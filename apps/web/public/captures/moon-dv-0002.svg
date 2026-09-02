@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Lunar terminator observatory capture</title>
+  <desc id="desc">A close observation of lunar craters and long shadows along the terminator.</desc>
+  <defs>
+    <radialGradient id="sky"><stop stop-color="#11181d"/><stop offset="1" stop-color="#010203"/></radialGradient>
+    <radialGradient id="moon" cx="35%" cy="30%"><stop stop-color="#e0dfd8"/><stop offset=".62" stop-color="#969690"/><stop offset="1" stop-color="#515350"/></radialGradient>
+    <clipPath id="disc"><circle cx="640" cy="620" r="440"/></clipPath>
+    <filter id="grain"><feTurbulence baseFrequency=".45" numOctaves="3" seed="7" type="fractalNoise"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .09 0"/></filter>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#sky)"/>
+  <circle cx="640" cy="620" r="440" fill="url(#moon)"/>
+  <g clip-path="url(#disc)">
+    <path d="M376 147c77 166 108 331 69 493-42 176-6 346 96 479H97V115z" fill="#070a0c" opacity=".92"/>
+    <path d="M377 146c75 170 103 330 65 495-40 172-7 341 98 478" fill="none" stroke="#f0ede3" stroke-width="12" opacity=".28"/>
+    <g fill="#62645f" stroke="#c1c1ba" stroke-width="8" opacity=".75">
+      <circle cx="594" cy="356" r="72"/><circle cx="770" cy="492" r="48"/><circle cx="612" cy="708" r="95"/><circle cx="858" cy="748" r="61"/><circle cx="732" cy="918" r="42"/><circle cx="965" cy="585" r="34"/>
+    </g>
+    <g fill="none" stroke="#464943" stroke-width="16" opacity=".64">
+      <circle cx="594" cy="356" r="42"/><circle cx="612" cy="708" r="57"/><circle cx="858" cy="748" r="31"/>
+    </g>
+    <rect width="1200" height="1200" filter="url(#grain)" opacity=".6"/>
+  </g>
+</svg>
