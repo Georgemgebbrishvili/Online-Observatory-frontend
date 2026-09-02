@@ -1,0 +1,85 @@
+:root {
+  --color-background: #05070a;
+  --color-elevated: #0b1016;
+  --color-elevated-secondary: #101720;
+  --color-elevated-hover: #151e29;
+  --color-text: #f3f6f8;
+  --color-text-secondary: #8d99a8;
+  --color-text-muted: #647080;
+  --color-text-quiet: #778493;
+  --color-cyan: #18c8ff;
+  --color-cyan-bright: #38daff;
+  --color-cyan-foreground: #00151c;
+  --color-success: #6fb78d;
+  --color-warning: #d4a258;
+  --color-error: #c76b6b;
+  --color-border: rgb(243 246 248 / 10%);
+  --color-border-strong: rgb(243 246 248 / 18%);
+  --color-surface-hover: rgb(243 246 248 / 5%);
+  --color-surface-active: rgb(243 246 248 / 8%);
+  --color-panel-overlay: rgb(5 7 10 / 82%);
+  --color-backdrop: rgb(5 7 10 / 76%);
+  --color-shadow: rgb(0 0 0 / 38%);
+  --color-cyan-faint: rgb(24 200 255 / 7%);
+  --color-cyan-muted: rgb(24 200 255 / 14%);
+  --color-cyan-border: rgb(24 200 255 / 34%);
+  --color-cyan-glow: rgb(24 200 255 / 24%);
+  --color-success-muted: rgb(111 183 141 / 13%);
+  --color-success-border: rgb(111 183 141 / 30%);
+  --color-warning-muted: rgb(212 162 88 / 13%);
+  --color-warning-border: rgb(212 162 88 / 30%);
+  --color-error-muted: rgb(199 107 107 / 13%);
+  --color-error-border: rgb(199 107 107 / 30%);
+  --color-optical-faint: rgb(141 153 168 / 15%);
+  --color-optical-medium: rgb(141 153 168 / 24%);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-page: clamp(var(--space-5), 4vw, 4.5rem);
+
+  --size-app-sidebar: 17rem;
+  --size-app-bottom-nav: 4.75rem;
+
+  --radius-small: 0.5rem;
+  --radius-medium: 0.75rem;
+  --radius-panel: 1rem;
+  --radius-large: 1.5rem;
+  --radius-full: 9999px;
+
+  --shadow-small: 0 0.5rem 1.5rem rgb(0 0 0 / 18%);
+  --shadow-panel: 0 2.5rem 8rem var(--color-shadow);
+  --shadow-dialog: 0 2rem 7rem rgb(0 0 0 / 62%);
+  --shadow-cyan: 0 0 1.5rem var(--color-cyan-glow);
+
+  --font-size-caption: 0.68rem;
+  --font-size-label: 0.75rem;
+  --font-size-body: 1rem;
+  --font-size-body-large: 1.125rem;
+  --font-size-title-small: clamp(1.75rem, 4vw, 2.5rem);
+  --font-size-title: clamp(2.5rem, 7vw, 5.25rem);
+
+  --duration-fast: 120ms;
+  --duration-standard: 180ms;
+  --duration-state: 280ms;
+  --duration-reveal: 420ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), Inter, sans-serif;
+  --font-display: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  --color-darkview-background: var(--color-background);
+  --color-darkview-elevated: var(--color-elevated);
+  --color-darkview-cyan: var(--color-cyan);
+  --color-darkview-text: var(--color-text);
+}

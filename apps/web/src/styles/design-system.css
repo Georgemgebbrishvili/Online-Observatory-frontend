@@ -1,0 +1,347 @@
+.design-system-page {
+  padding-bottom: var(--space-20);
+}
+
+.ds-hero {
+  display: grid;
+  gap: var(--space-12);
+  align-items: center;
+  min-height: min(48rem, calc(100vh - 5rem));
+  padding-block: var(--space-20);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ds-hero h1 {
+  font-size: var(--font-size-title);
+}
+
+.ds-hero > div > p:not(.eyebrow) {
+  max-width: 42rem;
+  margin: var(--space-6) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-large);
+  line-height: 1.75;
+}
+
+.ds-hero .optical-ring {
+  justify-self: center;
+}
+
+.ds-internal-label {
+  display: inline-block;
+  margin-top: var(--space-8);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ds-section {
+  padding-block: var(--space-16);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ds-section:last-child {
+  border-bottom: 0;
+}
+
+.ds-section-header {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.ds-section-header > span {
+  padding-top: var(--space-1);
+  color: var(--color-cyan);
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-size: var(--font-size-caption);
+  letter-spacing: 0.1em;
+}
+
+.ds-section-header h2 {
+  margin: 0;
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-size: var(--font-size-title-small);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.ds-section-header p {
+  max-width: 38rem;
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.ds-foundations,
+.ds-card-grid,
+.ds-feedback-grid,
+.ds-status-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.ds-foundations > *,
+.ds-card-grid > *,
+.ds-status-grid > *,
+.ds-feedback-grid > * {
+  min-width: 0;
+}
+
+.ds-foundations h3,
+.ds-status-grid h3,
+.ds-card-grid h3,
+.ds-form h3 {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-size: 1rem;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+
+.ds-palette {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ds-swatch-row {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(7rem, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  min-height: 2rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.ds-swatch-row code,
+.ds-type-specimens code {
+  color: var(--color-text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.65rem;
+}
+
+.ds-swatch {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-small);
+}
+
+.ds-swatch-background {
+  background: var(--color-background);
+}
+.ds-swatch-elevated {
+  background: var(--color-elevated);
+}
+.ds-swatch-elevated-secondary {
+  background: var(--color-elevated-secondary);
+}
+.ds-swatch-text {
+  background: var(--color-text);
+}
+.ds-swatch-text-secondary {
+  background: var(--color-text-secondary);
+}
+.ds-swatch-cyan {
+  background: var(--color-cyan);
+}
+.ds-swatch-success {
+  background: var(--color-success);
+}
+.ds-swatch-warning {
+  background: var(--color-warning);
+}
+.ds-swatch-error {
+  background: var(--color-error);
+}
+
+.ds-type-specimens {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.ds-type-specimens > div > span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ds-type-specimens p {
+  max-width: 36rem;
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.ds-type-specimens .ds-display-type {
+  color: var(--color-text);
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-size: clamp(2rem, 6vw, 3.75rem);
+  font-weight: 450;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.ds-token-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ds-token-row code {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-background);
+}
+
+.ds-component-row,
+.ds-status-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.ds-component-row + .ds-component-row {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.ds-status-grid .surface-panel {
+  min-height: 13rem;
+}
+
+.ds-subheading {
+  margin-top: var(--space-8) !important;
+}
+
+.ds-card-grid .surface-panel,
+.ds-card-grid .card {
+  min-height: 14rem;
+}
+
+.ds-card-grid .surface-panel p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.ds-card-meta {
+  color: var(--color-cyan-bright);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+}
+
+.ds-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.ds-overlay-grid {
+  display: grid;
+  gap: var(--space-5);
+  align-items: end;
+}
+
+.ds-overlay-grid > span:has(.button) {
+  display: inline-flex;
+}
+
+.ds-coordinate {
+  display: inline-grid;
+  min-width: 4.5rem;
+  min-height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  cursor: help;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--font-size-label);
+}
+
+.ds-feedback-grid .surface-panel {
+  min-height: 16rem;
+}
+
+.ds-skeleton-preview {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: var(--space-4);
+  align-items: center;
+  width: 100%;
+}
+
+.ds-skeleton-preview > div {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ds-form-panel {
+  max-width: 42rem;
+}
+
+.ds-form {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.ds-form > .button {
+  justify-self: start;
+}
+
+.ds-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (min-width: 48rem) {
+  .ds-overlay-grid {
+    grid-template-columns: auto auto minmax(14rem, 1fr) auto;
+  }
+
+  .ds-card-grid,
+  .ds-feedback-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .ds-hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .ds-foundations,
+  .ds-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ds-status-panel-wide {
+    grid-column: 1 / -1;
+  }
+
+  .ds-section-header {
+    grid-template-columns: 3rem minmax(0, 1fr);
+  }
+}

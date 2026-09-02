@@ -1,0 +1,131 @@
+.auth-page {
+  display: grid;
+  min-height: min(48rem, calc(100vh - 5rem));
+  align-items: center;
+  padding-block: clamp(3rem, 8vw, 7rem);
+}
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(22rem, 0.72fr);
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: center;
+}
+
+.auth-introduction {
+  position: relative;
+  min-height: 28rem;
+  padding-block: 2rem;
+}
+
+.auth-introduction h1 {
+  max-width: 9ch;
+  font-size: clamp(3rem, 7vw, 6rem);
+}
+
+.auth-introduction > p:not(.eyebrow) {
+  max-width: 35rem;
+  margin: 2rem 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-large);
+  line-height: 1.75;
+}
+
+.auth-optics {
+  position: absolute;
+  z-index: -1;
+  right: 2rem;
+  bottom: 0;
+  opacity: 0.42;
+  transform: scale(1.35);
+}
+
+.auth-panel {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-large);
+  background: linear-gradient(145deg, rgb(16 23 32 / 94%), rgb(8 12 17 / 96%));
+  box-shadow: var(--shadow-panel);
+}
+
+.auth-form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.auth-form-error {
+  margin: 0 0 0.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-medium);
+  background: var(--color-error-muted);
+  color: var(--color-text);
+}
+
+.auth-alternate {
+  margin: 0;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.auth-alternate a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--color-cyan-bright);
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
+.auth-security-note {
+  margin: 1.75rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 55rem) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .auth-introduction {
+    min-height: auto;
+  }
+
+  .auth-optics {
+    top: 1rem;
+    right: 8%;
+    bottom: auto;
+    opacity: 0.2;
+    transform: scale(0.9);
+  }
+
+}
+
+@media (max-width: 36rem) {
+  .auth-page {
+    align-items: start;
+    padding-block: 2.5rem 4rem;
+  }
+
+  .auth-layout {
+    gap: 1.5rem;
+  }
+
+  .auth-introduction h1 {
+    font-size: clamp(2.6rem, 13vw, 4rem);
+  }
+
+  .auth-panel {
+    padding: 1.25rem;
+  }
+}

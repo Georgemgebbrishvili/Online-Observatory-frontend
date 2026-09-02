@@ -1,0 +1,255 @@
+import type { Dictionary } from "../types";
+
+const dictionary = {
+  metadata: {
+    title: "Darkview by Astroman",
+    description:
+      "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
+  },
+  navigation: {
+    ariaLabel: "Primary navigation",
+    skip: "Skip to content",
+    language: "Language",
+    languageName: "ქართული",
+    brandAriaLabel: "Darkview by Astroman",
+    brandEndorsement: "by Astroman",
+    public: {
+      ariaLabel: "Public navigation",
+      menu: "Open navigation",
+      closeMenu: "Close navigation",
+      explore: "Explore",
+      live: "Live",
+      observatory: "Observatory",
+      pricing: "Pricing",
+      about: "About",
+      signIn: "Sign in",
+      startExploring: "Start Exploring",
+    },
+    app: {
+      ariaLabel: "Application navigation",
+      brandAriaLabel: "Darkview by Astroman",
+      brandEndorsement: "by Astroman",
+      home: "Home",
+      missions: "Missions",
+      live: "Live",
+      collection: "Collection",
+      profile: "Profile",
+      mobile: {
+        home: "Home",
+        missions: "Missions",
+        live: "Live",
+        collection: "Collection",
+        profile: "Profile",
+      },
+      observatory: "Observatory status",
+      observatoryName: "Tbilisi Observatory",
+      statusOnline: "Online",
+      simulated: "Simulated status",
+      previewEyebrow: "Application shell",
+      previewDescription:
+        "This destination is a layout preview. Feature content will be added separately.",
+    },
+  },
+  home: {
+    hero: {
+      eyebrow: "DARKVIEW · BY ASTROMAN",
+      title: "Explore the real universe.",
+      description:
+        "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
+      primaryCta: "Start a Mission",
+      secondaryCta: "Watch Live",
+      visualLabel: "Remote observatory interface",
+      visualTitle: "Real telescope access",
+      visualTarget: "Target · Saturn",
+      visualLocation: "Tbilisi · 41.72° N",
+      visualOperation: "Server-controlled optics",
+      visualStatus: "Online",
+      visualLive: "Live",
+    },
+    demoLabel: "Demonstration data",
+    common: {
+      watchLive: "Watch Live",
+      planMission: "Plan Mission",
+      minutes: "min",
+      approximateViewers: "approx. viewers",
+      currentTarget: "Current target",
+      currentMission: "Current mission",
+      telescope: "Telescope",
+      status: "Status",
+      bestTime: "Best time",
+      duration: "Mission",
+      liveLabel: "Live",
+      observatoryOnline: "Online",
+      qualities: {
+        Excellent: "Excellent",
+        Good: "Good",
+        Fair: "Fair",
+        Unavailable: "Unavailable",
+      },
+    },
+    live: {
+      index: "01",
+      eyebrow: "Live now",
+      title: "A real observatory, in motion.",
+      description:
+        "Follow the current telescope state, target, and active mission from one precise live interface.",
+      observatoryName: "Darkview Tbilisi Observatory",
+      targetName: "Saturn",
+      currentMission: "DV-042 · Saturn opposition survey",
+      telescopeState: "Tracking target",
+    },
+    tonight: {
+      index: "02",
+      eyebrow: "Tonight's sky",
+      title: "Choose what the telescope sees next.",
+      description:
+        "A mission begins with an observable target and a real window in the night sky.",
+      scheduleNote:
+        "Illustrative observing windows · final availability requires verification",
+      targets: {
+        moon: {
+          name: "Moon",
+          type: "Natural satellite",
+          visibility: "High above horizon",
+          bestTime: "20:10–22:30",
+        },
+        saturn: {
+          name: "Saturn",
+          type: "Planet",
+          visibility: "South-west",
+          bestTime: "21:40–23:15",
+        },
+        m31: {
+          name: "M31 Andromeda",
+          type: "Galaxy",
+          visibility: "North-east",
+          bestTime: "22:20–01:10",
+        },
+        m13: {
+          name: "M13",
+          type: "Globular cluster",
+          visibility: "Western sky",
+          bestTime: "20:50–22:40",
+        },
+        m27: {
+          name: "M27",
+          type: "Planetary nebula",
+          visibility: "North-west",
+          bestTime: "21:15–23:35",
+        },
+        m57: {
+          name: "M57",
+          type: "Planetary nebula",
+          visibility: "High west",
+          bestTime: "20:45–22:55",
+        },
+      },
+    },
+    howItWorks: {
+      index: "03",
+      eyebrow: "How Darkview works",
+      title: "Three steps. One real observation.",
+      description:
+        "Darkview turns observatory access into a clear mission from selection to capture.",
+      steps: [
+        { title: "Choose", description: "Pick an object from tonight's observable sky." },
+        {
+          title: "Observe",
+          description: "A real telescope automatically finds and tracks it.",
+        },
+        {
+          title: "Keep",
+          description:
+            "Capture your own astronomical image and add it to your collection.",
+        },
+      ],
+    },
+    realObservatory: {
+      index: "04",
+      eyebrow: "Real observatory",
+      title: "Software connected to physical optics.",
+      description:
+        "Darkview missions are designed to move through protected observatory software to a real telescope and camera—never directly from a browser.",
+      statement:
+        "Every command stays server-side. Every observation stays tied to a verified mission.",
+      locationLabel: "Location",
+      location: "Tbilisi, Georgia",
+      cameraLabel: "Camera",
+      camera: "Cooled astronomy camera",
+      operationLabel: "Operation",
+      operation: "Real-time mission state",
+      telescopeLabel: "Telescope",
+      telescope: "Parked · demonstration state",
+    },
+    collection: {
+      index: "05",
+      eyebrow: "Your collection",
+      title: "A visual record of where you looked.",
+      description:
+        "Each completed mission can become a personal observation you can revisit, compare, and keep.",
+      statement:
+        "These are not stock images. They are observations captured through Darkview.",
+      disclaimer: "Development placeholders · no telescope captures are represented",
+      frames: {
+        m42: { name: "Orion Nebula", catalog: "M42 · placeholder frame" },
+        moon: { name: "Lunar terminator", catalog: "Moon · placeholder frame" },
+        m13: { name: "Hercules Cluster", catalog: "M13 · placeholder frame" },
+      },
+    },
+    network: {
+      index: "06",
+      eyebrow: "Observatory network",
+      title: "One active node. Built to grow carefully.",
+      description:
+        "The platform architecture can support additional observatories without implying a network that does not yet exist.",
+      observatoryName: "Tbilisi Observatory",
+      active: "Active",
+      location: "Tbilisi · Georgia",
+      descriptionLine: "Primary Darkview observatory node",
+      futureNote:
+        "Future nodes will be announced only after physical integration and verification.",
+    },
+    privateObservatory: {
+      index: "07",
+      eyebrow: "Private observatory",
+      title: "A longer window for your own sky plan.",
+      description:
+        "Premium private sessions will offer dedicated observatory time for deeper, self-directed exploration.",
+      sessionLabel: "Private session",
+      sessionDescription: "Dedicated telescope window",
+      availability: "Coming later · checkout not enabled",
+    },
+    finalCta: {
+      eyebrow: "Begin with tonight",
+      title: "Your next observation starts here.",
+      description: "Choose an observable target and shape your first Darkview mission.",
+      action: "Explore Tonight's Sky",
+    },
+  },
+  footer: {
+    brandAriaLabel: "Darkview by Astroman",
+    brandEndorsement: "by Astroman",
+    georgianLanguage: "ქართული",
+    englishLanguage: "English",
+    statement: "A premium optical instrument looking into deep space.",
+    product: "Product",
+    company: "Company",
+    legal: "Legal",
+    language: "Language",
+    missions: "Missions",
+    live: "Live",
+    collection: "Collection",
+    observatory: "Observatory",
+    about: "About",
+    contact: "Contact",
+    privacy: "Privacy",
+    terms: "Terms",
+    comingSoon: "Coming soon",
+  },
+  notFound: {
+    title: "Observation not found",
+    action: "Return to Darkview",
+  },
+} satisfies Dictionary;
+
+export default dictionary;

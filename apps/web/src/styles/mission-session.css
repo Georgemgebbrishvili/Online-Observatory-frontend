@@ -1,0 +1,710 @@
+.session-page {
+  width: min(100%, 96rem);
+  margin-inline: auto;
+  padding: var(--space-5) var(--space-page) clamp(var(--space-16), 8vw, 7rem);
+}
+
+.session-topbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.session-topbar > a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  font-weight: 600;
+}
+
+.session-topbar > a:hover {
+  color: var(--color-text);
+}
+
+.session-topbar > a:focus-visible,
+.simulator-controls button:focus-visible,
+.simulator-failure-control select:focus-visible {
+  outline: 2px solid var(--color-cyan-bright);
+  outline-offset: 3px;
+}
+
+.simulator-identity {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-medium);
+  background: var(--color-warning-muted);
+}
+
+.simulator-identity strong,
+.simulator-controls > div:first-child > span {
+  color: var(--color-warning);
+  font-size: var(--font-size-caption);
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+
+.simulator-identity span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: 1.5;
+}
+
+.session-layout {
+  display: grid;
+  gap: var(--space-6);
+  padding-top: var(--space-6);
+}
+
+.session-stage,
+.simulator-controls,
+.mission-event-panel {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-elevated);
+}
+
+.session-stage {
+  overflow: hidden;
+}
+
+.session-mission-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.session-mission-meta span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.session-mission-meta strong {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 550;
+}
+
+.session-state-copy {
+  min-height: 16.5rem;
+  padding: clamp(var(--space-8), 7vw, var(--space-16)) var(--space-5) var(--space-8);
+  animation: session-state-reveal var(--duration-state) var(--ease-out-quart) both;
+}
+
+.session-state-copy h1 {
+  max-width: 15ch;
+  font-size: clamp(2.6rem, 8vw, 5.5rem);
+}
+
+.session-state-copy p {
+  max-width: 39rem;
+  margin: var(--space-5) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-large);
+  line-height: 1.7;
+}
+
+.session-live-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  color: var(--color-cyan-bright);
+  font-size: var(--font-size-label);
+  font-weight: 750;
+  letter-spacing: 0.16em;
+}
+
+.session-live-label::before {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  box-shadow: var(--shadow-cyan);
+  content: "";
+}
+
+.session-checks {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-8);
+  list-style: none;
+}
+
+.session-checks li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 550;
+}
+
+.session-checks svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0.2rem;
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-full);
+  background: var(--color-success-muted);
+  stroke: var(--color-success);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.session-optics {
+  position: relative;
+  display: grid;
+  min-height: clamp(23rem, 62vw, 40rem);
+  overflow: hidden;
+  place-items: center;
+  border-block: 1px solid var(--color-border-strong);
+  background:
+    radial-gradient(circle at center, var(--color-cyan-faint), transparent 38%),
+    var(--color-background);
+  isolation: isolate;
+}
+
+.session-optical-grid {
+  position: absolute;
+  z-index: -2;
+  background:
+    linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  inset: 0;
+  mask-image: radial-gradient(circle, black 15%, transparent 72%);
+}
+
+.session-ring {
+  position: absolute;
+  border: 1px solid var(--color-optical-medium);
+  border-radius: var(--radius-full);
+  transition:
+    border-color 480ms var(--ease-standard),
+    box-shadow 480ms var(--ease-standard),
+    transform 700ms var(--ease-standard);
+}
+
+.session-ring-outer {
+  width: min(78%, 31rem);
+  aspect-ratio: 1;
+}
+
+.session-ring-middle {
+  width: min(56%, 22rem);
+  aspect-ratio: 1;
+}
+
+.session-ring-inner {
+  width: min(32%, 12rem);
+  aspect-ratio: 1;
+}
+
+.session-alignment-axis {
+  position: absolute;
+  z-index: -1;
+  background: var(--color-optical-medium);
+}
+
+.session-axis-horizontal {
+  width: 100%;
+  height: 1px;
+}
+
+.session-axis-vertical {
+  width: 1px;
+  height: 100%;
+}
+
+.session-target-point {
+  position: relative;
+  display: grid;
+  width: 4rem;
+  height: 4rem;
+  place-items: center;
+  border: 1px solid var(--color-cyan-border);
+  border-radius: var(--radius-full);
+  background: var(--color-cyan-faint);
+  box-shadow: 0 0 2.5rem var(--color-cyan-glow);
+  transform: translate(2.75rem, -3.5rem);
+  transition:
+    border-color 500ms var(--ease-standard),
+    box-shadow 500ms var(--ease-standard),
+    transform 900ms var(--ease-standard);
+}
+
+.session-target-point::before,
+.session-target-point::after {
+  position: absolute;
+  background: var(--color-cyan-border);
+  content: "";
+}
+
+.session-target-point::before {
+  width: 6rem;
+  height: 1px;
+}
+
+.session-target-point::after {
+  width: 1px;
+  height: 6rem;
+}
+
+.session-target-point i {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: var(--radius-full);
+  background: var(--color-cyan-bright);
+  box-shadow: var(--shadow-cyan);
+}
+
+.session-optics-state,
+.session-simulator-watermark {
+  position: absolute;
+  bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.session-optics-state {
+  left: var(--space-4);
+}
+
+.session-simulator-watermark {
+  right: var(--space-4);
+  color: var(--color-warning);
+}
+
+.session-optics[data-state="SLEWING"] .session-target-point {
+  transform: translate(-4.5rem, 2.75rem);
+}
+
+.session-optics[data-state="SLEWING"] .session-ring-outer {
+  border-color: var(--color-cyan-border);
+  transform: scale(1.04);
+}
+
+.session-optics[data-state="PLATE_SOLVING"] .session-target-point {
+  transform: translate(1.6rem, -1.15rem);
+}
+
+.session-optics[data-state="PLATE_SOLVING"] .session-ring-middle {
+  border-style: dashed;
+  border-color: var(--color-cyan-border);
+  animation: optical-scan 1.8s var(--ease-standard) infinite alternate;
+}
+
+.session-optics[data-state="CENTERING"] .session-target-point,
+.session-optics[data-state="OBSERVING"] .session-target-point,
+.session-optics[data-state="CAPTURING"] .session-target-point,
+.session-optics[data-state="PROCESSING"] .session-target-point,
+.session-optics[data-state="COMPLETE"] .session-target-point {
+  transform: translate(0, 0);
+}
+
+.session-optics[data-state="CENTERING"] .session-ring-inner,
+.session-optics[data-state="OBSERVING"] .session-ring-inner,
+.session-optics[data-state="CAPTURING"] .session-ring-inner,
+.session-optics[data-state="PROCESSING"] .session-ring-inner,
+.session-optics[data-state="COMPLETE"] .session-ring-inner {
+  border-color: var(--color-cyan-bright);
+  box-shadow: var(--shadow-cyan);
+}
+
+.session-optics[data-state="OBSERVING"] .session-ring-middle,
+.session-optics[data-state="CAPTURING"] .session-ring-middle {
+  border-color: var(--color-cyan-border);
+  animation: optical-live 1.6s var(--ease-standard) infinite alternate;
+}
+
+.session-optics[data-state="OBSERVING"] .session-target-point {
+  animation: target-lock-settle 520ms var(--ease-out-quart) both;
+}
+
+.session-optics[data-state="PROCESSING"] .session-ring-outer,
+.session-optics[data-state="PROCESSING"] .session-ring-middle {
+  border-style: dashed;
+  border-color: var(--color-cyan-border);
+}
+
+.session-optics[data-state="COMPLETE"] .session-ring-outer,
+.session-optics[data-state="COMPLETE"] .session-ring-middle {
+  border-color: var(--color-success-border);
+}
+
+.session-optics[data-state="WEATHER_HOLD"] .session-target-point,
+.session-optics[data-state="NOT_VISIBLE"] .session-target-point {
+  border-color: var(--color-warning-border);
+  box-shadow: 0 0 2.5rem var(--color-warning-muted);
+}
+
+.session-optics[data-state="WEATHER_HOLD"] .session-target-point i,
+.session-optics[data-state="NOT_VISIBLE"] .session-target-point i {
+  background: var(--color-warning);
+  box-shadow: 0 0 1.5rem var(--color-warning);
+}
+
+.session-optics[data-state="HARDWARE_ERROR"] .session-target-point,
+.session-optics[data-state="FAILED"] .session-target-point {
+  border-color: var(--color-error-border);
+  box-shadow: 0 0 2.5rem var(--color-error-muted);
+}
+
+.session-optics[data-state="HARDWARE_ERROR"] .session-target-point i,
+.session-optics[data-state="FAILED"] .session-target-point i {
+  background: var(--color-error);
+  box-shadow: 0 0 1.5rem var(--color-error);
+}
+
+.session-progress {
+  display: grid;
+  grid-auto-columns: 8rem;
+  grid-auto-flow: column;
+  gap: 0;
+  overflow-x: auto;
+  margin: 0;
+  padding: var(--space-5);
+  list-style: none;
+  scrollbar-color: var(--color-border-strong) transparent;
+  scroll-padding-inline: var(--space-5);
+  scroll-snap-type: x proximity;
+}
+
+.session-progress li {
+  position: relative;
+  display: grid;
+  gap: var(--space-2);
+  min-height: 3.5rem;
+  align-content: start;
+  padding-right: var(--space-3);
+  color: var(--color-text-muted);
+  scroll-snap-align: start;
+}
+
+.session-progress li::before {
+  position: absolute;
+  top: 0.3rem;
+  right: 0;
+  left: 1.5rem;
+  height: 1px;
+  background: var(--color-border-strong);
+  content: "";
+}
+
+.session-progress li > span {
+  position: relative;
+  z-index: 1;
+  width: 0.65rem;
+  height: 0.65rem;
+  overflow: visible;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background: var(--color-elevated);
+  color: transparent;
+}
+
+.session-progress li small {
+  font-size: 0.61rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.session-progress li[data-complete] {
+  color: var(--color-text-secondary);
+}
+
+.session-progress li[data-complete]::before {
+  background: var(--color-cyan-border);
+}
+
+.session-progress li[data-complete] > span {
+  border-color: var(--color-cyan-border);
+  background: var(--color-cyan);
+}
+
+.session-progress li[data-current] {
+  color: var(--color-cyan-bright);
+}
+
+.session-progress li[data-current] > span {
+  border-color: var(--color-cyan-bright);
+  box-shadow: var(--shadow-cyan);
+}
+
+.session-sidebar {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.simulator-controls,
+.mission-event-panel {
+  overflow: hidden;
+}
+
+.simulator-controls {
+  padding: var(--space-5);
+  border-color: var(--color-warning-border);
+  background:
+    linear-gradient(145deg, var(--color-warning-muted), transparent 58%),
+    var(--color-elevated);
+}
+
+.simulator-controls h2,
+.mission-event-panel h2 {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 550;
+  letter-spacing: -0.03em;
+}
+
+.simulator-actions {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.simulator-failure-control {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-warning-border);
+}
+
+.simulator-failure-control > span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  font-weight: 600;
+}
+
+.simulator-failure-control select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-small);
+  background: var(--color-elevated-secondary);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.84rem;
+}
+
+.simulator-failure-control select:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.mission-event-panel > header {
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mission-event-panel header p {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  line-height: 1.55;
+}
+
+.mission-event-panel ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mission-event-panel li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mission-event-panel li:last-child {
+  border-bottom: 0;
+}
+
+.event-history-marker {
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-top: 0.3rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background: var(--color-elevated-secondary);
+}
+
+.mission-event-panel li[data-current] .event-history-marker {
+  border-color: var(--color-cyan-border);
+  background: var(--color-cyan);
+  box-shadow: var(--shadow-cyan);
+}
+
+.mission-event-panel li > div {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.mission-event-panel time {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.mission-event-panel strong {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.mission-event-panel small {
+  color: var(--color-warning);
+  font-size: 0.65rem;
+}
+
+@keyframes optical-scan {
+  from {
+    opacity: 0.45;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes optical-live {
+  from {
+    box-shadow: 0 0 0 var(--color-cyan-faint);
+    opacity: 0.78;
+  }
+  to {
+    box-shadow: 0 0 1.75rem var(--color-cyan-muted);
+    opacity: 1;
+  }
+}
+
+@keyframes session-state-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+}
+
+@keyframes target-lock-settle {
+  0% {
+    opacity: 0.65;
+    transform: translate(0, 0) scale(0.82);
+  }
+  65% {
+    transform: translate(0, 0) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@media (min-width: 44rem) {
+  .session-topbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .simulator-identity {
+    justify-items: end;
+    text-align: right;
+  }
+
+  .session-checks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .simulator-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .simulator-actions .button:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 43.99rem) {
+  .session-page {
+    padding-top: var(--space-3);
+  }
+
+  .session-optics-state {
+    bottom: 2.75rem;
+  }
+
+  .session-simulator-watermark {
+    right: auto;
+    left: var(--space-4);
+  }
+
+  .session-progress {
+    grid-auto-columns: 6.75rem;
+    padding: var(--space-4);
+    scroll-padding-inline: var(--space-4);
+    scrollbar-width: none;
+  }
+
+  .session-progress::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (min-width: 72rem) {
+  .session-layout {
+    grid-template-columns: minmax(0, 1.6fr) minmax(20rem, 0.7fr);
+    align-items: start;
+  }
+
+  .session-sidebar {
+    position: sticky;
+    top: var(--space-5);
+  }
+
+  .session-state-copy {
+    padding-inline: var(--space-8);
+  }
+
+  .session-checks {
+    padding-inline: var(--space-8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .session-ring,
+  .session-target-point {
+    transition-duration: 0.01ms;
+  }
+
+  .session-optics .session-ring {
+    animation: none !important;
+  }
+}

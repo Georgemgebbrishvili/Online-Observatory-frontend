@@ -1,0 +1,94 @@
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(.capture-morph) {
+  animation-duration: 360ms;
+  animation-timing-function: var(--ease-out-quart);
+}
+
+.brand-wordmark {
+  display: inline-block;
+  animation: brand-reveal var(--duration-reveal) var(--ease-out-quart) both;
+}
+
+.brand-endorsement {
+  animation: brand-detail-reveal var(--duration-state) 110ms var(--ease-out-quart) both;
+}
+
+.observatory-status-online .status-dot {
+  animation: observatory-online-pulse 2.8s ease-in-out infinite;
+}
+
+.optical-ring-active .optical-ring-accent {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: optical-calibration 2.4s linear infinite;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(
+    .card-interactive,
+    .target-card,
+    .mission-target-card,
+    .capture-card,
+    .home-explore-card,
+    .network-node-card,
+    .pricing-offering:not([data-feature-enabled="false"])
+  ) {
+    transition:
+      border-color var(--duration-standard) var(--ease-standard),
+      background-color var(--duration-standard) var(--ease-standard),
+      box-shadow var(--duration-state) var(--ease-out-quart),
+      transform var(--duration-state) var(--ease-out-quart);
+  }
+
+  :where(
+    .card-interactive,
+    .target-card,
+    .mission-target-card,
+    .capture-card,
+    .home-explore-card,
+    .network-node-card,
+    .pricing-offering:not([data-feature-enabled="false"])
+  ):is(:hover, :focus-within) {
+    box-shadow: 0 1.15rem 3rem rgb(0 0 0 / 28%);
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes brand-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  to {
+    clip-path: inset(0);
+    opacity: 1;
+  }
+}
+
+@keyframes brand-detail-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(-0.35rem);
+  }
+}
+
+@keyframes observatory-online-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    opacity: 0.8;
+  }
+  50% {
+    box-shadow: 0 0 0 0.22rem var(--color-success-muted);
+    opacity: 1;
+  }
+}
+
+@keyframes optical-calibration {
+  to {
+    transform: rotate(1turn);
+  }
+}
