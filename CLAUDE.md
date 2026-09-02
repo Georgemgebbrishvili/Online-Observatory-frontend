@@ -147,9 +147,11 @@ Nothing here may:
 - address the mount or camera, directly or indirectly;
 - define a type that crosses a process boundary.
 
-The two repositories share no file path, so they merge cleanly into one later with both
-histories intact. Do not create a path here that also exists there — `agent/`, `apps/api/`,
-`apps/realtime/`, `packages/db/` and `contracts/` are theirs.
+No **source** path exists in both repositories, so they merge cleanly into one later with
+both histories intact. Do not create a source path here that also exists there —
+`agent/`, `apps/api/`, `apps/realtime/`, `packages/db/` and `contracts/` are theirs. Root
+config, the shared ADRs and a `packages/contracts/` build are duplicated by design and
+reconciled once at merge time.
 
 ## Mission states
 
