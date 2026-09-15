@@ -68,6 +68,22 @@ export const zUser = z.object({
     createdAt: z.iso.datetime()
 });
 
+export const zRegisterRequest = z.object({
+    displayName: z.string().min(2).max(80),
+    email: z.email().max(254),
+    password: z.string().min(12).max(128),
+    locale: zLocale
+});
+
+export const zSignInRequest = z.object({
+    email: z.email().max(254),
+    password: z.string().min(1).max(128)
+});
+
+export const zVerifyEmailRequest = z.object({
+    token: z.string().min(16).max(128).regex(/^[A-Za-z0-9_-]+$/)
+});
+
 /**
  * Phase 1 catalogue classes only. Every class in this enum is one the
  * NexStar 6SE + ASI585MC combination can present convincingly from a Bortle 8-9
@@ -83,6 +99,33 @@ export const zTargetType = z.enum([
     'PLANETARY_NEBULA',
     'BRIGHT_NEBULA'
 ]);
+
+/**
+ * A body whose position is computed from ephemeris at request time. Phase 1
+ * offers the Moon and the four planets the Build Plan lists; the rest are
+ * named so the enum does not need a breaking change to add one.
+ *
+ */
+export const zSolarSystemBody = z.enum([
+    'MOON',
+    'MERCURY',
+    'VENUS',
+    'MARS',
+    'JUPITER',
+    'SATURN',
+    'URANUS',
+    'NEPTUNE'
+]);
+
+/**
+ * Where a target's position comes from. FIXED targets carry J2000
+ * coordinates. EPHEMERIS targets do not have any: the Moon and the planets
+ * move, and a stored coordinate for one is a statement that is false the day
+ * after it is written. Their position is computed at request time from
+ * solarSystemBody.
+ *
+ */
+export const zTargetPositionSource = z.enum(['FIXED', 'EPHEMERIS']);
 
 /**
  * The three optical configurations of the C6. Focal length and image scale follow
@@ -111,6 +154,12 @@ export const zImagingProfile = z.enum([
     'BRIGHT_NEBULA'
 ]);
 
+/**
+ * A catalogue object. Exactly one of `coordinates` or `solarSystemBody` is
+ * present, decided by `positionSource`: a FIXED target has coordinates and no
+ * body, an EPHEMERIS target has a body and no coordinates.
+ *
+ */
 export const zTarget = z.object({
     id: z.uuid(),
     slug: z.string().regex(/^[a-z0-9-]+$/),
@@ -120,7 +169,9 @@ export const zTarget = z.object({
     nameKa: z.string(),
     descriptionEn: z.string().nullish(),
     descriptionKa: z.string().nullish(),
-    coordinates: zEquatorialCoordinates,
+    positionSource: zTargetPositionSource,
+    coordinates: zEquatorialCoordinates.nullish(),
+    solarSystemBody: zSolarSystemBody.nullish(),
     angularSizeArcmin: z.number().gt(0),
     magnitude: z.number(),
     opticalConfig: zOpticalConfig,
@@ -172,6 +223,7 @@ export const zTonightTarget = z.object({
 });
 
 export const zTonightTargetList = z.object({
+    observatoryId: z.uuid(),
     items: z.array(zTonightTarget),
     evaluatedAt: z.iso.datetime()
 });
@@ -265,6 +317,18 @@ export const zObservatoryTelemetry = z.object({
     reportedAt: z.iso.datetime()
 });
 
+/**
+ * The latest telemetry the realtime service holds for one connected observatory,
+ * as served on x-darkview-internal to the API (ADR-017). Internal: never sent to a
+ * client directly.
+ *
+ */
+export const zObservatoryTelemetrySnapshot = z.object({
+    observatoryId: z.uuid(),
+    telemetry: zObservatoryTelemetry,
+    lastHeartbeatAt: z.iso.datetime()
+});
+
 export const zSetObservatoryModeRequest = z.object({
     mode: zObservatoryMode,
     reason: z.string().min(8),
@@ -332,6 +396,19 @@ export const zSetWeatherHoldRequest = z.object({
     note: z.string().nullish()
 });
 
+/**
+ * The instrument, as a customer would compare two of them. ADR-015: a partner
+ * is selling *that* telescope, with its aperture, and a customer choosing
+ * between two needs to see the difference.
+ *
+ */
+export const zBookableTelescope = z.object({
+    manufacturer: z.string(),
+    model: z.string(),
+    apertureMm: z.number().gt(0),
+    focalLengthMm: z.number().gt(0)
+});
+
 export const zSlotUnavailableReason = z.enum([
     'ALREADY_BOOKED',
     'OUTSIDE_ASTRONOMICAL_DARKNESS',
@@ -342,6 +419,7 @@ export const zSlotUnavailableReason = z.enum([
 ]);
 
 export const zSlot = z.object({
+    observatoryId: z.uuid(),
     startAt: z.iso.datetime(),
     endAt: z.iso.datetime(),
     durationMinutes: z.int().gt(0),
@@ -352,6 +430,7 @@ export const zSlot = z.object({
 });
 
 export const zSlotList = z.object({
+    observatoryId: z.uuid(),
     date: z.iso.date(),
     items: z.array(zSlot)
 });
@@ -367,6 +446,7 @@ export const zBookingStatus = z.enum([
 export const zBooking = z.object({
     id: z.uuid(),
     userId: z.uuid(),
+    observatoryId: z.uuid(),
     targetId: z.uuid(),
     slotStartAt: z.iso.datetime(),
     durationMinutes: z.int().gt(0),
@@ -379,6 +459,7 @@ export const zBooking = z.object({
 });
 
 export const zCreateBookingRequest = z.object({
+    observatoryId: z.uuid(),
     targetId: z.uuid(),
     slotStartAt: z.iso.datetime(),
     durationMinutes: z.int().gt(0),
@@ -509,7 +590,7 @@ export const zMissionFailureReason = z.enum([
 export const zMission = z.object({
     id: z.uuid(),
     userId: z.uuid(),
-    bookingId: z.uuid(),
+    bookingId: z.uuid().nullable(),
     targetId: z.uuid(),
     observatoryId: z.uuid(),
     state: zMissionState,
@@ -553,6 +634,45 @@ export const zMissionObserver = z.object({
 export const zMissionObserverList = z.object({
     items: z.array(zMissionObserver),
     capacity: z.int().gte(0).lte(5)
+});
+
+/**
+ * PENDING_PAYMENT holds a seat while the payment is outstanding and lapses at
+ * `holdExpiresAt` if nothing settles. PAID is a seat its buyer keeps for the rest
+ * of the session. CANCELLED is a payment that failed; EXPIRED is a hold that ran
+ * out. Both put the seat back on sale.
+ *
+ */
+export const zObserverPackStatus = z.enum([
+    'PENDING_PAYMENT',
+    'PAID',
+    'CANCELLED',
+    'EXPIRED'
+]);
+
+/**
+ * One purchased, view-only seat on a session somebody else controls (ADR-007).
+ *
+ * The pack is the sale; `MissionObserver` is the attachment to it. They are
+ * separate because a seat outlives a connection: an observer whose phone drops
+ * still owns what they paid for.
+ *
+ */
+export const zObserverPack = z.object({
+    id: z.uuid(),
+    missionId: z.uuid(),
+    userId: z.uuid(),
+    status: zObserverPackStatus,
+    priceMinor: z.int().gte(0),
+    currency: zCurrency,
+    paymentId: z.uuid().nullish(),
+    holdExpiresAt: z.iso.datetime().nullish(),
+    createdAt: z.iso.datetime()
+});
+
+export const zObserverPackWithPaymentIntent = z.object({
+    observerPack: zObserverPack,
+    paymentIntent: zPaymentIntent
 });
 
 /**
@@ -826,7 +946,9 @@ export const zOperatorOverrideRequest = z.object({
 
 /**
  * IMAGE is the delivered, stretched, watermarked image. FITS is the real frame
- * data. UNMARKED is the stored copy without the overlay.
+ * data. UNMARKED is the stored copy without the overlay. THUMBNAIL is a small
+ * preview of the same picture, for a Collection card; it is what
+ * `Capture.thumbnailUrl` signs.
  *
  */
 export const zCaptureAssetKind = z.enum([
@@ -871,6 +993,232 @@ export const zCaptureDownload = z.object({
     kind: zCaptureAssetKind,
     url: z.url(),
     expiresAt: z.iso.datetime()
+});
+
+/**
+ * FIRST_PARTY is an observatory Darkview owns and operates. PARTNER is one
+ * somebody else owns, running the same agent under a qualification an operator
+ * granted and can revoke.
+ *
+ */
+export const zNetworkNodeKind = z.enum(['FIRST_PARTY', 'PARTNER']);
+
+/**
+ * One telescope a customer may book, and what a customer needs to choose it.
+ *
+ * ADR-015 leaves how a customer chooses between instruments undecided -- a
+ * list, a map, a recommendation -- so this carries what any of those needs
+ * and no more. There are no coordinates: a map is not decided, and precise
+ * coordinates of somebody else's telescope are not a public field.
+ *
+ * `nameKa` may equal `nameEn`. A partner registers one `siteName`, and
+ * manufacturing a Georgian name for somebody else's property would be
+ * inventing data about it.
+ *
+ */
+export const zBookableObservatory = z.object({
+    id: z.uuid(),
+    slug: z.string(),
+    kind: zNetworkNodeKind,
+    nameEn: z.string(),
+    nameKa: z.string(),
+    city: z.string(),
+    countryCode: z.string().length(2),
+    timezone: z.string(),
+    telescope: zBookableTelescope
+});
+
+export const zBookableObservatoryList = z.object({
+    items: z.array(zBookableObservatory)
+});
+
+/**
+ * DRAFT is the resting state and it refuses everything. UNDER_REVIEW is the
+ * owner saying the telescope is ready to be qualified; it grants nothing.
+ * APPROVED is the only state in which a partner observatory may be operated.
+ * SUSPENDED is an operator having taken that away.
+ *
+ * SUSPENDED and DRAFT both refuse everything, and they are kept distinct
+ * because they are different facts about a telescope: one has never been
+ * qualified, the other was and had it revoked. Collapsing them would lose
+ * exactly the history an operator needs when deciding whether to approve it
+ * again.
+ *
+ */
+export const zNetworkNodeApprovalStatus = z.enum([
+    'DRAFT',
+    'UNDER_REVIEW',
+    'APPROVED',
+    'SUSPENDED'
+]);
+
+/**
+ * One observatory in the network, and the terms on which it may be used.
+ *
+ * ADR-013: partner status widens who may host a telescope, never what a
+ * telescope may be asked to do. A node carries no authority of its own -- the
+ * agent still re-validates every command, still enforces its own safety
+ * envelope after the link dies, and still refuses a cloud-approved command
+ * that fails local safety.
+ *
+ */
+export const zNetworkNode = z.object({
+    nodeId: z.uuid(),
+    observatoryId: z.uuid(),
+    ownerId: z.uuid(),
+    kind: zNetworkNodeKind,
+    approvalStatus: zNetworkNodeApprovalStatus,
+    siteName: z.string(),
+    city: z.string(),
+    countryCode: z.string().length(2),
+    timezone: z.string(),
+    safetyEnvelopeMeasured: z.boolean(),
+    capabilities: z.array(z.string()),
+    approvedAt: z.iso.datetime().nullish(),
+    createdAt: z.iso.datetime()
+});
+
+export const zNetworkNodePage = z.object({
+    items: z.array(zNetworkNode),
+    page: zPageMeta
+});
+
+export const zNetworkNodeOwner = z.object({
+    id: z.uuid(),
+    name: z.string(),
+    email: z.email()
+});
+
+export const zNetworkNodeSite = z.object({
+    latitude: z.number().gte(-90).lte(90),
+    longitude: z.number().gte(-180).lte(180),
+    timezone: z.string()
+});
+
+export const zNetworkNodeEnvelopeEvidence = z.object({
+    maxAltitudeDegrees: z.number().nullable(),
+    measuredAt: z.iso.datetime().nullable(),
+    measuredBy: z.string().nullable(),
+    measurementNote: z.string().nullable()
+});
+
+/**
+ * What the database can say about ADR-013's conditions. It reports; it does not
+ * judge. Park proven and the owner's acceptance of terms have no record here
+ * and remain the operator's attestation on approval.
+ *
+ */
+export const zNetworkNodeEvidence = z.object({
+    safetyEnvelope: zNetworkNodeEnvelopeEvidence.nullable(),
+    horizonMaskEntries: z.int().gte(0),
+    forbiddenAzimuthSectors: z.int().gte(0),
+    completedRealMissions: z.int().gte(0)
+});
+
+export const zNetworkNodeHistoryEntry = z.object({
+    action: z.enum([
+        'REGISTERED',
+        'SUBMITTED',
+        'APPROVED',
+        'SUSPENDED',
+        'DEVICE_TOKEN_ISSUED',
+        'DEVICE_TOKEN_ROTATED',
+        'DEVICE_TOKEN_REVOKED'
+    ]),
+    occurredAt: z.iso.datetime(),
+    actorUserId: z.uuid().nullable(),
+    reason: z.string().nullable()
+});
+
+export const zNetworkNodeList = z.object({
+    items: z.array(zNetworkNode)
+});
+
+export const zRegisterNetworkTelescope = z.object({
+    name: z.string().min(1).max(120),
+    manufacturer: z.string().min(1),
+    model: z.string().min(1),
+    apertureMm: z.number().gt(0),
+    focalLengthMm: z.number().gt(0)
+});
+
+/**
+ * One node, and the evidence for and against qualifying it (DV-122).
+ *
+ * Operator-only, and it carries what the public surfaces deliberately do not:
+ * the owner's identity and the site's exact coordinates. The coordinates are
+ * here because ADR-013 requires them verified against the sky, and the
+ * operator cannot compare a plate solve with a number they are not shown.
+ *
+ */
+export const zNetworkNodeReview = z.object({
+    node: zNetworkNode,
+    owner: zNetworkNodeOwner,
+    site: zNetworkNodeSite,
+    telescope: zRegisterNetworkTelescope.nullable(),
+    evidence: zNetworkNodeEvidence,
+    history: z.array(zNetworkNodeHistoryEntry)
+});
+
+/**
+ * The site and the instrument, together. A partner has neither until they
+ * register, so both are created here.
+ *
+ * There is one `siteName` rather than a name per language. A telescope on a
+ * roof in Santiago has one name, and manufacturing a Georgian translation of
+ * it would be inventing data about somebody else's property.
+ *
+ */
+export const zRegisterNetworkNodeRequest = z.object({
+    siteName: z.string().min(2).max(120),
+    city: z.string().min(1).max(120),
+    countryCode: z.string().length(2),
+    latitude: z.number().gte(-90).lte(90),
+    longitude: z.number().gte(-180).lte(180),
+    timezone: z.string().min(1),
+    telescope: zRegisterNetworkTelescope
+});
+
+/**
+ * ADR-013's qualification, as the operator attests it.
+ *
+ * Every flag must be true. They are separate fields rather than one
+ * confirmation because they are separate things somebody had to go and do, and
+ * a single "I confirm" is a box that gets ticked without reading. The measured
+ * safety envelope is absent from this list deliberately: it is checked against
+ * the database instead.
+ *
+ */
+export const zApproveNetworkNodeRequest = z.object({
+    coordinatesVerified: z.boolean(),
+    horizonMaskRecorded: z.boolean(),
+    firstLightSupervised: z.boolean(),
+    parkProven: z.boolean(),
+    ownerTermsAccepted: z.boolean(),
+    reason: z.string().min(8)
+});
+
+export const zSuspendNetworkNodeRequest = z.object({
+    reason: z.string().min(8)
+});
+
+/**
+ * Why the operator is issuing, rotating or revoking. Recorded verbatim.
+ */
+export const zDeviceTokenChangeRequest = z.object({
+    reason: z.string().min(8)
+});
+
+/**
+ * The only place a device token ever appears. Give it to the owner for
+ * `python -m darkview_agent setup`; it cannot be shown again.
+ *
+ */
+export const zDeviceTokenIssued = z.object({
+    nodeId: z.uuid(),
+    observatoryId: z.uuid(),
+    deviceToken: z.string(),
+    issuedAt: z.iso.datetime()
 });
 
 export const zAuditCategory = z.enum([
@@ -1012,6 +1360,12 @@ export const zLiveFrameHeader = z.object({
 
 /**
  * A finished capture has been uploaded by the agent and is ready for the cloud to record.
+ *
+ * Every storage key must be the one the cloud granted for that kind. The cloud
+ * re-derives each and refuses the whole capture if any differs: a key the
+ * agent could choose would let it attach another customer's object to a
+ * capture it reported (DV-065).
+ *
  */
 export const zAgentCaptureReady = z.object({
     type: z.enum(['AGENT_CAPTURE_READY']),
@@ -1029,6 +1383,7 @@ export const zAgentCaptureReady = z.object({
     imageStorageKey: z.string(),
     unmarkedStorageKey: z.string().nullish(),
     fitsStorageKey: z.string().nullish(),
+    thumbnailStorageKey: z.string().nullish(),
     solvedFocalLengthMm: z.number().nullish(),
     widthPx: z.int().nullish(),
     heightPx: z.int().nullish(),
@@ -1053,6 +1408,28 @@ export const zAgentError = z.object({
 });
 
 /**
+ * The agent asks for somewhere to put one capture asset (ADR-012).
+ *
+ * It does not propose a key. The cloud derives the object's identity from
+ * facts it already holds, so a compromised agent cannot choose to write over
+ * another customer's object -- and that is also what lets
+ * `CaptureAsset.storageKey` be trusted when the capture is finally recorded.
+ *
+ * The mission and command say which capture this is for. Together with
+ * `kind` they identify the object, so no correlation identifier is needed:
+ * a grant answers the request naming the same three.
+ *
+ */
+export const zAgentUploadGrantRequest = z.object({
+    type: z.enum(['AGENT_UPLOAD_GRANT_REQUEST']),
+    messageId: z.uuid(),
+    sentAt: z.iso.datetime(),
+    missionId: z.uuid(),
+    commandId: z.uuid(),
+    kind: zCaptureAssetKind
+});
+
+/**
  * Every message the Observatory Agent may send over its outbound link.
  */
 export const zAgentToCloudMessage = z.discriminatedUnion('type', [
@@ -1062,6 +1439,7 @@ export const zAgentToCloudMessage = z.discriminatedUnion('type', [
     zAgentStateDelta.extend({ type: z.literal('AGENT_STATE_DELTA') }),
     zAgentMissionEvent.extend({ type: z.literal('AGENT_MISSION_EVENT') }),
     zLiveFrameHeader.extend({ type: z.literal('AGENT_LIVE_FRAME') }),
+    zAgentUploadGrantRequest.extend({ type: z.literal('AGENT_UPLOAD_GRANT_REQUEST') }),
     zAgentCaptureReady.extend({ type: z.literal('AGENT_CAPTURE_READY') }),
     zAgentError.extend({ type: z.literal('AGENT_ERROR') })
 ]);
@@ -1135,6 +1513,34 @@ export const zCloudError = z.object({
 });
 
 /**
+ * Permission to write exactly one object, for a few minutes (ADR-012).
+ *
+ * The observatory holds no bucket credential. This URL is the whole of its
+ * authority over object storage: one key, one method, a short expiry. A
+ * stolen mini-PC yields a revocable device token and nothing else.
+ *
+ * `storageKey` is what the agent reports back as `imageStorageKey` on
+ * `AGENT_CAPTURE_READY`. It is the cloud's own derived key, echoed so the
+ * agent knows what it wrote rather than having to construct it.
+ *
+ * A request the cloud will not grant is answered with `CLOUD_ERROR`, not
+ * with a grant naming no URL.
+ *
+ */
+export const zCloudUploadGrant = z.object({
+    type: z.enum(['CLOUD_UPLOAD_GRANT']),
+    messageId: z.uuid(),
+    sentAt: z.iso.datetime(),
+    missionId: z.uuid(),
+    commandId: z.uuid(),
+    kind: zCaptureAssetKind,
+    storageKey: z.string(),
+    url: z.url(),
+    method: z.enum(['PUT']),
+    expiresAt: z.iso.datetime()
+});
+
+/**
  * Every message the cloud may send down the agent link.
  */
 export const zCloudToAgentMessage = z.discriminatedUnion('type', [
@@ -1143,6 +1549,7 @@ export const zCloudToAgentMessage = z.discriminatedUnion('type', [
     zCloudHeartbeatAck.extend({ type: z.literal('CLOUD_HEARTBEAT_ACK') }),
     zCloudSessionUpdate.extend({ type: z.literal('CLOUD_SESSION_UPDATE') }),
     zCloudSafetyEnvelopeUpdate.extend({ type: z.literal('CLOUD_SAFETY_ENVELOPE_UPDATE') }),
+    zCloudUploadGrant.extend({ type: z.literal('CLOUD_UPLOAD_GRANT') }),
     zCloudError.extend({ type: z.literal('CLOUD_ERROR') })
 ]);
 
@@ -1230,12 +1637,17 @@ export const zMissionChannelMessage = z.discriminatedUnion('type', [
     zMissionChannelError.extend({ type: z.literal('MISSION_ERROR') })
 ]);
 
+/**
+ * Ask to watch one mission. Sent by the controller and by an observer, which is
+ * the only difference `sessionId` carries.
+ *
+ */
 export const zMissionClientSubscribe = z.object({
     type: z.enum(['CLIENT_SUBSCRIBE']),
     messageId: z.uuid(),
     sentAt: z.iso.datetime(),
     missionId: z.uuid(),
-    sessionId: z.uuid()
+    sessionId: z.uuid().nullable()
 });
 
 export const zMissionClientPing = z.object({
@@ -1276,6 +1688,13 @@ export const zAdminUpdateTargetRequest = z.object({
 });
 
 /**
+ * An `id` from `GET /observatories`, or for an operator any observatory.
+ */
+export const zObservatoryId = z.uuid();
+
+export const zNodeId = z.uuid();
+
+/**
  * Opaque forward pagination cursor from the previous page.
  */
 export const zCursor = z.string();
@@ -1293,14 +1712,54 @@ export const zTargetId = z.uuid();
 export const zTargetSlug = z.string().regex(/^[a-z0-9-]+$/);
 
 /**
+ * Client-generated key that makes retrying a booking safe. A second request
+ * carrying a key the signed-in user has already used returns the booking the
+ * first request created, with its original payment intent, instead of
+ * reserving a second slot. Keys are scoped to the user, so two people cannot
+ * collide on one.
+ *
+ */
+export const zIdempotencyKey = z.string().min(8).max(128).regex(/^[A-Za-z0-9_.:-]+$/);
+
+export const zRegisterBody = zRegisterRequest;
+
+export const zVerifyEmailBody = zVerifyEmailRequest;
+
+/**
+ * Verified and signed in. Sets the session cookies.
+ */
+export const zVerifyEmailResponse = zUser;
+
+export const zSignInBody = zSignInRequest;
+
+/**
+ * Signed in. Sets the session cookies.
+ */
+export const zSignInResponse = zUser;
+
+/**
+ * Signed out.
+ */
+export const zSignOutResponse = z.void();
+
+/**
  * The current user.
  */
 export const zGetCurrentUserResponse = zUser;
+
+export const zGetObservatoryStatusPath = z.object({
+    observatoryId: z.uuid()
+});
 
 /**
  * Public observatory status.
  */
 export const zGetObservatoryStatusResponse = zPublicObservatoryStatus;
+
+/**
+ * Every bookable observatory.
+ */
+export const zListBookableObservatoriesResponse = zBookableObservatoryList;
 
 export const zListTargetsQuery = z.object({
     cursor: z.string().optional(),
@@ -1313,6 +1772,7 @@ export const zListTargetsQuery = z.object({
 export const zListTargetsResponse = zTargetPage;
 
 export const zListTonightTargetsQuery = z.object({
+    observatoryId: z.uuid(),
     at: z.iso.datetime().optional()
 });
 
@@ -1331,6 +1791,7 @@ export const zGetTargetPath = z.object({
 export const zGetTargetResponse = zTarget;
 
 export const zListSlotsQuery = z.object({
+    observatoryId: z.uuid(),
     date: z.iso.date()
 });
 
@@ -1350,6 +1811,10 @@ export const zListBookingsQuery = z.object({
 export const zListBookingsResponse = zBookingPage;
 
 export const zCreateBookingBody = zCreateBookingRequest;
+
+export const zCreateBookingHeaders = z.object({
+    'Idempotency-Key': z.string().min(8).max(128).regex(/^[A-Za-z0-9_.:-]+$/).optional()
+});
 
 /**
  * Booking reserved, awaiting payment.
@@ -1460,6 +1925,15 @@ export const zJoinMissionAsObserverPath = z.object({
  */
 export const zJoinMissionAsObserverResponse = zMissionObserver;
 
+export const zPurchaseObserverPackPath = z.object({
+    missionId: z.uuid()
+});
+
+/**
+ * Seat held and a payment intent opened.
+ */
+export const zPurchaseObserverPackResponse = zObserverPackWithPaymentIntent;
+
 export const zListMissionEventsPath = z.object({
     missionId: z.uuid()
 });
@@ -1506,6 +1980,10 @@ export const zGetCaptureDownloadQuery = z.object({
  */
 export const zGetCaptureDownloadResponse = zCaptureDownload;
 
+export const zAdminGetObservatoryStatePath = z.object({
+    observatoryId: z.uuid()
+});
+
 /**
  * Operator observatory state.
  */
@@ -1513,10 +1991,18 @@ export const zAdminGetObservatoryStateResponse = zOperatorObservatoryState;
 
 export const zAdminSetObservatoryModeBody = zSetObservatoryModeRequest;
 
+export const zAdminSetObservatoryModePath = z.object({
+    observatoryId: z.uuid()
+});
+
 /**
  * Mode applied.
  */
 export const zAdminSetObservatoryModeResponse = zOperatorObservatoryState;
+
+export const zAdminGetSafetyEnvelopePath = z.object({
+    observatoryId: z.uuid()
+});
 
 /**
  * Safety envelope.
@@ -1525,12 +2011,20 @@ export const zAdminGetSafetyEnvelopeResponse = zSafetyEnvelopeConfig;
 
 export const zAdminSetSafetyEnvelopeBody = zSafetyEnvelopeConfig;
 
+export const zAdminSetSafetyEnvelopePath = z.object({
+    observatoryId: z.uuid()
+});
+
 /**
  * Safety envelope stored.
  */
 export const zAdminSetSafetyEnvelopeResponse = zSafetyEnvelopeConfig;
 
 export const zAdminSetWeatherHoldBody = zSetWeatherHoldRequest;
+
+export const zAdminSetWeatherHoldPath = z.object({
+    observatoryId: z.uuid()
+});
 
 /**
  * Weather state applied.
@@ -1588,3 +2082,99 @@ export const zAdminListAuditEventsQuery = z.object({
  * Audit event page.
  */
 export const zAdminListAuditEventsResponse = zAuditEventPage;
+
+/**
+ * The caller's nodes.
+ */
+export const zListMyNetworkNodesResponse = zNetworkNodeList;
+
+export const zRegisterNetworkNodeBody = zRegisterNetworkNodeRequest;
+
+/**
+ * The registered node, in DRAFT.
+ */
+export const zRegisterNetworkNodeResponse = zNetworkNode;
+
+export const zSubmitNetworkNodeForReviewPath = z.object({
+    nodeId: z.uuid()
+});
+
+/**
+ * The node, now under review.
+ */
+export const zSubmitNetworkNodeForReviewResponse = zNetworkNode;
+
+export const zAdminListNetworkNodesQuery = z.object({
+    approvalStatus: zNetworkNodeApprovalStatus.optional(),
+    cursor: z.string().optional(),
+    limit: z.int().gte(1).lte(100).optional().default(20)
+});
+
+/**
+ * Node page.
+ */
+export const zAdminListNetworkNodesResponse = zNetworkNodePage;
+
+export const zAdminGetNetworkNodeReviewPath = z.object({
+    nodeId: z.uuid()
+});
+
+/**
+ * The node, under review.
+ */
+export const zAdminGetNetworkNodeReviewResponse = zNetworkNodeReview;
+
+export const zAdminApproveNetworkNodeBody = zApproveNetworkNodeRequest;
+
+export const zAdminApproveNetworkNodePath = z.object({
+    nodeId: z.uuid()
+});
+
+/**
+ * The approved node.
+ */
+export const zAdminApproveNetworkNodeResponse = zNetworkNode;
+
+export const zAdminSuspendNetworkNodeBody = zSuspendNetworkNodeRequest;
+
+export const zAdminSuspendNetworkNodePath = z.object({
+    nodeId: z.uuid()
+});
+
+/**
+ * The suspended node.
+ */
+export const zAdminSuspendNetworkNodeResponse = zNetworkNode;
+
+export const zAdminIssueDeviceTokenBody = zDeviceTokenChangeRequest;
+
+export const zAdminIssueDeviceTokenPath = z.object({
+    nodeId: z.uuid()
+});
+
+/**
+ * The token, shown once.
+ */
+export const zAdminIssueDeviceTokenResponse = zDeviceTokenIssued;
+
+export const zAdminRotateDeviceTokenBody = zDeviceTokenChangeRequest;
+
+export const zAdminRotateDeviceTokenPath = z.object({
+    nodeId: z.uuid()
+});
+
+/**
+ * The new token, shown once.
+ */
+export const zAdminRotateDeviceTokenResponse = zDeviceTokenIssued;
+
+export const zAdminRevokeDeviceTokenBody = zDeviceTokenChangeRequest;
+
+export const zAdminRevokeDeviceTokenPath = z.object({
+    nodeId: z.uuid()
+});
+
+/**
+ * Revoked. Also answered when the node had no token.
+ */
+export const zAdminRevokeDeviceTokenResponse = z.void();
