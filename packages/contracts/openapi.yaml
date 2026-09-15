@@ -36,6 +36,18 @@ info:
     submit intent; the cloud mints the authenticated CommandEnvelope; the agent
     re-validates it locally and may refuse it.
 
+    TIMESTAMPS
+    Every `format: date-time` field is an instant in UTC, written with a `Z` suffix.
+    RFC 3339 also permits a numeric offset; this contract does not. The generated
+    validators enforce it, and that strictness is deliberate rather than incidental.
+
+    One spelling, because an instant on this wire decides when a telescope moves and
+    a reader should never have to normalise before comparing. The rule was written
+    down after Milestone S1 found the Python agent emitting `+00:00` on every
+    message and the cloud refusing all of them -- and, worse, one message stamped in
+    the observatory's local zone, which a permissive reader would have accepted
+    without anyone noticing.
+
     PHASE 1 SCOPE
     Live-view / EAA using short exposures and live stacking. This contract deliberately
     contains no long-exposure astrophotography concepts.
@@ -75,6 +87,10 @@ tags:
     description: Mission lifecycle and the client command boundary.
   - name: captures
     description: Captures and the user's Collection.
+  - name: network
+    description: |
+      Partner observatories (ADR-013). A telescope somebody else owns, joining by
+      installing the agent on their own machine.
   - name: admin
     description: Operator-only. Separately audited.
 
@@ -119,7 +135,138 @@ x-darkview-websockets:
         Commands go through POST /missions/{missionId}/command so that the cloud mints
         and signs the envelope.
 
+x-darkview-internal:
+  description: |
+    Calls between Darkview's own cloud processes. Not client surface: no browser or
+    mobile client may call these, and the reverse proxy must not route them from the
+    internet. Their payloads are still defined here, because they cross a process
+    boundary, and are generated into TypeScript and Zod like every other payload.
+  routes:
+    - name: observatoryTelemetry
+      method: GET
+      url: /internal/observatories/{observatoryId}/state
+      served_by: apps/realtime
+      called_by: apps/api, for GET /admin/observatories/{observatoryId}/state (ADR-017)
+      auth: realtimeInternalSecret
+      response:
+        $ref: "#/components/schemas/ObservatoryTelemetrySnapshot"
+      constraints: |
+        The latest telemetry the connected agent reported, held in memory and
+        released when the link closes. Every refusal and every absence -- no or wrong
+        secret, unknown observatory, no link, no sample yet -- is the same 404.
+
 paths:
+  /auth/register:
+    post:
+      operationId: register
+      tags: [identity]
+      summary: Create an account and send a verification link.
+      description: |
+        ADR-016. Answers 202 whether or not the address already holds an account, so
+        this endpoint cannot be used to learn which addresses do. An unverified
+        address is sent a fresh link; a verified one is sent nothing. No session is
+        issued until the address is verified.
+
+        The link points at the web client, APP_URL/{locale}/verify-email/{token},
+        which posts the token to /auth/verify-email.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "202":
+          description: Accepted. A verification link is sent if one is owed.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /auth/verify-email:
+    post:
+      operationId: verifyEmail
+      tags: [identity]
+      summary: Consume a verification token and sign in.
+      description: |
+        ADR-016. A token is single-use and expires thirty minutes after it was sent.
+        Verifying ends every other session the user held, then issues the session
+        cookies described under the userSession security scheme.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyEmailRequest"
+      responses:
+        "200":
+          description: Verified and signed in. Sets the session cookies.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /auth/sign-in:
+    post:
+      operationId: signIn
+      tags: [identity]
+      summary: Exchange an email and password for a session.
+      description: |
+        ADR-016. A wrong email and a wrong password receive the same 401, and take the
+        same time. An address that has not been verified receives 403 only once the
+        password has been checked. Sets the session cookies on success.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        "200":
+          description: Signed in. Sets the session cookies.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /auth/sign-out:
+    post:
+      operationId: signOut
+      tags: [identity]
+      summary: End the current session and clear its cookies.
+      responses:
+        "204":
+          description: Signed out.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
   /me:
     get:
       operationId: getCurrentUser
@@ -135,15 +282,21 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
 
-  /observatory/state:
+  /observatories/{observatoryId}/state:
     get:
       operationId: getObservatoryStatus
       tags: [observatory]
-      summary: Public observatory status.
+      summary: Public status of one bookable observatory.
       description: |
         Powers the public status page and the live status chip. Contains no device
         address, no credential and no raw driver state.
+
+        ADR-019: answered for an observatory `GET /observatories` lists. An id that
+        does not exist and one that is not bookable are one 404, so a customer
+        cannot learn by probing ids that a suspended partner node exists.
       security: []
+      parameters:
+        - $ref: "#/components/parameters/ObservatoryId"
       responses:
         "200":
           description: Public observatory status.
@@ -151,6 +304,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PublicObservatoryStatus"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /observatories:
+    get:
+      operationId: listBookableObservatories
+      tags: [booking]
+      summary: The telescopes a customer may book.
+      description: |
+        ADR-015: a customer books an instrument, and then a time on that instrument.
+        This is the set they choose from, and the source of the `observatoryId` that
+        `GET /slots` and `POST /bookings` require.
+
+        An observatory is listed exactly when its network node is APPROVED, whatever
+        its kind. A first-party observatory is approved the same way a partner one
+        is, so there is one rule rather than two. DRAFT, UNDER_REVIEW and SUSPENDED
+        nodes are absent -- not listed as unavailable, absent -- because a telescope
+        nobody may book is not a choice, and an observatory with no node at all is
+        absent for the same reason.
+
+        Being listed says the instrument may be booked, not that it is free tonight
+        or online now. Each slot carries its own `unavailableReason` for that.
+
+        Public-safe fields only, on the rule `PublicObservatoryStatus` already
+        documents: no coordinates precise enough to be actionable, no device
+        identity, no owner.
+      security: []
+      responses:
+        "200":
+          description: Every bookable observatory.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookableObservatoryList"
 
   /targets:
     get:
@@ -173,12 +360,27 @@ paths:
     get:
       operationId: listTonightTargets
       tags: [targets]
-      summary: Catalogue filtered by live ephemeris.
+      summary: Catalogue filtered by live ephemeris, at one observatory.
       description: |
         Computed at request time from altitude, Sun angle, Moon separation and angular
         size fit. Never served from a static list.
+
+        Evaluated at one observatory (DV-067). Visibility is a fact about a site, not
+        about the catalogue: the same instant is midnight at one telescope and
+        afternoon at another, and each has its own horizon and its own measured
+        altitude limit. There is no list of what is up "tonight" without a place.
+
+        404 when no bookable observatory has that id, on the same rule `GET /slots`
+        applies: unknown and not bookable are one answer.
       security: []
       parameters:
+        - name: observatoryId
+          in: query
+          required: true
+          description: An `id` from `GET /observatories`.
+          schema:
+            type: string
+            format: uuid
         - name: at
           in: query
           required: false
@@ -193,6 +395,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TonightTargetList"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
 
   /targets/{slug}:
     get:
@@ -216,14 +422,31 @@ paths:
     get:
       operationId: listSlots
       tags: [booking]
-      summary: Bookable observation slots for a date.
-      description: Slots are generated from astronomical darkness, not from fixed office hours.
+      summary: Bookable observation slots on one observatory, for a date.
+      description: |
+        Slots are generated from astronomical darkness, not from fixed office hours,
+        and belong to one observatory (ADR-015). There is no list of "the slots"
+        without an instrument: two telescopes have two skies, two horizons and two
+        sets of hours their owners offered.
+
+        404 when no bookable observatory has that id. Unknown and not-bookable are
+        the same answer: whether a suspended partner node exists is not something a
+        caller may probe for.
       security: []
       parameters:
+        - name: observatoryId
+          in: query
+          required: true
+          description: An `id` from `GET /observatories`.
+          schema:
+            type: string
+            format: uuid
         - name: date
           in: query
           required: true
-          description: Local observatory date, ISO 8601 (YYYY-MM-DD).
+          description: |
+            The observatory's local date, ISO 8601 (YYYY-MM-DD) -- in the
+            `timezone` `GET /observatories` reports for it, not the caller's.
           schema:
             type: string
             format: date
@@ -234,6 +457,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SlotList"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
 
   /bookings:
     get:
@@ -257,9 +484,23 @@ paths:
       tags: [booking]
       summary: Reserve a slot transactionally and open a payment intent.
       description: |
-        The slot reservation runs inside a database transaction with row locking and a
-        partial unique index. Exactly one of two simultaneous requests for the same slot
-        succeeds; the other receives 409.
+        The slot reservation runs inside a database transaction, and exclusivity is an
+        exclusion constraint over the booked interval at that observatory. Exactly one
+        of two simultaneous requests for overlapping time on one telescope succeeds;
+        the other receives 409.
+
+        `observatoryId` names the telescope (ADR-015). An id that is unknown, or whose
+        node is not APPROVED, is 404 -- the same answer `GET /slots` gives it.
+
+        A reserved slot is held while payment is outstanding. The hold expires, and the
+        slot returns to the available list, if payment does not complete in time; the
+        `expiresAt` on the returned payment intent is that deadline. A failed or
+        abandoned payment releases the slot and creates no mission.
+
+        Send `Idempotency-Key` when retrying. Without it a retry after a timeout can
+        reserve a second slot and open a second payment intent.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
       requestBody:
         required: true
         content:
@@ -275,6 +516,8 @@ paths:
                 $ref: "#/components/schemas/BookingWithPaymentIntent"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
         "422":
@@ -554,6 +797,47 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /missions/{missionId}/observer-pack:
+    post:
+      operationId: purchaseObserverPack
+      tags: [missions, payments]
+      summary: Buy a view-only seat on a live session somebody else controls.
+      description: |
+        Opens a payment intent for one Observer Pack seat on this mission (ADR-007) and
+        holds the seat while the payment is outstanding, exactly as `POST /bookings`
+        holds a slot. The seat becomes usable when the provider callback settles the
+        payment; `POST /missions/{missionId}/observers` is what attaches to it, and
+        answers 402 until then.
+
+        Capacity is counted on packs, not on attached observers. A seat that has been
+        paid for belongs to its buyer for the rest of the session: leaving frees the
+        connection, never the seat, so a reconnecting observer is never shut out by
+        somebody who bought theirs in the meantime.
+
+        One pack per person per mission. Asking again while a hold is outstanding
+        returns the same pack and the same intent rather than opening a second payment.
+
+        Fails with MISSION_NOT_OBSERVABLE if the controller has not opted in, with
+        OBSERVER_CAPACITY_REACHED when every seat is sold or held, and with CONFLICT if
+        the caller is the session's own controller.
+      parameters:
+        - $ref: "#/components/parameters/MissionId"
+      responses:
+        "201":
+          description: Seat held and a payment intent opened.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObserverPackWithPaymentIntent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
   /missions/{missionId}/events:
     get:
       operationId: listMissionEvents
@@ -637,13 +921,27 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /admin/observatory/state:
+  /admin/observatories/{observatoryId}/state:
     get:
       operationId: adminGetObservatoryState
       tags: [admin]
-      summary: Full operator telemetry for the observatory.
+      summary: Full operator telemetry for one observatory.
+      description: |
+        ADR-017. Telemetry is read live from the realtime service, which holds it only
+        while the agent is connected. When there is no telemetry to report -- the agent
+        is not connected, or the realtime service cannot be reached -- this answers 503
+        OBSERVATORY_OFFLINE rather than inventing device health it cannot see. With no
+        safety envelope recorded it answers 503 SAFETY_NOT_CONFIGURED. The envelope and
+        the missions stay readable through
+        /admin/observatories/{observatoryId}/safety-envelope and /admin/missions, which
+        do not depend on the link.
+
+        ADR-019: any observatory that exists, bookable or not -- an operator reviewing
+        or suspending a partner node has to be able to read it.
       security:
         - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/ObservatoryId"
       responses:
         "200":
           description: Operator observatory state.
@@ -653,12 +951,16 @@ paths:
                 $ref: "#/components/schemas/OperatorObservatoryState"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
-  /admin/observatory/mode:
+  /admin/observatories/{observatoryId}/mode:
     post:
       operationId: adminSetObservatoryMode
       tags: [admin]
-      summary: Switch the observatory between SIMULATED and REAL hardware.
+      summary: Switch one observatory between SIMULATED and REAL hardware.
       description: |
         SIMULATED is the default and the normal state. Switching to REAL is an explicit,
         attended operator action outside the normal test workflow: it requires an
@@ -667,6 +969,8 @@ paths:
         recorded in the audit log.
       security:
         - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/ObservatoryId"
       requestBody:
         required: true
         content:
@@ -682,18 +986,24 @@ paths:
                 $ref: "#/components/schemas/OperatorObservatoryState"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
 
-  /admin/observatory/safety-envelope:
+  /admin/observatories/{observatoryId}/safety-envelope:
     get:
       operationId: adminGetSafetyEnvelope
       tags: [admin]
-      summary: The active safety envelope configuration.
+      summary: One observatory's active safety envelope configuration.
+      description: |
+        404 when the observatory does not exist or has no envelope recorded.
       security:
         - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/ObservatoryId"
       responses:
         "200":
           description: Safety envelope.
@@ -703,10 +1013,12 @@ paths:
                 $ref: "#/components/schemas/SafetyEnvelopeConfig"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
     put:
       operationId: adminSetSafetyEnvelope
       tags: [admin]
-      summary: Record a measured safety envelope.
+      summary: Record a measured safety envelope for one observatory.
       description: |
         maxAltitudeDegrees is a measured value from the physical optical train, not a
         configuration preference. Supplying it requires measuredAt and measuredBy. While
@@ -714,6 +1026,8 @@ paths:
         the cloud and the agent.
       security:
         - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/ObservatoryId"
       requestBody:
         required: true
         content:
@@ -729,20 +1043,24 @@ paths:
                 $ref: "#/components/schemas/SafetyEnvelopeConfig"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
 
-  /admin/observatory/weather-hold:
+  /admin/observatories/{observatoryId}/weather-hold:
     post:
       operationId: adminSetWeatherHold
       tags: [admin]
-      summary: Set or clear an operator weather hold.
+      summary: Set or clear an operator weather hold on one observatory.
       description: |
         A hold blocks every new mission start. Affected customers are notified and
         refunded or rescheduled. Phase 1 requires the manual operator hold; an automatic
         sensor-driven hold is only used if a sensor is actually fitted.
       security:
         - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/ObservatoryId"
       requestBody:
         required: true
         content:
@@ -758,6 +1076,8 @@ paths:
                 $ref: "#/components/schemas/WeatherState"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /admin/override:
     post:
@@ -900,15 +1220,327 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
 
+  /network/nodes:
+    get:
+      operationId: listMyNetworkNodes
+      tags: [network]
+      summary: The signed-in owner's observatories.
+      responses:
+        "200":
+          description: The caller's nodes.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkNodeList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      operationId: registerNetworkNode
+      tags: [network]
+      summary: Register a telescope you own.
+      description: |
+        Creates the site, the instrument and the node together, in DRAFT. A node in
+        DRAFT accepts no customer and commands no hardware: ADR-013 requires a
+        qualification an operator granted before a partner telescope may be operated
+        by anyone, and DRAFT is the resting state until then.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterNetworkNodeRequest"
+      responses:
+        "201":
+          description: The registered node, in DRAFT.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkNode"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /network/nodes/{nodeId}/submit:
+    post:
+      operationId: submitNetworkNodeForReview
+      tags: [network]
+      summary: Offer a node for operator review.
+      description: |
+        DRAFT to UNDER_REVIEW. The owner is saying the telescope is set up and ready
+        to be qualified; it is not an approval and changes nothing about what the
+        node may do.
+      parameters:
+        - $ref: "#/components/parameters/NodeId"
+      responses:
+        "200":
+          description: The node, now under review.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkNode"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /admin/network/nodes:
+    get:
+      operationId: adminListNetworkNodes
+      tags: [admin]
+      summary: The qualification queue, and every node by status.
+      description: |
+        DV-122. Unscoped by owner, which is what makes it an admin route. Oldest
+        first, because this is a queue: the node that has waited longest for review
+        is the one an operator should reach first. Keyset-paged, since nodes are
+        registered and moved between states while an operator reads it.
+
+        `approvalStatus` narrows it; `UNDER_REVIEW` is the review queue. An
+        unrecognised status is refused rather than ignored, so an operator who asked
+        for the queue is never silently shown every node.
+      security:
+        - userSession: [operator]
+      parameters:
+        - name: approvalStatus
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/NetworkNodeApprovalStatus"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Node page.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkNodePage"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /admin/network/nodes/{nodeId}:
+    get:
+      operationId: adminGetNetworkNodeReview
+      tags: [admin]
+      summary: Everything an operator reads before deciding a qualification.
+      description: |
+        DV-122. What the database knows about each of ADR-013's conditions, beside
+        the node itself, so an approval is a decision made against evidence rather
+        than a set of boxes. It grants nothing and changes nothing: approving and
+        suspending remain the two POSTs below.
+      security:
+        - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/NodeId"
+      responses:
+        "200":
+          description: The node, under review.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkNodeReview"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /admin/network/nodes/{nodeId}/approve:
+    post:
+      operationId: adminApproveNetworkNode
+      tags: [admin]
+      summary: Qualify a partner observatory to operate unattended.
+      description: |
+        ADR-013. Five of the six conditions are things only a person can attest, and
+        the operator attests each one explicitly. The sixth -- a measured safety
+        envelope for that instrument -- is checked here rather than asserted, because
+        the database knows the answer and a checkbox would let an unmeasured
+        telescope be approved by clicking.
+      security:
+        - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/NodeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApproveNetworkNodeRequest"
+      responses:
+        "200":
+          description: The approved node.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkNode"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /admin/network/nodes/{nodeId}/suspend:
+    post:
+      operationId: adminSuspendNetworkNode
+      tags: [admin]
+      summary: Return a node to DRAFT, immediately.
+      description: |
+        The emergency stop for a telescope nobody is standing next to. It is never
+        refused on the grounds that the node is busy: a live mission is a reason to
+        suspend, not a reason to wait.
+      security:
+        - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/NodeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspendNetworkNodeRequest"
+      responses:
+        "200":
+          description: The suspended node.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkNode"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /admin/network/nodes/{nodeId}/device-token:
+    post:
+      operationId: adminIssueDeviceToken
+      tags: [admin]
+      summary: Issue the device token a node's agent connects with.
+      description: |
+        ADR-020. Operators only, at any approval state: a token lets the agent
+        connect, and the link still refuses to operate anything until the node is
+        APPROVED. The token is in this response and nowhere else -- only its SHA-256
+        is stored -- so it cannot be read back. 409 when the node already has one;
+        rotate it instead.
+      security:
+        - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/NodeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceTokenChangeRequest"
+      responses:
+        "201":
+          description: The token, shown once.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceTokenIssued"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /admin/network/nodes/{nodeId}/device-token/rotate:
+    post:
+      operationId: adminRotateDeviceToken
+      tags: [admin]
+      summary: Replace a node's device token, cutting off the old one now.
+      description: |
+        ADR-020. The old token stops authenticating on commit, and a link still
+        connected with it is closed. 409 when the node has no token to rotate.
+      security:
+        - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/NodeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceTokenChangeRequest"
+      responses:
+        "200":
+          description: The new token, shown once.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceTokenIssued"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /admin/network/nodes/{nodeId}/device-token/revoke:
+    post:
+      operationId: adminRevokeDeviceToken
+      tags: [admin]
+      summary: Revoke a node's device token, immediately.
+      description: |
+        ADR-013's "revoke its token in one row", and an emergency stop like suspend:
+        never refused, never metered, and a live mission on the node is cancelled.
+        The link is closed and no agent can connect until a token is issued again.
+      security:
+        - userSession: [operator]
+      parameters:
+        - $ref: "#/components/parameters/NodeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceTokenChangeRequest"
+      responses:
+        "204":
+          description: Revoked. Also answered when the node had no token.
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+
 components:
   securitySchemes:
     userSession:
-      type: http
-      scheme: bearer
-      bearerFormat: opaque
+      type: apiKey
+      in: cookie
+      name: __Host-darkview_session
       description: |
-        Customer or operator session credential. Operator-only routes additionally
-        require role OPERATOR. This credential never travels to the observatory.
+        Customer or operator session credential (ADR-016). Operator-only routes
+        additionally require role OPERATOR. This credential never travels to the
+        observatory.
+
+        Issued by /auth/sign-in and /auth/verify-email as two cookies, both Secure,
+        SameSite=Lax and Path=/: `__Host-darkview_session` (HttpOnly, the credential)
+        and `__Host-darkview_csrf` (readable by the page). A session is valid only
+        when both are present. Outside production the `__Host-` prefix is dropped,
+        because a browser refuses it over plain HTTP. No token is ever returned in a
+        response body.
+
+        Every mutating request must carry an Origin header equal to the web client's
+        origin; a missing Origin is refused. The API, the realtime service and the
+        web client are served from one host.
     agentDeviceToken:
       type: http
       scheme: bearer
@@ -925,8 +1557,32 @@ components:
         Provider signature over the raw webhook body. The exact header name and
         algorithm are provider configuration and must be confirmed against the
         provider's own documentation before implementation. Nothing here is invented.
+    realtimeInternalSecret:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+      description: |
+        Shared secret the API presents to the realtime service on x-darkview-internal
+        routes (ADR-017). Held only in cloud secret storage, separate from AUTH_SECRET
+        and STREAM_SIGNING_SECRET so each can be rotated alone. Never sent to a client
+        or to the observatory.
 
   parameters:
+    ObservatoryId:
+      name: observatoryId
+      in: path
+      required: true
+      description: An `id` from `GET /observatories`, or for an operator any observatory.
+      schema:
+        type: string
+        format: uuid
+    NodeId:
+      name: nodeId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
     Cursor:
       name: cursor
       in: query
@@ -978,6 +1634,21 @@ components:
       schema:
         type: string
         pattern: "^[a-z0-9-]+$"
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: |
+        Client-generated key that makes retrying a booking safe. A second request
+        carrying a key the signed-in user has already used returns the booking the
+        first request created, with its original payment intent, instead of
+        reserving a second slot. Keys are scoped to the user, so two people cannot
+        collide on one.
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+        pattern: "^[A-Za-z0-9_.:-]+$"
 
   responses:
     BadRequest:
@@ -1018,6 +1689,18 @@ components:
             $ref: "#/components/schemas/ApiError"
     UnprocessableEntity:
       description: Well-formed but rejected by validation or by the safety envelope.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    TooManyRequests:
+      description: Rate limited. The body does not say how much budget remains or when it returns.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    ServiceUnavailable:
+      description: A dependency this request needs is not configured or not reachable.
       content:
         application/json:
           schema:
@@ -1143,6 +1826,51 @@ components:
           type: string
           format: date-time
 
+    RegisterRequest:
+      type: object
+      additionalProperties: false
+      required: [displayName, email, password, locale]
+      properties:
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 80
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          minLength: 12
+          maxLength: 128
+        locale:
+          $ref: "#/components/schemas/Locale"
+
+    SignInRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          minLength: 1
+          maxLength: 128
+
+    VerifyEmailRequest:
+      type: object
+      additionalProperties: false
+      required: [token]
+      properties:
+        token:
+          type: string
+          minLength: 16
+          maxLength: 128
+          pattern: "^[A-Za-z0-9_-]+$"
+
     # ---------------------------------------------------------------------------
     # Targets
     # ---------------------------------------------------------------------------
@@ -1161,6 +1889,32 @@ components:
         - GLOBULAR_CLUSTER
         - PLANETARY_NEBULA
         - BRIGHT_NEBULA
+
+    SolarSystemBody:
+      type: string
+      description: |
+        A body whose position is computed from ephemeris at request time. Phase 1
+        offers the Moon and the four planets the Build Plan lists; the rest are
+        named so the enum does not need a breaking change to add one.
+      enum:
+        - MOON
+        - MERCURY
+        - VENUS
+        - MARS
+        - JUPITER
+        - SATURN
+        - URANUS
+        - NEPTUNE
+
+    TargetPositionSource:
+      type: string
+      description: |
+        Where a target's position comes from. FIXED targets carry J2000
+        coordinates. EPHEMERIS targets do not have any: the Moon and the planets
+        move, and a stored coordinate for one is a statement that is false the day
+        after it is written. Their position is computed at request time from
+        solarSystemBody.
+      enum: [FIXED, EPHEMERIS]
 
     OpticalConfig:
       type: string
@@ -1189,6 +1943,10 @@ components:
 
     Target:
       type: object
+      description: |
+        A catalogue object. Exactly one of `coordinates` or `solarSystemBody` is
+        present, decided by `positionSource`: a FIXED target has coordinates and no
+        body, an EPHEMERIS target has a body and no coordinates.
       additionalProperties: false
       required:
         - id
@@ -1196,7 +1954,7 @@ components:
         - type
         - nameEn
         - nameKa
-        - coordinates
+        - positionSource
         - angularSizeArcmin
         - magnitude
         - opticalConfig
@@ -1224,8 +1982,18 @@ components:
           type: [string, "null"]
         descriptionKa:
           type: [string, "null"]
+        positionSource:
+          $ref: "#/components/schemas/TargetPositionSource"
         coordinates:
-          $ref: "#/components/schemas/EquatorialCoordinates"
+          oneOf:
+            - $ref: "#/components/schemas/EquatorialCoordinates"
+            - type: "null"
+          description: J2000 coordinates. Present only when positionSource is FIXED.
+        solarSystemBody:
+          oneOf:
+            - $ref: "#/components/schemas/SolarSystemBody"
+            - type: "null"
+          description: Present only when positionSource is EPHEMERIS.
         angularSizeArcmin:
           type: number
           exclusiveMinimum: 0
@@ -1329,8 +2097,12 @@ components:
     TonightTargetList:
       type: object
       additionalProperties: false
-      required: [items, evaluatedAt]
+      required: [observatoryId, items, evaluatedAt]
       properties:
+        observatoryId:
+          type: string
+          format: uuid
+          description: The observatory every assessment in `items` was made at.
         items:
           type: array
           items:
@@ -1428,6 +2200,25 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    ObservatoryTelemetrySnapshot:
+      type: object
+      description: |
+        The latest telemetry the realtime service holds for one connected observatory,
+        as served on x-darkview-internal to the API (ADR-017). Internal: never sent to a
+        client directly.
+      additionalProperties: false
+      required: [observatoryId, telemetry, lastHeartbeatAt]
+      properties:
+        observatoryId:
+          type: string
+          format: uuid
+        telemetry:
+          $ref: "#/components/schemas/ObservatoryTelemetry"
+        lastHeartbeatAt:
+          type: string
+          format: date-time
+          description: The last message of any kind from the agent's link, on the cloud's clock.
 
     ObservatoryTelemetry:
       type: object
@@ -1667,11 +2458,86 @@ components:
     # Slots, bookings, payment
     # ---------------------------------------------------------------------------
 
+    BookableObservatory:
+      type: object
+      description: |
+        One telescope a customer may book, and what a customer needs to choose it.
+
+        ADR-015 leaves how a customer chooses between instruments undecided -- a
+        list, a map, a recommendation -- so this carries what any of those needs
+        and no more. There are no coordinates: a map is not decided, and precise
+        coordinates of somebody else's telescope are not a public field.
+
+        `nameKa` may equal `nameEn`. A partner registers one `siteName`, and
+        manufacturing a Georgian name for somebody else's property would be
+        inventing data about it.
+      additionalProperties: false
+      required: [id, slug, kind, nameEn, nameKa, city, countryCode, timezone, telescope]
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        kind:
+          $ref: "#/components/schemas/NetworkNodeKind"
+        nameEn:
+          type: string
+        nameKa:
+          type: string
+        city:
+          type: string
+        countryCode:
+          type: string
+          minLength: 2
+          maxLength: 2
+        timezone:
+          type: string
+          description: |
+            IANA zone. `GET /slots` takes a date in this zone, so a client in another
+            one needs it to ask for the night it means.
+        telescope:
+          $ref: "#/components/schemas/BookableTelescope"
+
+    BookableTelescope:
+      type: object
+      description: |
+        The instrument, as a customer would compare two of them. ADR-015: a partner
+        is selling *that* telescope, with its aperture, and a customer choosing
+        between two needs to see the difference.
+      additionalProperties: false
+      required: [manufacturer, model, apertureMm, focalLengthMm]
+      properties:
+        manufacturer:
+          type: string
+        model:
+          type: string
+        apertureMm:
+          type: number
+          exclusiveMinimum: 0
+        focalLengthMm:
+          type: number
+          exclusiveMinimum: 0
+
+    BookableObservatoryList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookableObservatory"
+
     Slot:
       type: object
       additionalProperties: false
-      required: [startAt, endAt, durationMinutes, available, priceMinor, currency]
+      required: [observatoryId, startAt, endAt, durationMinutes, available, priceMinor, currency]
       properties:
+        observatoryId:
+          type: string
+          format: uuid
+          description: The telescope this slot is time on (ADR-015).
         startAt:
           type: string
           format: date-time
@@ -1707,8 +2573,11 @@ components:
     SlotList:
       type: object
       additionalProperties: false
-      required: [date, items]
+      required: [observatoryId, date, items]
       properties:
+        observatoryId:
+          type: string
+          format: uuid
         date:
           type: string
           format: date
@@ -1733,6 +2602,7 @@ components:
         [
           id,
           userId,
+          observatoryId,
           targetId,
           slotStartAt,
           durationMinutes,
@@ -1748,6 +2618,10 @@ components:
         userId:
           type: string
           format: uuid
+        observatoryId:
+          type: string
+          format: uuid
+          description: The telescope the booking is time on (ADR-015).
         targetId:
           type: string
           format: uuid
@@ -1777,8 +2651,12 @@ components:
     CreateBookingRequest:
       type: object
       additionalProperties: false
-      required: [targetId, slotStartAt, durationMinutes]
+      required: [observatoryId, targetId, slotStartAt, durationMinutes]
       properties:
+        observatoryId:
+          type: string
+          format: uuid
+          description: An `id` from `GET /observatories`.
         targetId:
           type: string
           format: uuid
@@ -1955,8 +2833,13 @@ components:
           type: string
           format: uuid
         bookingId:
-          type: string
+          type: [string, "null"]
           format: uuid
+          description: |
+            The booking this mission was sold from, or null. Required so it is always
+            stated, nullable because not every mission is sold: an operator mission and
+            a demo mission have no booking, and inventing one for them would put a
+            fiction in the payment tables.
         targetId:
           type: string
           format: uuid
@@ -2061,6 +2944,63 @@ components:
           type: integer
           minimum: 0
           maximum: 5
+
+    ObserverPackStatus:
+      type: string
+      description: |
+        PENDING_PAYMENT holds a seat while the payment is outstanding and lapses at
+        `holdExpiresAt` if nothing settles. PAID is a seat its buyer keeps for the rest
+        of the session. CANCELLED is a payment that failed; EXPIRED is a hold that ran
+        out. Both put the seat back on sale.
+      enum: [PENDING_PAYMENT, PAID, CANCELLED, EXPIRED]
+
+    ObserverPack:
+      type: object
+      description: |
+        One purchased, view-only seat on a session somebody else controls (ADR-007).
+
+        The pack is the sale; `MissionObserver` is the attachment to it. They are
+        separate because a seat outlives a connection: an observer whose phone drops
+        still owns what they paid for.
+      additionalProperties: false
+      required: [id, missionId, userId, status, priceMinor, currency, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        missionId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/ObserverPackStatus"
+        priceMinor:
+          type: integer
+          minimum: 0
+        currency:
+          $ref: "#/components/schemas/Currency"
+        paymentId:
+          type: [string, "null"]
+          format: uuid
+        holdExpiresAt:
+          type: [string, "null"]
+          format: date-time
+          description: When an unpaid hold lapses. Null once the pack is no longer holding one.
+        createdAt:
+          type: string
+          format: date-time
+
+    ObserverPackWithPaymentIntent:
+      type: object
+      additionalProperties: false
+      required: [observerPack, paymentIntent]
+      properties:
+        observerPack:
+          $ref: "#/components/schemas/ObserverPack"
+        paymentIntent:
+          $ref: "#/components/schemas/PaymentIntent"
 
     MissionObservationSettings:
       type: object
@@ -2517,7 +3457,9 @@ components:
       type: string
       description: |
         IMAGE is the delivered, stretched, watermarked image. FITS is the real frame
-        data. UNMARKED is the stored copy without the overlay.
+        data. UNMARKED is the stored copy without the overlay. THUMBNAIL is a small
+        preview of the same picture, for a Collection card; it is what
+        `Capture.thumbnailUrl` signs.
       enum: [IMAGE, THUMBNAIL, FITS, UNMARKED]
 
     CaptureVisibility:
@@ -2626,6 +3568,374 @@ components:
     # ---------------------------------------------------------------------------
     # Audit
     # ---------------------------------------------------------------------------
+
+    # ---------------------------------------------------------------------------
+    # Partner observatories (ADR-013)
+    # ---------------------------------------------------------------------------
+
+    NetworkNodeKind:
+      type: string
+      description: |
+        FIRST_PARTY is an observatory Darkview owns and operates. PARTNER is one
+        somebody else owns, running the same agent under a qualification an operator
+        granted and can revoke.
+      enum: [FIRST_PARTY, PARTNER]
+
+    NetworkNodeApprovalStatus:
+      type: string
+      description: |
+        DRAFT is the resting state and it refuses everything. UNDER_REVIEW is the
+        owner saying the telescope is ready to be qualified; it grants nothing.
+        APPROVED is the only state in which a partner observatory may be operated.
+        SUSPENDED is an operator having taken that away.
+
+        SUSPENDED and DRAFT both refuse everything, and they are kept distinct
+        because they are different facts about a telescope: one has never been
+        qualified, the other was and had it revoked. Collapsing them would lose
+        exactly the history an operator needs when deciding whether to approve it
+        again.
+      enum: [DRAFT, UNDER_REVIEW, APPROVED, SUSPENDED]
+
+    NetworkNode:
+      type: object
+      description: |
+        One observatory in the network, and the terms on which it may be used.
+
+        ADR-013: partner status widens who may host a telescope, never what a
+        telescope may be asked to do. A node carries no authority of its own -- the
+        agent still re-validates every command, still enforces its own safety
+        envelope after the link dies, and still refuses a cloud-approved command
+        that fails local safety.
+      additionalProperties: false
+      required:
+        [nodeId, observatoryId, ownerId, kind, approvalStatus, siteName, city,
+         countryCode, timezone, safetyEnvelopeMeasured, capabilities, createdAt]
+      properties:
+        nodeId:
+          type: string
+          format: uuid
+        observatoryId:
+          type: string
+          format: uuid
+        ownerId:
+          type: string
+          format: uuid
+        kind:
+          $ref: "#/components/schemas/NetworkNodeKind"
+        approvalStatus:
+          $ref: "#/components/schemas/NetworkNodeApprovalStatus"
+        siteName:
+          type: string
+        city:
+          type: string
+        countryCode:
+          type: string
+          minLength: 2
+          maxLength: 2
+        timezone:
+          type: string
+        safetyEnvelopeMeasured:
+          type: boolean
+          description: |
+            Whether a measured altitude limit exists for this instrument. Reported
+            rather than asserted: it is the condition approval checks for itself,
+            because the database knows the answer and a checkbox would let an
+            unmeasured telescope be approved by clicking.
+        capabilities:
+          type: array
+          items:
+            type: string
+          description: Populated at qualification. Empty at registration.
+        approvedAt:
+          type: [string, "null"]
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    NetworkNodePage:
+      type: object
+      additionalProperties: false
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetworkNode"
+        page:
+          $ref: "#/components/schemas/PageMeta"
+
+    NetworkNodeReview:
+      type: object
+      description: |
+        One node, and the evidence for and against qualifying it (DV-122).
+
+        Operator-only, and it carries what the public surfaces deliberately do not:
+        the owner's identity and the site's exact coordinates. The coordinates are
+        here because ADR-013 requires them verified against the sky, and the
+        operator cannot compare a plate solve with a number they are not shown.
+      additionalProperties: false
+      required: [node, owner, site, telescope, evidence, history]
+      properties:
+        node:
+          $ref: "#/components/schemas/NetworkNode"
+        owner:
+          $ref: "#/components/schemas/NetworkNodeOwner"
+        site:
+          $ref: "#/components/schemas/NetworkNodeSite"
+        telescope:
+          description: The node's primary instrument as registered. Null if it has been removed, which also makes the node unbookable.
+          oneOf:
+            - $ref: "#/components/schemas/RegisterNetworkTelescope"
+            - type: "null"
+        evidence:
+          $ref: "#/components/schemas/NetworkNodeEvidence"
+        history:
+          type: array
+          description: Every state change the node has been through, oldest first.
+          items:
+            $ref: "#/components/schemas/NetworkNodeHistoryEntry"
+
+    NetworkNodeOwner:
+      type: object
+      additionalProperties: false
+      required: [id, name, email]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+
+    NetworkNodeSite:
+      type: object
+      additionalProperties: false
+      required: [latitude, longitude, timezone]
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        timezone:
+          type: string
+
+    NetworkNodeEvidence:
+      type: object
+      description: |
+        What the database can say about ADR-013's conditions. It reports; it does not
+        judge. Park proven and the owner's acceptance of terms have no record here
+        and remain the operator's attestation on approval.
+      additionalProperties: false
+      required:
+        [safetyEnvelope, horizonMaskEntries, forbiddenAzimuthSectors, completedRealMissions]
+      properties:
+        safetyEnvelope:
+          description: The measurement approval checks for itself. Null when no envelope row exists.
+          oneOf:
+            - $ref: "#/components/schemas/NetworkNodeEnvelopeEvidence"
+            - type: "null"
+        horizonMaskEntries:
+          type: integer
+          minimum: 0
+          description: Bearings recorded in the horizon mask. Zero means nothing has been surveyed.
+        forbiddenAzimuthSectors:
+          type: integer
+          minimum: 0
+        completedRealMissions:
+          type: integer
+          minimum: 0
+          description: |
+            Missions that reached COMPLETE on this observatory in REAL mode. A
+            supervised first light is at least one; simulated missions prove nothing
+            about the hardware and are not counted.
+
+    NetworkNodeEnvelopeEvidence:
+      type: object
+      additionalProperties: false
+      required: [maxAltitudeDegrees, measuredAt, measuredBy, measurementNote]
+      properties:
+        maxAltitudeDegrees:
+          type: [number, "null"]
+          description: Null is UNMEASURED, and approval refuses it.
+        measuredAt:
+          type: [string, "null"]
+          format: date-time
+        measuredBy:
+          type: [string, "null"]
+        measurementNote:
+          type: [string, "null"]
+
+    NetworkNodeHistoryEntry:
+      type: object
+      additionalProperties: false
+      required: [action, occurredAt, actorUserId, reason]
+      properties:
+        action:
+          type: string
+          enum:
+            [REGISTERED, SUBMITTED, APPROVED, SUSPENDED, DEVICE_TOKEN_ISSUED,
+             DEVICE_TOKEN_ROTATED, DEVICE_TOKEN_REVOKED]
+        occurredAt:
+          type: string
+          format: date-time
+        actorUserId:
+          type: [string, "null"]
+          format: uuid
+        reason:
+          type: [string, "null"]
+          description: Verbatim, for an approval or a suspension. The operator's own words.
+
+    NetworkNodeList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetworkNode"
+
+    RegisterNetworkNodeRequest:
+      type: object
+      description: |
+        The site and the instrument, together. A partner has neither until they
+        register, so both are created here.
+
+        There is one `siteName` rather than a name per language. A telescope on a
+        roof in Santiago has one name, and manufacturing a Georgian translation of
+        it would be inventing data about somebody else's property.
+      additionalProperties: false
+      required:
+        [siteName, city, countryCode, latitude, longitude, timezone, telescope]
+      properties:
+        siteName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        city:
+          type: string
+          minLength: 1
+          maxLength: 120
+        countryCode:
+          type: string
+          minLength: 2
+          maxLength: 2
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        timezone:
+          type: string
+          minLength: 1
+        telescope:
+          $ref: "#/components/schemas/RegisterNetworkTelescope"
+
+    RegisterNetworkTelescope:
+      type: object
+      additionalProperties: false
+      required: [name, manufacturer, model, apertureMm, focalLengthMm]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        manufacturer:
+          type: string
+          minLength: 1
+        model:
+          type: string
+          minLength: 1
+        apertureMm:
+          type: number
+          exclusiveMinimum: 0
+        focalLengthMm:
+          type: number
+          exclusiveMinimum: 0
+
+    ApproveNetworkNodeRequest:
+      type: object
+      description: |
+        ADR-013's qualification, as the operator attests it.
+
+        Every flag must be true. They are separate fields rather than one
+        confirmation because they are separate things somebody had to go and do, and
+        a single "I confirm" is a box that gets ticked without reading. The measured
+        safety envelope is absent from this list deliberately: it is checked against
+        the database instead.
+      additionalProperties: false
+      required:
+        [coordinatesVerified, horizonMaskRecorded, firstLightSupervised,
+         parkProven, ownerTermsAccepted, reason]
+      properties:
+        coordinatesVerified:
+          type: boolean
+          description: The site was confirmed against the sky, by plate solve, rather than typed into a form.
+        horizonMaskRecorded:
+          type: boolean
+          description: The roofline, walls and obstructions at this site are recorded.
+        firstLightSupervised:
+          type: boolean
+          description: At least one full mission was run on this instrument with an operator watching.
+        parkProven:
+          type: boolean
+          description: Park was seen to work on this hardware, both commanded and on link loss.
+        ownerTermsAccepted:
+          type: boolean
+          description: The owner accepted the operating terms in writing, for this node.
+        reason:
+          type: string
+          minLength: 8
+
+    SuspendNetworkNodeRequest:
+      type: object
+      additionalProperties: false
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 8
+
+    DeviceTokenChangeRequest:
+      type: object
+      description: Why the operator is issuing, rotating or revoking. Recorded verbatim.
+      additionalProperties: false
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 8
+
+    DeviceTokenIssued:
+      type: object
+      description: |
+        The only place a device token ever appears. Give it to the owner for
+        `python -m darkview_agent setup`; it cannot be shown again.
+      additionalProperties: false
+      required: [nodeId, observatoryId, deviceToken, issuedAt]
+      properties:
+        nodeId:
+          type: string
+          format: uuid
+        observatoryId:
+          type: string
+          format: uuid
+        deviceToken:
+          type: string
+          description: "Presented by the agent as `Authorization: Bearer`. Never logged."
+        issuedAt:
+          type: string
+          format: date-time
 
     AuditCategory:
       type: string
@@ -2934,7 +4244,13 @@ components:
 
     AgentCaptureReady:
       type: object
-      description: A finished capture has been uploaded by the agent and is ready for the cloud to record.
+      description: |
+        A finished capture has been uploaded by the agent and is ready for the cloud to record.
+
+        Every storage key must be the one the cloud granted for that kind. The cloud
+        re-derives each and refuses the whole capture if any differs: a key the
+        agent could choose would let it attach another customer's object to a
+        capture it reported (DV-065).
       additionalProperties: false
       required:
         [
@@ -2995,6 +4311,11 @@ components:
           type: [string, "null"]
         fitsStorageKey:
           type: [string, "null"]
+        thumbnailStorageKey:
+          type: [string, "null"]
+          description: |
+            The THUMBNAIL the agent wrote, if it wrote one (DV-065). Optional, so an
+            agent that predates it still sends a valid message.
         solvedFocalLengthMm:
           type: [number, "null"]
         widthPx:
@@ -3036,6 +4357,40 @@ components:
           type: [string, "null"]
           format: uuid
 
+    AgentUploadGrantRequest:
+      type: object
+      description: |
+        The agent asks for somewhere to put one capture asset (ADR-012).
+
+        It does not propose a key. The cloud derives the object's identity from
+        facts it already holds, so a compromised agent cannot choose to write over
+        another customer's object -- and that is also what lets
+        `CaptureAsset.storageKey` be trusted when the capture is finally recorded.
+
+        The mission and command say which capture this is for. Together with
+        `kind` they identify the object, so no correlation identifier is needed:
+        a grant answers the request naming the same three.
+      additionalProperties: false
+      required: [type, messageId, sentAt, missionId, commandId, kind]
+      properties:
+        type:
+          type: string
+          enum: [AGENT_UPLOAD_GRANT_REQUEST]
+        messageId:
+          type: string
+          format: uuid
+        sentAt:
+          type: string
+          format: date-time
+        missionId:
+          type: string
+          format: uuid
+        commandId:
+          type: string
+          format: uuid
+        kind:
+          $ref: "#/components/schemas/CaptureAssetKind"
+
     AgentToCloudMessage:
       description: Every message the Observatory Agent may send over its outbound link.
       oneOf:
@@ -3045,6 +4400,7 @@ components:
         - $ref: "#/components/schemas/AgentStateDelta"
         - $ref: "#/components/schemas/AgentMissionEvent"
         - $ref: "#/components/schemas/LiveFrameHeader"
+        - $ref: "#/components/schemas/AgentUploadGrantRequest"
         - $ref: "#/components/schemas/AgentCaptureReady"
         - $ref: "#/components/schemas/AgentError"
       discriminator:
@@ -3056,6 +4412,7 @@ components:
           AGENT_STATE_DELTA: "#/components/schemas/AgentStateDelta"
           AGENT_MISSION_EVENT: "#/components/schemas/AgentMissionEvent"
           AGENT_LIVE_FRAME: "#/components/schemas/LiveFrameHeader"
+          AGENT_UPLOAD_GRANT_REQUEST: "#/components/schemas/AgentUploadGrantRequest"
           AGENT_CAPTURE_READY: "#/components/schemas/AgentCaptureReady"
           AGENT_ERROR: "#/components/schemas/AgentError"
 
@@ -3200,6 +4557,57 @@ components:
           default: false
           description: When true the agent closes the link, backs off and re-dials. It does not stop enforcing safety while disconnected.
 
+    CloudUploadGrant:
+      type: object
+      description: |
+        Permission to write exactly one object, for a few minutes (ADR-012).
+
+        The observatory holds no bucket credential. This URL is the whole of its
+        authority over object storage: one key, one method, a short expiry. A
+        stolen mini-PC yields a revocable device token and nothing else.
+
+        `storageKey` is what the agent reports back as `imageStorageKey` on
+        `AGENT_CAPTURE_READY`. It is the cloud's own derived key, echoed so the
+        agent knows what it wrote rather than having to construct it.
+
+        A request the cloud will not grant is answered with `CLOUD_ERROR`, not
+        with a grant naming no URL.
+      additionalProperties: false
+      required:
+        [type, messageId, sentAt, missionId, commandId, kind, storageKey, url, method, expiresAt]
+      properties:
+        type:
+          type: string
+          enum: [CLOUD_UPLOAD_GRANT]
+        messageId:
+          type: string
+          format: uuid
+        sentAt:
+          type: string
+          format: date-time
+        missionId:
+          type: string
+          format: uuid
+        commandId:
+          type: string
+          format: uuid
+        kind:
+          $ref: "#/components/schemas/CaptureAssetKind"
+        storageKey:
+          type: string
+          description: Object storage key the cloud derived. Not a URL and never a public path.
+        url:
+          type: string
+          format: uri
+          description: Presigned URL. Names one object and one method, and expires.
+        method:
+          type: string
+          description: Always PUT. Stated rather than assumed, so a reader of a captured message knows what it permitted.
+          enum: [PUT]
+        expiresAt:
+          type: string
+          format: date-time
+
     CloudToAgentMessage:
       description: Every message the cloud may send down the agent link.
       oneOf:
@@ -3208,6 +4616,7 @@ components:
         - $ref: "#/components/schemas/CloudHeartbeatAck"
         - $ref: "#/components/schemas/CloudSessionUpdate"
         - $ref: "#/components/schemas/CloudSafetyEnvelopeUpdate"
+        - $ref: "#/components/schemas/CloudUploadGrant"
         - $ref: "#/components/schemas/CloudError"
       discriminator:
         propertyName: type
@@ -3217,6 +4626,7 @@ components:
           CLOUD_HEARTBEAT_ACK: "#/components/schemas/CloudHeartbeatAck"
           CLOUD_SESSION_UPDATE: "#/components/schemas/CloudSessionUpdate"
           CLOUD_SAFETY_ENVELOPE_UPDATE: "#/components/schemas/CloudSafetyEnvelopeUpdate"
+          CLOUD_UPLOAD_GRANT: "#/components/schemas/CloudUploadGrant"
           CLOUD_ERROR: "#/components/schemas/CloudError"
 
     # ---------------------------------------------------------------------------
@@ -3404,6 +4814,9 @@ components:
 
     MissionClientSubscribe:
       type: object
+      description: |
+        Ask to watch one mission. Sent by the controller and by an observer, which is
+        the only difference `sessionId` carries.
       additionalProperties: false
       required: [type, messageId, sentAt, missionId, sessionId]
       properties:
@@ -3420,8 +4833,22 @@ components:
           type: string
           format: uuid
         sessionId:
-          type: string
+          type: [string, "null"]
           format: uuid
+          description: |
+            The controller's session, or null for an observer (ADR-007).
+
+            The controller states it because a session rotates: reopening replaces the
+            old identifier, and a stale browser tab holding the previous one must stop
+            being able to watch. An observer has no rotating credential -- the seat is
+            the grant and the session cookie verified during the handshake is the
+            identity -- so there is nothing for them to state. Required either way, so
+            that a client says which it is rather than omitting the field.
+
+            Stating a sessionId never grants anything on its own. The cloud admits a
+            subscriber only when the session or the seat belongs to the authenticated
+            user, and neither confers any command capability: commands are minted only
+            through POST /missions/{missionId}/command, for the session owner alone.
 
     MissionClientPing:
       type: object
