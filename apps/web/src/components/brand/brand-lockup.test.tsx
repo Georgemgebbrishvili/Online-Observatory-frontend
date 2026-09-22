@@ -8,7 +8,7 @@ describe("BrandLockup", () => {
     render(<BrandLockup ariaLabel="Darkview by Astroman" endorsement="by Astroman" />);
 
     expect(screen.getByLabelText("Darkview by Astroman")).toHaveTextContent(
-      "DARKVIEWby Astroman",
+      "Darkviewby Astroman",
     );
   });
 });

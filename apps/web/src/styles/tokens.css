@@ -1,37 +1,101 @@
+/*
+ * Darkview design tokens — Brand Identity System v2.0.
+ * The only file in apps/web/src allowed to hold a colour literal (stylelint enforces it).
+ * tokens.ts mirrors the palette for surfaces CSS cannot reach; a test keeps them equal.
+ */
 :root {
-  --color-background: #05070a;
-  --color-elevated: #0b1016;
-  --color-elevated-secondary: #101720;
-  --color-elevated-hover: #151e29;
-  --color-text: #f3f6f8;
-  --color-text-secondary: #8d99a8;
-  --color-text-muted: #647080;
-  --color-text-quiet: #778493;
-  --color-cyan: #18c8ff;
-  --color-cyan-bright: #38daff;
-  --color-cyan-foreground: #00151c;
-  --color-success: #6fb78d;
-  --color-warning: #d4a258;
-  --color-error: #c76b6b;
-  --color-border: rgb(243 246 248 / 10%);
-  --color-border-strong: rgb(243 246 248 / 18%);
-  --color-surface-hover: rgb(243 246 248 / 5%);
-  --color-surface-active: rgb(243 246 248 / 8%);
-  --color-panel-overlay: rgb(5 7 10 / 82%);
-  --color-backdrop: rgb(5 7 10 / 76%);
-  --color-shadow: rgb(0 0 0 / 38%);
-  --color-cyan-faint: rgb(24 200 255 / 7%);
-  --color-cyan-muted: rgb(24 200 255 / 14%);
-  --color-cyan-border: rgb(24 200 255 / 34%);
-  --color-cyan-glow: rgb(24 200 255 / 24%);
-  --color-success-muted: rgb(111 183 141 / 13%);
-  --color-success-border: rgb(111 183 141 / 30%);
-  --color-warning-muted: rgb(212 162 88 / 13%);
-  --color-warning-border: rgb(212 162 88 / 30%);
-  --color-error-muted: rgb(199 107 107 / 13%);
-  --color-error-border: rgb(199 107 107 / 30%);
-  --color-optical-faint: rgb(141 153 168 / 15%);
-  --color-optical-medium: rgb(141 153 168 / 24%);
+  /* §04 Primary palette, secondary palette and neutral scale */
+  --dv-neutral-950: #05080d;
+  --dv-neutral-900: #0b0f15;
+  --dv-neutral-800: #111722;
+  --dv-neutral-700: #1a2330;
+  --dv-neutral-600: #2a3645;
+  --dv-neutral-500: #4c5a68;
+  --dv-neutral-400: #778492;
+  --dv-neutral-300: #aab4be;
+  --dv-neutral-200: #d0d6dc;
+  --dv-neutral-100: #f2f5f7;
+  --dv-photon: #5cc8ff;
+  --dv-deep-signal: #1677a3;
+  --dv-star-brass: #d9a45b;
+  --dv-lunar-silver: #a8b2bc;
+  --dv-optical-glass: #263a49;
+  --dv-success: #4fd1a5;
+  --dv-warning: #e5b454;
+  --dv-error: #ff6b6b;
+  --dv-info: #78afff;
+  --dv-black: #000;
+
+  /* §08 Surface mapping · dark mode, and §11 semantic tokens */
+  --color-night: var(--dv-neutral-950);
+  --color-surface-base: var(--dv-neutral-900);
+  --color-surface-raised: var(--dv-neutral-800);
+  --color-surface-hover: var(--dv-neutral-700);
+  --color-border-subtle: var(--dv-neutral-600);
+  --color-border-strong: var(--dv-neutral-500);
+  --color-border-control: var(--dv-neutral-400);
+  --color-text-primary: var(--dv-neutral-100);
+  --color-text-secondary: var(--dv-neutral-300);
+  --color-text-tertiary: var(--dv-neutral-400);
+  --color-text-technical: var(--dv-lunar-silver);
+  --color-photon: var(--dv-photon);
+  --color-photon-hover: color-mix(in srgb, var(--dv-photon) 82%, var(--dv-neutral-100));
+  --color-photon-deep: var(--dv-deep-signal);
+  --color-on-photon: var(--dv-neutral-950);
+  --color-star-brass: var(--dv-star-brass);
+  --color-optical-glass: var(--dv-optical-glass);
+  --color-success: var(--dv-success);
+  --color-warning: var(--dv-warning);
+  --color-error: var(--dv-error);
+  --color-info: var(--dv-info);
+  /* §08 Live observation page, rule 04: the conventional red LIVE dot, only when genuinely live */
+  --color-live: var(--dv-error);
+
+  /* Tints derived from the palette above — no new hues */
+  --color-photon-faint: color-mix(in srgb, var(--dv-photon) 7%, transparent);
+  --color-photon-muted: color-mix(in srgb, var(--dv-photon) 14%, transparent);
+  --color-photon-border: color-mix(in srgb, var(--dv-photon) 34%, transparent);
+  --color-success-muted: color-mix(in srgb, var(--dv-success) 13%, transparent);
+  --color-success-border: color-mix(in srgb, var(--dv-success) 30%, transparent);
+  --color-warning-muted: color-mix(in srgb, var(--dv-warning) 13%, transparent);
+  --color-warning-border: color-mix(in srgb, var(--dv-warning) 30%, transparent);
+  --color-error-muted: color-mix(in srgb, var(--dv-error) 13%, transparent);
+  --color-error-border: color-mix(in srgb, var(--dv-error) 30%, transparent);
+  --color-overlay-hover: color-mix(in srgb, var(--dv-neutral-100) 5%, transparent);
+  --color-overlay-active: color-mix(in srgb, var(--dv-neutral-100) 8%, transparent);
+  --color-optical-faint: color-mix(in srgb, var(--dv-lunar-silver) 15%, transparent);
+  --color-optical-medium: color-mix(in srgb, var(--dv-lunar-silver) 24%, transparent);
+  --color-scrim-soft: color-mix(in srgb, var(--dv-neutral-950) 60%, transparent);
+  --color-scrim: color-mix(in srgb, var(--dv-neutral-950) 74%, transparent);
+  --color-scrim-strong: color-mix(in srgb, var(--dv-neutral-950) 94%, transparent);
+  --color-panel-overlay: var(--color-scrim-strong);
+  --color-backdrop: var(--color-scrim);
+  --color-mask: var(--dv-black);
+  --color-shadow: color-mix(in srgb, var(--dv-black) 38%, transparent);
+
+  /* §05 Typography — families are loaded in app/[locale]/layout.tsx */
+  --font-display: var(--font-noto-serif-georgian), "Noto Serif Georgian", Georgia, serif;
+  --font-body: var(--font-firago), FiraGO, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+
+  /* §05 Type scale: brand pt × 1.6 = px; hero is 44px mobile → 64px desktop */
+  --font-size-hero: clamp(2.75rem, 1.9rem + 3.4vw, 4rem);
+  --font-size-h1: clamp(1.875rem, 1.6rem + 1.1vw, 2.25rem);
+  --font-size-h2: 1.8rem;
+  --font-size-h3: 1.375rem;
+  --font-size-body-lg: 1.1875rem;
+  --font-size-body: 1rem;
+  --font-size-label: 0.875rem;
+  --font-size-caption: 0.8125rem;
+  --font-size-mono: 0.875rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --leading-display: 1.1;
+  --leading-heading: 1.25;
+  --leading-body: 1.55;
+  --leading-body-georgian: 1.65;
+  --tracking-label: 0.08em;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -46,40 +110,37 @@
   --space-20: 5rem;
   --space-page: clamp(var(--space-5), 4vw, 4.5rem);
 
+  --size-touch: 2.75rem;
   --size-app-sidebar: 17rem;
   --size-app-bottom-nav: 4.75rem;
 
+  /* §07 Iconography and §08 Button styles */
   --radius-small: 0.5rem;
+  --radius-control: 0.625rem;
   --radius-medium: 0.75rem;
   --radius-panel: 1rem;
   --radius-large: 1.5rem;
   --radius-full: 9999px;
+  --icon-stroke: 1.5;
 
-  --shadow-small: 0 0.5rem 1.5rem rgb(0 0 0 / 18%);
+  /* §09 anti-pattern 04 — shadows separate layers; nothing glows */
+  --shadow-small: 0 0.5rem 1.5rem color-mix(in srgb, var(--dv-black) 18%, transparent);
   --shadow-panel: 0 2.5rem 8rem var(--color-shadow);
-  --shadow-dialog: 0 2rem 7rem rgb(0 0 0 / 62%);
-  --shadow-cyan: 0 0 1.5rem var(--color-cyan-glow);
+  --shadow-dialog: 0 2rem 7rem color-mix(in srgb, var(--dv-black) 62%, transparent);
+  --focus-ring: 2px solid var(--color-photon);
 
-  --font-size-caption: 0.68rem;
-  --font-size-label: 0.75rem;
-  --font-size-body: 1rem;
-  --font-size-body-large: 1.125rem;
-  --font-size-title-small: clamp(1.75rem, 4vw, 2.5rem);
-  --font-size-title: clamp(2.5rem, 7vw, 5.25rem);
-
-  --duration-fast: 120ms;
-  --duration-standard: 180ms;
-  --duration-state: 280ms;
-  --duration-reveal: 420ms;
-  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  /* §07 Motion principles: UI 160–220ms, instrument 500–1200ms, wonder 4–8s */
+  --duration-fast: 160ms;
+  --duration-standard: 200ms;
+  --duration-state: 220ms;
+  --duration-instrument: 800ms;
+  --duration-wonder: 6s;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), Inter, sans-serif;
-  --font-display: var(--font-space-grotesk), "Space Grotesk", sans-serif;
-  --color-darkview-background: var(--color-background);
-  --color-darkview-elevated: var(--color-elevated);
-  --color-darkview-cyan: var(--color-cyan);
-  --color-darkview-text: var(--color-text);
+  --color-darkview-night: var(--color-night);
+  --color-darkview-surface: var(--color-surface-raised);
+  --color-darkview-photon: var(--color-photon);
+  --color-darkview-text: var(--color-text-primary);
 }

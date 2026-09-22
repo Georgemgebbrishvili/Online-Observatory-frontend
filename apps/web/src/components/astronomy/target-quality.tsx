@@ -4,7 +4,7 @@ export const targetQualities = ["Excellent", "Good", "Fair", "Unavailable"] as c
 export type TargetQualityValue = (typeof targetQualities)[number];
 
 const qualityTone: Record<TargetQualityValue, StatusTone> = {
-  Excellent: "cyan",
+  Excellent: "active",
   Good: "success",
   Fair: "warning",
   Unavailable: "neutral",

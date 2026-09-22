@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_Georgian, Space_Grotesk } from "next/font/google";
+import { IBM_Plex_Mono, Noto_Serif_Georgian } from "next/font/google";
+import localFont from "next/font/local";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -8,22 +9,27 @@ import { isLocale, locales } from "@/i18n/config";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
 import "@/styles/globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-  preload: false,
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
+const firaGO = localFont({
+  src: [
+    { path: "../fonts/firago/FiraGO-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/firago/FiraGO-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/firago/FiraGO-SemiBold.woff2", weight: "600", style: "normal" },
+  ],
+  variable: "--font-firago",
   display: "swap",
 });
 
-const notoSansGeorgian = Noto_Sans_Georgian({
-  subsets: ["georgian"],
-  variable: "--font-georgian",
+const notoSerifGeorgian = Noto_Serif_Georgian({
+  subsets: ["georgian", "latin"],
+  weight: ["500", "600"],
+  variable: "--font-noto-serif-georgian",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-ibm-plex-mono",
   display: "swap",
   preload: false,
 });
@@ -76,12 +82,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   }
 
   const dictionary = await getDictionary(locale);
-  const bodyFont = locale === "ka" ? notoSansGeorgian.variable : inter.variable;
-
   return (
     <html
       lang={locale}
-      className={`${bodyFont} ${spaceGrotesk.variable}`}
+      className={`${firaGO.variable} ${notoSerifGeorgian.variable} ${ibmPlexMono.variable}`}
     >
       <body>
         <a className="skip-link" href="#main-content">

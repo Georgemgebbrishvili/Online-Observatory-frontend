@@ -4,7 +4,7 @@
 
 .home-hero {
   position: relative;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .home-hero::before {
@@ -61,7 +61,7 @@
   overflow: hidden;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   box-shadow: var(--shadow-panel);
 }
 
@@ -88,7 +88,7 @@
 }
 
 .hero-observatory > header {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .hero-observatory > header > div {
@@ -98,7 +98,7 @@
 
 .hero-observatory > header span,
 .hero-observatory > footer span {
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.1em;
@@ -115,7 +115,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
   background: var(--color-panel-overlay);
 }
 
@@ -159,7 +159,7 @@
 }
 
 .hero-target-label strong {
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 0.9rem;
   font-weight: 550;
 }
@@ -167,7 +167,7 @@
 .home-section {
   scroll-margin-top: var(--space-8);
   padding-block: clamp(var(--space-16), 10vw, 8.5rem);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   content-visibility: auto;
   contain-intrinsic-size: auto 48rem;
 }
@@ -182,8 +182,8 @@
 
 .home-section-heading > span {
   padding-top: var(--space-1);
-  color: var(--color-cyan);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  color: var(--color-photon);
+  font-family: var(--font-display);
   font-size: var(--font-size-caption);
   letter-spacing: 0.12em;
 }
@@ -191,7 +191,7 @@
 .home-section-heading p:first-child,
 .final-cta .page-container > p {
   margin: 0 0 var(--space-3);
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -202,7 +202,7 @@
 .final-cta h2 {
   max-width: 16ch;
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.35rem, 6vw, 5rem);
   font-weight: 450;
   letter-spacing: -0.055em;
@@ -221,14 +221,14 @@
 }
 
 .live-section {
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .live-console {
   overflow: hidden;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-background);
+  background: var(--color-night);
 }
 
 .live-console > header,
@@ -242,7 +242,7 @@
 }
 
 .live-console > header {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .live-console > header > div:first-child {
@@ -253,7 +253,7 @@
 .live-console > header > div:first-child > span,
 .live-console > footer > span,
 .network-node > div > span {
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -262,7 +262,7 @@
 
 .live-console h3 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.25rem, 3vw, 2rem);
   font-weight: 500;
   letter-spacing: -0.035em;
@@ -285,10 +285,10 @@
   min-height: 24rem;
   overflow: hidden;
   place-items: center;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   background:
-    radial-gradient(circle at center, var(--color-cyan-faint), transparent 45%),
-    var(--color-elevated);
+    radial-gradient(circle at center, var(--color-photon-faint), transparent 45%),
+    var(--color-surface-base);
 }
 
 .live-target-orbit::before,
@@ -317,14 +317,13 @@
   place-items: center;
   border-radius: var(--radius-full);
   background: var(--color-text-secondary);
-  box-shadow: var(--shadow-cyan);
   transform: rotate(-12deg);
 }
 
 .saturn-mark i {
   width: 6rem;
   height: 1.45rem;
-  border: 1px solid var(--color-cyan-bright);
+  border: 1px solid var(--color-photon);
   border-radius: 50%;
 }
 
@@ -340,7 +339,7 @@
   grid-template-columns: minmax(7rem, 0.7fr) minmax(0, 1.3fr);
   gap: var(--space-4);
   padding: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .live-console dl div:last-child,
@@ -351,7 +350,7 @@
 .live-console dt,
 .observatory-details dt,
 .target-card dt {
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.09em;
@@ -367,7 +366,7 @@
 }
 
 .live-console > footer {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .section-data-note {
@@ -390,9 +389,9 @@
 .target-card {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-medium);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   scroll-snap-align: start;
   transition:
     border-color var(--duration-standard) var(--ease-standard),
@@ -411,11 +410,11 @@
   height: 11rem;
   overflow: hidden;
   place-items: center;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   background:
     linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
     linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px),
-    var(--color-background);
+    var(--color-night);
   background-size: 2.5rem 2.5rem;
 }
 
@@ -426,13 +425,13 @@
   height: 4.2rem;
   border: 1px solid var(--color-text-secondary);
   border-radius: var(--radius-full);
-  background: var(--color-elevated-secondary);
+  background: var(--color-surface-raised);
 }
 
 .target-visual-moon > span {
   border: 0;
   background: var(--color-text-secondary);
-  box-shadow: inset -1rem 0 var(--color-background);
+  box-shadow: inset -1rem 0 var(--color-night);
 }
 
 .target-visual-saturn > span::after {
@@ -451,7 +450,7 @@
   width: 7rem;
   height: 2.25rem;
   border-color: var(--color-optical-medium);
-  background: var(--color-cyan-faint);
+  background: var(--color-photon-faint);
   transform: rotate(-18deg);
 }
 
@@ -476,27 +475,27 @@
   width: 0.35rem;
   height: 0.35rem;
   box-shadow:
-    1rem 0.4rem var(--color-text-muted),
+    1rem 0.4rem var(--color-text-tertiary),
     1.8rem 1.5rem var(--color-text-secondary),
-    0.2rem 2rem var(--color-text-muted),
+    0.2rem 2rem var(--color-text-tertiary),
     -1rem 1.2rem var(--color-text-secondary),
-    -1.3rem -0.5rem var(--color-text-muted),
+    -1.3rem -0.5rem var(--color-text-tertiary),
     0.9rem -1.2rem var(--color-text-secondary),
-    1.8rem -0.6rem var(--color-text-muted);
+    1.8rem -0.6rem var(--color-text-tertiary);
   inset: 1.7rem;
 }
 
 .target-visual-nebula > span::before {
   width: 2.4rem;
   height: 1.25rem;
-  background: var(--color-cyan-muted);
+  background: var(--color-photon-muted);
   filter: blur(0.4rem);
   inset: 1.45rem 0 0 0.85rem;
   transform: rotate(22deg);
 }
 
 .target-visual-ring > span::before {
-  border: 1px solid var(--color-cyan);
+  border: 1px solid var(--color-photon);
   background: transparent;
   inset: 0.75rem;
 }
@@ -514,13 +513,13 @@
 
 .target-card-body > header p {
   margin: 0 0 var(--space-1);
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
 .target-card h3 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 520;
   letter-spacing: -0.035em;
@@ -539,7 +538,7 @@
 }
 
 .process-section {
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .process-list {
@@ -554,19 +553,19 @@
   grid-template-columns: 3rem minmax(0, 1fr);
   gap: var(--space-4);
   padding-block: var(--space-8);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .process-list li > span {
   padding-top: var(--space-1);
-  color: var(--color-cyan);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  color: var(--color-photon);
+  font-family: var(--font-display);
   font-size: var(--font-size-label);
 }
 
 .process-list h3 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.75rem, 5vw, 3.5rem);
   font-weight: 450;
   letter-spacing: -0.045em;
@@ -585,7 +584,7 @@
   overflow: hidden;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .observatory-blueprint {
@@ -594,11 +593,11 @@
   min-height: 29rem;
   overflow: hidden;
   place-items: center;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   background:
     linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
     linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px),
-    var(--color-background);
+    var(--color-night);
   background-size: 3.5rem 3.5rem;
 }
 
@@ -607,7 +606,7 @@
   bottom: 7rem;
   width: min(19rem, 72%);
   height: 9.5rem;
-  border: 1px solid var(--color-text-muted);
+  border: 1px solid var(--color-text-tertiary);
   border-bottom: 0;
   border-radius: 50% 50% 0 0;
 }
@@ -617,8 +616,8 @@
   bottom: 4.8rem;
   width: min(22rem, 82%);
   height: 2.25rem;
-  border: 1px solid var(--color-text-muted);
-  background: var(--color-elevated-secondary);
+  border: 1px solid var(--color-text-tertiary);
+  background: var(--color-surface-raised);
 }
 
 .blueprint-axis {
@@ -626,8 +625,7 @@
   bottom: 7rem;
   width: 1px;
   height: 10rem;
-  background: var(--color-cyan);
-  box-shadow: var(--shadow-cyan);
+  background: var(--color-photon);
   transform: rotate(31deg);
   transform-origin: bottom;
 }
@@ -641,9 +639,9 @@
 .observatory-details > p {
   margin: 0;
   padding: var(--space-6);
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
   font-size: clamp(1.25rem, 3vw, 1.8rem);
   font-weight: 450;
   letter-spacing: -0.035em;
@@ -651,7 +649,7 @@
 }
 
 .collection-section {
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .collection-statement {
@@ -666,8 +664,8 @@
 .collection-statement p {
   max-width: 46rem;
   margin: 0;
-  color: var(--color-text);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
   font-size: clamp(1.3rem, 3vw, 2rem);
   font-weight: 450;
   letter-spacing: -0.035em;
@@ -686,9 +684,9 @@
 .collection-frame {
   margin: 0;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-medium);
-  background: var(--color-background);
+  background: var(--color-night);
 }
 
 .collection-placeholder {
@@ -707,8 +705,8 @@
   position: absolute;
   top: var(--space-4);
   left: var(--space-4);
-  color: var(--color-text-quiet);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
   font-size: var(--font-size-caption);
 }
 
@@ -737,16 +735,16 @@
   z-index: 2;
   width: 7rem;
   height: 7rem;
-  border: 1px solid var(--color-text-muted);
+  border: 1px solid var(--color-text-tertiary);
   border-radius: var(--radius-full);
-  background: var(--color-elevated-secondary);
+  background: var(--color-surface-raised);
 }
 
 .collection-frame-nebula .collection-object {
   width: 9rem;
   height: 4rem;
   border-style: dashed;
-  background: var(--color-cyan-faint);
+  background: var(--color-photon-faint);
   filter: blur(0.15rem);
   transform: rotate(-18deg);
 }
@@ -754,7 +752,7 @@
 .collection-frame-moon .collection-object {
   border: 0;
   background: var(--color-text-secondary);
-  box-shadow: inset -1.6rem 0 var(--color-elevated);
+  box-shadow: inset -1.6rem 0 var(--color-surface-base);
 }
 
 .collection-frame-cluster .collection-object {
@@ -765,13 +763,13 @@
       var(--color-text-secondary) 0 1px,
       transparent 2px
     ),
-    radial-gradient(circle at 63% 42%, var(--color-text-muted) 0 1px, transparent 2px),
+    radial-gradient(circle at 63% 42%, var(--color-text-tertiary) 0 1px, transparent 2px),
     radial-gradient(
       circle at 45% 68%,
       var(--color-text-secondary) 0 1px,
       transparent 2px
     ),
-    radial-gradient(circle at 72% 72%, var(--color-text-muted) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 72%, var(--color-text-tertiary) 0 1px, transparent 2px),
     transparent;
 }
 
@@ -782,7 +780,7 @@
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-4);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .collection-frame figcaption div {
@@ -796,7 +794,7 @@
 }
 
 .collection-frame figcaption span {
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
@@ -823,7 +821,7 @@
   gap: var(--space-4);
   align-items: center;
   padding-block: var(--space-6);
-  border-block: 1px solid var(--color-border);
+  border-block: 1px solid var(--color-border-subtle);
 }
 
 .network-node-mark {
@@ -833,22 +831,21 @@
   width: 2.8rem;
   height: 2.8rem;
   place-items: center;
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
-  background: var(--color-background);
+  background: var(--color-night);
 }
 
 .network-node-mark span {
   width: 0.45rem;
   height: 0.45rem;
   border-radius: var(--radius-full);
-  background: var(--color-cyan);
-  box-shadow: var(--shadow-cyan);
+  background: var(--color-photon);
 }
 
 .network-node h3 {
   margin: var(--space-2) 0 var(--space-1);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.3rem, 3vw, 2rem);
   font-weight: 480;
   letter-spacing: -0.04em;
@@ -875,7 +872,7 @@
 }
 
 .private-section {
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .session-list {
@@ -888,12 +885,12 @@
   gap: var(--space-2) var(--space-4);
   align-items: center;
   padding-block: var(--space-6);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .session-option > span,
 .session-option small {
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.08em;
@@ -902,8 +899,8 @@
 
 .session-option strong {
   grid-row: span 2;
-  color: var(--color-text);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
   font-size: clamp(1.8rem, 5vw, 3.5rem);
   font-weight: 450;
   letter-spacing: -0.05em;
@@ -926,7 +923,7 @@
   position: relative;
   overflow: hidden;
   padding-block: clamp(var(--space-20), 14vw, 11rem);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   text-align: left;
 }
 
@@ -936,7 +933,7 @@
   right: -7rem;
   width: 24rem;
   height: 24rem;
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
   content: "";
   pointer-events: none;
@@ -961,7 +958,7 @@
 }
 
 .site-footer {
-  background: var(--color-background);
+  background: var(--color-night);
 }
 
 .footer-grid {
@@ -973,7 +970,7 @@
 .footer-brand p {
   max-width: 26rem;
   margin: var(--space-4) 0 0;
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: 0.8rem;
   line-height: 1.65;
 }
@@ -992,7 +989,7 @@
 
 .footer-nav h2 {
   margin: 0 0 var(--space-2);
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -1017,15 +1014,15 @@
 
 .footer-nav a:hover,
 .footer-nav a[aria-current="page"] {
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .footer-nav span {
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
 }
 
 .footer-nav a:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -1037,7 +1034,7 @@
 
   .live-target-orbit,
   .observatory-blueprint {
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border-subtle);
     border-bottom: 0;
   }
 

@@ -13,7 +13,7 @@
 
 .home-dashboard-kicker {
   margin: 0 0 var(--space-4);
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.13em;
@@ -28,7 +28,7 @@
   max-width: 36rem;
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-large);
+  font-size: var(--font-size-body-lg);
   line-height: 1.65;
 }
 
@@ -43,9 +43,9 @@
 .home-upcoming,
 .home-explore-card,
 .home-collection-progress {
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .home-section-label {
@@ -62,7 +62,7 @@
 .home-explore > header span,
 .home-collection-intro > span,
 .home-recent-captures > span {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.12em;
@@ -78,7 +78,7 @@
   position: relative;
   min-height: 36rem;
   overflow: hidden;
-  background: var(--color-background);
+  background: var(--color-night);
   box-shadow: var(--shadow-panel);
 }
 
@@ -91,8 +91,8 @@
   position: absolute;
   background: linear-gradient(
     90deg,
-    rgb(5 7 10 / 97%) 0%,
-    rgb(5 7 10 / 78%) 50%,
+    var(--color-scrim-strong) 0%,
+    var(--color-scrim) 50%,
     transparent 100%
   );
   inset: 0;
@@ -102,7 +102,7 @@
   position: absolute;
   width: 20rem;
   aspect-ratio: 1;
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
   opacity: 0.55;
   top: 50%;
@@ -137,7 +137,7 @@
 .home-explore h2,
 .home-collection-progress h2 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-weight: 450;
   letter-spacing: -0.05em;
   line-height: 1;
@@ -176,7 +176,7 @@
 .home-tonight dt,
 .home-observatory dt,
 .home-live dt {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
@@ -208,7 +208,7 @@
 }
 
 .home-text-link:hover {
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .home-observatory {
@@ -239,14 +239,13 @@
 }
 
 .home-observatory-optics span:nth-child(2) {
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
   inset: 36%;
 }
 
 .home-observatory-optics i {
-  border-color: var(--color-cyan-bright);
-  background: var(--color-cyan);
-  box-shadow: var(--shadow-cyan);
+  border-color: var(--color-photon);
+  background: var(--color-photon);
   inset: 49%;
 }
 
@@ -259,7 +258,7 @@
 .home-observatory h3 {
   margin: 0;
   max-width: 100%;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2rem, 3vw, 2.75rem);
   font-weight: 450;
   letter-spacing: -0.05em;
@@ -277,7 +276,7 @@
   position: relative;
   z-index: 2;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .home-observatory dl div {
@@ -296,17 +295,17 @@
   min-height: 20rem;
   overflow: hidden;
   place-items: center;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   background:
-    radial-gradient(circle, var(--color-cyan-muted), transparent 31%),
-    var(--color-background);
+    radial-gradient(circle, var(--color-photon-muted), transparent 31%),
+    var(--color-night);
 }
 
 .home-live-visual > span {
   position: absolute;
   width: 18rem;
   aspect-ratio: 1;
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
 }
 
@@ -314,15 +313,18 @@
   width: 5rem;
   height: 5rem;
   border-radius: var(--radius-full);
-  background: linear-gradient(165deg, #c5bca7, #625d53);
-  box-shadow: 0 0 4rem rgb(243 246 248 / 16%);
+  background: linear-gradient(
+    165deg,
+    var(--color-text-secondary),
+    var(--color-border-strong)
+  );
 }
 
 .home-live-visual > b {
   position: absolute;
   width: 8rem;
   height: 2rem;
-  border: 1px solid #bcb4a3;
+  border: 1px solid var(--color-text-secondary);
   border-radius: 50%;
   transform: rotate(-12deg);
 }
@@ -335,13 +337,13 @@
 
 .home-live-copy > p {
   margin: auto 0 var(--space-2);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
 .home-live h3 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 450;
   letter-spacing: -0.05em;
@@ -369,7 +371,7 @@
 .home-upcoming-list {
   display: grid;
   margin-top: var(--space-6);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .home-upcoming-list article {
@@ -378,11 +380,11 @@
   gap: var(--space-4);
   align-items: center;
   padding-block: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .home-upcoming-list article > span {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 650;
 }
@@ -395,13 +397,13 @@
 
 .home-upcoming-list p,
 .home-upcoming-list small {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
 .home-upcoming-list h3,
 .home-explore-card h3 {
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
 }
 
@@ -415,14 +417,14 @@
   width: 2.75rem;
   height: 2.75rem;
   place-items: center;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-full);
   color: var(--color-text-secondary);
 }
 
 .home-upcoming-list a:hover {
-  border-color: var(--color-cyan-border);
-  color: var(--color-cyan-bright);
+  border-color: var(--color-photon-border);
+  color: var(--color-photon);
 }
 
 .home-explore {
@@ -486,7 +488,7 @@
 }
 
 .home-explore-card p {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.09em;
@@ -499,7 +501,7 @@
 }
 
 .home-explore-card > div > span {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-label);
 }
 
@@ -509,8 +511,8 @@
   margin-top: clamp(var(--space-16), 8vw, 7rem);
   padding: clamp(var(--space-6), 5vw, var(--space-10));
   background:
-    radial-gradient(circle at 88% 20%, var(--color-cyan-muted), transparent 18rem),
-    var(--color-elevated);
+    radial-gradient(circle at 88% 20%, var(--color-photon-muted), transparent 18rem),
+    var(--color-surface-base);
 }
 
 .home-collection-intro {
@@ -526,7 +528,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0;
-  border-block: 1px solid var(--color-border);
+  border-block: 1px solid var(--color-border-subtle);
 }
 
 .home-collection-counts div {
@@ -535,7 +537,7 @@
 
 .home-collection-counts dd {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.8rem, 7vw, 4.5rem);
   font-weight: 450;
   letter-spacing: -0.05em;
@@ -544,7 +546,7 @@
 
 .home-collection-counts dt {
   margin-top: var(--space-2);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
@@ -564,9 +566,9 @@
   display: block;
   aspect-ratio: 1;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-medium);
-  background: var(--color-background);
+  background: var(--color-night);
 }
 
 .home-recent-captures img {
@@ -583,7 +585,7 @@
 .home-upcoming-list a:focus-visible,
 .home-explore-card a:focus-visible,
 .home-recent-captures a:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -599,7 +601,7 @@
 
   .home-live-visual {
     min-height: 25rem;
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border-subtle);
     border-bottom: 0;
   }
 
@@ -666,8 +668,8 @@
   .home-tonight-shade {
     background: linear-gradient(
       0deg,
-      rgb(5 7 10 / 98%) 0%,
-      rgb(5 7 10 / 70%) 62%,
+      var(--color-scrim-strong) 0%,
+      var(--color-scrim) 62%,
       transparent 100%
     );
   }

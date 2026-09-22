@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from "react";
 
-export type StatusTone = "cyan" | "success" | "warning" | "danger" | "neutral";
+export type StatusTone = "active" | "success" | "warning" | "danger" | "neutral";
 
 type StatusIndicatorProps = HTMLAttributes<HTMLSpanElement> & {
   label: string;

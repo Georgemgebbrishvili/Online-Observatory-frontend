@@ -18,7 +18,7 @@
 .network-connect-copy > p,
 .network-current header span {
   margin: 0;
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.13em;
@@ -35,7 +35,7 @@
   max-width: 43rem;
   margin: var(--space-8) 0;
   padding-left: var(--space-5);
-  border-left: 1px solid var(--color-cyan);
+  border-left: 1px solid var(--color-photon);
   color: var(--color-text-secondary);
   font-size: clamp(1.05rem, 2vw, 1.3rem);
   line-height: 1.75;
@@ -48,8 +48,8 @@
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
   background:
-    radial-gradient(circle at 58% 48%, var(--color-cyan-muted), transparent 25%),
-    var(--color-elevated);
+    radial-gradient(circle at 58% 48%, var(--color-photon-muted), transparent 25%),
+    var(--color-surface-base);
   box-shadow: var(--shadow-panel);
   isolation: isolate;
 }
@@ -62,7 +62,7 @@
     linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px);
   background-size: 3.25rem 3.25rem;
   inset: 0;
-  mask-image: radial-gradient(circle, black 20%, transparent 78%);
+  mask-image: radial-gradient(circle, var(--color-mask) 20%, transparent 78%);
 }
 
 .network-map-orbit,
@@ -87,7 +87,7 @@
 
 .network-map-orbit-inner {
   width: min(48%, 19rem);
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
 }
 
 .network-map-axis {
@@ -114,19 +114,17 @@
   width: 4.5rem;
   aspect-ratio: 1;
   place-items: center;
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: 50%;
-  background: var(--color-cyan-faint);
-  box-shadow: 0 0 3rem var(--color-cyan-glow);
+  background: var(--color-photon-faint);
 }
 
 .network-map-node i {
   width: 0.65rem;
   aspect-ratio: 1;
-  border: 2px solid var(--color-background);
+  border: 2px solid var(--color-night);
   border-radius: 50%;
-  background: var(--color-cyan-bright);
-  box-shadow: var(--shadow-cyan);
+  background: var(--color-photon);
 }
 
 .network-map-label {
@@ -139,11 +137,10 @@
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-medium);
   background: var(--color-panel-overlay);
-  backdrop-filter: blur(1rem);
 }
 
 .network-map-label span {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
@@ -156,9 +153,9 @@
 .network-review,
 .network-connect {
   margin-top: clamp(var(--space-12), 8vw, var(--space-20));
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .network-current {
@@ -171,7 +168,7 @@
   justify-content: space-between;
   gap: var(--space-5);
   padding: var(--space-5) clamp(var(--space-5), 4vw, var(--space-8));
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .network-current header > div {
@@ -185,7 +182,7 @@
 .network-connect h2,
 .network-connect h3 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-weight: 450;
   letter-spacing: -0.045em;
 }
@@ -210,21 +207,21 @@
   min-height: 21rem;
   padding: clamp(var(--space-6), 5vw, var(--space-10));
   background:
-    radial-gradient(circle at 88% 18%, var(--color-cyan-muted), transparent 15rem),
-    var(--color-background);
+    radial-gradient(circle at 88% 18%, var(--color-photon-muted), transparent 15rem),
+    var(--color-night);
 }
 
 .network-node-index {
   position: absolute;
   top: var(--space-5);
   right: var(--space-5);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   letter-spacing: 0.1em;
 }
 
 .network-node-summary small {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -234,7 +231,7 @@
 .network-node-summary h3 {
   max-width: 12ch;
   margin: var(--space-5) 0 var(--space-3);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.35rem, 6vw, 5rem);
   font-weight: 450;
   letter-spacing: -0.055em;
@@ -255,11 +252,11 @@
   display: grid;
   gap: var(--space-2);
   padding: var(--space-4) clamp(var(--space-5), 4vw, var(--space-8));
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .network-node-card dt {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
@@ -277,10 +274,10 @@
 
 .network-capabilities span {
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
-  background: var(--color-cyan-faint);
-  color: var(--color-cyan-bright);
+  background: var(--color-photon-faint);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
 }
 
@@ -325,7 +322,7 @@
 
 .network-review ol {
   display: grid;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .network-review li {
@@ -333,12 +330,12 @@
   grid-template-columns: 3rem minmax(0, 1fr);
   gap: var(--space-4);
   padding-block: var(--space-6);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .network-review li > span,
 .network-connect li > span {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 700;
 }
@@ -349,7 +346,7 @@
 }
 
 .network-review li h3 {
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 500;
 }
@@ -365,15 +362,15 @@
   display: grid;
   gap: clamp(var(--space-10), 7vw, var(--space-20));
   background:
-    radial-gradient(circle at 84% 18%, var(--color-cyan-muted), transparent 22rem),
-    var(--color-elevated);
+    radial-gradient(circle at 84% 18%, var(--color-photon-muted), transparent 22rem),
+    var(--color-surface-base);
 }
 
 .network-connect blockquote {
   max-width: 39rem;
   margin: var(--space-6) 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-large);
+  font-size: var(--font-size-body-lg);
   line-height: 1.7;
 }
 
@@ -393,7 +390,7 @@
   display: block;
   max-width: 40rem;
   margin-top: var(--space-5);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-label);
   line-height: 1.65;
 }
@@ -411,7 +408,7 @@
 
 .network-connect ul {
   margin-top: var(--space-5);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .network-connect li {
@@ -419,14 +416,14 @@
   grid-template-columns: 2.5rem minmax(0, 1fr);
   gap: var(--space-3);
   padding-block: var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   color: var(--color-text-secondary);
   font-size: var(--font-size-label);
   line-height: 1.55;
 }
 
 .network-hero a:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -440,7 +437,7 @@
   }
 
   .network-node-card dl {
-    border-left: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border-subtle);
   }
 
   .network-review ol {
@@ -449,7 +446,7 @@
 
   .network-review li:nth-child(odd) {
     padding-right: var(--space-8);
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border-subtle);
   }
 
   .network-review li:nth-child(even) {
