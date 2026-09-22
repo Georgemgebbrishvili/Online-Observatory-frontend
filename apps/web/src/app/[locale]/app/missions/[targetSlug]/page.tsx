@@ -10,7 +10,7 @@ import {
 import { getDevelopmentMissionForTarget } from "@/features/missions/simulator";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { missionBrowserCopy, missionDetailCopy } from "@/i18n/resources/missions";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 import "@/styles/missions.css";
 
 type MissionTargetPageProps = {
@@ -68,7 +68,7 @@ export default async function MissionTargetPage({
     notFound();
   }
 
-  await requireSession(locale);
+  await requireUser(locale);
 
   const target = getMissionTarget(targetSlug);
 

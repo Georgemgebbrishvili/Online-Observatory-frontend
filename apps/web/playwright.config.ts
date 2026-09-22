@@ -13,14 +13,38 @@ export default defineConfig({
   },
   projects: [
     {
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
+      use: { ...devices["Desktop Chrome"], channel: "chrome" },
+    },
+    {
       name: "chromium",
+      testIgnore: /auth\.(setup|spec)\.ts/,
+      dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: "chrome",
+        storageState: "e2e/.auth/observer.json",
+      },
+    },
+    {
+      name: "signed-out",
+      testMatch: /auth\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
   ],
-  webServer: {
-    command: "npm run dev",
-    url: "http://localhost:3000/en",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: "node e2e/fake-platform.mjs",
+      url: "http://127.0.0.1:4100/health",
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: "npm run dev",
+      url: "http://localhost:3000/en",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+      env: { DARKVIEW_PLATFORM_API_URL: "http://127.0.0.1:4100" },
+    },
+  ],
 });

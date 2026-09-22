@@ -4,8 +4,7 @@ import { notFound } from "next/navigation";
 import { AuthPage } from "@/components/auth/auth-page";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { Button } from "@/components/ui/button";
-import { verifyEmailAction } from "@/features/auth/actions";
+import { VerifyEmailForm } from "@/components/auth/auth-form";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { authCopy } from "@/i18n/resources/auth";
@@ -40,7 +39,6 @@ export default async function VerifyEmailPage({
 
   const dictionary = await getDictionary(locale);
   const copy = authCopy[locale];
-  const action = verifyEmailAction.bind(null, locale, token);
   return (
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
@@ -55,11 +53,7 @@ export default async function VerifyEmailPage({
             {copy.verify.invalid}
           </p>
         )}
-        <form action={action}>
-          <Button size="large" type="submit">
-            {copy.verify.submit}
-          </Button>
-        </form>
+        <VerifyEmailForm label={copy.verify.submit} locale={locale} token={token} />
       </AuthPage>
       <SiteFooter footer={dictionary.footer} locale={locale} />
     </div>
