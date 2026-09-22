@@ -53,10 +53,10 @@ info:
     contains no long-exposure astrophotography concepts.
 
     KNOWN OPEN ITEMS (see docs/planning/phase1-issue-decomposition.md)
-      - MissionState below is exactly the enumeration in CLAUDE.md. RESOLVED by
+      - MissionState below is exactly the enumeration in docs/ENGINEERING.md. RESOLVED by
         ADR-004 (2026-08-31): the Build Plan's LOCKED and DELIVERED are not states,
         and its SOLVE_FAILED, LINK_LOST and EXPIRED are carried as MissionFailureReason
-        diagnostic detail attached to a CLAUDE.md state, never as competing states.
+        diagnostic detail attached to a docs/ENGINEERING.md state, never as competing states.
       - SafetyEnvelopeConfig.maxAltitudeDegrees has no default and is nullable on
         purpose. `null` means UNMEASURED. It is measured from the physical optical
         train (mount qualification test Q7) and never guessed.
@@ -307,6 +307,37 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /observatories/{observatoryId}/conditions:
+    get:
+      operationId: getObservatoryConditions
+      tags: [observatory]
+      summary: Tonight's viewing forecast at one bookable observatory.
+      description: |
+        DV-110. An hourly forecast for tonight's bookable hours: the night that has not
+        yet reached dawn, narrowed to the hours the observatory offers. Read from
+        forecasts the realtime service fetched and stored; never fetched on request.
+
+        **Advisory only.** Conditions never set or clear a weather hold. The operator's
+        hold, reported by `GET /observatories/{observatoryId}/state`, stays authoritative.
+
+        An hour with no stored forecast, or one older than the configured maximum age,
+        is UNKNOWN with every value null. Unknown is never reported as clear.
+
+        ADR-019: answered for an observatory `GET /observatories` lists. An id that does
+        not exist and one that is not bookable are one 404.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ObservatoryId"
+      responses:
+        "200":
+          description: Tonight's viewing conditions.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ViewingConditions"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /observatories:
     get:
       operationId: listBookableObservatories
@@ -492,6 +523,9 @@ paths:
         `observatoryId` names the telescope (ADR-015). An id that is unknown, or whose
         node is not APPROVED, is 404 -- the same answer `GET /slots` gives it.
 
+        The slot's length decides which targets it can deliver (ADR-015 §2). A target
+        whose `expectedMissionMinutes` exceeds `durationMinutes` is 422.
+
         A reserved slot is held while payment is outstanding. The hold expires, and the
         slot returns to the available list, if payment does not complete in time; the
         `expiresAt` on the returned payment intent is that deadline. A failed or
@@ -499,6 +533,32 @@ paths:
 
         Send `Idempotency-Key` when retrying. Without it a retry after a timeout can
         reserve a second slot and open a second payment intent.
+
+        **Loyalty** (DV-095). A cash booking is priced at the slot price less the
+        customer's tier discount, and `loyaltyPoints` spends points on top at the
+        scheme's rate, leaving at least the scheme's minimum payable. Points are taken
+        when the slot is held and given back if the hold lapses, the payment fails or
+        the booking is refunded. `loyaltyPoints` together with `voucherCode` is 422: a
+        booking uses one price reduction. Too few points is 422.
+
+        **With `voucherCode`** (DV-112) the booking is paid by the voucher: it is
+        CONFIRMED at once at no charge, its mission is scheduled, and `paymentIntent` is
+        null. The voucher is spent in the same transaction as the reservation, so a
+        reservation that fails spends nothing and a voucher is never spent twice. A code
+        that is unknown, spent, expired or unpaid, or for a different length, is 422.
+        Redemption attempts are rate-limited per account.
+
+        **With `useSubscriptionMinutes`** (ADR-022) the booking is paid from the
+        signed-in customer's subscription balance: `durationMinutes` minutes are taken,
+        the booking is CONFIRMED at once at no charge, its mission is scheduled, and
+        `paymentIntent` is null. The minutes are taken in the same transaction as the
+        reservation, so a reservation that fails takes nothing, and two bookings racing
+        on one balance cannot both spend it. Minutes are spendable while the
+        subscription is ACTIVE or PAUSED and its current period has not ended (the
+        maintainer's decision of 2026-09-19: a pause stops charging and granting, not
+        spending). Too few minutes, no subscription, or no current period, is 422.
+        Never together with `voucherCode` or `loyaltyPoints`: a booking uses one price
+        reduction. A refunded booking returns its minutes, never money.
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
       requestBody:
@@ -522,6 +582,262 @@ paths:
           $ref: "#/components/responses/Conflict"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
+
+  /loyalty/scheme:
+    get:
+      operationId: getLoyaltyScheme
+      tags: [booking]
+      summary: The loyalty club's rules, as configured.
+      description: |
+        DV-090. Tiers, thresholds, rates and bonuses are configuration data (ADR-008), so
+        a client renders them from here rather than hard-coding them.
+      security: []
+      responses:
+        "200":
+          description: The loyalty scheme.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoyaltyScheme"
+
+  /loyalty:
+    get:
+      operationId: getMyLoyalty
+      tags: [booking]
+      summary: The signed-in user's points, tier, referral code and recent ledger.
+      description: |
+        DV-091. `balance` is what can be spent; `tierPoints` is what the tier is derived
+        from, which counts only points earned on settled payments (bonuses and
+        adjustments never raise a tier). Points do not expire.
+      responses:
+        "200":
+          description: The loyalty account.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoyaltyAccount"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /subscription/plans:
+    get:
+      operationId: listSubscriptionPlans
+      tags: [booking]
+      summary: The subscription plans on offer.
+      description: |
+        ADR-022. Plans are rows rather than code, so a price or a grant changes without
+        a deployment and a plan is withdrawn by clearing `isAvailable`. An empty list
+        means nothing is on sale, which is the state until prices are set.
+
+        Public, like the loyalty scheme: a price list is what somebody reads before
+        they have an account.
+      security: []
+      responses:
+        "200":
+          description: The available plans, cheapest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubscriptionPlanOption"
+
+  /subscription:
+    get:
+      operationId: getMySubscription
+      tags: [booking]
+      summary: The signed-in user's subscription and remaining minutes.
+      description: |
+        ADR-022. `null` when the user has never subscribed. `minuteBalance` is what a
+        booking can spend and is reported whether or not a subscription is currently
+        active, because minutes already granted survive a cancellation until they
+        expire.
+      responses:
+        "200":
+          description: The subscription, or null.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Subscription"
+                  - type: "null"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      operationId: subscribe
+      tags: [booking]
+      summary: Subscribe to a monthly plan.
+      description: |
+        ADR-022. Opens a payment intent for the first period through the same provider
+        path as a booking, and saves the instrument the renewal sweep later charges.
+        The subscription grants nothing until that payment settles: there is no path
+        that grants minutes before money arrives (ADR-022 §6).
+
+        409 when the user already has a subscription that is not CANCELLED or EXPIRED;
+        a plan change is a cancellation and a new subscription, not an edit. 422 for a
+        plan that is not on sale. 503 when no plan catalogue has been configured on
+        this deployment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscribeRequest"
+      responses:
+        "201":
+          description: Subscription created, awaiting payment for its first period.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionWithPaymentIntent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /subscription/cancel:
+    post:
+      operationId: cancelMySubscription
+      tags: [booking]
+      summary: Stop the subscription renewing.
+      description: |
+        ADR-022 §9, and the maintainer's decision of 2026-09-19: cancelling refunds
+        nothing. A period that has been paid for runs to its end, so the subscription
+        stays ACTIVE with `cancelAtPeriodEnd` set and its minutes stay spendable until
+        they expire. A subscription with no funded period is CANCELLED at once.
+
+        Idempotent: cancelling an already-cancelling subscription changes nothing and
+        answers 200. 404 when the user has never subscribed. 409 when it is already
+        CANCELLED or EXPIRED.
+      responses:
+        "200":
+          description: The subscription as it now stands.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /subscription/pause:
+    post:
+      operationId: pauseMySubscription
+      tags: [booking]
+      summary: Pause charging and granting.
+      description: |
+        ADR-022 §9. A pause is the customer's own act: the sweep neither charges nor
+        grants while it holds. Minutes already granted stay spendable until the period
+        they belong to expires — pausing is not a way to bank them.
+
+        Idempotent. 404 when the user has never subscribed. 409 for a subscription
+        that is not ACTIVE.
+      responses:
+        "200":
+          description: The paused subscription.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /subscription/resume:
+    post:
+      operationId: resumeMySubscription
+      tags: [booking]
+      summary: Resume a paused subscription.
+      description: |
+        ADR-022 §9. The subscription becomes ACTIVE again and the sweep charges it at
+        the end of its current period. When that period has already passed, the next
+        one starts at resumption: `currentPeriodEnd` becomes now and the sweep charges
+        on its next pass, for a month the customer can use (maintainer decision of
+        2026-09-19).
+
+        It undoes a pause and nothing else. A subscription that is already ending --
+        cancelled, or running out the last period it paid for -- is refused rather
+        than answered 200, because a 200 would read as an un-cancellation that
+        nothing performed.
+
+        Idempotent. 404 when the user has never subscribed. 409 for a subscription
+        that is not PAUSED, and for one that is ending.
+      responses:
+        "200":
+          description: The resumed subscription.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /vouchers:
+    get:
+      operationId: listMyGiftVouchers
+      tags: [booking]
+      summary: The gift vouchers the signed-in user bought.
+      description: |
+        DV-112. Never includes a code: codes are stored hashed and reach only the
+        email sent when the payment settles. `codeLast4` lets a buyer tell vouchers apart.
+      responses:
+        "200":
+          description: The buyer's vouchers, newest first.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GiftVoucherList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: purchaseGiftVoucher
+      tags: [booking]
+      summary: Buy a gift voucher for one observation of a given length.
+      description: |
+        DV-112. Opens a payment intent through the same provider path as a booking. When
+        the payment settles the voucher becomes ACTIVE for twelve months and its code is
+        emailed to `recipientEmail`, or to the buyer when none is given.
+
+        A voucher pays for exactly one booking of `durationMinutes`, redeemed with
+        `voucherCode` on `POST /bookings`. It is not exchangeable for cash: a refunded
+        booking a voucher paid for restores the voucher instead (DV-111).
+
+        422 for a length no slot is sold at. 503 when vouchers are not configured on
+        this deployment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGiftVoucherRequest"
+      responses:
+        "201":
+          description: Voucher created, awaiting payment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GiftVoucherWithPaymentIntent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /bookings/{bookingId}:
     get:
@@ -568,6 +884,74 @@ paths:
           $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
+
+  /bookings/{bookingId}/refund:
+    post:
+      operationId: refundBooking
+      tags: [booking]
+      summary: Take the refund a lost slot entitles the customer to.
+      description: |
+        DV-111. Available while the booking's `entitlement.status` is OPEN: its slot
+        was lost to weather or to an observatory fault and the customer lost half of
+        it or more. The whole amount originally paid is returned -- for a booking that
+        was itself a free reschedule, the payment it was rescheduled from. A booking
+        a gift voucher paid for restores the voucher, and one subscription minutes
+        paid for returns the minutes (ADR-022 §7); neither is paid out. 409 with no
+        open entitlement. 503 when the payment's provider has no refund integration
+        yet; the entitlement stays open.
+      parameters:
+        - $ref: "#/components/parameters/BookingId"
+      responses:
+        "200":
+          description: The refunded booking.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /bookings/{bookingId}/reschedule:
+    post:
+      operationId: rescheduleBooking
+      tags: [booking]
+      summary: Book a free replacement slot with the entitlement a lost slot gave.
+      description: |
+        DV-111. Available while the booking's `entitlement.status` is OPEN and before
+        `entitlement.expiresAt`. The new booking is on the same telescope, for the same
+        length, at no charge, and is confirmed at once. It must be a slot `GET /slots`
+        offers. The target may change. 409 with no open entitlement or when the slot is
+        taken; 422 for an instant that is not an offered slot, or for a target whose
+        `expectedMissionMinutes` exceeds the slot's length (ADR-015 §2).
+      parameters:
+        - $ref: "#/components/parameters/BookingId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RescheduleBookingRequest"
+      responses:
+        "201":
+          description: The new, confirmed booking.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
 
   /payments/webhook:
     post:
@@ -1134,6 +1518,39 @@ paths:
                 $ref: "#/components/schemas/MissionPage"
         "403":
           $ref: "#/components/responses/Forbidden"
+
+  /admin/loyalty/adjustments:
+    post:
+      operationId: adminAdjustLoyaltyPoints
+      tags: [admin]
+      summary: Add or remove points on a customer's balance, with a reason.
+      description: |
+        DV-092. Idempotent by `adjustmentId`: repeating a request changes nothing. An
+        adjustment never changes `tierPoints`. A removal that would take the balance
+        below zero is 409. Audited with the operator and the reason.
+      security:
+        - userSession: [operator]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoyaltyAdjustmentRequest"
+      responses:
+        "200":
+          description: The customer's account after the adjustment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoyaltyAccount"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
 
   /admin/missions/{missionId}/cancel:
     post:
@@ -1845,6 +2262,13 @@ components:
           maxLength: 128
         locale:
           $ref: "#/components/schemas/Locale"
+        referralCode:
+          type: string
+          minLength: 6
+          maxLength: 16
+          description: |
+            Another member's referral code (DV-096). Both receive the referral bonus once
+            this account's first paid booking settles. An unknown code is ignored.
 
     SignInRequest:
       type: object
@@ -2123,6 +2547,31 @@ components:
         only through an explicit, attended operator action.
       enum: [SIMULATED, REAL]
 
+    AgentPosture:
+      type: string
+      description: |
+        Who the agent believes is at the instrument, decided by the agent alone (ADR-024).
+        A process starts SIMULATED, or ATTENDED when it was started with the attended flag;
+        it never starts UNATTENDED. UNATTENDED is armed by a local operator act from
+        ATTENDED, for that process only, and the daylight override is refused in it. On
+        real drivers arming is refused until a sky sensor is fitted. DISARMED is an
+        UNATTENDED agent that latched off on a fault, a suspension or a local disarm; it
+        refuses every command but PARK and ABORT until an operator restarts it attended and
+        arms it again. Read it beside ObservatoryMode, which says whether the drivers are
+        real. The cloud may disarm an agent and never arm one.
+      enum: [SIMULATED, ATTENDED, UNATTENDED, DISARMED]
+
+    DisarmReason:
+      type: string
+      description: Why an UNATTENDED agent moved to DISARMED (ADR-024 §4).
+      enum:
+        - HARDWARE_FAULT
+        - PARK_FAILED
+        - LINK_LOST
+        - APPROVAL_WITHDRAWN
+        - LOCAL_DISARM
+        - SKY_SENSOR_STALE
+
     ObservatoryLinkState:
       type: string
       description: |
@@ -2155,6 +2604,100 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    ForecastSource:
+      type: string
+      description: The forecast provider that produced a stored hour (DV-110).
+      enum: [METEOBLUE, OPEN_METEO]
+
+    ViewingConditionsStatus:
+      type: string
+      description: UNKNOWN when no forecast is stored for the hour or the stored one is too old.
+      enum: [KNOWN, UNKNOWN]
+
+    ViewingConditionsHour:
+      type: object
+      description: |
+        One forecast hour. Every value is null when `status` is UNKNOWN, and any value
+        the source does not provide is null when KNOWN. Cloud layers are as the source
+        defines them, which differ between providers; `source` says which applies.
+      additionalProperties: false
+      required:
+        - at
+        - status
+        - source
+        - fetchedAt
+        - cloudCoverPercent
+        - cloudCoverLowPercent
+        - cloudCoverMidPercent
+        - cloudCoverHighPercent
+        - precipitationProbabilityPercent
+        - relativeHumidityPercent
+        - windSpeedMetresPerSecond
+        - seeingArcseconds
+      properties:
+        at:
+          type: string
+          format: date-time
+          description: The instant the forecast hour begins, on the hour.
+        status:
+          $ref: "#/components/schemas/ViewingConditionsStatus"
+        source:
+          oneOf:
+            - $ref: "#/components/schemas/ForecastSource"
+            - type: "null"
+        fetchedAt:
+          type: [string, "null"]
+          format: date-time
+        cloudCoverPercent:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 100
+        cloudCoverLowPercent:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 100
+        cloudCoverMidPercent:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 100
+        cloudCoverHighPercent:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 100
+        precipitationProbabilityPercent:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 100
+        relativeHumidityPercent:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 100
+        windSpeedMetresPerSecond:
+          type: [number, "null"]
+          minimum: 0
+        seeingArcseconds:
+          type: [number, "null"]
+          minimum: 0
+          description: Only from a source with an astronomy seeing forecast.
+
+    ViewingConditions:
+      type: object
+      additionalProperties: false
+      required: [observatoryId, date, items]
+      properties:
+        observatoryId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+          description: The observatory's local date on which tonight begins.
+        items:
+          type: array
+          description: Tonight's bookable hours in order. Empty when the night offers none.
+          items:
+            $ref: "#/components/schemas/ViewingConditionsHour"
 
     DeviceHealth:
       type: string
@@ -2404,18 +2947,29 @@ components:
             $ref: "#/components/schemas/AzimuthSector"
         sunExclusionDegrees:
           type: number
-          minimum: 0
+          minimum: 15
           maximum: 180
           description: |
             Hard block on any coordinate within this angle of the Sun, computed
             independently by cloud and agent. Never overridable, including by an
             operator override.
+
+            The minimum is 15 rather than 0 because ADR-013 requires the Sun exclusion
+            to be unreachable from any parameter on any path, and a parameter that may
+            be set to zero is that path. Cloud and agent each apply the same floor
+            again in code, independently, so a stored value below it is raised rather
+            than obeyed.
         daylightLockSunAltitudeDegrees:
           type: number
+          minimum: -90
+          maximum: 0
           description: |
             No customer mission may start while the Sun is above this altitude. An
             operator override is permitted for attended terrestrial testing and remains
             Sun-bounded.
+
+            Bounded to real Sun altitudes, and never above the horizon: a lock set
+            higher than 0 is a lock that cannot fire.
         nudgeMaxDegrees:
           type: number
           exclusiveMinimum: 0
@@ -2644,9 +3198,74 @@ components:
         missionId:
           type: [string, "null"]
           format: uuid
+        tierDiscountMinor:
+          type: integer
+          minimum: 0
+          description: What the customer's loyalty tier took off the slot price (DV-095).
+        loyaltyPointsRedeemed:
+          type: integer
+          minimum: 0
+          description: Points spent on this booking (DV-095).
+        subscriptionMinutesSpent:
+          type: integer
+          minimum: 0
+          description: Subscription minutes that paid for this booking (ADR-022).
+        entitlement:
+          description: |
+            DV-111. Null until the slot has ended and been evaluated, and when nothing
+            was lost on our side or less than half the slot was lost.
+          oneOf:
+            - $ref: "#/components/schemas/BookingEntitlement"
+            - type: "null"
         createdAt:
           type: string
           format: date-time
+
+    BookingLossCause:
+      type: string
+      description: What lost the slot. A customer who did not show up is not a cause.
+      enum: [WEATHER, OBSERVATORY_FAULT]
+
+    BookingEntitlement:
+      type: object
+      description: |
+        DV-111, maintainer rules of 2026-09-15. A slot lost to weather or to an
+        observatory fault -- internet, power or telescope -- where the customer lost
+        half the slot or more. OPEN offers a full refund or a free reschedule until
+        `expiresAt`, thirty days after the slot was evaluated; an entitlement still
+        OPEN then is refunded automatically.
+      additionalProperties: false
+      required: [status, cause, minutesLost, expiresAt, rescheduledBookingId]
+      properties:
+        status:
+          type: string
+          enum: [OPEN, REFUNDED, RESCHEDULED]
+        cause:
+          $ref: "#/components/schemas/BookingLossCause"
+        minutesLost:
+          type: integer
+          minimum: 0
+        expiresAt:
+          type: string
+          format: date-time
+        rescheduledBookingId:
+          type: [string, "null"]
+          format: uuid
+          description: The replacement booking, once RESCHEDULED.
+
+    RescheduleBookingRequest:
+      type: object
+      additionalProperties: false
+      required: [slotStartAt]
+      properties:
+        slotStartAt:
+          type: string
+          format: date-time
+          description: A slot `GET /slots` offers on the booking's telescope, of the booking's length.
+        targetId:
+          type: string
+          format: uuid
+          description: Defaults to the original booking's target.
 
     CreateBookingRequest:
       type: object
@@ -2668,6 +3287,21 @@ components:
           exclusiveMinimum: 0
         locale:
           $ref: "#/components/schemas/Locale"
+        voucherCode:
+          type: string
+          minLength: 8
+          maxLength: 64
+          description: A gift voucher code (DV-112). Case and separators are ignored.
+        loyaltyPoints:
+          type: integer
+          minimum: 100
+          multipleOf: 100
+          description: Points to spend on this booking (DV-095). Never with `voucherCode`.
+        useSubscriptionMinutes:
+          type: boolean
+          description: |
+            Pay for this booking with subscription minutes (ADR-022). Never with
+            `voucherCode` or `loyaltyPoints`.
 
     CancelBookingRequest:
       type: object
@@ -2718,7 +3352,346 @@ components:
         booking:
           $ref: "#/components/schemas/Booking"
         paymentIntent:
+          description: Null when a gift voucher paid for the booking (DV-112).
+          oneOf:
+            - $ref: "#/components/schemas/PaymentIntent"
+            - type: "null"
+
+    LoyaltyTier:
+      type: object
+      additionalProperties: false
+      required: [code, nameEn, nameKa, thresholdPoints, discountPercent]
+      properties:
+        code:
+          type: string
+        nameEn:
+          type: string
+        nameKa:
+          type: string
+        thresholdPoints:
+          type: integer
+          minimum: 0
+          description: Purchase-earned points at which the tier begins.
+        discountPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    LoyaltyScheme:
+      type: object
+      additionalProperties: false
+      required:
+        - pointsPerGel
+        - pointsPerGelRedeemed
+        - welcomeBonusPoints
+        - referralBonusPoints
+        - minimumPayableMinor
+        - progressMarkers
+        - tiers
+      properties:
+        pointsPerGel:
+          type: integer
+          minimum: 0
+          description: Points earned per 1 GEL of settled payment.
+        pointsPerGelRedeemed:
+          type: integer
+          exclusiveMinimum: 0
+          description: Points that take 1 GEL off a booking.
+        welcomeBonusPoints:
+          type: integer
+          minimum: 0
+        referralBonusPoints:
+          type: integer
+          minimum: 0
+        minimumPayableMinor:
+          type: integer
+          minimum: 0
+          description: The least a cash booking may cost after points.
+        progressMarkers:
+          type: array
+          description: Milestones shown on the way to a tier. They grant nothing.
+          items:
+            type: integer
+            minimum: 0
+        tiers:
+          type: array
+          description: Ordered by threshold, lowest first.
+          items:
+            $ref: "#/components/schemas/LoyaltyTier"
+
+    LoyaltyEntryKind:
+      type: string
+      enum:
+        - WELCOME_BONUS
+        - REFERRAL_BONUS
+        - PURCHASE_EARNED
+        - PURCHASE_REVERSED
+        - REDEEMED
+        - REDEMPTION_RELEASED
+        - ADMIN_ADJUSTMENT
+
+    LoyaltyLedgerEntry:
+      type: object
+      additionalProperties: false
+      required: [id, kind, points, tierPoints, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: "#/components/schemas/LoyaltyEntryKind"
+        points:
+          type: integer
+          description: Signed change to the balance.
+        tierPoints:
+          type: integer
+          description: Signed change to tier points. Non-zero only for purchases and their reversal.
+        bookingId:
+          type: [string, "null"]
+          format: uuid
+        reason:
+          type: [string, "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    SubscriptionPlan:
+      type: string
+      description: |
+        ADR-022. The plan a subscription is on. Prices and grants live in the plan
+        catalogue, never in this enum.
+      enum: [OBSERVER, EXPLORER, ADVANCED]
+
+    SubscriptionStatus:
+      type: string
+      description: |
+        ADR-022. A failed renewal leaves a subscription ACTIVE while it is retried and
+        EXPIRED when the grace period lapses; there is no separate past-due state.
+        TRIALING is unused in Phase 1.
+      enum: [TRIALING, ACTIVE, PAUSED, CANCELLED, EXPIRED]
+
+    SubscriptionPlanOption:
+      type: object
+      additionalProperties: false
+      required: [plan, nameEn, nameKa, priceMinor, currency, minutesPerPeriod]
+      properties:
+        plan:
+          $ref: "#/components/schemas/SubscriptionPlan"
+        nameEn:
+          type: string
+        nameKa:
+          type: string
+        priceMinor:
+          type: integer
+          exclusiveMinimum: 0
+          description: Monthly price in the currency's minor unit.
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        minutesPerPeriod:
+          type: integer
+          exclusiveMinimum: 0
+          description: |
+            Observation minutes granted when a period is paid. Minutes rather than
+            observations because the slot length is not settled (ADR-022 §2).
+
+    Subscription:
+      type: object
+      additionalProperties: false
+      required:
+        [subscriptionId, plan, status, currentPeriodStart, currentPeriodEnd,
+         cancelAtPeriodEnd, minuteBalance, isDemo]
+      properties:
+        subscriptionId:
+          type: string
+          format: uuid
+        plan:
+          $ref: "#/components/schemas/SubscriptionPlan"
+        status:
+          $ref: "#/components/schemas/SubscriptionStatus"
+        currentPeriodStart:
+          type: [string, "null"]
+          format: date-time
+        currentPeriodEnd:
+          type: [string, "null"]
+          format: date-time
+          description: When the next renewal is attempted, and when this period's minutes expire.
+        cancelAtPeriodEnd:
+          type: boolean
+        minuteBalance:
+          type: integer
+          minimum: 0
+          description: Observation minutes a booking can spend now.
+        isDemo:
+          type: boolean
+
+    SubscribeRequest:
+      type: object
+      additionalProperties: false
+      required: [plan]
+      properties:
+        plan:
+          $ref: "#/components/schemas/SubscriptionPlan"
+        locale:
+          $ref: "#/components/schemas/Locale"
+
+    SubscriptionWithPaymentIntent:
+      type: object
+      additionalProperties: false
+      required: [subscription, paymentIntent]
+      properties:
+        subscription:
+          $ref: "#/components/schemas/Subscription"
+        paymentIntent:
           $ref: "#/components/schemas/PaymentIntent"
+
+    LoyaltyAccount:
+      type: object
+      additionalProperties: false
+      required: [userId, balance, tierPoints, tier, nextTier, referralCode, recentEntries]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        balance:
+          type: integer
+          description: Spendable points. Negative only when a refund reversed points already spent.
+        tierPoints:
+          type: integer
+        tier:
+          $ref: "#/components/schemas/LoyaltyTier"
+        nextTier:
+          oneOf:
+            - $ref: "#/components/schemas/LoyaltyTier"
+            - type: "null"
+        referralCode:
+          type: string
+        recentEntries:
+          type: array
+          description: The fifty most recent entries, newest first.
+          items:
+            $ref: "#/components/schemas/LoyaltyLedgerEntry"
+
+    LoyaltyAdjustmentRequest:
+      type: object
+      additionalProperties: false
+      required: [adjustmentId, userId, points, reason]
+      properties:
+        adjustmentId:
+          type: string
+          format: uuid
+          description: Client-generated. Makes a retried adjustment a no-op.
+        userId:
+          type: string
+          format: uuid
+        points:
+          type: integer
+          not:
+            const: 0
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+
+    GiftVoucherStatus:
+      type: string
+      description: |
+        DV-112. PENDING_PAYMENT until the payment settles; CANCELLED when it fails.
+        EXPIRED is an ACTIVE voucher past `expiresAt`.
+      enum: [PENDING_PAYMENT, ACTIVE, REDEEMED, EXPIRED, CANCELLED]
+
+    GiftVoucher:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - status
+        - durationMinutes
+        - priceMinor
+        - currency
+        - codeLast4
+        - recipientEmail
+        - recipientName
+        - expiresAt
+        - redeemedBookingId
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/GiftVoucherStatus"
+        durationMinutes:
+          type: integer
+          exclusiveMinimum: 0
+        priceMinor:
+          type: integer
+          minimum: 0
+        currency:
+          $ref: "#/components/schemas/Currency"
+        codeLast4:
+          type: [string, "null"]
+          description: The code's last four characters. Null until the payment settles.
+        recipientEmail:
+          type: [string, "null"]
+          format: email
+        recipientName:
+          type: [string, "null"]
+        expiresAt:
+          type: [string, "null"]
+          format: date-time
+          description: Twelve months from payment. Null until the payment settles.
+        redeemedBookingId:
+          type: [string, "null"]
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+
+    GiftVoucherList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/GiftVoucher"
+
+    GiftVoucherWithPaymentIntent:
+      type: object
+      additionalProperties: false
+      required: [voucher, paymentIntent]
+      properties:
+        voucher:
+          $ref: "#/components/schemas/GiftVoucher"
+        paymentIntent:
+          $ref: "#/components/schemas/PaymentIntent"
+
+    CreateGiftVoucherRequest:
+      type: object
+      additionalProperties: false
+      required: [durationMinutes]
+      properties:
+        durationMinutes:
+          type: integer
+          exclusiveMinimum: 0
+          description: The length of the observation the voucher pays for. Must be a length slots are sold at.
+        recipientEmail:
+          type: string
+          format: email
+          maxLength: 254
+          description: Where the code is emailed. The buyer when omitted.
+        recipientName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        message:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: A personal note included in the email.
 
     BookingPage:
       type: object
@@ -2764,7 +3737,7 @@ components:
     MissionState:
       type: string
       description: |
-        The authoritative mission state machine, exactly as enumerated in CLAUDE.md.
+        The authoritative mission state machine, exactly as enumerated in docs/ENGINEERING.md.
 
         Primary:  REQUESTED -> SCHEDULED -> PREPARING -> SLEWING -> VERIFYING ->
                   CENTERING -> OBSERVING -> CAPTURING -> PROCESSING -> COMPLETE
@@ -2775,7 +3748,7 @@ components:
         state, and every path out of one ends at Park.
 
         Resolved by docs/decisions/ADR-004-mission-state-machine.md (2026-08-31). This
-        enum matches CLAUDE.md and nothing else. The Build Plan's LOCKED and DELIVERED
+        enum matches docs/ENGINEERING.md and nothing else. The Build Plan's LOCKED and DELIVERED
         are not states -- "Target locked" and "LIVE" are display labels mapped in the
         web layer. Its SOLVE_FAILED, LINK_LOST and EXPIRED are carried as
         MissionFailureReason detail on a state above, never as states.
@@ -3402,6 +4375,7 @@ components:
         - MODE_NOT_PERMITTED
         - WEATHER_HOLD_ACTIVE
         - OBSERVATORY_OFFLINE
+        - UNATTENDED_DISARMED
 
     MissionCommandAccepted:
       type: object
@@ -3609,7 +4583,8 @@ components:
       additionalProperties: false
       required:
         [nodeId, observatoryId, ownerId, kind, approvalStatus, siteName, city,
-         countryCode, timezone, safetyEnvelopeMeasured, capabilities, createdAt]
+         countryCode, timezone, safetyEnvelopeMeasured, capabilities, agentPosture,
+         agentDisarmReason, createdAt]
       properties:
         nodeId:
           type: string
@@ -3646,6 +4621,19 @@ components:
           items:
             type: string
           description: Populated at qualification. Empty at registration.
+        agentPosture:
+          oneOf:
+            - $ref: "#/components/schemas/AgentPosture"
+            - type: "null"
+          description: |
+            The posture the node's agent last reported (ADR-024). Null until an agent
+            has ever connected. Kept after the link drops, so a node that disarmed
+            reads DISARMED until an agent reports otherwise.
+        agentDisarmReason:
+          oneOf:
+            - $ref: "#/components/schemas/DisarmReason"
+            - type: "null"
+          description: Set only while agentPosture is DISARMED.
         approvedAt:
           type: [string, "null"]
           format: date-time
@@ -3949,6 +4937,8 @@ components:
         - OBSERVATORY_MODE
         - OPERATOR_OVERRIDE
         - AGENT_LINK
+        - LOYALTY
+        - SUBSCRIPTION
 
     AuditEvent:
       type: object
@@ -4014,6 +5004,7 @@ components:
           observatoryId,
           agentVersion,
           mode,
+          posture,
           bootedAt,
         ]
       properties:
@@ -4035,6 +5026,13 @@ components:
           type: string
         mode:
           $ref: "#/components/schemas/ObservatoryMode"
+        posture:
+          $ref: "#/components/schemas/AgentPosture"
+        disarmReason:
+          oneOf:
+            - $ref: "#/components/schemas/DisarmReason"
+            - type: "null"
+          description: Set only while posture is DISARMED.
         bootedAt:
           type: string
           format: date-time
@@ -4048,9 +5046,12 @@ components:
 
     AgentHeartbeat:
       type: object
-      description: Sent every 5 seconds. Its absence is what triggers the watchdog.
+      description: |
+        Sent every 5 seconds. Its absence is what triggers the watchdog. Carries the
+        agent's posture, so a disarm reaches the cloud within one interval rather than at
+        the next reconnect (ADR-024 §5, correction of 2026-09-22).
       additionalProperties: false
-      required: [type, messageId, sentAt, sequence, uptimeSeconds]
+      required: [type, messageId, sentAt, sequence, uptimeSeconds, posture]
       properties:
         type:
           type: string
@@ -4067,6 +5068,13 @@ components:
         uptimeSeconds:
           type: integer
           minimum: 0
+        posture:
+          $ref: "#/components/schemas/AgentPosture"
+        disarmReason:
+          oneOf:
+            - $ref: "#/components/schemas/DisarmReason"
+            - type: "null"
+          description: Set only while posture is DISARMED.
 
     AgentCommandAck:
       type: object
@@ -4228,6 +5236,18 @@ components:
         byteLength:
           type: integer
           exclusiveMinimum: 0
+          maximum: 4194304
+          description: |
+            The exact size of the binary frame that follows. Four mebibytes is the
+            ceiling, and it is this contract that sets it rather than any one
+            transport: a header declaring more is refused before its pixels are
+            accepted, and the bytes are never buffered.
+
+            Measured against SimCamera at 1920x1080, the shipped agent defaults of
+            a 1024px long edge at quality 70 produce about 165 KB; the largest
+            measurement taken was 381 KB at 1280px and quality 82. DV-035
+            re-measures both against the real ASI585MC at first light, so this
+            leaves an order of magnitude of room above anything yet observed.
         exposureMilliseconds:
           type: number
           exclusiveMinimum: 0
@@ -4370,8 +5390,13 @@ components:
         The mission and command say which capture this is for. Together with
         `kind` they identify the object, so no correlation identifier is needed:
         a grant answers the request naming the same three.
+        The agent also declares what it is about to write. A presigned URL signs
+        only the headers it was given, so a grant that names neither the media type
+        nor the size is a grant to PUT anything of any size at that key until it
+        expires. The cloud checks both against the asset kind, signs them, and the
+        upload is refused by storage itself if either differs.
       additionalProperties: false
-      required: [type, messageId, sentAt, missionId, commandId, kind]
+      required: [type, messageId, sentAt, missionId, commandId, kind, contentType, contentLength]
       properties:
         type:
           type: string
@@ -4390,6 +5415,17 @@ components:
           format: uuid
         kind:
           $ref: "#/components/schemas/CaptureAssetKind"
+        contentType:
+          type: string
+          description: |
+            Media type of the bytes the agent will PUT. Checked against `kind` and
+            then signed, so it is what the agent must actually send.
+        contentLength:
+          type: integer
+          minimum: 1
+          description: |
+            Exact size in bytes of the object the agent will PUT. Checked against the
+            cloud's per-kind maximum and then signed.
 
     AgentToCloudMessage:
       description: Every message the Observatory Agent may send over its outbound link.
@@ -4534,6 +5570,61 @@ components:
         envelope:
           $ref: "#/components/schemas/SafetyEnvelopeConfig"
 
+    CloudWeatherUpdate:
+      type: object
+      description: |
+        Tells the agent what the cloud believes the sky is doing, and whether an
+        operator hold stands. The agent stores it locally and keeps enforcing it
+        after the link dies, the same way it does the safety envelope: a hold that
+        only lived in the cloud would stop meaning anything at the moment the
+        observatory most needs it to.
+
+        While `holdActive` is true the agent parks and refuses every command but
+        PARK and ABORT, with WEATHER_HOLD_ACTIVE. Phase 1 fits no sky sensor, so
+        the only writer is the operator console.
+      additionalProperties: false
+      required: [type, messageId, sentAt, observatoryId, weather]
+      properties:
+        type:
+          type: string
+          enum: [CLOUD_WEATHER_UPDATE]
+        messageId:
+          type: string
+          format: uuid
+        sentAt:
+          type: string
+          format: date-time
+        observatoryId:
+          type: string
+          format: uuid
+        weather:
+          $ref: "#/components/schemas/WeatherState"
+
+    CloudOperatingUpdate:
+      type: object
+      description: |
+        The observatory's network node approval status, as the cloud holds it (ADR-024
+        §3). Sent on every reconnect and whenever the status changes. It can only ever
+        make the agent safer: any status but APPROVED moves an UNATTENDED agent to
+        DISARMED, and APPROVED never arms one. Arming is a local act at the observatory.
+      additionalProperties: false
+      required: [type, messageId, sentAt, observatoryId, approvalStatus]
+      properties:
+        type:
+          type: string
+          enum: [CLOUD_OPERATING_UPDATE]
+        messageId:
+          type: string
+          format: uuid
+        sentAt:
+          type: string
+          format: date-time
+        observatoryId:
+          type: string
+          format: uuid
+        approvalStatus:
+          $ref: "#/components/schemas/NetworkNodeApprovalStatus"
+
     CloudError:
       type: object
       additionalProperties: false
@@ -4574,7 +5665,20 @@ components:
         with a grant naming no URL.
       additionalProperties: false
       required:
-        [type, messageId, sentAt, missionId, commandId, kind, storageKey, url, method, expiresAt]
+        [
+          type,
+          messageId,
+          sentAt,
+          missionId,
+          commandId,
+          kind,
+          storageKey,
+          url,
+          method,
+          expiresAt,
+          contentType,
+          contentLength,
+        ]
       properties:
         type:
           type: string
@@ -4596,6 +5700,17 @@ components:
         storageKey:
           type: string
           description: Object storage key the cloud derived. Not a URL and never a public path.
+        contentType:
+          type: string
+          description: |
+            The media type the URL was signed for, echoed from the request. The agent
+            sends exactly this; storage refuses anything else.
+        contentLength:
+          type: integer
+          minimum: 1
+          description: |
+            The exact size the URL was signed for, echoed from the request. The agent
+            sends exactly this many bytes; storage refuses anything else.
         url:
           type: string
           format: uri
@@ -4617,6 +5732,8 @@ components:
         - $ref: "#/components/schemas/CloudSessionUpdate"
         - $ref: "#/components/schemas/CloudSafetyEnvelopeUpdate"
         - $ref: "#/components/schemas/CloudUploadGrant"
+        - $ref: "#/components/schemas/CloudWeatherUpdate"
+        - $ref: "#/components/schemas/CloudOperatingUpdate"
         - $ref: "#/components/schemas/CloudError"
       discriminator:
         propertyName: type
@@ -4627,6 +5744,8 @@ components:
           CLOUD_SESSION_UPDATE: "#/components/schemas/CloudSessionUpdate"
           CLOUD_SAFETY_ENVELOPE_UPDATE: "#/components/schemas/CloudSafetyEnvelopeUpdate"
           CLOUD_UPLOAD_GRANT: "#/components/schemas/CloudUploadGrant"
+          CLOUD_WEATHER_UPDATE: "#/components/schemas/CloudWeatherUpdate"
+          CLOUD_OPERATING_UPDATE: "#/components/schemas/CloudOperatingUpdate"
           CLOUD_ERROR: "#/components/schemas/CloudError"
 
     # ---------------------------------------------------------------------------
