@@ -58,7 +58,7 @@ export function HomeShell({ content }: HomeShellProps) {
                 <h3>{content.live.observatoryName}</h3>
               </div>
               <div className="live-console-state">
-                <LiveIndicator label={content.common.liveLabel} />
+                <LiveIndicator active={false} label={content.common.liveLabel} />
                 <ObservatoryStatus
                   status={liveObservatorySnapshot.status}
                   label={content.common.observatoryOnline}

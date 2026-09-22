@@ -2,7 +2,7 @@
 
 - **Date:** 2026-08-31
 - **Source:** the Brand Identity System source PDF (private brand archive, outside this repository), page 1 of which
-  reads *"Brand Identity System v2.0 · MERGED"*, and its §11 Developer cheat sheet.
+  reads _"Brand Identity System v2.0 · MERGED"_, and its §11 Developer cheat sheet.
 - **Status:** Reference for **DV-070**. The PDF remains the controlling document;
   `CLAUDE.md` outranks it.
 - **Verification:** every colour `CLAUDE.md` names appears in the PDF with the same
@@ -10,27 +10,27 @@
 
 ## Semantic tokens (§11 Developer cheat sheet, verbatim)
 
-| Token              | Value     |
-| ------------------ | --------- |
-| `darkview-night`   | `#05080D` |
-| `surface-base`     | `#0B0F15` |
-| `surface-raised`   | `#111722` |
-| `surface-hover`    | `#1A2330` |
-| `border-subtle`    | `#2A3645` |
-| `text-primary`     | `#F2F5F7` |
-| `text-secondary`   | `#AAB4BE` |
-| `text-tertiary`    | `#778492` |
-| `photon`           | `#5CC8FF` |
-| `photon-deep`      | `#1677A3` |
-| `success`          | `#4FD1A5` |
-| `warning`          | `#E5B454` |
-| `error`            | `#FF6B6B` |
-| `info`             | `#78AFFF` |
+| Token            | Value     |
+| ---------------- | --------- |
+| `darkview-night` | `#05080D` |
+| `surface-base`   | `#0B0F15` |
+| `surface-raised` | `#111722` |
+| `surface-hover`  | `#1A2330` |
+| `border-subtle`  | `#2A3645` |
+| `text-primary`   | `#F2F5F7` |
+| `text-secondary` | `#AAB4BE` |
+| `text-tertiary`  | `#778492` |
+| `photon`         | `#5CC8FF` |
+| `photon-deep`    | `#1677A3` |
+| `success`        | `#4FD1A5` |
+| `warning`        | `#E5B454` |
+| `error`          | `#FF6B6B` |
+| `info`           | `#78AFFF` |
 
 Named palette roles: Darkview Night (primary background), Observatory Blue `#111722`
 (cards, navigation, raised surfaces), Photon Blue `#5CC8FF` (signature accent — primary
 CTA, active state, live indicator, focus, links), Instrument `#F2F5F7` (primary text —
-*never pure white; it burns on OLED*), Deep Signal `#1677A3` (accent for light
+_never pure white; it burns on OLED_), Deep Signal `#1677A3` (accent for light
 backgrounds, because Photon Blue fails contrast on white), Star Brass `#D9A45B`
 (editorial only — vouchers and print, **never a second CTA**), Lunar Silver `#A8B2BC`
 (coordinates, metadata, timestamps), Optical Glass `#263A49` (charts and receding layers).
@@ -45,17 +45,17 @@ perceptually cyan: `950 #05080D · 900 #0B0F15 · 800 #111722 · 700 #1A2330 · 
   Blue at scale reads as neon; at 2% it reads as an instrument LED."
 - **Buttons on dark use Darkview Night text on Photon Blue — not white.**
 - **Semantic colour discipline.** Error is for destructive or actionable failures,
-  *never for merely absent data*. Warning means degraded conditions — increasing cloud,
+  _never for merely absent data_. Warning means degraded conditions — increasing cloud,
   high wind — which maps directly to `WEATHER_HOLD`.
 - **Star Brass is never a second CTA.**
 
 ## Typography
 
-| Role      | Family              | Weights   | Use                                                        |
-| --------- | ------------------- | --------- | ---------------------------------------------------------- |
-| Display   | Noto Serif Georgian | 500–600   | Heroes, campaign headlines, vouchers, editorial             |
-| Body / UI | FiraGO              | 400/500/600 | Navigation, buttons, forms, body, mobile, observation UI  |
-| Mono      | IBM Plex Mono       | —         | Coordinates, timestamps, exposures, telemetry **only**      |
+| Role      | Family              | Weights     | Use                                                      |
+| --------- | ------------------- | ----------- | -------------------------------------------------------- |
+| Display   | Noto Serif Georgian | 500–600     | Heroes, campaign headlines, vouchers, editorial          |
+| Body / UI | FiraGO              | 400/500/600 | Navigation, buttons, forms, body, mobile, observation UI |
+| Mono      | IBM Plex Mono       | —           | Coordinates, timestamps, exposures, telemetry **only**   |
 
 All three are free and self-hostable, chosen so the product never depends on a font
 vendor. Both display and body families cover Mkhedruli natively.
@@ -67,23 +67,12 @@ vendor. Both display and body families cover Mkhedruli natively.
 2. **IBM Plex Mono has no Georgian coverage.** Use it for the numeric/technical column
    only; Georgian labels around those values stay in FiraGO.
 
-## Current implementation is off-brand
+## Implementation status
 
-`apps/web/src/styles/tokens.css` predates this extraction and does not match. The
-values are close enough to look deliberate, which makes it worse, not better:
-
-| Token         | Implemented | Brand v2.0 | Note                          |
-| ------------- | ----------- | ---------- | ----------------------------- |
-| background    | `#05070a`   | `#05080D`  | drifted                       |
-| text primary  | `#f3f6f8`   | `#F2F5F7`  | drifted                       |
-| text secondary| `#8d99a8`   | `#AAB4BE`  | materially darker             |
-| accent        | `#18c8ff`   | `#5CC8FF`  | **wrong hue** — a cyan, not Photon Blue |
-| success       | `#6fb78d`   | `#4FD1A5`  | drifted                       |
-| warning       | `#d4a258`   | `#E5B454`  | drifted                       |
-| error         | `#c76b6b`   | `#FF6B6B`  | drifted                       |
-
-`CLAUDE.md` names `#5CC8FF` directly and outranks the implementation, so this is a
-defect to correct in **DV-070**, not a conflict to escalate.
+The drift recorded here on 2026-08-31 — background, text, accent (a cyan, not Photon Blue) and
+all three semantic colours off by a few steps — was corrected in **DV-070** on 2026-09-22.
+`apps/web/src/styles/tokens.css` now carries the §11 values verbatim, and
+`apps/web/src/styles/tokens.test.ts` fails if they move. See `docs/design-system.md`.
 
 ## Phase 1 implementation order (§11, the brand system's own sequencing)
 
@@ -114,4 +103,4 @@ Consumer-facing telescope movement is "Moving to [target]", not "Slewing" or "Go
 2. Is it honest about what the customer will get?
 3. Would this feel quiet enough on a Tbilisi terrace at 2 a.m.?
 
-> *"If it does not make the physical telescope feel more real, remove it."*
+> _"If it does not make the physical telescope feel more real, remove it."_

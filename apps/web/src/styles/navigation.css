@@ -2,7 +2,6 @@
   position: relative;
   z-index: 20;
   background: var(--color-panel-overlay);
-  backdrop-filter: blur(1rem);
 }
 
 .public-navigation,
@@ -17,11 +16,11 @@
   height: 2.75rem;
   flex: none;
   place-content: center;
-  gap: 0.35rem;
-  border: 1px solid var(--color-border);
+  gap: var(--space-1);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-small);
-  background: var(--color-elevated);
-  color: var(--color-text);
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
   cursor: pointer;
 }
 
@@ -48,7 +47,7 @@
   display: none;
   padding: var(--space-3) var(--space-page) var(--space-5);
   border-bottom: 1px solid var(--color-border-strong);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   box-shadow: var(--shadow-panel);
 }
 
@@ -64,9 +63,9 @@
   display: flex;
   min-height: 3.25rem;
   align-items: center;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   color: var(--color-text-secondary);
-  font-size: 0.9rem;
+  font-size: var(--font-size-label);
 }
 
 .public-mobile-menu > div {
@@ -82,7 +81,7 @@
   display: inline-flex;
   align-items: center;
   color: var(--color-text-secondary);
-  font-size: 0.78rem;
+  font-size: var(--font-size-label);
 }
 
 .public-mobile-menu .button {
@@ -95,7 +94,7 @@
 .public-mobile-menu a:focus-visible,
 .app-brand:focus-visible,
 .app-navigation a:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -103,8 +102,8 @@
   min-height: 100vh;
   padding-bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
   background:
-    radial-gradient(circle at 82% 18%, var(--color-cyan-faint), transparent 22rem),
-    var(--color-background);
+    radial-gradient(circle at 82% 18%, var(--color-photon-faint), transparent 22rem),
+    var(--color-night);
 }
 
 .app-sidebar {
@@ -121,9 +120,8 @@
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-3) var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
   background: var(--color-panel-overlay);
-  backdrop-filter: blur(1rem);
 }
 
 .app-logout-form {
@@ -134,7 +132,7 @@
 .app-logout-form button,
 .app-mobile-logout button {
   min-height: 2.75rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-medium);
   background: transparent;
   color: var(--color-text-secondary);
@@ -151,13 +149,13 @@
 
 .app-logout-form button:hover,
 .app-mobile-logout button:hover {
-  border-color: var(--color-cyan-border);
-  color: var(--color-text);
+  border-color: var(--color-photon-border);
+  color: var(--color-text-primary);
 }
 
 .app-logout-form button:focus-visible,
 .app-mobile-logout button:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -166,7 +164,7 @@
 }
 
 .app-mobile-logout button {
-  padding-inline: 0.9rem;
+  padding-inline: var(--space-4);
 }
 
 .app-brand {
@@ -180,9 +178,9 @@
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-medium);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .app-observatory-state > div {
@@ -191,21 +189,21 @@
 }
 
 .app-observatory-state > div:first-child > span {
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
-  font-weight: 650;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .app-observatory-state strong {
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
-  font-size: 0.84rem;
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
 }
 
 .app-observatory-state small {
-  color: var(--color-text-quiet);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
@@ -239,7 +237,7 @@
 }
 
 .app-navigation a:hover {
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .app-nav-icon {
@@ -272,7 +270,6 @@
   border-top: 1px solid var(--color-border-strong);
   background: var(--color-panel-overlay);
   box-shadow: 0 -1rem 3rem var(--color-shadow);
-  backdrop-filter: blur(1.25rem);
 }
 
 .app-navigation-bottom a {
@@ -283,10 +280,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.2rem;
+  gap: var(--space-1);
   border-radius: var(--radius-small);
-  font-size: 0.625rem;
-  font-weight: 550;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -331,8 +328,8 @@
 }
 
 .app-navigation-bottom a[aria-current="page"] {
-  background: var(--color-cyan-faint);
-  color: var(--color-cyan-bright);
+  background: var(--color-photon-faint);
+  color: var(--color-photon);
 }
 
 .app-navigation-bottom a[aria-current="page"]::before {
@@ -341,8 +338,7 @@
   width: 1.5rem;
   height: 2px;
   border-radius: var(--radius-full);
-  background: var(--color-cyan);
-  box-shadow: var(--shadow-cyan);
+  background: var(--color-photon);
   content: "";
 }
 
@@ -356,11 +352,11 @@
   min-height: calc(100vh - 10rem);
   align-content: center;
   overflow: hidden;
-  padding: clamp(var(--space-12), 12vw, 8rem) var(--space-page);
+  padding: clamp(var(--space-12), 12vw, calc(var(--space-16) * 2)) var(--space-page);
 }
 
 .app-preview h1 {
-  font-size: clamp(3rem, 10vw, 6rem);
+  font-size: var(--font-size-hero);
 }
 
 .app-preview > p:last-of-type {
@@ -393,9 +389,8 @@
 }
 
 .app-preview-instrument span:nth-child(3) {
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
   inset: 47%;
-  box-shadow: var(--shadow-cyan);
 }
 
 @media (min-width: 70rem) {
@@ -418,8 +413,8 @@
     padding-inline: var(--space-3);
     border-radius: var(--radius-small);
     color: var(--color-text-secondary);
-    font-size: 0.78rem;
-    font-weight: 550;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-medium);
     transition:
       background-color var(--duration-fast) var(--ease-standard),
       color var(--duration-fast) var(--ease-standard);
@@ -427,8 +422,8 @@
 
   .public-navigation a:hover,
   .public-sign-in:hover {
-    background: var(--color-surface-hover);
-    color: var(--color-text);
+    background: var(--color-overlay-hover);
+    color: var(--color-text-primary);
   }
 
   .public-actions {
@@ -450,8 +445,8 @@
     height: 100vh;
     flex-direction: column;
     padding: var(--space-8) var(--space-5) var(--space-5);
-    border-right: 1px solid var(--color-border);
-    background: var(--color-elevated);
+    border-right: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-base);
   }
 
   .app-sidebar .app-brand {
@@ -471,13 +466,13 @@
     gap: var(--space-3);
     padding-inline: var(--space-3);
     border-radius: var(--radius-medium);
-    font-size: 0.86rem;
-    font-weight: 550;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-medium);
   }
 
   .app-navigation-sidebar a[aria-current="page"] {
-    background: var(--color-cyan-faint);
-    color: var(--color-text);
+    background: var(--color-photon-faint);
+    color: var(--color-text-primary);
   }
 
   .app-navigation-sidebar a[aria-current="page"]::before {
@@ -486,8 +481,7 @@
     width: 2px;
     height: 1.5rem;
     border-radius: var(--radius-full);
-    background: var(--color-cyan);
-    box-shadow: var(--shadow-cyan);
+    background: var(--color-photon);
     content: "";
   }
 
