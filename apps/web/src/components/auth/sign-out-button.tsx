@@ -4,6 +4,7 @@ import { useTransition } from "react";
 
 import { signOut } from "@/features/auth/actions";
 import type { Locale } from "@/i18n/config";
+import { navigateWithFreshSession } from "@/lib/platform/browser";
 
 type SignOutButtonProps = { className: string; label: string; locale: Locale };
 
@@ -20,7 +21,7 @@ export function SignOutButton({ className, label, locale }: SignOutButtonProps) 
           startTransition(async () => {
             // A 401 means the session had already ended; either way, leave.
             await signOut().catch(() => undefined);
-            window.location.assign(`/${locale}/sign-in`);
+            navigateWithFreshSession(`/${locale}/sign-in`);
           })
         }
       >

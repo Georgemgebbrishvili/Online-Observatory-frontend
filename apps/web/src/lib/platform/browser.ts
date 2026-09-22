@@ -42,3 +42,13 @@ export async function apiRequest<T = void>(
   }
   return init.schema.parse(await response.json());
 }
+
+/**
+ * A full page load, for the moments the session changes: signing in or out, or the
+ * API answering 401/403. The next page must render on the cookies the API has just
+ * set or cleared, and a client-side router transition can serve a render from
+ * before the change.
+ */
+export function navigateWithFreshSession(path: string) {
+  window.location.assign(path);
+}

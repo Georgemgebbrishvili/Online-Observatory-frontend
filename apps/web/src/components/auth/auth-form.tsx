@@ -14,6 +14,7 @@ import type { Locale } from "@/i18n/config";
 import type { authCopy } from "@/i18n/resources/auth";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/form";
+import { navigateWithFreshSession } from "@/lib/platform/browser";
 
 type AuthResource = (typeof authCopy)[Locale];
 
@@ -30,7 +31,7 @@ function SubmitButton({ label }: { label: string }) {
 // on the cookies the API just set, with nothing from the router cache.
 function useRedirect(state: AuthActionState) {
   useEffect(() => {
-    if (state.redirectTo) window.location.assign(state.redirectTo);
+    if (state.redirectTo) navigateWithFreshSession(state.redirectTo);
   }, [state.redirectTo]);
 }
 
@@ -157,9 +158,9 @@ export function VerifyEmailForm({
         startTransition(async () => {
           try {
             await verifyEmail(token);
-            window.location.assign(`/${locale}/app`);
+            navigateWithFreshSession(`/${locale}/app`);
           } catch {
-            window.location.assign(
+            navigateWithFreshSession(
               `/${locale}/verify-email/${encodeURIComponent(token)}?invalid=1`,
             );
           }

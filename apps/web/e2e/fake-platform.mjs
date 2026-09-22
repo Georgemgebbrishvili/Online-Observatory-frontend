@@ -5,7 +5,16 @@
 import { randomUUID } from "node:crypto";
 import http from "node:http";
 
-import { zApiError, zUser } from "@darkview/contracts/zod";
+import {
+  zApiError,
+  zListBookableObservatoriesResponse,
+  zListTargetsResponse,
+  zMissionCommandAccepted,
+  zOperatorObservatoryState,
+  zOperatorOverrideRequest,
+  zSetObservatoryModeRequest,
+  zUser,
+} from "@darkview/contracts/zod";
 
 const port = Number(process.env.FAKE_PLATFORM_PORT ?? 4100);
 const appOrigin = process.env.FAKE_PLATFORM_APP_URL ?? "http://localhost:3000";
@@ -42,6 +51,146 @@ const users = new Map(
 );
 const sessions = new Map();
 
+// One simulated first-party observatory with one live mission, as the simulator
+// agent would report it. PARK takes a moment to land, like a real mount.
+const observatoryId = "10000000-0000-4000-8000-000000000001";
+const missionId = "20000000-0000-4000-8000-000000000001";
+const observatories = zListBookableObservatoriesResponse.parse({
+  items: [
+    {
+      id: observatoryId,
+      slug: "tbilisi",
+      kind: "FIRST_PARTY",
+      nameEn: "Darkview Tbilisi",
+      nameKa: "Darkview თბილისი",
+      city: "Tbilisi",
+      countryCode: "GE",
+      timezone: "Asia/Tbilisi",
+      telescope: {
+        manufacturer: "Celestron",
+        model: "NexStar 6SE",
+        apertureMm: 150,
+        focalLengthMm: 1500,
+      },
+    },
+  ],
+});
+const targets = zListTargetsResponse.parse({
+  items: [
+    {
+      id: "30000000-0000-4000-8000-000000000013",
+      slug: "m13",
+      type: "GLOBULAR_CLUSTER",
+      catalogId: "M13",
+      nameEn: "Hercules Cluster",
+      nameKa: "ჰერკულესის გროვა",
+      positionSource: "FIXED",
+      coordinates: { raHours: 16.695, decDegrees: 36.46, epoch: "J2000" },
+      solarSystemBody: null,
+      angularSizeArcmin: 20,
+      magnitude: 5.8,
+      opticalConfig: "F6_3_REDUCER",
+      imagingProfile: "GLOBULAR_CLUSTER",
+      minAltitudeDegrees: 25,
+      expectedMissionMinutes: 10,
+      enabled: true,
+    },
+    {
+      id: "30000000-0000-4000-8000-000000000006",
+      slug: "saturn",
+      type: "PLANET",
+      catalogId: null,
+      nameEn: "Saturn",
+      nameKa: "სატურნი",
+      positionSource: "EPHEMERIS",
+      coordinates: null,
+      solarSystemBody: "SATURN",
+      angularSizeArcmin: 0.3,
+      magnitude: 0.6,
+      opticalConfig: "F20_BARLOW",
+      imagingProfile: "PLANETARY",
+      minAltitudeDegrees: 20,
+      expectedMissionMinutes: 10,
+      enabled: true,
+    },
+  ],
+  page: { hasMore: false, nextCursor: null },
+});
+const observatory = { mode: "SIMULATED", parked: false, activeMissionId: missionId };
+
+function observatoryState() {
+  const now = new Date().toISOString();
+  const device = { health: "OK", detail: null };
+  return zOperatorObservatoryState.parse({
+    observatoryId,
+    activeMissionId: observatory.activeMissionId,
+    activeSessionId: observatory.activeMissionId
+      ? "40000000-0000-4000-8000-000000000001"
+      : null,
+    linkLatencyMs: null,
+    lastHeartbeatAt: now,
+    updatedAt: now,
+    telemetry: {
+      mode: observatory.mode,
+      link: "ONLINE",
+      mount: device,
+      camera: device,
+      focuser: device,
+      weather: {
+        status: "CLEAR",
+        source: "OPERATOR",
+        holdActive: false,
+        note: null,
+        updatedAt: now,
+      },
+      pointingEquatorial: observatory.parked
+        ? null
+        : { raHours: 16.695, decDegrees: 36.46, epoch: "J2000" },
+      pointingHorizontal: observatory.parked
+        ? { altitudeDegrees: 0, azimuthDegrees: 180 }
+        : { altitudeDegrees: 61.2, azimuthDegrees: 241.7 },
+      tracking: !observatory.parked,
+      parked: observatory.parked,
+      slewing: false,
+      focuserPosition: 12_480,
+      ambientTemperatureC: 14.5,
+      agentVersion: "0.1.0-sim",
+      reportedAt: now,
+    },
+    safetyEnvelope: {
+      observatoryId,
+      minAltitudeDegrees: 20,
+      maxAltitudeDegrees: null,
+      maxAltitudeMeasuredAt: null,
+      maxAltitudeMeasuredBy: null,
+      horizonMask: [],
+      forbiddenAzimuthSectors: [],
+      sunExclusionDegrees: 30,
+      daylightLockSunAltitudeDegrees: -6,
+      nudgeMaxDegrees: 1,
+      nudgeRateDegreesPerSecond: 0.5,
+      slewTimeoutSeconds: 120,
+      heartbeatLossSeconds: 15,
+      linkDeadSeconds: 60,
+      refocusTemperatureDeltaC: 2,
+      updatedAt: now,
+    },
+  });
+}
+
+function operator(request, response) {
+  const user = sessionUser(request);
+  if (!user) {
+    error(response, 401, "UNAUTHENTICATED", "No session.");
+    return false;
+  }
+  if (user.role !== "OPERATOR") {
+    error(response, 403, "FORBIDDEN", "Operator only.");
+    return false;
+  }
+  return true;
+}
+
 function send(response, status, body, headers = {}) {
   response.writeHead(status, { "content-type": "application/json", ...headers });
   response.end(body === undefined ? undefined : JSON.stringify(body));
@@ -77,6 +226,52 @@ async function json(request) {
 }
 
 const routes = {
+  "GET /observatories": (_request, response) => send(response, 200, observatories),
+  "GET /targets": (_request, response) => send(response, 200, targets),
+  [`GET /admin/observatories/${observatoryId}/state`]: (request, response) => {
+    if (operator(request, response)) send(response, 200, observatoryState());
+  },
+  [`POST /admin/observatories/${observatoryId}/mode`]: async (request, response) => {
+    if (!operator(request, response)) return;
+    const body = zSetObservatoryModeRequest.safeParse(await json(request));
+    if (
+      !body.success ||
+      (body.data.mode === "REAL" && !body.data.attendedOperatorPresent)
+    ) {
+      return error(
+        response,
+        422,
+        "VALIDATION_FAILED",
+        "REAL needs attended presence and a reason.",
+      );
+    }
+    observatory.mode = body.data.mode;
+    send(response, 200, observatoryState());
+  },
+  "POST /admin/override": async (request, response) => {
+    if (!operator(request, response)) return;
+    const body = zOperatorOverrideRequest.safeParse(await json(request));
+    if (!body.success)
+      return error(response, 422, "VALIDATION_FAILED", "Malformed override.");
+    if (body.data.missionId !== observatory.activeMissionId) {
+      return error(response, 409, "MISSION_NOT_ACTIVE", "No such live mission.");
+    }
+    if (body.data.type === "PARK") setTimeout(() => (observatory.parked = true), 1500);
+    const issuedAt = new Date();
+    send(
+      response,
+      202,
+      zMissionCommandAccepted.parse({
+        commandId: randomUUID(),
+        missionId: body.data.missionId,
+        type: body.data.type,
+        issuedAt: issuedAt.toISOString(),
+        expiresAt: new Date(issuedAt.getTime() + 30_000).toISOString(),
+        status: "ACCEPTED",
+        rejectionReason: null,
+      }),
+    );
+  },
   "GET /me": (request, response) => {
     const user = sessionUser(request);
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
