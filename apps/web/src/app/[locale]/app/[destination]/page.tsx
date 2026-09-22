@@ -7,7 +7,7 @@ import {
 } from "@/features/navigation/navigation-model";
 import { isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 
 type AppDestinationPageProps = {
   params: Promise<{ locale: string; destination: string }>;
@@ -34,7 +34,7 @@ export default async function AppDestinationPage({ params }: AppDestinationPageP
     notFound();
   }
 
-  await requireSession(locale);
+  await requireUser(locale);
   const dictionary = await getDictionary(locale);
 
   return (
