@@ -18,3 +18,4 @@ agent/.venv/
 # never commit commercial or personal material
 /private/
 *.xlsx
+apps/web/e2e/.auth

@@ -18,15 +18,10 @@ export function proxy(request: NextRequest) {
     const locale = pathname.split("/")[1];
     const isProtectedRoute =
       pathname === `/${locale}/app` || pathname.startsWith(`/${locale}/app/`);
-    const isAuthenticationRoute =
-      pathname === `/${locale}/sign-in` || pathname === `/${locale}/register`;
-    const hasSessionCookie = request.cookies.has(sessionCookieName);
-
-    if (isProtectedRoute && !hasSessionCookie) {
+    // A cheap pre-check only. The cookie proves nothing here; the server verifies
+    // it with GET /me, and only the server may send a visitor on to /app.
+    if (isProtectedRoute && !request.cookies.has(sessionCookieName)) {
       return NextResponse.redirect(new URL(`/${locale}/sign-in`, request.url));
-    }
-    if (isAuthenticationRoute && hasSessionCookie) {
-      return NextResponse.redirect(new URL(`/${locale}/app`, request.url));
     }
     return NextResponse.next();
   }
