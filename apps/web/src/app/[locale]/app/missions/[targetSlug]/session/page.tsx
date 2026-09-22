@@ -9,7 +9,7 @@ import {
 import { getMissionTarget } from "@/features/missions/targets";
 import { isLocale, locales } from "@/i18n/config";
 import { missionSessionCopy } from "@/i18n/resources/missions";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 import "@/styles/mission-session.css";
 
 type MissionSessionPageProps = {
@@ -46,7 +46,7 @@ export default async function MissionSessionPage({ params }: MissionSessionPageP
 
   if (!isLocale(locale)) notFound();
 
-  await requireSession(locale);
+  await requireUser(locale);
 
   const definition = getDevelopmentMission(missionId);
   const target = definition ? getMissionTarget(definition.targetSlug) : undefined;

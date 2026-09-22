@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
   registerAction,
   signInAction,
+  verifyEmail,
   type AuthActionState,
 } from "@/features/auth/actions";
 import type { Locale } from "@/i18n/config";
@@ -25,6 +26,14 @@ function SubmitButton({ label }: { label: string }) {
   );
 }
 
+// A full navigation once the API has answered: the next page is rendered afresh,
+// on the cookies the API just set, with nothing from the router cache.
+function useRedirect(state: AuthActionState) {
+  useEffect(() => {
+    if (state.redirectTo) window.location.assign(state.redirectTo);
+  }, [state.redirectTo]);
+}
+
 function FormMessage({ state }: { state: AuthActionState }) {
   if (!state.message) return null;
   return (
@@ -36,6 +45,7 @@ function FormMessage({ state }: { state: AuthActionState }) {
 
 export function SignInForm({ copy, locale }: { copy: AuthResource; locale: Locale }) {
   const [state, action] = useActionState(signInAction.bind(null, locale), {});
+  useRedirect(state);
 
   return (
     <form action={action} className="auth-form">
@@ -80,6 +90,7 @@ export function RegistrationForm({
   locale: Locale;
 }) {
   const [state, action] = useActionState(registerAction.bind(null, locale), {});
+  useRedirect(state);
 
   return (
     <form action={action} className="auth-form">
@@ -124,6 +135,40 @@ export function RegistrationForm({
         {copy.register.alternate}{" "}
         <Link href={`/${locale}/sign-in`}>{copy.register.alternateAction}</Link>
       </p>
+    </form>
+  );
+}
+
+export function VerifyEmailForm({
+  label,
+  locale,
+  token,
+}: {
+  label: string;
+  locale: Locale;
+  token: string;
+}) {
+  const [pending, startTransition] = useTransition();
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        startTransition(async () => {
+          try {
+            await verifyEmail(token);
+            window.location.assign(`/${locale}/app`);
+          } catch {
+            window.location.assign(
+              `/${locale}/verify-email/${encodeURIComponent(token)}?invalid=1`,
+            );
+          }
+        });
+      }}
+    >
+      <Button loading={pending} size="large" type="submit">
+        {label}
+      </Button>
     </form>
   );
 }

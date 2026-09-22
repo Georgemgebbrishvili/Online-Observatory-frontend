@@ -6,7 +6,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { authCopy } from "@/i18n/resources/auth";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 import { privatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = privatePageMetadata;
@@ -23,12 +23,11 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
     notFound();
   }
 
-  const session = await requireSession(locale);
+  await requireUser(locale);
   const dictionary = await getDictionary(locale);
 
   return (
     <AppShell
-      csrfToken={session.csrfToken}
       locale={locale}
       logoutLabel={authCopy[locale].logout}
       navigation={dictionary.navigation.app}

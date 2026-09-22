@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { CollectionGallery } from "@/components/collection/collection-gallery";
 import { isLocale } from "@/i18n/config";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 import "@/styles/collection.css";
 
 type CollectionPageProps = {
@@ -25,7 +25,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
 
   if (!isLocale(locale)) notFound();
 
-  await requireSession(locale);
+  await requireUser(locale);
 
   return <CollectionGallery locale={locale} />;
 }
