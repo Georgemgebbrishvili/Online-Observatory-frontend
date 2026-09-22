@@ -19,13 +19,20 @@ export default defineConfig({
     },
     {
       name: "chromium",
-      testIgnore: /auth\.(setup|spec)\.ts/,
+      testIgnore: /auth\.(setup|spec)\.ts|operator\.spec\.ts/,
       dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],
         channel: "chrome",
         storageState: "e2e/.auth/observer.json",
       },
+    },
+    {
+      name: "operator",
+      testMatch: /operator\.spec\.ts/,
+      dependencies: ["setup"],
+      // The DV-077 evidence includes a recording of Park acting on a simulated mission.
+      use: { ...devices["Desktop Chrome"], channel: "chrome", video: "on" },
     },
     {
       name: "signed-out",

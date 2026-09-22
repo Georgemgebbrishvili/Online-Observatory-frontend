@@ -16,8 +16,10 @@ export function proxy(request: NextRequest) {
 
   if (hasLocale) {
     const locale = pathname.split("/")[1];
-    const isProtectedRoute =
-      pathname === `/${locale}/app` || pathname.startsWith(`/${locale}/app/`);
+    const isProtectedRoute = ["app", "admin"].some(
+      (area) =>
+        pathname === `/${locale}/${area}` || pathname.startsWith(`/${locale}/${area}/`),
+    );
     // A cheap pre-check only. The cookie proves nothing here; the server verifies
     // it with GET /me, and only the server may send a visitor on to /app.
     if (isProtectedRoute && !request.cookies.has(sessionCookieName)) {
