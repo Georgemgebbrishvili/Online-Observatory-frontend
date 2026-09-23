@@ -19,3 +19,4 @@ agent/.venv/
 /private/
 *.xlsx
 apps/web/e2e/.auth
+.vercel
