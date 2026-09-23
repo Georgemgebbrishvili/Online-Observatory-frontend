@@ -70,6 +70,7 @@ const dictionary = {
     common: {
       watchLive: "Watch Live",
       planMission: "Plan Mission",
+      illustration: "Catalogue illustration",
       minutes: "min",
       approximateViewers: "approx. viewers",
       currentTarget: "Current target",

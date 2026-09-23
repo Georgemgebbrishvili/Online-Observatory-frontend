@@ -70,6 +70,7 @@ const dictionary = {
     common: {
       watchLive: "პირდაპირი დაკვირვების ნახვა",
       planMission: "მისიის დაგეგმვა",
+      illustration: "საკატალოგო ილუსტრაცია",
       minutes: "წთ",
       approximateViewers: "დაახლ. მაყურებელი",
       currentTarget: "მიმდინარე სამიზნე",
