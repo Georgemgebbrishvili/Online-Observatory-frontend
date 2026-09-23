@@ -45,6 +45,7 @@ export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
               {footer.collection}
             </Link>
             <Link href={`/${locale}/observatory`}>{footer.observatory}</Link>
+            <Link href={`/${locale}/status`}>{footer.status}</Link>
           </div>
           <div>
             <h2>{footer.company}</h2>

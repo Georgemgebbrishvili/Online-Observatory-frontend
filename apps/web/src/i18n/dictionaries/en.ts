@@ -240,6 +240,7 @@ const dictionary = {
     live: "Live",
     collection: "Collection",
     observatory: "Observatory",
+    status: "Status",
     about: "About",
     contact: "Contact",
     privacy: "Privacy",

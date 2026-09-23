@@ -7,6 +7,8 @@ import http from "node:http";
 
 import {
   zApiError,
+  zGetObservatoryConditionsResponse,
+  zGetObservatoryStatusResponse,
   zListBookableObservatoriesResponse,
   zListTargetsResponse,
   zMissionCommandAccepted,
@@ -117,6 +119,69 @@ const targets = zListTargetsResponse.parse({
   page: { hasMore: false, nextCursor: null },
 });
 const observatory = { mode: "SIMULATED", parked: false, activeMissionId: missionId };
+
+// DV-073. The public status view: no device address, no driver state, no credential.
+function publicStatus() {
+  return zGetObservatoryStatusResponse.parse({
+    observatoryId,
+    mode: observatory.mode,
+    link: "ONLINE",
+    weather: {
+      status: "CLEAR",
+      source: "OPERATOR",
+      holdActive: false,
+      note: null,
+      updatedAt: new Date().toISOString(),
+    },
+    missionInProgress: observatory.activeMissionId !== null,
+    // Null unless the session owner opted in (ADR-007); the fake keeps it null.
+    currentTargetName: null,
+    lastSuccessfulMissionAt: "2026-09-22T20:12:00.000Z",
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+// Three bookable hours, the last of which has no stored forecast, so the page has to
+// show an UNKNOWN hour rather than quietly implying it is clear.
+function viewingConditions() {
+  const fetchedAt = new Date(Date.now() - 20 * 60_000).toISOString();
+  const known = (at, cloud, seeing) => ({
+    at,
+    status: "KNOWN",
+    source: "OPEN_METEO",
+    fetchedAt,
+    cloudCoverPercent: cloud,
+    cloudCoverLowPercent: Math.round(cloud / 3),
+    cloudCoverMidPercent: Math.round(cloud / 3),
+    cloudCoverHighPercent: Math.round(cloud / 3),
+    precipitationProbabilityPercent: 5,
+    relativeHumidityPercent: 62,
+    windSpeedMetresPerSecond: 2.4,
+    seeingArcseconds: seeing,
+  });
+  return zGetObservatoryConditionsResponse.parse({
+    observatoryId,
+    date: "2026-09-23",
+    items: [
+      known("2026-09-23T20:00:00.000Z", 12, 1.8),
+      known("2026-09-23T21:00:00.000Z", 48, 2.6),
+      {
+        at: "2026-09-23T22:00:00.000Z",
+        status: "UNKNOWN",
+        source: null,
+        fetchedAt: null,
+        cloudCoverPercent: null,
+        cloudCoverLowPercent: null,
+        cloudCoverMidPercent: null,
+        cloudCoverHighPercent: null,
+        precipitationProbabilityPercent: null,
+        relativeHumidityPercent: null,
+        windSpeedMetresPerSecond: null,
+        seeingArcseconds: null,
+      },
+    ],
+  });
+}
 
 function observatoryState() {
   const now = new Date().toISOString();
@@ -272,6 +337,10 @@ const routes = {
       }),
     );
   },
+  [`GET /observatories/${observatoryId}/state`]: (_request, response) =>
+    send(response, 200, publicStatus()),
+  [`GET /observatories/${observatoryId}/conditions`]: (_request, response) =>
+    send(response, 200, viewingConditions()),
   "GET /me": (request, response) => {
     const user = sessionUser(request);
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");

@@ -243,6 +243,7 @@ const dictionary = {
     live: "პირდაპირი დაკვირვება",
     collection: "კოლექცია",
     observatory: "ობსერვატორია",
+    status: "სტატუსი",
     about: "ჩვენ შესახებ",
     contact: "კონტაქტი",
     privacy: "კონფიდენციალურობა",
