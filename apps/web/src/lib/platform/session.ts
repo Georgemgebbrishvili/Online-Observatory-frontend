@@ -6,15 +6,21 @@ import { redirect } from "next/navigation";
 
 import type { Locale } from "@/i18n/config";
 
-import { PlatformError, platformRequest } from "./client";
+import { platformRequest } from "./client";
 
-/** GET /me. `null` when the request carries no valid session (401). */
+/**
+ * GET /me. `null` when the request carries no valid session.
+ *
+ * Any failure answers `null`, not an exception: nobody is authenticated when the
+ * platform cannot say who they are, so this fails closed. Rethrowing turned an
+ * unreachable API into a 500 on /sign-in, /register, /app and every /admin route,
+ * which told a visitor nothing and served a broken page instead of a sign-in form.
+ */
 export async function getCurrentUser(): Promise<User | null> {
   try {
     return zGetCurrentUserResponse.parse(await platformRequest<unknown>("/me"));
-  } catch (error) {
-    if (error instanceof PlatformError && error.status === 401) return null;
-    throw error;
+  } catch {
+    return null;
   }
 }
 
