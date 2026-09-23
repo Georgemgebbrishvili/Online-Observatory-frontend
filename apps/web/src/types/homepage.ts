@@ -119,6 +119,7 @@ export type FooterDictionary = {
   live: string;
   collection: string;
   observatory: string;
+  status: string;
   about: string;
   contact: string;
   privacy: string;
