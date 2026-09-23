@@ -123,5 +123,6 @@ export type FooterDictionary = {
   contact: string;
   privacy: string;
   terms: string;
+  refunds: string;
   comingSoon: string;
 };

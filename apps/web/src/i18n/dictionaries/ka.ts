@@ -247,6 +247,7 @@ const dictionary = {
     contact: "კონტაქტი",
     privacy: "კონფიდენციალურობა",
     terms: "პირობები",
+    refunds: "თანხის დაბრუნება",
     comingSoon: "მალე",
   },
   notFound: {

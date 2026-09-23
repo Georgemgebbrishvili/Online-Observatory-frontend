@@ -10,6 +10,7 @@ import {
   missionDetailCopy,
   missionSessionCopy,
 } from "@/i18n/resources/missions";
+import { legalCopy } from "@/i18n/resources/legal";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
 import { pricingPageCopy } from "@/i18n/resources/pricing";
 import { authCopy } from "@/i18n/resources/auth";
@@ -53,6 +54,7 @@ describe("Georgian localization", () => {
       [observatoryPageCopy.en, observatoryPageCopy.ka],
       [pricingPageCopy.en, pricingPageCopy.ka],
       [authCopy.en, authCopy.ka],
+      [legalCopy.en, legalCopy.ka],
     ] as const;
 
     for (const [english, georgian] of resources) {
