@@ -19,7 +19,7 @@ export default defineConfig({
     },
     {
       name: "chromium",
-      testIgnore: /auth\.(setup|spec)\.ts|operator\.spec\.ts/,
+      testIgnore: /auth\.(setup|spec)\.ts|operator\.(evidence\.)?spec\.ts/,
       dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],
@@ -33,6 +33,14 @@ export default defineConfig({
       dependencies: ["setup"],
       // The DV-077 evidence includes a recording of Park acting on a simulated mission.
       use: { ...devices["Desktop Chrome"], channel: "chrome", video: "on" },
+    },
+    {
+      // Writes docs/evidence/dv-077. Run on its own -- it mutates the fake platform's
+      // mode and parked state, which the operator project also reads.
+      name: "operator-evidence",
+      testMatch: /operator\.evidence\.spec\.ts/,
+      dependencies: ["setup"],
+      use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
     {
       name: "signed-out",
