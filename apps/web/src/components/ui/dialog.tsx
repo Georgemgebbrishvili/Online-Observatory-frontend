@@ -1,22 +1,32 @@
 "use client";
 
-import { useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 
 import { Button } from "./button";
 
 type DialogProps = {
-  triggerLabel: string;
+  /** Omitted in controlled mode, where the caller renders its own trigger. */
+  triggerLabel?: string;
   title: string;
   description?: string;
   children: ReactNode;
   closeLabel: string;
   variant?: "modal" | "sheet";
+  /**
+   * Controlled mode. Use it when the trigger sits somewhere a dialog must not be
+   * rendered -- a table cell or a flex row lays the dialog's box out with its
+   * siblings, which displaces the panel's contents.
+   */
+  open?: boolean;
+  onClose?: () => void;
 };
 
 export function Dialog({
   children,
   closeLabel,
   description,
+  onClose,
+  open,
   title,
   triggerLabel,
   variant = "modal",
@@ -24,17 +34,29 @@ export function Dialog({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const descriptionId = useId();
+  const controlled = open !== undefined;
+
+  useEffect(() => {
+    if (!controlled) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+  }, [controlled, open]);
 
   return (
     <>
-      <Button variant="secondary" onClick={() => dialogRef.current?.showModal()}>
-        {triggerLabel}
-      </Button>
+      {!controlled && triggerLabel && (
+        <Button variant="secondary" onClick={() => dialogRef.current?.showModal()}>
+          {triggerLabel}
+        </Button>
+      )}
       <dialog
         ref={dialogRef}
         className={`dialog dialog-${variant}`}
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
+        onClose={onClose}
         onClick={(event) => {
           if (event.target === event.currentTarget) {
             dialogRef.current?.close();

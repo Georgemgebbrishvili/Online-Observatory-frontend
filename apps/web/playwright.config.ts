@@ -19,7 +19,7 @@ export default defineConfig({
     },
     {
       name: "chromium",
-      testIgnore: /auth\.(setup|spec)\.ts|operator\.(evidence\.)?spec\.ts/,
+      testIgnore: /auth\.(setup|spec)\.ts|operator(-records)?\.(evidence\.)?spec\.ts/,
       dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],
@@ -39,6 +39,14 @@ export default defineConfig({
       // mode and parked state, which the operator project also reads.
       name: "operator-evidence",
       testMatch: /operator\.evidence\.spec\.ts/,
+      dependencies: ["setup"],
+      use: { ...devices["Desktop Chrome"], channel: "chrome" },
+    },
+    {
+      // DV-078. Writes docs/evidence/dv-078, and cancels a mission and disables a
+      // target in the fake, so it runs on its own like the other operator projects.
+      name: "operator-records",
+      testMatch: /operator-records\.spec\.ts/,
       dependencies: ["setup"],
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
