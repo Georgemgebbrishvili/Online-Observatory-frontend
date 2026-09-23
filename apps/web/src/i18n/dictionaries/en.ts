@@ -244,6 +244,7 @@ const dictionary = {
     contact: "Contact",
     privacy: "Privacy",
     terms: "Terms",
+    refunds: "Refunds",
     comingSoon: "Coming soon",
   },
   notFound: {
