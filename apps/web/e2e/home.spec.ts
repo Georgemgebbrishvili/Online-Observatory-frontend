@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { appSidebar, bottomNavigation, liveViewport } from "./selectors";
 
 test("communicates real telescope access in the English hero", async ({ page }) => {
   await page.goto("/en");
@@ -77,7 +78,7 @@ test("provides the complete public navigation on desktop and mobile", async ({
 }) => {
   await page.goto("/en");
 
-  const header = page.locator(".site-header");
+  const header = page.getByRole("banner");
   const publicNavigation = header.getByRole("navigation", {
     name: "Public navigation",
   });
@@ -104,7 +105,7 @@ test("uses a desktop sidebar and native-style mobile app navigation", async ({
 }) => {
   await page.goto("/en/app");
 
-  const sidebar = page.locator(".app-sidebar");
+  const sidebar = appSidebar(page);
   await expect(sidebar).toBeVisible();
   await expect(sidebar.getByLabel("Darkview by Astroman")).toBeVisible();
   await expect(sidebar.getByText("Tbilisi Observatory")).toBeVisible();
@@ -122,17 +123,17 @@ test("uses a desktop sidebar and native-style mobile app navigation", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
 
-  const bottomNavigation = page.locator(".app-navigation-bottom");
+  const bottomNav = bottomNavigation(page);
   await expect(sidebar).toBeHidden();
-  await expect(bottomNavigation).toBeVisible();
-  await expect(page.locator(".app-mobile-header").getByText("Online")).toBeVisible();
-  const mobileMissionsLink = bottomNavigation.getByRole("link", { name: "Missions" });
+  await expect(bottomNav).toBeVisible();
+  await expect(page.getByRole("banner").getByText("Online")).toBeVisible();
+  const mobileMissionsLink = bottomNav.getByRole("link", { name: "Missions" });
   await expect(mobileMissionsLink).toBeVisible();
   await Promise.all([
     page.waitForURL(/\/en\/app\/missions$/),
     mobileMissionsLink.click(),
   ]);
-  await expect(bottomNavigation.getByRole("link", { name: "Missions" })).toHaveAttribute(
+  await expect(bottomNav.getByRole("link", { name: "Missions" })).toHaveAttribute(
     "aria-current",
     "page",
   );
@@ -180,7 +181,7 @@ test("ranks and filters tonight's mission targets", async ({ page }) => {
   await page.goto("/en/app/missions");
 
   await expect(page.getByRole("heading", { name: "Available Tonight" })).toBeVisible();
-  await expect(page.locator(".mission-target-card").first()).toContainText("Saturn");
+  await expect(page.getByRole("article").first()).toContainText("Saturn");
 
   await page.getByRole("button", { name: "Galaxies" }).click();
   await expect(page.getByRole("heading", { name: "Andromeda Galaxy" })).toBeVisible();
@@ -267,9 +268,7 @@ test("operates the live capture instrument without mount controls", async ({ pag
   await page.goto("/en/app/live");
 
   await expect(page.getByText("DARKVIEW LIVE")).toBeVisible();
-  await expect(
-    page.locator(".live-viewport").getByText("Tbilisi Observatory"),
-  ).toBeVisible();
+  await expect(liveViewport(page).getByText("Tbilisi Observatory")).toBeVisible();
   await expect(page.getByText("Observer · Public mission")).toBeVisible();
   await expect(page.getByRole("button", { name: "Enter fullscreen" })).toBeVisible();
 
@@ -291,7 +290,7 @@ test("prioritizes the live viewport on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/app/live");
 
-  const viewport = page.locator(".live-viewport");
+  const viewport = liveViewport(page);
   await expect(viewport).toBeVisible();
   await expect(page.getByText("DARKVIEW LIVE")).toBeVisible();
   expect((await viewport.boundingBox())?.height).toBeGreaterThanOrEqual(540);
@@ -372,7 +371,9 @@ test("presents a personalized authenticated home without dashboard overload", as
 }) => {
   await page.goto("/en/app");
 
-  await expect(page.getByRole("heading", { name: "Good evening, Observer" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Good evening, Observer" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Saturn is excellent tonight" }),
   ).toBeVisible();
@@ -414,9 +415,11 @@ test("explains the physical observatory and configurable equipment", async ({ pa
     page.getByRole("heading", { level: 1, name: "Darkview Tbilisi Observatory" }),
   ).toBeVisible();
   await expect(
-    page.locator(".observatory-page-hero").getByText("Tbilisi, Georgia", {
-      exact: true,
-    }),
+    page
+      .getByRole("region", { name: "Darkview Tbilisi Observatory" })
+      .getByText("Tbilisi, Georgia", {
+        exact: true,
+      }),
   ).toBeVisible();
   await expect(
     page.getByText(

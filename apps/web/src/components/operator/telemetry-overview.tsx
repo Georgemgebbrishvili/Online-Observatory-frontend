@@ -26,9 +26,22 @@ const healthTone: Record<DeviceStatus["health"], StatusTone> = {
   NOT_CONFIGURED: "neutral",
 };
 
-function Row({ label, children }: { label: string; children: ReactNode }) {
+/**
+ * `field` names the row for tests. A dt/dd pair exposes no role that can be asked
+ * for by name, and the label is localised, so without it a test has to select the
+ * style class -- which then breaks the moment the row is restyled.
+ */
+function Row({
+  children,
+  field,
+  label,
+}: {
+  children: ReactNode;
+  field?: string;
+  label: string;
+}) {
   return (
-    <div className="operator-row">
+    <div className="operator-row" data-field={field}>
       <dt>{label}</dt>
       <dd>{children}</dd>
     </div>
@@ -128,7 +141,9 @@ export function TelemetryOverview({ copy }: { copy: OperatorCopy }) {
             </span>
           </Row>
           <Row label={labels.tracking}>{yesNo(telemetry.tracking)}</Row>
-          <Row label={labels.parked}>{yesNo(telemetry.parked)}</Row>
+          <Row field="parked" label={labels.parked}>
+            {yesNo(telemetry.parked)}
+          </Row>
           <Row label={labels.slewing}>{yesNo(telemetry.slewing)}</Row>
           <Row label={labels.focuserPosition}>
             <span className="data">{telemetry.focuserPosition ?? labels.unknown}</span>

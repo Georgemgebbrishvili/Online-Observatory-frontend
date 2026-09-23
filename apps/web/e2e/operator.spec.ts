@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { field } from "./selectors";
 
 // Against e2e/fake-platform.mjs: one simulated first-party observatory with a live
 // mission. The fake keeps state across requests, so these run in order.
@@ -84,9 +85,7 @@ test.describe("operator", () => {
     await expect(page.getByText("The mount reports parked.")).toBeVisible({
       timeout: 10_000,
     });
-    await expect(
-      page.locator(".operator-row", { hasText: "Parked" }).locator("dd"),
-    ).toHaveText("Yes");
+    await expect(field(page, "parked").locator("dd")).toHaveText("Yes");
   });
 });
 
