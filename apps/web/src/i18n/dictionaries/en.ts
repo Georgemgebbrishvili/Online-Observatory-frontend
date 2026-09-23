@@ -120,6 +120,12 @@ const dictionary = {
           visibility: "South-west",
           bestTime: "21:40–23:15",
         },
+        jupiter: {
+          name: "Jupiter",
+          type: "Planet",
+          visibility: "Rising east",
+          bestTime: "22:05–01:40",
+        },
         m31: {
           name: "M31 Andromeda",
           type: "Galaxy",
@@ -143,6 +149,12 @@ const dictionary = {
           type: "Planetary nebula",
           visibility: "High west",
           bestTime: "20:45–22:55",
+        },
+        m42: {
+          name: "M42 Orion",
+          type: "Emission nebula",
+          visibility: "Low south-east",
+          bestTime: "23:30–02:15",
         },
       },
     },
