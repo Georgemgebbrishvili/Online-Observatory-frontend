@@ -37,9 +37,18 @@ function age(milliseconds: number, copy: StatusCopy["age"]) {
   return fill(copy.hours, { value: String(Math.floor(minutes / 60)) });
 }
 
-function Row({ label, children }: { label: string; children: ReactNode }) {
+/** `field` names the row for tests; see the same prop on the operator overview. */
+function Row({
+  children,
+  field,
+  label,
+}: {
+  children: ReactNode;
+  field: string;
+  label: string;
+}) {
   return (
-    <div className="status-row">
+    <div className="status-row" data-field={field}>
       <dt>{label}</dt>
       <dd>{children}</dd>
     </div>
@@ -117,14 +126,14 @@ export function StatusPage({
         <section className="status-panel" aria-labelledby="status-now">
           <h2 id="status-now">{copy.now.title}</h2>
           <dl className="status-rows">
-            <Row label={copy.now.link}>
+            <Row field="link" label={copy.now.link}>
               <StatusIndicator
                 label={copy.link[status.link]}
                 tone={linkTone[status.link]}
               />
               <span className="status-note">{copy.linkDetail[status.link]}</span>
             </Row>
-            <Row label={copy.now.weather}>
+            <Row field="weather" label={copy.now.weather}>
               <StatusIndicator
                 label={copy.weather[status.weather.status]}
                 tone={weatherTone[status.weather.status]}
@@ -133,7 +142,7 @@ export function StatusPage({
                 {copy.now.weatherSource}: {copy.weatherSource[status.weather.source]}
               </span>
             </Row>
-            <Row label={copy.now.hold}>
+            <Row field="hold" label={copy.now.hold}>
               <StatusIndicator
                 label={
                   status.weather.holdActive ? copy.now.holdActive : copy.now.holdInactive
@@ -144,14 +153,14 @@ export function StatusPage({
                 <span className="status-note">{status.weather.note}</span>
               )}
             </Row>
-            <Row label={copy.now.mission}>
+            <Row field="mission" label={copy.now.mission}>
               {status.missionInProgress ? copy.now.yes : copy.now.no}
             </Row>
-            <Row label={copy.now.target}>
+            <Row field="target" label={copy.now.target}>
               {/* Present only while the session owner has opted in (ADR-007). */}
               {status.currentTargetName ?? copy.now.none}
             </Row>
-            <Row label={copy.now.lastMission}>
+            <Row field="last-mission" label={copy.now.lastMission}>
               {status.lastSuccessfulMissionAt
                 ? new Date(status.lastSuccessfulMissionAt).toLocaleString(
                     locale === "ka" ? "ka-GE" : "en-GB",

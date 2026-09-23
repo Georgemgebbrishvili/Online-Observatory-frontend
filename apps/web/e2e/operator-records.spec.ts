@@ -17,6 +17,11 @@ test.use({ storageState: "e2e/.auth/operator.json" });
  * into the stitched image, where it lands over a heading. Hidden for the capture only;
  * nothing about the page itself changes.
  */
+/** The audit stream, found by its section's name rather than its list's class. */
+function auditEvents(page: Page) {
+  return page.getByRole("region", { name: "Audit log" }).getByRole("listitem");
+}
+
 async function shoot(page: Page, path: string, fullPage = true) {
   const style = await page.addStyleTag({ content: ".skip-link { display: none; }" });
   // animations: "disabled" finishes the dialog's transition first, so a capture taken
@@ -80,24 +85,24 @@ test("the audit log filters by category, and by mission from the missions table"
   await expect(page.getByRole("heading", { name: "Audit log" })).toBeVisible({
     timeout: firstCompile,
   });
-  await expect(page.locator(".operator-events > li")).toHaveCount(2);
+  await expect(auditEvents(page)).toHaveCount(2);
   await page.getByRole("button", { name: "Load more" }).click();
-  await expect(page.locator(".operator-events > li")).toHaveCount(3);
+  await expect(auditEvents(page)).toHaveCount(3);
   await shoot(page, `${evidence}/03-logs.png`);
 
   await page.getByLabel("Category").selectOption("AGENT_LINK");
-  await expect(page.locator(".operator-events > li")).toHaveCount(1);
+  await expect(auditEvents(page)).toHaveCount(1);
   await expect(page.getByText("agent.connected")).toBeVisible();
 
   // The missions table links straight to this mission's correlated events.
   await page.goto(`/en/admin/logs?mission=${liveMissionId}`);
-  await expect(page.locator(".operator-events > li")).toHaveCount(2);
+  await expect(auditEvents(page)).toHaveCount(2);
   await expect(page.getByText("agent.connected")).toBeHidden();
 
   // Clearing the filter starts a fresh first page rather than appending to the old
   // one, so the third event needs the cursor again.
   await page.getByRole("button", { name: "Show every mission" }).click();
-  await expect(page.locator(".operator-events > li")).toHaveCount(2);
+  await expect(auditEvents(page)).toHaveCount(2);
   await page.getByRole("button", { name: "Load more" }).click();
   await expect(page.getByText("agent.connected")).toBeVisible();
 });

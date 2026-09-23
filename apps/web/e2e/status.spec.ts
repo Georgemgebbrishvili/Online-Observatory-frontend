@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { field } from "./selectors";
 
 // DV-073, against e2e/fake-platform.mjs: one simulated first-party observatory and
 // three bookable hours, the last with no stored forecast.
@@ -24,11 +25,9 @@ test("reports the observatory, and says the simulator is answering", async ({ pa
   await expect(page.getByText("Darkview Tbilisi")).toBeVisible();
   await expect(page.getByText(/Reported \d+ (s|min|h) ago/)).toBeVisible();
 
-  const now = page.locator(".status-row", { hasText: "Observatory link" });
+  const now = field(page, "link");
   await expect(now.getByText("Online")).toBeVisible();
-  await expect(
-    page.locator(".status-row", { hasText: "Weather hold" }).getByText("No hold"),
-  ).toBeVisible();
+  await expect(field(page, "hold").getByText("No hold")).toBeVisible();
 
   await shoot(page, `${evidence}/01-status.png`);
 });

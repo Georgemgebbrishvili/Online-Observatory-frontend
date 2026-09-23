@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { appSidebar } from "./selectors";
 
 // A cold `next dev` compiles each route on its first visit, which takes longer
 // than the default five seconds.
@@ -32,7 +33,7 @@ test("signs in through /api and reaches the app on the session the API set", asy
 
 test("refuses a wrong password without leaving the sign-in page", async ({ page }) => {
   await signIn(page, "observer@darkview.test", "not the password");
-  await expect(page.locator(".auth-form-error")).toHaveText(
+  await expect(page.getByRole("main").getByRole("alert")).toHaveText(
     "Email or password is incorrect.",
   );
   await expect(page).toHaveURL(/\/en\/sign-in$/, { timeout: firstCompile });
@@ -55,7 +56,7 @@ test("signs out and ends the session", async ({ page }) => {
   await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
 
   await page.waitForLoadState("networkidle");
-  await page.locator(".app-logout-form").getByRole("button").click();
+  await appSidebar(page).getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/en\/sign-in$/, { timeout: firstCompile });
 
   await page.goto("/en/app");
