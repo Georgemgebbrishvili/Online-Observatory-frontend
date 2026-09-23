@@ -166,10 +166,11 @@
 
 .home-section {
   scroll-margin-top: var(--space-8);
-  padding-block: clamp(var(--space-16), 10vw, 8.5rem);
+  padding-block: clamp(var(--space-12), 5vw, var(--space-20));
   border-bottom: 1px solid var(--color-border-subtle);
   content-visibility: auto;
-  contain-intrinsic-size: auto 48rem;
+  /* Close to the real rendered height, so skipped sections do not shift the scrollbar. */
+  contain-intrinsic-size: auto 34rem;
 }
 
 .home-section-heading {
@@ -177,7 +178,7 @@
   max-width: 58rem;
   grid-template-columns: 2.75rem minmax(0, 1fr);
   gap: var(--space-4);
-  margin-bottom: clamp(var(--space-10), 6vw, var(--space-16));
+  margin-bottom: clamp(var(--space-6), 3vw, var(--space-10));
 }
 
 .home-section-heading > span {
@@ -407,15 +408,16 @@
 .target-visual {
   position: relative;
   display: grid;
-  height: 11rem;
+  height: 9rem;
   overflow: hidden;
   place-items: center;
   border-bottom: 1px solid var(--color-border-subtle);
+  /* An instrument's field diagram: a measured grid, not decoration. */
   background:
-    linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px),
+    linear-gradient(var(--color-optical-medium) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-optical-medium) 1px, transparent 1px),
     var(--color-night);
-  background-size: 2.5rem 2.5rem;
+  background-size: 2rem 2rem;
 }
 
 .target-visual > span {
@@ -423,9 +425,10 @@
   display: block;
   width: 4.2rem;
   height: 4.2rem;
-  border: 1px solid var(--color-text-secondary);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
   background: var(--color-surface-raised);
+  box-shadow: 0 0 0 1px var(--color-photon-faint);
 }
 
 .target-visual-moon > span {
@@ -449,15 +452,15 @@
 .target-visual-galaxy > span {
   width: 7rem;
   height: 2.25rem;
-  border-color: var(--color-optical-medium);
-  background: var(--color-photon-faint);
+  border-color: var(--color-photon-border);
+  background: var(--color-photon-muted);
   transform: rotate(-18deg);
 }
 
 .target-visual-cluster > span,
 .target-visual-nebula > span {
   border-style: dashed;
-  border-color: var(--color-optical-medium);
+  border-color: var(--color-photon-border);
   background: transparent;
 }
 
@@ -501,7 +504,7 @@
 }
 
 .target-card-body {
-  padding: var(--space-5);
+  padding: var(--space-4);
 }
 
 .target-card-body > header {
@@ -527,8 +530,8 @@
 
 .target-card dl {
   display: grid;
-  gap: var(--space-3);
-  margin: var(--space-6) 0;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
 }
 
 .target-card dl div {
@@ -1042,4 +1045,20 @@
   .process-list p {
     margin: 0;
   }
+}
+
+/* A wide screen gets a fourth column rather than three cards and a gap. Density is
+   what makes a catalogue read as a catalogue. */
+@media (min-width: 80rem) {
+  .target-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* The card art is a diagram, not telescope output, and says so. */
+.target-visual-note {
+  margin: var(--space-2) var(--space-4) 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+  letter-spacing: 0.04em;
 }

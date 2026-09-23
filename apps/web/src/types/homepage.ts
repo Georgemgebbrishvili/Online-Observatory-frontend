@@ -36,6 +36,7 @@ export type HomepageDictionary = {
   common: {
     watchLive: string;
     planMission: string;
+    illustration: string;
     minutes: string;
     approximateViewers: string;
     currentTarget: string;
