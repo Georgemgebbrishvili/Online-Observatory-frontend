@@ -6,6 +6,11 @@ import { randomUUID } from "node:crypto";
 import http from "node:http";
 
 import {
+  zAdminCancelMissionRequest,
+  zAdminListAuditEventsResponse,
+  zAdminListMissionsResponse,
+  zAdminUpdateTargetRequest,
+  zAdminUpdateTargetResponse,
   zApiError,
   zListBookableObservatoriesResponse,
   zListTargetsResponse,
@@ -117,6 +122,111 @@ const targets = zListTargetsResponse.parse({
   page: { hasMore: false, nextCursor: null },
 });
 const observatory = { mode: "SIMULATED", parked: false, activeMissionId: missionId };
+
+// DV-078. Missions and audit events, mutable so cancel and enable/disable are visible.
+// Paged two at a time so the cursor is actually exercised rather than assumed.
+const PAGE_SIZE = 2;
+const userId = fakeAccounts["observer@darkview.test"].id;
+const missions = [
+  {
+    id: missionId,
+    userId,
+    bookingId: "50000000-0000-4000-8000-000000000001",
+    targetId: "30000000-0000-4000-8000-000000000013",
+    observatoryId,
+    state: "OBSERVING",
+    failureReason: null,
+    mode: "SIMULATED",
+    scheduledStartAt: "2026-09-23T20:00:00.000Z",
+    requestedAt: "2026-09-23T19:40:00.000Z",
+    startedAt: "2026-09-23T20:00:00.000Z",
+    endedAt: null,
+    captureIds: [],
+    observable: false,
+    observerCapacity: 5,
+  },
+  {
+    id: "21000000-0000-4000-8000-000000000002",
+    userId,
+    bookingId: "51000000-0000-4000-8000-000000000002",
+    targetId: "30000000-0000-4000-8000-000000000006",
+    observatoryId,
+    state: "SCHEDULED",
+    failureReason: null,
+    mode: "SIMULATED",
+    scheduledStartAt: "2026-09-24T20:00:00.000Z",
+    requestedAt: "2026-09-23T18:00:00.000Z",
+    startedAt: null,
+    endedAt: null,
+    captureIds: [],
+    observable: false,
+    observerCapacity: 5,
+  },
+  {
+    id: "22000000-0000-4000-8000-000000000003",
+    userId,
+    bookingId: null,
+    targetId: "30000000-0000-4000-8000-000000000013",
+    observatoryId,
+    state: "COMPLETE",
+    failureReason: null,
+    mode: "SIMULATED",
+    scheduledStartAt: "2026-09-22T20:00:00.000Z",
+    requestedAt: "2026-09-22T19:30:00.000Z",
+    startedAt: "2026-09-22T20:00:00.000Z",
+    endedAt: "2026-09-22T20:12:00.000Z",
+    captureIds: ["60000000-0000-4000-8000-000000000001"],
+    observable: false,
+    observerCapacity: 5,
+  },
+];
+
+const auditEvents = [
+  {
+    id: "70000000-0000-4000-8000-000000000001",
+    at: "2026-09-23T20:00:02.000Z",
+    category: "MISSION",
+    action: "mission.started",
+    actorUserId: userId,
+    missionId,
+    commandId: null,
+    detail: { state: "OBSERVING" },
+  },
+  {
+    id: "70000000-0000-4000-8000-000000000002",
+    at: "2026-09-23T19:59:00.000Z",
+    category: "OPERATOR_OVERRIDE",
+    action: "override.goto",
+    actorUserId: fakeAccounts["operator@darkview.test"].id,
+    missionId,
+    commandId: "80000000-0000-4000-8000-000000000001",
+    detail: { reason: "Centring by hand" },
+  },
+  {
+    id: "70000000-0000-4000-8000-000000000003",
+    at: "2026-09-23T19:40:00.000Z",
+    category: "AGENT_LINK",
+    action: "agent.connected",
+    actorUserId: null,
+    missionId: null,
+    commandId: null,
+    detail: { agentVersion: "0.1.0-sim" },
+  },
+];
+
+/** Cursor paging over an already-sorted array: the cursor is the next index. */
+function paginate(rows, cursor) {
+  const start = cursor ? Number(cursor) : 0;
+  const slice = rows.slice(start, start + PAGE_SIZE);
+  const next = start + PAGE_SIZE;
+  return {
+    items: slice,
+    page: {
+      hasMore: next < rows.length,
+      nextCursor: next < rows.length ? String(next) : null,
+    },
+  };
+}
 
 function observatoryState() {
   const now = new Date().toISOString();
@@ -272,6 +382,33 @@ const routes = {
       }),
     );
   },
+  "GET /admin/missions": (request, response) => {
+    if (!operator(request, response)) return;
+    const query = new URL(request.url, "http://fake").searchParams;
+    const state = query.get("state");
+    const rows = state ? missions.filter((row) => row.state === state) : missions;
+    send(
+      response,
+      200,
+      zAdminListMissionsResponse.parse(paginate(rows, query.get("cursor"))),
+    );
+  },
+  "GET /admin/logs": (request, response) => {
+    if (!operator(request, response)) return;
+    const query = new URL(request.url, "http://fake").searchParams;
+    const missionFilter = query.get("missionId");
+    const category = query.get("category");
+    const rows = auditEvents.filter(
+      (row) =>
+        (!missionFilter || row.missionId === missionFilter) &&
+        (!category || row.category === category),
+    );
+    send(
+      response,
+      200,
+      zAdminListAuditEventsResponse.parse(paginate(rows, query.get("cursor"))),
+    );
+  },
   "GET /me": (request, response) => {
     const user = sessionUser(request);
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
@@ -306,6 +443,42 @@ const routes = {
   },
 };
 
+async function cancelMission(request, response, id) {
+  if (!operator(request, response)) return;
+  const body = zAdminCancelMissionRequest.safeParse(await json(request));
+  if (!body.success) {
+    return error(response, 422, "VALIDATION_FAILED", "A reason and a resolution.");
+  }
+  const mission = missions.find((row) => row.id === id);
+  if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+
+  mission.state = "CANCELLED";
+  mission.endedAt = new Date().toISOString();
+  if (observatory.activeMissionId === id) observatory.activeMissionId = null;
+  auditEvents.unshift({
+    id: randomUUID(),
+    at: mission.endedAt,
+    category: "MISSION",
+    action: "mission.cancelled",
+    actorUserId: sessionUser(request).id,
+    missionId: id,
+    commandId: null,
+    detail: { reason: body.data.reason, resolution: body.data.resolution },
+  });
+  send(response, 200, mission);
+}
+
+async function patchTarget(request, response, id) {
+  if (!operator(request, response)) return;
+  const body = zAdminUpdateTargetRequest.safeParse(await json(request));
+  if (!body.success) return error(response, 422, "VALIDATION_FAILED", "Malformed patch.");
+  const target = targets.items.find((row) => row.id === id);
+  if (!target) return error(response, 404, "NOT_FOUND", "No such target.");
+
+  Object.assign(target, body.data);
+  send(response, 200, zAdminUpdateTargetResponse.parse(target));
+}
+
 http
   .createServer(async (request, response) => {
     const path = new URL(request.url, "http://fake").pathname;
@@ -315,7 +488,16 @@ http
       return error(response, 403, "FORBIDDEN", "Cross-origin mutation refused.");
     }
     const route = routes[`${request.method} ${path}`];
-    if (!route) return error(response, 404, "NOT_FOUND", "Not implemented by the fake.");
-    await route(request, response);
+    if (route) return await route(request, response);
+
+    const cancel = path.match(/^\/admin\/missions\/([0-9a-f-]+)\/cancel$/);
+    if (cancel && request.method === "POST") {
+      return await cancelMission(request, response, cancel[1]);
+    }
+    const target = path.match(/^\/admin\/targets\/([0-9a-f-]+)$/);
+    if (target && request.method === "PATCH") {
+      return await patchTarget(request, response, target[1]);
+    }
+    error(response, 404, "NOT_FOUND", "Not implemented by the fake.");
   })
   .listen(port, "127.0.0.1");

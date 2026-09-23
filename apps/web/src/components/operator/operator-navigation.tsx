@@ -17,6 +17,9 @@ export function OperatorNavigation({
   const links = [
     { href: `/${locale}/admin`, label: copy.overview },
     { href: `/${locale}/admin/control`, label: copy.control },
+    { href: `/${locale}/admin/missions`, label: copy.missions },
+    { href: `/${locale}/admin/targets`, label: copy.targets },
+    { href: `/${locale}/admin/logs`, label: copy.logs },
   ];
 
   return (
