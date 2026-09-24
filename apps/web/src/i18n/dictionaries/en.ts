@@ -35,6 +35,11 @@ const dictionary = {
       live: "Live",
       collection: "Collection",
       profile: "Profile",
+      book: "Book an observation",
+      subscription: "Subscription",
+      loyalty: "Loyalty",
+      passes: "Observation Pass",
+      plannedGroup: "Not yet available",
       mobile: {
         home: "Home",
         missions: "Missions",
@@ -49,6 +54,9 @@ const dictionary = {
       previewEyebrow: "Application shell",
       previewDescription:
         "This destination is a layout preview. Feature content will be added separately.",
+      plannedEyebrow: "Not yet available",
+      plannedDescription:
+        "This part of Stellar has not been built. It is listed here so you can see what is coming, and it will work from this page when it is ready.",
     },
   },
   home: {
