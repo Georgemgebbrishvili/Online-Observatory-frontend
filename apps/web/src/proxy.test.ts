@@ -17,4 +17,13 @@ describe("authentication proxy", () => {
     const response = proxy(request);
     expect(response.headers.get("location")).toBeNull();
   });
+
+  it("leaves the sign-in page to the server even when a session cookie is present", () => {
+    // A cookie proves nothing here. Redirecting on it looped forever for a stale or
+    // half-present session: the server sent /app back to sign-in, and this sent it on.
+    const request = new NextRequest("https://darkview.ge/en/sign-in", {
+      headers: { cookie: `${sessionCookieName}=stale-token` },
+    });
+    expect(proxy(request).headers.get("location")).toBeNull();
+  });
 });

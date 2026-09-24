@@ -115,7 +115,7 @@ export function AuthenticatedHome({ locale }: AuthenticatedHomeProps) {
                 <h2 id="home-live-title" className="home-label-heading">
                   {copy.liveNow}
                 </h2>
-                <LiveIndicator label={copy.liveBadge} />
+                <LiveIndicator active={false} label={copy.liveBadge} />
               </div>
               <p>{copy.publicObservation}</p>
               <h3>{dashboard.liveObservation.target[locale]}</h3>

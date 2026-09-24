@@ -27,7 +27,7 @@ export function HeroObservatoryVisual({
         <span className="hero-axis hero-axis-vertical" aria-hidden="true" />
         <OpticalRing size="large" active />
         <div className="hero-target-label">
-          <LiveIndicator label={content.visualLive} />
+          <LiveIndicator active={false} label={content.visualLive} />
           <strong>{content.visualTarget}</strong>
         </div>
       </div>

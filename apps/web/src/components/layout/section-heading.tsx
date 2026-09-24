@@ -19,8 +19,8 @@ export function SectionHeading({
       <div>
         <p>{eyebrow}</p>
         <h2 id={id}>{title}</h2>
-        <p className="home-section-description">{description}</p>
       </div>
+      <p className="home-section-description">{description}</p>
     </header>
   );
 }

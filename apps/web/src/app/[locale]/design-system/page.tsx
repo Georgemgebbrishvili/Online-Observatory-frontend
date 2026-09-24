@@ -24,6 +24,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { Container } from "@/components/ui/container";
 import { isLocale } from "@/i18n/config";
 import { missionSessionCopy } from "@/i18n/resources/missions";
+import { palette } from "@/styles/tokens";
 
 import { designSystemCopy } from "./copy";
 
@@ -31,16 +32,33 @@ type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-const palette = [
-  "background",
-  "elevated",
-  "elevated-secondary",
-  "text",
-  "text-secondary",
-  "cyan",
-  "success",
-  "warning",
-  "error",
+const swatches = [
+  ["night", palette.neutral950],
+  ["surface-base", palette.neutral900],
+  ["surface-raised", palette.neutral800],
+  ["surface-hover", palette.neutral700],
+  ["border-subtle", palette.neutral600],
+  ["text-primary", palette.neutral100],
+  ["text-secondary", palette.neutral300],
+  ["text-tertiary", palette.neutral400],
+  ["photon", palette.photon],
+  ["photon-deep", palette.deepSignal],
+  ["success", palette.success],
+  ["warning", palette.warning],
+  ["error", palette.error],
+  ["info", palette.info],
+] as const;
+
+const typeScale = [
+  "hero",
+  "h1",
+  "h2",
+  "h3",
+  "body-lg",
+  "body",
+  "label",
+  "caption",
+  "mono",
 ] as const;
 
 function SearchIcon() {
@@ -67,7 +85,7 @@ function SectionHeader({
   section,
 }: {
   id: string;
-  section: readonly [string, string, string];
+  section: readonly [string, string, string, string];
 }) {
   return (
     <header className="ds-section-header">
@@ -75,6 +93,7 @@ function SectionHeader({
       <div>
         <h2 id={id}>{section[1]}</h2>
         <p>{section[2]}</p>
+        <p className="ds-brand-ref">Brand Identity System v2.0 · {section[3]}</p>
       </div>
     </header>
   );
@@ -124,11 +143,16 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             <SurfacePanel>
               <h3>{copy.palette}</h3>
               <div className="ds-palette">
-                {palette.map((token, index) => (
+                {swatches.map(([token, value], index) => (
                   <div key={token} className="ds-swatch-row">
-                    <span className={`ds-swatch ds-swatch-${token}`} aria-hidden="true" />
+                    <span
+                      className="ds-swatch"
+                      style={{ background: `var(--color-${token})` }}
+                      aria-hidden="true"
+                    />
                     <span>{copy.paletteNames[index]}</span>
                     <code>--color-{token}</code>
+                    <code>{value}</code>
                   </div>
                 ))}
               </div>
@@ -144,6 +168,10 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   <span>{copy.bodyFont}</span>
                   <p>{copy.bodySample}</p>
                 </div>
+                <div>
+                  <span>{copy.monoFont}</span>
+                  <p className="data">{copy.typeScale.mono}</p>
+                </div>
                 <div className="ds-token-row">
                   <code>04</code>
                   <code>08</code>
@@ -155,6 +183,22 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               </div>
             </SurfacePanel>
           </div>
+        </section>
+
+        <section className="ds-section" aria-labelledby="type-scale-title">
+          <SectionHeader id="type-scale-title" section={copy.sections.typeScale} />
+          <SurfacePanel>
+            <dl className="ds-type-scale">
+              {typeScale.map((step) => (
+                <div key={step}>
+                  <dt>
+                    <code>--font-size-{step}</code>
+                  </dt>
+                  <dd className={`ds-type-${step}`}>{copy.typeScale[step]}</dd>
+                </div>
+              ))}
+            </dl>
+          </SurfacePanel>
         </section>
 
         <section className="ds-section" aria-labelledby="actions-title">
@@ -200,7 +244,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             <SurfacePanel>
               <h3>{copy.statusGroups.live}</h3>
               <div className="ds-status-list">
-                <LiveIndicator label={copy.liveLabel} />
+                <LiveIndicator active label={copy.liveLabel} />
                 <LiveIndicator active={false} label={copy.idle} />
               </div>
               <h3 className="ds-subheading">{copy.statusGroups.quality}</h3>
@@ -221,7 +265,10 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   <MissionStatus
                     key={status}
                     status={status}
-                    label={missionSessionCopy[locale].states[status].title}
+                    label={missionSessionCopy[locale].states[status].title.replace(
+                      "{target}",
+                      "M42",
+                    )}
                   />
                 ))}
               </div>

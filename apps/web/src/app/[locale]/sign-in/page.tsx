@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { SignInForm } from "@/components/auth/auth-form";
 import { AuthPage } from "@/components/auth/auth-page";
@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { authCopy } from "@/i18n/resources/auth";
+import { getCurrentUser } from "@/lib/platform/session";
 import { privatePageMetadata } from "@/lib/seo";
 import "@/styles/auth.css";
 
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: SignInPageProps): Promise<Met
 export default async function SignInPage({ params }: SignInPageProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  if (await getCurrentUser()) redirect(`/${locale}/app`);
 
   const dictionary = await getDictionary(locale);
   const copy = authCopy[locale];

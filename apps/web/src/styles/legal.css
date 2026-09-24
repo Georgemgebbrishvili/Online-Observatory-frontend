@@ -1,0 +1,131 @@
+/* DV-072. A reading surface: one measured column, generous leading, no decoration
+   competing with the text. The draft notice is the one element allowed to be loud. */
+
+.legal-page {
+  padding-block: clamp(var(--space-12), 7vw, 6rem) clamp(var(--space-16), 8vw, 8rem);
+}
+
+.legal-page .page-container {
+  width: min(100%, 52rem);
+  margin-inline: auto;
+}
+
+.legal-header {
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding-bottom: var(--space-10);
+}
+
+.legal-eyebrow {
+  display: block;
+  color: var(--color-photon);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.13em;
+}
+
+.legal-header h1 {
+  margin: var(--space-5) 0 0;
+  font-size: var(--font-size-hero);
+}
+
+.legal-introduction {
+  margin: var(--space-6) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+  line-height: 1.6;
+}
+
+.legal-notice {
+  display: flex;
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-strong);
+  border-left: 3px solid var(--color-photon);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+}
+
+.legal-notice-marker {
+  flex-shrink: 0;
+  color: var(--color-photon);
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: var(--font-size-caption);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.legal-notice h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.legal-notice p {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.legal-sections {
+  margin-top: clamp(var(--space-12), 6vw, var(--space-20));
+}
+
+.legal-section + .legal-section {
+  margin-top: var(--space-12);
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: var(--space-10);
+}
+
+.legal-section h2 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.legal-section-number {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: var(--font-size-mono);
+  font-weight: 400;
+}
+
+.legal-status {
+  display: inline-block;
+  margin-top: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.legal-status-decided {
+  border: 1px solid color-mix(in srgb, var(--color-photon) 40%, transparent);
+  color: var(--color-photon);
+}
+
+.legal-status-pending {
+  border: 1px solid var(--color-border-control);
+  color: var(--color-text-tertiary);
+}
+
+.legal-section p {
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+  line-height: 1.7;
+}
+
+.legal-pending-detail {
+  font-style: italic;
+  color: var(--color-text-tertiary);
+}
+
+.legal-back {
+  display: inline-block;
+  margin-top: clamp(var(--space-12), 6vw, var(--space-16));
+  color: var(--color-photon);
+  font-weight: 500;
+}

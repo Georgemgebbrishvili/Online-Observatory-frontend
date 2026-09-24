@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { AppNavigation } from "@/components/navigation/app-navigation";
 import { ObservatoryStatus } from "@/components/observatory/observatory-status";
-import { logoutAction } from "@/features/auth/actions";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
@@ -11,7 +11,6 @@ type AppShellProps = {
   children: ReactNode;
   locale: Locale;
   navigation: Dictionary["navigation"]["app"];
-  csrfToken: string;
   logoutLabel: string;
 };
 
@@ -30,15 +29,7 @@ function ObservatoryState({ navigation }: Pick<AppShellProps, "navigation">) {
   );
 }
 
-export function AppShell({
-  children,
-  csrfToken,
-  locale,
-  logoutLabel,
-  navigation,
-}: AppShellProps) {
-  const logout = logoutAction.bind(null, locale);
-
+export function AppShell({ children, locale, logoutLabel, navigation }: AppShellProps) {
   return (
     <div className="app-shell">
       <aside className="app-sidebar">
@@ -49,10 +40,7 @@ export function AppShell({
           />
         </a>
         <AppNavigation locale={locale} navigation={navigation} placement="sidebar" />
-        <form action={logout} className="app-logout-form">
-          <input name="csrfToken" type="hidden" value={csrfToken} />
-          <button type="submit">{logoutLabel}</button>
-        </form>
+        <SignOutButton className="app-logout-form" label={logoutLabel} locale={locale} />
         <ObservatoryState navigation={navigation} />
       </aside>
 
@@ -65,10 +53,11 @@ export function AppShell({
           />
         </a>
         <ObservatoryState navigation={navigation} />
-        <form action={logout} className="app-mobile-logout">
-          <input name="csrfToken" type="hidden" value={csrfToken} />
-          <button type="submit">{logoutLabel}</button>
-        </form>
+        <SignOutButton
+          className="app-mobile-logout"
+          label={logoutLabel}
+          locale={locale}
+        />
       </header>
 
       <main id="main-content" className="app-content">

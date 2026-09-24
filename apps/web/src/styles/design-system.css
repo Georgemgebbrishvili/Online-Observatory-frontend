@@ -8,18 +8,18 @@
   align-items: center;
   min-height: min(48rem, calc(100vh - 5rem));
   padding-block: var(--space-20);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .ds-hero h1 {
-  font-size: var(--font-size-title);
+  font-size: var(--font-size-hero);
 }
 
 .ds-hero > div > p:not(.eyebrow) {
   max-width: 42rem;
   margin: var(--space-6) 0 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-large);
+  font-size: var(--font-size-body-lg);
   line-height: 1.75;
 }
 
@@ -30,16 +30,16 @@
 .ds-internal-label {
   display: inline-block;
   margin-top: var(--space-8);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
-  font-weight: 650;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .ds-section {
   padding-block: var(--space-16);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .ds-section:last-child {
@@ -55,27 +55,32 @@
 
 .ds-section-header > span {
   padding-top: var(--space-1);
-  color: var(--color-cyan);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  color: var(--color-photon);
+  font-family: var(--font-mono);
   font-size: var(--font-size-caption);
-  letter-spacing: 0.1em;
 }
 
 .ds-section-header h2 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
-  font-size: var(--font-size-title-small);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-heading);
 }
 
 .ds-section-header p {
   max-width: 38rem;
   margin: var(--space-3) 0 0;
   color: var(--color-text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-label);
   line-height: 1.65;
+}
+
+.ds-section-header .ds-brand-ref {
+  margin-top: var(--space-2);
+  color: var(--color-text-technical);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
 }
 
 .ds-foundations,
@@ -98,10 +103,9 @@
 .ds-card-grid h3,
 .ds-form h3 {
   margin: 0 0 var(--space-5);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
-  font-size: 1rem;
-  font-weight: 550;
-  letter-spacing: -0.02em;
+  font-family: var(--font-body);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-semibold);
 }
 
 .ds-palette {
@@ -111,7 +115,7 @@
 
 .ds-swatch-row {
   display: grid;
-  grid-template-columns: 1.5rem minmax(7rem, 1fr) auto;
+  grid-template-columns: 1.5rem minmax(7rem, 1fr) auto 4.5rem;
   gap: var(--space-3);
   align-items: center;
   min-height: 2rem;
@@ -121,9 +125,9 @@
 
 .ds-swatch-row code,
 .ds-type-specimens code {
-  color: var(--color-text-muted);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.65rem;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
 }
 
 .ds-swatch {
@@ -133,43 +137,15 @@
   border-radius: var(--radius-small);
 }
 
-.ds-swatch-background {
-  background: var(--color-background);
-}
-.ds-swatch-elevated {
-  background: var(--color-elevated);
-}
-.ds-swatch-elevated-secondary {
-  background: var(--color-elevated-secondary);
-}
-.ds-swatch-text {
-  background: var(--color-text);
-}
-.ds-swatch-text-secondary {
-  background: var(--color-text-secondary);
-}
-.ds-swatch-cyan {
-  background: var(--color-cyan);
-}
-.ds-swatch-success {
-  background: var(--color-success);
-}
-.ds-swatch-warning {
-  background: var(--color-warning);
-}
-.ds-swatch-error {
-  background: var(--color-error);
-}
-
 .ds-type-specimens {
   display: grid;
   gap: var(--space-8);
 }
 
 .ds-type-specimens > div > span {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -182,12 +158,93 @@
 }
 
 .ds-type-specimens .ds-display-type {
-  color: var(--color-text);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
-  font-size: clamp(2rem, 6vw, 3.75rem);
-  font-weight: 450;
-  letter-spacing: -0.055em;
-  line-height: 1;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-display);
+}
+
+.ds-type-scale {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+}
+
+.ds-type-scale > div {
+  display: grid;
+  gap: var(--space-2);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.ds-type-scale > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.ds-type-scale dt code {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+}
+
+.ds-type-scale dd {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.ds-type-hero,
+.ds-type-h1,
+.ds-type-h2 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-display);
+}
+
+.ds-type-hero {
+  font-size: var(--font-size-hero);
+}
+
+.ds-type-h1 {
+  font-size: var(--font-size-h1);
+}
+
+.ds-type-h2 {
+  font-size: var(--font-size-h2);
+}
+
+.ds-type-h3 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ds-type-body-lg {
+  font-size: var(--font-size-body-lg);
+}
+
+.ds-type-body {
+  font-size: var(--font-size-body);
+}
+
+.ds-type-label,
+.ds-type-caption {
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.ds-type-label {
+  font-size: var(--font-size-label);
+}
+
+.ds-type-caption {
+  font-size: var(--font-size-caption);
+}
+
+.ds-type-mono {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
 }
 
 .ds-token-row {
@@ -201,9 +258,9 @@
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-small);
-  background: var(--color-background);
+  background: var(--color-night);
 }
 
 .ds-component-row,
@@ -217,7 +274,7 @@
 .ds-component-row + .ds-component-row {
   margin-top: var(--space-6);
   padding-top: var(--space-6);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .ds-status-grid .surface-panel {
@@ -235,14 +292,14 @@
 
 .ds-card-grid .surface-panel p {
   color: var(--color-text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-label);
   line-height: 1.7;
 }
 
 .ds-card-meta {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .ds-card-footer {
@@ -267,12 +324,12 @@
   min-width: 4.5rem;
   min-height: 2.75rem;
   place-items: center;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-small);
-  background: var(--color-background);
+  background: var(--color-night);
   color: var(--color-text-secondary);
   cursor: help;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: var(--font-size-label);
 }
 

@@ -26,7 +26,7 @@
   max-width: 42rem;
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-large);
+  font-size: var(--font-size-body-lg);
   line-height: 1.75;
 }
 
@@ -46,7 +46,7 @@
 .mission-filter {
   min-height: 2.75rem;
   padding-inline: var(--space-4);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-full);
   background: transparent;
   color: var(--color-text-secondary);
@@ -63,13 +63,13 @@
 
 .mission-filter:hover {
   border-color: var(--color-border-strong);
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .mission-filter[aria-pressed="true"] {
-  border-color: var(--color-cyan-border);
-  background: var(--color-cyan-muted);
-  color: var(--color-cyan-bright);
+  border-color: var(--color-photon-border);
+  background: var(--color-photon-muted);
+  color: var(--color-photon);
 }
 
 .mission-filter:focus-visible,
@@ -77,7 +77,7 @@
 .mission-back-link:focus-visible,
 .mission-detail a:focus-visible,
 .mission-technical summary:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -93,9 +93,9 @@
   display: grid;
   min-height: 100%;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   box-shadow: var(--shadow-small);
   transition:
     border-color var(--duration-standard) var(--ease-standard),
@@ -122,10 +122,10 @@
   overflow: hidden;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 48%, var(--color-cyan-faint), transparent 28%),
+    radial-gradient(circle at 50% 48%, var(--color-photon-faint), transparent 28%),
     linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
     linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px),
-    var(--color-background);
+    var(--color-night);
   background-size:
     auto,
     3.2rem 3.2rem,
@@ -135,7 +135,7 @@
 
 .mission-target-visual {
   min-height: 13rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .mission-target-visual::before,
@@ -164,8 +164,8 @@
   z-index: 3;
   top: var(--space-4);
   left: var(--space-4);
-  color: var(--color-text-muted);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-display);
   font-size: var(--font-size-label);
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -180,8 +180,8 @@
   height: 5rem;
   border: 1px solid var(--color-text-secondary);
   border-radius: var(--radius-full);
-  background: var(--color-elevated-secondary);
-  box-shadow: 0 0 3rem var(--color-cyan-muted);
+  background: var(--color-surface-raised);
+  box-shadow: 0 0 3rem var(--color-photon-muted);
 }
 
 .mission-target-visual > b,
@@ -193,14 +193,18 @@
 
 .mission-target-visual-saturn > i,
 .mission-detail-visual.mission-target-visual-saturn > i {
-  background: linear-gradient(165deg, #c5bca7, #625d53);
+  background: linear-gradient(
+    165deg,
+    var(--color-text-secondary),
+    var(--color-border-strong)
+  );
 }
 
 .mission-target-visual-saturn > b,
 .mission-detail-visual.mission-target-visual-saturn > b {
   width: 8rem;
   height: 2rem;
-  border: 1px solid #bcb4a3;
+  border: 1px solid var(--color-text-secondary);
   border-radius: 50%;
   transform: rotate(-12deg);
 }
@@ -209,24 +213,22 @@
 .mission-detail-visual.mission-target-visual-moon > i {
   border: 0;
   background:
-    radial-gradient(circle at 37% 32%, #777 0 5%, transparent 6%),
-    radial-gradient(circle at 62% 59%, #727272 0 8%, transparent 9%),
-    radial-gradient(circle at 35% 75%, #868686 0 4%, transparent 5%),
-    linear-gradient(120deg, #d5d5d2, #858585);
-  box-shadow:
-    inset -1.25rem -0.4rem 0 rgb(5 7 10 / 38%),
-    0 0 3rem rgb(243 246 248 / 12%);
+    radial-gradient(circle at 37% 32%, var(--color-text-tertiary) 0 5%, transparent 6%),
+    radial-gradient(circle at 62% 59%, var(--color-text-tertiary) 0 8%, transparent 9%),
+    radial-gradient(circle at 35% 75%, var(--color-text-tertiary) 0 4%, transparent 5%),
+    linear-gradient(120deg, var(--color-text-secondary), var(--color-text-tertiary));
+  box-shadow: inset -1.25rem -0.4rem 0 var(--color-scrim-soft);
 }
 
 .mission-target-visual-galaxy > i,
 .mission-detail-visual.mission-target-visual-galaxy > i {
   width: 8.5rem;
   height: 2.6rem;
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
   background: radial-gradient(
     ellipse,
-    var(--color-text),
-    var(--color-cyan-muted) 25%,
+    var(--color-text-primary),
+    var(--color-photon-muted) 25%,
     transparent 68%
   );
   filter: blur(0.1rem);
@@ -238,7 +240,7 @@
   width: 6rem;
   height: 1px;
   background: var(--color-text-secondary);
-  box-shadow: 0 0 1.5rem var(--color-cyan);
+  box-shadow: 0 0 1.5rem var(--color-photon);
   transform: rotate(-18deg);
 }
 
@@ -254,26 +256,26 @@
   width: 0.35rem;
   height: 0.35rem;
   border-radius: var(--radius-full);
-  background: var(--color-text);
+  background: var(--color-text-primary);
   box-shadow:
-    1rem 0.4rem var(--color-text-muted),
+    1rem 0.4rem var(--color-text-tertiary),
     1.8rem 1.5rem var(--color-text-secondary),
-    0.2rem 2rem var(--color-text-muted),
+    0.2rem 2rem var(--color-text-tertiary),
     -1rem 1.2rem var(--color-text-secondary),
-    -1.3rem -0.5rem var(--color-text-muted),
+    -1.3rem -0.5rem var(--color-text-tertiary),
     0.9rem -1.2rem var(--color-text-secondary),
-    1.8rem -0.6rem var(--color-text-muted),
+    1.8rem -0.6rem var(--color-text-tertiary),
     -1.7rem -1.4rem var(--color-text-secondary),
-    -0.4rem -2rem var(--color-text-muted);
+    -0.4rem -2rem var(--color-text-tertiary);
 }
 
 .mission-target-visual-nebula > i,
 .mission-detail-visual.mission-target-visual-nebula > i {
   width: 6.5rem;
   height: 4rem;
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
   border-radius: 58% 42% 63% 37%;
-  background: var(--color-cyan-muted);
+  background: var(--color-photon-muted);
   filter: blur(0.25rem);
   transform: rotate(20deg);
 }
@@ -282,9 +284,8 @@
 .mission-detail-visual.mission-target-visual-nebula > b {
   width: 2.2rem;
   height: 1rem;
-  border: 1px solid var(--color-cyan-bright);
+  border: 1px solid var(--color-photon);
   border-radius: 50%;
-  box-shadow: var(--shadow-cyan);
   transform: rotate(-25deg);
 }
 
@@ -293,8 +294,7 @@
   width: 0.7rem;
   height: 0.7rem;
   border: 0;
-  background: #e2b272;
-  box-shadow: 0 0 2.2rem #e2b272;
+  background: var(--color-text-primary);
 }
 
 .mission-target-visual-star > b,
@@ -303,8 +303,7 @@
   height: 0.5rem;
   margin: 2rem 0 0 3rem;
   border-radius: var(--radius-full);
-  background: #8ecbff;
-  box-shadow: 0 0 2rem #8ecbff;
+  background: var(--color-text-secondary);
 }
 
 .mission-target-body {
@@ -326,7 +325,7 @@
 .mission-action-panel > p,
 .mission-expectation > p {
   margin: 0 0 var(--space-2);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.1em;
@@ -335,7 +334,7 @@
 
 .mission-target-body h2 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.4rem;
   font-weight: 520;
   letter-spacing: -0.035em;
@@ -381,13 +380,13 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 0;
-  border-block: 1px solid var(--color-border);
+  border-block: 1px solid var(--color-border-subtle);
 }
 
 .mission-card-data div {
   min-width: 0;
   padding: var(--space-4) var(--space-3);
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border-subtle);
 }
 
 .mission-card-data div:first-child {
@@ -402,7 +401,7 @@
 .mission-card-data dt,
 .mission-stat-grid dt,
 .mission-technical dt {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
@@ -410,7 +409,7 @@
 .mission-stat-grid dd,
 .mission-technical dd {
   margin: var(--space-1) 0 0;
-  color: var(--color-text);
+  color: var(--color-text-primary);
   font-size: 0.82rem;
   font-weight: 550;
 }
@@ -427,7 +426,7 @@
 }
 
 .mission-card-action:hover {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
 }
 
 .mission-card-action span {
@@ -438,9 +437,9 @@
   display: grid;
   justify-items: center;
   padding: var(--space-16) var(--space-5);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   text-align: center;
 }
 
@@ -458,13 +457,12 @@
   width: 0.4rem;
   height: 0.4rem;
   border-radius: var(--radius-full);
-  background: var(--color-cyan);
-  box-shadow: var(--shadow-cyan);
+  background: var(--color-photon);
 }
 
 .mission-empty h2 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.4rem;
 }
 
@@ -486,7 +484,7 @@
 }
 
 .mission-back-link:hover {
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .mission-detail-hero {
@@ -535,8 +533,8 @@
   position: absolute;
   right: var(--space-4);
   bottom: var(--space-4);
-  color: var(--color-cyan-bright);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  color: var(--color-photon);
+  font-family: var(--font-display);
   font-size: var(--font-size-label);
   letter-spacing: 0.08em;
 }
@@ -571,9 +569,9 @@
 .mission-expectation,
 .mission-technical,
 .mission-action-panel {
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .mission-stat-grid dl {
@@ -585,7 +583,7 @@
   display: grid;
   gap: var(--space-2);
   padding: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .mission-stat-grid dl > div:last-child {
@@ -608,14 +606,14 @@
   margin-top: var(--space-4);
   padding: clamp(var(--space-6), 5vw, var(--space-10));
   background:
-    linear-gradient(145deg, var(--color-cyan-faint), transparent 55%),
-    var(--color-elevated);
+    linear-gradient(145deg, var(--color-photon-faint), transparent 55%),
+    var(--color-surface-base);
 }
 
 .mission-expectation h2 {
   max-width: 27ch;
   margin: var(--space-4) 0 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.5rem, 4vw, 2.35rem);
   font-weight: 450;
   letter-spacing: -0.04em;
@@ -656,7 +654,7 @@
 .mission-technical dl {
   display: grid;
   margin: 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .mission-technical dl div {
@@ -664,7 +662,7 @@
   grid-template-columns: minmax(7rem, 0.9fr) minmax(0, 1.1fr);
   gap: var(--space-4);
   padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .mission-technical dl div:last-child {
@@ -680,14 +678,14 @@
   padding: var(--space-6);
   border-color: var(--color-border-strong);
   background:
-    radial-gradient(circle at top right, var(--color-cyan-muted), transparent 12rem),
-    var(--color-elevated-secondary);
+    radial-gradient(circle at top right, var(--color-photon-muted), transparent 12rem),
+    var(--color-surface-raised);
   box-shadow: var(--shadow-panel);
 }
 
 .mission-action-panel h2 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.4rem;
   font-weight: 520;
   letter-spacing: -0.035em;
@@ -708,13 +706,13 @@
   gap: var(--space-2);
   margin-top: var(--space-4);
   padding: var(--space-4);
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-medium);
-  background: var(--color-cyan-faint);
+  background: var(--color-photon-faint);
 }
 
 .mission-action-feedback strong {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: 0.84rem;
 }
 
@@ -739,7 +737,7 @@
   }
 
   .mission-stat-grid dl > div:nth-child(odd) {
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border-subtle);
   }
 
   .mission-stat-grid dl > div:nth-last-child(2) {

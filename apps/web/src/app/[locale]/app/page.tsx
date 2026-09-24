@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { AuthenticatedHome } from "@/components/home/authenticated-home";
 import { isLocale } from "@/i18n/config";
 import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 import "@/styles/authenticated-home.css";
 
 type AppHomePageProps = {
@@ -25,7 +25,7 @@ export default async function AppHomePage({ params }: AppHomePageProps) {
     notFound();
   }
 
-  await requireSession(locale);
+  await requireUser(locale);
 
   return <AuthenticatedHome locale={locale} />;
 }

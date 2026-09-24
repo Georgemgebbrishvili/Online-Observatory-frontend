@@ -36,6 +36,7 @@ export type HomepageDictionary = {
   common: {
     watchLive: string;
     planMission: string;
+    illustration: string;
     minutes: string;
     approximateViewers: string;
     currentTarget: string;
@@ -119,9 +120,11 @@ export type FooterDictionary = {
   live: string;
   collection: string;
   observatory: string;
+  status: string;
   about: string;
   contact: string;
   privacy: string;
   terms: string;
+  refunds: string;
   comingSoon: string;
 };

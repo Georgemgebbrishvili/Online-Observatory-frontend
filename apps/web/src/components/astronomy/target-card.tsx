@@ -15,6 +15,8 @@ export function TargetCard({ common, content, target }: TargetCardProps) {
       <div className={`target-visual target-visual-${target.visual}`} aria-hidden="true">
         <span />
       </div>
+      {/* CLAUDE.md: never present an illustration as telescope output. */}
+      <p className="target-visual-note">{common.illustration}</p>
       <div className="target-card-body">
         <header>
           <div>

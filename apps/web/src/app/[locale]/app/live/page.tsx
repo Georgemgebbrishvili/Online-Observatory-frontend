@@ -5,7 +5,7 @@ import { LiveObservationView } from "@/components/live/live-observation";
 import { currentLiveObservation } from "@/features/live/live-data";
 import { isLocale } from "@/i18n/config";
 import { liveObservationCopy } from "@/i18n/resources/live";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 import "@/styles/live.css";
 
 type LivePageProps = {
@@ -26,7 +26,7 @@ export default async function LivePage({ params }: LivePageProps) {
 
   if (!isLocale(locale)) notFound();
 
-  const session = await requireSession(locale);
+  const user = await requireUser(locale);
 
   const safeNudgeEnabled = process.env.NEXT_PUBLIC_ENABLE_SAFE_NUDGE === "true";
 
@@ -36,9 +36,7 @@ export default async function LivePage({ params }: LivePageProps) {
       observation={currentLiveObservation}
       safeNudgeEnabled={safeNudgeEnabled}
       canControl={
-        session.user.id === currentLiveObservation.missionOwnerId ||
-        session.user.role === "OPERATOR" ||
-        session.user.role === "ADMIN"
+        user.id === currentLiveObservation.missionOwnerId || user.role === "OPERATOR"
       }
       sharedMissionUrl={`/${locale}/app/missions/${currentLiveObservation.missionId}/watch`}
     />
