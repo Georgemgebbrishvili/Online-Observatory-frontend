@@ -104,7 +104,7 @@ export function PricingPage({ locale }: PricingPageProps) {
         <strong>{copy.noPayment}</strong>
       </aside>
 
-      <section className="pricing-offering-grid" aria-label={copy.title}>
+      <section className="pricing-offering-grid" aria-label={copy.offerings}>
         {standardOfferings.map((offering, index) => (
           <OfferingCard
             key={offering.id}

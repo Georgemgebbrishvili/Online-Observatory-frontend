@@ -27,6 +27,7 @@ const dictionary = {
     },
     app: {
       ariaLabel: "აპლიკაციის ნავიგაცია",
+      sidebarAriaLabel: "ანგარიში და ობსერვატორია",
       brandAriaLabel: "სტელარი — Astroman-ის პროდუქტი",
       brandEndorsement: "Astroman-ისგან",
       home: "მთავარი",

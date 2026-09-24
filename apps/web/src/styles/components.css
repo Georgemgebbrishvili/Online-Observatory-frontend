@@ -196,10 +196,13 @@
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  white-space: nowrap;
+  /* A Georgian status label runs to ~293px. nowrap made the pill push the page
+     sideways at 320; wrapping only happens where it genuinely does not fit. */
+  max-width: 100%;
 }
 
 .status-dot {
+  flex-shrink: 0;
   width: 0.35rem;
   height: 0.35rem;
   border-radius: var(--radius-full);
@@ -631,6 +634,8 @@
 }
 
 .tab-list {
+  /* overflow-x alone does not shrink a flex or grid item below its content. */
+  min-width: 0;
   display: flex;
   overflow-x: auto;
   border-bottom: 1px solid var(--color-border-subtle);

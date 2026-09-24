@@ -117,10 +117,17 @@
 .status-row {
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: minmax(12rem, 0.4fr) minmax(0, 1fr);
   align-items: baseline;
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--color-border-subtle);
+}
+
+/* The label column's 12rem floor is wider than a 320px page can spare, and a Georgian
+   status label runs to 155px beside it. Stack until there is room for two columns. */
+@media (--sm) {
+  .status-row {
+    grid-template-columns: minmax(12rem, 0.4fr) minmax(0, 1fr);
+  }
 }
 
 .status-row:last-child {
@@ -163,6 +170,8 @@
 }
 
 .status-table-scroll {
+  /* overflow-x alone does not shrink a grid or flex item below its content. */
+  min-width: 0;
   margin-top: var(--space-6);
   overflow-x: auto;
 }

@@ -40,7 +40,12 @@ export default async function OperatorLayout({ children, params }: OperatorLayou
   if (!observatory) {
     return (
       <main id="main-content" className="operator-shell">
-        <StatePanel variant="error" title={copy.title} description={copy.noObservatory} />
+        <StatePanel
+          variant="error"
+          headingLevel={1}
+          title={copy.title}
+          description={copy.noObservatory}
+        />
       </main>
     );
   }

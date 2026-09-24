@@ -37,6 +37,7 @@
 
 .legal-notice {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-5);
   margin-top: var(--space-10);
   padding: var(--space-6);
@@ -44,6 +45,12 @@
   border-left: 3px solid var(--color-photon);
   border-radius: var(--radius-panel);
   background: var(--color-surface-raised);
+}
+
+/* A flex child will not shrink below its content unless told to, and the Georgian
+   notice is long enough that the default min-width:auto pushes it past a 320px page. */
+.legal-notice > * {
+  min-width: 0;
 }
 
 .legal-notice-marker {

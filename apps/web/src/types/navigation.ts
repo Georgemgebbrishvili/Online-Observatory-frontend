@@ -13,6 +13,7 @@ export type PublicNavigationDictionary = {
 
 export type AppNavigationDictionary = {
   ariaLabel: string;
+  sidebarAriaLabel: string;
   brandAriaLabel: string;
   brandEndorsement: string;
   home: string;
