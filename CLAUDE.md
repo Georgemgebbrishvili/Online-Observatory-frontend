@@ -161,6 +161,24 @@ both histories intact. Do not create a source path here that also exists there â
 config, the shared ADRs and a `packages/contracts/` build are duplicated by design and
 reconciled once at merge time.
 
+## The platform repository
+
+The local dev stack (`dev/README.md`) runs `darkview-platform` from a sibling checkout,
+`../part-1-platform` by default. That checkout is Beka's and is used, never changed.
+
+- Read-only. Never edit, format, commit, checkout, pull or stash there. The only
+  commands allowed there are: `npm ci`, `npm run db:generate`, `npm run db:deploy`,
+  `npm run db:seed`, the dev servers, creating `agent/.venv`, running the agent,
+  `git fetch --tags`, and the read-only `git show` (both run by
+  `npm run contracts:sync`).
+- NEVER `npm run db:migrate` â€” it is `prisma migrate dev` and can generate new
+  migration files in Beka's repo.
+- A missing endpoint, field or behaviour is never invented or worked around here.
+  Write `docs/platform-requests/<name>.md` (the screen that needs it, the proposed
+  contract shape, what it blocks) and stop.
+- Fixture data is allowed only in `e2e/fake-platform.mjs` and in UI states badged
+  "simulated".
+
 ## Mission states
 
 Primary: `REQUESTED, SCHEDULED, PREPARING, SLEWING, VERIFYING, CENTERING,
