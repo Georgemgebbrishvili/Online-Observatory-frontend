@@ -36,7 +36,7 @@ export async function generateMetadata({
 
   const name = locale === "ka" ? target.georgianName : target.commonName;
   return {
-    title: `${name} · Darkview`,
+    title: `${name} · Stellar`,
     description: target.description[locale],
   };
 }

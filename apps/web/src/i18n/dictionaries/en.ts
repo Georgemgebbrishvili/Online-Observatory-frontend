@@ -2,7 +2,7 @@ import type { Dictionary } from "../types";
 
 const dictionary = {
   metadata: {
-    title: "Darkview by Astroman",
+    title: "Stellar by Astroman",
     description:
       "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
   },
@@ -11,7 +11,7 @@ const dictionary = {
     skip: "Skip to content",
     language: "Language",
     languageName: "ქართული",
-    brandAriaLabel: "Darkview by Astroman",
+    brandAriaLabel: "Stellar by Astroman",
     brandEndorsement: "by Astroman",
     public: {
       ariaLabel: "Public navigation",
@@ -27,7 +27,7 @@ const dictionary = {
     },
     app: {
       ariaLabel: "Application navigation",
-      brandAriaLabel: "Darkview by Astroman",
+      brandAriaLabel: "Stellar by Astroman",
       brandEndorsement: "by Astroman",
       home: "Home",
       missions: "Missions",
@@ -52,7 +52,7 @@ const dictionary = {
   },
   home: {
     hero: {
-      eyebrow: "DARKVIEW · BY ASTROMAN",
+      eyebrow: "STELLAR · BY ASTROMAN",
       title: "Explore the real universe.",
       description:
         "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
@@ -94,7 +94,7 @@ const dictionary = {
       title: "A real observatory, in motion.",
       description:
         "Follow the current telescope state, target, and active mission from one precise live interface.",
-      observatoryName: "Darkview Tbilisi Observatory",
+      observatoryName: "Stellar Tbilisi Observatory",
       targetName: "Saturn",
       currentMission: "DV-042 · Saturn opposition survey",
       telescopeState: "Tracking target",
@@ -160,10 +160,10 @@ const dictionary = {
     },
     howItWorks: {
       index: "03",
-      eyebrow: "How Darkview works",
+      eyebrow: "How Stellar works",
       title: "Three steps. One real observation.",
       description:
-        "Darkview turns observatory access into a clear mission from selection to capture.",
+        "Stellar turns observatory access into a clear mission from selection to capture.",
       steps: [
         { title: "Choose", description: "Pick an object from tonight's observable sky." },
         {
@@ -182,7 +182,7 @@ const dictionary = {
       eyebrow: "Real observatory",
       title: "Software connected to physical optics.",
       description:
-        "Darkview missions are designed to move through protected observatory software to a real telescope and camera—never directly from a browser.",
+        "Stellar missions are designed to move through protected observatory software to a real telescope and camera—never directly from a browser.",
       statement:
         "Every command stays server-side. Every observation stays tied to a verified mission.",
       locationLabel: "Location",
@@ -201,7 +201,7 @@ const dictionary = {
       description:
         "Each completed mission can become a personal observation you can revisit, compare, and keep.",
       statement:
-        "These are not stock images. They are observations captured through Darkview.",
+        "These are not stock images. They are observations captured through Stellar.",
       disclaimer: "Development placeholders · no telescope captures are represented",
       frames: {
         m42: { name: "Orion Nebula", catalog: "M42 · placeholder frame" },
@@ -218,7 +218,7 @@ const dictionary = {
       observatoryName: "Tbilisi Observatory",
       active: "Active",
       location: "Tbilisi · Georgia",
-      descriptionLine: "Primary Darkview observatory node",
+      descriptionLine: "Primary Stellar observatory node",
       futureNote:
         "Future nodes will be announced only after physical integration and verification.",
     },
@@ -235,12 +235,12 @@ const dictionary = {
     finalCta: {
       eyebrow: "Begin with tonight",
       title: "Your next observation starts here.",
-      description: "Choose an observable target and shape your first Darkview mission.",
+      description: "Choose an observable target and shape your first Stellar mission.",
       action: "Explore Tonight's Sky",
     },
   },
   footer: {
-    brandAriaLabel: "Darkview by Astroman",
+    brandAriaLabel: "Stellar by Astroman",
     brandEndorsement: "by Astroman",
     georgianLanguage: "ქართული",
     englishLanguage: "English",
@@ -263,7 +263,7 @@ const dictionary = {
   },
   notFound: {
     title: "Observation not found",
-    action: "Return to Darkview",
+    action: "Return to Stellar",
   },
 } satisfies Dictionary;
 

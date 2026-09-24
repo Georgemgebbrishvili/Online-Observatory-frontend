@@ -3,15 +3,15 @@ import type { Locale } from "@/i18n/config";
 const en = {
   eyebrow: "SECURE ACCESS",
   signIn: {
-    metadataTitle: "Sign in · Darkview",
+    metadataTitle: "Sign in · Stellar",
     title: "Return to your observatory.",
     description: "Sign in to manage your missions and personal captures.",
     submit: "Sign in",
-    alternate: "New to Darkview?",
+    alternate: "New to Stellar?",
     alternateAction: "Create an account",
   },
   register: {
-    metadataTitle: "Create account · Darkview",
+    metadataTitle: "Create account · Stellar",
     title: "Begin your observing journey.",
     description: "Create a verified account before requesting telescope time.",
     submit: "Create account",
@@ -19,14 +19,14 @@ const en = {
     alternateAction: "Sign in",
   },
   verifyPending: {
-    metadataTitle: "Verify email · Darkview",
+    metadataTitle: "Verify email · Stellar",
     title: "Check your email.",
     description:
       "We sent a one-time verification link. It expires in 30 minutes and can only be used once.",
     action: "Return to sign in",
   },
   verify: {
-    metadataTitle: "Confirm email · Darkview",
+    metadataTitle: "Confirm email · Stellar",
     title: "Confirm your email address.",
     description:
       "This final check activates your account and creates a new secure session.",
@@ -60,15 +60,15 @@ export const authCopy = {
   ka: {
     eyebrow: "დაცული წვდომა",
     signIn: {
-      metadataTitle: "შესვლა · Darkview",
+      metadataTitle: "შესვლა · სტელარი",
       title: "დაუბრუნდი შენს ობსერვატორიას.",
       description: "შედი ანგარიშში მისიებისა და პირადი გადაღებების სამართავად.",
       submit: "შესვლა",
-      alternate: "ჯერ არ გაქვს Darkview-ის ანგარიში?",
+      alternate: "ჯერ არ გაქვს სტელარის ანგარიში?",
       alternateAction: "ანგარიშის შექმნა",
     },
     register: {
-      metadataTitle: "ანგარიშის შექმნა · Darkview",
+      metadataTitle: "ანგარიშის შექმნა · სტელარი",
       title: "დაიწყე დაკვირვების გზა.",
       description: "ტელესკოპის დროის მოთხოვნამდე შექმენი და დაადასტურე ანგარიში.",
       submit: "ანგარიშის შექმნა",
@@ -76,14 +76,14 @@ export const authCopy = {
       alternateAction: "შესვლა",
     },
     verifyPending: {
-      metadataTitle: "ელფოსტის დადასტურება · Darkview",
+      metadataTitle: "ელფოსტის დადასტურება · სტელარი",
       title: "შეამოწმე ელფოსტა.",
       description:
         "გამოგიგზავნეთ ერთჯერადი დამადასტურებელი ბმული. ის 30 წუთში გაუქმდება და მხოლოდ ერთხელ იმუშავებს.",
       action: "შესვლაზე დაბრუნება",
     },
     verify: {
-      metadataTitle: "ელფოსტის დადასტურება · Darkview",
+      metadataTitle: "ელფოსტის დადასტურება · სტელარი",
       title: "დაადასტურე ელფოსტის მისამართი.",
       description:
         "ეს ბოლო შემოწმება გაააქტიურებს ანგარიშს და შექმნის ახალ დაცულ სესიას.",

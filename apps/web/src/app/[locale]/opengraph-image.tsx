@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 import { palette } from "@/styles/tokens";
 
-export const alt = "Darkview by Astroman — Live Remote Observatory · Tbilisi";
+export const alt = "Stellar by Astroman — Live Remote Observatory · Tbilisi";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -23,7 +23,7 @@ export default function OpenGraphImage() {
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
         <div style={{ color: palette.neutral300, fontSize: 28 }}>
-          Darkview by Astroman
+          Stellar by Astroman
         </div>
         <div style={{ display: "flex", maxWidth: 680, fontSize: 72, lineHeight: 1.04 }}>
           The real sky, live.

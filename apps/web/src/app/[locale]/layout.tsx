@@ -64,7 +64,7 @@ export async function generateMetadata({
       title: dictionary.metadata.title,
       description: dictionary.metadata.description,
     }),
-    applicationName: "Darkview",
+    applicationName: "Stellar",
     category: "astronomy",
     formatDetection: {
       email: false,
