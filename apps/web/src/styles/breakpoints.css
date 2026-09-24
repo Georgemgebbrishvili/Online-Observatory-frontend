@@ -1,0 +1,19 @@
+/*
+ * Stellar design system v3 — the five breakpoints, and the only five permitted.
+ * docs/plan/03-design-system.md §3. Resolved by postcss-custom-media; a custom
+ * property cannot be read inside a media query, so these are not :root tokens.
+ *
+ * A component that wants a sixth boundary wants a container query instead.
+ * Verified at 320 / 390 / 768 / 1024 / 1440 every phase.
+ */
+@custom-media --xs (min-width: 20rem); /* 320px — smallest supported phone */
+@custom-media --sm (min-width: 30rem); /* 480px — large phone */
+@custom-media --md (min-width: 48rem); /* 768px — tablet, sidebar appears */
+@custom-media --lg (min-width: 64rem); /* 1024px — laptop, multi-column */
+@custom-media --xl (min-width: 80rem); /* 1280px — desktop, widest grids */
+
+/* Below a boundary. Written once here so 43.99 and 44 cannot both exist again. */
+@custom-media --below-sm (max-width: 29.999rem);
+@custom-media --below-md (max-width: 47.999rem);
+@custom-media --below-lg (max-width: 63.999rem);
+@custom-media --below-xl (max-width: 79.999rem);

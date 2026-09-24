@@ -1,5 +1,29 @@
-// Brand Identity System v2.0 enforcement for apps/web. See docs/design/brand-tokens.md.
+// Brand Identity System v2.0 enforcement for apps/web. See docs/design/brand-tokens.md
+// and docs/plan/03-design-system.md for the v3 rules.
 const rawLength = "/(^|[\\s(,])-?\\d*\\.?\\d+(rem|px|em)\\b/";
+
+// v3 §4 — a font-size comes from the scale. The one permitted shape beyond a bare
+// token is min(token, Nvw), which caps a heading by viewport width so a long Georgian
+// compound does not break mid-word; the measurement belongs in a comment at the site.
+const fontSizeFromScale = [
+  "/^var\\(--font-size-[a-z0-9-]+\\)$/",
+  "/^min\\(var\\(--font-size-[a-z0-9-]+\\), [0-9.]+vw\\)$/",
+  "inherit",
+];
+
+// v3 §4 and §3 hold everywhere except these eight, which carry 60 hardcoded sizes and
+// the eleven ad-hoc widths DV-071 never reached. Phase 1 migrates them and this list
+// shrinks to nothing. Do not add a file to it.
+const awaitingV3Migration = [
+  "apps/web/src/styles/auth.css",
+  "apps/web/src/styles/authenticated-home.css",
+  "apps/web/src/styles/collection.css",
+  "apps/web/src/styles/footer.css",
+  "apps/web/src/styles/live.css",
+  "apps/web/src/styles/mission-session.css",
+  "apps/web/src/styles/missions.css",
+  "apps/web/src/styles/shared-mission.css",
+];
 
 /** @type {import("stylelint").Config} */
 const config = {
@@ -19,8 +43,8 @@ const config = {
       "oklch",
       "color",
     ],
-    // The --dv-* palette is private to tokens.css; everything else uses semantic tokens.
-    "declaration-property-value-disallowed-list": { "/.*/": ["/var\\(--dv-/"] },
+    // The --st-* palette is private to tokens.css; everything else uses semantic tokens.
+    "declaration-property-value-disallowed-list": { "/.*/": ["/var\\(--st-/"] },
     // §09 anti-pattern 04: no glassmorphism, no glowing text.
     "property-disallowed-list": [
       "backdrop-filter",
@@ -38,6 +62,16 @@ const config = {
       },
     },
     {
+      // v3 §4: every stylesheet takes its type from the scale, not just the library.
+      files: ["apps/web/src/styles/*.css"],
+      ignoreFiles: [...awaitingV3Migration, "apps/web/src/styles/tokens.css"],
+      rules: {
+        "declaration-property-value-allowed-list": {
+          "font-size": fontSizeFromScale,
+        },
+      },
+    },
+    {
       // DV-070 AC1: the component library takes type and spacing from the scale only.
       files: [
         "apps/web/src/styles/components.css",
@@ -47,11 +81,11 @@ const config = {
       ],
       rules: {
         "declaration-property-value-allowed-list": {
-          "font-size": ["/^var\\(--font-size-[a-z0-9-]+\\)$/", "inherit"],
+          "font-size": fontSizeFromScale,
           "font-weight": ["/^var\\(--font-weight-[a-z]+\\)$/", "inherit"],
         },
         "declaration-property-value-disallowed-list": {
-          "/.*/": ["/var\\(--dv-/"],
+          "/.*/": ["/var\\(--st-/"],
           "/^(padding|margin|gap|row-gap|column-gap)/": [rawLength],
         },
       },

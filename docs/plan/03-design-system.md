@@ -140,6 +140,31 @@ differently, and getting it wrong is visible on every commerce surface.
 A design system nobody can violate by accident is worth more than a document describing
 one. The three new rules are the difference between v2 and v3.
 
+## What Phase 0 landed, and what it did not
+
+Phase 0 is the token layer. It delivered:
+
+- the `--st-*` rename, `--color-stellar-*`, and every document that named the old prefix;
+- the surface ramp and the three elevations, written into `tokens.css` as the rule
+  rather than left in this file;
+- the completed spacing scale — 7, 9, 11, 14 — and `--space-section`, `--space-card`,
+  `--space-stack`;
+- `styles/breakpoints.css`: the five boundaries and their `below-` forms as
+  `@custom-media`, wired through `postcss-custom-media` and proven to resolve in a
+  production build (`@media (--md)` → `@media (min-width:48rem)`);
+- the v3 `font-size` rule, live in every stylesheet but eight.
+
+It deliberately did not migrate call sites. Eight stylesheets still hold 60 hardcoded
+font sizes and the eleven ad-hoc widths; `stylelint.config.mjs` names them in
+`awaitingV3Migration`. Moving them changes layout at real widths, and re-verifying
+every surface at 320 / 390 / 768 / 1024 / 1440 is Phase 1's stated Done-when. The
+media-query rule turns on at the end of that migration, when it can be turned on
+without an exception list.
+
+The `--glow-mark` token is also deferred, to the commit that brings the comet mark in.
+Its only consumer is the mark, and a token nothing uses is a token nobody can check.
+
+
 ## Open questions for the maintainer
 
 1. **A Stellar Brand Identity System document.** ADR-006 pinned a Darkview PDF as the

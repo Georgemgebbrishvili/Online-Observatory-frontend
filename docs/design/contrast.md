@@ -1,6 +1,6 @@
 # Contrast measurements — DV-070
 
-WCAG 2.1 contrast ratios for every token pair the Darkview component library uses, computed
+WCAG 2.1 contrast ratios for every token pair the Stellar component library uses, computed
 from `apps/web/src/styles/tokens.css` by `apps/web/src/styles/tokens.test.ts`. That test fails
 if any pair drops below its minimum or if this table stops matching the tokens. Regenerate the
 table after a token change:
