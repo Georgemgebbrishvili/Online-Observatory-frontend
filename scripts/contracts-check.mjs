@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// Fails if the committed generated artifacts have drifted from the pinned copy of
-// the platform contract. Generates into a scratch directory and compares; never
-// mutates the committed output.
+// Fails if the pinned copy of the platform contract is not the one SOURCE.json records,
+// or if the committed generated artifacts have drifted from it. Generates into a scratch
+// directory and compares; never mutates the committed output.
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -25,6 +26,27 @@ function readTree(directory) {
   );
 }
 
+// SOURCE.json is written by `npm run contracts:sync`. A spec whose hash disagrees with
+// it was edited in place or copied by hand, and no longer is the release it claims.
+const sourcePath = path.join(repositoryRoot, "packages/contracts/SOURCE.json");
+if (!fs.existsSync(sourcePath)) {
+  console.error(
+    "packages/contracts/SOURCE.json is missing. Run `npm run contracts:sync`.",
+  );
+  process.exit(1);
+}
+const recorded = JSON.parse(fs.readFileSync(sourcePath, "utf8")).sha256;
+const actual = createHash("sha256")
+  .update(fs.readFileSync(path.join(repositoryRoot, "packages/contracts/openapi.yaml")))
+  .digest("hex");
+if (actual !== recorded) {
+  console.error(
+    `packages/contracts/openapi.yaml is sha256 ${actual}, but SOURCE.json records ${recorded}.\n` +
+      "Never edit the pinned copy. Run `npm run contracts:sync -- <ref>`.",
+  );
+  process.exit(1);
+}
+
 const scratchDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "darkview-contracts-"));
 
 try {
@@ -35,22 +57,28 @@ try {
   const drifted = [];
 
   for (const [file, contents] of expected) {
-    if (!committed.has(file)) drifted.push(`missing:  packages/contracts/generated/${file}`);
+    if (!committed.has(file))
+      drifted.push(`missing:  packages/contracts/generated/${file}`);
     else if (committed.get(file) !== contents)
       drifted.push(`stale:    packages/contracts/generated/${file}`);
   }
   for (const file of committed.keys()) {
-    if (!expected.has(file)) drifted.push(`orphaned: packages/contracts/generated/${file}`);
+    if (!expected.has(file))
+      drifted.push(`orphaned: packages/contracts/generated/${file}`);
   }
 
   if (drifted.length > 0) {
-    console.error("Generated contract artifacts have drifted from the pinned contract:\n");
+    console.error(
+      "Generated contract artifacts have drifted from the pinned contract:\n",
+    );
     for (const line of drifted) console.error(`  ${line}`);
     console.error("\nRun `npm run contracts:generate` and commit the result.");
     process.exit(1);
   }
 
-  console.log(`contracts: ${expected.size} generated artifacts match the pinned contract`);
+  console.log(
+    `contracts: ${expected.size} generated artifacts match the pinned contract`,
+  );
 } finally {
   fs.rmSync(scratchDirectory, { recursive: true, force: true });
 }
