@@ -17,6 +17,40 @@ What does work: the platform, simulator and web client come up together, and you
 register, verify and sign in as a customer. The agent links to realtime. You can browse
 targets, and at night you can see and reserve slots.
 
+## Fake mode: any hour, no Docker, no platform
+
+For website work. The site runs against `apps/web/e2e/fake-platform.mjs`, the same fake
+the Playwright suite uses. It never looks at a clock or the Sun: its one observatory is
+`SIMULATED` and `ONLINE`, with a mission `OBSERVING`, at 2 pm or 2 am.
+
+```bash
+cd /Users/nika/Desktop/Darkview/part-2-clients
+npm ci                 # once
+npm run dev:fake
+```
+
+Or, in VS Code: _Tasks: Run Task → dev stack: fake mode_.
+
+Open http://localhost:3000, never `127.0.0.1`: the fake checks `Origin` the way the
+platform does. Sign in with one of these:
+
+| Account  | Email                    | Password                |
+| -------- | ------------------------ | ----------------------- |
+| Customer | `observer@darkview.test` | `correct horse battery` |
+| Operator | `operator@darkview.test` | `correct horse battery` |
+
+Everything the fake serves is parsed by the generated contract validators, so it cannot
+take a shape the platform's API does not have. Every observation it shows is simulated,
+and the UI must badge it that way. A route the fake does not implement answers 404
+`Not implemented by the fake`. Today that covers registration, email verification and
+shared-observation presence. The fake gains a route when a screen starts calling it,
+never ahead of one.
+
+Ports 3000 and 4100 must be free. The script refuses to start otherwise, because a server
+already there would answer its readiness checks.
+
+The rest of this file covers the **real** platform stack.
+
 ## The platform checkout is read-only
 
 `../part-1-platform` is used, never changed. See CLAUDE.md, "The platform repository".

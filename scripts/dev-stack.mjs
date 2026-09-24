@@ -4,12 +4,14 @@
 //
 //   node scripts/dev-stack.mjs          run everything; Ctrl-C stops it
 //   node scripts/dev-stack.mjs setup    first time: install, migrate, seed, agent venv
+//   node scripts/dev-stack.mjs fake     this web app against e2e/fake-platform.mjs only
 //
 // Nothing here writes inside the platform checkout except what its own commands do
 // (node_modules, the generated Prisma client, agent/.venv). See CLAUDE.md, "The
 // platform repository", and dev/README.md.
 import { execFileSync, spawn } from "node:child_process";
 import fs from "node:fs";
+import net from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -19,6 +21,7 @@ const stateDirectory = path.join(repositoryRoot, "dev/.state");
 
 const API_URL = "http://127.0.0.1:4000";
 const AGENT_CLOUD_URL = "ws://localhost:4001/ws/agent";
+const FAKE_API_URL = "http://127.0.0.1:4100";
 
 function fail(message) {
   console.error(`\n\x1b[31mdev-stack: ${message}\x1b[0m\n`);
@@ -167,7 +170,7 @@ function setup() {
   console.log("\n\x1b[32mdev-stack: setup complete. Next: npm run dev:stack\x1b[0m\n");
 }
 
-const COLOURS = { mail: 34, api: 36, realtime: 35, agent: 33, web: 32 };
+const COLOURS = { fake: 31, mail: 34, api: 36, realtime: 35, agent: 33, web: 32 };
 const children = new Map();
 let stopping = false;
 
@@ -222,6 +225,26 @@ function stopAll(reason, exitCode = 0) {
   }
 }
 
+// A server already on one of these ports would answer the readiness checks below
+// for a stack that never started.
+async function requireFreePorts(...ports) {
+  for (const port of ports) {
+    // Both: a server bound to 127.0.0.1 only does not stop a wildcard probe on macOS.
+    const free = await Promise.all(
+      [undefined, "127.0.0.1"].map(
+        (host) =>
+          new Promise((resolve) => {
+            const probe = net.createServer();
+            probe.once("error", () => resolve(false));
+            probe.listen(port, host, () => probe.close(() => resolve(true)));
+          }),
+      ),
+    ).then((results) => results.every(Boolean));
+    if (!free)
+      fail(`port ${port} is already in use. Stop whatever holds it (lsof -i :${port}).`);
+  }
+}
+
 async function waitFor(url, name, timeoutSeconds) {
   const deadline = Date.now() + timeoutSeconds * 1000;
   while (Date.now() < deadline) {
@@ -245,6 +268,7 @@ async function stack() {
     fail("SITE_LATITUDE and SITE_LONGITUDE must be set in dev/.env.local.");
   }
 
+  await requireFreePorts(3000, 4000, 4001, 4010);
   startServices();
 
   process.on("SIGINT", () => stopAll("Ctrl-C; stopping."));
@@ -300,6 +324,30 @@ async function stack() {
     );
 }
 
+// The web app against the e2e fake platform: no containers, no platform checkout, no
+// clock. Its observatory is simulated and its mission is OBSERVING at any hour.
+async function fake() {
+  process.on("SIGINT", () => stopAll("Ctrl-C; stopping."));
+  process.on("SIGTERM", () => stopAll("SIGTERM; stopping."));
+
+  await requireFreePorts(3000, 4100);
+  const webDirectory = path.join(repositoryRoot, "apps/web");
+  start("fake", process.execPath, ["e2e/fake-platform.mjs"], { cwd: webDirectory });
+  await waitFor(`${FAKE_API_URL}/health`, "the fake platform", 30);
+  if (stopping) return;
+
+  start("web", "npm", ["run", "dev"], {
+    cwd: repositoryRoot,
+    env: { DARKVIEW_PLATFORM_API_URL: FAKE_API_URL },
+  });
+  await waitFor("http://localhost:3000/en", "the web app", 120);
+  if (!stopping)
+    console.log(
+      "\n\x1b[32mdev-stack: fake mode up. Open http://localhost:3000 (not 127.0.0.1).\x1b[0m\n",
+    );
+}
+
 if (process.argv[2] === "setup") setup();
+else if (process.argv[2] === "fake") await fake();
 else if (process.argv[2] === "down") compose("down");
 else await stack();
