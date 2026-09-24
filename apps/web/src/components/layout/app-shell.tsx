@@ -32,7 +32,7 @@ function ObservatoryState({ navigation }: Pick<AppShellProps, "navigation">) {
 export function AppShell({ children, locale, logoutLabel, navigation }: AppShellProps) {
   return (
     <div className="app-shell">
-      <aside className="app-sidebar">
+      <aside className="app-sidebar" aria-label={navigation.sidebarAriaLabel}>
         <a className="app-brand" href={`/${locale}`}>
           <BrandLockup
             ariaLabel={navigation.brandAriaLabel}

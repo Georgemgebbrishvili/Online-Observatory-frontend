@@ -71,6 +71,20 @@ a {
   padding-inline: var(--space-page);
 }
 
+/*
+ * The one visually-hidden utility. A heading or label that belongs in the accessibility
+ * tree but not in the layout uses this — an immersive viewport still owes a screen
+ * reader an h1. Previously duplicated in operator.css and design-system.css.
+ */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .skip-link {
   position: fixed;
   z-index: 50;

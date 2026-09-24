@@ -63,6 +63,7 @@ export default async function StatusRoute({ params }: StatusRouteProps) {
         <main className="status-page status-page-unavailable" id="main-content">
           <StatePanel
             variant="error"
+            headingLevel={1}
             title={failure.title}
             description={failure.detail}
           />

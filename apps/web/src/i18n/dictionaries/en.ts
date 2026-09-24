@@ -27,6 +27,7 @@ const dictionary = {
     },
     app: {
       ariaLabel: "Application navigation",
+      sidebarAriaLabel: "Account and observatory",
       brandAriaLabel: "Stellar by Astroman",
       brandEndorsement: "by Astroman",
       home: "Home",

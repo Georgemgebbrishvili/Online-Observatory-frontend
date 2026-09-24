@@ -138,8 +138,8 @@ export function NetworkPage({ locale }: NetworkPageProps) {
           <strong>{copy.connectStatus}</strong>
           <span>{copy.connectBoundary}</span>
         </div>
-        <aside>
-          <h3>{copy.foundationTitle}</h3>
+        <aside aria-labelledby="network-foundation-title">
+          <h3 id="network-foundation-title">{copy.foundationTitle}</h3>
           <ul>
             {copy.foundationItems.map((item, index) => (
               <li key={item}>

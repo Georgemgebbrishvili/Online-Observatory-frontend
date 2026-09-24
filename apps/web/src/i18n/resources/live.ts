@@ -31,6 +31,7 @@ export const liveObservationCopy = {
     },
     safeControl: "Safe server-validated framing control enabled",
     viewportLabel: (target: string) => `${target} live observation`,
+    pageHeading: (target: string) => `Live observation of ${target}`,
   },
   ka: {
     metadataTitle: "პირდაპირი დაკვირვება · სტელარი",
@@ -67,6 +68,7 @@ export const liveObservationCopy = {
     },
     safeControl: "სერვერით შემოწმებული უსაფრთხო კადრირების კონტროლი ჩართულია",
     viewportLabel: (target: string) => `${target} — პირდაპირი დაკვირვება`,
+    pageHeading: (target: string) => `${target} — პირდაპირი დაკვირვება`,
   },
 } as const;
 

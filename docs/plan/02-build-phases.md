@@ -43,13 +43,51 @@ correct; all tests green.
   with the full route map including the pages that do not exist yet.
 - Route groups and layouts for the sections Phase 3–5 will fill.
 - Breakpoint contract fixed and documented; every existing page re-verified against it.
-- Fix the two a11y defects already found: `/app` has an unnamed `complementary`
-  landmark and two navigations sharing one `aria-label`; the `/status` unreachable
-  fallback renders an `h3` as the page's only heading.
+- ~~Fix the two a11y defects already found.~~ Done, and the list was wrong in one
+  place — see "What the shell contract found" below.
+- A shell contract in `e2e/shell-contract.ts`: every route, both languages, the five
+  widths, checked for horizontal overflow, landmark naming and heading outline. It is
+  the mechanism behind this phase's Done-when rather than a manual pass at the end.
 - Empty, loading and error states as shared components, since every phase needs them.
 
 **Done when:** every route in the inventory is reachable or renders an honest
 "not yet available"; no horizontal scroll at 320px anywhere.
+
+### What the shell contract found
+
+Written before the navigation work, because a claim about a11y or responsiveness is
+worth what its evidence is worth. Run across 16 routes × 2 languages, it failed 27
+times on first run. What that resolved to:
+
+| Finding | Where | In the plan? |
+| --- | --- | --- |
+| Unnamed `complementary` landmark | `/app/*` sidebar, at 1440 | yes |
+| `StatePanel` hardcodes `h3`, so a page that *is* one has no `h1` | `/status` unreachable, `/admin` with no observatory | yes |
+| Two `region` landmarks share the `h1`'s text as their name | `/pricing`, both widths | **no — new** |
+| No heading at all, so no `h1` | `/app/live` | **no — new** |
+| Unnamed `complementary` landmark | `/network` foundation aside | **no — new** |
+| Label column's 12rem floor exceeds a 320px page | `/status` | **no — new** |
+| Table wider than the page; `overflow-x` cannot shrink a grid item | `/status` | **no — new** |
+| Four-column swatch row with a 7rem floor | `/design-system` | **no — new** |
+| Flex child will not shrink below content | `/terms`, `/privacy`, `/refunds`, Georgian only | **no — new** |
+| `white-space: nowrap` on a 293px Georgian status pill | `/design-system`, Georgian only | **no — new** |
+| `.tab-list` `overflow-x` cannot shrink a flex item | `/design-system`, Georgian only | **no — new** |
+
+**One item in the plan was wrong.** "Two navigations sharing one `aria-label`" is a
+duplicate in the source only. `site-header.tsx` labels its desktop nav and its mobile
+menu identically, and `app-navigation.tsx` does the same for the sidebar and the bottom
+bar — but CSS gives exactly one of each pair `display: none` at every width, so only
+one is ever in the accessibility tree. The contract's duplicate-name check passes at
+both widths and never reproduced it. Left alone deliberately: renaming one of a pair
+that is never heard together would be noise.
+
+Four of the ten real findings are Georgian-only. A responsive pass run in English
+would have found six of them.
+
+**Deliberately not fixed:** `/app/live` uses a visually hidden `h1`. The viewport is
+the page and a visible title would fight it; a screen reader still gets a title. The
+`.visually-hidden` utility moved to `globals.css`, where it was duplicated in
+`operator.css` and `design-system.css` before.
 
 ## Phase 2 — Wire what already exists
 
@@ -122,8 +160,16 @@ why not.
 - Motion, per the brand's three durations.
 - DV-080 Georgian QA with a native reader.
 - DV-081 accessibility, responsive and performance pass; WCAG 2.1 AA verified, not assumed.
-- Fix the `home.spec.ts:103` hydration race — `Promise.all([waitForURL, click])` fires
-  the click before hydration and fails intermittently under load.
+- Fix the two `home.spec.ts` tests that fail only under full-suite load, `:76` and
+  `:103`. `:103` is the hydration race — `Promise.all([waitForURL, click])` fires the
+  click before hydration. `:76` times out clicking a button whose locator has already
+  resolved. Both pass in isolation (26/26) and both failed in the 151-test run that
+  added the Phase 1 shell contract, so the cause is contention, not the pages.
+  The underlying reason is that `webServer` runs `next dev`, which compiles routes on
+  demand: the shell contract visits 32 route/locale combinations at once and forces
+  the whole route tree to compile under parallel load. Either cap `workers`, or build
+  once and serve with `next start` for e2e. **CI is unaffected** — the workflow runs
+  contracts, lint, typecheck, unit tests and build, not Playwright.
 
 ## Sequence
 
