@@ -4,6 +4,8 @@ import { AppDestinationPreview } from "@/components/layout/app-destination-previ
 import {
   appDestinations,
   isAppDestinationSegment,
+  isPlannedSegment,
+  isPreviewSegment,
 } from "@/features/navigation/navigation-model";
 import { isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -16,13 +18,7 @@ type AppDestinationPageProps = {
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
     appDestinations
-      .filter(
-        (destination) =>
-          destination.segment !== "" &&
-          destination.segment !== "missions" &&
-          destination.segment !== "live" &&
-          destination.segment !== "collection",
-      )
+      .filter((destination) => isPreviewSegment(destination.segment))
       .map((destination) => ({ locale, destination: destination.segment })),
   );
 }
@@ -41,6 +37,7 @@ export default async function AppDestinationPage({ params }: AppDestinationPageP
     <AppDestinationPreview
       destination={destination}
       navigation={dictionary.navigation.app}
+      planned={isPlannedSegment(destination)}
     />
   );
 }

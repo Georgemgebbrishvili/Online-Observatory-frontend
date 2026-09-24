@@ -106,7 +106,8 @@
     var(--color-night);
 }
 
-.app-sidebar {
+.app-sidebar,
+.app-navigation-planned {
   display: none;
 }
 
@@ -294,7 +295,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 43.99rem) {
+@media (--below-md) {
   .app-mobile-header {
     min-height: 4.5rem;
     gap: var(--space-2);
@@ -393,7 +394,7 @@
   inset: 47%;
 }
 
-@media (min-width: 70rem) {
+@media (--lg) {
   .public-menu-button,
   .public-mobile-menu {
     display: none;
@@ -483,6 +484,47 @@
     border-radius: var(--radius-full);
     background: var(--color-photon);
     content: "";
+  }
+
+  /*
+   * The planned destinations: reachable, navigable, and visibly not the same thing
+   * as a surface that works. Dimmer, and under a heading that says so.
+   */
+  .app-navigation-planned {
+    display: grid;
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border-subtle);
+    gap: var(--space-1);
+  }
+
+  .app-nav-group {
+    margin: 0 var(--space-3) var(--space-2);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .app-navigation-planned a {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: var(--space-3);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-medium);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-label);
+  }
+
+  .app-navigation-planned a[aria-current="page"] {
+    background: var(--color-overlay-hover);
+    color: var(--color-text-secondary);
+  }
+
+  .app-navigation-planned .app-nav-icon svg {
+    opacity: 0.65;
   }
 
   .app-sidebar .app-observatory-state {
