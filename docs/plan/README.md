@@ -24,15 +24,16 @@ room, commerce, mobile — then polish, last, by instruction.
 
 ## Three things found while writing this
 
-1. **Subscription has no client issue.** ADR-022 is approved, the platform ships six
+1. **Subscription had no client issue.** ADR-022 is approved, the platform ships six
    subscription endpoints, `/pricing` describes subscriptions in prose and cannot sell
-   one. No issue exists in either backlog.
-2. **Partner self-service has no client issue.** DV-120–123 build registration,
+   one. No issue existed in either backlog.
+2. **Partner self-service had no client issue.** DV-120–123 build registration,
    windows, review and the installer — all server and agent side. A telescope owner has
    no page to register on.
-3. **The `/v1/*` contract debt is still unfiled.** `shared-observations` calls six
+3. **The `/v1/*` contract debt was unfiled.** `shared-observations` calls six
    endpoints absent from the pinned contract, through a hand-written cross-boundary
    type with no validation. `CLAUDE.md` requires an issue against `darkview-platform`.
    It blocks Phase 2.
 
-All three are Phase 0 items.
+All three were Phase 0 items and all three are now filed: [#2](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/2), [#3](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/3)
+and [#1](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/1).
