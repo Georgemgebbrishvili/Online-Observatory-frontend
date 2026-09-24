@@ -22,7 +22,8 @@
     "test": "npm run test --workspaces --if-present",
     "test:e2e": "npm run test:e2e --workspace @darkview/web",
     "contracts:generate": "node scripts/contracts-generate.mjs",
-    "contracts:check": "node scripts/contracts-check.mjs"
+    "contracts:check": "node scripts/contracts-check.mjs",
+    "contracts:sync": "node scripts/contracts-sync.mjs"
   },
   "devDependencies": {
     "eslint": "9.39.5",
