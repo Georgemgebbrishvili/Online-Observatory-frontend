@@ -589,7 +589,7 @@
   outline-offset: 3px;
 }
 
-@media (min-width: 44rem) {
+@media (--md) {
   .home-dashboard-header {
     grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.7fr);
     align-items: end;
@@ -624,7 +624,7 @@
   }
 }
 
-@media (min-width: 70rem) {
+@media (--lg) {
   .home-dashboard-grid {
     grid-template-columns: minmax(0, 1.65fr) minmax(19rem, 0.75fr);
   }
@@ -647,7 +647,7 @@
   }
 }
 
-@media (max-width: 43.99rem) {
+@media (--below-md) {
   .authenticated-home {
     padding-top: var(--space-6);
   }

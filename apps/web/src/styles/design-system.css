@@ -115,12 +115,18 @@
 
 .ds-swatch-row {
   display: grid;
-  grid-template-columns: 1.5rem minmax(7rem, 1fr) auto 4.5rem;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
   gap: var(--space-3);
   align-items: center;
   min-height: 2rem;
   color: var(--color-text-secondary);
   font-size: var(--font-size-label);
+}
+
+@media (--sm) {
+  .ds-swatch-row {
+    grid-template-columns: 1.5rem minmax(7rem, 1fr) auto 4.5rem;
+  }
 }
 
 .ds-swatch-row code,
@@ -363,17 +369,7 @@
   justify-self: start;
 }
 
-.ds-visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-@media (min-width: 48rem) {
+@media (--md) {
   .ds-overlay-grid {
     grid-template-columns: auto auto minmax(14rem, 1fr) auto;
   }
@@ -384,7 +380,7 @@
   }
 }
 
-@media (min-width: 64rem) {
+@media (--lg) {
   .ds-hero {
     grid-template-columns: minmax(0, 1fr) auto;
   }

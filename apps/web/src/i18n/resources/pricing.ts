@@ -5,6 +5,7 @@ export const pricingPageCopy = {
       "Conceptual Stellar access offerings with configurable pricing and no payment integration.",
     eyebrow: "STELLAR ACCESS · CONFIGURATION DRAFT",
     title: "Choose how deeply you look.",
+    offerings: "Access offerings",
     introduction:
       "Start with the shared sky, build a personal collection, or plan for dedicated telescope time.",
     noticeTitle: "Pricing is not finalized",
@@ -41,6 +42,7 @@ export const pricingPageCopy = {
       "სტელარზე წვდომის კონცეფციური შეთავაზებები და კონფიგურირებადი ფასების სტრუქტურა.",
     eyebrow: "სტელარზე წვდომა · კონფიგურაციის მონახაზი",
     title: "აირჩიეთ, რამდენად ღრმად გაიხედავთ.",
+    offerings: "წვდომის შეთავაზებები",
     introduction:
       "დაიწყეთ საერთო ცით, შექმენით პირადი კოლექცია ან დაგეგმეთ ტელესკოპის გამოყოფილი დრო.",
     noticeTitle: "ფასები ჯერ არ არის საბოლოო",

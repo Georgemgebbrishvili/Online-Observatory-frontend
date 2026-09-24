@@ -114,6 +114,7 @@ export function LiveObservationView({
 
   return (
     <article className="live-page">
+      <h1 className="visually-hidden">{copy.pageHeading(observation.target[locale])}</h1>
       <div
         ref={viewportRef}
         className="live-viewport"

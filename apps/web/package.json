@@ -20,6 +20,7 @@
     "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@csstools/postcss-global-data": "4.0.0",
     "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/jest-dom": "7.0.1",

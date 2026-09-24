@@ -8,8 +8,9 @@ import type { Page } from "@playwright/test";
 
 /**
  * The application sidebar. The page carries two `complementary` landmarks -- this
- * one and the observatory panel -- and only the other has an accessible name, so
- * the sidebar is identified by the navigation it contains.
+ * one and the observatory panel -- and both are now named, so either would resolve
+ * by name. It stays keyed to the navigation it contains because that works in both
+ * languages, where a name would have to be looked up per locale.
  */
 export function appSidebar(page: Page) {
   return page

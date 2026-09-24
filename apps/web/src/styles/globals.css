@@ -48,7 +48,7 @@ html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow) {
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 43.99rem) {
+@media (--below-md) {
   html[lang="ka"] .missions-hero h1 {
     font-size: var(--font-size-h1);
   }
@@ -69,6 +69,20 @@ a {
   width: min(100%, 90rem);
   margin-inline: auto;
   padding-inline: var(--space-page);
+}
+
+/*
+ * The one visually-hidden utility. A heading or label that belongs in the accessibility
+ * tree but not in the layout uses this — an immersive viewport still owes a screen
+ * reader an h1. Previously duplicated in operator.css and design-system.css.
+ */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .skip-link {
