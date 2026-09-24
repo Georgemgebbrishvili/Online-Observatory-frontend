@@ -168,7 +168,9 @@ The local dev stack (`dev/README.md`) runs `darkview-platform` from a sibling ch
 
 - Read-only. Never edit, format, commit, checkout, pull or stash there. The only
   commands allowed there are: `npm ci`, `npm run db:generate`, `npm run db:deploy`,
-  `npm run db:seed`, the dev servers, creating `agent/.venv`, and running the agent.
+  `npm run db:seed`, the dev servers, creating `agent/.venv`, running the agent,
+  `git fetch --tags`, and the read-only `git show` (both run by
+  `npm run contracts:sync`).
 - NEVER `npm run db:migrate` — it is `prisma migrate dev` and can generate new
   migration files in Beka's repo.
 - A missing endpoint, field or behaviour is never invented or worked around here.
