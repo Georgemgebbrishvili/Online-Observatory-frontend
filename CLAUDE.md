@@ -206,7 +206,6 @@ Every change in this repository must be independently verifiable. Treat it accor
 - Never read, print or commit secrets.
 - Never fabricate timestamps, commits, tests or hardware evidence.
 - Never backdate a commit. Real history only.
-- Never merge directly to `main`.
 - Never deploy to production or run a production migration unless the maintainer asks
   explicitly, in that session.
 - Material that predates this repository is recorded in the private provenance record
@@ -225,7 +224,7 @@ Every change in this repository must be independently verifiable. Treat it accor
 7. Risks and assumptions listed explicitly.
 8. Work stays on its branch until reviewed. An agent may **request** to push the
    branch, but must wait for the maintainer's explicit approval on that prompt before
-   the push happens. Never merge and never deploy.
+   the push happens. 
 
 Pushing is maintainer-approved, per push. Do not batch several branches into one
 approval request, and do not treat an earlier approval as standing permission for
