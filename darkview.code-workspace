@@ -1,0 +1,11 @@
+{
+  "folders": [
+    { "path": "." },
+    { "name": "part-1-platform (read-only)", "path": "../part-1-platform" },
+  ],
+  "settings": {
+    "files.readonlyInclude": {
+      "**/part-1-platform/**": true,
+    },
+  },
+}
