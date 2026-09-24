@@ -4,11 +4,11 @@ import { describe, expect, it } from "vitest";
 import { NetworkPage } from "./network-page";
 
 describe("NetworkPage", () => {
-  it("shows the single current Darkview node without inventing partners", () => {
+  it("shows the single current Stellar node without inventing partners", () => {
     render(<NetworkPage locale="en" />);
 
     expect(
-      screen.getByRole("heading", { name: "Darkview Tbilisi Observatory" }),
+      screen.getByRole("heading", { name: "Stellar Tbilisi Observatory" }),
     ).toBeVisible();
     expect(screen.getByText("1 active node")).toBeVisible();
     expect(

@@ -1,6 +1,6 @@
 export const authenticatedHomeCopy = {
   en: {
-    metadataTitle: "Home · Darkview",
+    metadataTitle: "Home · Stellar",
     metadataDescription: "Your observatory, missions, and collection for tonight.",
     greeting: (name: string) => `Good evening, ${name}`,
     introduction: "Your observatory is ready. Here is the sky worth seeing tonight.",
@@ -43,7 +43,7 @@ export const authenticatedHomeCopy = {
     minutes: "min",
   },
   ka: {
-    metadataTitle: "მთავარი · Darkview",
+    metadataTitle: "მთავარი · სტელარი",
     metadataDescription: "თქვენი ობსერვატორია, მისიები და დღევანდელი კოლექცია.",
     greeting: (name: string) => `საღამო მშვიდობისა, ${name}`,
     introduction: "თქვენი ობსერვატორია მზადაა. აი, ცა, რომლის ნახვაც დღეს ღირს.",

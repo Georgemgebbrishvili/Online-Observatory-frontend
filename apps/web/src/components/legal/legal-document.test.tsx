@@ -35,7 +35,7 @@ describe("LegalDocumentPage", () => {
     );
 
     const pending = screen
-      .getByRole("heading", { name: /What Darkview collects/ })
+      .getByRole("heading", { name: /What Stellar collects/ })
       .closest("section");
 
     expect(pending).not.toBeNull();

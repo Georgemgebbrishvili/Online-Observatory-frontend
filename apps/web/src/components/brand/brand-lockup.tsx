@@ -11,7 +11,7 @@ export function BrandLockup({
 }: BrandLockupProps) {
   return (
     <span className="brand-lockup" aria-label={ariaLabel}>
-      <span className="brand-wordmark">Darkview</span>
+      <span className="brand-wordmark">Stellar</span>
       {!compact && <span className="brand-endorsement">{endorsement}</span>}
     </span>
   );

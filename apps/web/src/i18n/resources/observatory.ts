@@ -1,11 +1,11 @@
 export const observatoryPageCopy = {
   en: {
-    metadataTitle: "Darkview Tbilisi Observatory",
+    metadataTitle: "Stellar Tbilisi Observatory",
     metadataDescription:
-      "Darkview's physical telescope system, configurable equipment, and protected mission path.",
+      "Stellar's physical telescope system, configurable equipment, and protected mission path.",
     eyebrow: "PHYSICAL OBSERVATORY · TBILISI 01",
     statement:
-      "Darkview operates a physical telescope system remotely through secure observatory software.",
+      "Stellar operates a physical telescope system remotely through secure observatory software.",
     status: "Observatory status",
     online: "Online",
     statusMode: "Demonstration status",
@@ -35,7 +35,7 @@ export const observatoryPageCopy = {
       "A request becomes a capture through a protected sequence managed beside the telescope—not by unrestricted browser controls.",
     safety: "Safety comes before movement",
     safetyDescription:
-      "Before anything moves, Darkview checks that the mission is allowed, the equipment is ready, and the requested direction is safe.",
+      "Before anything moves, Stellar checks that the mission is allowed, the equipment is ready, and the requested direction is safe.",
     futureNetwork: "Future network",
     futureDescription:
       "The architecture supports additional observatories, but only physically integrated and verified sites will appear here.",
@@ -49,12 +49,12 @@ export const observatoryPageCopy = {
     east: "E",
   },
   ka: {
-    metadataTitle: "Darkview თბილისის ობსერვატორია",
+    metadataTitle: "სტელარის თბილისის ობსერვატორია",
     metadataDescription:
-      "Darkview-ის ფიზიკური ტელესკოპური სისტემა, მოწყობილობა და უსაფრთხო მისიის გზა.",
+      "სტელარის ფიზიკური ტელესკოპური სისტემა, მოწყობილობა და უსაფრთხო მისიის გზა.",
     eyebrow: "ფიზიკური ობსერვატორია · თბილისი 01",
     statement:
-      "Darkview ფიზიკურ ტელესკოპურ სისტემას უსაფრთხო ობსერვატორიული პროგრამით დისტანციურად მართავს.",
+      "სტელარი ფიზიკურ ტელესკოპურ სისტემას უსაფრთხო ობსერვატორიული პროგრამით დისტანციურად მართავს.",
     status: "ობსერვატორიის სტატუსი",
     online: "ონლაინ",
     statusMode: "სადემონსტრაციო სტატუსი",
@@ -84,7 +84,7 @@ export const observatoryPageCopy = {
       "მოთხოვნა კადრად ტელესკოპთან დაცული თანმიმდევრობის გავლით იქცევა — არა ბრაუზერის შეუზღუდავი მართვით.",
     safety: "უსაფრთხოება მოძრაობაზე წინ დგას",
     safetyDescription:
-      "ნებისმიერი მოძრაობის წინ Darkview ამოწმებს, რომ მისია ნებადართულია, მოწყობილობა მზადაა და მიმართულება უსაფრთხოა.",
+      "ნებისმიერი მოძრაობის წინ სტელარი ამოწმებს, რომ მისია ნებადართულია, მოწყობილობა მზადაა და მიმართულება უსაფრთხოა.",
     futureNetwork: "სამომავლო ქსელი",
     futureDescription:
       "არქიტექტურა დამატებით ობსერვატორიებს უჭერს მხარს, თუმცა აქ მხოლოდ ფიზიკურად ინტეგრირებული და დადასტურებული ადგილები გამოჩნდება.",

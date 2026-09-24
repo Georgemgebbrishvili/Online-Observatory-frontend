@@ -20,7 +20,7 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   return {
-    title: `${sharedObservationCopy[locale].metadataTitle} · Darkview`,
+    title: `${sharedObservationCopy[locale].metadataTitle} · Stellar`,
     robots: { index: false, follow: false },
   };
 }

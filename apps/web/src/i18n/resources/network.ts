@@ -1,15 +1,15 @@
 export const networkPageCopy = {
   en: {
-    metadataTitle: "Observatory Network · Darkview",
+    metadataTitle: "Observatory Network · Stellar",
     metadataDescription:
-      "Darkview's current Tbilisi observatory and the reviewed foundation for future independent observatory nodes.",
-    eyebrow: "DARKVIEW NETWORK · ONE VERIFIED NODE",
+      "Stellar's current Tbilisi observatory and the reviewed foundation for future independent observatory nodes.",
+    eyebrow: "STELLAR NETWORK · ONE VERIFIED NODE",
     title: "One observatory today. A network when ready.",
     description:
-      "Darkview currently operates a single observatory in Tbilisi. The platform is being structured so future independent sites can be reviewed, approved, and scheduled without becoming an open telescope marketplace.",
+      "Stellar currently operates a single observatory in Tbilisi. The platform is being structured so future independent sites can be reviewed, approved, and scheduled without becoming an open telescope marketplace.",
     currentNetwork: "Current network",
     oneActiveNode: "1 active node",
-    approved: "Darkview operated",
+    approved: "Stellar operated",
     status: "Status",
     online: "Online",
     location: "Location",
@@ -49,7 +49,7 @@ export const networkPageCopy = {
       MANUAL_APPROVAL: {
         title: "Manual approval",
         description:
-          "Darkview operators review the complete node before it can receive any mission reservation.",
+          "Stellar operators review the complete node before it can receive any mission reservation.",
       },
     },
     connectEyebrow: "FUTURE CONCEPT",
@@ -64,23 +64,23 @@ export const networkPageCopy = {
       "A verified owner linked to one physical observatory",
       "Configured telescopes and declared observation capabilities",
       "Geographic coordinates and recurring availability windows",
-      "Approval state controlled by Darkview operators",
+      "Approval state controlled by Stellar operators",
       "Future commercial agreements kept separate from mission safety",
     ],
     observatoryLink: "View the Tbilisi observatory",
     networkLink: "View network architecture",
   },
   ka: {
-    metadataTitle: "ობსერვატორიების ქსელი · Darkview",
+    metadataTitle: "ობსერვატორიების ქსელი · სტელარი",
     metadataDescription:
-      "Darkview-ის თბილისის ობსერვატორია და სამომავლო დამოუკიდებელი კვანძების შემოწმებადი საფუძველი.",
-    eyebrow: "DARKVIEW-ის ქსელი · ერთი დადასტურებული კვანძი",
+      "სტელარის თბილისის ობსერვატორია და სამომავლო დამოუკიდებელი კვანძების შემოწმებადი საფუძველი.",
+    eyebrow: "სტელარის ქსელი · ერთი დადასტურებული კვანძი",
     title: "დღეს ერთი ობსერვატორია. ქსელი — როცა მზად იქნება.",
     description:
-      "Darkview ამჟამად თბილისში ერთ ობსერვატორიას მართავს. პლატფორმა ისე იგეგმება, რომ მომავალში დამოუკიდებელი ობიექტები შემოწმდეს, დამტკიცდეს და მისიებში ჩაერთოს ღია ტელესკოპების ბაზრად ქცევის გარეშე.",
+      "სტელარი ამჟამად თბილისში ერთ ობსერვატორიას მართავს. პლატფორმა ისე იგეგმება, რომ მომავალში დამოუკიდებელი ობიექტები შემოწმდეს, დამტკიცდეს და მისიებში ჩაერთოს ღია ტელესკოპების ბაზრად ქცევის გარეშე.",
     currentNetwork: "მიმდინარე ქსელი",
     oneActiveNode: "1 აქტიური კვანძი",
-    approved: "Darkview-ის მიერ მართული",
+    approved: "სტელარის მიერ მართული",
     status: "სტატუსი",
     online: "ონლაინ",
     location: "მდებარეობა",
@@ -119,7 +119,7 @@ export const networkPageCopy = {
       },
       MANUAL_APPROVAL: {
         title: "ხელით დამტკიცება",
-        description: "მისიის დაჯავშნამდე სრულ კვანძს Darkview-ის ოპერატორები ამოწმებენ.",
+        description: "მისიის დაჯავშნამდე სრულ კვანძს სტელარის ოპერატორები ამოწმებენ.",
       },
     },
     connectEyebrow: "სამომავლო კონცეფცია",
@@ -134,7 +134,7 @@ export const networkPageCopy = {
       "დადასტურებული მფლობელის დაკავშირებას ერთ ფიზიკურ ობსერვატორიასთან",
       "კონფიგურირებულ ტელესკოპებსა და გამოცხადებულ შესაძლებლობებს",
       "გეოგრაფიულ კოორდინატებსა და განმეორებად ხელმისაწვდომ დროებს",
-      "Darkview-ის ოპერატორების მიერ მართულ დამტკიცების სტატუსს",
+      "სტელარის ოპერატორების მიერ მართულ დამტკიცების სტატუსს",
       "სამომავლო კომერციული პირობების გამიჯვნას მისიის უსაფრთხოებისგან",
     ],
     observatoryLink: "თბილისის ობსერვატორიის ნახვა",

@@ -34,7 +34,7 @@ export function localizedMetadata({
       url: canonical,
       title,
       description,
-      siteName: "Darkview by Astroman",
+      siteName: "Stellar by Astroman",
       locale: locale === "ka" ? "ka_GE" : "en_US",
       alternateLocale: locale === "ka" ? ["en_US"] : ["ka_GE"],
     },

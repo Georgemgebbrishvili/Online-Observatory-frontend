@@ -1,6 +1,6 @@
 export const collectionGalleryCopy = {
   en: {
-    metadataTitle: "Collection · Darkview",
+    metadataTitle: "Collection · Stellar",
     metadataDescription: "Your personal archive of completed observations.",
     eyebrow: "Your observations",
     title: "A sky only you have seen.",
@@ -14,7 +14,7 @@ export const collectionGalleryCopy = {
     private: "Private",
     view: "Open capture",
     allCaptures: "Observation archive",
-    allDescription: "Your personal record of completed Darkview missions.",
+    allDescription: "Your personal record of completed Stellar missions.",
     progress: "Progress collections",
     progressDescription:
       "Simple paths through the sky, built from observations you already own.",
@@ -23,7 +23,7 @@ export const collectionGalleryCopy = {
     presets: { NATURAL: "Natural", BRIGHT: "Bright", DETAIL: "Detail" },
   },
   ka: {
-    metadataTitle: "კოლექცია · Darkview",
+    metadataTitle: "კოლექცია · სტელარი",
     metadataDescription: "თქვენი დასრულებული დაკვირვებების პირადი არქივი.",
     eyebrow: "თქვენი დაკვირვებები",
     title: "ცა, რომელიც მხოლოდ თქვენ ნახეთ.",
@@ -37,7 +37,7 @@ export const collectionGalleryCopy = {
     private: "პირადი",
     view: "კადრის გახსნა",
     allCaptures: "დაკვირვებების არქივი",
-    allDescription: "Darkview-ის დასრულებული მისიების თქვენი პირადი ჩანაწერი.",
+    allDescription: "სტელარის დასრულებული მისიების თქვენი პირადი ჩანაწერი.",
     progress: "პროგრესის კოლექციები",
     progressDescription:
       "მარტივი გზები ცაში, რომლებიც უკვე თქვენს დაკვირვებებზეა აგებული.",

@@ -1,5 +1,5 @@
 /*
- * Darkview design tokens — Brand Identity System v2.0.
+ * Stellar design tokens — Brand Identity System v2.0, as amended by ADR-025.
  * The only file in apps/web/src allowed to hold a colour literal (stylelint enforces it).
  * tokens.ts mirrors the palette for surfaces CSS cannot reach; a test keeps them equal.
  */

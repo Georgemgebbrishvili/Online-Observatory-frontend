@@ -36,7 +36,7 @@ export async function generateMetadata({
 
   const name = locale === "ka" ? target.georgianName : target.commonName;
   return {
-    title: `${name} · ${missionSessionCopy[locale].metadataMission} ${missionId} · Darkview`,
+    title: `${name} · ${missionSessionCopy[locale].metadataMission} ${missionId} · Stellar`,
     robots: { index: false, follow: false },
   };
 }

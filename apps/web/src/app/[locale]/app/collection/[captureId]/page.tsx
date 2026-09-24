@@ -26,7 +26,7 @@ export async function generateMetadata({
   if (!isLocale(locale) || !capture) return {};
 
   return {
-    title: `${capture.target[locale]} · ${capture.id} · Darkview`,
+    title: `${capture.target[locale]} · ${capture.id} · Stellar`,
     description: capture.description[locale],
     robots: { index: false, follow: false },
   };

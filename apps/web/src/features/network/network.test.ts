@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { networkNodes } from "./network";
 
 describe("observatory network", () => {
-  it("represents only the current Darkview-operated site", () => {
+  it("represents only the current Stellar-operated site", () => {
     expect(networkNodes).toHaveLength(1);
     expect(networkNodes[0]).toMatchObject({
       ownerType: "DARKVIEW",
