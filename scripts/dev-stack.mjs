@@ -173,6 +173,7 @@ function setup() {
 const COLOURS = { fake: 31, mail: 34, api: 36, realtime: 35, agent: 33, web: 32 };
 const children = new Map();
 let stopping = false;
+let usesContainers = false;
 
 function prefixLines(name, stream, target) {
   let buffer = "";
@@ -204,7 +205,9 @@ function start(name, command, args, options) {
       stopAll(`${name} exited (${signal ?? `code ${code}`}); stopping the rest.`, 1);
     } else if (children.size === 0) {
       console.log(
-        "dev-stack: all stopped. Containers are still up: npm run dev:stack:down",
+        usesContainers
+          ? "dev-stack: all stopped. Containers are still up: npm run dev:stack:down"
+          : "dev-stack: all stopped.",
       );
       process.exit(process.exitCode ?? 0);
     }
@@ -270,6 +273,7 @@ async function stack() {
 
   await requireFreePorts(3000, 4000, 4001, 4010);
   startServices();
+  usesContainers = true;
 
   process.on("SIGINT", () => stopAll("Ctrl-C; stopping."));
   process.on("SIGTERM", () => stopAll("SIGTERM; stopping."));
