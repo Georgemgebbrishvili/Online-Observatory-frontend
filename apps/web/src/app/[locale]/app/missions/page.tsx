@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { MissionBrowser } from "@/components/missions/mission-browser";
 import { isLocale } from "@/i18n/config";
 import { missionBrowserCopy } from "@/i18n/resources/missions";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 import "@/styles/missions.css";
 
 type MissionsPageProps = {
@@ -25,7 +25,7 @@ export default async function MissionsPage({ params }: MissionsPageProps) {
     notFound();
   }
 
-  await requireSession(locale);
+  await requireUser(locale);
 
   return <MissionBrowser locale={locale} />;
 }

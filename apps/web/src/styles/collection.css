@@ -25,7 +25,7 @@
   max-width: 40rem;
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-large);
+  font-size: var(--font-size-body-lg);
   line-height: 1.75;
 }
 
@@ -35,7 +35,7 @@
   margin-top: var(--space-6);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   box-shadow: var(--shadow-panel);
 }
 
@@ -43,8 +43,8 @@
   position: relative;
   min-height: clamp(23rem, 78vw, 42rem);
   overflow: hidden;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-night);
 }
 
 .featured-capture-image img,
@@ -67,7 +67,7 @@
   display: block;
   width: min(38%, 15rem);
   aspect-ratio: 1;
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
   inset: 50% auto auto 50%;
   transform: translate(-50%, -50%);
@@ -75,7 +75,7 @@
 
 .featured-reticle i {
   position: absolute;
-  background: var(--color-cyan-border);
+  background: var(--color-photon-border);
 }
 
 .featured-reticle i:first-child {
@@ -98,14 +98,13 @@
   bottom: var(--space-4);
   left: var(--space-4);
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-small);
-  background: rgb(5 7 10 / 72%);
+  background: var(--color-scrim);
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.1em;
-  backdrop-filter: blur(0.8rem);
 }
 
 .featured-capture-copy {
@@ -117,7 +116,7 @@
 .featured-capture-copy > span,
 .capture-card-copy > span,
 .capture-detail-header > div > p {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.11em;
@@ -126,14 +125,14 @@
 
 .featured-capture-copy > p {
   margin: var(--space-6) 0 var(--space-2);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   letter-spacing: 0.08em;
 }
 
 .featured-capture-copy h2 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.4rem, 7vw, 4.5rem);
   font-weight: 450;
   letter-spacing: -0.055em;
@@ -150,7 +149,7 @@
 .featured-capture-copy dl {
   display: grid;
   margin: 0 0 var(--space-8);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .featured-capture-copy dl div {
@@ -158,19 +157,19 @@
   grid-template-columns: 7rem minmax(0, 1fr);
   gap: var(--space-4);
   padding-block: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .featured-capture-copy dt,
 .capture-provenance dt {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
 .featured-capture-copy dd,
 .capture-provenance dd {
   margin: 0;
-  color: var(--color-text);
+  color: var(--color-text-primary);
   font-size: var(--font-size-label);
   font-weight: 550;
 }
@@ -194,7 +193,7 @@
 .capture-archive > header h2,
 .progress-collections > header h2 {
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 450;
   letter-spacing: -0.045em;
@@ -215,9 +214,9 @@
 
 .capture-card {
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   transition:
     border-color var(--duration-standard) var(--ease-standard),
     box-shadow var(--duration-standard) var(--ease-standard),
@@ -236,16 +235,16 @@
   display: block;
   aspect-ratio: 1;
   overflow: hidden;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-night);
 }
 
 .capture-card-corners,
 .capture-detail-corners {
   position: absolute;
   border: 1px solid transparent;
-  border-top-color: var(--color-cyan-border);
-  border-left-color: var(--color-cyan-border);
+  border-top-color: var(--color-photon-border);
+  border-left-color: var(--color-photon-border);
   inset: var(--space-4);
   pointer-events: none;
 }
@@ -254,8 +253,8 @@
 .capture-detail-corners::after {
   position: absolute;
   border: 1px solid transparent;
-  border-right-color: var(--color-cyan-border);
-  border-bottom-color: var(--color-cyan-border);
+  border-right-color: var(--color-photon-border);
+  border-bottom-color: var(--color-photon-border);
   content: "";
   inset: -1px;
 }
@@ -268,13 +267,12 @@
   padding-inline: var(--space-3);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
-  background: rgb(5 7 10 / 74%);
+  background: var(--color-scrim);
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  backdrop-filter: blur(0.75rem);
 }
 
 .capture-card-image > .capture-privacy {
@@ -306,12 +304,12 @@
 }
 
 .capture-card-copy > span {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
 }
 
 .capture-card-copy h3 {
   margin: var(--space-2) 0 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 520;
   letter-spacing: -0.035em;
@@ -339,15 +337,15 @@
   min-height: 18rem;
   flex-direction: column;
   padding: var(--space-6);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
   background:
-    radial-gradient(circle at top right, var(--color-cyan-faint), transparent 12rem),
-    var(--color-elevated);
+    radial-gradient(circle at top right, var(--color-photon-faint), transparent 12rem),
+    var(--color-surface-base);
 }
 
 .progress-collection-card > span {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.1em;
@@ -355,7 +353,7 @@
 
 .progress-collection-card h3 {
   margin: auto 0 var(--space-3);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.65rem;
   font-weight: 500;
   letter-spacing: -0.04em;
@@ -378,8 +376,7 @@
 .collection-progress-track span {
   display: block;
   height: 100%;
-  background: var(--color-cyan);
-  box-shadow: var(--shadow-cyan);
+  background: var(--color-photon);
 }
 
 .progress-collection-card > strong {
@@ -401,7 +398,7 @@
 }
 
 .capture-detail-back:hover {
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .capture-detail-header {
@@ -425,14 +422,14 @@
   display: block;
   margin-top: var(--space-5);
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-large);
+  font-size: var(--font-size-body-lg);
   font-weight: 500;
 }
 
 .capture-detail-header dl {
   display: grid;
   margin: 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .capture-detail-header dl div {
@@ -440,17 +437,17 @@
   grid-template-columns: 6rem minmax(0, 1fr);
   gap: var(--space-4);
   padding-block: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .capture-detail-header dt {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
 .capture-detail-header dd {
   margin: 0;
-  color: var(--color-text);
+  color: var(--color-text-primary);
   font-size: var(--font-size-label);
   font-weight: 550;
 }
@@ -462,7 +459,7 @@
   margin: var(--space-6) 0 0;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-background);
+  background: var(--color-night);
   box-shadow: var(--shadow-panel);
 }
 
@@ -476,12 +473,11 @@
   right: var(--space-4);
   bottom: var(--space-4);
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-small);
-  background: rgb(5 7 10 / 76%);
+  background: var(--color-scrim);
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
-  backdrop-filter: blur(0.75rem);
 }
 
 .capture-detail-lower {
@@ -492,15 +488,15 @@
 
 .capture-detail-story {
   padding: clamp(var(--space-6), 5vw, var(--space-10));
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .capture-detail-story > p:first-child {
   max-width: 33ch;
   margin: 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.45rem, 4vw, 2.35rem);
   font-weight: 450;
   letter-spacing: -0.035em;
@@ -516,26 +512,26 @@
 .capture-action-feedback {
   margin: var(--space-4) 0 0;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-medium);
-  background: var(--color-cyan-faint);
-  color: var(--color-cyan-bright);
+  background: var(--color-photon-faint);
+  color: var(--color-photon);
   font-size: var(--font-size-label);
 }
 
 .capture-provenance {
   align-self: start;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .capture-provenance h2 {
   margin: 0;
   padding: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 550;
   letter-spacing: -0.025em;
@@ -549,7 +545,7 @@
   display: grid;
   gap: var(--space-2);
   padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .capture-provenance dl div:last-child {
@@ -563,7 +559,7 @@
 .capture-detail-page a:focus-visible,
 .capture-detail-page button:focus-visible,
 .collection-page a:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -593,7 +589,7 @@
 
   .featured-capture-image {
     min-height: 42rem;
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border-subtle);
     border-bottom: 0;
   }
 

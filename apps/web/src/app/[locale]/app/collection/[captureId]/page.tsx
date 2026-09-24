@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { CaptureDetail } from "@/components/collection/capture-detail";
 import { captures, getCapture } from "@/features/collection/captures";
 import { isLocale, locales } from "@/i18n/config";
-import { requireSession } from "@/lib/platform/session";
+import { requireUser } from "@/lib/platform/session";
 import "@/styles/collection.css";
 
 type CaptureDetailPageProps = {
@@ -37,7 +37,7 @@ export default async function CaptureDetailPage({ params }: CaptureDetailPagePro
 
   if (!isLocale(locale)) notFound();
 
-  await requireSession(locale);
+  await requireUser(locale);
 
   const capture = getCapture(captureId);
   if (!capture) notFound();

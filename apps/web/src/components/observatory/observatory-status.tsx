@@ -14,12 +14,12 @@ export type ObservatoryStatusValue = (typeof observatoryStatuses)[number];
 
 const statusTone: Record<ObservatoryStatusValue, StatusTone> = {
   ONLINE: "success",
-  PREPARING: "warning",
-  OBSERVING: "cyan",
+  PREPARING: "neutral",
+  OBSERVING: "active",
   PARKED: "neutral",
   OFFLINE: "neutral",
   WEATHER_HOLD: "warning",
-  MAINTENANCE: "danger",
+  MAINTENANCE: "neutral",
 };
 
 type ObservatoryStatusProps = {

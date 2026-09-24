@@ -24,13 +24,13 @@
 }
 
 .session-topbar > a:hover {
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .session-topbar > a:focus-visible,
 .simulator-controls button:focus-visible,
 .simulator-failure-control select:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -67,9 +67,9 @@
 .simulator-controls,
 .mission-event-panel {
   min-width: 0;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .session-stage {
@@ -83,11 +83,11 @@
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .session-mission-meta span {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 650;
   letter-spacing: 0.1em;
@@ -95,7 +95,7 @@
 }
 
 .session-mission-meta strong {
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 0.85rem;
   font-weight: 550;
 }
@@ -103,7 +103,7 @@
 .session-state-copy {
   min-height: 16.5rem;
   padding: clamp(var(--space-8), 7vw, var(--space-16)) var(--space-5) var(--space-8);
-  animation: session-state-reveal var(--duration-state) var(--ease-out-quart) both;
+  animation: session-state-reveal var(--duration-state) var(--ease-standard) both;
 }
 
 .session-state-copy h1 {
@@ -115,7 +115,7 @@
   max-width: 39rem;
   margin: var(--space-5) 0 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-large);
+  font-size: var(--font-size-body-lg);
   line-height: 1.7;
 }
 
@@ -124,7 +124,7 @@
   align-items: center;
   gap: var(--space-2);
   margin-bottom: var(--space-5);
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-label);
   font-weight: 750;
   letter-spacing: 0.16em;
@@ -135,7 +135,6 @@
   height: 0.45rem;
   border-radius: var(--radius-full);
   background: currentColor;
-  box-shadow: var(--shadow-cyan);
   content: "";
 }
 
@@ -151,7 +150,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  color: var(--color-text);
+  color: var(--color-text-primary);
   font-size: 0.9rem;
   font-weight: 550;
 }
@@ -177,8 +176,8 @@
   place-items: center;
   border-block: 1px solid var(--color-border-strong);
   background:
-    radial-gradient(circle at center, var(--color-cyan-faint), transparent 38%),
-    var(--color-background);
+    radial-gradient(circle at center, var(--color-photon-faint), transparent 38%),
+    var(--color-night);
   isolation: isolate;
 }
 
@@ -190,7 +189,7 @@
     linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px);
   background-size: 3rem 3rem;
   inset: 0;
-  mask-image: radial-gradient(circle, black 15%, transparent 72%);
+  mask-image: radial-gradient(circle, var(--color-mask) 15%, transparent 72%);
 }
 
 .session-ring {
@@ -240,10 +239,9 @@
   width: 4rem;
   height: 4rem;
   place-items: center;
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
-  background: var(--color-cyan-faint);
-  box-shadow: 0 0 2.5rem var(--color-cyan-glow);
+  background: var(--color-photon-faint);
   transform: translate(2.75rem, -3.5rem);
   transition:
     border-color 500ms var(--ease-standard),
@@ -254,7 +252,7 @@
 .session-target-point::before,
 .session-target-point::after {
   position: absolute;
-  background: var(--color-cyan-border);
+  background: var(--color-photon-border);
   content: "";
 }
 
@@ -272,15 +270,14 @@
   width: 0.6rem;
   height: 0.6rem;
   border-radius: var(--radius-full);
-  background: var(--color-cyan-bright);
-  box-shadow: var(--shadow-cyan);
+  background: var(--color-photon);
 }
 
 .session-optics-state,
 .session-simulator-watermark {
   position: absolute;
   bottom: var(--space-4);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -300,7 +297,7 @@
 }
 
 .session-optics[data-state="SLEWING"] .session-ring-outer {
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
   transform: scale(1.04);
 }
 
@@ -310,7 +307,7 @@
 
 .session-optics[data-state="PLATE_SOLVING"] .session-ring-middle {
   border-style: dashed;
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
   animation: optical-scan 1.8s var(--ease-standard) infinite alternate;
 }
 
@@ -327,24 +324,23 @@
 .session-optics[data-state="CAPTURING"] .session-ring-inner,
 .session-optics[data-state="PROCESSING"] .session-ring-inner,
 .session-optics[data-state="COMPLETE"] .session-ring-inner {
-  border-color: var(--color-cyan-bright);
-  box-shadow: var(--shadow-cyan);
+  border-color: var(--color-photon);
 }
 
 .session-optics[data-state="OBSERVING"] .session-ring-middle,
 .session-optics[data-state="CAPTURING"] .session-ring-middle {
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
   animation: optical-live 1.6s var(--ease-standard) infinite alternate;
 }
 
 .session-optics[data-state="OBSERVING"] .session-target-point {
-  animation: target-lock-settle 520ms var(--ease-out-quart) both;
+  animation: target-lock-settle 520ms var(--ease-standard) both;
 }
 
 .session-optics[data-state="PROCESSING"] .session-ring-outer,
 .session-optics[data-state="PROCESSING"] .session-ring-middle {
   border-style: dashed;
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
 }
 
 .session-optics[data-state="COMPLETE"] .session-ring-outer,
@@ -397,7 +393,7 @@
   min-height: 3.5rem;
   align-content: start;
   padding-right: var(--space-3);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   scroll-snap-align: start;
 }
 
@@ -419,7 +415,7 @@
   overflow: visible;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   color: transparent;
 }
 
@@ -435,21 +431,20 @@
 }
 
 .session-progress li[data-complete]::before {
-  background: var(--color-cyan-border);
+  background: var(--color-photon-border);
 }
 
 .session-progress li[data-complete] > span {
-  border-color: var(--color-cyan-border);
-  background: var(--color-cyan);
+  border-color: var(--color-photon-border);
+  background: var(--color-photon);
 }
 
 .session-progress li[data-current] {
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
 }
 
 .session-progress li[data-current] > span {
-  border-color: var(--color-cyan-bright);
-  box-shadow: var(--shadow-cyan);
+  border-color: var(--color-photon);
 }
 
 .session-sidebar {
@@ -468,13 +463,13 @@
   border-color: var(--color-warning-border);
   background:
     linear-gradient(145deg, var(--color-warning-muted), transparent 58%),
-    var(--color-elevated);
+    var(--color-surface-base);
 }
 
 .simulator-controls h2,
 .mission-event-panel h2 {
   margin: var(--space-2) 0 0;
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 550;
   letter-spacing: -0.03em;
@@ -506,8 +501,8 @@
   padding: 0 var(--space-3);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-small);
-  background: var(--color-elevated-secondary);
-  color: var(--color-text);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
   font: inherit;
   font-size: 0.84rem;
 }
@@ -519,7 +514,7 @@
 
 .mission-event-panel > header {
   padding: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .mission-event-panel header p {
@@ -541,7 +536,7 @@
   grid-template-columns: 1rem minmax(0, 1fr);
   gap: var(--space-3);
   padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .mission-event-panel li:last-child {
@@ -554,13 +549,12 @@
   margin-top: 0.3rem;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
-  background: var(--color-elevated-secondary);
+  background: var(--color-surface-raised);
 }
 
 .mission-event-panel li[data-current] .event-history-marker {
-  border-color: var(--color-cyan-border);
-  background: var(--color-cyan);
-  box-shadow: var(--shadow-cyan);
+  border-color: var(--color-photon-border);
+  background: var(--color-photon);
 }
 
 .mission-event-panel li > div {
@@ -569,7 +563,7 @@
 }
 
 .mission-event-panel time {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   font-variant-numeric: tabular-nums;
 }
@@ -597,11 +591,11 @@
 
 @keyframes optical-live {
   from {
-    box-shadow: 0 0 0 var(--color-cyan-faint);
+    box-shadow: 0 0 0 var(--color-photon-faint);
     opacity: 0.78;
   }
   to {
-    box-shadow: 0 0 1.75rem var(--color-cyan-muted);
+    box-shadow: 0 0 1.75rem var(--color-photon-muted);
     opacity: 1;
   }
 }

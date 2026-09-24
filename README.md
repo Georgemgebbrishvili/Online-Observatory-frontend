@@ -68,7 +68,7 @@ Do not upgrade a major mid-phase.
 | --- | --- | --- |
 | Node | **24 LTS** (`v24.14.1` in use) | `engines: >=20.19` |
 | npm | 11+ | workspaces |
-| Next.js | **16.3.2** | App Router; see `AGENTS.md` — this is not the Next.js you know |
+| Next.js | **16.3.6** | App Router; see `AGENTS.md` — this is not the Next.js you know |
 | React | **19.2.8** | |
 | TypeScript | **6.0.3** | strict |
 | Zod | **4.4.3** | generated from the contract, never hand-written |

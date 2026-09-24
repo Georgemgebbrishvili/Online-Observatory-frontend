@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/ui/container";
 import type { Locale } from "@/i18n/config";
+import { legalPaths } from "@/i18n/resources/legal";
 import type { Dictionary } from "@/i18n/types";
 
 type SiteFooterProps = {
@@ -12,7 +13,12 @@ type SiteFooterProps = {
 };
 
 export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
-  const futureItems = [footer.about, footer.contact, footer.privacy, footer.terms];
+  const futureItems = [footer.about, footer.contact];
+  const legalItems = [
+    { href: `/${locale}/${legalPaths.terms}`, label: footer.terms },
+    { href: `/${locale}/${legalPaths.privacy}`, label: footer.privacy },
+    { href: `/${locale}/${legalPaths.refunds}`, label: footer.refunds },
+  ];
   const localizedPath = path ? `/${path}` : "";
 
   return (
@@ -39,10 +45,11 @@ export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
               {footer.collection}
             </Link>
             <Link href={`/${locale}/observatory`}>{footer.observatory}</Link>
+            <Link href={`/${locale}/status`}>{footer.status}</Link>
           </div>
           <div>
             <h2>{footer.company}</h2>
-            {futureItems.slice(0, 2).map((item) => (
+            {futureItems.map((item) => (
               <span key={item} title={footer.comingSoon}>
                 {item}
               </span>
@@ -50,10 +57,10 @@ export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
           </div>
           <div>
             <h2>{footer.legal}</h2>
-            {futureItems.slice(2).map((item) => (
-              <span key={item} title={footer.comingSoon}>
-                {item}
-              </span>
+            {legalItems.map((item) => (
+              <Link href={item.href} key={item.href}>
+                {item.label}
+              </Link>
             ))}
           </div>
           <div>

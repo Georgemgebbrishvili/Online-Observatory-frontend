@@ -1,0 +1,206 @@
+/* DV-073. The instrument's own report: readable, quiet, and never dressed up to look
+   more certain than the data behind it. */
+
+.status-page {
+  padding-block: clamp(var(--space-12), 7vw, 6rem) clamp(var(--space-16), 8vw, 8rem);
+}
+
+.status-page .page-container {
+  width: min(100%, 62rem);
+  margin-inline: auto;
+}
+
+.status-page-unavailable {
+  display: grid;
+  place-content: center;
+  min-height: 50vh;
+  padding: var(--space-page);
+}
+
+.status-header {
+  max-width: 46rem;
+}
+
+.status-eyebrow {
+  display: block;
+  color: var(--color-photon);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.13em;
+}
+
+.status-header h1 {
+  margin: var(--space-5) 0 0;
+  font-size: var(--font-size-hero);
+}
+
+.status-introduction {
+  margin: var(--space-6) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+  line-height: 1.6;
+}
+
+.status-observatory {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin: var(--space-6) 0 0;
+}
+
+.status-observatory > span {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.status-mode {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-medium);
+}
+
+.status-mode > strong {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: var(--font-size-mono);
+  letter-spacing: 0.1em;
+}
+
+.status-mode > span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+/* The same tones the operator console uses, so SIMULATED reads identically on both. */
+.status-mode-simulated {
+  border-color: var(--color-warning);
+  background: var(--color-warning-muted);
+}
+
+.status-mode-simulated > strong {
+  color: var(--color-warning);
+}
+
+.status-mode-real {
+  border-color: var(--color-error);
+  background: var(--color-error-muted);
+}
+
+.status-mode-real > strong {
+  color: var(--color-error);
+}
+
+.status-panel {
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+}
+
+.status-panel > h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.status-rows {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-6) 0 0;
+}
+
+.status-row {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(12rem, 0.4fr) minmax(0, 1fr);
+  align-items: baseline;
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.status-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.status-row dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.status-row dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin: 0;
+  font-size: var(--font-size-label);
+}
+
+.status-note {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.status-advisory {
+  max-width: 68ch;
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  line-height: 1.6;
+}
+
+.status-empty,
+.status-source {
+  margin: var(--space-5) 0 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.status-table-scroll {
+  margin-top: var(--space-6);
+  overflow-x: auto;
+}
+
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-label);
+}
+
+.status-table th,
+.status-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.status-table thead th {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.status-table tbody th {
+  font-weight: 500;
+}
+
+.status-unknown-hour {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.status-back {
+  display: inline-block;
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+  color: var(--color-photon);
+  font-weight: 500;
+}

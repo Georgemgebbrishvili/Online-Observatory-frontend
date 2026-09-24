@@ -23,7 +23,7 @@
 }
 
 .shared-mission-header > a:hover {
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .shared-live-identity,
@@ -34,7 +34,7 @@
 
 .shared-live-identity {
   gap: var(--space-2);
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   letter-spacing: 0.14em;
 }
@@ -52,7 +52,6 @@
   height: 0.45rem;
   border-radius: var(--radius-full);
   background: currentColor;
-  box-shadow: var(--shadow-cyan);
   animation: shared-live-pulse 2s ease-in-out infinite;
 }
 
@@ -63,8 +62,8 @@
 }
 
 .shared-viewer-count strong {
-  color: var(--color-text);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
   font-size: 1.1rem;
 }
 
@@ -73,7 +72,7 @@
   overflow: hidden;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
   box-shadow: var(--shadow-panel);
 }
 
@@ -87,7 +86,7 @@
 .shared-captures header p,
 .shared-access-panel > div:nth-child(2) > p {
   margin: 0;
-  color: var(--color-cyan-bright);
+  color: var(--color-photon);
   font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.13em;
@@ -110,8 +109,8 @@
   overflow: hidden;
   border-block: 1px solid var(--color-border-strong);
   background:
-    radial-gradient(circle at center, var(--color-cyan-faint), transparent 38%),
-    var(--color-background);
+    radial-gradient(circle at center, var(--color-photon-faint), transparent 38%),
+    var(--color-night);
   isolation: isolate;
 }
 
@@ -128,12 +127,12 @@
   background:
     linear-gradient(
       90deg,
-      var(--color-background),
+      var(--color-night),
       transparent 28%,
       transparent 72%,
-      var(--color-background)
+      var(--color-night)
     ),
-    linear-gradient(transparent 70%, var(--color-background));
+    linear-gradient(transparent 70%, var(--color-night));
   content: "";
   inset: 0;
 }
@@ -145,7 +144,6 @@
   aspect-ratio: 1;
   border: 1px solid var(--color-optical-medium);
   border-radius: var(--radius-full);
-  box-shadow: inset 0 0 3rem rgb(24 200 255 / 3%);
   transform: translate(-50%, -50%);
 }
 
@@ -155,7 +153,7 @@
 
 .shared-ring-inner {
   width: min(35%, 16rem);
-  border-color: var(--color-cyan-border);
+  border-color: var(--color-photon-border);
 }
 
 .shared-reticle-horizontal,
@@ -210,11 +208,10 @@
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-medium);
   background: var(--color-panel-overlay);
-  backdrop-filter: blur(1rem);
 }
 
 .shared-state-readout span {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -233,7 +230,7 @@
   display: grid;
   gap: var(--space-1);
   padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .shared-mission-readouts > div:last-child {
@@ -241,7 +238,7 @@
 }
 
 .shared-mission-readouts dt {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -264,9 +261,13 @@
   gap: var(--space-5);
   align-items: center;
   padding: clamp(var(--space-5), 4vw, var(--space-8));
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: linear-gradient(130deg, var(--color-cyan-faint), var(--color-elevated));
+  background: linear-gradient(
+    130deg,
+    var(--color-photon-faint),
+    var(--color-surface-base)
+  );
 }
 
 .shared-access-icon {
@@ -274,16 +275,15 @@
   width: 3.5rem;
   aspect-ratio: 1;
   place-items: center;
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-full);
 }
 
 .shared-access-icon span {
   width: 1rem;
   aspect-ratio: 1;
-  border: 1px solid var(--color-cyan-bright);
+  border: 1px solid var(--color-photon);
   border-radius: var(--radius-full);
-  box-shadow: 0 0 1rem var(--color-cyan-glow);
 }
 
 .shared-access-panel h2 {
@@ -306,7 +306,7 @@
   display: block;
   max-width: 40rem;
   margin-top: var(--space-3);
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-label);
   line-height: 1.6;
 }
@@ -317,9 +317,9 @@
 
 .shared-captures {
   padding: clamp(var(--space-5), 4vw, var(--space-8));
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--color-elevated);
+  background: var(--color-surface-base);
 }
 
 .shared-captures header {
@@ -350,9 +350,9 @@
 
 .shared-capture-grid > article {
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-medium);
-  background: var(--color-background);
+  background: var(--color-night);
 }
 
 .shared-capture-image {
@@ -374,7 +374,7 @@
   display: grid;
   gap: var(--space-4);
   padding: var(--space-4);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .shared-capture-meta > div {
@@ -383,7 +383,7 @@
 }
 
 .shared-capture-meta span {
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -392,10 +392,10 @@
 .shared-capture-meta button {
   min-height: 2.75rem;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-cyan-border);
+  border: 1px solid var(--color-photon-border);
   border-radius: var(--radius-small);
-  background: var(--color-cyan-faint);
-  color: var(--color-cyan-bright);
+  background: var(--color-photon-faint);
+  color: var(--color-photon);
   font: inherit;
   font-size: var(--font-size-label);
   font-weight: 650;
@@ -403,13 +403,13 @@
 }
 
 .shared-capture-meta button:hover:not(:disabled) {
-  background: var(--color-cyan-muted);
+  background: var(--color-photon-muted);
 }
 
 .shared-capture-meta button:disabled {
-  border-color: var(--color-border);
+  border-color: var(--color-border-subtle);
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-text-tertiary);
   cursor: not-allowed;
 }
 
@@ -425,7 +425,7 @@
 .shared-mission-header > a:focus-visible,
 .shared-access-panel button:focus-visible,
 .shared-capture-meta button:focus-visible {
-  outline: 2px solid var(--color-cyan-bright);
+  outline: 2px solid var(--color-photon);
   outline-offset: 3px;
 }
 
@@ -446,7 +446,7 @@
   }
 
   .shared-mission-readouts > div:nth-child(odd) {
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border-subtle);
   }
 
   .shared-capture-meta {

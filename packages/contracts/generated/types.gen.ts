@@ -89,6 +89,28 @@ export type User = {
     createdAt: string;
 };
 
+export type RegisterRequest = {
+    displayName: string;
+    email: string;
+    password: string;
+    locale: Locale;
+    /**
+     * Another member's referral code (DV-096). Both receive the referral bonus once
+     * this account's first paid booking settles. An unknown code is ignored.
+     *
+     */
+    referralCode?: string;
+};
+
+export type SignInRequest = {
+    email: string;
+    password: string;
+};
+
+export type VerifyEmailRequest = {
+    token: string;
+};
+
 /**
  * Phase 1 catalogue classes only. Every class in this enum is one the
  * NexStar 6SE + ASI585MC combination can present convincingly from a Bortle 8-9
@@ -113,6 +135,51 @@ export const TargetType = {
  *
  */
 export type TargetType = typeof TargetType[keyof typeof TargetType];
+
+/**
+ * A body whose position is computed from ephemeris at request time. Phase 1
+ * offers the Moon and the four planets the Build Plan lists; the rest are
+ * named so the enum does not need a breaking change to add one.
+ *
+ */
+export const SolarSystemBody = {
+    MOON: 'MOON',
+    MERCURY: 'MERCURY',
+    VENUS: 'VENUS',
+    MARS: 'MARS',
+    JUPITER: 'JUPITER',
+    SATURN: 'SATURN',
+    URANUS: 'URANUS',
+    NEPTUNE: 'NEPTUNE'
+} as const;
+
+/**
+ * A body whose position is computed from ephemeris at request time. Phase 1
+ * offers the Moon and the four planets the Build Plan lists; the rest are
+ * named so the enum does not need a breaking change to add one.
+ *
+ */
+export type SolarSystemBody = typeof SolarSystemBody[keyof typeof SolarSystemBody];
+
+/**
+ * Where a target's position comes from. FIXED targets carry J2000
+ * coordinates. EPHEMERIS targets do not have any: the Moon and the planets
+ * move, and a stored coordinate for one is a statement that is false the day
+ * after it is written. Their position is computed at request time from
+ * solarSystemBody.
+ *
+ */
+export const TargetPositionSource = { FIXED: 'FIXED', EPHEMERIS: 'EPHEMERIS' } as const;
+
+/**
+ * Where a target's position comes from. FIXED targets carry J2000
+ * coordinates. EPHEMERIS targets do not have any: the Moon and the planets
+ * move, and a stored coordinate for one is a statement that is false the day
+ * after it is written. Their position is computed at request time from
+ * solarSystemBody.
+ *
+ */
+export type TargetPositionSource = typeof TargetPositionSource[keyof typeof TargetPositionSource];
 
 /**
  * The three optical configurations of the C6. Focal length and image scale follow
@@ -157,6 +224,12 @@ export const ImagingProfile = {
  */
 export type ImagingProfile = typeof ImagingProfile[keyof typeof ImagingProfile];
 
+/**
+ * A catalogue object. Exactly one of `coordinates` or `solarSystemBody` is
+ * present, decided by `positionSource`: a FIXED target has coordinates and no
+ * body, an EPHEMERIS target has a body and no coordinates.
+ *
+ */
 export type Target = {
     id: string;
     slug: string;
@@ -169,7 +242,15 @@ export type Target = {
     nameKa: string;
     descriptionEn?: string | null;
     descriptionKa?: string | null;
-    coordinates: EquatorialCoordinates;
+    positionSource: TargetPositionSource;
+    /**
+     * J2000 coordinates. Present only when positionSource is FIXED.
+     */
+    coordinates?: EquatorialCoordinates | null;
+    /**
+     * Present only when positionSource is EPHEMERIS.
+     */
+    solarSystemBody?: SolarSystemBody | null;
     angularSizeArcmin: number;
     magnitude: number;
     opticalConfig: OpticalConfig;
@@ -228,6 +309,10 @@ export type TonightTarget = {
 };
 
 export type TonightTargetList = {
+    /**
+     * The observatory every assessment in `items` was made at.
+     */
+    observatoryId: string;
     items: Array<TonightTarget>;
     evaluatedAt: string;
 };
@@ -247,6 +332,56 @@ export const ObservatoryMode = { SIMULATED: 'SIMULATED', REAL: 'REAL' } as const
  *
  */
 export type ObservatoryMode = typeof ObservatoryMode[keyof typeof ObservatoryMode];
+
+/**
+ * Who the agent believes is at the instrument, decided by the agent alone (ADR-024).
+ * A process starts SIMULATED, or ATTENDED when it was started with the attended flag;
+ * it never starts UNATTENDED. UNATTENDED is armed by a local operator act from
+ * ATTENDED, for that process only, and the daylight override is refused in it. On
+ * real drivers arming is refused until a sky sensor is fitted. DISARMED is an
+ * UNATTENDED agent that latched off on a fault, a suspension or a local disarm; it
+ * refuses every command but PARK and ABORT until an operator restarts it attended and
+ * arms it again. Read it beside ObservatoryMode, which says whether the drivers are
+ * real. The cloud may disarm an agent and never arm one.
+ *
+ */
+export const AgentPosture = {
+    SIMULATED: 'SIMULATED',
+    ATTENDED: 'ATTENDED',
+    UNATTENDED: 'UNATTENDED',
+    DISARMED: 'DISARMED'
+} as const;
+
+/**
+ * Who the agent believes is at the instrument, decided by the agent alone (ADR-024).
+ * A process starts SIMULATED, or ATTENDED when it was started with the attended flag;
+ * it never starts UNATTENDED. UNATTENDED is armed by a local operator act from
+ * ATTENDED, for that process only, and the daylight override is refused in it. On
+ * real drivers arming is refused until a sky sensor is fitted. DISARMED is an
+ * UNATTENDED agent that latched off on a fault, a suspension or a local disarm; it
+ * refuses every command but PARK and ABORT until an operator restarts it attended and
+ * arms it again. Read it beside ObservatoryMode, which says whether the drivers are
+ * real. The cloud may disarm an agent and never arm one.
+ *
+ */
+export type AgentPosture = typeof AgentPosture[keyof typeof AgentPosture];
+
+/**
+ * Why an UNATTENDED agent moved to DISARMED (ADR-024 §4).
+ */
+export const DisarmReason = {
+    HARDWARE_FAULT: 'HARDWARE_FAULT',
+    PARK_FAILED: 'PARK_FAILED',
+    LINK_LOST: 'LINK_LOST',
+    APPROVAL_WITHDRAWN: 'APPROVAL_WITHDRAWN',
+    LOCAL_DISARM: 'LOCAL_DISARM',
+    SKY_SENSOR_STALE: 'SKY_SENSOR_STALE'
+} as const;
+
+/**
+ * Why an UNATTENDED agent moved to DISARMED (ADR-024 §4).
+ */
+export type DisarmReason = typeof DisarmReason[keyof typeof DisarmReason];
 
 /**
  * ONLINE = agent connected and heartbeating. DEGRADED = connected but a heartbeat
@@ -293,6 +428,65 @@ export type WeatherState = {
     updatedAt: string;
 };
 
+/**
+ * The forecast provider that produced a stored hour (DV-110).
+ */
+export const ForecastSource = { METEOBLUE: 'METEOBLUE', OPEN_METEO: 'OPEN_METEO' } as const;
+
+/**
+ * The forecast provider that produced a stored hour (DV-110).
+ */
+export type ForecastSource = typeof ForecastSource[keyof typeof ForecastSource];
+
+/**
+ * UNKNOWN when no forecast is stored for the hour or the stored one is too old.
+ */
+export const ViewingConditionsStatus = { KNOWN: 'KNOWN', UNKNOWN: 'UNKNOWN' } as const;
+
+/**
+ * UNKNOWN when no forecast is stored for the hour or the stored one is too old.
+ */
+export type ViewingConditionsStatus = typeof ViewingConditionsStatus[keyof typeof ViewingConditionsStatus];
+
+/**
+ * One forecast hour. Every value is null when `status` is UNKNOWN, and any value
+ * the source does not provide is null when KNOWN. Cloud layers are as the source
+ * defines them, which differ between providers; `source` says which applies.
+ *
+ */
+export type ViewingConditionsHour = {
+    /**
+     * The instant the forecast hour begins, on the hour.
+     */
+    at: string;
+    status: ViewingConditionsStatus;
+    source: ForecastSource | null;
+    fetchedAt: string | null;
+    cloudCoverPercent: number | null;
+    cloudCoverLowPercent: number | null;
+    cloudCoverMidPercent: number | null;
+    cloudCoverHighPercent: number | null;
+    precipitationProbabilityPercent: number | null;
+    relativeHumidityPercent: number | null;
+    windSpeedMetresPerSecond: number | null;
+    /**
+     * Only from a source with an astronomy seeing forecast.
+     */
+    seeingArcseconds: number | null;
+};
+
+export type ViewingConditions = {
+    observatoryId: string;
+    /**
+     * The observatory's local date on which tonight begins.
+     */
+    date: string;
+    /**
+     * Tonight's bookable hours in order. Empty when the night offers none.
+     */
+    items: Array<ViewingConditionsHour>;
+};
+
 export const DeviceHealth = {
     OK: 'OK',
     DEGRADED: 'DEGRADED',
@@ -328,6 +522,21 @@ export type PublicObservatoryStatus = {
     currentTargetName?: string | null;
     lastSuccessfulMissionAt?: string | null;
     updatedAt: string;
+};
+
+/**
+ * The latest telemetry the realtime service holds for one connected observatory,
+ * as served on x-darkview-internal to the API (ADR-017). Internal: never sent to a
+ * client directly.
+ *
+ */
+export type ObservatoryTelemetrySnapshot = {
+    observatoryId: string;
+    telemetry: ObservatoryTelemetry;
+    /**
+     * The last message of any kind from the agent's link, on the cloud's clock.
+     */
+    lastHeartbeatAt: string;
 };
 
 /**
@@ -437,12 +646,21 @@ export type SafetyEnvelopeConfig = {
      * independently by cloud and agent. Never overridable, including by an
      * operator override.
      *
+     * The minimum is 15 rather than 0 because ADR-013 requires the Sun exclusion
+     * to be unreachable from any parameter on any path, and a parameter that may
+     * be set to zero is that path. Cloud and agent each apply the same floor
+     * again in code, independently, so a stored value below it is raised rather
+     * than obeyed.
+     *
      */
     sunExclusionDegrees: number;
     /**
      * No customer mission may start while the Sun is above this altitude. An
      * operator override is permitted for attended terrestrial testing and remains
      * Sun-bounded.
+     *
+     * Bounded to real Sun altitudes, and never above the horizon: a lock set
+     * higher than 0 is a lock that cannot fire.
      *
      */
     daylightLockSunAltitudeDegrees: number;
@@ -473,7 +691,58 @@ export type SetWeatherHoldRequest = {
     note?: string | null;
 };
 
+/**
+ * One telescope a customer may book, and what a customer needs to choose it.
+ *
+ * ADR-015 leaves how a customer chooses between instruments undecided -- a
+ * list, a map, a recommendation -- so this carries what any of those needs
+ * and no more. There are no coordinates: a map is not decided, and precise
+ * coordinates of somebody else's telescope are not a public field.
+ *
+ * `nameKa` may equal `nameEn`. A partner registers one `siteName`, and
+ * manufacturing a Georgian name for somebody else's property would be
+ * inventing data about it.
+ *
+ */
+export type BookableObservatory = {
+    id: string;
+    slug: string;
+    kind: NetworkNodeKind;
+    nameEn: string;
+    nameKa: string;
+    city: string;
+    countryCode: string;
+    /**
+     * IANA zone. `GET /slots` takes a date in this zone, so a client in another
+     * one needs it to ask for the night it means.
+     *
+     */
+    timezone: string;
+    telescope: BookableTelescope;
+};
+
+/**
+ * The instrument, as a customer would compare two of them. ADR-015: a partner
+ * is selling *that* telescope, with its aperture, and a customer choosing
+ * between two needs to see the difference.
+ *
+ */
+export type BookableTelescope = {
+    manufacturer: string;
+    model: string;
+    apertureMm: number;
+    focalLengthMm: number;
+};
+
+export type BookableObservatoryList = {
+    items: Array<BookableObservatory>;
+};
+
 export type Slot = {
+    /**
+     * The telescope this slot is time on (ADR-015).
+     */
+    observatoryId: string;
     startAt: string;
     endAt: string;
     durationMinutes: number;
@@ -498,6 +767,7 @@ export const SlotUnavailableReason = {
 export type SlotUnavailableReason = typeof SlotUnavailableReason[keyof typeof SlotUnavailableReason];
 
 export type SlotList = {
+    observatoryId: string;
     date: string;
     items: Array<Slot>;
 };
@@ -515,6 +785,10 @@ export type BookingStatus = typeof BookingStatus[keyof typeof BookingStatus];
 export type Booking = {
     id: string;
     userId: string;
+    /**
+     * The telescope the booking is time on (ADR-015).
+     */
+    observatoryId: string;
     targetId: string;
     slotStartAt: string;
     durationMinutes: number;
@@ -523,14 +797,90 @@ export type Booking = {
     currency: Currency;
     paymentId?: string | null;
     missionId?: string | null;
+    /**
+     * What the customer's loyalty tier took off the slot price (DV-095).
+     */
+    tierDiscountMinor?: number;
+    /**
+     * Points spent on this booking (DV-095).
+     */
+    loyaltyPointsRedeemed?: number;
+    /**
+     * Subscription minutes that paid for this booking (ADR-022).
+     */
+    subscriptionMinutesSpent?: number;
+    /**
+     * DV-111. Null until the slot has ended and been evaluated, and when nothing
+     * was lost on our side or less than half the slot was lost.
+     *
+     */
+    entitlement?: BookingEntitlement | null;
     createdAt: string;
 };
 
+/**
+ * What lost the slot. A customer who did not show up is not a cause.
+ */
+export const BookingLossCause = { WEATHER: 'WEATHER', OBSERVATORY_FAULT: 'OBSERVATORY_FAULT' } as const;
+
+/**
+ * What lost the slot. A customer who did not show up is not a cause.
+ */
+export type BookingLossCause = typeof BookingLossCause[keyof typeof BookingLossCause];
+
+/**
+ * DV-111, maintainer rules of 2026-09-15. A slot lost to weather or to an
+ * observatory fault -- internet, power or telescope -- where the customer lost
+ * half the slot or more. OPEN offers a full refund or a free reschedule until
+ * `expiresAt`, thirty days after the slot was evaluated; an entitlement still
+ * OPEN then is refunded automatically.
+ *
+ */
+export type BookingEntitlement = {
+    status: 'OPEN' | 'REFUNDED' | 'RESCHEDULED';
+    cause: BookingLossCause;
+    minutesLost: number;
+    expiresAt: string;
+    /**
+     * The replacement booking, once RESCHEDULED.
+     */
+    rescheduledBookingId: string | null;
+};
+
+export type RescheduleBookingRequest = {
+    /**
+     * A slot `GET /slots` offers on the booking's telescope, of the booking's length.
+     */
+    slotStartAt: string;
+    /**
+     * Defaults to the original booking's target.
+     */
+    targetId?: string;
+};
+
 export type CreateBookingRequest = {
+    /**
+     * An `id` from `GET /observatories`.
+     */
+    observatoryId: string;
     targetId: string;
     slotStartAt: string;
     durationMinutes: number;
     locale?: Locale;
+    /**
+     * A gift voucher code (DV-112). Case and separators are ignored.
+     */
+    voucherCode?: string;
+    /**
+     * Points to spend on this booking (DV-095). Never with `voucherCode`.
+     */
+    loyaltyPoints?: number;
+    /**
+     * Pay for this booking with subscription minutes (ADR-022). Never with
+     * `voucherCode` or `loyaltyPoints`.
+     *
+     */
+    useSubscriptionMinutes?: boolean;
 };
 
 export type CancelBookingRequest = {
@@ -577,7 +927,249 @@ export type PaymentIntent = {
 
 export type BookingWithPaymentIntent = {
     booking: Booking;
+    /**
+     * Null when a gift voucher paid for the booking (DV-112).
+     */
+    paymentIntent: PaymentIntent | null;
+};
+
+export type LoyaltyTier = {
+    code: string;
+    nameEn: string;
+    nameKa: string;
+    /**
+     * Purchase-earned points at which the tier begins.
+     */
+    thresholdPoints: number;
+    discountPercent: number;
+};
+
+export type LoyaltyScheme = {
+    /**
+     * Points earned per 1 GEL of settled payment.
+     */
+    pointsPerGel: number;
+    /**
+     * Points that take 1 GEL off a booking.
+     */
+    pointsPerGelRedeemed: number;
+    welcomeBonusPoints: number;
+    referralBonusPoints: number;
+    /**
+     * The least a cash booking may cost after points.
+     */
+    minimumPayableMinor: number;
+    /**
+     * Milestones shown on the way to a tier. They grant nothing.
+     */
+    progressMarkers: Array<number>;
+    /**
+     * Ordered by threshold, lowest first.
+     */
+    tiers: Array<LoyaltyTier>;
+};
+
+export const LoyaltyEntryKind = {
+    WELCOME_BONUS: 'WELCOME_BONUS',
+    REFERRAL_BONUS: 'REFERRAL_BONUS',
+    PURCHASE_EARNED: 'PURCHASE_EARNED',
+    PURCHASE_REVERSED: 'PURCHASE_REVERSED',
+    REDEEMED: 'REDEEMED',
+    REDEMPTION_RELEASED: 'REDEMPTION_RELEASED',
+    ADMIN_ADJUSTMENT: 'ADMIN_ADJUSTMENT'
+} as const;
+
+export type LoyaltyEntryKind = typeof LoyaltyEntryKind[keyof typeof LoyaltyEntryKind];
+
+export type LoyaltyLedgerEntry = {
+    id: string;
+    kind: LoyaltyEntryKind;
+    /**
+     * Signed change to the balance.
+     */
+    points: number;
+    /**
+     * Signed change to tier points. Non-zero only for purchases and their reversal.
+     */
+    tierPoints: number;
+    bookingId?: string | null;
+    reason?: string | null;
+    createdAt: string;
+};
+
+/**
+ * ADR-022. The plan a subscription is on. Prices and grants live in the plan
+ * catalogue, never in this enum.
+ *
+ */
+export const SubscriptionPlan = {
+    OBSERVER: 'OBSERVER',
+    EXPLORER: 'EXPLORER',
+    ADVANCED: 'ADVANCED'
+} as const;
+
+/**
+ * ADR-022. The plan a subscription is on. Prices and grants live in the plan
+ * catalogue, never in this enum.
+ *
+ */
+export type SubscriptionPlan = typeof SubscriptionPlan[keyof typeof SubscriptionPlan];
+
+/**
+ * ADR-022. A failed renewal leaves a subscription ACTIVE while it is retried and
+ * EXPIRED when the grace period lapses; there is no separate past-due state.
+ * TRIALING is unused in Phase 1.
+ *
+ */
+export const SubscriptionStatus = {
+    TRIALING: 'TRIALING',
+    ACTIVE: 'ACTIVE',
+    PAUSED: 'PAUSED',
+    CANCELLED: 'CANCELLED',
+    EXPIRED: 'EXPIRED'
+} as const;
+
+/**
+ * ADR-022. A failed renewal leaves a subscription ACTIVE while it is retried and
+ * EXPIRED when the grace period lapses; there is no separate past-due state.
+ * TRIALING is unused in Phase 1.
+ *
+ */
+export type SubscriptionStatus = typeof SubscriptionStatus[keyof typeof SubscriptionStatus];
+
+export type SubscriptionPlanOption = {
+    plan: SubscriptionPlan;
+    nameEn: string;
+    nameKa: string;
+    /**
+     * Monthly price in the currency's minor unit.
+     */
+    priceMinor: number;
+    currency: string;
+    /**
+     * Observation minutes granted when a period is paid. Minutes rather than
+     * observations because the slot length is not settled (ADR-022 §2).
+     *
+     */
+    minutesPerPeriod: number;
+};
+
+export type Subscription = {
+    subscriptionId: string;
+    plan: SubscriptionPlan;
+    status: SubscriptionStatus;
+    currentPeriodStart: string | null;
+    /**
+     * When the next renewal is attempted, and when this period's minutes expire.
+     */
+    currentPeriodEnd: string | null;
+    cancelAtPeriodEnd: boolean;
+    /**
+     * Observation minutes a booking can spend now.
+     */
+    minuteBalance: number;
+    isDemo: boolean;
+};
+
+export type SubscribeRequest = {
+    plan: SubscriptionPlan;
+    locale?: Locale;
+};
+
+export type SubscriptionWithPaymentIntent = {
+    subscription: Subscription;
     paymentIntent: PaymentIntent;
+};
+
+export type LoyaltyAccount = {
+    userId: string;
+    /**
+     * Spendable points. Negative only when a refund reversed points already spent.
+     */
+    balance: number;
+    tierPoints: number;
+    tier: LoyaltyTier;
+    nextTier: LoyaltyTier | null;
+    referralCode: string;
+    /**
+     * The fifty most recent entries, newest first.
+     */
+    recentEntries: Array<LoyaltyLedgerEntry>;
+};
+
+export type LoyaltyAdjustmentRequest = {
+    /**
+     * Client-generated. Makes a retried adjustment a no-op.
+     */
+    adjustmentId: string;
+    userId: string;
+    points: number;
+    reason: string;
+};
+
+/**
+ * DV-112. PENDING_PAYMENT until the payment settles; CANCELLED when it fails.
+ * EXPIRED is an ACTIVE voucher past `expiresAt`.
+ *
+ */
+export const GiftVoucherStatus = {
+    PENDING_PAYMENT: 'PENDING_PAYMENT',
+    ACTIVE: 'ACTIVE',
+    REDEEMED: 'REDEEMED',
+    EXPIRED: 'EXPIRED',
+    CANCELLED: 'CANCELLED'
+} as const;
+
+/**
+ * DV-112. PENDING_PAYMENT until the payment settles; CANCELLED when it fails.
+ * EXPIRED is an ACTIVE voucher past `expiresAt`.
+ *
+ */
+export type GiftVoucherStatus = typeof GiftVoucherStatus[keyof typeof GiftVoucherStatus];
+
+export type GiftVoucher = {
+    id: string;
+    status: GiftVoucherStatus;
+    durationMinutes: number;
+    priceMinor: number;
+    currency: Currency;
+    /**
+     * The code's last four characters. Null until the payment settles.
+     */
+    codeLast4: string | null;
+    recipientEmail: string | null;
+    recipientName: string | null;
+    /**
+     * Twelve months from payment. Null until the payment settles.
+     */
+    expiresAt: string | null;
+    redeemedBookingId: string | null;
+    createdAt: string;
+};
+
+export type GiftVoucherList = {
+    items: Array<GiftVoucher>;
+};
+
+export type GiftVoucherWithPaymentIntent = {
+    voucher: GiftVoucher;
+    paymentIntent: PaymentIntent;
+};
+
+export type CreateGiftVoucherRequest = {
+    /**
+     * The length of the observation the voucher pays for. Must be a length slots are sold at.
+     */
+    durationMinutes: number;
+    /**
+     * Where the code is emailed. The buyer when omitted.
+     */
+    recipientEmail?: string;
+    recipientName?: string;
+    /**
+     * A personal note included in the email.
+     */
+    message?: string;
 };
 
 export type BookingPage = {
@@ -607,7 +1199,7 @@ export type PaymentWebhookAck = {
 };
 
 /**
- * The authoritative mission state machine, exactly as enumerated in CLAUDE.md.
+ * The authoritative mission state machine, exactly as enumerated in docs/ENGINEERING.md.
  *
  * Primary:  REQUESTED -> SCHEDULED -> PREPARING -> SLEWING -> VERIFYING ->
  * CENTERING -> OBSERVING -> CAPTURING -> PROCESSING -> COMPLETE
@@ -618,7 +1210,7 @@ export type PaymentWebhookAck = {
  * state, and every path out of one ends at Park.
  *
  * Resolved by docs/decisions/ADR-004-mission-state-machine.md (2026-08-31). This
- * enum matches CLAUDE.md and nothing else. The Build Plan's LOCKED and DELIVERED
+ * enum matches docs/ENGINEERING.md and nothing else. The Build Plan's LOCKED and DELIVERED
  * are not states -- "Target locked" and "LIVE" are display labels mapped in the
  * web layer. Its SOLVE_FAILED, LINK_LOST and EXPIRED are carried as
  * MissionFailureReason detail on a state above, never as states.
@@ -643,7 +1235,7 @@ export const MissionState = {
 } as const;
 
 /**
- * The authoritative mission state machine, exactly as enumerated in CLAUDE.md.
+ * The authoritative mission state machine, exactly as enumerated in docs/ENGINEERING.md.
  *
  * Primary:  REQUESTED -> SCHEDULED -> PREPARING -> SLEWING -> VERIFYING ->
  * CENTERING -> OBSERVING -> CAPTURING -> PROCESSING -> COMPLETE
@@ -654,7 +1246,7 @@ export const MissionState = {
  * state, and every path out of one ends at Park.
  *
  * Resolved by docs/decisions/ADR-004-mission-state-machine.md (2026-08-31). This
- * enum matches CLAUDE.md and nothing else. The Build Plan's LOCKED and DELIVERED
+ * enum matches docs/ENGINEERING.md and nothing else. The Build Plan's LOCKED and DELIVERED
  * are not states -- "Target locked" and "LIVE" are display labels mapped in the
  * web layer. Its SOLVE_FAILED, LINK_LOST and EXPIRED are carried as
  * MissionFailureReason detail on a state above, never as states.
@@ -699,7 +1291,14 @@ export type MissionFailureReason = typeof MissionFailureReason[keyof typeof Miss
 export type Mission = {
     id: string;
     userId: string;
-    bookingId: string;
+    /**
+     * The booking this mission was sold from, or null. Required so it is always
+     * stated, nullable because not every mission is sold: an operator mission and
+     * a demo mission have no booking, and inventing one for them would put a
+     * fiction in the payment tables.
+     *
+     */
+    bookingId: string | null;
     targetId: string;
     observatoryId: string;
     state: MissionState;
@@ -763,6 +1362,57 @@ export type MissionObserver = {
 export type MissionObserverList = {
     items: Array<MissionObserver>;
     capacity: number;
+};
+
+/**
+ * PENDING_PAYMENT holds a seat while the payment is outstanding and lapses at
+ * `holdExpiresAt` if nothing settles. PAID is a seat its buyer keeps for the rest
+ * of the session. CANCELLED is a payment that failed; EXPIRED is a hold that ran
+ * out. Both put the seat back on sale.
+ *
+ */
+export const ObserverPackStatus = {
+    PENDING_PAYMENT: 'PENDING_PAYMENT',
+    PAID: 'PAID',
+    CANCELLED: 'CANCELLED',
+    EXPIRED: 'EXPIRED'
+} as const;
+
+/**
+ * PENDING_PAYMENT holds a seat while the payment is outstanding and lapses at
+ * `holdExpiresAt` if nothing settles. PAID is a seat its buyer keeps for the rest
+ * of the session. CANCELLED is a payment that failed; EXPIRED is a hold that ran
+ * out. Both put the seat back on sale.
+ *
+ */
+export type ObserverPackStatus = typeof ObserverPackStatus[keyof typeof ObserverPackStatus];
+
+/**
+ * One purchased, view-only seat on a session somebody else controls (ADR-007).
+ *
+ * The pack is the sale; `MissionObserver` is the attachment to it. They are
+ * separate because a seat outlives a connection: an observer whose phone drops
+ * still owns what they paid for.
+ *
+ */
+export type ObserverPack = {
+    id: string;
+    missionId: string;
+    userId: string;
+    status: ObserverPackStatus;
+    priceMinor: number;
+    currency: Currency;
+    paymentId?: string | null;
+    /**
+     * When an unpaid hold lapses. Null once the pack is no longer holding one.
+     */
+    holdExpiresAt?: string | null;
+    createdAt: string;
+};
+
+export type ObserverPackWithPaymentIntent = {
+    observerPack: ObserverPack;
+    paymentIntent: PaymentIntent;
 };
 
 /**
@@ -1070,7 +1720,8 @@ export const CommandRejectionReason = {
     DEVICE_UNAVAILABLE: 'DEVICE_UNAVAILABLE',
     MODE_NOT_PERMITTED: 'MODE_NOT_PERMITTED',
     WEATHER_HOLD_ACTIVE: 'WEATHER_HOLD_ACTIVE',
-    OBSERVATORY_OFFLINE: 'OBSERVATORY_OFFLINE'
+    OBSERVATORY_OFFLINE: 'OBSERVATORY_OFFLINE',
+    UNATTENDED_DISARMED: 'UNATTENDED_DISARMED'
 } as const;
 
 /**
@@ -1108,7 +1759,9 @@ export type OperatorOverrideRequest = {
 
 /**
  * IMAGE is the delivered, stretched, watermarked image. FITS is the real frame
- * data. UNMARKED is the stored copy without the overlay.
+ * data. UNMARKED is the stored copy without the overlay. THUMBNAIL is a small
+ * preview of the same picture, for a Collection card; it is what
+ * `Capture.thumbnailUrl` signs.
  *
  */
 export const CaptureAssetKind = {
@@ -1120,7 +1773,9 @@ export const CaptureAssetKind = {
 
 /**
  * IMAGE is the delivered, stretched, watermarked image. FITS is the real frame
- * data. UNMARKED is the stored copy without the overlay.
+ * data. UNMARKED is the stored copy without the overlay. THUMBNAIL is a small
+ * preview of the same picture, for a Collection card; it is what
+ * `Capture.thumbnailUrl` signs.
  *
  */
 export type CaptureAssetKind = typeof CaptureAssetKind[keyof typeof CaptureAssetKind];
@@ -1179,6 +1834,281 @@ export type CaptureDownload = {
     expiresAt: string;
 };
 
+/**
+ * FIRST_PARTY is an observatory Darkview owns and operates. PARTNER is one
+ * somebody else owns, running the same agent under a qualification an operator
+ * granted and can revoke.
+ *
+ */
+export const NetworkNodeKind = { FIRST_PARTY: 'FIRST_PARTY', PARTNER: 'PARTNER' } as const;
+
+/**
+ * FIRST_PARTY is an observatory Darkview owns and operates. PARTNER is one
+ * somebody else owns, running the same agent under a qualification an operator
+ * granted and can revoke.
+ *
+ */
+export type NetworkNodeKind = typeof NetworkNodeKind[keyof typeof NetworkNodeKind];
+
+/**
+ * DRAFT is the resting state and it refuses everything. UNDER_REVIEW is the
+ * owner saying the telescope is ready to be qualified; it grants nothing.
+ * APPROVED is the only state in which a partner observatory may be operated.
+ * SUSPENDED is an operator having taken that away.
+ *
+ * SUSPENDED and DRAFT both refuse everything, and they are kept distinct
+ * because they are different facts about a telescope: one has never been
+ * qualified, the other was and had it revoked. Collapsing them would lose
+ * exactly the history an operator needs when deciding whether to approve it
+ * again.
+ *
+ */
+export const NetworkNodeApprovalStatus = {
+    DRAFT: 'DRAFT',
+    UNDER_REVIEW: 'UNDER_REVIEW',
+    APPROVED: 'APPROVED',
+    SUSPENDED: 'SUSPENDED'
+} as const;
+
+/**
+ * DRAFT is the resting state and it refuses everything. UNDER_REVIEW is the
+ * owner saying the telescope is ready to be qualified; it grants nothing.
+ * APPROVED is the only state in which a partner observatory may be operated.
+ * SUSPENDED is an operator having taken that away.
+ *
+ * SUSPENDED and DRAFT both refuse everything, and they are kept distinct
+ * because they are different facts about a telescope: one has never been
+ * qualified, the other was and had it revoked. Collapsing them would lose
+ * exactly the history an operator needs when deciding whether to approve it
+ * again.
+ *
+ */
+export type NetworkNodeApprovalStatus = typeof NetworkNodeApprovalStatus[keyof typeof NetworkNodeApprovalStatus];
+
+/**
+ * One observatory in the network, and the terms on which it may be used.
+ *
+ * ADR-013: partner status widens who may host a telescope, never what a
+ * telescope may be asked to do. A node carries no authority of its own -- the
+ * agent still re-validates every command, still enforces its own safety
+ * envelope after the link dies, and still refuses a cloud-approved command
+ * that fails local safety.
+ *
+ */
+export type NetworkNode = {
+    nodeId: string;
+    observatoryId: string;
+    ownerId: string;
+    kind: NetworkNodeKind;
+    approvalStatus: NetworkNodeApprovalStatus;
+    siteName: string;
+    city: string;
+    countryCode: string;
+    timezone: string;
+    /**
+     * Whether a measured altitude limit exists for this instrument. Reported
+     * rather than asserted: it is the condition approval checks for itself,
+     * because the database knows the answer and a checkbox would let an
+     * unmeasured telescope be approved by clicking.
+     *
+     */
+    safetyEnvelopeMeasured: boolean;
+    /**
+     * Populated at qualification. Empty at registration.
+     */
+    capabilities: Array<string>;
+    /**
+     * The posture the node's agent last reported (ADR-024). Null until an agent
+     * has ever connected. Kept after the link drops, so a node that disarmed
+     * reads DISARMED until an agent reports otherwise.
+     *
+     */
+    agentPosture: AgentPosture | null;
+    /**
+     * Set only while agentPosture is DISARMED.
+     */
+    agentDisarmReason: DisarmReason | null;
+    approvedAt?: string | null;
+    createdAt: string;
+};
+
+export type NetworkNodePage = {
+    items: Array<NetworkNode>;
+    page: PageMeta;
+};
+
+/**
+ * One node, and the evidence for and against qualifying it (DV-122).
+ *
+ * Operator-only, and it carries what the public surfaces deliberately do not:
+ * the owner's identity and the site's exact coordinates. The coordinates are
+ * here because ADR-013 requires them verified against the sky, and the
+ * operator cannot compare a plate solve with a number they are not shown.
+ *
+ */
+export type NetworkNodeReview = {
+    node: NetworkNode;
+    owner: NetworkNodeOwner;
+    site: NetworkNodeSite;
+    /**
+     * The node's primary instrument as registered. Null if it has been removed, which also makes the node unbookable.
+     */
+    telescope: RegisterNetworkTelescope | null;
+    evidence: NetworkNodeEvidence;
+    /**
+     * Every state change the node has been through, oldest first.
+     */
+    history: Array<NetworkNodeHistoryEntry>;
+};
+
+export type NetworkNodeOwner = {
+    id: string;
+    name: string;
+    email: string;
+};
+
+export type NetworkNodeSite = {
+    latitude: number;
+    longitude: number;
+    timezone: string;
+};
+
+/**
+ * What the database can say about ADR-013's conditions. It reports; it does not
+ * judge. Park proven and the owner's acceptance of terms have no record here
+ * and remain the operator's attestation on approval.
+ *
+ */
+export type NetworkNodeEvidence = {
+    /**
+     * The measurement approval checks for itself. Null when no envelope row exists.
+     */
+    safetyEnvelope: NetworkNodeEnvelopeEvidence | null;
+    /**
+     * Bearings recorded in the horizon mask. Zero means nothing has been surveyed.
+     */
+    horizonMaskEntries: number;
+    forbiddenAzimuthSectors: number;
+    /**
+     * Missions that reached COMPLETE on this observatory in REAL mode. A
+     * supervised first light is at least one; simulated missions prove nothing
+     * about the hardware and are not counted.
+     *
+     */
+    completedRealMissions: number;
+};
+
+export type NetworkNodeEnvelopeEvidence = {
+    /**
+     * Null is UNMEASURED, and approval refuses it.
+     */
+    maxAltitudeDegrees: number | null;
+    measuredAt: string | null;
+    measuredBy: string | null;
+    measurementNote: string | null;
+};
+
+export type NetworkNodeHistoryEntry = {
+    action: 'REGISTERED' | 'SUBMITTED' | 'APPROVED' | 'SUSPENDED' | 'DEVICE_TOKEN_ISSUED' | 'DEVICE_TOKEN_ROTATED' | 'DEVICE_TOKEN_REVOKED';
+    occurredAt: string;
+    actorUserId: string | null;
+    /**
+     * Verbatim, for an approval or a suspension. The operator's own words.
+     */
+    reason: string | null;
+};
+
+export type NetworkNodeList = {
+    items: Array<NetworkNode>;
+};
+
+/**
+ * The site and the instrument, together. A partner has neither until they
+ * register, so both are created here.
+ *
+ * There is one `siteName` rather than a name per language. A telescope on a
+ * roof in Santiago has one name, and manufacturing a Georgian translation of
+ * it would be inventing data about somebody else's property.
+ *
+ */
+export type RegisterNetworkNodeRequest = {
+    siteName: string;
+    city: string;
+    countryCode: string;
+    latitude: number;
+    longitude: number;
+    timezone: string;
+    telescope: RegisterNetworkTelescope;
+};
+
+export type RegisterNetworkTelescope = {
+    name: string;
+    manufacturer: string;
+    model: string;
+    apertureMm: number;
+    focalLengthMm: number;
+};
+
+/**
+ * ADR-013's qualification, as the operator attests it.
+ *
+ * Every flag must be true. They are separate fields rather than one
+ * confirmation because they are separate things somebody had to go and do, and
+ * a single "I confirm" is a box that gets ticked without reading. The measured
+ * safety envelope is absent from this list deliberately: it is checked against
+ * the database instead.
+ *
+ */
+export type ApproveNetworkNodeRequest = {
+    /**
+     * The site was confirmed against the sky, by plate solve, rather than typed into a form.
+     */
+    coordinatesVerified: boolean;
+    /**
+     * The roofline, walls and obstructions at this site are recorded.
+     */
+    horizonMaskRecorded: boolean;
+    /**
+     * At least one full mission was run on this instrument with an operator watching.
+     */
+    firstLightSupervised: boolean;
+    /**
+     * Park was seen to work on this hardware, both commanded and on link loss.
+     */
+    parkProven: boolean;
+    /**
+     * The owner accepted the operating terms in writing, for this node.
+     */
+    ownerTermsAccepted: boolean;
+    reason: string;
+};
+
+export type SuspendNetworkNodeRequest = {
+    reason: string;
+};
+
+/**
+ * Why the operator is issuing, rotating or revoking. Recorded verbatim.
+ */
+export type DeviceTokenChangeRequest = {
+    reason: string;
+};
+
+/**
+ * The only place a device token ever appears. Give it to the owner for
+ * `python -m darkview_agent setup`; it cannot be shown again.
+ *
+ */
+export type DeviceTokenIssued = {
+    nodeId: string;
+    observatoryId: string;
+    /**
+     * Presented by the agent as `Authorization: Bearer`. Never logged.
+     */
+    deviceToken: string;
+    issuedAt: string;
+};
+
 export const AuditCategory = {
     AUTH: 'AUTH',
     BOOKING: 'BOOKING',
@@ -1188,7 +2118,9 @@ export const AuditCategory = {
     SAFETY: 'SAFETY',
     OBSERVATORY_MODE: 'OBSERVATORY_MODE',
     OPERATOR_OVERRIDE: 'OPERATOR_OVERRIDE',
-    AGENT_LINK: 'AGENT_LINK'
+    AGENT_LINK: 'AGENT_LINK',
+    LOYALTY: 'LOYALTY',
+    SUBSCRIPTION: 'SUBSCRIPTION'
 } as const;
 
 export type AuditCategory = typeof AuditCategory[keyof typeof AuditCategory];
@@ -1238,6 +2170,11 @@ export type AgentHello = {
     observatoryId: string;
     agentVersion: string;
     mode: ObservatoryMode;
+    posture: AgentPosture;
+    /**
+     * Set only while posture is DISARMED.
+     */
+    disarmReason?: DisarmReason | null;
     bootedAt: string;
     /**
      * False while maxAltitudeDegrees is unmeasured. The cloud must not schedule a mission against an agent reporting false.
@@ -1250,7 +2187,10 @@ export type AgentHello = {
 };
 
 /**
- * Sent every 5 seconds. Its absence is what triggers the watchdog.
+ * Sent every 5 seconds. Its absence is what triggers the watchdog. Carries the
+ * agent's posture, so a disarm reaches the cloud within one interval rather than at
+ * the next reconnect (ADR-024 §5, correction of 2026-09-22).
+ *
  */
 export type AgentHeartbeat = {
     type: 'AGENT_HEARTBEAT';
@@ -1258,6 +2198,11 @@ export type AgentHeartbeat = {
     sentAt: string;
     sequence: number;
     uptimeSeconds: number;
+    posture: AgentPosture;
+    /**
+     * Set only while posture is DISARMED.
+     */
+    disarmReason?: DisarmReason | null;
 };
 
 /**
@@ -1341,6 +2286,19 @@ export type LiveFrameHeader = {
     encoding: LiveFrameEncoding;
     widthPx: number;
     heightPx: number;
+    /**
+     * The exact size of the binary frame that follows. Four mebibytes is the
+     * ceiling, and it is this contract that sets it rather than any one
+     * transport: a header declaring more is refused before its pixels are
+     * accepted, and the bytes are never buffered.
+     *
+     * Measured against SimCamera at 1920x1080, the shipped agent defaults of
+     * a 1024px long edge at quality 70 produce about 165 KB; the largest
+     * measurement taken was 381 KB at 1280px and quality 82. DV-035
+     * re-measures both against the real ASI585MC at first light, so this
+     * leaves an order of magnitude of room above anything yet observed.
+     *
+     */
     byteLength: number;
     exposureMilliseconds: number;
     gain: number;
@@ -1356,6 +2314,12 @@ export type LiveFrameHeader = {
 
 /**
  * A finished capture has been uploaded by the agent and is ready for the cloud to record.
+ *
+ * Every storage key must be the one the cloud granted for that kind. The cloud
+ * re-derives each and refuses the whole capture if any differs: a key the
+ * agent could choose would let it attach another customer's object to a
+ * capture it reported (DV-065).
+ *
  */
 export type AgentCaptureReady = {
     type: 'AGENT_CAPTURE_READY';
@@ -1376,6 +2340,12 @@ export type AgentCaptureReady = {
     imageStorageKey: string;
     unmarkedStorageKey?: string | null;
     fitsStorageKey?: string | null;
+    /**
+     * The THUMBNAIL the agent wrote, if it wrote one (DV-065). Optional, so an
+     * agent that predates it still sends a valid message.
+     *
+     */
+    thumbnailStorageKey?: string | null;
     solvedFocalLengthMm?: number | null;
     widthPx?: number | null;
     heightPx?: number | null;
@@ -1405,6 +2375,45 @@ export type AgentError = {
 };
 
 /**
+ * The agent asks for somewhere to put one capture asset (ADR-012).
+ *
+ * It does not propose a key. The cloud derives the object's identity from
+ * facts it already holds, so a compromised agent cannot choose to write over
+ * another customer's object -- and that is also what lets
+ * `CaptureAsset.storageKey` be trusted when the capture is finally recorded.
+ *
+ * The mission and command say which capture this is for. Together with
+ * `kind` they identify the object, so no correlation identifier is needed:
+ * a grant answers the request naming the same three.
+ * The agent also declares what it is about to write. A presigned URL signs
+ * only the headers it was given, so a grant that names neither the media type
+ * nor the size is a grant to PUT anything of any size at that key until it
+ * expires. The cloud checks both against the asset kind, signs them, and the
+ * upload is refused by storage itself if either differs.
+ *
+ */
+export type AgentUploadGrantRequest = {
+    type: 'AGENT_UPLOAD_GRANT_REQUEST';
+    messageId: string;
+    sentAt: string;
+    missionId: string;
+    commandId: string;
+    kind: CaptureAssetKind;
+    /**
+     * Media type of the bytes the agent will PUT. Checked against `kind` and
+     * then signed, so it is what the agent must actually send.
+     *
+     */
+    contentType: string;
+    /**
+     * Exact size in bytes of the object the agent will PUT. Checked against the
+     * cloud's per-kind maximum and then signed.
+     *
+     */
+    contentLength: number;
+};
+
+/**
  * Every message the Observatory Agent may send over its outbound link.
  */
 export type AgentToCloudMessage = ({
@@ -1420,6 +2429,8 @@ export type AgentToCloudMessage = ({
 } & AgentMissionEvent) | ({
     type: 'AGENT_LIVE_FRAME';
 } & LiveFrameHeader) | ({
+    type: 'AGENT_UPLOAD_GRANT_REQUEST';
+} & AgentUploadGrantRequest) | ({
     type: 'AGENT_CAPTURE_READY';
 } & AgentCaptureReady) | ({
     type: 'AGENT_ERROR';
@@ -1490,6 +2501,41 @@ export type CloudSafetyEnvelopeUpdate = {
     envelope: SafetyEnvelopeConfig;
 };
 
+/**
+ * Tells the agent what the cloud believes the sky is doing, and whether an
+ * operator hold stands. The agent stores it locally and keeps enforcing it
+ * after the link dies, the same way it does the safety envelope: a hold that
+ * only lived in the cloud would stop meaning anything at the moment the
+ * observatory most needs it to.
+ *
+ * While `holdActive` is true the agent parks and refuses every command but
+ * PARK and ABORT, with WEATHER_HOLD_ACTIVE. Phase 1 fits no sky sensor, so
+ * the only writer is the operator console.
+ *
+ */
+export type CloudWeatherUpdate = {
+    type: 'CLOUD_WEATHER_UPDATE';
+    messageId: string;
+    sentAt: string;
+    observatoryId: string;
+    weather: WeatherState;
+};
+
+/**
+ * The observatory's network node approval status, as the cloud holds it (ADR-024
+ * §3). Sent on every reconnect and whenever the status changes. It can only ever
+ * make the agent safer: any status but APPROVED moves an UNATTENDED agent to
+ * DISARMED, and APPROVED never arms one. Arming is a local act at the observatory.
+ *
+ */
+export type CloudOperatingUpdate = {
+    type: 'CLOUD_OPERATING_UPDATE';
+    messageId: string;
+    sentAt: string;
+    observatoryId: string;
+    approvalStatus: NetworkNodeApprovalStatus;
+};
+
 export type CloudError = {
     type: 'CLOUD_ERROR';
     messageId: string;
@@ -1500,6 +2546,55 @@ export type CloudError = {
      * When true the agent closes the link, backs off and re-dials. It does not stop enforcing safety while disconnected.
      */
     fatal?: boolean;
+};
+
+/**
+ * Permission to write exactly one object, for a few minutes (ADR-012).
+ *
+ * The observatory holds no bucket credential. This URL is the whole of its
+ * authority over object storage: one key, one method, a short expiry. A
+ * stolen mini-PC yields a revocable device token and nothing else.
+ *
+ * `storageKey` is what the agent reports back as `imageStorageKey` on
+ * `AGENT_CAPTURE_READY`. It is the cloud's own derived key, echoed so the
+ * agent knows what it wrote rather than having to construct it.
+ *
+ * A request the cloud will not grant is answered with `CLOUD_ERROR`, not
+ * with a grant naming no URL.
+ *
+ */
+export type CloudUploadGrant = {
+    type: 'CLOUD_UPLOAD_GRANT';
+    messageId: string;
+    sentAt: string;
+    missionId: string;
+    commandId: string;
+    kind: CaptureAssetKind;
+    /**
+     * Object storage key the cloud derived. Not a URL and never a public path.
+     */
+    storageKey: string;
+    /**
+     * The media type the URL was signed for, echoed from the request. The agent
+     * sends exactly this; storage refuses anything else.
+     *
+     */
+    contentType: string;
+    /**
+     * The exact size the URL was signed for, echoed from the request. The agent
+     * sends exactly this many bytes; storage refuses anything else.
+     *
+     */
+    contentLength: number;
+    /**
+     * Presigned URL. Names one object and one method, and expires.
+     */
+    url: string;
+    /**
+     * Always PUT. Stated rather than assumed, so a reader of a captured message knows what it permitted.
+     */
+    method: 'PUT';
+    expiresAt: string;
 };
 
 /**
@@ -1516,6 +2611,12 @@ export type CloudToAgentMessage = ({
 } & CloudSessionUpdate) | ({
     type: 'CLOUD_SAFETY_ENVELOPE_UPDATE';
 } & CloudSafetyEnvelopeUpdate) | ({
+    type: 'CLOUD_UPLOAD_GRANT';
+} & CloudUploadGrant) | ({
+    type: 'CLOUD_WEATHER_UPDATE';
+} & CloudWeatherUpdate) | ({
+    type: 'CLOUD_OPERATING_UPDATE';
+} & CloudOperatingUpdate) | ({
     type: 'CLOUD_ERROR';
 } & CloudError);
 
@@ -1608,12 +2709,33 @@ export type MissionChannelMessage = ({
     type: 'MISSION_ERROR';
 } & MissionChannelError);
 
+/**
+ * Ask to watch one mission. Sent by the controller and by an observer, which is
+ * the only difference `sessionId` carries.
+ *
+ */
 export type MissionClientSubscribe = {
     type: 'CLIENT_SUBSCRIBE';
     messageId: string;
     sentAt: string;
     missionId: string;
-    sessionId: string;
+    /**
+     * The controller's session, or null for an observer (ADR-007).
+     *
+     * The controller states it because a session rotates: reopening replaces the
+     * old identifier, and a stale browser tab holding the previous one must stop
+     * being able to watch. An observer has no rotating credential -- the seat is
+     * the grant and the session cookie verified during the handshake is the
+     * identity -- so there is nothing for them to state. Required either way, so
+     * that a client says which it is rather than omitting the field.
+     *
+     * Stating a sessionId never grants anything on its own. The cloud admits a
+     * subscriber only when the session or the seat belongs to the authenticated
+     * user, and neither confers any command capability: commands are minted only
+     * through POST /missions/{missionId}/command, for the session owner alone.
+     *
+     */
+    sessionId: string | null;
 };
 
 export type MissionClientPing = {
@@ -1651,6 +2773,13 @@ export type AdminUpdateTargetRequest = {
 };
 
 /**
+ * An `id` from `GET /observatories`, or for an operator any observatory.
+ */
+export type ObservatoryId = string;
+
+export type NodeId = string;
+
+/**
  * Opaque forward pagination cursor from the previous page.
  */
 export type Cursor = string;
@@ -1666,6 +2795,158 @@ export type CaptureId = string;
 export type TargetId = string;
 
 export type TargetSlug = string;
+
+/**
+ * Client-generated key that makes retrying a booking safe. A second request
+ * carrying a key the signed-in user has already used returns the booking the
+ * first request created, with its original payment intent, instead of
+ * reserving a second slot. Keys are scoped to the user, so two people cannot
+ * collide on one.
+ *
+ */
+export type IdempotencyKey = string;
+
+export type RegisterData = {
+    body: RegisterRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/register';
+};
+
+export type RegisterErrors = {
+    /**
+     * Malformed request.
+     */
+    400: ApiError;
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+    /**
+     * Rate limited. The body does not say how much budget remains or when it returns.
+     */
+    429: ApiError;
+    /**
+     * A dependency this request needs is not configured or not reachable.
+     */
+    503: ApiError;
+};
+
+export type RegisterError = RegisterErrors[keyof RegisterErrors];
+
+export type RegisterResponses = {
+    /**
+     * Accepted. A verification link is sent if one is owed.
+     */
+    202: unknown;
+};
+
+export type VerifyEmailData = {
+    body: VerifyEmailRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/verify-email';
+};
+
+export type VerifyEmailErrors = {
+    /**
+     * Malformed request.
+     */
+    400: ApiError;
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type VerifyEmailError = VerifyEmailErrors[keyof VerifyEmailErrors];
+
+export type VerifyEmailResponses = {
+    /**
+     * Verified and signed in. Sets the session cookies.
+     */
+    200: User;
+};
+
+export type VerifyEmailResponse = VerifyEmailResponses[keyof VerifyEmailResponses];
+
+export type SignInData = {
+    body: SignInRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/sign-in';
+};
+
+export type SignInErrors = {
+    /**
+     * Malformed request.
+     */
+    400: ApiError;
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+    /**
+     * Rate limited. The body does not say how much budget remains or when it returns.
+     */
+    429: ApiError;
+};
+
+export type SignInError = SignInErrors[keyof SignInErrors];
+
+export type SignInResponses = {
+    /**
+     * Signed in. Sets the session cookies.
+     */
+    200: User;
+};
+
+export type SignInResponse = SignInResponses[keyof SignInResponses];
+
+export type SignOutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/sign-out';
+};
+
+export type SignOutErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+};
+
+export type SignOutError = SignOutErrors[keyof SignOutErrors];
+
+export type SignOutResponses = {
+    /**
+     * Signed out.
+     */
+    204: void;
+};
+
+export type SignOutResponse = SignOutResponses[keyof SignOutResponses];
 
 export type GetCurrentUserData = {
     body?: never;
@@ -1694,10 +2975,24 @@ export type GetCurrentUserResponse = GetCurrentUserResponses[keyof GetCurrentUse
 
 export type GetObservatoryStatusData = {
     body?: never;
-    path?: never;
+    path: {
+        /**
+         * An `id` from `GET /observatories`, or for an operator any observatory.
+         */
+        observatoryId: string;
+    };
     query?: never;
-    url: '/observatory/state';
+    url: '/observatories/{observatoryId}/state';
 };
+
+export type GetObservatoryStatusErrors = {
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+};
+
+export type GetObservatoryStatusError = GetObservatoryStatusErrors[keyof GetObservatoryStatusErrors];
 
 export type GetObservatoryStatusResponses = {
     /**
@@ -1707,6 +3002,52 @@ export type GetObservatoryStatusResponses = {
 };
 
 export type GetObservatoryStatusResponse = GetObservatoryStatusResponses[keyof GetObservatoryStatusResponses];
+
+export type GetObservatoryConditionsData = {
+    body?: never;
+    path: {
+        /**
+         * An `id` from `GET /observatories`, or for an operator any observatory.
+         */
+        observatoryId: string;
+    };
+    query?: never;
+    url: '/observatories/{observatoryId}/conditions';
+};
+
+export type GetObservatoryConditionsErrors = {
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+};
+
+export type GetObservatoryConditionsError = GetObservatoryConditionsErrors[keyof GetObservatoryConditionsErrors];
+
+export type GetObservatoryConditionsResponses = {
+    /**
+     * Tonight's viewing conditions.
+     */
+    200: ViewingConditions;
+};
+
+export type GetObservatoryConditionsResponse = GetObservatoryConditionsResponses[keyof GetObservatoryConditionsResponses];
+
+export type ListBookableObservatoriesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/observatories';
+};
+
+export type ListBookableObservatoriesResponses = {
+    /**
+     * Every bookable observatory.
+     */
+    200: BookableObservatoryList;
+};
+
+export type ListBookableObservatoriesResponse = ListBookableObservatoriesResponses[keyof ListBookableObservatoriesResponses];
 
 export type ListTargetsData = {
     body?: never;
@@ -1733,7 +3074,11 @@ export type ListTargetsResponse = ListTargetsResponses[keyof ListTargetsResponse
 export type ListTonightTargetsData = {
     body?: never;
     path?: never;
-    query?: {
+    query: {
+        /**
+         * An `id` from `GET /observatories`.
+         */
+        observatoryId: string;
         /**
          * Instant to evaluate visibility at. Defaults to now.
          */
@@ -1741,6 +3086,19 @@ export type ListTonightTargetsData = {
     };
     url: '/targets/tonight';
 };
+
+export type ListTonightTargetsErrors = {
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type ListTonightTargetsError = ListTonightTargetsErrors[keyof ListTonightTargetsErrors];
 
 export type ListTonightTargetsResponses = {
     /**
@@ -1783,12 +3141,31 @@ export type ListSlotsData = {
     path?: never;
     query: {
         /**
-         * Local observatory date, ISO 8601 (YYYY-MM-DD).
+         * An `id` from `GET /observatories`.
+         */
+        observatoryId: string;
+        /**
+         * The observatory's local date, ISO 8601 (YYYY-MM-DD) -- in the
+         * `timezone` `GET /observatories` reports for it, not the caller's.
+         *
          */
         date: string;
     };
     url: '/slots';
 };
+
+export type ListSlotsErrors = {
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type ListSlotsError = ListSlotsErrors[keyof ListSlotsErrors];
 
 export type ListSlotsResponses = {
     /**
@@ -1832,6 +3209,17 @@ export type ListBookingsResponse = ListBookingsResponses[keyof ListBookingsRespo
 
 export type CreateBookingData = {
     body: CreateBookingRequest;
+    headers?: {
+        /**
+         * Client-generated key that makes retrying a booking safe. A second request
+         * carrying a key the signed-in user has already used returns the booking the
+         * first request created, with its original payment intent, instead of
+         * reserving a second slot. Keys are scoped to the user, so two people cannot
+         * collide on one.
+         *
+         */
+        'Idempotency-Key'?: string;
+    };
     path?: never;
     query?: never;
     url: '/bookings';
@@ -1842,6 +3230,10 @@ export type CreateBookingErrors = {
      * Not authenticated.
      */
     401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
     /**
      * Conflicts with current state, for example a slot already taken or a session already held.
      */
@@ -1862,6 +3254,282 @@ export type CreateBookingResponses = {
 };
 
 export type CreateBookingResponse = CreateBookingResponses[keyof CreateBookingResponses];
+
+export type GetLoyaltySchemeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/loyalty/scheme';
+};
+
+export type GetLoyaltySchemeResponses = {
+    /**
+     * The loyalty scheme.
+     */
+    200: LoyaltyScheme;
+};
+
+export type GetLoyaltySchemeResponse = GetLoyaltySchemeResponses[keyof GetLoyaltySchemeResponses];
+
+export type GetMyLoyaltyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/loyalty';
+};
+
+export type GetMyLoyaltyErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+};
+
+export type GetMyLoyaltyError = GetMyLoyaltyErrors[keyof GetMyLoyaltyErrors];
+
+export type GetMyLoyaltyResponses = {
+    /**
+     * The loyalty account.
+     */
+    200: LoyaltyAccount;
+};
+
+export type GetMyLoyaltyResponse = GetMyLoyaltyResponses[keyof GetMyLoyaltyResponses];
+
+export type ListSubscriptionPlansData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/subscription/plans';
+};
+
+export type ListSubscriptionPlansResponses = {
+    /**
+     * The available plans, cheapest first.
+     */
+    200: Array<SubscriptionPlanOption>;
+};
+
+export type ListSubscriptionPlansResponse = ListSubscriptionPlansResponses[keyof ListSubscriptionPlansResponses];
+
+export type GetMySubscriptionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/subscription';
+};
+
+export type GetMySubscriptionErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+};
+
+export type GetMySubscriptionError = GetMySubscriptionErrors[keyof GetMySubscriptionErrors];
+
+export type GetMySubscriptionResponses = {
+    /**
+     * The subscription, or null.
+     */
+    200: Subscription | null;
+};
+
+export type GetMySubscriptionResponse = GetMySubscriptionResponses[keyof GetMySubscriptionResponses];
+
+export type SubscribeData = {
+    body: SubscribeRequest;
+    path?: never;
+    query?: never;
+    url: '/subscription';
+};
+
+export type SubscribeErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+    /**
+     * A dependency this request needs is not configured or not reachable.
+     */
+    503: ApiError;
+};
+
+export type SubscribeError = SubscribeErrors[keyof SubscribeErrors];
+
+export type SubscribeResponses = {
+    /**
+     * Subscription created, awaiting payment for its first period.
+     */
+    201: SubscriptionWithPaymentIntent;
+};
+
+export type SubscribeResponse = SubscribeResponses[keyof SubscribeResponses];
+
+export type CancelMySubscriptionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/subscription/cancel';
+};
+
+export type CancelMySubscriptionErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+};
+
+export type CancelMySubscriptionError = CancelMySubscriptionErrors[keyof CancelMySubscriptionErrors];
+
+export type CancelMySubscriptionResponses = {
+    /**
+     * The subscription as it now stands.
+     */
+    200: Subscription;
+};
+
+export type CancelMySubscriptionResponse = CancelMySubscriptionResponses[keyof CancelMySubscriptionResponses];
+
+export type PauseMySubscriptionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/subscription/pause';
+};
+
+export type PauseMySubscriptionErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+};
+
+export type PauseMySubscriptionError = PauseMySubscriptionErrors[keyof PauseMySubscriptionErrors];
+
+export type PauseMySubscriptionResponses = {
+    /**
+     * The paused subscription.
+     */
+    200: Subscription;
+};
+
+export type PauseMySubscriptionResponse = PauseMySubscriptionResponses[keyof PauseMySubscriptionResponses];
+
+export type ResumeMySubscriptionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/subscription/resume';
+};
+
+export type ResumeMySubscriptionErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+};
+
+export type ResumeMySubscriptionError = ResumeMySubscriptionErrors[keyof ResumeMySubscriptionErrors];
+
+export type ResumeMySubscriptionResponses = {
+    /**
+     * The resumed subscription.
+     */
+    200: Subscription;
+};
+
+export type ResumeMySubscriptionResponse = ResumeMySubscriptionResponses[keyof ResumeMySubscriptionResponses];
+
+export type ListMyGiftVouchersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/vouchers';
+};
+
+export type ListMyGiftVouchersErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+};
+
+export type ListMyGiftVouchersError = ListMyGiftVouchersErrors[keyof ListMyGiftVouchersErrors];
+
+export type ListMyGiftVouchersResponses = {
+    /**
+     * The buyer's vouchers, newest first.
+     */
+    200: GiftVoucherList;
+};
+
+export type ListMyGiftVouchersResponse = ListMyGiftVouchersResponses[keyof ListMyGiftVouchersResponses];
+
+export type PurchaseGiftVoucherData = {
+    body: CreateGiftVoucherRequest;
+    path?: never;
+    query?: never;
+    url: '/vouchers';
+};
+
+export type PurchaseGiftVoucherErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+    /**
+     * A dependency this request needs is not configured or not reachable.
+     */
+    503: ApiError;
+};
+
+export type PurchaseGiftVoucherError = PurchaseGiftVoucherErrors[keyof PurchaseGiftVoucherErrors];
+
+export type PurchaseGiftVoucherResponses = {
+    /**
+     * Voucher created, awaiting payment.
+     */
+    201: GiftVoucherWithPaymentIntent;
+};
+
+export type PurchaseGiftVoucherResponse = PurchaseGiftVoucherResponses[keyof PurchaseGiftVoucherResponses];
 
 export type GetBookingData = {
     body?: never;
@@ -1928,6 +3596,84 @@ export type CancelBookingResponses = {
 };
 
 export type CancelBookingResponse = CancelBookingResponses[keyof CancelBookingResponses];
+
+export type RefundBookingData = {
+    body?: never;
+    path: {
+        bookingId: string;
+    };
+    query?: never;
+    url: '/bookings/{bookingId}/refund';
+};
+
+export type RefundBookingErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+    /**
+     * A dependency this request needs is not configured or not reachable.
+     */
+    503: ApiError;
+};
+
+export type RefundBookingError = RefundBookingErrors[keyof RefundBookingErrors];
+
+export type RefundBookingResponses = {
+    /**
+     * The refunded booking.
+     */
+    200: Booking;
+};
+
+export type RefundBookingResponse = RefundBookingResponses[keyof RefundBookingResponses];
+
+export type RescheduleBookingData = {
+    body: RescheduleBookingRequest;
+    path: {
+        bookingId: string;
+    };
+    query?: never;
+    url: '/bookings/{bookingId}/reschedule';
+};
+
+export type RescheduleBookingErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type RescheduleBookingError = RescheduleBookingErrors[keyof RescheduleBookingErrors];
+
+export type RescheduleBookingResponses = {
+    /**
+     * The new, confirmed booking.
+     */
+    201: Booking;
+};
+
+export type RescheduleBookingResponse = RescheduleBookingResponses[keyof RescheduleBookingResponses];
 
 export type ReceivePaymentWebhookData = {
     body: PaymentWebhookEnvelope;
@@ -2242,6 +3988,45 @@ export type JoinMissionAsObserverResponses = {
 
 export type JoinMissionAsObserverResponse = JoinMissionAsObserverResponses[keyof JoinMissionAsObserverResponses];
 
+export type PurchaseObserverPackData = {
+    body?: never;
+    path: {
+        missionId: string;
+    };
+    query?: never;
+    url: '/missions/{missionId}/observer-pack';
+};
+
+export type PurchaseObserverPackErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+};
+
+export type PurchaseObserverPackError = PurchaseObserverPackErrors[keyof PurchaseObserverPackErrors];
+
+export type PurchaseObserverPackResponses = {
+    /**
+     * Seat held and a payment intent opened.
+     */
+    201: ObserverPackWithPaymentIntent;
+};
+
+export type PurchaseObserverPackResponse = PurchaseObserverPackResponses[keyof PurchaseObserverPackResponses];
+
 export type ListMissionEventsData = {
     body?: never;
     path: {
@@ -2376,9 +4161,14 @@ export type GetCaptureDownloadResponse = GetCaptureDownloadResponses[keyof GetCa
 
 export type AdminGetObservatoryStateData = {
     body?: never;
-    path?: never;
+    path: {
+        /**
+         * An `id` from `GET /observatories`, or for an operator any observatory.
+         */
+        observatoryId: string;
+    };
     query?: never;
-    url: '/admin/observatory/state';
+    url: '/admin/observatories/{observatoryId}/state';
 };
 
 export type AdminGetObservatoryStateErrors = {
@@ -2386,6 +4176,14 @@ export type AdminGetObservatoryStateErrors = {
      * Authenticated but not permitted.
      */
     403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * A dependency this request needs is not configured or not reachable.
+     */
+    503: ApiError;
 };
 
 export type AdminGetObservatoryStateError = AdminGetObservatoryStateErrors[keyof AdminGetObservatoryStateErrors];
@@ -2401,9 +4199,14 @@ export type AdminGetObservatoryStateResponse = AdminGetObservatoryStateResponses
 
 export type AdminSetObservatoryModeData = {
     body: SetObservatoryModeRequest;
-    path?: never;
+    path: {
+        /**
+         * An `id` from `GET /observatories`, or for an operator any observatory.
+         */
+        observatoryId: string;
+    };
     query?: never;
-    url: '/admin/observatory/mode';
+    url: '/admin/observatories/{observatoryId}/mode';
 };
 
 export type AdminSetObservatoryModeErrors = {
@@ -2411,6 +4214,10 @@ export type AdminSetObservatoryModeErrors = {
      * Authenticated but not permitted.
      */
     403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
     /**
      * Conflicts with current state, for example a slot already taken or a session already held.
      */
@@ -2434,9 +4241,14 @@ export type AdminSetObservatoryModeResponse = AdminSetObservatoryModeResponses[k
 
 export type AdminGetSafetyEnvelopeData = {
     body?: never;
-    path?: never;
+    path: {
+        /**
+         * An `id` from `GET /observatories`, or for an operator any observatory.
+         */
+        observatoryId: string;
+    };
     query?: never;
-    url: '/admin/observatory/safety-envelope';
+    url: '/admin/observatories/{observatoryId}/safety-envelope';
 };
 
 export type AdminGetSafetyEnvelopeErrors = {
@@ -2444,6 +4256,10 @@ export type AdminGetSafetyEnvelopeErrors = {
      * Authenticated but not permitted.
      */
     403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
 };
 
 export type AdminGetSafetyEnvelopeError = AdminGetSafetyEnvelopeErrors[keyof AdminGetSafetyEnvelopeErrors];
@@ -2459,9 +4275,14 @@ export type AdminGetSafetyEnvelopeResponse = AdminGetSafetyEnvelopeResponses[key
 
 export type AdminSetSafetyEnvelopeData = {
     body: SafetyEnvelopeConfig;
-    path?: never;
+    path: {
+        /**
+         * An `id` from `GET /observatories`, or for an operator any observatory.
+         */
+        observatoryId: string;
+    };
     query?: never;
-    url: '/admin/observatory/safety-envelope';
+    url: '/admin/observatories/{observatoryId}/safety-envelope';
 };
 
 export type AdminSetSafetyEnvelopeErrors = {
@@ -2469,6 +4290,10 @@ export type AdminSetSafetyEnvelopeErrors = {
      * Authenticated but not permitted.
      */
     403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
     /**
      * Well-formed but rejected by validation or by the safety envelope.
      */
@@ -2488,9 +4313,14 @@ export type AdminSetSafetyEnvelopeResponse = AdminSetSafetyEnvelopeResponses[key
 
 export type AdminSetWeatherHoldData = {
     body: SetWeatherHoldRequest;
-    path?: never;
+    path: {
+        /**
+         * An `id` from `GET /observatories`, or for an operator any observatory.
+         */
+        observatoryId: string;
+    };
     query?: never;
-    url: '/admin/observatory/weather-hold';
+    url: '/admin/observatories/{observatoryId}/weather-hold';
 };
 
 export type AdminSetWeatherHoldErrors = {
@@ -2498,6 +4328,10 @@ export type AdminSetWeatherHoldErrors = {
      * Authenticated but not permitted.
      */
     403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
 };
 
 export type AdminSetWeatherHoldError = AdminSetWeatherHoldErrors[keyof AdminSetWeatherHoldErrors];
@@ -2575,6 +4409,43 @@ export type AdminListMissionsResponses = {
 };
 
 export type AdminListMissionsResponse = AdminListMissionsResponses[keyof AdminListMissionsResponses];
+
+export type AdminAdjustLoyaltyPointsData = {
+    body: LoyaltyAdjustmentRequest;
+    path?: never;
+    query?: never;
+    url: '/admin/loyalty/adjustments';
+};
+
+export type AdminAdjustLoyaltyPointsErrors = {
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type AdminAdjustLoyaltyPointsError = AdminAdjustLoyaltyPointsErrors[keyof AdminAdjustLoyaltyPointsErrors];
+
+export type AdminAdjustLoyaltyPointsResponses = {
+    /**
+     * The customer's account after the adjustment.
+     */
+    200: LoyaltyAccount;
+};
+
+export type AdminAdjustLoyaltyPointsResponse = AdminAdjustLoyaltyPointsResponses[keyof AdminAdjustLoyaltyPointsResponses];
 
 export type AdminCancelMissionData = {
     body: AdminCancelMissionRequest;
@@ -2670,3 +4541,346 @@ export type AdminListAuditEventsResponses = {
 };
 
 export type AdminListAuditEventsResponse = AdminListAuditEventsResponses[keyof AdminListAuditEventsResponses];
+
+export type ListMyNetworkNodesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/network/nodes';
+};
+
+export type ListMyNetworkNodesErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+};
+
+export type ListMyNetworkNodesError = ListMyNetworkNodesErrors[keyof ListMyNetworkNodesErrors];
+
+export type ListMyNetworkNodesResponses = {
+    /**
+     * The caller's nodes.
+     */
+    200: NetworkNodeList;
+};
+
+export type ListMyNetworkNodesResponse = ListMyNetworkNodesResponses[keyof ListMyNetworkNodesResponses];
+
+export type RegisterNetworkNodeData = {
+    body: RegisterNetworkNodeRequest;
+    path?: never;
+    query?: never;
+    url: '/network/nodes';
+};
+
+export type RegisterNetworkNodeErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type RegisterNetworkNodeError = RegisterNetworkNodeErrors[keyof RegisterNetworkNodeErrors];
+
+export type RegisterNetworkNodeResponses = {
+    /**
+     * The registered node, in DRAFT.
+     */
+    201: NetworkNode;
+};
+
+export type RegisterNetworkNodeResponse = RegisterNetworkNodeResponses[keyof RegisterNetworkNodeResponses];
+
+export type SubmitNetworkNodeForReviewData = {
+    body?: never;
+    path: {
+        nodeId: string;
+    };
+    query?: never;
+    url: '/network/nodes/{nodeId}/submit';
+};
+
+export type SubmitNetworkNodeForReviewErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+};
+
+export type SubmitNetworkNodeForReviewError = SubmitNetworkNodeForReviewErrors[keyof SubmitNetworkNodeForReviewErrors];
+
+export type SubmitNetworkNodeForReviewResponses = {
+    /**
+     * The node, now under review.
+     */
+    200: NetworkNode;
+};
+
+export type SubmitNetworkNodeForReviewResponse = SubmitNetworkNodeForReviewResponses[keyof SubmitNetworkNodeForReviewResponses];
+
+export type AdminListNetworkNodesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        approvalStatus?: NetworkNodeApprovalStatus;
+        /**
+         * Opaque forward pagination cursor from the previous page.
+         */
+        cursor?: string;
+        limit?: number;
+    };
+    url: '/admin/network/nodes';
+};
+
+export type AdminListNetworkNodesErrors = {
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type AdminListNetworkNodesError = AdminListNetworkNodesErrors[keyof AdminListNetworkNodesErrors];
+
+export type AdminListNetworkNodesResponses = {
+    /**
+     * Node page.
+     */
+    200: NetworkNodePage;
+};
+
+export type AdminListNetworkNodesResponse = AdminListNetworkNodesResponses[keyof AdminListNetworkNodesResponses];
+
+export type AdminGetNetworkNodeReviewData = {
+    body?: never;
+    path: {
+        nodeId: string;
+    };
+    query?: never;
+    url: '/admin/network/nodes/{nodeId}';
+};
+
+export type AdminGetNetworkNodeReviewErrors = {
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+};
+
+export type AdminGetNetworkNodeReviewError = AdminGetNetworkNodeReviewErrors[keyof AdminGetNetworkNodeReviewErrors];
+
+export type AdminGetNetworkNodeReviewResponses = {
+    /**
+     * The node, under review.
+     */
+    200: NetworkNodeReview;
+};
+
+export type AdminGetNetworkNodeReviewResponse = AdminGetNetworkNodeReviewResponses[keyof AdminGetNetworkNodeReviewResponses];
+
+export type AdminApproveNetworkNodeData = {
+    body: ApproveNetworkNodeRequest;
+    path: {
+        nodeId: string;
+    };
+    query?: never;
+    url: '/admin/network/nodes/{nodeId}/approve';
+};
+
+export type AdminApproveNetworkNodeErrors = {
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type AdminApproveNetworkNodeError = AdminApproveNetworkNodeErrors[keyof AdminApproveNetworkNodeErrors];
+
+export type AdminApproveNetworkNodeResponses = {
+    /**
+     * The approved node.
+     */
+    200: NetworkNode;
+};
+
+export type AdminApproveNetworkNodeResponse = AdminApproveNetworkNodeResponses[keyof AdminApproveNetworkNodeResponses];
+
+export type AdminSuspendNetworkNodeData = {
+    body: SuspendNetworkNodeRequest;
+    path: {
+        nodeId: string;
+    };
+    query?: never;
+    url: '/admin/network/nodes/{nodeId}/suspend';
+};
+
+export type AdminSuspendNetworkNodeErrors = {
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type AdminSuspendNetworkNodeError = AdminSuspendNetworkNodeErrors[keyof AdminSuspendNetworkNodeErrors];
+
+export type AdminSuspendNetworkNodeResponses = {
+    /**
+     * The suspended node.
+     */
+    200: NetworkNode;
+};
+
+export type AdminSuspendNetworkNodeResponse = AdminSuspendNetworkNodeResponses[keyof AdminSuspendNetworkNodeResponses];
+
+export type AdminIssueDeviceTokenData = {
+    body: DeviceTokenChangeRequest;
+    path: {
+        nodeId: string;
+    };
+    query?: never;
+    url: '/admin/network/nodes/{nodeId}/device-token';
+};
+
+export type AdminIssueDeviceTokenErrors = {
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type AdminIssueDeviceTokenError = AdminIssueDeviceTokenErrors[keyof AdminIssueDeviceTokenErrors];
+
+export type AdminIssueDeviceTokenResponses = {
+    /**
+     * The token, shown once.
+     */
+    201: DeviceTokenIssued;
+};
+
+export type AdminIssueDeviceTokenResponse = AdminIssueDeviceTokenResponses[keyof AdminIssueDeviceTokenResponses];
+
+export type AdminRotateDeviceTokenData = {
+    body: DeviceTokenChangeRequest;
+    path: {
+        nodeId: string;
+    };
+    query?: never;
+    url: '/admin/network/nodes/{nodeId}/device-token/rotate';
+};
+
+export type AdminRotateDeviceTokenErrors = {
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type AdminRotateDeviceTokenError = AdminRotateDeviceTokenErrors[keyof AdminRotateDeviceTokenErrors];
+
+export type AdminRotateDeviceTokenResponses = {
+    /**
+     * The new token, shown once.
+     */
+    200: DeviceTokenIssued;
+};
+
+export type AdminRotateDeviceTokenResponse = AdminRotateDeviceTokenResponses[keyof AdminRotateDeviceTokenResponses];
+
+export type AdminRevokeDeviceTokenData = {
+    body: DeviceTokenChangeRequest;
+    path: {
+        nodeId: string;
+    };
+    query?: never;
+    url: '/admin/network/nodes/{nodeId}/device-token/revoke';
+};
+
+export type AdminRevokeDeviceTokenErrors = {
+    /**
+     * Authenticated but not permitted.
+     */
+    403: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type AdminRevokeDeviceTokenError = AdminRevokeDeviceTokenErrors[keyof AdminRevokeDeviceTokenErrors];
+
+export type AdminRevokeDeviceTokenResponses = {
+    /**
+     * Revoked. Also answered when the node had no token.
+     */
+    204: void;
+};
+
+export type AdminRevokeDeviceTokenResponse = AdminRevokeDeviceTokenResponses[keyof AdminRevokeDeviceTokenResponses];

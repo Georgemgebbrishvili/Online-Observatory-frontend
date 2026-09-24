@@ -74,5 +74,5 @@ These terms are deliberately not normalized as definitive Georgian astronomy ter
 - Use short, direct verbs for primary actions: „დაიწყე“, „გადაიღე“, „ნახე“.
 - Use neutral explanatory sentences instead of translating English idioms word for word.
 - Use Georgian quotation marks only in editorial prose; interface labels do not need quotation marks.
-- Do not add artificial letter spacing to Georgian headings. Georgian pages use Noto Sans Georgian with a slightly more open line height than Latin pages.
+- Do not add artificial letter spacing or uppercase to Georgian text; `:lang(ka)` enforces both. Georgian pages use the same families as Latin pages — Noto Serif Georgian for display, FiraGO for UI and body (Brand Identity System v2.0 §05) — with a slightly more open line height.
 - Preserve international catalog identifiers and units (`M31`, `RA`, `Dec`, `mm`, `FITS`) unchanged.

@@ -21,6 +21,9 @@ export function AppNavigation({ locale, navigation, placement }: AppNavigationPr
     <nav
       className={`app-navigation app-navigation-${placement}`}
       aria-label={navigation.ariaLabel}
+      // Both placements carry the same accessible name, so this is what tells them
+      // apart without depending on a class name that a restyle may rename.
+      data-placement={placement}
     >
       {appDestinations.map((destination) => {
         const href = `/${locale}/app${destination.segment ? `/${destination.segment}` : ""}`;
