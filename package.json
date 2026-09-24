@@ -23,6 +23,7 @@
     "dev:stack": "node scripts/dev-stack.mjs",
     "dev:stack:setup": "node scripts/dev-stack.mjs setup",
     "dev:stack:down": "node scripts/dev-stack.mjs down",
+    "dev:fake": "node scripts/dev-stack.mjs fake",
     "contracts:generate": "node scripts/contracts-generate.mjs",
     "contracts:check": "node scripts/contracts-check.mjs"
   },

@@ -8,6 +8,12 @@
       "problemMatcher": []
     },
     {
+      "label": "dev stack: fake mode",
+      "type": "shell",
+      "command": "npm run dev:fake",
+      "problemMatcher": []
+    },
+    {
       "label": "dev stack: run",
       "type": "shell",
       "command": "npm run dev:stack",
