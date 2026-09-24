@@ -637,7 +637,11 @@
   .home-upcoming {
     min-height: 25rem;
   }
+}
 
+/* Three columns only from --xl: at --lg the sidebar leaves too little room, and the
+   Georgian heading and counts break mid-word before the grid overflows. */
+@media (--xl) {
   .home-collection-progress {
     grid-template-columns: minmax(15rem, 1.2fr) minmax(15rem, 0.8fr) minmax(15rem, 1fr);
   }
