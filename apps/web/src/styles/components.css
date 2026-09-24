@@ -411,7 +411,7 @@
   border-top: 1px solid var(--color-border-subtle);
 }
 
-@media (max-width: 43.99rem) {
+@media (--below-md) {
   .dialog[open] {
     place-items: end stretch;
   }
@@ -679,6 +679,42 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-body);
   line-height: var(--leading-body);
+}
+
+/* A whole surface waiting: the Skeleton primitive stacked, with a live region. */
+.loading-state {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 48rem;
+  padding: var(--space-page);
+}
+
+.route-loading,
+.route-error {
+  min-height: 60vh;
+  padding: var(--space-page);
+}
+
+.route-error .state-panel {
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.route-error .state-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+.route-error-digest {
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.route-error-digest code {
+  font-family: var(--font-mono);
 }
 
 .skeleton {

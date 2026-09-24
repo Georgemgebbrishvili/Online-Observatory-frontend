@@ -706,7 +706,7 @@
   }
 }
 
-@media (min-width: 44rem) {
+@media (--md) {
   .live-viewport-top {
     padding: var(--space-5);
   }
@@ -754,7 +754,7 @@
   }
 }
 
-@media (max-width: 43.99rem) {
+@media (--below-md) {
   .live-page {
     padding-top: var(--space-3);
   }
@@ -791,7 +791,7 @@
   }
 }
 
-@media (min-width: 72rem) {
+@media (--xl) {
   .live-page {
     padding-top: var(--space-6);
   }

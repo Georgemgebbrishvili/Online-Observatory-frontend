@@ -11,9 +11,9 @@ const fontSizeFromScale = [
   "inherit",
 ];
 
-// v3 §4 and §3 hold everywhere except these eight, which carry 60 hardcoded sizes and
-// the eleven ad-hoc widths DV-071 never reached. Phase 1 migrates them and this list
-// shrinks to nothing. Do not add a file to it.
+// v3 §4 holds everywhere except these eight, which still carry 60 hardcoded font
+// sizes. Their media queries were migrated in Phase 1, so §3 now holds everywhere with
+// no exception at all. This list shrinks to nothing. Do not add a file to it.
 const awaitingV3Migration = [
   "apps/web/src/styles/auth.css",
   "apps/web/src/styles/authenticated-home.css",
@@ -45,6 +45,10 @@ const config = {
     ],
     // The --st-* palette is private to tokens.css; everything else uses semantic tokens.
     "declaration-property-value-disallowed-list": { "/.*/": ["/var\\(--st-/"] },
+    // v3 §3: the five named breakpoints, and no sixth. A stylesheet writes
+    // @media (--md), never @media (min-width: 48rem). breakpoints.css declares them
+    // with @custom-media, which this rule does not reach.
+    "media-feature-name-disallowed-list": ["min-width", "max-width"],
     // §09 anti-pattern 04: no glassmorphism, no glowing text.
     "property-disallowed-list": [
       "backdrop-filter",

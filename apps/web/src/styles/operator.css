@@ -257,7 +257,7 @@
   gap: var(--space-6);
 }
 
-@media (min-width: 64rem) {
+@media (--lg) {
   .operator-overview {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -267,7 +267,7 @@
   }
 }
 
-@media (max-width: 36rem) {
+@media (--below-sm) {
   .operator-navigation {
     margin-left: 0;
   }

@@ -107,23 +107,29 @@ everything else. `tokens.ts` and its equality test move with them.
 brand-lockup, section-heading, legal-document, navigation, live-indicator, optical-ring,
 target-card, collection-frame, capture-detail, mission-status, auth-form.
 
-**Phase 1 needs, and none exist:**
+**Phase 1 needs.** This table said "and none exist". Five of the ten already did —
+it was written from the plan rather than from `components/ui/`, which also holds
+`card`, `chip`, `dropdown`, `tooltip` and `icon-button`. Corrected after checking the
+tree, Phase 1:
 
-| Component | Wanted by |
-| --- | --- |
-| Skeleton / loading state | every wired surface, Phase 2 |
-| Empty state | collection, bookings, loyalty |
-| Error boundary surface | every route |
-| Form field set — label, hint, error, required | booking, account, partner registration |
-| Date and slot picker | booking, Phase 3 |
-| Data table with paging | operator, account history |
-| Tabs | account, loyalty, operator |
-| Toast / inline confirmation | every mutation |
-| Pagination | collection, logs |
-| Money and date formatters, locale-aware | booking, subscription, loyalty |
+| Component | State | Wanted by |
+| --- | --- | --- |
+| Skeleton / loading state | **exists** — `skeleton.tsx`, plus `loading-state.tsx` and a route `loading.tsx` added in Phase 1 | every wired surface, Phase 2 |
+| Empty state | **exists** — `state-panel.tsx`, `variant="empty"` | collection, bookings, loyalty |
+| Error boundary surface | **exists** — `error.tsx` added in Phase 1 | every route |
+| Form field set — label, hint, error | **exists** — `form.tsx`: `Field`, `TextInput`, `TextArea`, `Checkbox` | booking, account, partner registration |
+| Tabs | **exists** — `tabs.tsx`, tested | account, loyalty, operator |
+| Pagination | **partly** — `usePagedList` in `features/operator/`, not a component and not shared | collection, logs |
+| Data table with paging | **partly** — `mission-table.tsx` is one, specific to the operator console | operator, account history |
+| Money and date formatters, locale-aware | **partly** — `features/operator/format.ts` does coordinates and ages, no money, no locale-aware dates | booking, subscription, loyalty |
+| Date and slot picker | missing | booking, Phase 3 |
+| Toast / inline confirmation | missing | every mutation |
 
-The last one is not decoration: Georgian and English format dates and currency
-differently, and getting it wrong is visible on every commerce surface.
+The formatters are not decoration: Georgian and English format dates and currency
+differently, and getting it wrong is visible on every commerce surface. What exists
+today does neither — that gap is real and is Phase 3's to close.
+
+**Before building any component from this table, look in `components/ui/` first.**
 
 ## Enforcement
 
@@ -150,16 +156,64 @@ Phase 0 is the token layer. It delivered:
 - the completed spacing scale — 7, 9, 11, 14 — and `--space-section`, `--space-card`,
   `--space-stack`;
 - `styles/breakpoints.css`: the five boundaries and their `below-` forms as
-  `@custom-media`, wired through `postcss-custom-media` and proven to resolve in a
-  production build (`@media (--md)` → `@media (min-width:48rem)`);
+  `@custom-media`, wired through `postcss-custom-media`. **That Phase 0 verification
+  was too narrow** — the probe lived in `globals.css`, the one file that imports
+  `breakpoints.css`, so it proved the plugin ran and nothing more. See the migration
+  section below;
 - the v3 `font-size` rule, live in every stylesheet but eight.
 
 It deliberately did not migrate call sites. Eight stylesheets still hold 60 hardcoded
-font sizes and the eleven ad-hoc widths; `stylelint.config.mjs` names them in
-`awaitingV3Migration`. Moving them changes layout at real widths, and re-verifying
-every surface at 320 / 390 / 768 / 1024 / 1440 is Phase 1's stated Done-when. The
-media-query rule turns on at the end of that migration, when it can be turned on
-without an exception list.
+font sizes; `stylelint.config.mjs` names them in `awaitingV3Migration`. The media
+queries were migrated in Phase 1 — see below.
+
+## The breakpoint migration, Phase 1
+
+Thirty-seven width queries across seventeen stylesheets now use the named boundaries,
+and **the media-query rule is on with no exception list at all**: a stylesheet writes
+`@media (--md)`, never `@media (min-width: 48rem)`. Verified to bite.
+
+Four of the eleven original widths mapped exactly. The other seven moved to the
+nearest named boundary, and those are the ones worth a designer's eye rather than only
+a test's:
+
+| Was | Now | Shift | Where |
+| --- | --- | --- | --- |
+| `48rem`, `64rem`, `80rem`, `47.99rem` | `--md`, `--lg`, `--xl`, `--below-md` | none | most files |
+| `44rem` / `43.99rem` | `--md` / `--below-md` | 704 → 768 | the most common pair |
+| `42rem` | `--md` | 672 → 768 | `shared-mission.css` |
+| `70rem` | `--lg` | 1120 → 1024 | `navigation.css`, `authenticated-home.css` |
+| `72rem` | `--xl` | 1152 → 1280 | `live.css`, `mission-session.css` |
+| `92rem` | `--xl` | 1472 → 1280 | `missions.css` |
+| `36rem` | `--below-sm` | 576 → 480 | `auth.css`, `operator.css` |
+| `55rem` | `--below-lg` | 880 → 1024 | `auth.css` |
+
+### The defect the migration exposed
+
+Migrating the call sites is what revealed that the mechanism only half worked.
+`@custom-media` is scoped to the PostCSS **entry** that declares it. `globals.css`
+imports `breakpoints.css`; every page-level stylesheet — `auth.css`, `status.css` and
+thirteen others a page imports directly — is its own entry and had no definitions in
+scope. Thirty-three `@media (--name)` queries reached the built CSS unresolved.
+
+A browser ignores `@media (--md)` outright. No error, no warning: every rule inside
+simply never applies. `/sign-in` overflowed by 120px at 320px, which is how it
+surfaced. `/status` did **not** fail any test — its two-column rule silently stopped
+applying and the single-column default covered for it, so the page passed while
+looking wrong above 480px. That is the dangerous shape of this bug.
+
+Fixed with `@csstools/postcss-global-data`, which feeds `breakpoints.css` to every
+entry. Guarded by `npm run css:check` (`scripts/check-css-breakpoints.mjs`), which
+fails if `@media (--` survives into `.next`, and runs in CI after the build. It is the
+only thing that catches this, because neither the browser, the build, stylelint nor
+the test suite reliably does.
+
+### What the contract does and does not prove
+
+The shell contract proves none of these overflow, break a landmark or break a heading
+outline at 320 / 390 / 768 / 1024 / 1440. It cannot prove any of them still *looks*
+right — a two-column layout that now waits until 768px instead of 704px is a judgment,
+not a test result. The `70rem → 1024` and `92rem → 1280` rows move a boundary furthest
+and are the two to look at first.
 
 The `--glow-mark` token is also deferred, to the commit that brings the comet mark in.
 Its only consumer is the mark, and a token nothing uses is a token nobody can check.
