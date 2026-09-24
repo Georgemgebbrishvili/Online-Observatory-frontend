@@ -1,10 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { locales } from "./routes";
+
 // docs/plan/02-build-phases.md Phase 1: every surface verified at these five widths,
 // every phase, in both languages — not at the end.
 export const widths = [320, 390, 768, 1024, 1440] as const;
-
-export const locales = ["en", "ka"] as const;
 
 const landmarkRoles = new Set([
   "banner",
@@ -37,15 +37,13 @@ async function landmarks(page: Page): Promise<Landmark[]> {
 }
 
 function headingLevels(page: Page) {
-  return page
-    .locator("h1, h2, h3, h4, h5, h6")
-    .evaluateAll((nodes) =>
-      nodes
-        // checkVisibility, not offsetParent: a position:fixed heading has no
-        // offsetParent and would read as hidden when it is on screen.
-        .filter((node) => (node as HTMLElement).checkVisibility())
-        .map((node) => Number(node.tagName.slice(1))),
-    );
+  return page.locator("h1, h2, h3, h4, h5, h6").evaluateAll((nodes) =>
+    nodes
+      // checkVisibility, not offsetParent: a position:fixed heading has no
+      // offsetParent and would read as hidden when it is on screen.
+      .filter((node) => (node as HTMLElement).checkVisibility())
+      .map((node) => Number(node.tagName.slice(1))),
+  );
 }
 
 export function describeShellContract(routes: readonly string[]) {
@@ -63,8 +61,7 @@ export function describeShellContract(routes: readonly string[]) {
           // every width, because a layout that overflows at 768 is just as broken.
           const overflow = await page.evaluate(
             () =>
-              document.documentElement.scrollWidth -
-              document.documentElement.clientWidth,
+              document.documentElement.scrollWidth - document.documentElement.clientWidth,
           );
           expect(overflow, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(0);
         }
@@ -87,8 +84,7 @@ export function describeShellContract(routes: readonly string[]) {
           expect(
             exposed
               .filter(
-                (landmark) =>
-                  landmark.name === "" && mustBeNamed.includes(landmark.role),
+                (landmark) => landmark.name === "" && mustBeNamed.includes(landmark.role),
               )
               .map((landmark) => landmark.role),
             `landmarks with no accessible name at ${width}px`,
@@ -108,9 +104,10 @@ export function describeShellContract(routes: readonly string[]) {
         await page.setViewportSize({ width: 1440, height: 900 });
 
         const levels = await headingLevels(page);
-        expect(levels.length, "the page has at least one visible heading").toBeGreaterThan(
-          0,
-        );
+        expect(
+          levels.length,
+          "the page has at least one visible heading",
+        ).toBeGreaterThan(0);
         expect(levels[0], "the first visible heading is the page's h1").toBe(1);
         expect(
           levels.filter((level) => level === 1),

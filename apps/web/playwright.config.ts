@@ -18,9 +18,22 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
     {
-      name: "chromium",
-      testIgnore: /auth\.(setup|spec)\.ts|shell-signed-out\.spec\.ts|operator(-records)?\.(evidence\.)?spec\.ts/,
+      // Compiles every route once, serially, so the parallel projects are not racing
+      // the dev server's on-demand compiler. See the comment in warm.setup.ts.
+      name: "warm",
+      testMatch: /warm\.setup\.ts/,
       dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: "chrome",
+        storageState: "e2e/.auth/operator.json",
+      },
+    },
+    {
+      name: "chromium",
+      testIgnore:
+        /auth\.(setup|spec)\.ts|warm\.setup\.ts|shell-signed-out\.spec\.ts|operator(-records)?\.(evidence\.)?spec\.ts/,
+      dependencies: ["warm"],
       use: {
         ...devices["Desktop Chrome"],
         channel: "chrome",
@@ -30,7 +43,7 @@ export default defineConfig({
     {
       name: "operator",
       testMatch: /operator\.spec\.ts/,
-      dependencies: ["setup"],
+      dependencies: ["warm"],
       // The DV-077 evidence includes a recording of Park acting on a simulated mission.
       use: { ...devices["Desktop Chrome"], channel: "chrome", video: "on" },
     },
@@ -39,7 +52,7 @@ export default defineConfig({
       // mode and parked state, which the operator project also reads.
       name: "operator-evidence",
       testMatch: /operator\.evidence\.spec\.ts/,
-      dependencies: ["setup"],
+      dependencies: ["warm"],
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
     {
@@ -47,12 +60,13 @@ export default defineConfig({
       // target in the fake, so it runs on its own like the other operator projects.
       name: "operator-records",
       testMatch: /operator-records\.spec\.ts/,
-      dependencies: ["setup"],
+      dependencies: ["warm"],
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
     {
       name: "signed-out",
       testMatch: /(auth|shell-signed-out)\.spec\.ts/,
+      dependencies: ["warm"],
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
   ],
