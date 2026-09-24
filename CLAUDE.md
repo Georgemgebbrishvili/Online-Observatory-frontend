@@ -262,10 +262,10 @@ Every change in this repository must be independently verifiable. Treat it accor
 5. Contracts and docs updated only if genuinely required.
 6. Screenshots or simulator evidence produced for UI and agent work.
 7. Risks and assumptions listed explicitly.
-8. Work stays on its branch until reviewed. An agent may **request** to push the
-   branch, but must wait for the maintainer's explicit approval on that prompt before
-   the push happens. 
+8. Work is committed on `main`. Since 2026-09-24 this repository has no feature
+   branches and no worktrees until the maintainer says otherwise, even when a task
+   brief names a branch. An agent may **request** to push `main`, but must wait for the
+   maintainer's explicit approval on that prompt before the push happens.
 
-Pushing is maintainer-approved, per push. Do not batch several branches into one
-approval request, and do not treat an earlier approval as standing permission for
-later pushes in the same session.
+Pushing is maintainer-approved, per push. Do not treat an earlier approval as standing
+permission for later pushes in the same session.
