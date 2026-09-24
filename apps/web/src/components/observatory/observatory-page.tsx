@@ -217,7 +217,7 @@ export function ObservatoryPage({ locale }: ObservatoryPageProps) {
           <span>{copy.networkFoundation}</span>
         </Link>
         <Link className="observatory-back-link" href={`/${locale}`}>
-          <span aria-hidden="true">←</span> DARKVIEW
+          <span aria-hidden="true">←</span> STELLAR
         </Link>
       </section>
     </main>

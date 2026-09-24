@@ -28,8 +28,8 @@ export type ProgressCollection = {
 };
 
 const observatory = {
-  en: "Darkview Tbilisi Observatory",
-  ka: "Darkview თბილისის ობსერვატორია",
+  en: "Stellar Tbilisi Observatory",
+  ka: "სტელარის თბილისის ობსერვატორია",
 } as const;
 
 export const captures: Capture[] = [

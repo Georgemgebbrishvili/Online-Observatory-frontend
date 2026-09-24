@@ -12,7 +12,7 @@ test("communicates real telescope access in the English hero", async ({ page }) 
       "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
     ),
   ).toBeVisible();
-  await expect(page.getByLabel("Darkview by Astroman").first()).toBeVisible();
+  await expect(page.getByLabel("Stellar by Astroman").first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Start a Mission" })).toHaveAttribute(
     "href",
     "#tonight",
@@ -107,7 +107,7 @@ test("uses a desktop sidebar and native-style mobile app navigation", async ({
 
   const sidebar = appSidebar(page);
   await expect(sidebar).toBeVisible();
-  await expect(sidebar.getByLabel("Darkview by Astroman")).toBeVisible();
+  await expect(sidebar.getByLabel("Stellar by Astroman")).toBeVisible();
   await expect(sidebar.getByText("Tbilisi Observatory")).toBeVisible();
   await expect(sidebar.getByText("Simulated status")).toBeVisible();
 
@@ -193,7 +193,7 @@ test("shows the consumer mission detail before technical data", async ({ page })
 
   await expect(page.getByRole("heading", { name: "Saturn", exact: true })).toBeVisible();
   await expect(page.getByText("Clear observing window")).toBeVisible();
-  await expect(page.getByText("Darkview Tbilisi Observatory")).toBeVisible();
+  await expect(page.getByText("Stellar Tbilisi Observatory")).toBeVisible();
   await expect(page.getByText("23h 12m 41s / −06° 42′ 18″")).toBeHidden();
 
   await page.getByText("Advanced technical information").click();
@@ -267,7 +267,7 @@ test("keeps the mission session within a mobile viewport", async ({ page }) => {
 test("operates the live capture instrument without mount controls", async ({ page }) => {
   await page.goto("/en/app/live");
 
-  await expect(page.getByText("DARKVIEW LIVE")).toBeVisible();
+  await expect(page.getByText("STELLAR LIVE")).toBeVisible();
   await expect(liveViewport(page).getByText("Tbilisi Observatory")).toBeVisible();
   await expect(page.getByText("Observer · Public mission")).toBeVisible();
   await expect(page.getByRole("button", { name: "Enter fullscreen" })).toBeVisible();
@@ -292,7 +292,7 @@ test("prioritizes the live viewport on mobile", async ({ page }) => {
 
   const viewport = liveViewport(page);
   await expect(viewport).toBeVisible();
-  await expect(page.getByText("DARKVIEW LIVE")).toBeVisible();
+  await expect(page.getByText("STELLAR LIVE")).toBeVisible();
   expect((await viewport.boundingBox())?.height).toBeGreaterThanOrEqual(540);
 
   const dimensions = await page.evaluate(() => ({
@@ -412,18 +412,18 @@ test("explains the physical observatory and configurable equipment", async ({ pa
   await page.goto("/en/observatory");
 
   await expect(
-    page.getByRole("heading", { level: 1, name: "Darkview Tbilisi Observatory" }),
+    page.getByRole("heading", { level: 1, name: "Stellar Tbilisi Observatory" }),
   ).toBeVisible();
   await expect(
     page
-      .getByRole("region", { name: "Darkview Tbilisi Observatory" })
+      .getByRole("region", { name: "Stellar Tbilisi Observatory" })
       .getByText("Tbilisi, Georgia", {
         exact: true,
       }),
   ).toBeVisible();
   await expect(
     page.getByText(
-      "Darkview operates a physical telescope system remotely through secure observatory software.",
+      "Stellar operates a physical telescope system remotely through secure observatory software.",
     ),
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Observatory status" })).toBeVisible();
@@ -446,7 +446,7 @@ test("preserves observatory locale and mobile width", async ({ page }) => {
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Darkview თბილისის ობსერვატორია",
+      name: "სტელარის თბილისის ობსერვატორია",
     }),
   ).toBeVisible();
   await page.getByRole("button", { name: "ნავიგაციის გახსნა" }).click();

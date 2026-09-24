@@ -1,15 +1,15 @@
 export const pricingPageCopy = {
   en: {
-    metadataTitle: "Darkview · Pricing",
+    metadataTitle: "Stellar · Pricing",
     metadataDescription:
-      "Conceptual Darkview access offerings with configurable pricing and no payment integration.",
-    eyebrow: "DARKVIEW ACCESS · CONFIGURATION DRAFT",
+      "Conceptual Stellar access offerings with configurable pricing and no payment integration.",
+    eyebrow: "STELLAR ACCESS · CONFIGURATION DRAFT",
     title: "Choose how deeply you look.",
     introduction:
       "Start with the shared sky, build a personal collection, or plan for dedicated telescope time.",
     noticeTitle: "Pricing is not finalized",
     notice:
-      "Subscription and session amounts remain configurable placeholders until Darkview formally approves production pricing.",
+      "Subscription and session amounts remain configurable placeholders until Stellar formally approves production pricing.",
     noPayment: "Payments and checkout are not enabled.",
     free: "Free",
     configuredLater: "Price to be confirmed",
@@ -31,21 +31,21 @@ export const pricingPageCopy = {
     perSession: "per session · price pending",
     sessionNote:
       "Private sessions are conceptual reservations only. No booking or payment is accepted on this page.",
-    back: "Return to Darkview",
+    back: "Return to Stellar",
     noticeMarker: "CONFIG",
     configurationMarker: "CONFIGURATION",
   },
   ka: {
-    metadataTitle: "Darkview · ფასები",
+    metadataTitle: "სტელარი · ფასები",
     metadataDescription:
-      "Darkview-ზე წვდომის კონცეფციური შეთავაზებები და კონფიგურირებადი ფასების სტრუქტურა.",
-    eyebrow: "DARKVIEW-ზე წვდომა · კონფიგურაციის მონახაზი",
+      "სტელარზე წვდომის კონცეფციური შეთავაზებები და კონფიგურირებადი ფასების სტრუქტურა.",
+    eyebrow: "სტელარზე წვდომა · კონფიგურაციის მონახაზი",
     title: "აირჩიეთ, რამდენად ღრმად გაიხედავთ.",
     introduction:
       "დაიწყეთ საერთო ცით, შექმენით პირადი კოლექცია ან დაგეგმეთ ტელესკოპის გამოყოფილი დრო.",
     noticeTitle: "ფასები ჯერ არ არის საბოლოო",
     notice:
-      "გამოწერისა და სესიის თანხები კონფიგურირებად მონახაზად რჩება, სანამ Darkview საბოლოო ფასებს ოფიციალურად დაამტკიცებს.",
+      "გამოწერისა და სესიის თანხები კონფიგურირებად მონახაზად რჩება, სანამ სტელარი საბოლოო ფასებს ოფიციალურად დაამტკიცებს.",
     noPayment: "გადახდა და შეკვეთის გაფორმება ჩართული არ არის.",
     free: "უფასო",
     configuredLater: "ფასი მოგვიანებით დადასტურდება",
@@ -67,7 +67,7 @@ export const pricingPageCopy = {
     perSession: "სესიაზე · ფასი დასადგენია",
     sessionNote:
       "პირადი სესიები მხოლოდ კონცეფციური ჯავშნებია. ამ გვერდზე დაჯავშნა ან გადახდა არ მიიღება.",
-    back: "Darkview-ზე დაბრუნება",
+    back: "სტელარზე დაბრუნება",
     noticeMarker: "კონფიგურაცია",
     configurationMarker: "კონფიგურაცია",
   },

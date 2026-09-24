@@ -17,7 +17,7 @@ describe("LiveObservationView", () => {
       />,
     );
 
-    expect(screen.getByText("DARKVIEW LIVE")).toBeVisible();
+    expect(screen.getByText("STELLAR LIVE")).toBeVisible();
     expect(screen.getByText("Tbilisi Observatory")).toBeVisible();
     expect(screen.getAllByText("Saturn").length).toBeGreaterThan(1);
     expect(screen.getByText("Observer · Public mission")).toBeVisible();

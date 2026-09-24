@@ -21,7 +21,7 @@ describe("CaptureDetail", () => {
 
     expect(screen.getByRole("heading", { name: "Saturn" })).toBeVisible();
     expect(screen.getByText("Captured by you")).toBeVisible();
-    expect(screen.getByText("Darkview Tbilisi Observatory")).toBeVisible();
+    expect(screen.getByText("Stellar Tbilisi Observatory")).toBeVisible();
     expect(screen.getByRole("link", { name: "Download" })).toHaveAttribute(
       "href",
       "/captures/saturn-dv-0001.svg",

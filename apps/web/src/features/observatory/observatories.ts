@@ -40,8 +40,8 @@ export const observatories: ObservatorySite[] = [
   {
     id: "tbilisi-01",
     name: {
-      en: "Darkview Tbilisi Observatory",
-      ka: "Darkview თბილისის ობსერვატორია",
+      en: "Stellar Tbilisi Observatory",
+      ka: "სტელარის თბილისის ობსერვატორია",
     },
     location: { en: "Tbilisi, Georgia", ka: "თბილისი, საქართველო" },
     coordinates: { latitude: 41.72, longitude: 44.79 },

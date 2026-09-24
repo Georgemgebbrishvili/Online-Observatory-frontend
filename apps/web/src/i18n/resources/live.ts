@@ -1,7 +1,7 @@
 export const liveObservationCopy = {
   en: {
-    metadataTitle: "Darkview Live",
-    live: "DARKVIEW LIVE",
+    metadataTitle: "Stellar Live",
+    live: "STELLAR LIVE",
     demonstration: "DEMONSTRATION VIEW",
     observatory: "Observatory",
     target: "Target",
@@ -33,8 +33,8 @@ export const liveObservationCopy = {
     viewportLabel: (target: string) => `${target} live observation`,
   },
   ka: {
-    metadataTitle: "პირდაპირი დაკვირვება · Darkview",
-    live: "DARKVIEW LIVE",
+    metadataTitle: "პირდაპირი დაკვირვება · სტელარი",
+    live: "STELLAR LIVE",
     demonstration: "სადემონსტრაციო ხედი",
     observatory: "ობსერვატორია",
     target: "სამიზნე",

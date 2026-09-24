@@ -1,7 +1,7 @@
 import type { Locale } from "@/i18n/config";
 
 const en = {
-  metadataTitle: "Operator console · Darkview",
+  metadataTitle: "Operator console · Stellar",
   title: "Operator console",
   observatory: "Observatory",
   noObservatory: "No observatory is listed by the platform.",
@@ -263,7 +263,7 @@ const en = {
 export const operatorCopy = {
   en,
   ka: {
-    metadataTitle: "ოპერატორის პანელი · Darkview",
+    metadataTitle: "ოპერატორის პანელი · სტელარი",
     title: "ოპერატორის პანელი",
     observatory: "ობსერვატორია",
     noObservatory: "პლატფორმა არცერთ ობსერვატორიას არ აბრუნებს.",

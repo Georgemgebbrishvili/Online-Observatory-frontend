@@ -42,27 +42,27 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     noticeMarker: "DRAFT",
     noticeTitle: "These terms are not yet in force",
     notice:
-      "Darkview has not launched and this document is awaiting legal review. Sections marked as settled record decisions already taken about how the service will work. They are published for transparency and do not yet bind anyone.",
+      "Stellar has not launched and this document is awaiting legal review. Sections marked as settled record decisions already taken about how the service will work. They are published for transparency and do not yet bind anyone.",
     decidedLabel: "Settled",
     pendingLabel: "Awaiting legal review",
-    pendingDetail: "This section will be written and reviewed before Darkview opens.",
-    back: "Return to Darkview",
+    pendingDetail: "This section will be written and reviewed before Stellar opens.",
+    back: "Return to Stellar",
     documents: {
       terms: {
-        metadataTitle: "Darkview · Terms of service",
+        metadataTitle: "Stellar · Terms of service",
         metadataDescription:
-          "Draft terms of service for Darkview, a live remote observatory in Tbilisi. Not yet in force.",
+          "Draft terms of service for Stellar, a live remote observatory in Tbilisi. Not yet in force.",
         eyebrow: "LEGAL · DRAFT",
         title: "Terms of service",
         introduction:
-          "What Darkview offers, and what it does not. This draft is published early so that the parts already settled can be read and challenged.",
+          "What Stellar offers, and what it does not. This draft is published early so that the parts already settled can be read and challenged.",
         sections: [
           {
-            heading: "What Darkview is",
+            heading: "What Stellar is",
             status: "decided",
             body: [
-              "Darkview is a live remote observatory in Tbilisi, Georgia. You reserve an observation slot, choose a target from an operator-approved list, and a real Celestron NexStar 6SE moves to that target while you watch its camera output.",
-              "Darkview is a live-view service. It uses short exposures and live stacking, the technique usually called electronically assisted astronomy. It is not a long-exposure astrophotography service, and it does not produce results comparable to a research observatory or a space telescope.",
+              "Stellar is a live remote observatory in Tbilisi, Georgia. You reserve an observation slot, choose a target from an operator-approved list, and a real Celestron NexStar 6SE moves to that target while you watch its camera output.",
+              "Stellar is a live-view service. It uses short exposures and live stacking, the technique usually called electronically assisted astronomy. It is not a long-exposure astrophotography service, and it does not produce results comparable to a research observatory or a space telescope.",
             ],
           },
           {
@@ -82,13 +82,13 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       privacy: {
-        metadataTitle: "Darkview · Privacy policy",
+        metadataTitle: "Stellar · Privacy policy",
         metadataDescription:
-          "Draft privacy policy for Darkview, a live remote observatory in Tbilisi. Not yet in force.",
+          "Draft privacy policy for Stellar, a live remote observatory in Tbilisi. Not yet in force.",
         eyebrow: "LEGAL · DRAFT",
         title: "Privacy policy",
         introduction:
-          "What Darkview records about you and why. This document needs a data inventory and legal review before it can be published properly.",
+          "What Stellar records about you and why. This document needs a data inventory and legal review before it can be published properly.",
         sections: [
           {
             heading: "Staying signed in",
@@ -97,7 +97,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
               "Signing in sets session cookies in your browser. They exist to keep you signed in and to protect the forms you submit against cross-site request forgery. They are not advertising cookies and they do not follow you to other sites.",
             ],
           },
-          { heading: "What Darkview collects", status: "pending" },
+          { heading: "What Stellar collects", status: "pending" },
           { heading: "Your captures and your collection", status: "pending" },
           { heading: "Payment information", status: "pending" },
           { heading: "Who else processes your data", status: "pending" },
@@ -107,9 +107,9 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       refunds: {
-        metadataTitle: "Darkview · Refund policy",
+        metadataTitle: "Stellar · Refund policy",
         metadataDescription:
-          "Draft refund and cancellation policy for Darkview, a live remote observatory in Tbilisi. Not yet in force.",
+          "Draft refund and cancellation policy for Stellar, a live remote observatory in Tbilisi. Not yet in force.",
         eyebrow: "LEGAL · DRAFT",
         title: "Refund policy",
         introduction:
@@ -150,27 +150,27 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     noticeMarker: "მონახაზი",
     noticeTitle: "ეს პირობები ჯერ არ მოქმედებს",
     notice:
-      "Darkview ჯერ არ ამოქმედებულა და ეს დოკუმენტი იურიდიულ განხილვას ელოდება. გადაწყვეტილად მონიშნული სექციები ასახავს უკვე მიღებულ გადაწყვეტილებებს სერვისის მუშაობის შესახებ. ისინი გამჭვირვალობისთვისაა გამოქვეყნებული და ჯერ არავის ავალდებულებს.",
+      "სტელარი ჯერ არ ამოქმედებულა და ეს დოკუმენტი იურიდიულ განხილვას ელოდება. გადაწყვეტილად მონიშნული სექციები ასახავს უკვე მიღებულ გადაწყვეტილებებს სერვისის მუშაობის შესახებ. ისინი გამჭვირვალობისთვისაა გამოქვეყნებული და ჯერ არავის ავალდებულებს.",
     decidedLabel: "გადაწყვეტილია",
     pendingLabel: "ელოდება იურიდიულ განხილვას",
-    pendingDetail: "ეს სექცია დაიწერება და განიხილება Darkview-ის გახსნამდე.",
-    back: "Darkview-ზე დაბრუნება",
+    pendingDetail: "ეს სექცია დაიწერება და განიხილება სტელარის გახსნამდე.",
+    back: "სტელარზე დაბრუნება",
     documents: {
       terms: {
-        metadataTitle: "Darkview · მომსახურების პირობები",
+        metadataTitle: "სტელარი · მომსახურების პირობები",
         metadataDescription:
-          "Darkview-ის მომსახურების პირობების მონახაზი. ჯერ არ მოქმედებს.",
+          "სტელარის მომსახურების პირობების მონახაზი. ჯერ არ მოქმედებს.",
         eyebrow: "იურიდიული · მონახაზი",
         title: "მომსახურების პირობები",
         introduction:
-          "რას გთავაზობთ Darkview და რას არა. მონახაზი ადრე ქვეყნდება, რომ უკვე გადაწყვეტილი ნაწილი წაკითხვადი და სადავო იყოს.",
+          "რას გთავაზობთ სტელარი და რას არა. მონახაზი ადრე ქვეყნდება, რომ უკვე გადაწყვეტილი ნაწილი წაკითხვადი და სადავო იყოს.",
         sections: [
           {
-            heading: "რა არის Darkview",
+            heading: "რა არის სტელარი",
             status: "decided",
             body: [
-              "Darkview არის ცოცხალი დისტანციური ობსერვატორია თბილისში. თქვენ ჯავშნით სადამკვირვებლო სლოტს, ირჩევთ ობიექტს ოპერატორის დამტკიცებული სიიდან, და ნამდვილი Celestron NexStar 6SE ფიზიკურად ბრუნდება ამ ობიექტისკენ, სანამ თქვენ კამერის გამოსახულებას უყურებთ.",
-              "Darkview ცოცხალი ხედვის სერვისია. ის იყენებს მოკლე ექსპოზიციებს და ცოცხალ დასტეკვას — მეთოდს, რომელსაც ელექტრონულად დახმარებულ ასტრონომიას უწოდებენ. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფიის სერვისი და არ იძლევა სამეცნიერო ობსერვატორიის ან კოსმოსური ტელესკოპის დონის შედეგს.",
+              "სტელარი არის ცოცხალი დისტანციური ობსერვატორია თბილისში. თქვენ ჯავშნით სადამკვირვებლო სლოტს, ირჩევთ ობიექტს ოპერატორის დამტკიცებული სიიდან, და ნამდვილი Celestron NexStar 6SE ფიზიკურად ბრუნდება ამ ობიექტისკენ, სანამ თქვენ კამერის გამოსახულებას უყურებთ.",
+              "სტელარი ცოცხალი ხედვის სერვისია. ის იყენებს მოკლე ექსპოზიციებს და ცოცხალ დასტეკვას — მეთოდს, რომელსაც ელექტრონულად დახმარებულ ასტრონომიას უწოდებენ. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფიის სერვისი და არ იძლევა სამეცნიერო ობსერვატორიის ან კოსმოსური ტელესკოპის დონის შედეგს.",
             ],
           },
           {
@@ -190,13 +190,13 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       privacy: {
-        metadataTitle: "Darkview · კონფიდენციალურობის პოლიტიკა",
+        metadataTitle: "სტელარი · კონფიდენციალურობის პოლიტიკა",
         metadataDescription:
-          "Darkview-ის კონფიდენციალურობის პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.",
+          "სტელარის კონფიდენციალურობის პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.",
         eyebrow: "იურიდიული · მონახაზი",
         title: "კონფიდენციალურობის პოლიტიკა",
         introduction:
-          "რას ინახავს Darkview თქვენ შესახებ და რატომ. დოკუმენტს სჭირდება მონაცემთა აღწერა და იურიდიული განხილვა, სანამ სათანადოდ გამოქვეყნდება.",
+          "რას ინახავს სტელარი თქვენ შესახებ და რატომ. დოკუმენტს სჭირდება მონაცემთა აღწერა და იურიდიული განხილვა, სანამ სათანადოდ გამოქვეყნდება.",
         sections: [
           {
             heading: "სისტემაში დარჩენა",
@@ -205,7 +205,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
               "შესვლისას ბრაუზერში იწერება სესიის ქუქი-ფაილები. ისინი საჭიროა იმისთვის, რომ სისტემაში დარჩეთ და თქვენი გაგზავნილი ფორმები დაცული იყოს. ეს არ არის სარეკლამო ქუქი-ფაილები და ისინი სხვა საიტებზე არ მიგყვებათ.",
             ],
           },
-          { heading: "რა მონაცემებს აგროვებს Darkview", status: "pending" },
+          { heading: "რა მონაცემებს აგროვებს სტელარი", status: "pending" },
           { heading: "თქვენი კადრები და კოლექცია", status: "pending" },
           { heading: "გადახდის მონაცემები", status: "pending" },
           { heading: "ვინ ამუშავებს თქვენს მონაცემებს", status: "pending" },
@@ -215,9 +215,9 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       refunds: {
-        metadataTitle: "Darkview · თანხის დაბრუნების პოლიტიკა",
+        metadataTitle: "სტელარი · თანხის დაბრუნების პოლიტიკა",
         metadataDescription:
-          "Darkview-ის თანხის დაბრუნებისა და გაუქმების პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.",
+          "სტელარის თანხის დაბრუნებისა და გაუქმების პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.",
         eyebrow: "იურიდიული · მონახაზი",
         title: "თანხის დაბრუნების პოლიტიკა",
         introduction:
