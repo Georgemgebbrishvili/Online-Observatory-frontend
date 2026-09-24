@@ -2,7 +2,7 @@ import type { Dictionary } from "../types";
 
 const dictionary = {
   metadata: {
-    title: "Darkview by Astroman",
+    title: "Stellar by Astroman",
     description:
       "დაუკავშირდით რეალურ ობსერვატორიებს, გაუშვით ასტრონომიული მისიები და გადაიღეთ ღამის ცის საკუთარი სურათები.",
   },
@@ -11,7 +11,7 @@ const dictionary = {
     skip: "შინაარსზე გადასვლა",
     language: "ენა",
     languageName: "English",
-    brandAriaLabel: "Darkview — Astroman-ის პროდუქტი",
+    brandAriaLabel: "სტელარი — Astroman-ის პროდუქტი",
     brandEndorsement: "Astroman-ისგან",
     public: {
       ariaLabel: "საჯარო ნავიგაცია",
@@ -27,7 +27,7 @@ const dictionary = {
     },
     app: {
       ariaLabel: "აპლიკაციის ნავიგაცია",
-      brandAriaLabel: "Darkview — Astroman-ის პროდუქტი",
+      brandAriaLabel: "სტელარი — Astroman-ის პროდუქტი",
       brandEndorsement: "Astroman-ისგან",
       home: "მთავარი",
       missions: "მისიები",
@@ -52,7 +52,7 @@ const dictionary = {
   },
   home: {
     hero: {
-      eyebrow: "DARKVIEW · BY ASTROMAN",
+      eyebrow: "STELLAR · BY ASTROMAN",
       title: "აღმოაჩინეთ რეალური სამყარო.",
       description:
         "დაუკავშირდით რეალურ ობსერვატორიებს, გაუშვით ასტრონომიული მისიები და გადაიღეთ ღამის ცის საკუთარი სურათები.",
@@ -94,7 +94,7 @@ const dictionary = {
       title: "რეალური ობსერვატორია მოქმედებაში.",
       description:
         "ერთ ზუსტ ინტერფეისში ადევნეთ თვალი ტელესკოპის მდგომარეობას, სამიზნესა და აქტიურ მისიას.",
-      observatoryName: "Darkview თბილისის ობსერვატორია",
+      observatoryName: "სტელარის თბილისის ობსერვატორია",
       targetName: "სატურნი",
       currentMission: "DV-042 · სატურნის ოპოზიციის დაკვირვება",
       telescopeState: "სამიზნის თვალყურის დევნება",
@@ -160,10 +160,10 @@ const dictionary = {
     },
     howItWorks: {
       index: "03",
-      eyebrow: "როგორ მუშაობს Darkview",
+      eyebrow: "როგორ მუშაობს სტელარი",
       title: "სამი ნაბიჯი. ერთი რეალური დაკვირვება.",
       description:
-        "Darkview ობსერვატორიაზე წვდომას არჩევიდან გადაღებამდე გასაგებ მისიად აქცევს.",
+        "სტელარი ობსერვატორიაზე წვდომას არჩევიდან გადაღებამდე გასაგებ მისიად აქცევს.",
       steps: [
         {
           title: "აირჩიეთ",
@@ -184,7 +184,7 @@ const dictionary = {
       eyebrow: "რეალური ობსერვატორია",
       title: "ფიზიკურ ოპტიკასთან დაკავშირებული პროგრამა.",
       description:
-        "Darkview-ის მისიები დაცული ობსერვატორიის პროგრამის გავლით რეალურ ტელესკოპსა და კამერამდე მიდის — არასოდეს პირდაპირ ბრაუზერიდან.",
+        "სტელარის მისიები დაცული ობსერვატორიის პროგრამის გავლით რეალურ ტელესკოპსა და კამერამდე მიდის — არასოდეს პირდაპირ ბრაუზერიდან.",
       statement:
         "ყველა ბრძანება რჩება სერვერზე. ყველა დაკვირვება მიბმულია დადასტურებულ მისიაზე.",
       locationLabel: "მდებარეობა",
@@ -203,7 +203,7 @@ const dictionary = {
       description:
         "ყოველი დასრულებული მისია შეიძლება გახდეს პირადი დაკვირვება, რომელსაც შეინახავთ და შეადარებთ.",
       statement:
-        "ეს არ არის ფოტოარქივის სურათები. ეს Darkview-ის გავლით შესრულებული დაკვირვებებია.",
+        "ეს არ არის ფოტოარქივის სურათები. ეს სტელარის გავლით შესრულებული დაკვირვებებია.",
       disclaimer:
         "დეველოპერული ჩანაცვლებები · ტელესკოპის რეალური კადრები წარმოდგენილი არ არის",
       frames: {
@@ -221,7 +221,7 @@ const dictionary = {
       observatoryName: "თბილისის ობსერვატორია",
       active: "აქტიური",
       location: "თბილისი · საქართველო",
-      descriptionLine: "Darkview-ის ძირითადი ობსერვატორიის კვანძი",
+      descriptionLine: "სტელარის ძირითადი ობსერვატორიის კვანძი",
       futureNote:
         "ახალი კვანძები გამოცხადდება მხოლოდ ფიზიკური ინტეგრაციისა და გადამოწმების შემდეგ.",
     },
@@ -238,12 +238,12 @@ const dictionary = {
     finalCta: {
       eyebrow: "დაიწყეთ დღეს",
       title: "თქვენი შემდეგი დაკვირვება აქ იწყება.",
-      description: "აირჩიეთ დაკვირვებადი სამიზნე და ჩამოაყალიბეთ პირველი Darkview მისია.",
+      description: "აირჩიეთ დაკვირვებადი სამიზნე და ჩამოაყალიბეთ პირველი სტელარის მისია.",
       action: "დღევანდელი ცის ნახვა",
     },
   },
   footer: {
-    brandAriaLabel: "Darkview — Astroman-ის პროდუქტი",
+    brandAriaLabel: "სტელარი — Astroman-ის პროდუქტი",
     brandEndorsement: "Astroman-ისგან",
     georgianLanguage: "ქართული",
     englishLanguage: "English",
@@ -266,7 +266,7 @@ const dictionary = {
   },
   notFound: {
     title: "დაკვირვება ვერ მოიძებნა",
-    action: "Darkview-ზე დაბრუნება",
+    action: "სტელარზე დაბრუნება",
   },
 } satisfies Dictionary;
 

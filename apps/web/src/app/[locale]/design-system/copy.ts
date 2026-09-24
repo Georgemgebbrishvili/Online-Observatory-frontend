@@ -2,8 +2,8 @@ import type { Locale } from "@/i18n/config";
 
 export const designSystemCopy = {
   en: {
-    metadataTitle: "Design system — Darkview",
-    metadataDescription: "Internal Darkview visual system and component reference.",
+    metadataTitle: "Design system — Stellar",
+    metadataDescription: "Internal Stellar visual system and component reference.",
     eyebrow: "Internal reference · 01",
     title: "Visual system",
     introduction:
@@ -44,7 +44,7 @@ export const designSystemCopy = {
         "06",
         "Overlays & disclosure",
         "Native modal, sheet, dropdown, and tooltip behavior.",
-        "§08 Surface mapping · §09 What Darkview must never be, 04",
+        "§08 Surface mapping · §09 What Stellar must never be, 04",
       ],
       navigation: [
         "07",
@@ -67,7 +67,7 @@ export const designSystemCopy = {
     },
     palette: "Core palette",
     paletteNames: [
-      "Darkview Night",
+      "Stellar Night",
       "Surface",
       "Observatory Blue",
       "Surface hover",
@@ -97,7 +97,7 @@ export const designSystemCopy = {
       caption: "Captions and micro-copy",
       mono: "RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15",
     },
-    opticalLabel: "Darkview optical interface motif",
+    opticalLabel: "Stellar optical interface motif",
     idle: "Idle",
     liveLabel: "Live",
     observatoryStatuses: {
@@ -199,8 +199,8 @@ export const designSystemCopy = {
     },
   },
   ka: {
-    metadataTitle: "დიზაინ სისტემა — Darkview",
-    metadataDescription: "Darkview-ის შიდა ვიზუალური სისტემა და კომპონენტების ცნობარი.",
+    metadataTitle: "დიზაინ სისტემა — სტელარი",
+    metadataDescription: "სტელარის შიდა ვიზუალური სისტემა და კომპონენტების ცნობარი.",
     eyebrow: "შიდა ცნობარი · 01",
     title: "ვიზუალური სისტემა",
     introduction:
@@ -241,7 +241,7 @@ export const designSystemCopy = {
         "06",
         "ზედდებული ფენები",
         "მოდალი, გვერდითი პანელი, ჩამონათვალი და მინიშნება.",
-        "§08 Surface mapping · §09 What Darkview must never be, 04",
+        "§08 Surface mapping · §09 What Stellar must never be, 04",
       ],
       navigation: [
         "07",
@@ -264,7 +264,7 @@ export const designSystemCopy = {
     },
     palette: "ძირითადი პალიტრა",
     paletteNames: [
-      "ფონი · Darkview Night",
+      "ფონი · Stellar Night",
       "ზედაპირი",
       "ამაღლებული ზედაპირი · Observatory Blue",
       "ზედაპირი კურსორის მიტანისას",
@@ -294,7 +294,7 @@ export const designSystemCopy = {
       caption: "წარწერები და მოკლე ტექსტი",
       mono: "RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15",
     },
-    opticalLabel: "Darkview-ის ოპტიკური ინტერფეისის მოტივი",
+    opticalLabel: "სტელარის ოპტიკური ინტერფეისის მოტივი",
     idle: "უმოქმედო",
     liveLabel: "პირდაპირი",
     observatoryStatuses: {

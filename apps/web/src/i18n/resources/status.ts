@@ -1,9 +1,9 @@
 import type { Locale } from "@/i18n/config";
 
 const en = {
-  metadataTitle: "Darkview · Observatory status",
+  metadataTitle: "Stellar · Observatory status",
   metadataDescription:
-    "Live status of the Darkview observatory in Tbilisi, and tonight's viewing conditions.",
+    "Live status of the Stellar observatory in Tbilisi, and tonight's viewing conditions.",
   eyebrow: "OBSERVATORY STATUS",
   title: "What the telescope is doing now.",
   introduction:
@@ -74,21 +74,21 @@ const en = {
   unavailable: {
     title: "Status is unavailable",
     detail:
-      "The Darkview platform did not answer, so this page has nothing current to show. It shows no older reading rather than presenting a stale one as live.",
+      "The Stellar platform did not answer, so this page has nothing current to show. It shows no older reading rather than presenting a stale one as live.",
   },
   noObservatory: {
     title: "No observatory is listed",
     detail: "The platform lists no bookable observatory to report on.",
   },
-  back: "Return to Darkview",
+  back: "Return to Stellar",
 };
 
 export const statusCopy = {
   en,
   ka: {
-    metadataTitle: "Darkview · ობსერვატორიის სტატუსი",
+    metadataTitle: "სტელარი · ობსერვატორიის სტატუსი",
     metadataDescription:
-      "Darkview-ის თბილისის ობსერვატორიის მიმდინარე სტატუსი და ამაღამის დაკვირვების პირობები.",
+      "სტელარის თბილისის ობსერვატორიის მიმდინარე სტატუსი და ამაღამის დაკვირვების პირობები.",
     eyebrow: "ობსერვატორიის სტატუსი",
     title: "რას აკეთებს ტელესკოპი ახლა.",
     introduction:
@@ -159,13 +159,13 @@ export const statusCopy = {
     unavailable: {
       title: "სტატუსი მიუწვდომელია",
       detail:
-        "Darkview-ის პლატფორმამ არ უპასუხა, ამიტომ ამ გვერდს მიმდინარე მონაცემი არ აქვს. ძველ მონაცემს მიმდინარედ არ აჩვენებს — სჯობს არაფერი აჩვენოს.",
+        "სტელარის პლატფორმამ არ უპასუხა, ამიტომ ამ გვერდს მიმდინარე მონაცემი არ აქვს. ძველ მონაცემს მიმდინარედ არ აჩვენებს — სჯობს არაფერი აჩვენოს.",
     },
     noObservatory: {
       title: "ობსერვატორია არ არის",
       detail: "პლატფორმა არცერთ ხელმისაწვდომ ობსერვატორიას არ აბრუნებს.",
     },
-    back: "Darkview-ზე დაბრუნება",
+    back: "სტელარზე დაბრუნება",
   },
 } as const satisfies Record<Locale, typeof en>;
 

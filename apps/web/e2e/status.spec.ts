@@ -22,7 +22,7 @@ test("reports the observatory, and says the simulator is answering", async ({ pa
   });
   // A page fed by the simulator must say so, unmistakably.
   await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible();
-  await expect(page.getByText("Darkview Tbilisi")).toBeVisible();
+  await expect(page.getByText("Stellar Tbilisi")).toBeVisible();
   await expect(page.getByText(/Reported \d+ (s|min|h) ago/)).toBeVisible();
 
   const now = field(page, "link");

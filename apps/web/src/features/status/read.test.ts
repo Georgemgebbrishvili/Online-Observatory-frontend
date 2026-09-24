@@ -15,8 +15,8 @@ const observatories = {
       id: observatoryId,
       slug: "tbilisi",
       kind: "FIRST_PARTY",
-      nameEn: "Darkview Tbilisi",
-      nameKa: "Darkview თბილისი",
+      nameEn: "Stellar Tbilisi",
+      nameKa: "სტელარი თბილისი",
       city: "Tbilisi",
       countryCode: "GE",
       timezone: "Asia/Tbilisi",
@@ -62,7 +62,7 @@ describe("readStatus", () => {
 
     expect(result.kind).toBe("ok");
     if (result.kind !== "ok") return;
-    expect(result.reading.observatoryName).toBe("Darkview Tbilisi");
+    expect(result.reading.observatoryName).toBe("Stellar Tbilisi");
     expect(result.reading.timezone).toBe("Asia/Tbilisi");
     expect(result.reading.conditions).not.toBeNull();
   });
@@ -119,7 +119,7 @@ describe("readStatus", () => {
     const result = await readStatus("ka");
 
     expect(result.kind === "ok" && result.reading.observatoryName).toBe(
-      "Darkview თბილისი",
+      "სტელარი თბილისი",
     );
   });
 });

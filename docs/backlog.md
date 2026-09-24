@@ -1,4 +1,4 @@
-# Darkview Clients — backlog
+# Stellar Clients — backlog
 
 22 issues. IDs are stable across both repositories and never reused. Gaps in the
 numbering are intentional headroom.
@@ -21,7 +21,7 @@ dependency order.
 
 | ID | Title | Size | Depends on |
 | --- | --- | --- | --- |
-| DV-070 | Design tokens and the Darkview component library | L | — |
+| DV-070 | Design tokens and the Stellar component library | L | — |
 | DV-071 | Public conversion pages | L | DV-070 |
 | DV-072 | Legal pages | M | DV-070 |
 | DV-073 | `/status` page | M | DV-070 |
@@ -91,6 +91,17 @@ DV-097  loyalty web        DV-098  loyalty admin
 DV-082  Expo shell -> DV-083 mobile live -> DV-099 loyalty -> DV-084 builds
 DV-080  Georgian QA        DV-081  accessibility and performance
 ```
+
+## Filed on GitHub, outside the DV numbering
+
+Opened in Phase 0. The DV series is the planning archive's numbering and is shared with
+`darkview-platform`; these three are issues on this repository and carry no DV number.
+
+| Issue | What it is | Phase |
+| --- | --- | --- |
+| [#1](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/1) | `shared-observations` calls six `/v1/*` endpoints absent from the pinned contract, through an unvalidated hand-written cross-boundary type | blocks 2 |
+| [#2](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/2) | Subscription has no client surface — six approved endpoints, no caller | 5 |
+| [#3](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/3) | Partner node self-service registration has no client surface | 5 |
 
 ## Blocking external dependencies
 

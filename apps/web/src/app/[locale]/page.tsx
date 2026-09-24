@@ -28,7 +28,7 @@ export default async function HomePage({ params }: HomePageProps) {
           {
             "@context": "https://schema.org",
             "@type": "WebSite",
-            name: "Darkview by Astroman",
+            name: "Stellar by Astroman",
             url: new URL(`/${locale}`, siteUrl).toString(),
             inLanguage: locale === "ka" ? "ka-GE" : "en-US",
             description: dictionary.metadata.description,
@@ -36,7 +36,7 @@ export default async function HomePage({ params }: HomePageProps) {
           {
             "@context": "https://schema.org",
             "@type": "Organization",
-            name: "Darkview by Astroman",
+            name: "Stellar by Astroman",
             url: siteUrl.origin,
           },
         ]}

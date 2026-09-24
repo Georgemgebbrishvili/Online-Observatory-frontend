@@ -1,9 +1,9 @@
-# Darkview Clients
+# Stellar Clients
 
-**The website and the mobile application.** This is the half of Darkview a customer
+**The website and the mobile application.** This is the half of Stellar a customer
 actually touches.
 
-Darkview is a Live Remote Observatory in Tbilisi, Georgia. A customer reserves an
+Stellar — Georgian **სტელარი** — is a Live Remote Observatory in Tbilisi, Georgia. A customer reserves an
 Observation Slot, chooses an operator-approved Target, and during the Live Observation a
 real Celestron NexStar 6SE physically slews to it. Phase 1 is a **live-view / EAA**
 experience using short exposures and live stacking — not a long-exposure astrophotography
@@ -11,6 +11,16 @@ service.
 
 Nothing here touches the telescope, the database, or a secret. Every server-side
 capability comes from the `darkview-platform` repository over HTTP.
+
+## The name
+
+The product was renamed from Darkview to Stellar on 2026-09-24 by
+[ADR-025](docs/decisions/ADR-025-the-product-is-renamed-stellar.md). Customer-visible
+strings say Stellar today. Identifiers do not: `@darkview/*`,
+`DARKVIEW_PLATFORM_API_URL`, the session cookie names, the repository names and every
+`darkview` string inside `packages/contracts/` stay until `darkview-platform` renames
+in lockstep. The mismatch is expected and is not a defect. Do not "fix" an identifier
+opportunistically, and never hand-edit the pinned contract to change a name.
 
 ## Repository boundary
 

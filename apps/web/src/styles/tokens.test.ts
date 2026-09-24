@@ -5,6 +5,10 @@ import { describe, expect, it } from "vitest";
 import { palette } from "./tokens";
 
 const tokensCss = fs.readFileSync(path.join(import.meta.dirname, "tokens.css"), "utf8");
+const breakpointsCss = fs.readFileSync(
+  path.join(import.meta.dirname, "breakpoints.css"),
+  "utf8",
+);
 const contrastDoc = path.join(import.meta.dirname, "../../../../docs/design/contrast.md");
 
 type Rgba = [number, number, number, number];
@@ -144,11 +148,11 @@ function table() {
 
 describe("design tokens", () => {
   it("uses the five core colours CLAUDE.md names, exactly", () => {
-    expect(declarations.get("--dv-neutral-950")).toBe("#05080d");
-    expect(declarations.get("--dv-neutral-800")).toBe("#111722");
-    expect(declarations.get("--dv-photon")).toBe("#5cc8ff");
-    expect(declarations.get("--dv-neutral-100")).toBe("#f2f5f7");
-    expect(declarations.get("--dv-neutral-300")).toBe("#aab4be");
+    expect(declarations.get("--st-neutral-950")).toBe("#05080d");
+    expect(declarations.get("--st-neutral-800")).toBe("#111722");
+    expect(declarations.get("--st-photon")).toBe("#5cc8ff");
+    expect(declarations.get("--st-neutral-100")).toBe("#f2f5f7");
+    expect(declarations.get("--st-neutral-300")).toBe("#aab4be");
     expect(token("night")).toEqual(parseHex("#05080d"));
     expect(token("surface-raised")).toEqual(parseHex("#111722"));
     expect(token("photon")).toEqual(parseHex("#5cc8ff"));
@@ -159,16 +163,31 @@ describe("design tokens", () => {
   it("keeps tokens.ts identical to the palette in tokens.css", () => {
     const cssPalette = Object.fromEntries(
       [...declarations]
-        .filter(([name]) => name.startsWith("--dv-"))
+        .filter(([name]) => name.startsWith("--st-"))
         .map(([name, value]) => [name, value]),
     );
     const tsPalette = Object.fromEntries(
       Object.entries(palette).map(([name, value]) => [
-        `--dv-${name.replace(/([A-Z0-9]+)/g, (part) => `-${part.toLowerCase()}`)}`,
+        `--st-${name.replace(/([A-Z0-9]+)/g, (part) => `-${part.toLowerCase()}`)}`,
         value,
       ]),
     );
     expect(tsPalette).toEqual(cssPalette);
+  });
+
+  it("defines the five breakpoints v3 permits, and no sixth", () => {
+    const declared = [...breakpointsCss.matchAll(/@custom-media --([a-z-]+) \(([^)]+)\);/g)];
+    expect(Object.fromEntries(declared.map((m) => [m[1], m[2]]))).toEqual({
+      xs: "min-width: 20rem",
+      sm: "min-width: 30rem",
+      md: "min-width: 48rem",
+      lg: "min-width: 64rem",
+      xl: "min-width: 80rem",
+      "below-sm": "max-width: 29.999rem",
+      "below-md": "max-width: 47.999rem",
+      "below-lg": "max-width: 63.999rem",
+      "below-xl": "max-width: 79.999rem",
+    });
   });
 
   it("meets WCAG 2.1 AA for every pair the library uses", () => {

@@ -26,7 +26,7 @@ export function AuthenticatedHome({ locale }: AuthenticatedHomeProps) {
     <div className="authenticated-home">
       <header className="home-dashboard-header">
         <div>
-          <p className="home-dashboard-kicker">DARKVIEW · {copy.location}</p>
+          <p className="home-dashboard-kicker">STELLAR · {copy.location}</p>
           <h1>{copy.greeting(dashboard.profile.firstName[locale])}</h1>
         </div>
         <p>{copy.introduction}</p>

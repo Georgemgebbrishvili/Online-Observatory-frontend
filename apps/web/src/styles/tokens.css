@@ -1,77 +1,89 @@
 /*
- * Darkview design tokens — Brand Identity System v2.0.
+ * Stellar design tokens v3 — Brand Identity System v2.0, as amended by ADR-025.
+ * The ramp, elevation, breakpoint and spacing rules are docs/plan/03-design-system.md.
  * The only file in apps/web/src allowed to hold a colour literal (stylelint enforces it).
  * tokens.ts mirrors the palette for surfaces CSS cannot reach; a test keeps them equal.
  */
 :root {
   /* §04 Primary palette, secondary palette and neutral scale */
-  --dv-neutral-950: #05080d;
-  --dv-neutral-900: #0b0f15;
-  --dv-neutral-800: #111722;
-  --dv-neutral-700: #1a2330;
-  --dv-neutral-600: #2a3645;
-  --dv-neutral-500: #4c5a68;
-  --dv-neutral-400: #778492;
-  --dv-neutral-300: #aab4be;
-  --dv-neutral-200: #d0d6dc;
-  --dv-neutral-100: #f2f5f7;
-  --dv-photon: #5cc8ff;
-  --dv-deep-signal: #1677a3;
-  --dv-star-brass: #d9a45b;
-  --dv-lunar-silver: #a8b2bc;
-  --dv-optical-glass: #263a49;
-  --dv-success: #4fd1a5;
-  --dv-warning: #e5b454;
-  --dv-error: #ff6b6b;
-  --dv-info: #78afff;
-  --dv-black: #000;
+  --st-neutral-950: #05080d;
+  --st-neutral-900: #0b0f15;
+  --st-neutral-800: #111722;
+  --st-neutral-700: #1a2330;
+  --st-neutral-600: #2a3645;
+  --st-neutral-500: #4c5a68;
+  --st-neutral-400: #778492;
+  --st-neutral-300: #aab4be;
+  --st-neutral-200: #d0d6dc;
+  --st-neutral-100: #f2f5f7;
+  --st-photon: #5cc8ff;
+  --st-deep-signal: #1677a3;
+  --st-star-brass: #d9a45b;
+  --st-lunar-silver: #a8b2bc;
+  --st-optical-glass: #263a49;
+  --st-success: #4fd1a5;
+  --st-warning: #e5b454;
+  --st-error: #ff6b6b;
+  --st-info: #78afff;
+  --st-black: #000;
 
-  /* §08 Surface mapping · dark mode, and §11 semantic tokens */
-  --color-night: var(--dv-neutral-950);
-  --color-surface-base: var(--dv-neutral-900);
-  --color-surface-raised: var(--dv-neutral-800);
-  --color-surface-hover: var(--dv-neutral-700);
-  --color-border-subtle: var(--dv-neutral-600);
-  --color-border-strong: var(--dv-neutral-500);
-  --color-border-control: var(--dv-neutral-400);
-  --color-text-primary: var(--dv-neutral-100);
-  --color-text-secondary: var(--dv-neutral-300);
-  --color-text-tertiary: var(--dv-neutral-400);
-  --color-text-technical: var(--dv-lunar-silver);
-  --color-photon: var(--dv-photon);
-  --color-photon-hover: color-mix(in srgb, var(--dv-photon) 82%, var(--dv-neutral-100));
-  --color-photon-deep: var(--dv-deep-signal);
-  --color-on-photon: var(--dv-neutral-950);
-  --color-star-brass: var(--dv-star-brass);
-  --color-optical-glass: var(--dv-optical-glass);
-  --color-success: var(--dv-success);
-  --color-warning: var(--dv-warning);
-  --color-error: var(--dv-error);
-  --color-info: var(--dv-info);
+  /*
+   * §08 Surface mapping · dark mode, and §11 semantic tokens.
+   *
+   * v3 §1 — the surface ramp, deepest first. Two adjacent surfaces must be at least
+   * two steps apart: night beside surface-base differs by six sRGB units and reads
+   * as flat, which is why alternating sections use surface-raised.
+   *
+   *   night          page background, the deepest level
+   *   surface-base   recessed wells — a viewport inside a panel
+   *   surface-raised panels, cards, alternating sections
+   *   surface-hover  interactive hover only
+   */
+  --color-night: var(--st-neutral-950);
+  --color-surface-base: var(--st-neutral-900);
+  --color-surface-raised: var(--st-neutral-800);
+  --color-surface-hover: var(--st-neutral-700);
+  --color-border-subtle: var(--st-neutral-600);
+  --color-border-strong: var(--st-neutral-500);
+  --color-border-control: var(--st-neutral-400);
+  --color-text-primary: var(--st-neutral-100);
+  --color-text-secondary: var(--st-neutral-300);
+  --color-text-tertiary: var(--st-neutral-400);
+  --color-text-technical: var(--st-lunar-silver);
+  --color-photon: var(--st-photon);
+  --color-photon-hover: color-mix(in srgb, var(--st-photon) 82%, var(--st-neutral-100));
+  --color-photon-deep: var(--st-deep-signal);
+  --color-on-photon: var(--st-neutral-950);
+  --color-star-brass: var(--st-star-brass);
+  --color-optical-glass: var(--st-optical-glass);
+  --color-success: var(--st-success);
+  --color-warning: var(--st-warning);
+  --color-error: var(--st-error);
+  --color-info: var(--st-info);
   /* §08 Live observation page, rule 04: the conventional red LIVE dot, only when genuinely live */
-  --color-live: var(--dv-error);
+  --color-live: var(--st-error);
 
   /* Tints derived from the palette above — no new hues */
-  --color-photon-faint: color-mix(in srgb, var(--dv-photon) 7%, transparent);
-  --color-photon-muted: color-mix(in srgb, var(--dv-photon) 14%, transparent);
-  --color-photon-border: color-mix(in srgb, var(--dv-photon) 34%, transparent);
-  --color-success-muted: color-mix(in srgb, var(--dv-success) 13%, transparent);
-  --color-success-border: color-mix(in srgb, var(--dv-success) 30%, transparent);
-  --color-warning-muted: color-mix(in srgb, var(--dv-warning) 13%, transparent);
-  --color-warning-border: color-mix(in srgb, var(--dv-warning) 30%, transparent);
-  --color-error-muted: color-mix(in srgb, var(--dv-error) 13%, transparent);
-  --color-error-border: color-mix(in srgb, var(--dv-error) 30%, transparent);
-  --color-overlay-hover: color-mix(in srgb, var(--dv-neutral-100) 5%, transparent);
-  --color-overlay-active: color-mix(in srgb, var(--dv-neutral-100) 8%, transparent);
-  --color-optical-faint: color-mix(in srgb, var(--dv-lunar-silver) 15%, transparent);
-  --color-optical-medium: color-mix(in srgb, var(--dv-lunar-silver) 24%, transparent);
-  --color-scrim-soft: color-mix(in srgb, var(--dv-neutral-950) 60%, transparent);
-  --color-scrim: color-mix(in srgb, var(--dv-neutral-950) 74%, transparent);
-  --color-scrim-strong: color-mix(in srgb, var(--dv-neutral-950) 94%, transparent);
+  --color-photon-faint: color-mix(in srgb, var(--st-photon) 7%, transparent);
+  --color-photon-muted: color-mix(in srgb, var(--st-photon) 14%, transparent);
+  --color-photon-border: color-mix(in srgb, var(--st-photon) 34%, transparent);
+  --color-success-muted: color-mix(in srgb, var(--st-success) 13%, transparent);
+  --color-success-border: color-mix(in srgb, var(--st-success) 30%, transparent);
+  --color-warning-muted: color-mix(in srgb, var(--st-warning) 13%, transparent);
+  --color-warning-border: color-mix(in srgb, var(--st-warning) 30%, transparent);
+  --color-error-muted: color-mix(in srgb, var(--st-error) 13%, transparent);
+  --color-error-border: color-mix(in srgb, var(--st-error) 30%, transparent);
+  --color-overlay-hover: color-mix(in srgb, var(--st-neutral-100) 5%, transparent);
+  --color-overlay-active: color-mix(in srgb, var(--st-neutral-100) 8%, transparent);
+  --color-optical-faint: color-mix(in srgb, var(--st-lunar-silver) 15%, transparent);
+  --color-optical-medium: color-mix(in srgb, var(--st-lunar-silver) 24%, transparent);
+  --color-scrim-soft: color-mix(in srgb, var(--st-neutral-950) 60%, transparent);
+  --color-scrim: color-mix(in srgb, var(--st-neutral-950) 74%, transparent);
+  --color-scrim-strong: color-mix(in srgb, var(--st-neutral-950) 94%, transparent);
   --color-panel-overlay: var(--color-scrim-strong);
   --color-backdrop: var(--color-scrim);
-  --color-mask: var(--dv-black);
-  --color-shadow: color-mix(in srgb, var(--dv-black) 38%, transparent);
+  --color-mask: var(--st-black);
+  --color-shadow: color-mix(in srgb, var(--st-black) 38%, transparent);
 
   /* §05 Typography — families are loaded in app/[locale]/layout.tsx */
   --font-display: var(--font-noto-serif-georgian), "Noto Serif Georgian", Georgia, serif;
@@ -103,12 +115,20 @@
   --space-4: 1rem;
   --space-5: 1.25rem;
   --space-6: 1.5rem;
+  --space-7: 1.75rem;
   --space-8: 2rem;
+  --space-9: 2.25rem;
   --space-10: 2.5rem;
+  --space-11: 2.75rem;
   --space-12: 3rem;
+  --space-14: 3.5rem;
   --space-16: 4rem;
   --space-20: 5rem;
   --space-page: clamp(var(--space-5), 4vw, 4.5rem);
+  /* v3 §5 — semantic aliases, so a component names its intent, not a number. */
+  --space-section: var(--space-16);
+  --space-card: var(--space-6);
+  --space-stack: var(--space-4);
 
   --size-touch: 2.75rem;
   --size-app-sidebar: 17rem;
@@ -123,10 +143,19 @@
   --radius-full: 9999px;
   --icon-stroke: 1.5;
 
-  /* §09 anti-pattern 04 — shadows separate layers; nothing glows */
-  --shadow-small: 0 0.5rem 1.5rem color-mix(in srgb, var(--dv-black) 18%, transparent);
+  /*
+   * §09 anti-pattern 04 — shadows separate layers; nothing glows. ADR-025 §3 makes
+   * one exception, the comet mark as a logo, and its token lives beside the logo
+   * component rather than here so component CSS cannot reach it.
+   *
+   * v3 §2 — three elevations, each a surface step plus a border, never a glow:
+   *   flat     surface-raised + border-subtle                      cards, list rows
+   *   raised   surface-raised + border-strong + shadow-small       panels
+   *   overlay  surface-raised + border-strong + shadow-dialog + scrim   dialogs
+   */
+  --shadow-small: 0 0.5rem 1.5rem color-mix(in srgb, var(--st-black) 18%, transparent);
   --shadow-panel: 0 2.5rem 8rem var(--color-shadow);
-  --shadow-dialog: 0 2rem 7rem color-mix(in srgb, var(--dv-black) 62%, transparent);
+  --shadow-dialog: 0 2rem 7rem color-mix(in srgb, var(--st-black) 62%, transparent);
   --focus-ring: 2px solid var(--color-photon);
 
   /* §07 Motion principles: UI 160–220ms, instrument 500–1200ms, wonder 4–8s */
@@ -139,8 +168,8 @@
 }
 
 @theme inline {
-  --color-darkview-night: var(--color-night);
-  --color-darkview-surface: var(--color-surface-raised);
-  --color-darkview-photon: var(--color-photon);
-  --color-darkview-text: var(--color-text-primary);
+  --color-stellar-night: var(--color-night);
+  --color-stellar-surface: var(--color-surface-raised);
+  --color-stellar-photon: var(--color-photon);
+  --color-stellar-text: var(--color-text-primary);
 }

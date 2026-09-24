@@ -1,10 +1,17 @@
 @AGENTS.md
 
-# DARKVIEW BY ASTROMAN — PROJECT INSTRUCTIONS
+# STELLAR BY ASTROMAN — PROJECT INSTRUCTIONS
 
 ## Product
 
-Darkview is a Live Remote Observatory in Tbilisi, Georgia.
+Stellar — Georgian **სტელარი** — is a Live Remote Observatory in Tbilisi, Georgia.
+
+The product was called Darkview until 2026-09-24. ADR-025 renamed it and splits the
+work in two: customer-visible strings are Stellar now, while identifiers — `@darkview/*`,
+`DARKVIEW_PLATFORM_API_URL`, the session cookies, the repository names and every
+`darkview` string inside `packages/contracts/` — stay as they are until
+`darkview-platform` renames in lockstep. An identifier reading `darkview` is correct
+and must not be "fixed" opportunistically.
 
 A customer reserves an Observation Slot, selects an operator-approved Target, and
 during the Live Observation a real Celestron NexStar 6SE physically slews to that
@@ -21,7 +28,8 @@ When documents conflict, this order decides:
 
 1. This file (CLAUDE.md)
 2. Approved decision records in `docs/decisions/`
-3. Darkview Brand Identity System **v2.0**
+3. Darkview Brand Identity System **v2.0** — everything except the name and the
+   mark, which ADR-025 overrides
 4. Darkview Phase 1 Final Master Plan
 5. Darkview Build Plan — engineering detail only where it does not contradict 1–4
 6. The current GitHub issue and its acceptance criteria
@@ -39,7 +47,7 @@ Clients never touch hardware.
 ```
 web / mobile
     |  HTTPS + WSS
-Darkview cloud + mission orchestrator
+Stellar cloud + mission orchestrator
     |  authenticated OUTBOUND WSS (observatory dials out)
 Observatory Agent (Python 3.12)
     |  Alpaca HTTP (mount)  +  ZWO ASI SDK (camera)
@@ -136,7 +144,7 @@ copying a released version across from `darkview-platform`, running
 
 ## Repository boundary
 
-This repository is the client half of Darkview: the website and the mobile application.
+This repository is the client half of Stellar: the website and the mobile application.
 The Observatory Agent, API, realtime service and database live in `darkview-platform`.
 
 Every server-side capability arrives over HTTP through `apps/web/src/lib/platform/`.
@@ -183,13 +191,14 @@ rejected after `expiresAt`, and rejected if the session is not the current owner
 
 ## Design and brand
 
-Source: Darkview Brand Identity System v2.0. Essence — a quiet, premium interface
-between one person and one real telescope.
+Source: Darkview Brand Identity System v2.0, as amended by ADR-025 for the name and
+the mark. Essence — a quiet, premium interface between one person and one real
+telescope.
 
 Tagline: *The real sky, live.*
 Georgian: *შენი დრო ნამდვილ ცასთან.*
 
-Core colors: Darkview Night `#05080D` · Observatory Blue `#111722` ·
+Core colors: Stellar Night `#05080D` · Observatory Blue `#111722` ·
 Photon Blue `#5CC8FF` · primary text `#F2F5F7` · secondary text `#AAB4BE`.
 
 Avoid: purple-nebula SaaS gradients, cartoon astronomy, fake NASA/military HUD
@@ -198,6 +207,13 @@ telescope output, any claim of Hubble/JWST-class or professional long-exposure
 results, and "NASA-cosplay" vocabulary.
 
 The real feed and real instrument status are the visual focus.
+
+**One exception to the glow rule (ADR-025 §3).** The comet mark carries its blue glow
+wherever it appears *as a logo* — header lockup, favicon, app icon, splash, social
+card. Everywhere else the rule is unchanged and binding: no glow on panels, cards,
+buttons, inputs, focus rings, status indicators or live badges. Depth comes from the
+surface ramp and borders. `--shadow-*` tokens are shadows, not glows, and the mark's
+glow token is not reachable from component CSS.
 
 ## Security and audit
 
