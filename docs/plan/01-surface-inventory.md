@@ -58,25 +58,25 @@ The platform can do all of this today. None of it has a client surface.
 | --- | --- | --- |
 | **Booking** — slot picker, checkout, confirmation, manage | `/slots`, `/bookings`, `/bookings/{id}`, `/cancel`, `/reschedule`, `/refund` | DV-074 |
 | **Account and profile** | `/me` | DV-079 |
-| **Subscription** — plans, subscribe, pause, resume, cancel | `/subscription`, `/plans`, `/pause`, `/resume`, `/cancel` | **none — gap** |
+| **Subscription** — plans, subscribe, pause, resume, cancel | `/subscription`, `/plans`, `/pause`, `/resume`, `/cancel` | [#2](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/2) |
 | **Loyalty** — benefits, tier, ledger, redemption | `/loyalty`, `/loyalty/scheme` | DV-097 |
 | **Observation Pass** — buy, redeem, gift | `/vouchers` | DV-113 |
 | **Observer seat purchase** | `/missions/{id}/observer-pack` | DV-106 |
-| **Partner node self-service** — register, submit for review | `/network/nodes`, `/network/nodes/{id}/submit` | **none — gap** |
+| **Partner node self-service** — register, submit for review | `/network/nodes`, `/network/nodes/{id}/submit` | [#3](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/3) |
 | **Mobile application** | all of the above | DV-082/083/084 |
 
 `apps/web/src/features/booking/` exists and is an empty directory.
 
-### Two gaps with no issue behind them
+### Two gaps that had no issue behind them — filed in Phase 0
 
 **Subscription.** ADR-022 is approved and the platform ships six subscription
 endpoints. `docs/backlog.md` has no client issue for any of them. `/pricing` describes
-subscriptions in prose and cannot sell one. This needs an issue.
+subscriptions in prose and cannot sell one. Filed as [#2](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/2).
 
 **Partner node self-service.** DV-120–DV-123 build registration, availability windows,
 the operator review surface and the installer — all platform and agent side. A telescope
 owner has no page on which to register. `/network` describes the network and cannot
-join it. This needs an issue.
+join it. Filed as [#3](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/3).
 
 ## 4. Operator console
 
@@ -100,8 +100,10 @@ appear in `packages/contracts/openapi.yaml`, through a hand-written ~25-field
 cross-boundary type with no schema validation. It predates this work and sits on `main`.
 
 `CLAUDE.md` is explicit that a missing field stops the work and opens a contract issue
-against `darkview-platform`. That issue is still unopened. **It must be filed before
-Phase 2 touches the live room**, because that is the code path it is in.
+against `darkview-platform`. Filed as [#1](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/1), here rather than there because the
+platform repository sits under a separate account; that issue carries the client half
+and the record, and the contract change itself still has to land upstream. **It must be
+resolved before Phase 2 touches the live room**, because that is the code path it is in.
 
 ## 6. Totals
 

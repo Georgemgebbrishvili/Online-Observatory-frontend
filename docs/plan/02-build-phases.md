@@ -25,8 +25,10 @@ Read `01-surface-inventory.md` first — it is the evidence this order rests on.
   mark only (ADR-025 §3).
 - `CLAUDE.md` edited for the name and the glow exception.
 - Design system v3 token layer — `03-design-system.md`.
-- **File the `shared-observations` contract issue** against `darkview-platform`.
-- **Open the two missing issues**: subscription client surface, partner self-service.
+- ~~**File the `shared-observations` contract issue** against `darkview-platform`.~~
+  Filed as [#1](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/1) — see the issue for why it is filed here.
+- ~~**Open the two missing issues**: subscription client surface, partner self-service.~~
+  Filed as [#2](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/2) and [#3](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/3).
 - Start Apple D-U-N-S enrolment. 5–30 days plus 1–4 weeks, gates DV-084, compressible
   by nobody.
 
@@ -57,7 +59,7 @@ correct; all tests green.
 - `/app/collection` → `/captures`, `/captures/{id}`, `/download`
 - `/app` → `/me`
 - `/app/missions/[slug]/session`, `/app/live` → `/missions/*`
-- Resolve the `shared-observations` `/v1/*` debt per the Phase 0 issue. **Do not build
+- Resolve the `shared-observations` `/v1/*` debt per [#1](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/1). **Do not build
   on it until it is contract-backed.**
 - Delete `homepage-data.ts` and the committed capture SVGs once real data flows.
 
@@ -93,11 +95,11 @@ in `CLAUDE.md`'s list has a screen.
 ## Phase 5 — Commerce and account
 
 - Account and profile (DV-079).
-- Subscription surfaces — the gap found in the inventory.
+- Subscription surfaces — the gap found in the inventory, [#2](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/2).
 - Loyalty: benefits, tier, ledger, redemption at checkout (DV-097).
 - Observation Pass: buy, redeem, gift (DV-113).
 - Observer seat purchase (DV-106).
-- Partner node self-service registration — the second gap.
+- Partner node self-service registration — the second gap, [#3](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/3).
 - Operator: partner node review (DV-122 client half), loyalty adjustment (DV-098).
 
 **Done when:** every platform endpoint in the inventory has a caller, or a filed reason
