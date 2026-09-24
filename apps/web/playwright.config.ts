@@ -7,7 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:3100",
     screenshot: "only-on-failure",
     trace: "on-first-retry",
   },
@@ -70,18 +70,24 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
   ],
+  // Own ports, never reused: e2e must not attach to a dev:stack web server on :3000
+  // (real platform) or a dev:fake platform on :4100 whose Origin is :3000.
   webServer: [
     {
       command: "node e2e/fake-platform.mjs",
-      url: "http://127.0.0.1:4100/health",
-      reuseExistingServer: !process.env.CI,
+      url: "http://127.0.0.1:4110/health",
+      reuseExistingServer: false,
+      env: { FAKE_PLATFORM_PORT: "4110", FAKE_PLATFORM_APP_URL: "http://localhost:3100" },
     },
     {
-      command: "npm run dev",
-      url: "http://localhost:3000/en",
-      reuseExistingServer: !process.env.CI,
+      command: "npm run dev -- --port 3100",
+      url: "http://localhost:3100/en",
+      reuseExistingServer: false,
       timeout: 120_000,
-      env: { DARKVIEW_PLATFORM_API_URL: "http://127.0.0.1:4100" },
+      env: {
+        DARKVIEW_PLATFORM_API_URL: "http://127.0.0.1:4110",
+        APP_URL: "http://localhost:3100",
+      },
     },
   ],
 });
