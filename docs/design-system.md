@@ -2,7 +2,7 @@
 
 ## Direction
 
-Darkview should feel like a premium optical instrument: dark, calm, exact, and trustworthy. Brand Identity System v2.0 is the source; `docs/design/brand-tokens.md` is the extraction. Photon Blue is reserved for the one active or important state on a screen (the 90 / 8 / 2 rule). Nothing glows, nothing is frosted glass, and there is no purple-nebula imagery, HUD decoration or generic space-store pattern.
+Stellar should feel like a premium optical instrument: dark, calm, exact, and trustworthy. Brand Identity System v2.0 is the source; `docs/design/brand-tokens.md` is the extraction. Photon Blue is reserved for the one active or important state on a screen (the 90 / 8 / 2 rule). Nothing glows, nothing is frosted glass, and there is no purple-nebula imagery, HUD decoration or generic space-store pattern.
 
 ## Foundations
 
@@ -13,13 +13,15 @@ Darkview should feel like a premium optical instrument: dark, calm, exact, and t
 - Spacing: `--space-1` … `--space-20` (4px multiples) with a fluid `--space-page` gutter
 - Surfaces (§08): `--color-night`, `--color-surface-base`, `--color-surface-raised` (Observatory Blue — cards, navigation, panels), `--color-surface-hover`
 - Text: `--color-text-primary` (Instrument), `--color-text-secondary`, `--color-text-tertiary`, `--color-text-technical` (Lunar Silver)
-- Accent: `--color-photon`, `--color-photon-deep` (light backgrounds), `--color-on-photon` (Darkview Night text on Photon Blue)
+- Accent: `--color-photon`, `--color-photon-deep` (light backgrounds), `--color-on-photon` (Stellar Night text on Photon Blue)
 - Semantic states: `--color-success`, `--color-warning` (degraded conditions, `WEATHER_HOLD`), `--color-error` (destructive or actionable failure — never absent data), `--color-info`, and `--color-live` for the LIVE dot
 - Motion (§07): UI 160–220ms, instrument 500–1200ms (`--duration-instrument`), wonder 4–8s (`--duration-wonder`), one curve `--ease-standard`
 
-`src/styles/tokens.css` is the only file that holds a colour literal. `src/styles/tokens.ts` mirrors the palette for `next/og`, which cannot read CSS variables; `tokens.test.ts` keeps the two equal and asserts the five `CLAUDE.md` colours. The `--dv-*` palette is private to `tokens.css`: everything else uses the semantic `--color-*` tokens.
+`src/styles/tokens.css` is the only file that holds a colour literal. `src/styles/tokens.ts` mirrors the palette for `next/og`, which cannot read CSS variables; `tokens.test.ts` keeps the two equal and asserts the five `CLAUDE.md` colours. The `--st-*` palette is private to `tokens.css`: everything else uses the semantic `--color-*` tokens.
 
-`npm run lint` enforces this. Stylelint rejects hex, named colours, colour functions, `--dv-*` references, `backdrop-filter` and `text-shadow` in any stylesheet except `tokens.css`, and rejects raw font sizes, font weights and spacing lengths in the library stylesheets (`components.css`, `globals.css`, `navigation.css`, `design-system.css`). ESLint rejects colour literals in TypeScript outside `tokens.ts`.
+`npm run lint` enforces this. Stylelint rejects hex, named colours, colour functions, `--st-*` references, `backdrop-filter` and `text-shadow` in any stylesheet except `tokens.css`. Since v3 it also rejects a `font-size` that does not come from the scale in **every** stylesheet, not only the library four — the permitted shapes are `var(--font-size-*)` and `min(var(--font-size-*), Nvw)`, the measured cap that stops a long Georgian compound breaking mid-word. Eight stylesheets are exempt while they await the Phase 1 migration and are named in `stylelint.config.mjs`; that list only shrinks. Raw font weights and spacing lengths are still rejected in the library stylesheets (`components.css`, `globals.css`, `navigation.css`, `design-system.css`). ESLint rejects colour literals in TypeScript outside `tokens.ts`.
+
+Breakpoints are named, not written by hand. `src/styles/breakpoints.css` declares the five v3 boundaries plus their `below-` forms as `@custom-media`, resolved by `postcss-custom-media` after Tailwind inlines the import graph. A stylesheet writes `@media (--md)`, never `@media (min-width: 48rem)`. `tokens.test.ts` fails if a sixth appears.
 
 Contrast for every token pair is measured in `docs/design/contrast.md`. The one pair below AA, `text-tertiary` on `surface-hover`, is never used.
 
@@ -30,7 +32,7 @@ Contrast for every token pair is measured in `docs/design/contrast.md`. The one 
 - Surfaces: `Card`, `SurfacePanel`, `Modal`, `Sheet`, `Tooltip`
 - Feedback: `Skeleton`, `StatePanel`
 - Forms: `Field`, `TextInput`, `TextArea`, `Checkbox`
-- Darkview motifs: `OpticalRing`, `LiveIndicator`, `ObservatoryStatus`, `TargetQuality`, `MissionStatus`
+- Stellar motifs: `OpticalRing`, `LiveIndicator`, `ObservatoryStatus`, `TargetQuality`, `MissionStatus`
 
 The internal `/design-system` route redirects to the active locale and renders every supported component state. It is marked `noindex` and is not a product feature page.
 
@@ -65,7 +67,7 @@ Status components accept typed values and select a semantic tone internally. The
 | ----------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tokens                                                | §04 Color, §04 Neutral scale, §11 Developer cheat sheet       | Values verbatim; `CLAUDE.md` colours asserted by test                                                                                                                                                                                     |
 | Typography                                            | §05 Typography, §05 Type scale, §05 Georgian typographic rule | Three families; Georgian is never uppercased or letter-spaced (`:lang(ka)`)                                                                                                                                                               |
-| `Button`                                              | §08 Button styles                                             | Primary Photon Blue with Darkview Night text, 10px radius, weight 600, no glow or gradient; secondary Observatory surface, Neutral-600 border, hover Neutral-700; ghost Neutral-300, hover Observatory; destructive error border and text |
+| `Button`                                              | §08 Button styles                                             | Primary Photon Blue with Stellar Night text, 10px radius, weight 600, no glow or gradient; secondary Observatory surface, Neutral-600 border, hover Neutral-700; ghost Neutral-300, hover Observatory; destructive error border and text |
 | `IconButton`                                          | §07 Iconography                                               | 24px glyph, 1.5 stroke, round caps and joins, 8px container radius                                                                                                                                                                        |
 | `Chip`, `StatusIndicator`                             | §04 Semantic colors, §04 The 90 / 8 / 2 rule                  | Text label always present; tints composited and measured                                                                                                                                                                                  |
 | `LiveIndicator`                                       | §08 Live observation page, rule 04                            | Red dot only when `active`; `active` is required so no caller can default to LIVE                                                                                                                                                         |
@@ -76,7 +78,7 @@ Status components accept typed values and select a semantic tone internally. The
 | `Skeleton`, `StatePanel`                              | §02 Tone of voice, §04 Semantic colors                        | Empty state neutral; error state uses error only for an actionable failure                                                                                                                                                                |
 | `Field`, `TextInput`, `TextArea`, `Checkbox`          | §05 (16px UI minimum), WCAG 1.4.11                            | 16px text; control borders 3:1 or better                                                                                                                                                                                                  |
 | `OpticalRing`                                         | §06 Logo direction (Concept A geometry), §07 Motion           | Motif only, not the logo; no drop-shadow glow                                                                                                                                                                                             |
-| `BrandLockup`                                         | §06 Logo rules — wordmark treatment                           | "Darkview" in sentence case, FiraGO Medium; the Aperture mark itself is not yet drawn                                                                                                                                                     |
+| `BrandLockup`                                         | §06 Logo rules — wordmark treatment                           | "Stellar" in sentence case, FiraGO Medium; the Aperture mark itself is not yet drawn                                                                                                                                                     |
 
 ## Brand assets
 

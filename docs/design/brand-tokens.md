@@ -1,4 +1,4 @@
-# Darkview design tokens — extracted from Brand Identity System v2.0
+# Stellar design tokens — extracted from Brand Identity System v2.0
 
 - **Date:** 2026-08-31
 - **Source:** the Brand Identity System source PDF (private brand archive, outside this repository), page 1 of which
@@ -27,7 +27,7 @@
 | `error`          | `#FF6B6B` |
 | `info`           | `#78AFFF` |
 
-Named palette roles: Darkview Night (primary background), Observatory Blue `#111722`
+Named palette roles: Stellar Night (primary background), Observatory Blue `#111722`
 (cards, navigation, raised surfaces), Photon Blue `#5CC8FF` (signature accent — primary
 CTA, active state, live indicator, focus, links), Instrument `#F2F5F7` (primary text —
 _never pure white; it burns on OLED_), Deep Signal `#1677A3` (accent for light
@@ -43,7 +43,7 @@ perceptually cyan: `950 #05080D · 900 #0B0F15 · 800 #111722 · 700 #1A2330 · 
 
 - **The 90 / 8 / 2 rule.** 90% darkness, 8% white information, 2% Photon Blue. "Photon
   Blue at scale reads as neon; at 2% it reads as an instrument LED."
-- **Buttons on dark use Darkview Night text on Photon Blue — not white.**
+- **Buttons on dark use Stellar Night text on Photon Blue — not white.**
 - **Semantic colour discipline.** Error is for destructive or actionable failures,
   _never for merely absent data_. Warning means degraded conditions — increasing cloud,
   high wind — which maps directly to `WEATHER_HOLD`.
