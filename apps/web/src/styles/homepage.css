@@ -175,13 +175,13 @@
 
 .home-section-heading {
   display: grid;
-  max-width: 58rem;
   grid-template-columns: 2.75rem minmax(0, 1fr);
   gap: var(--space-4);
   margin-bottom: clamp(var(--space-6), 3vw, var(--space-10));
 }
 
 .home-section-heading > span {
+  align-self: start;
   padding-top: var(--space-1);
   color: var(--color-photon);
   font-family: var(--font-display);
@@ -201,7 +201,7 @@
 
 .home-section-heading h2,
 .final-cta h2 {
-  max-width: 16ch;
+  max-width: 20ch;
   margin: 0;
   font-family: var(--font-display);
   font-size: var(--font-size-h1);
@@ -212,6 +212,7 @@
 
 .home-section-description {
   max-width: 43rem;
+  grid-column: 2;
   margin: var(--space-5) 0 0 !important;
   color: var(--color-text-secondary) !important;
   font-size: var(--font-size-body) !important;
@@ -1093,6 +1094,24 @@
 }
 
 @media (min-width: 64rem) {
+  /* The title and its description sit side by side, so the heading block is as wide
+     as the content under it instead of a tall column beside an empty half-page. */
+  .home-section-heading {
+    grid-template-columns: 2.75rem minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: var(--space-4) var(--space-10);
+    align-items: end;
+  }
+
+  .home-section-description {
+    grid-column: 3;
+    margin: 0 !important;
+  }
+
+  /* 0.75fr left a step title short of a 500px void before its description. */
+  .process-list li {
+    grid-template-columns: 5rem minmax(0, 17rem) minmax(0, 1fr);
+  }
+
   .home-hero-grid {
     grid-template-columns: minmax(0, 1.08fr) minmax(27rem, 0.92fr);
   }
@@ -1102,7 +1121,6 @@
   }
 
   .process-list li {
-    grid-template-columns: 5rem minmax(0, 0.75fr) minmax(20rem, 1fr);
     align-items: baseline;
   }
 
