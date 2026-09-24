@@ -27,9 +27,11 @@
 }
 
 .observatory-page-hero h1 {
-  max-width: 12ch;
+  max-width: 16ch;
   margin-top: var(--space-6);
-  font-size: clamp(3.5rem, 8vw, 7.5rem);
+  /* Georgian compounds run wider than the line at the 44px mobile hero; the viewport
+     cap keeps whole words without a per-locale size. No effect above ~600px. */
+  font-size: min(var(--font-size-hero), 10.6vw);
 }
 
 .observatory-page-hero-copy > strong {
@@ -46,7 +48,7 @@
   padding-left: var(--space-5);
   border-left: 1px solid var(--color-photon);
   color: var(--color-text-secondary);
-  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-size: var(--font-size-body-lg);
   line-height: 1.65;
 }
 
@@ -227,7 +229,7 @@
 
 .observatory-status-panel h2,
 .observatory-equipment h2 {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: var(--font-size-h1);
 }
 
 .observatory-status-content {
@@ -331,7 +333,7 @@
   max-width: 10ch;
   margin-top: var(--space-3);
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 4.75rem);
+  font-size: var(--font-size-h2);
   font-weight: 450;
   letter-spacing: -0.055em;
   line-height: 1;
@@ -370,7 +372,7 @@
 .equipment-name-camera > h3 {
   max-width: 8ch;
   margin-top: 0;
-  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-size: var(--font-size-h2);
 }
 
 .equipment-name-camera > p {
@@ -396,7 +398,7 @@
 .observatory-mission-path h2,
 .observatory-safety h2,
 .observatory-network h2 {
-  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-size: var(--font-size-h1);
 }
 
 .observatory-mission-path header p,
@@ -441,7 +443,7 @@
 
 .observatory-mission-path li > strong {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: var(--font-size-body-lg);
   font-weight: 500;
 }
 
@@ -481,7 +483,7 @@
 
 .observatory-safety li h3 {
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: var(--font-size-h3);
   font-weight: 500;
 }
 
@@ -546,7 +548,7 @@
 .observatory-network-track article h3 {
   margin-block: var(--space-2);
   font-family: var(--font-display);
-  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  font-size: var(--font-size-h3);
   font-weight: 450;
   letter-spacing: -0.04em;
 }
@@ -658,16 +660,6 @@
 @media (max-width: 47.99rem) {
   .observatory-page-hero {
     min-height: 0;
-  }
-
-  .observatory-page-hero h1 {
-    font-size: clamp(3.3rem, 15vw, 5rem);
-    overflow-wrap: anywhere;
-  }
-
-  html[lang="ka"] .observatory-page-hero h1 {
-    font-size: clamp(2.8rem, 11.5vw, 4rem);
-    letter-spacing: -0.07em;
   }
 
   .observatory-status-panel > header,
