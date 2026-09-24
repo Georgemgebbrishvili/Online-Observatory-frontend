@@ -14,6 +14,7 @@ packages/db/generated/prisma/
 *.tsbuildinfo
 .DS_Store
 agent/.venv/
+dev/.state/
 
 # never commit commercial or personal material
 /private/
