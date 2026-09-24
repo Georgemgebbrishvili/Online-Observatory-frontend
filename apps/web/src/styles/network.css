@@ -26,9 +26,11 @@
 }
 
 .network-hero h1 {
-  max-width: 10ch;
+  max-width: 16ch;
   margin-top: var(--space-6);
-  font-size: clamp(3.5rem, 8vw, 7.25rem);
+  /* Georgian compounds run wider than the line at the 44px mobile hero; the viewport
+     cap keeps whole words without a per-locale size. No effect above ~600px. */
+  font-size: min(var(--font-size-hero), 10.6vw);
 }
 
 .network-hero blockquote {
@@ -37,7 +39,7 @@
   padding-left: var(--space-5);
   border-left: 1px solid var(--color-photon);
   color: var(--color-text-secondary);
-  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-size: var(--font-size-body-lg);
   line-height: 1.75;
 }
 
@@ -188,7 +190,7 @@
 }
 
 .network-current h2 {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: var(--font-size-h1);
 }
 
 .network-current > header > strong {
@@ -232,7 +234,7 @@
   max-width: 12ch;
   margin: var(--space-5) 0 var(--space-3);
   font-family: var(--font-display);
-  font-size: clamp(2.35rem, 6vw, 5rem);
+  font-size: var(--font-size-h2);
   font-weight: 450;
   letter-spacing: -0.055em;
   line-height: 1;
@@ -301,7 +303,7 @@
 .network-review h2,
 .network-connect h2 {
   margin-top: var(--space-4);
-  font-size: clamp(2.4rem, 6vw, 4.75rem);
+  font-size: var(--font-size-h1);
   line-height: 1.02;
 }
 
@@ -347,7 +349,7 @@
 
 .network-review li h3 {
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: var(--font-size-h3);
   font-weight: 500;
 }
 
@@ -403,7 +405,7 @@
 }
 
 .network-connect h3 {
-  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-size: var(--font-size-h3);
 }
 
 .network-connect ul {
@@ -462,14 +464,6 @@
 @media (max-width: 47.99rem) {
   .network-hero {
     min-height: 0;
-  }
-
-  .network-hero h1 {
-    font-size: clamp(3.1rem, 14vw, 5rem);
-  }
-
-  html[lang="ka"] .network-hero h1 {
-    font-size: clamp(2.65rem, 11vw, 4rem);
   }
 
   .network-current > header {
