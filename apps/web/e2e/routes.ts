@@ -27,6 +27,17 @@ export const appRoutes = [
   "app/passes",
 ] as const;
 
+/**
+ * One instance of each parameterised route the suite navigates to. A dynamic segment is
+ * compiled on the first request for any of its values, so warming app/collection does
+ * not warm app/collection/[captureId]. Warm-up only: these are not shell-contract routes.
+ */
+export const parameterisedRoutes = [
+  "app/missions/saturn",
+  "app/missions/DV-SIM-001/session",
+  "app/collection/CAP-DV-0001",
+] as const;
+
 /** Only reachable with no session; an authenticated visitor is redirected away. */
 export const signedOutRoutes = ["sign-in", "register"] as const;
 

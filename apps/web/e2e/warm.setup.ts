@@ -4,6 +4,7 @@ import {
   appRoutes,
   locales,
   operatorRoutes,
+  parameterisedRoutes,
   publicRoutes,
   signedOutRoutes,
 } from "./routes";
@@ -23,7 +24,13 @@ test("warm every route so the parallel run is not racing the compiler", async ({
 }) => {
   test.setTimeout(10 * 60 * 1000);
 
-  const routes = [...publicRoutes, ...appRoutes, ...signedOutRoutes, ...operatorRoutes];
+  const routes = [
+    ...publicRoutes,
+    ...appRoutes,
+    ...parameterisedRoutes,
+    ...signedOutRoutes,
+    ...operatorRoutes,
+  ];
 
   for (const locale of locales) {
     for (const route of routes) {
