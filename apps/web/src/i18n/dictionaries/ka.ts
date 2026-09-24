@@ -27,6 +27,7 @@ const dictionary = {
     },
     app: {
       ariaLabel: "აპლიკაციის ნავიგაცია",
+      sidebarAriaLabel: "ანგარიში და ობსერვატორია",
       brandAriaLabel: "სტელარი — Astroman-ის პროდუქტი",
       brandEndorsement: "Astroman-ისგან",
       home: "მთავარი",
@@ -34,6 +35,11 @@ const dictionary = {
       live: "პირდაპირი დაკვირვება",
       collection: "კოლექცია",
       profile: "პროფილი",
+      book: "დაკვირვების დაჯავშნა",
+      subscription: "გამოწერა",
+      loyalty: "ლოიალობა",
+      passes: "დაკვირვების პასი",
+      plannedGroup: "ჯერ მიუწვდომელია",
       mobile: {
         home: "მთავარი",
         missions: "მისიები",
@@ -48,6 +54,9 @@ const dictionary = {
       previewEyebrow: "აპლიკაციის გარსი",
       previewDescription:
         "ეს მიმართულება განლაგების პრევიუა. ფუნქციური შინაარსი ცალკე დაემატება.",
+      plannedEyebrow: "ჯერ მიუწვდომელია",
+      plannedDescription:
+        "სტელარის ეს ნაწილი ჯერ არ აშენებულა. აქ იმიტომ ჩანს, რომ ნახოთ რა მოდის — და როცა მზად იქნება, სწორედ ამ გვერდიდან იმუშავებს.",
     },
   },
   home: {

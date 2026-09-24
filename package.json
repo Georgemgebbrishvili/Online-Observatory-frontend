@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "npm run dev --workspace @darkview/web",
     "build": "npm run build --workspace @darkview/web",
+    "css:check": "node scripts/check-css-breakpoints.mjs",
     "start": "npm run start --workspace @darkview/web",
     "lint": "eslint . && stylelint \"apps/web/src/**/*.css\"",
     "typecheck": "npm run typecheck --workspaces --if-present",

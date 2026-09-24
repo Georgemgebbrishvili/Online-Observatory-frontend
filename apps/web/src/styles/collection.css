@@ -563,7 +563,7 @@
   outline-offset: 3px;
 }
 
-@media (min-width: 44rem) {
+@media (--md) {
   .collection-hero > div,
   .capture-detail-header {
     grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
@@ -582,7 +582,7 @@
   }
 }
 
-@media (min-width: 64rem) {
+@media (--lg) {
   .featured-capture {
     grid-template-columns: minmax(0, 1.45fr) minmax(22rem, 0.7fr);
   }

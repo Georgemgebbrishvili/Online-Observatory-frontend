@@ -412,7 +412,7 @@
   outline-offset: 3px;
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .pricing-notice {
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
@@ -434,7 +434,7 @@
   }
 }
 
-@media (max-width: 47.99rem) {
+@media (--below-md) {
   .pricing-orbit {
     width: 17rem;
     opacity: 0.45;

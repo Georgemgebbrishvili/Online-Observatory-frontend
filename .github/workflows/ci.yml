@@ -39,3 +39,8 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # A named breakpoint that reaches the browser unresolved is dead CSS with no
+      # error and no warning. This is the only thing that catches it.
+      - name: Breakpoints resolved
+        run: npm run css:check
