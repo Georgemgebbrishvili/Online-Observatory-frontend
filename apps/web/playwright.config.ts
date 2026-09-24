@@ -7,7 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:3100",
     screenshot: "only-on-failure",
     trace: "on-first-retry",
   },
@@ -18,9 +18,22 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
     {
-      name: "chromium",
-      testIgnore: /auth\.(setup|spec)\.ts|operator(-records)?\.(evidence\.)?spec\.ts/,
+      // Compiles every route once, serially, so the parallel projects are not racing
+      // the dev server's on-demand compiler. See the comment in warm.setup.ts.
+      name: "warm",
+      testMatch: /warm\.setup\.ts/,
       dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: "chrome",
+        storageState: "e2e/.auth/operator.json",
+      },
+    },
+    {
+      name: "chromium",
+      testIgnore:
+        /auth\.(setup|spec)\.ts|warm\.setup\.ts|operator(-records)?\.(evidence\.)?spec\.ts/,
+      dependencies: ["warm"],
       use: {
         ...devices["Desktop Chrome"],
         channel: "chrome",
@@ -30,7 +43,7 @@ export default defineConfig({
     {
       name: "operator",
       testMatch: /operator\.spec\.ts/,
-      dependencies: ["setup"],
+      dependencies: ["warm"],
       // The DV-077 evidence includes a recording of Park acting on a simulated mission.
       use: { ...devices["Desktop Chrome"], channel: "chrome", video: "on" },
     },
@@ -56,18 +69,24 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
   ],
+  // Own ports, never reused: e2e must not attach to a dev:stack web server on :3000
+  // (real platform) or a dev:fake platform on :4100 whose Origin is :3000.
   webServer: [
     {
       command: "node e2e/fake-platform.mjs",
-      url: "http://127.0.0.1:4100/health",
-      reuseExistingServer: !process.env.CI,
+      url: "http://127.0.0.1:4110/health",
+      reuseExistingServer: false,
+      env: { FAKE_PLATFORM_PORT: "4110", FAKE_PLATFORM_APP_URL: "http://localhost:3100" },
     },
     {
-      command: "npm run dev",
-      url: "http://localhost:3000/en",
-      reuseExistingServer: !process.env.CI,
+      command: "npm run dev -- --port 3100",
+      url: "http://localhost:3100/en",
+      reuseExistingServer: false,
       timeout: 120_000,
-      env: { DARKVIEW_PLATFORM_API_URL: "http://127.0.0.1:4100" },
+      env: {
+        DARKVIEW_PLATFORM_API_URL: "http://127.0.0.1:4110",
+        APP_URL: "http://localhost:3100",
+      },
     },
   ],
 });
