@@ -92,7 +92,7 @@ describe("readStatus", () => {
   it("tells an empty observatory list apart from an unreachable platform", async () => {
     platformRequest.mockImplementation((path: string) =>
       path === "/observatories"
-        ? Promise.resolve({ items: [], page: { hasMore: false, nextCursor: null } })
+        ? Promise.resolve({ items: [] })
         : Promise.reject(new Error("not called")),
     );
 
