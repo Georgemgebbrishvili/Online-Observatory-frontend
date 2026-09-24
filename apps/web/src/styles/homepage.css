@@ -1029,7 +1029,7 @@
   margin-top: var(--space-8);
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .live-console-grid,
   .observatory-feature {
     grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
@@ -1093,7 +1093,7 @@
 
 }
 
-@media (min-width: 64rem) {
+@media (--lg) {
   /* The title and its description sit side by side, so the heading block is as wide
      as the content under it instead of a tall column beside an empty half-page. */
   .home-section-heading {
@@ -1135,7 +1135,7 @@
 
 /* A wide screen gets a fourth column rather than three cards and a gap. Density is
    what makes a catalogue read as a catalogue. */
-@media (min-width: 80rem) {
+@media (--xl) {
   .target-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

@@ -722,7 +722,7 @@
   line-height: 1.55;
 }
 
-@media (min-width: 44rem) {
+@media (--md) {
   .missions-hero-copy {
     grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
     align-items: end;
@@ -745,7 +745,7 @@
   }
 }
 
-@media (min-width: 64rem) {
+@media (--lg) {
   .mission-detail-hero {
     grid-template-columns: minmax(0, 1fr) minmax(24rem, 0.76fr);
   }
@@ -760,7 +760,7 @@
   }
 }
 
-@media (min-width: 92rem) {
+@media (--xl) {
   .mission-target-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

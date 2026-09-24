@@ -590,7 +590,7 @@
   outline-offset: 3px;
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .observatory-page-hero {
     grid-template-columns: minmax(0, 0.95fr) minmax(26rem, 1.05fr);
   }
@@ -657,7 +657,7 @@
   }
 }
 
-@media (max-width: 47.99rem) {
+@media (--below-md) {
   .observatory-page-hero {
     min-height: 0;
   }

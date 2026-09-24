@@ -91,7 +91,7 @@
   line-height: 1.65;
 }
 
-@media (max-width: 55rem) {
+@media (--below-lg) {
   .auth-layout {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -110,7 +110,7 @@
   }
 }
 
-@media (max-width: 36rem) {
+@media (--below-sm) {
   .auth-page {
     align-items: start;
     padding-block: 2.5rem 4rem;

@@ -436,7 +436,7 @@
   }
 }
 
-@media (min-width: 42rem) {
+@media (--md) {
   .shared-mission-header {
     grid-template-columns: 1fr auto auto;
   }
@@ -455,7 +455,7 @@
   }
 }
 
-@media (min-width: 64rem) {
+@media (--lg) {
   .shared-access-panel {
     grid-template-columns: auto 1fr auto;
   }

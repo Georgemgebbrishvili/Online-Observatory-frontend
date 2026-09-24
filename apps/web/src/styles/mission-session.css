@@ -621,7 +621,7 @@
   }
 }
 
-@media (min-width: 44rem) {
+@media (--md) {
   .session-topbar {
     flex-direction: row;
     align-items: center;
@@ -646,7 +646,7 @@
   }
 }
 
-@media (max-width: 43.99rem) {
+@media (--below-md) {
   .session-page {
     padding-top: var(--space-3);
   }
@@ -672,7 +672,7 @@
   }
 }
 
-@media (min-width: 72rem) {
+@media (--xl) {
   .session-layout {
     grid-template-columns: minmax(0, 1.6fr) minmax(20rem, 0.7fr);
     align-items: start;

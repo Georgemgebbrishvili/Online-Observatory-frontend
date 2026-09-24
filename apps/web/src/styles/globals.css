@@ -48,7 +48,7 @@ html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow) {
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 43.99rem) {
+@media (--below-md) {
   html[lang="ka"] .missions-hero h1 {
     font-size: var(--font-size-h1);
   }

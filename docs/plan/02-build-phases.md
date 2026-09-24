@@ -39,16 +39,32 @@ correct; all tests green.
 
 *Structure before pages. Every later phase drops into this.*
 
-- One navigation model: public header, authenticated sidebar, mobile bottom bar,
-  with the full route map including the pages that do not exist yet.
-- Route groups and layouts for the sections Phase 3–5 will fill.
-- Breakpoint contract fixed and documented; every existing page re-verified against it.
+- ~~One navigation model~~ with the full route map including the pages that do not
+  exist yet. `navigation-model.ts` now carries nine destinations: the five primary
+  ones the bottom bar holds, and four — booking, subscription, loyalty, Observation
+  Pass — that are reachable, navigable and say plainly that they are not built. Each
+  planned destination records the phase that fills it, so the list cannot drift from
+  this document.
+- ~~Breakpoint contract fixed and documented~~; 37 width queries across 17 stylesheets
+  migrated to the five named boundaries, and the stylelint rule is on with no
+  exception list. Seven boundaries moved; `03-design-system.md` tables them.
+- Route groups and layouts for the sections Phase 3–5 will fill. **Still open** —
+  the planned destinations render from `/app/[destination]`, which is enough to make
+  them reachable but is not the layout those sections will want.
 - ~~Fix the two a11y defects already found.~~ Done, and the list was wrong in one
   place — see "What the shell contract found" below.
 - A shell contract in `e2e/shell-contract.ts`: every route, both languages, the five
   widths, checked for horizontal overflow, landmark naming and heading outline. It is
   the mechanism behind this phase's Done-when rather than a manual pass at the end.
-- Empty, loading and error states as shared components, since every phase needs them.
+- ~~Empty, loading and error states as shared components.~~ `StatePanel` covers empty
+  and error and now takes a `headingLevel`; `LoadingState` wraps the existing
+  `Skeleton` primitive in a live region, since a page of `aria-hidden` bars is silence
+  to a screen reader; `error.tsx` and `loading.tsx` give every route a designed
+  fallback instead of a stack trace or a blank page.
+- **A correction to `03-design-system.md`.** Its component inventory lists "Skeleton /
+  loading state" as not existing. It does exist, as a primitive, and the design-system
+  page uses it. The inventory was written from the plan rather than the tree; treat
+  the rest of that table as needing the same check before acting on it.
 
 **Done when:** every route in the inventory is reachable or renders an honest
 "not yet available"; no horizontal scroll at 320px anywhere.
