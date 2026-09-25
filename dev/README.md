@@ -60,17 +60,25 @@ The only commands run there are `npm ci`, `npm run db:generate`, `npm run db:dep
 
 ## 1. Tools
 
-|                   | Version                      | Check                    |
-| ----------------- | ---------------------------- | ------------------------ |
-| Node              | 24 LTS                       | `node --version`         |
-| Python            | 3.12                         | `python3.12 --version`   |
-| Container runtime | OrbStack (or Docker Desktop) | `docker compose version` |
-| git               | any                          |                          |
+|                   | Version                                   | Check                    |
+| ----------------- | ----------------------------------------- | ------------------------ |
+| Node              | 24 LTS                                    | `node --version`         |
+| Python            | 3.12                                      | `python3.12 --version`   |
+| Container runtime | OrbStack on macOS 14+; Colima on macOS 13 | `docker compose version` |
+| git               | any                                       |                          |
 
 ```bash
+# macOS 14 or later
 brew install --cask orbstack
 open -a OrbStack          # once, to finish its setup; afterwards `docker` is on PATH
+
+# macOS 13: OrbStack and current Docker Desktop refuse to install
+brew install colima docker docker-compose
+colima start --vm-type vz --mount-type virtiofs --cpu 3 --memory 6
 ```
+
+`docker compose` also needs the plugin path once, in `~/.docker/config.json`:
+`"cliPluginsExtraDirs": ["/usr/local/lib/docker/cli-plugins"]` (Homebrew's prefix).
 
 ## 2. The two checkouts, side by side
 
