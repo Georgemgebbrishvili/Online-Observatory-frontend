@@ -1,9 +1,9 @@
 import type { Locale } from "@/i18n/config";
+import { brand } from "@/brand";
 
 const en = {
-  metadataTitle: "Stellar · Observatory status",
-  metadataDescription:
-    "Live status of the Stellar observatory in Tbilisi, and tonight's viewing conditions.",
+  metadataTitle: `${brand.en.name} · Observatory status`,
+  metadataDescription: `Live status of the ${brand.en.name} observatory in Tbilisi, and tonight's viewing conditions.`,
   eyebrow: "OBSERVATORY STATUS",
   title: "What the telescope is doing now.",
   introduction:
@@ -73,22 +73,20 @@ const en = {
   },
   unavailable: {
     title: "Status is unavailable",
-    detail:
-      "The Stellar platform did not answer, so this page has nothing current to show. It shows no older reading rather than presenting a stale one as live.",
+    detail: `The ${brand.en.name} platform did not answer, so this page has nothing current to show. It shows no older reading rather than presenting a stale one as live.`,
   },
   noObservatory: {
     title: "No observatory is listed",
     detail: "The platform lists no bookable observatory to report on.",
   },
-  back: "Return to Stellar",
+  back: `Return to ${brand.en.name}`,
 };
 
 export const statusCopy = {
   en,
   ka: {
-    metadataTitle: "სტელარი · ობსერვატორიის სტატუსი",
-    metadataDescription:
-      "სტელარის თბილისის ობსერვატორიის მიმდინარე სტატუსი და ამაღამის დაკვირვების პირობები.",
+    metadataTitle: `${brand.ka.nominative} · ობსერვატორიის სტატუსი`,
+    metadataDescription: `${brand.ka.genitive} თბილისის ობსერვატორიის მიმდინარე სტატუსი და ამაღამის დაკვირვების პირობები.`,
     eyebrow: "ობსერვატორიის სტატუსი",
     title: "რას აკეთებს ტელესკოპი ახლა.",
     introduction:
@@ -158,14 +156,13 @@ export const statusCopy = {
     },
     unavailable: {
       title: "სტატუსი მიუწვდომელია",
-      detail:
-        "სტელარის პლატფორმამ არ უპასუხა, ამიტომ ამ გვერდს მიმდინარე მონაცემი არ აქვს. ძველ მონაცემს მიმდინარედ არ აჩვენებს — სჯობს არაფერი აჩვენოს.",
+      detail: `${brand.ka.genitive} პლატფორმამ არ უპასუხა, ამიტომ ამ გვერდს მიმდინარე მონაცემი არ აქვს. ძველ მონაცემს მიმდინარედ არ აჩვენებს — სჯობს არაფერი აჩვენოს.`,
     },
     noObservatory: {
       title: "ობსერვატორია არ არის",
       detail: "პლატფორმა არცერთ ხელმისაწვდომ ობსერვატორიას არ აბრუნებს.",
     },
-    back: "სტელარზე დაბრუნება",
+    back: `${brand.ka.on} დაბრუნება`,
   },
 } as const satisfies Record<Locale, typeof en>;
 

@@ -1,7 +1,8 @@
 import type { Locale } from "@/i18n/config";
+import { brand } from "@/brand";
 
 const en = {
-  metadataTitle: "Operator console · Stellar",
+  metadataTitle: `Operator console · ${brand.en.name}`,
   title: "Operator console",
   observatory: "Observatory",
   noObservatory: "No observatory is listed by the platform.",
@@ -263,7 +264,7 @@ const en = {
 export const operatorCopy = {
   en,
   ka: {
-    metadataTitle: "ოპერატორის პანელი · სტელარი",
+    metadataTitle: `ოპერატორის პანელი · ${brand.ka.nominative}`,
     title: "ოპერატორის პანელი",
     observatory: "ობსერვატორია",
     noObservatory: "პლატფორმა არცერთ ობსერვატორიას არ აბრუნებს.",

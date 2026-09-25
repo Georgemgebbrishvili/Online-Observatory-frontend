@@ -1,3 +1,5 @@
+import { brand } from "@/brand";
+
 /**
  * Loading, empty and error copy, shared by every surface. A separate resource rather
  * than part of the dictionary because the error boundary is a client component: it
@@ -10,7 +12,7 @@ export const feedbackCopy = {
     errorDescription:
       "Something failed on our side. Nothing you did caused it, and nothing was lost.",
     errorRetry: "Try again",
-    errorHome: "Return to Stellar",
+    errorHome: `Return to ${brand.en.name}`,
     errorReference: "Reference",
   },
   ka: {
@@ -19,7 +21,7 @@ export const feedbackCopy = {
     errorDescription:
       "შეცდომა ჩვენს მხარესაა. თქვენ არაფერი დაგიშავებიათ და არაფერი დაკარგულა.",
     errorRetry: "ხელახლა ცდა",
-    errorHome: "სტელარზე დაბრუნება",
+    errorHome: `${brand.ka.on} დაბრუნება`,
     errorReference: "იდენტიფიკატორი",
   },
 } as const;

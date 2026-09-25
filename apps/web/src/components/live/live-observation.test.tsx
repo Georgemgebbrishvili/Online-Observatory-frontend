@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { brand } from "@/brand";
 import { currentLiveObservation } from "@/features/live/live-data";
 
 import { LiveObservationView } from "./live-observation";
@@ -17,7 +18,7 @@ describe("LiveObservationView", () => {
       />,
     );
 
-    expect(screen.getByText("STELLAR LIVE")).toBeVisible();
+    expect(screen.getByText(`${brand.en.name.toUpperCase()} LIVE`)).toBeVisible();
     expect(screen.getByText("Tbilisi Observatory")).toBeVisible();
     expect(screen.getAllByText("Saturn").length).toBeGreaterThan(1);
     expect(screen.getByText("Observer · Public mission")).toBeVisible();

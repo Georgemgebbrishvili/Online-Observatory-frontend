@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/config";
+import { brand } from "@/brand";
 
 export type CaptureVisibility = "PUBLIC" | "PRIVATE";
 export type CapturePreset = "NATURAL" | "BRIGHT" | "DETAIL";
@@ -28,8 +29,8 @@ export type ProgressCollection = {
 };
 
 const observatory = {
-  en: "Stellar Tbilisi Observatory",
-  ka: "სტელარის თბილისის ობსერვატორია",
+  en: `${brand.en.name} Tbilisi Observatory`,
+  ka: `${brand.ka.genitive} თბილისის ობსერვატორია`,
 } as const;
 
 export const captures: Capture[] = [

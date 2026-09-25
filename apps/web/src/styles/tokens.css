@@ -1,5 +1,5 @@
 /*
- * Stellar design tokens v3 — Brand Identity System v2.0, as amended by ADR-025.
+ * Design tokens v3 — Brand Identity System v2.0, as amended by ADR-025.
  * The ramp, elevation, breakpoint and spacing rules are docs/plan/03-design-system.md.
  * The only file in apps/web/src allowed to hold a colour literal (stylelint enforces it).
  * tokens.ts mirrors the palette for surfaces CSS cannot reach; a test keeps them equal.

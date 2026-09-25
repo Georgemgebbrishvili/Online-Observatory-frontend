@@ -1,6 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { brand } from "@/brand";
 import { legalCopy, type LegalDocumentId } from "@/i18n/resources/legal";
 
 import { LegalDocumentPage } from "./legal-document";
@@ -35,7 +36,7 @@ describe("LegalDocumentPage", () => {
     );
 
     const pending = screen
-      .getByRole("heading", { name: /What Stellar collects/ })
+      .getByRole("heading", { name: new RegExp(`What ${brand.en.name} collects`) })
       .closest("section");
 
     expect(pending).not.toBeNull();

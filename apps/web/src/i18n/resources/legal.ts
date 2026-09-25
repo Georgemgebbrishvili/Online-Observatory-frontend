@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/config";
+import { brand } from "@/brand";
 
 // DV-072. None of these documents is in force. A section is `decided` only where a
 // controlling document already settled it -- the sources are listed per section in
@@ -41,28 +42,25 @@ export const legalCopy: Record<Locale, LegalCopy> = {
   en: {
     noticeMarker: "DRAFT",
     noticeTitle: "These terms are not yet in force",
-    notice:
-      "Stellar has not launched and this document is awaiting legal review. Sections marked as settled record decisions already taken about how the service will work. They are published for transparency and do not yet bind anyone.",
+    notice: `${brand.en.name} has not launched and this document is awaiting legal review. Sections marked as settled record decisions already taken about how the service will work. They are published for transparency and do not yet bind anyone.`,
     decidedLabel: "Settled",
     pendingLabel: "Awaiting legal review",
-    pendingDetail: "This section will be written and reviewed before Stellar opens.",
-    back: "Return to Stellar",
+    pendingDetail: `This section will be written and reviewed before ${brand.en.name} opens.`,
+    back: `Return to ${brand.en.name}`,
     documents: {
       terms: {
-        metadataTitle: "Stellar · Terms of service",
-        metadataDescription:
-          "Draft terms of service for Stellar, a live remote observatory in Tbilisi. Not yet in force.",
+        metadataTitle: `${brand.en.name} · Terms of service`,
+        metadataDescription: `Draft terms of service for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
         eyebrow: "LEGAL · DRAFT",
         title: "Terms of service",
-        introduction:
-          "What Stellar offers, and what it does not. This draft is published early so that the parts already settled can be read and challenged.",
+        introduction: `What ${brand.en.name} offers, and what it does not. This draft is published early so that the parts already settled can be read and challenged.`,
         sections: [
           {
-            heading: "What Stellar is",
+            heading: `What ${brand.en.name} is`,
             status: "decided",
             body: [
-              "Stellar is a live remote observatory in Tbilisi, Georgia. You reserve an observation slot, choose a target from an operator-approved list, and a real Celestron NexStar 6SE moves to that target while you watch its camera output.",
-              "Stellar is a live-view service. It uses short exposures and live stacking, the technique usually called electronically assisted astronomy. It is not a long-exposure astrophotography service, and it does not produce results comparable to a research observatory or a space telescope.",
+              `${brand.en.name} is a live remote observatory in Tbilisi, Georgia. You reserve an observation slot, choose a target from an operator-approved list, and a real Celestron NexStar 6SE moves to that target while you watch its camera output.`,
+              `${brand.en.name} is a live-view service. It uses short exposures and live stacking, the technique usually called electronically assisted astronomy. It is not a long-exposure astrophotography service, and it does not produce results comparable to a research observatory or a space telescope.`,
             ],
           },
           {
@@ -82,13 +80,11 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       privacy: {
-        metadataTitle: "Stellar · Privacy policy",
-        metadataDescription:
-          "Draft privacy policy for Stellar, a live remote observatory in Tbilisi. Not yet in force.",
+        metadataTitle: `${brand.en.name} · Privacy policy`,
+        metadataDescription: `Draft privacy policy for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
         eyebrow: "LEGAL · DRAFT",
         title: "Privacy policy",
-        introduction:
-          "What Stellar records about you and why. This document needs a data inventory and legal review before it can be published properly.",
+        introduction: `What ${brand.en.name} records about you and why. This document needs a data inventory and legal review before it can be published properly.`,
         sections: [
           {
             heading: "Staying signed in",
@@ -97,7 +93,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
               "Signing in sets session cookies in your browser. They exist to keep you signed in and to protect the forms you submit against cross-site request forgery. They are not advertising cookies and they do not follow you to other sites.",
             ],
           },
-          { heading: "What Stellar collects", status: "pending" },
+          { heading: `What ${brand.en.name} collects`, status: "pending" },
           { heading: "Your captures and your collection", status: "pending" },
           { heading: "Payment information", status: "pending" },
           { heading: "Who else processes your data", status: "pending" },
@@ -107,9 +103,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       refunds: {
-        metadataTitle: "Stellar · Refund policy",
-        metadataDescription:
-          "Draft refund and cancellation policy for Stellar, a live remote observatory in Tbilisi. Not yet in force.",
+        metadataTitle: `${brand.en.name} · Refund policy`,
+        metadataDescription: `Draft refund and cancellation policy for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
         eyebrow: "LEGAL · DRAFT",
         title: "Refund policy",
         introduction:
@@ -149,28 +144,25 @@ export const legalCopy: Record<Locale, LegalCopy> = {
   ka: {
     noticeMarker: "მონახაზი",
     noticeTitle: "ეს პირობები ჯერ არ მოქმედებს",
-    notice:
-      "სტელარი ჯერ არ ამოქმედებულა და ეს დოკუმენტი იურიდიულ განხილვას ელოდება. გადაწყვეტილად მონიშნული სექციები ასახავს უკვე მიღებულ გადაწყვეტილებებს სერვისის მუშაობის შესახებ. ისინი გამჭვირვალობისთვისაა გამოქვეყნებული და ჯერ არავის ავალდებულებს.",
+    notice: `${brand.ka.nominative} ჯერ არ ამოქმედებულა და ეს დოკუმენტი იურიდიულ განხილვას ელოდება. გადაწყვეტილად მონიშნული სექციები ასახავს უკვე მიღებულ გადაწყვეტილებებს სერვისის მუშაობის შესახებ. ისინი გამჭვირვალობისთვისაა გამოქვეყნებული და ჯერ არავის ავალდებულებს.`,
     decidedLabel: "გადაწყვეტილია",
     pendingLabel: "ელოდება იურიდიულ განხილვას",
-    pendingDetail: "ეს სექცია დაიწერება და განიხილება სტელარის გახსნამდე.",
-    back: "სტელარზე დაბრუნება",
+    pendingDetail: `ეს სექცია დაიწერება და განიხილება ${brand.ka.genitive} გახსნამდე.`,
+    back: `${brand.ka.on} დაბრუნება`,
     documents: {
       terms: {
-        metadataTitle: "სტელარი · მომსახურების პირობები",
-        metadataDescription:
-          "სტელარის მომსახურების პირობების მონახაზი. ჯერ არ მოქმედებს.",
+        metadataTitle: `${brand.ka.nominative} · მომსახურების პირობები`,
+        metadataDescription: `${brand.ka.genitive} მომსახურების პირობების მონახაზი. ჯერ არ მოქმედებს.`,
         eyebrow: "იურიდიული · მონახაზი",
         title: "მომსახურების პირობები",
-        introduction:
-          "რას გთავაზობთ სტელარი და რას არა. მონახაზი ადრე ქვეყნდება, რომ უკვე გადაწყვეტილი ნაწილი წაკითხვადი და სადავო იყოს.",
+        introduction: `რას გთავაზობთ ${brand.ka.nominative} და რას არა. მონახაზი ადრე ქვეყნდება, რომ უკვე გადაწყვეტილი ნაწილი წაკითხვადი და სადავო იყოს.`,
         sections: [
           {
-            heading: "რა არის სტელარი",
+            heading: `რა არის ${brand.ka.nominative}`,
             status: "decided",
             body: [
-              "სტელარი არის ცოცხალი დისტანციური ობსერვატორია თბილისში. თქვენ ჯავშნით სადამკვირვებლო სლოტს, ირჩევთ ობიექტს ოპერატორის დამტკიცებული სიიდან, და ნამდვილი Celestron NexStar 6SE ფიზიკურად ბრუნდება ამ ობიექტისკენ, სანამ თქვენ კამერის გამოსახულებას უყურებთ.",
-              "სტელარი ცოცხალი ხედვის სერვისია. ის იყენებს მოკლე ექსპოზიციებს და ცოცხალ დასტეკვას — მეთოდს, რომელსაც ელექტრონულად დახმარებულ ასტრონომიას უწოდებენ. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფიის სერვისი და არ იძლევა სამეცნიერო ობსერვატორიის ან კოსმოსური ტელესკოპის დონის შედეგს.",
+              `${brand.ka.nominative} არის ცოცხალი დისტანციური ობსერვატორია თბილისში. თქვენ ჯავშნით სადამკვირვებლო სლოტს, ირჩევთ ობიექტს ოპერატორის დამტკიცებული სიიდან, და ნამდვილი Celestron NexStar 6SE ფიზიკურად ბრუნდება ამ ობიექტისკენ, სანამ თქვენ კამერის გამოსახულებას უყურებთ.`,
+              `${brand.ka.nominative} ცოცხალი ხედვის სერვისია. ის იყენებს მოკლე ექსპოზიციებს და ცოცხალ დასტეკვას — მეთოდს, რომელსაც ელექტრონულად დახმარებულ ასტრონომიას უწოდებენ. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფიის სერვისი და არ იძლევა სამეცნიერო ობსერვატორიის ან კოსმოსური ტელესკოპის დონის შედეგს.`,
             ],
           },
           {
@@ -190,13 +182,11 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       privacy: {
-        metadataTitle: "სტელარი · კონფიდენციალურობის პოლიტიკა",
-        metadataDescription:
-          "სტელარის კონფიდენციალურობის პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.",
+        metadataTitle: `${brand.ka.nominative} · კონფიდენციალურობის პოლიტიკა`,
+        metadataDescription: `${brand.ka.genitive} კონფიდენციალურობის პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.`,
         eyebrow: "იურიდიული · მონახაზი",
         title: "კონფიდენციალურობის პოლიტიკა",
-        introduction:
-          "რას ინახავს სტელარი თქვენ შესახებ და რატომ. დოკუმენტს სჭირდება მონაცემთა აღწერა და იურიდიული განხილვა, სანამ სათანადოდ გამოქვეყნდება.",
+        introduction: `რას ინახავს ${brand.ka.nominative} თქვენ შესახებ და რატომ. დოკუმენტს სჭირდება მონაცემთა აღწერა და იურიდიული განხილვა, სანამ სათანადოდ გამოქვეყნდება.`,
         sections: [
           {
             heading: "სისტემაში დარჩენა",
@@ -205,7 +195,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
               "შესვლისას ბრაუზერში იწერება სესიის ქუქი-ფაილები. ისინი საჭიროა იმისთვის, რომ სისტემაში დარჩეთ და თქვენი გაგზავნილი ფორმები დაცული იყოს. ეს არ არის სარეკლამო ქუქი-ფაილები და ისინი სხვა საიტებზე არ მიგყვებათ.",
             ],
           },
-          { heading: "რა მონაცემებს აგროვებს სტელარი", status: "pending" },
+          { heading: `რა მონაცემებს აგროვებს ${brand.ka.nominative}`, status: "pending" },
           { heading: "თქვენი კადრები და კოლექცია", status: "pending" },
           { heading: "გადახდის მონაცემები", status: "pending" },
           { heading: "ვინ ამუშავებს თქვენს მონაცემებს", status: "pending" },
@@ -215,9 +205,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       refunds: {
-        metadataTitle: "სტელარი · თანხის დაბრუნების პოლიტიკა",
-        metadataDescription:
-          "სტელარის თანხის დაბრუნებისა და გაუქმების პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.",
+        metadataTitle: `${brand.ka.nominative} · თანხის დაბრუნების პოლიტიკა`,
+        metadataDescription: `${brand.ka.genitive} თანხის დაბრუნებისა და გაუქმების პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.`,
         eyebrow: "იურიდიული · მონახაზი",
         title: "თანხის დაბრუნების პოლიტიკა",
         introduction:

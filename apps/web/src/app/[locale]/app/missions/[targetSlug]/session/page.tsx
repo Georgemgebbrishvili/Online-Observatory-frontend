@@ -11,6 +11,7 @@ import { isLocale, locales } from "@/i18n/config";
 import { missionSessionCopy } from "@/i18n/resources/missions";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/mission-session.css";
+import { brand } from "@/brand";
 
 type MissionSessionPageProps = {
   params: Promise<{ locale: string; targetSlug: string }>;
@@ -36,7 +37,7 @@ export async function generateMetadata({
 
   const name = locale === "ka" ? target.georgianName : target.commonName;
   return {
-    title: `${name} · ${missionSessionCopy[locale].metadataMission} ${missionId} · Stellar`,
+    title: `${name} · ${missionSessionCopy[locale].metadataMission} ${missionId} · ${brand.en.name}`,
     robots: { index: false, follow: false },
   };
 }

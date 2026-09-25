@@ -1,17 +1,18 @@
 import type { Locale } from "@/i18n/config";
+import { brand } from "@/brand";
 
 const en = {
   eyebrow: "SECURE ACCESS",
   signIn: {
-    metadataTitle: "Sign in · Stellar",
+    metadataTitle: `Sign in · ${brand.en.name}`,
     title: "Return to your observatory.",
     description: "Sign in to manage your missions and personal captures.",
     submit: "Sign in",
-    alternate: "New to Stellar?",
+    alternate: `New to ${brand.en.name}?`,
     alternateAction: "Create an account",
   },
   register: {
-    metadataTitle: "Create account · Stellar",
+    metadataTitle: `Create account · ${brand.en.name}`,
     title: "Begin your observing journey.",
     description: "Create a verified account before requesting telescope time.",
     submit: "Create account",
@@ -19,14 +20,14 @@ const en = {
     alternateAction: "Sign in",
   },
   verifyPending: {
-    metadataTitle: "Verify email · Stellar",
+    metadataTitle: `Verify email · ${brand.en.name}`,
     title: "Check your email.",
     description:
       "We sent a one-time verification link. It expires in 30 minutes and can only be used once.",
     action: "Return to sign in",
   },
   verify: {
-    metadataTitle: "Confirm email · Stellar",
+    metadataTitle: `Confirm email · ${brand.en.name}`,
     title: "Confirm your email address.",
     description:
       "This final check activates your account and creates a new secure session.",
@@ -60,15 +61,15 @@ export const authCopy = {
   ka: {
     eyebrow: "დაცული წვდომა",
     signIn: {
-      metadataTitle: "შესვლა · სტელარი",
+      metadataTitle: `შესვლა · ${brand.ka.nominative}`,
       title: "დაუბრუნდი შენს ობსერვატორიას.",
       description: "შედი ანგარიშში მისიებისა და პირადი გადაღებების სამართავად.",
       submit: "შესვლა",
-      alternate: "ჯერ არ გაქვს სტელარის ანგარიში?",
+      alternate: `ჯერ არ გაქვს ${brand.ka.genitive} ანგარიში?`,
       alternateAction: "ანგარიშის შექმნა",
     },
     register: {
-      metadataTitle: "ანგარიშის შექმნა · სტელარი",
+      metadataTitle: `ანგარიშის შექმნა · ${brand.ka.nominative}`,
       title: "დაიწყე დაკვირვების გზა.",
       description: "ტელესკოპის დროის მოთხოვნამდე შექმენი და დაადასტურე ანგარიში.",
       submit: "ანგარიშის შექმნა",
@@ -76,14 +77,14 @@ export const authCopy = {
       alternateAction: "შესვლა",
     },
     verifyPending: {
-      metadataTitle: "ელფოსტის დადასტურება · სტელარი",
+      metadataTitle: `ელფოსტის დადასტურება · ${brand.ka.nominative}`,
       title: "შეამოწმე ელფოსტა.",
       description:
         "გამოგიგზავნეთ ერთჯერადი დამადასტურებელი ბმული. ის 30 წუთში გაუქმდება და მხოლოდ ერთხელ იმუშავებს.",
       action: "შესვლაზე დაბრუნება",
     },
     verify: {
-      metadataTitle: "ელფოსტის დადასტურება · სტელარი",
+      metadataTitle: `ელფოსტის დადასტურება · ${brand.ka.nominative}`,
       title: "დაადასტურე ელფოსტის მისამართი.",
       description:
         "ეს ბოლო შემოწმება გაააქტიურებს ანგარიშს და შექმნის ახალ დაცულ სესიას.",

@@ -1,9 +1,10 @@
 import type { Locale } from "@/i18n/config";
+import { brand } from "@/brand";
 
 export const designSystemCopy = {
   en: {
-    metadataTitle: "Design system — Stellar",
-    metadataDescription: "Internal Stellar visual system and component reference.",
+    metadataTitle: `Design system — ${brand.en.name}`,
+    metadataDescription: `Internal ${brand.en.name} visual system and component reference.`,
     eyebrow: "Internal reference · 01",
     title: "Visual system",
     introduction:
@@ -44,7 +45,7 @@ export const designSystemCopy = {
         "06",
         "Overlays & disclosure",
         "Native modal, sheet, dropdown, and tooltip behavior.",
-        "§08 Surface mapping · §09 What Stellar must never be, 04",
+        `§08 Surface mapping · §09 What ${brand.en.name} must never be, 04`,
       ],
       navigation: [
         "07",
@@ -67,7 +68,7 @@ export const designSystemCopy = {
     },
     palette: "Core palette",
     paletteNames: [
-      "Stellar Night",
+      `${brand.en.name} Night`,
       "Surface",
       "Observatory Blue",
       "Surface hover",
@@ -87,7 +88,7 @@ export const designSystemCopy = {
     bodyFont: "FiraGO · UI / Body",
     monoFont: "IBM Plex Mono · Data",
     typeScale: {
-      hero: "The real sky, live.",
+      hero: brand.en.tagline,
       h1: "Tonight above the horizon",
       h2: "The instrument is ready",
       h3: "Reserve an observation",
@@ -97,7 +98,7 @@ export const designSystemCopy = {
       caption: "Captions and micro-copy",
       mono: "RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15",
     },
-    opticalLabel: "Stellar optical interface motif",
+    opticalLabel: `${brand.en.name} optical interface motif`,
     idle: "Idle",
     liveLabel: "Live",
     observatoryStatuses: {
@@ -115,7 +116,7 @@ export const designSystemCopy = {
       Fair: "Fair",
       Unavailable: "Unavailable",
     },
-    displaySample: "The real sky, live.",
+    displaySample: brand.en.tagline,
     bodySample:
       "Instrument-grade interfaces should remain legible, measured, and quiet under low-light conditions.",
     buttons: {
@@ -199,8 +200,8 @@ export const designSystemCopy = {
     },
   },
   ka: {
-    metadataTitle: "დიზაინ სისტემა — სტელარი",
-    metadataDescription: "სტელარის შიდა ვიზუალური სისტემა და კომპონენტების ცნობარი.",
+    metadataTitle: `დიზაინ სისტემა — ${brand.ka.nominative}`,
+    metadataDescription: `${brand.ka.genitive} შიდა ვიზუალური სისტემა და კომპონენტების ცნობარი.`,
     eyebrow: "შიდა ცნობარი · 01",
     title: "ვიზუალური სისტემა",
     introduction:
@@ -241,7 +242,7 @@ export const designSystemCopy = {
         "06",
         "ზედდებული ფენები",
         "მოდალი, გვერდითი პანელი, ჩამონათვალი და მინიშნება.",
-        "§08 Surface mapping · §09 What Stellar must never be, 04",
+        `§08 Surface mapping · §09 What ${brand.en.name} must never be, 04`,
       ],
       navigation: [
         "07",
@@ -264,7 +265,7 @@ export const designSystemCopy = {
     },
     palette: "ძირითადი პალიტრა",
     paletteNames: [
-      "ფონი · Stellar Night",
+      `ფონი · ${brand.en.name} Night`,
       "ზედაპირი",
       "ამაღლებული ზედაპირი · Observatory Blue",
       "ზედაპირი კურსორის მიტანისას",
@@ -284,7 +285,7 @@ export const designSystemCopy = {
     bodyFont: "FiraGO · ინტერფეისი / ტექსტი",
     monoFont: "IBM Plex Mono · მონაცემები",
     typeScale: {
-      hero: "შენი დრო ნამდვილ ცასთან.",
+      hero: brand.ka.tagline,
       h1: "დღეს ღამით ჰორიზონტის ზემოთ",
       h2: "ინსტრუმენტი მზადაა",
       h3: "დაკვირვების დაჯავშნა",
@@ -294,7 +295,7 @@ export const designSystemCopy = {
       caption: "წარწერები და მოკლე ტექსტი",
       mono: "RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15",
     },
-    opticalLabel: "სტელარის ოპტიკური ინტერფეისის მოტივი",
+    opticalLabel: `${brand.ka.genitive} ოპტიკური ინტერფეისის მოტივი`,
     idle: "უმოქმედო",
     liveLabel: "პირდაპირი",
     observatoryStatuses: {
@@ -312,7 +313,7 @@ export const designSystemCopy = {
       Fair: "დამაკმაყოფილებელი",
       Unavailable: "მიუწვდომელი",
     },
-    displaySample: "შენი დრო ნამდვილ ცასთან.",
+    displaySample: brand.ka.tagline,
     bodySample:
       "ინსტრუმენტული ინტერფეისი დაბალი განათების პირობებშიც მკაფიო, გაწონასწორებული და მშვიდი უნდა დარჩეს.",
     buttons: {

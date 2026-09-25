@@ -12,6 +12,7 @@ import { isLocale, locales, type Locale } from "@/i18n/config";
 import { missionBrowserCopy, missionDetailCopy } from "@/i18n/resources/missions";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/missions.css";
+import { brand } from "@/brand";
 
 type MissionTargetPageProps = {
   params: Promise<{ locale: string; targetSlug: string }>;
@@ -36,7 +37,7 @@ export async function generateMetadata({
 
   const name = locale === "ka" ? target.georgianName : target.commonName;
   return {
-    title: `${name} · Stellar`,
+    title: `${name} · ${brand.en.name}`,
     description: target.description[locale],
   };
 }

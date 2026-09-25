@@ -8,6 +8,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale, locales } from "@/i18n/config";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
 import "@/styles/globals.css";
+import { brand } from "@/brand";
 
 const firaGO = localFont({
   src: [
@@ -64,7 +65,7 @@ export async function generateMetadata({
       title: dictionary.metadata.title,
       description: dictionary.metadata.description,
     }),
-    applicationName: "Stellar",
+    applicationName: brand.en.name,
     category: "astronomy",
     formatDetection: {
       email: false,

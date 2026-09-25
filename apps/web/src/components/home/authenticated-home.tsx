@@ -8,6 +8,7 @@ import type { MissionTarget } from "@/features/missions/targets";
 import type { Locale } from "@/i18n/config";
 import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
 import { missionBrowserCopy } from "@/i18n/resources/missions";
+import { brand } from "@/brand";
 
 type AuthenticatedHomeProps = {
   locale: Locale;
@@ -26,7 +27,9 @@ export function AuthenticatedHome({ locale }: AuthenticatedHomeProps) {
     <div className="authenticated-home">
       <header className="home-dashboard-header">
         <div>
-          <p className="home-dashboard-kicker">STELLAR · {copy.location}</p>
+          <p className="home-dashboard-kicker">
+            {brand.en.name.toUpperCase()} · {copy.location}
+          </p>
           <h1>{copy.greeting(dashboard.profile.firstName[locale])}</h1>
         </div>
         <p>{copy.introduction}</p>

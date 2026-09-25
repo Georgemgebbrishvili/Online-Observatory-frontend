@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import type { Locale } from "@/i18n/config";
+import { brand } from "@/brand";
 
 export const siteUrl = new URL(process.env.APP_URL ?? "http://localhost:3000");
 
@@ -34,7 +35,7 @@ export function localizedMetadata({
       url: canonical,
       title,
       description,
-      siteName: "Stellar by Astroman",
+      siteName: brand.en.siteName,
       locale: locale === "ka" ? "ka_GE" : "en_US",
       alternateLocale: locale === "ka" ? ["en_US"] : ["ka_GE"],
     },

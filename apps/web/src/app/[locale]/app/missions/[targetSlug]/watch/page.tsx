@@ -9,6 +9,7 @@ import { sharedObservationCopy } from "@/i18n/resources/shared-observation";
 import { csrfCookieName } from "@/lib/platform/config";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/shared-mission.css";
+import { brand } from "@/brand";
 
 type SharedMissionPageProps = {
   params: Promise<{ locale: string; targetSlug: string }>;
@@ -20,7 +21,7 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   return {
-    title: `${sharedObservationCopy[locale].metadataTitle} · Stellar`,
+    title: `${sharedObservationCopy[locale].metadataTitle} · ${brand.en.name}`,
     robots: { index: false, follow: false },
   };
 }

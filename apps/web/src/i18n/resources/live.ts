@@ -1,7 +1,9 @@
+import { brand } from "@/brand";
+
 export const liveObservationCopy = {
   en: {
-    metadataTitle: "Stellar Live",
-    live: "STELLAR LIVE",
+    metadataTitle: `${brand.en.name} Live`,
+    live: `${brand.en.name.toUpperCase()} LIVE`,
     demonstration: "DEMONSTRATION VIEW",
     observatory: "Observatory",
     target: "Target",
@@ -34,8 +36,8 @@ export const liveObservationCopy = {
     pageHeading: (target: string) => `Live observation of ${target}`,
   },
   ka: {
-    metadataTitle: "პირდაპირი დაკვირვება · სტელარი",
-    live: "STELLAR LIVE",
+    metadataTitle: `პირდაპირი დაკვირვება · ${brand.ka.nominative}`,
+    live: `${brand.en.name.toUpperCase()} LIVE`,
     demonstration: "სადემონსტრაციო ხედი",
     observatory: "ობსერვატორია",
     target: "სამიზნე",

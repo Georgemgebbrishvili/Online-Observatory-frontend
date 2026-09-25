@@ -1,8 +1,9 @@
 import type { Dictionary } from "../types";
+import { brand } from "@/brand";
 
 const dictionary = {
   metadata: {
-    title: "Stellar by Astroman",
+    title: brand.en.siteName,
     description:
       "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
   },
@@ -11,8 +12,8 @@ const dictionary = {
     skip: "Skip to content",
     language: "Language",
     languageName: "ქართული",
-    brandAriaLabel: "Stellar by Astroman",
-    brandEndorsement: "by Astroman",
+    brandAriaLabel: brand.en.siteName,
+    brandEndorsement: brand.en.endorsement,
     public: {
       ariaLabel: "Public navigation",
       menu: "Open navigation",
@@ -28,8 +29,8 @@ const dictionary = {
     app: {
       ariaLabel: "Application navigation",
       sidebarAriaLabel: "Account and observatory",
-      brandAriaLabel: "Stellar by Astroman",
-      brandEndorsement: "by Astroman",
+      brandAriaLabel: brand.en.siteName,
+      brandEndorsement: brand.en.endorsement,
       home: "Home",
       missions: "Missions",
       live: "Live",
@@ -55,13 +56,12 @@ const dictionary = {
       previewDescription:
         "This destination is a layout preview. Feature content will be added separately.",
       plannedEyebrow: "Not yet available",
-      plannedDescription:
-        "This part of Stellar has not been built. It is listed here so you can see what is coming, and it will work from this page when it is ready.",
+      plannedDescription: `This part of ${brand.en.name} has not been built. It is listed here so you can see what is coming, and it will work from this page when it is ready.`,
     },
   },
   home: {
     hero: {
-      eyebrow: "STELLAR · BY ASTROMAN",
+      eyebrow: `${brand.en.name.toUpperCase()} · BY ASTROMAN`,
       title: "Explore the real universe.",
       description:
         "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
@@ -103,7 +103,7 @@ const dictionary = {
       title: "A real observatory, in motion.",
       description:
         "Follow the current telescope state, target, and active mission from one precise live interface.",
-      observatoryName: "Stellar Tbilisi Observatory",
+      observatoryName: `${brand.en.name} Tbilisi Observatory`,
       targetName: "Saturn",
       currentMission: "DV-042 · Saturn opposition survey",
       telescopeState: "Tracking target",
@@ -169,10 +169,9 @@ const dictionary = {
     },
     howItWorks: {
       index: "03",
-      eyebrow: "How Stellar works",
+      eyebrow: `How ${brand.en.name} works`,
       title: "Three steps. One real observation.",
-      description:
-        "Stellar turns observatory access into a clear mission from selection to capture.",
+      description: `${brand.en.name} turns observatory access into a clear mission from selection to capture.`,
       steps: [
         { title: "Choose", description: "Pick an object from tonight's observable sky." },
         {
@@ -190,8 +189,7 @@ const dictionary = {
       index: "04",
       eyebrow: "Real observatory",
       title: "Software connected to physical optics.",
-      description:
-        "Stellar missions are designed to move through protected observatory software to a real telescope and camera—never directly from a browser.",
+      description: `${brand.en.name} missions are designed to move through protected observatory software to a real telescope and camera—never directly from a browser.`,
       statement:
         "Every command stays server-side. Every observation stays tied to a verified mission.",
       locationLabel: "Location",
@@ -209,8 +207,7 @@ const dictionary = {
       title: "A visual record of where you looked.",
       description:
         "Each completed mission can become a personal observation you can revisit, compare, and keep.",
-      statement:
-        "These are not stock images. They are observations captured through Stellar.",
+      statement: `These are not stock images. They are observations captured through ${brand.en.name}.`,
       disclaimer: "Development placeholders · no telescope captures are represented",
       frames: {
         m42: { name: "Orion Nebula", catalog: "M42 · placeholder frame" },
@@ -227,7 +224,7 @@ const dictionary = {
       observatoryName: "Tbilisi Observatory",
       active: "Active",
       location: "Tbilisi · Georgia",
-      descriptionLine: "Primary Stellar observatory node",
+      descriptionLine: `Primary ${brand.en.name} observatory node`,
       futureNote:
         "Future nodes will be announced only after physical integration and verification.",
     },
@@ -244,13 +241,13 @@ const dictionary = {
     finalCta: {
       eyebrow: "Begin with tonight",
       title: "Your next observation starts here.",
-      description: "Choose an observable target and shape your first Stellar mission.",
+      description: `Choose an observable target and shape your first ${brand.en.name} mission.`,
       action: "Explore Tonight's Sky",
     },
   },
   footer: {
-    brandAriaLabel: "Stellar by Astroman",
-    brandEndorsement: "by Astroman",
+    brandAriaLabel: brand.en.siteName,
+    brandEndorsement: brand.en.endorsement,
     georgianLanguage: "ქართული",
     englishLanguage: "English",
     statement: "A premium optical instrument looking into deep space.",
@@ -272,7 +269,7 @@ const dictionary = {
   },
   notFound: {
     title: "Observation not found",
-    action: "Return to Stellar",
+    action: `Return to ${brand.en.name}`,
   },
 } satisfies Dictionary;
 

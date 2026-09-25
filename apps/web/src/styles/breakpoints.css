@@ -1,5 +1,5 @@
 /*
- * Stellar design system v3 — the five breakpoints, and the only five permitted.
+ * Design system v3 — the five breakpoints, and the only five permitted.
  * docs/plan/03-design-system.md §3. Resolved by postcss-custom-media; a custom
  * property cannot be read inside a media query, so these are not :root tokens.
  *

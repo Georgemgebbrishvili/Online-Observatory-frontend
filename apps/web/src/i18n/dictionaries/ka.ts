@@ -1,8 +1,9 @@
 import type { Dictionary } from "../types";
+import { brand } from "@/brand";
 
 const dictionary = {
   metadata: {
-    title: "Stellar by Astroman",
+    title: brand.en.siteName,
     description:
       "დაუკავშირდით რეალურ ობსერვატორიებს, გაუშვით ასტრონომიული მისიები და გადაიღეთ ღამის ცის საკუთარი სურათები.",
   },
@@ -11,8 +12,8 @@ const dictionary = {
     skip: "შინაარსზე გადასვლა",
     language: "ენა",
     languageName: "English",
-    brandAriaLabel: "სტელარი — Astroman-ის პროდუქტი",
-    brandEndorsement: "Astroman-ისგან",
+    brandAriaLabel: `${brand.ka.nominative} — ${brand.ka.maker}`,
+    brandEndorsement: brand.ka.endorsement,
     public: {
       ariaLabel: "საჯარო ნავიგაცია",
       menu: "ნავიგაციის გახსნა",
@@ -28,8 +29,8 @@ const dictionary = {
     app: {
       ariaLabel: "აპლიკაციის ნავიგაცია",
       sidebarAriaLabel: "ანგარიში და ობსერვატორია",
-      brandAriaLabel: "სტელარი — Astroman-ის პროდუქტი",
-      brandEndorsement: "Astroman-ისგან",
+      brandAriaLabel: `${brand.ka.nominative} — ${brand.ka.maker}`,
+      brandEndorsement: brand.ka.endorsement,
       home: "მთავარი",
       missions: "მისიები",
       live: "პირდაპირი დაკვირვება",
@@ -55,13 +56,12 @@ const dictionary = {
       previewDescription:
         "ეს მიმართულება განლაგების პრევიუა. ფუნქციური შინაარსი ცალკე დაემატება.",
       plannedEyebrow: "ჯერ მიუწვდომელია",
-      plannedDescription:
-        "სტელარის ეს ნაწილი ჯერ არ აშენებულა. აქ იმიტომ ჩანს, რომ ნახოთ რა მოდის — და როცა მზად იქნება, სწორედ ამ გვერდიდან იმუშავებს.",
+      plannedDescription: `${brand.ka.genitive} ეს ნაწილი ჯერ არ აშენებულა. აქ იმიტომ ჩანს, რომ ნახოთ რა მოდის — და როცა მზად იქნება, სწორედ ამ გვერდიდან იმუშავებს.`,
     },
   },
   home: {
     hero: {
-      eyebrow: "STELLAR · BY ASTROMAN",
+      eyebrow: `${brand.en.name.toUpperCase()} · BY ASTROMAN`,
       title: "აღმოაჩინეთ რეალური სამყარო.",
       description:
         "დაუკავშირდით რეალურ ობსერვატორიებს, გაუშვით ასტრონომიული მისიები და გადაიღეთ ღამის ცის საკუთარი სურათები.",
@@ -103,7 +103,7 @@ const dictionary = {
       title: "რეალური ობსერვატორია მოქმედებაში.",
       description:
         "ერთ ზუსტ ინტერფეისში ადევნეთ თვალი ტელესკოპის მდგომარეობას, სამიზნესა და აქტიურ მისიას.",
-      observatoryName: "სტელარის თბილისის ობსერვატორია",
+      observatoryName: `${brand.ka.genitive} თბილისის ობსერვატორია`,
       targetName: "სატურნი",
       currentMission: "DV-042 · სატურნის ოპოზიციის დაკვირვება",
       telescopeState: "სამიზნის თვალყურის დევნება",
@@ -169,10 +169,9 @@ const dictionary = {
     },
     howItWorks: {
       index: "03",
-      eyebrow: "როგორ მუშაობს სტელარი",
+      eyebrow: `როგორ მუშაობს ${brand.ka.nominative}`,
       title: "სამი ნაბიჯი. ერთი რეალური დაკვირვება.",
-      description:
-        "სტელარი ობსერვატორიაზე წვდომას არჩევიდან გადაღებამდე გასაგებ მისიად აქცევს.",
+      description: `${brand.ka.nominative} ობსერვატორიაზე წვდომას არჩევიდან გადაღებამდე გასაგებ მისიად აქცევს.`,
       steps: [
         {
           title: "აირჩიეთ",
@@ -192,8 +191,7 @@ const dictionary = {
       index: "04",
       eyebrow: "რეალური ობსერვატორია",
       title: "ფიზიკურ ოპტიკასთან დაკავშირებული პროგრამა.",
-      description:
-        "სტელარის მისიები დაცული ობსერვატორიის პროგრამის გავლით რეალურ ტელესკოპსა და კამერამდე მიდის — არასოდეს პირდაპირ ბრაუზერიდან.",
+      description: `${brand.ka.genitive} მისიები დაცული ობსერვატორიის პროგრამის გავლით რეალურ ტელესკოპსა და კამერამდე მიდის — არასოდეს პირდაპირ ბრაუზერიდან.`,
       statement:
         "ყველა ბრძანება რჩება სერვერზე. ყველა დაკვირვება მიბმულია დადასტურებულ მისიაზე.",
       locationLabel: "მდებარეობა",
@@ -211,8 +209,7 @@ const dictionary = {
       title: "ვიზუალური ჩანაწერი იმისა, თუ სად გაიხედეთ.",
       description:
         "ყოველი დასრულებული მისია შეიძლება გახდეს პირადი დაკვირვება, რომელსაც შეინახავთ და შეადარებთ.",
-      statement:
-        "ეს არ არის ფოტოარქივის სურათები. ეს სტელარის გავლით შესრულებული დაკვირვებებია.",
+      statement: `ეს არ არის ფოტოარქივის სურათები. ეს ${brand.ka.genitive} გავლით შესრულებული დაკვირვებებია.`,
       disclaimer:
         "დეველოპერული ჩანაცვლებები · ტელესკოპის რეალური კადრები წარმოდგენილი არ არის",
       frames: {
@@ -230,7 +227,7 @@ const dictionary = {
       observatoryName: "თბილისის ობსერვატორია",
       active: "აქტიური",
       location: "თბილისი · საქართველო",
-      descriptionLine: "სტელარის ძირითადი ობსერვატორიის კვანძი",
+      descriptionLine: `${brand.ka.genitive} ძირითადი ობსერვატორიის კვანძი`,
       futureNote:
         "ახალი კვანძები გამოცხადდება მხოლოდ ფიზიკური ინტეგრაციისა და გადამოწმების შემდეგ.",
     },
@@ -247,13 +244,13 @@ const dictionary = {
     finalCta: {
       eyebrow: "დაიწყეთ დღეს",
       title: "თქვენი შემდეგი დაკვირვება აქ იწყება.",
-      description: "აირჩიეთ დაკვირვებადი სამიზნე და ჩამოაყალიბეთ პირველი სტელარის მისია.",
+      description: `აირჩიეთ დაკვირვებადი სამიზნე და ჩამოაყალიბეთ პირველი ${brand.ka.genitive} მისია.`,
       action: "დღევანდელი ცის ნახვა",
     },
   },
   footer: {
-    brandAriaLabel: "სტელარი — Astroman-ის პროდუქტი",
-    brandEndorsement: "Astroman-ისგან",
+    brandAriaLabel: `${brand.ka.nominative} — ${brand.ka.maker}`,
+    brandEndorsement: brand.ka.endorsement,
     georgianLanguage: "ქართული",
     englishLanguage: "English",
     statement: "პრემიუმ ოპტიკური ინსტრუმენტი ღრმა კოსმოსის დასანახად.",
@@ -275,7 +272,7 @@ const dictionary = {
   },
   notFound: {
     title: "დაკვირვება ვერ მოიძებნა",
-    action: "სტელარზე დაბრუნება",
+    action: `${brand.ka.on} დაბრუნება`,
   },
 } satisfies Dictionary;
 

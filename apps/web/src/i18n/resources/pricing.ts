@@ -1,16 +1,16 @@
+import { brand } from "@/brand";
+
 export const pricingPageCopy = {
   en: {
-    metadataTitle: "Stellar · Pricing",
-    metadataDescription:
-      "Conceptual Stellar access offerings with configurable pricing and no payment integration.",
-    eyebrow: "STELLAR ACCESS · CONFIGURATION DRAFT",
+    metadataTitle: `${brand.en.name} · Pricing`,
+    metadataDescription: `Conceptual ${brand.en.name} access offerings with configurable pricing and no payment integration.`,
+    eyebrow: `${brand.en.name.toUpperCase()} ACCESS · CONFIGURATION DRAFT`,
     title: "Choose how deeply you look.",
     offerings: "Access offerings",
     introduction:
       "Start with the shared sky, build a personal collection, or plan for dedicated telescope time.",
     noticeTitle: "Pricing is not finalized",
-    notice:
-      "Subscription and session amounts remain configurable placeholders until Stellar formally approves production pricing.",
+    notice: `Subscription and session amounts remain configurable placeholders until ${brand.en.name} formally approves production pricing.`,
     noPayment: "Payments and checkout are not enabled.",
     free: "Free",
     configuredLater: "Price to be confirmed",
@@ -32,22 +32,20 @@ export const pricingPageCopy = {
     perSession: "per session · price pending",
     sessionNote:
       "Private sessions are conceptual reservations only. No booking or payment is accepted on this page.",
-    back: "Return to Stellar",
+    back: `Return to ${brand.en.name}`,
     noticeMarker: "CONFIG",
     configurationMarker: "CONFIGURATION",
   },
   ka: {
-    metadataTitle: "სტელარი · ფასები",
-    metadataDescription:
-      "სტელარზე წვდომის კონცეფციური შეთავაზებები და კონფიგურირებადი ფასების სტრუქტურა.",
-    eyebrow: "სტელარზე წვდომა · კონფიგურაციის მონახაზი",
+    metadataTitle: `${brand.ka.nominative} · ფასები`,
+    metadataDescription: `${brand.ka.on} წვდომის კონცეფციური შეთავაზებები და კონფიგურირებადი ფასების სტრუქტურა.`,
+    eyebrow: `${brand.ka.on} წვდომა · კონფიგურაციის მონახაზი`,
     title: "აირჩიეთ, რამდენად ღრმად გაიხედავთ.",
     offerings: "წვდომის შეთავაზებები",
     introduction:
       "დაიწყეთ საერთო ცით, შექმენით პირადი კოლექცია ან დაგეგმეთ ტელესკოპის გამოყოფილი დრო.",
     noticeTitle: "ფასები ჯერ არ არის საბოლოო",
-    notice:
-      "გამოწერისა და სესიის თანხები კონფიგურირებად მონახაზად რჩება, სანამ სტელარი საბოლოო ფასებს ოფიციალურად დაამტკიცებს.",
+    notice: `გამოწერისა და სესიის თანხები კონფიგურირებად მონახაზად რჩება, სანამ ${brand.ka.nominative} საბოლოო ფასებს ოფიციალურად დაამტკიცებს.`,
     noPayment: "გადახდა და შეკვეთის გაფორმება ჩართული არ არის.",
     free: "უფასო",
     configuredLater: "ფასი მოგვიანებით დადასტურდება",
@@ -69,7 +67,7 @@ export const pricingPageCopy = {
     perSession: "სესიაზე · ფასი დასადგენია",
     sessionNote:
       "პირადი სესიები მხოლოდ კონცეფციური ჯავშნებია. ამ გვერდზე დაჯავშნა ან გადახდა არ მიიღება.",
-    back: "სტელარზე დაბრუნება",
+    back: `${brand.ka.on} დაბრუნება`,
     noticeMarker: "კონფიგურაცია",
     configurationMarker: "კონფიგურაცია",
   },

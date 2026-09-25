@@ -1,4 +1,5 @@
 import type { MissionState } from "@/features/missions/domain";
+import { brand } from "@/brand";
 
 type StatePresentation = {
   title: string;
@@ -9,7 +10,7 @@ type StatePresentation = {
 
 export const missionBrowserCopy = {
   en: {
-    metadataTitle: "Missions · Stellar",
+    metadataTitle: `Missions · ${brand.en.name}`,
     metadataDescription: "Choose an observable object from tonight's sky.",
     eyebrow: "Tonight · Tbilisi Observatory",
     title: "Available Tonight",
@@ -43,7 +44,7 @@ export const missionBrowserCopy = {
     emptyDescription: "Try another category to see tonight’s observable sky.",
   },
   ka: {
-    metadataTitle: "მისიები · სტელარი",
+    metadataTitle: `მისიები · ${brand.ka.nominative}`,
     metadataDescription: "აირჩიეთ დღეს დაკვირვებისთვის ხელმისაწვდომი ობიექტი.",
     eyebrow: "დღევანდელი ცა · თბილისის ობსერვატორია",
     title: "დღეს დაკვირვებისთვის ხელმისაწვდომია",
@@ -92,7 +93,7 @@ export const missionDetailCopy = {
     difficulty: "Difficulty",
     expect: "What you can expect",
     observatory: "Observatory",
-    observatoryName: "Stellar Tbilisi Observatory",
+    observatoryName: `${brand.en.name} Tbilisi Observatory`,
     capable: "Compatible and online",
     start: "Start Mission",
     schedule: "Schedule Mission",
@@ -121,7 +122,7 @@ export const missionDetailCopy = {
     difficulty: "სირთულე",
     expect: "რას დაინახავთ",
     observatory: "ობსერვატორია",
-    observatoryName: "სტელარის თბილისის ობსერვატორია",
+    observatoryName: `${brand.ka.genitive} თბილისის ობსერვატორია`,
     capable: "თავსებადია და მზადაა",
     start: "დაიწყე მისია",
     schedule: "დაგეგმე მისია",
