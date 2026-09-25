@@ -21,6 +21,8 @@
     "format:check": "prettier --check .",
     "test": "npm run test --workspaces --if-present",
     "test:e2e": "npm run test:e2e --workspace @darkview/web",
+    "visual": "node scripts/visual.mjs",
+    "visual:update": "node scripts/visual.mjs --update",
     "dev:stack": "node scripts/dev-stack.mjs",
     "dev:stack:setup": "node scripts/dev-stack.mjs setup",
     "dev:stack:down": "node scripts/dev-stack.mjs down",
