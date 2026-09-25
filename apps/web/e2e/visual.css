@@ -1,0 +1,4 @@
+/* Applied only while a visual baseline is captured. The dev-server badge is not the product. */
+nextjs-portal {
+  display: none !important;
+}

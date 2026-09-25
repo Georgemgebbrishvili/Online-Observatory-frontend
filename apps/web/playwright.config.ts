@@ -32,7 +32,7 @@ export default defineConfig({
     {
       name: "chromium",
       testIgnore:
-        /auth\.(setup|spec)\.ts|warm\.setup\.ts|shell-signed-out\.spec\.ts|operator(-records)?\.(evidence\.)?spec\.ts/,
+        /auth\.(setup|spec)\.ts|warm\.setup\.ts|shell-signed-out\.spec\.ts|operator(-records)?\.(evidence\.)?spec\.ts|visual\.spec\.ts/,
       dependencies: ["warm"],
       use: {
         ...devices["Desktop Chrome"],
@@ -68,6 +68,35 @@ export default defineConfig({
       testMatch: /(auth|shell-signed-out)\.spec\.ts/,
       dependencies: ["warm"],
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
+    },
+    {
+      // The visual gate runs in mcr.microsoft.com/playwright, which ships the bundled
+      // chromium and not Google Chrome, so it signs in with that browser too.
+      name: "visual-setup",
+      testMatch: /auth\.setup\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // Run through `npm run visual` / `npm run visual:update` only. One worker, in
+      // order: `next dev` compiles each route on first request, and a screenshot taken
+      // while the compiler is busy elsewhere is a timeout, not a finding.
+      name: "visual",
+      testMatch: /visual\.spec\.ts/,
+      dependencies: ["visual-setup"],
+      fullyParallel: false,
+      // A retry that passes would hide a baseline that does not reproduce.
+      retries: 0,
+      timeout: 120_000,
+      use: {
+        ...devices["Desktop Chrome"],
+        contextOptions: { reducedMotion: "reduce" },
+      },
+      // A full-page capture at 1440 takes over two seconds on a slow host, and a stable
+      // screenshot needs at least two of them to agree.
+      expect: {
+        timeout: 15_000,
+        toHaveScreenshot: { animations: "disabled", caret: "hide" },
+      },
     },
   ],
   // Own ports, never reused: e2e must not attach to a dev:stack web server on :3000
