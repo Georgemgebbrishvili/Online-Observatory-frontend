@@ -112,13 +112,16 @@ the page and a visible title would fight it; a screen reader still gets a title.
 - `/` and `/app/missions` → `/targets/tonight`, `/targets/{slug}`
 - `/app/collection` → `/captures`, `/captures/{id}`, `/download`
 - `/app` → `/me`
-- `/app/missions/[slug]/session`, `/app/live` → `/missions/*`
+- ~~`/app/missions/[slug]/session`, `/app/live` → `/missions/*`~~ Moved to Phase 4 by
+  the maintainer on 2026-09-25: wiring the read side here and the commands there would
+  build the live room twice. Both pages keep their fixture until Phase 4.
 - Resolve the `shared-observations` `/v1/*` debt per [#1](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/1). **Do not build
   on it until it is contract-backed.**
 - Delete `homepage-data.ts` and the committed capture SVGs once real data flows.
 
 **Done when:** no customer surface renders a fixture, except where the platform has no
-endpoint and the page says so.
+endpoint and the page says so, and except `/app/live` and
+`/app/missions/[slug]/session`, which Phase 4 wires.
 
 ## Phase 3 — Booking
 
@@ -137,6 +140,8 @@ on a phone.
 
 *The product's reason to exist. Hardest, and it depends on Phase 3 for entry.*
 
+- Wire `/app/missions/[slug]/session` and `/app/live` to `/missions/{id}` and
+  `/missions/{id}/events`, replacing their fixture — moved here from Phase 2.
 - Mission session: state machine, live view, capture, safe-nudge.
 - Real instrument status; simulated frames badged as simulated, always.
 - Observer view (DV-104) and the controller's sharing control (DV-105).
