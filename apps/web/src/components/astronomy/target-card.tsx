@@ -1,18 +1,36 @@
-import { TargetQuality } from "@/components/astronomy/target-quality";
+import type { TonightTarget } from "@darkview/contracts";
+
+import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { ButtonLink } from "@/components/ui/button";
-import type { HomepageTarget } from "@/features/targets/homepage-data";
+import {
+  formatWindow,
+  primaryReason,
+  targetName,
+  targetVisual,
+} from "@/features/targets/present";
+import type { Locale } from "@/i18n/config";
+import { targetCopy } from "@/i18n/resources/targets";
 import type { HomepageDictionary } from "@/types/homepage";
 
 type TargetCardProps = {
-  target: HomepageTarget;
-  content: HomepageDictionary["tonight"]["targets"][HomepageTarget["id"]];
+  item: TonightTarget;
+  /** The observatory's, so a window reads in the sky's own local time. */
+  timezone: string;
+  locale: Locale;
   common: HomepageDictionary["common"];
 };
 
-export function TargetCard({ common, content, target }: TargetCardProps) {
+export function TargetCard({ common, item, locale, timezone }: TargetCardProps) {
+  const { target, visibility } = item;
+  const copy = targetCopy[locale];
+  const reason = primaryReason(visibility);
+
   return (
-    <article className="target-card">
-      <div className={`target-visual target-visual-${target.visual}`} aria-hidden="true">
+    <article className="target-card" data-observable={visibility.observable}>
+      <div
+        className={`target-visual target-visual-${targetVisual(target)}`}
+        aria-hidden="true"
+      >
         <span />
       </div>
       {/* CLAUDE.md: never present an illustration as telescope output. */}
@@ -20,32 +38,39 @@ export function TargetCard({ common, content, target }: TargetCardProps) {
       <div className="target-card-body">
         <header>
           <div>
-            <p>{content.type}</p>
-            <h3>{content.name}</h3>
+            <p>
+              {copy.types[target.type]}
+              {target.catalogId ? ` · ${target.catalogId}` : ""}
+            </p>
+            <h3>{targetName(target, locale)}</h3>
           </div>
-          <TargetQuality
-            quality={target.quality}
-            label={common.qualities[target.quality]}
+          <TargetAvailability
+            observable={visibility.observable}
+            label={reason ? copy.reasons[reason] : copy.observable}
           />
         </header>
         <dl>
           <div>
-            <dt>{common.status}</dt>
-            <dd>{content.visibility}</dd>
+            <dt>{common.altitude}</dt>
+            <dd>{Math.round(visibility.horizontal.altitudeDegrees)}°</dd>
           </div>
           <div>
-            <dt>{common.bestTime}</dt>
-            <dd>{content.bestTime}</dd>
+            <dt>{common.window}</dt>
+            <dd>{formatWindow(visibility, timezone, locale, copy.window)}</dd>
           </div>
           <div>
             <dt>{common.duration}</dt>
             <dd>
-              {target.durationMinutes} {common.minutes}
+              {target.expectedMissionMinutes} {common.minutes}
             </dd>
           </div>
         </dl>
-        <ButtonLink href="#final-cta" variant="secondary" size="small">
-          {common.planMission}
+        <ButtonLink
+          href={`/${locale}/app/missions/${target.slug}`}
+          variant="secondary"
+          size="small"
+        >
+          {common.viewTarget}
         </ButtonLink>
       </div>
     </article>

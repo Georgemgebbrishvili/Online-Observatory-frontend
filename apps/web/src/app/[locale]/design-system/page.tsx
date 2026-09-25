@@ -3,9 +3,11 @@ import "@/styles/design-system.css";
 import { notFound } from "next/navigation";
 
 import { OpticalRing } from "@/components/astronomy/optical-ring";
-import { TargetQuality, targetQualities } from "@/components/astronomy/target-quality";
+import { TargetAvailability } from "@/components/astronomy/target-availability";
+import { TargetCard } from "@/components/astronomy/target-card";
 import { MissionStatus, missionStatuses } from "@/components/missions/mission-status";
 import { LiveIndicator } from "@/components/observatory/live-indicator";
+import { ModeNotice } from "@/components/observatory/mode-notice";
 import {
   ObservatoryStatus,
   observatoryStatuses,
@@ -23,10 +25,13 @@ import { Tabs } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Container } from "@/components/ui/container";
 import { isLocale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/get-dictionary";
 import { missionSessionCopy } from "@/i18n/resources/missions";
+import { statusCopy } from "@/i18n/resources/status";
+import { targetCopy } from "@/i18n/resources/targets";
 import { palette } from "@/styles/tokens";
 
-import { designSystemCopy } from "./copy";
+import { designSystemCopy, targetSpecimens } from "./copy";
 
 type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
@@ -120,6 +125,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
   if (!isLocale(locale)) notFound();
 
   const copy = designSystemCopy[locale];
+  const dictionary = await getDictionary(locale);
 
   return (
     <main id="main-content" className="design-system-page">
@@ -247,13 +253,23 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 <LiveIndicator active label={copy.liveLabel} />
                 <LiveIndicator active={false} label={copy.idle} />
               </div>
-              <h3 className="ds-subheading">{copy.statusGroups.quality}</h3>
+              <h3 className="ds-subheading">{copy.statusGroups.availability}</h3>
               <div className="ds-status-list">
-                {targetQualities.map((quality) => (
-                  <TargetQuality
-                    key={quality}
-                    quality={quality}
-                    label={copy.targetQualities[quality]}
+                <TargetAvailability observable label={targetCopy[locale].observable} />
+                {Object.values(targetCopy[locale].reasons).map((reason) => (
+                  <TargetAvailability key={reason} observable={false} label={reason} />
+                ))}
+              </div>
+            </SurfacePanel>
+            <SurfacePanel className="ds-status-panel-wide">
+              <h3>{copy.statusGroups.mode}</h3>
+              <div className="ds-status-list">
+                {(["SIMULATED", "REAL"] as const).map((mode) => (
+                  <ModeNotice
+                    key={mode}
+                    mode={mode}
+                    label={statusCopy[locale].mode[mode].banner}
+                    detail={statusCopy[locale].mode[mode].detail}
                   />
                 ))}
               </div>
@@ -302,6 +318,18 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <h3>{copy.cards.elevatedTitle}</h3>
               <p>{copy.cards.elevatedDescription}</p>
             </SurfacePanel>
+          </div>
+          <h3 className="ds-subheading">{copy.cards.targetCard}</h3>
+          <div className="target-grid">
+            {targetSpecimens.map((item) => (
+              <TargetCard
+                key={item.target.id}
+                item={item}
+                timezone="Asia/Tbilisi"
+                locale={locale}
+                common={dictionary.home.common}
+              />
+            ))}
           </div>
         </section>
 

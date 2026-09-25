@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { OpticalRing } from "@/components/astronomy/optical-ring";
-import { TargetQuality, targetQualities } from "@/components/astronomy/target-quality";
+import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { MissionStatus, missionStatuses } from "@/components/missions/mission-status";
 import {
   ObservatoryStatus,
@@ -27,21 +27,19 @@ describe("operational status components", () => {
     }
   });
 
-  it("renders every target quality and mission state", () => {
+  it("renders target availability and every mission state", () => {
     render(
       <div>
-        {targetQualities.map((quality) => (
-          <TargetQuality key={quality} quality={quality} label={quality} />
-        ))}
+        <TargetAvailability observable label="Observable now" />
+        <TargetAvailability observable={false} label="Below the horizon" />
         {missionStatuses.map((status) => (
           <MissionStatus key={status} status={status} label={status} />
         ))}
       </div>,
     );
 
-    for (const quality of targetQualities) {
-      expect(screen.getByText(quality)).toBeVisible();
-    }
+    expect(screen.getByText("Observable now")).toHaveClass("status-success");
+    expect(screen.getByText("Below the horizon")).toHaveClass("status-neutral");
     for (const status of missionStatuses) {
       expect(screen.getByText(status)).toBeVisible();
     }

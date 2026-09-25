@@ -15,7 +15,9 @@ import {
   zGetObservatoryConditionsResponse,
   zGetObservatoryStatusResponse,
   zListBookableObservatoriesResponse,
+  zGetTargetResponse,
   zListTargetsResponse,
+  zListTonightTargetsResponse,
   zMissionCommandAccepted,
   zOperatorObservatoryState,
   zOperatorOverrideRequest,
@@ -86,7 +88,7 @@ const targets = zListTargetsResponse.parse({
   items: [
     {
       id: "30000000-0000-4000-8000-000000000013",
-      slug: "m13",
+      slug: "m13-hercules-cluster",
       type: "GLOBULAR_CLUSTER",
       catalogId: "M13",
       nameEn: "Hercules Cluster",
@@ -109,6 +111,10 @@ const targets = zListTargetsResponse.parse({
       catalogId: null,
       nameEn: "Saturn",
       nameKa: "სატურნი",
+      descriptionEn:
+        "The ringed planet. Its rings and largest moon, Titan, show in a short live stack.",
+      descriptionKa:
+        "რგოლებიანი პლანეტა. მისი რგოლები და უდიდესი თანამგზავრი, ტიტანი, მოკლე ცოცხალ დასტაზე ჩანს.",
       positionSource: "EPHEMERIS",
       coordinates: null,
       solarSystemBody: "SATURN",
@@ -120,9 +126,136 @@ const targets = zListTargetsResponse.parse({
       expectedMissionMinutes: 10,
       enabled: true,
     },
+    {
+      id: "30000000-0000-4000-8000-000000000021",
+      slug: "albireo",
+      type: "DOUBLE_STAR",
+      catalogId: "Beta Cygni",
+      nameEn: "Albireo",
+      nameKa: "ალბირეო",
+      descriptionEn: "A gold and blue pair of stars, split cleanly at this focal length.",
+      descriptionKa:
+        "ოქროსფერი და ცისფერი ვარსკვლავების წყვილი, რომელიც ამ ფოკუსურ მანძილზე მკაფიოდ იყოფა.",
+      positionSource: "FIXED",
+      coordinates: { raHours: 19.512, decDegrees: 27.96, epoch: "J2000" },
+      solarSystemBody: null,
+      angularSizeArcmin: 0.6,
+      magnitude: 3.1,
+      opticalConfig: "F10_NATIVE",
+      imagingProfile: "DOUBLE_STAR",
+      minAltitudeDegrees: 25,
+      expectedMissionMinutes: 15,
+      enabled: true,
+    },
+    {
+      id: "30000000-0000-4000-8000-000000000031",
+      slug: "moon-terminator",
+      type: "MOON",
+      catalogId: null,
+      nameEn: "Moon",
+      nameKa: "მთვარე",
+      positionSource: "EPHEMERIS",
+      coordinates: null,
+      solarSystemBody: "MOON",
+      angularSizeArcmin: 31,
+      magnitude: -10,
+      opticalConfig: "F10_NATIVE",
+      imagingProfile: "LUNAR",
+      minAltitudeDegrees: 25,
+      expectedMissionMinutes: 15,
+      enabled: true,
+    },
+    {
+      id: "30000000-0000-4000-8000-000000000032",
+      slug: "venus",
+      type: "PLANET",
+      catalogId: null,
+      nameEn: "Venus",
+      nameKa: "ვენერა",
+      positionSource: "EPHEMERIS",
+      coordinates: null,
+      solarSystemBody: "VENUS",
+      angularSizeArcmin: 0.4,
+      magnitude: -4.1,
+      opticalConfig: "F20_BARLOW",
+      imagingProfile: "PLANETARY",
+      minAltitudeDegrees: 25,
+      expectedMissionMinutes: 15,
+      enabled: true,
+    },
   ],
   page: { hasMore: false, nextCursor: null },
 });
+
+// GET /targets/tonight. Fixed readings rather than an ephemeris, so every run and every
+// visual baseline sees the same sky: two observable, three blocked for different reasons.
+// A target the operator disables reads TARGET_DISABLED, ahead of the sky, as the
+// platform orders its checks.
+const tonightSky = {
+  albireo: {
+    altitude: 61,
+    azimuth: 250,
+    rises: null,
+    sets: "2026-09-25T23:50:00Z",
+    reasons: [],
+  },
+  saturn: {
+    altitude: 38,
+    azimuth: 160,
+    rises: "2026-09-25T14:30:00Z",
+    sets: "2026-09-26T01:40:00Z",
+    reasons: [],
+  },
+  "moon-terminator": {
+    altitude: 44,
+    azimuth: 200,
+    rises: "2026-09-25T13:10:00Z",
+    sets: "2026-09-25T22:20:00Z",
+    reasons: ["DOES_NOT_FIT_FIELD"],
+  },
+  "m13-hercules-cluster": {
+    altitude: 18,
+    azimuth: 290,
+    rises: null,
+    sets: "2026-09-25T21:05:00Z",
+    reasons: ["BELOW_MIN_ALTITUDE"],
+  },
+  venus: {
+    altitude: -12,
+    azimuth: 275,
+    rises: "2026-09-26T02:15:00Z",
+    sets: null,
+    reasons: ["BELOW_HORIZON"],
+  },
+};
+const tonightEvaluatedAt = "2026-09-25T18:00:00Z";
+
+function tonightTargets() {
+  return zListTonightTargetsResponse.parse({
+    observatoryId,
+    evaluatedAt: tonightEvaluatedAt,
+    items: targets.items.map((target) => {
+      const sky = tonightSky[target.slug];
+      const blockReasons = [
+        ...(target.enabled ? [] : ["TARGET_DISABLED"]),
+        ...sky.reasons,
+      ];
+      return {
+        target,
+        visibility: {
+          observable: blockReasons.length === 0,
+          evaluatedAt: tonightEvaluatedAt,
+          horizontal: { altitudeDegrees: sky.altitude, azimuthDegrees: sky.azimuth },
+          sunAltitudeDegrees: -24,
+          moonSeparationDegrees: 70,
+          risesAt: sky.rises,
+          setsAt: sky.sets,
+          blockReasons,
+        },
+      };
+    }),
+  });
+}
 const observatory = { mode: "SIMULATED", parked: false, activeMissionId: missionId };
 
 // DV-078. Missions and audit events, mutable so cancel and enable/disable are visible.
@@ -474,6 +607,13 @@ const routes = {
       zAdminListAuditEventsResponse.parse(paginate(rows, query.get("cursor"))),
     );
   },
+  "GET /targets/tonight": (request, response) => {
+    const query = new URL(request.url, "http://fake").searchParams;
+    if (query.get("observatoryId") !== observatoryId) {
+      return error(response, 404, "NOT_FOUND", "No such observatory.");
+    }
+    send(response, 200, tonightTargets());
+  },
   [`GET /observatories/${observatoryId}/state`]: (_request, response) =>
     send(response, 200, publicStatus()),
   [`GET /observatories/${observatoryId}/conditions`]: (_request, response) =>
@@ -562,6 +702,13 @@ http
     const cancel = path.match(/^\/admin\/missions\/([0-9a-f-]+)\/cancel$/);
     if (cancel && request.method === "POST") {
       return await cancelMission(request, response, cancel[1]);
+    }
+    const slug = path.match(/^\/targets\/([a-z0-9-]+)$/);
+    if (slug && request.method === "GET") {
+      // Enabled only, as the platform answers.
+      const found = targets.items.find((row) => row.slug === slug[1] && row.enabled);
+      if (!found) return error(response, 404, "NOT_FOUND", "No such target.");
+      return send(response, 200, zGetTargetResponse.parse(found));
     }
     const target = path.match(/^\/admin\/targets\/([0-9a-f-]+)$/);
     if (target && request.method === "PATCH") {

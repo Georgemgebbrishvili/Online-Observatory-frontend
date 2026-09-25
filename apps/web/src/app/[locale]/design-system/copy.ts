@@ -1,4 +1,6 @@
 import type { Locale } from "@/i18n/config";
+import type { TonightTarget } from "@darkview/contracts";
+
 import { brand } from "@/brand";
 
 export const designSystemCopy = {
@@ -110,12 +112,6 @@ export const designSystemCopy = {
       WEATHER_HOLD: "Weather hold",
       MAINTENANCE: "Maintenance",
     },
-    targetQualities: {
-      Excellent: "Excellent",
-      Good: "Good",
-      Fair: "Fair",
-      Unavailable: "Unavailable",
-    },
     displaySample: brand.en.tagline,
     bodySample:
       "Instrument-grade interfaces should remain legible, measured, and quiet under low-light conditions.",
@@ -133,7 +129,8 @@ export const designSystemCopy = {
     statusGroups: {
       observatory: "ObservatoryStatus",
       live: "LiveIndicator",
-      quality: "TargetQuality",
+      availability: "TargetAvailability",
+      mode: "ModeNotice",
       mission: "MissionStatus",
     },
     cards: {
@@ -148,6 +145,7 @@ export const designSystemCopy = {
       elevatedTitle: "Elevated panel",
       elevatedDescription:
         "Reserved for focused layers and content that needs stronger separation.",
+      targetCard: "TargetCard — observable and blocked specimens",
     },
     overlay: {
       openModal: "Open modal",
@@ -307,12 +305,6 @@ export const designSystemCopy = {
       WEATHER_HOLD: "ამინდის გამო შეჩერებულია",
       MAINTENANCE: "ტექნიკური მომსახურება",
     },
-    targetQualities: {
-      Excellent: "შესანიშნავი",
-      Good: "კარგი",
-      Fair: "დამაკმაყოფილებელი",
-      Unavailable: "მიუწვდომელი",
-    },
     displaySample: brand.ka.tagline,
     bodySample:
       "ინსტრუმენტული ინტერფეისი დაბალი განათების პირობებშიც მკაფიო, გაწონასწორებული და მშვიდი უნდა დარჩეს.",
@@ -330,7 +322,8 @@ export const designSystemCopy = {
     statusGroups: {
       observatory: "ObservatoryStatus",
       live: "LiveIndicator",
-      quality: "TargetQuality",
+      availability: "TargetAvailability",
+      mode: "ModeNotice",
       mission: "MissionStatus",
     },
     cards: {
@@ -345,6 +338,7 @@ export const designSystemCopy = {
       elevatedTitle: "ამაღლებული პანელი",
       elevatedDescription:
         "გამოიყენება ფოკუსირებულ ფენებსა და მკაფიოდ გამოსაყოფ კონტენტში.",
+      targetCard: "TargetCard — დაკვირვებადი და დაბლოკილი ნიმუშები",
     },
     overlay: {
       openModal: "მოდალის გახსნა",
@@ -395,3 +389,70 @@ export const designSystemCopy = {
     },
   },
 } as const satisfies Record<Locale, object>;
+
+/**
+ * TargetCard specimens, observable and blocked. Shapes from the contract with
+ * values chosen to exercise both states; nothing here is a reading of the sky.
+ */
+const specimenTarget = {
+  positionSource: "EPHEMERIS",
+  coordinates: null,
+  catalogId: null,
+  descriptionEn: null,
+  descriptionKa: null,
+  previewImageUrl: null,
+  opticalConfig: "F20_BARLOW",
+  imagingProfile: "PLANETARY",
+  minAltitudeDegrees: 25,
+  expectedMissionMinutes: 15,
+  enabled: true,
+} as const;
+
+const specimenVisibility = {
+  evaluatedAt: "2026-09-25T18:00:00Z",
+  sunAltitudeDegrees: -24,
+  moonSeparationDegrees: 80,
+  risesAt: "2026-09-25T15:10:00Z",
+  setsAt: "2026-09-26T01:40:00Z",
+} as const;
+
+export const targetSpecimens: TonightTarget[] = [
+  {
+    target: {
+      ...specimenTarget,
+      id: "00000000-0000-4000-8000-00000000d501",
+      slug: "specimen-observable",
+      type: "PLANET",
+      nameEn: "Saturn",
+      nameKa: "სატურნი",
+      solarSystemBody: "SATURN",
+      angularSizeArcmin: 0.3,
+      magnitude: 0.6,
+    },
+    visibility: {
+      ...specimenVisibility,
+      observable: true,
+      horizontal: { altitudeDegrees: 38, azimuthDegrees: 170 },
+      blockReasons: [],
+    },
+  },
+  {
+    target: {
+      ...specimenTarget,
+      id: "00000000-0000-4000-8000-00000000d502",
+      slug: "specimen-blocked",
+      type: "PLANET",
+      nameEn: "Venus",
+      nameKa: "ვენერა",
+      solarSystemBody: "VENUS",
+      angularSizeArcmin: 0.4,
+      magnitude: -4.1,
+    },
+    visibility: {
+      ...specimenVisibility,
+      observable: false,
+      horizontal: { altitudeDegrees: -12, azimuthDegrees: 280 },
+      blockReasons: ["BELOW_HORIZON"],
+    },
+  },
+];

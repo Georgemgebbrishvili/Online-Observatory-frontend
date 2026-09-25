@@ -30,7 +30,8 @@ test.describe("operator", () => {
   test("offers GoTo only for targets with fixed coordinates", async ({ page }) => {
     await page.goto("/en/admin/control");
     const options = page.getByLabel("Target").locator("option");
-    await expect(options).toHaveText(["M13 · Hercules Cluster"]);
+    // Saturn, Venus and the Moon are ephemeris targets and are left out.
+    await expect(options).toHaveText(["M13 · Hercules Cluster", "Beta Cygni · Albireo"]);
   });
 
   test("switches to REAL only after presence is affirmed, then back", async ({

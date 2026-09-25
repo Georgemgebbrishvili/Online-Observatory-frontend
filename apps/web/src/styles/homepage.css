@@ -377,6 +377,16 @@
   font-size: var(--font-size-caption);
 }
 
+.tonight-notices {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.tonight-notices:empty {
+  display: none;
+}
+
 .target-grid {
   display: grid;
   grid-auto-columns: minmax(17.5rem, 84vw);
@@ -436,7 +446,11 @@
 
 .target-visual::after {
   position: absolute;
-  background: radial-gradient(circle at 50% 50%, transparent 46%, var(--color-scrim-soft));
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 46%,
+    var(--color-scrim-soft)
+  );
   content: "";
   inset: 0;
   pointer-events: none;
@@ -452,6 +466,25 @@
   border-radius: var(--radius-full);
   background: var(--color-surface-raised);
   box-shadow: 0 0 0 1px var(--color-photon-faint);
+}
+
+/* A double star: two points, not a disc. */
+.target-visual-star > span {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 0;
+  background: var(--color-text-primary);
+}
+
+.target-visual-star > span::after {
+  position: absolute;
+  top: 1.6rem;
+  left: 2.4rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-text-secondary);
+  content: "";
 }
 
 .target-visual-moon > span {
@@ -477,53 +510,8 @@
   height: 5rem;
   border-color: var(--color-star-brass);
   background:
-    repeating-linear-gradient(
-      var(--color-optical-medium) 0 1px,
-      transparent 1px 0.75rem
-    ),
+    repeating-linear-gradient(var(--color-optical-medium) 0 1px, transparent 1px 0.75rem),
     var(--color-surface-raised);
-}
-
-.target-visual-galaxy > span {
-  width: 7rem;
-  height: 2.25rem;
-  border-color: var(--color-photon-border);
-  background: var(--color-photon-muted);
-  transform: rotate(-18deg);
-}
-
-.target-visual-emission > span {
-  width: 6rem;
-  height: 4.5rem;
-  border: 0;
-  border-radius: var(--radius-medium);
-  background: transparent;
-}
-
-.target-visual-emission > span::before {
-  position: absolute;
-  width: 4.25rem;
-  height: 2.4rem;
-  border-radius: var(--radius-full);
-  background: var(--color-photon-muted);
-  content: "";
-  filter: blur(0.5rem);
-  inset: 1rem 0 0 0.9rem;
-  transform: rotate(-14deg);
-}
-
-.target-visual-emission > span::after {
-  position: absolute;
-  width: 0.3rem;
-  height: 0.3rem;
-  border-radius: var(--radius-full);
-  background: var(--color-text-secondary);
-  box-shadow:
-    0.7rem 0.3rem var(--color-text-tertiary),
-    0.3rem 0.9rem var(--color-text-tertiary),
-    1.1rem 0.9rem var(--color-text-tertiary);
-  content: "";
-  inset: 1.6rem 0 0 2.2rem;
 }
 
 .target-visual-cluster > span,
@@ -577,9 +565,10 @@
 }
 
 .target-card-body > header {
+  /* The availability sits under the name: a reason is a phrase, not a one-word badge. */
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
   gap: var(--space-3);
 }
 
@@ -1090,7 +1079,6 @@
     grid-column: 2;
     grid-row: 2;
   }
-
 }
 
 @media (--lg) {

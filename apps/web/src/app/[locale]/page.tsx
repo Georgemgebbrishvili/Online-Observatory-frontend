@@ -4,6 +4,7 @@ import { HomeShell } from "@/components/layout/home-shell";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
+import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { siteUrl } from "@/lib/seo";
@@ -21,7 +22,10 @@ export default async function HomePage({ params }: HomePageProps) {
     notFound();
   }
 
-  const dictionary = await getDictionary(locale);
+  const [dictionary, tonight] = await Promise.all([
+    getDictionary(locale),
+    readTonight(locale),
+  ]);
   return (
     <div className="site-frame">
       <JsonLd
@@ -43,7 +47,7 @@ export default async function HomePage({ params }: HomePageProps) {
         ]}
       />
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
-      <HomeShell content={dictionary.home} />
+      <HomeShell content={dictionary.home} locale={locale} tonight={tonight} />
       <SiteFooter footer={dictionary.footer} locale={locale} />
     </div>
   );

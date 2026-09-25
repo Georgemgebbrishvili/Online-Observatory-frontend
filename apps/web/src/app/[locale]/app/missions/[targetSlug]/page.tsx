@@ -2,68 +2,46 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { TargetAvailability } from "@/components/astronomy/target-availability";
+import { ModeNotice } from "@/components/observatory/mode-notice";
+import { StatePanel } from "@/components/ui/state-panel";
 import {
-  activeObservatoryId,
-  getMissionTarget,
-  missionTargets,
-} from "@/features/missions/targets";
-import { getDevelopmentMissionForTarget } from "@/features/missions/simulator";
-import { isLocale, locales, type Locale } from "@/i18n/config";
-import { missionBrowserCopy, missionDetailCopy } from "@/i18n/resources/missions";
+  formatCoordinates,
+  formatWindow,
+  primaryReason,
+  targetDescription,
+  targetName,
+  targetVisual,
+} from "@/features/targets/present";
+import { readTarget } from "@/features/targets/read";
+import { isLocale } from "@/i18n/config";
+import { missionDetailCopy } from "@/i18n/resources/missions";
+import { targetCopy } from "@/i18n/resources/targets";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/missions.css";
 import { brand } from "@/brand";
 
 type MissionTargetPageProps = {
   params: Promise<{ locale: string; targetSlug: string }>;
-  searchParams: Promise<{ action?: string }>;
 };
-
-export function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    missionTargets.map((target) => ({ locale, targetSlug: target.slug })),
-  );
-}
 
 export async function generateMetadata({
   params,
 }: MissionTargetPageProps): Promise<Metadata> {
   const { locale, targetSlug } = await params;
-  const target = getMissionTarget(targetSlug);
+  if (!isLocale(locale)) return {};
 
-  if (!isLocale(locale) || !target) {
-    return {};
-  }
+  const result = await readTarget(targetSlug, locale);
+  if (result.kind !== "ok") return {};
 
-  const name = locale === "ka" ? target.georgianName : target.commonName;
   return {
-    title: `${name} · ${brand.en.name}`,
-    description: target.description[locale],
+    title: `${targetName(result.target, locale)} · ${brand.en.name}`,
+    description: targetDescription(result.target, locale) ?? undefined,
   };
 }
 
-function targetName(
-  locale: Locale,
-  target: NonNullable<ReturnType<typeof getMissionTarget>>,
-) {
-  return locale === "ka" ? target.georgianName : target.commonName;
-}
-
-function formatBestMonths(locale: Locale, months: readonly number[]) {
-  const formatter = new Intl.DateTimeFormat(locale === "ka" ? "ka-GE" : "en-GB", {
-    month: "long",
-    timeZone: "UTC",
-  });
-  return months
-    .map((month) => formatter.format(new Date(Date.UTC(2026, month - 1, 1))))
-    .join(" · ");
-}
-
-export default async function MissionTargetPage({
-  params,
-  searchParams,
-}: MissionTargetPageProps) {
-  const [{ locale, targetSlug }, { action }] = await Promise.all([params, searchParams]);
+export default async function MissionTargetPage({ params }: MissionTargetPageProps) {
+  const { locale, targetSlug } = await params;
 
   if (!isLocale(locale)) {
     notFound();
@@ -71,21 +49,27 @@ export default async function MissionTargetPage({
 
   await requireUser(locale);
 
-  const target = getMissionTarget(targetSlug);
-
-  if (!target) {
-    notFound();
-  }
+  const result = await readTarget(targetSlug, locale);
+  if (result.kind === "not-found") notFound();
 
   const copy = missionDetailCopy[locale];
-  const name = targetName(locale, target);
-  const compatible = target.observatoryCompatibility.includes(activeObservatoryId);
-  const developmentMission = getDevelopmentMissionForTarget(target.slug);
+  const words = targetCopy[locale];
 
-  if (!developmentMission) notFound();
+  if (result.kind === "unreachable") {
+    return (
+      <article className="mission-detail">
+        <Link className="mission-back-link" href={`/${locale}/app/missions`}>
+          <span aria-hidden="true">←</span> {copy.back}
+        </Link>
+        <StatePanel variant="error" headingLevel={1} {...words.unreachable} />
+      </article>
+    );
+  }
 
-  const actionMessage =
-    action === "schedule" ? { title: copy.scheduleReady, note: copy.scheduleNote } : null;
+  const { target, tonight } = result;
+  const name = targetName(target, locale);
+  const visibility = tonight?.item.visibility ?? null;
+  const reason = visibility ? primaryReason(visibility) : null;
 
   return (
     <article className="mission-detail">
@@ -95,18 +79,17 @@ export default async function MissionTargetPage({
 
       <header className="mission-detail-hero">
         <div className="mission-detail-copy">
-          <p className="eyebrow">
-            <span aria-hidden="true" />
-            {copy.available}
-          </p>
           <p className="mission-detail-catalog">
-            {missionBrowserCopy[locale].types[target.type]} · {target.catalogId}
+            {words.types[target.type]}
+            {target.catalogId ? ` · ${target.catalogId}` : ""}
           </p>
           <h1>{name}</h1>
-          <p className="mission-detail-description">{target.description[locale]}</p>
+          <p className="mission-detail-description">
+            {targetDescription(target, locale)}
+          </p>
         </div>
         <div
-          className={`mission-detail-visual mission-target-visual-${target.imagePreset}`}
+          className={`mission-detail-visual mission-target-visual-${targetVisual(target)}`}
           aria-label={`${name} · ${copy.illustration}`}
           role="img"
         >
@@ -116,46 +99,57 @@ export default async function MissionTargetPage({
           </div>
           <i aria-hidden="true" />
           <b aria-hidden="true" />
-          <small>{target.currentVisibility.altitude}°</small>
+          {visibility && (
+            <small>{Math.round(visibility.horizontal.altitudeDegrees)}°</small>
+          )}
         </div>
       </header>
 
       <section className="mission-detail-grid" aria-label={copy.visibility}>
         <div className="mission-detail-main">
-          <div className="mission-stat-grid">
-            <dl>
-              <div>
-                <dt>{copy.visibility}</dt>
-                <dd>
-                  <span className="detail-live-dot" />
-                  {copy.visible}
-                </dd>
-              </div>
-              <div>
-                <dt>{copy.window}</dt>
-                <dd>{target.currentVisibility.window}</dd>
-              </div>
-              <div>
-                <dt>{copy.altitude}</dt>
-                <dd>{target.currentVisibility.altitude}°</dd>
-              </div>
-              <div>
-                <dt>{copy.duration}</dt>
-                <dd>
-                  {target.preferredObservationDuration} {copy.minutes}
-                </dd>
-              </div>
-              <div>
-                <dt>{copy.difficulty}</dt>
-                <dd>{target.difficulty[locale]}</dd>
-              </div>
-            </dl>
-          </div>
-
-          <section className="mission-expectation">
-            <p>{copy.expect}</p>
-            <h2>{target.expectation[locale]}</h2>
-          </section>
+          {tonight && visibility ? (
+            <div className="mission-stat-grid">
+              <dl>
+                <div>
+                  <dt>{copy.visibility}</dt>
+                  <dd>
+                    <TargetAvailability
+                      observable={visibility.observable}
+                      label={reason ? words.reasons[reason] : words.observable}
+                    />
+                  </dd>
+                </div>
+                <div>
+                  <dt>{copy.window}</dt>
+                  <dd>
+                    {formatWindow(
+                      visibility,
+                      tonight.observatory.timezone,
+                      locale,
+                      words.window,
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{copy.altitude}</dt>
+                  <dd>{Math.round(visibility.horizontal.altitudeDegrees)}°</dd>
+                </div>
+                <div>
+                  <dt>{copy.duration}</dt>
+                  <dd>
+                    {target.expectedMissionMinutes} {copy.minutes}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          ) : (
+            <StatePanel
+              variant="error"
+              headingLevel={2}
+              title={copy.visibilityUnknown}
+              description={words.unreachable.description}
+            />
+          )}
 
           <details className="mission-technical">
             <summary>
@@ -163,31 +157,29 @@ export default async function MissionTargetPage({
               <span aria-hidden="true">+</span>
             </summary>
             <dl>
-              <div>
-                <dt>{copy.catalog}</dt>
-                <dd>{target.catalogId}</dd>
-              </div>
-              <div>
-                <dt>{copy.coordinates}</dt>
-                <dd>
-                  {target.ra} / {target.dec}
-                </dd>
-              </div>
+              {target.catalogId && (
+                <div>
+                  <dt>{copy.catalog}</dt>
+                  <dd>{target.catalogId}</dd>
+                </div>
+              )}
+              {target.coordinates && (
+                <div>
+                  <dt>{copy.coordinates}</dt>
+                  <dd>{formatCoordinates(target.coordinates)}</dd>
+                </div>
+              )}
               <div>
                 <dt>{copy.magnitude}</dt>
                 <dd>{target.magnitude}</dd>
               </div>
               <div>
                 <dt>{copy.angularSize}</dt>
-                <dd>{target.angularSize}</dd>
+                <dd>{target.angularSizeArcmin}′</dd>
               </div>
               <div>
                 <dt>{copy.minimumAltitude}</dt>
-                <dd>{target.minimumAltitude}°</dd>
-              </div>
-              <div>
-                <dt>{copy.bestMonths}</dt>
-                <dd>{formatBestMonths(locale, target.bestMonths)}</dd>
+                <dd>{target.minAltitudeDegrees}°</dd>
               </div>
             </dl>
           </details>
@@ -195,31 +187,23 @@ export default async function MissionTargetPage({
 
         <aside className="mission-action-panel" id="mission-actions">
           <p>{copy.observatory}</p>
-          <h2>{copy.observatoryName}</h2>
-          <span className="mission-compatible">
-            <i aria-hidden="true" />
-            {compatible ? copy.capable : "—"}
-          </span>
+          <h2>{tonight?.observatory.name ?? copy.observatoryName}</h2>
+          {tonight?.observatory.mode === "SIMULATED" && (
+            <ModeNotice
+              mode="SIMULATED"
+              label={words.simulated.label}
+              detail={words.simulated.detail}
+            />
+          )}
           <div>
+            {/* Booking is Phase 3; /app/book says so plainly until then. */}
             <Link
               className="button button-primary button-large"
-              href={`/${locale}/app/missions/${developmentMission.id}/session`}
+              href={`/${locale}/app/book`}
             >
-              <span>{copy.start}</span>
-            </Link>
-            <Link
-              className="button button-secondary button-large"
-              href={`?action=schedule#mission-actions`}
-            >
-              <span>{copy.schedule}</span>
+              <span>{copy.book}</span>
             </Link>
           </div>
-          {actionMessage && (
-            <div className="mission-action-feedback" role="status">
-              <strong>{actionMessage.title}</strong>
-              <span>{actionMessage.note}</span>
-            </div>
-          )}
         </aside>
       </section>
     </article>

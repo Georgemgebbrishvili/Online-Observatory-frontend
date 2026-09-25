@@ -1,6 +1,7 @@
 import { CollectionFrame } from "@/components/astronomy/collection-frame";
 import { OpticalRing } from "@/components/astronomy/optical-ring";
 import { TargetCard } from "@/components/astronomy/target-card";
+import { TonightNotices } from "@/components/astronomy/tonight-notices";
 import { SectionHeading } from "@/components/layout/section-heading";
 import { HeroObservatoryVisual } from "@/components/observatory/hero-observatory-visual";
 import { LiveIndicator } from "@/components/observatory/live-indicator";
@@ -12,14 +13,18 @@ import {
   observatoryNodes,
   privateSessionDurations,
 } from "@/features/observatory/homepage-data";
-import { collectionFrames, homepageTargets } from "@/features/targets/homepage-data";
+import { collectionFrames } from "@/features/targets/homepage-data";
+import type { TonightResult } from "@/features/targets/read";
+import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
 type HomeShellProps = {
   content: Dictionary["home"];
+  locale: Locale;
+  tonight: TonightResult;
 };
 
-export function HomeShell({ content }: HomeShellProps) {
+export function HomeShell({ content, locale, tonight }: HomeShellProps) {
   return (
     <main id="main-content" className="public-home">
       <section className="home-hero" aria-labelledby="home-title">
@@ -109,16 +114,22 @@ export function HomeShell({ content }: HomeShellProps) {
         <Container>
           <SectionHeading {...content.tonight} id="tonight-title" />
           <p className="section-data-note">{content.tonight.scheduleNote}</p>
-          <div className="target-grid">
-            {homepageTargets.map((target) => (
-              <TargetCard
-                key={target.id}
-                target={target}
-                content={content.tonight.targets[target.id]}
-                common={content.common}
-              />
-            ))}
+          <div className="tonight-notices">
+            <TonightNotices result={tonight} locale={locale} />
           </div>
+          {tonight.kind === "ok" && (
+            <div className="target-grid">
+              {tonight.items.map((item) => (
+                <TargetCard
+                  key={item.target.id}
+                  item={item}
+                  timezone={tonight.observatory.timezone}
+                  locale={locale}
+                  common={content.common}
+                />
+              ))}
+            </div>
+          )}
         </Container>
       </section>
 

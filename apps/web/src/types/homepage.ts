@@ -1,20 +1,10 @@
-import type {
-  CollectionFrameId,
-  HomepageTargetId,
-} from "@/features/targets/homepage-data";
+import type { CollectionFrameId } from "@/features/targets/homepage-data";
 
 type HomepageSectionHeading = {
   index: string;
   eyebrow: string;
   title: string;
   description: string;
-};
-
-type TargetCopy = {
-  name: string;
-  type: string;
-  visibility: string;
-  bestTime: string;
 };
 
 export type HomepageDictionary = {
@@ -35,7 +25,7 @@ export type HomepageDictionary = {
   demoLabel: string;
   common: {
     watchLive: string;
-    planMission: string;
+    viewTarget: string;
     illustration: string;
     minutes: string;
     approximateViewers: string;
@@ -43,16 +33,11 @@ export type HomepageDictionary = {
     currentMission: string;
     telescope: string;
     status: string;
-    bestTime: string;
+    window: string;
+    altitude: string;
     duration: string;
     liveLabel: string;
     observatoryOnline: string;
-    qualities: {
-      Excellent: string;
-      Good: string;
-      Fair: string;
-      Unavailable: string;
-    };
   };
   live: HomepageSectionHeading & {
     observatoryName: string;
@@ -62,7 +47,6 @@ export type HomepageDictionary = {
   };
   tonight: HomepageSectionHeading & {
     scheduleNote: string;
-    targets: Record<HomepageTargetId, TargetCopy>;
   };
   howItWorks: HomepageSectionHeading & {
     steps: readonly {
