@@ -54,45 +54,8 @@
   font-size: var(--font-size-caption);
 }
 
-.status-mode {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-4);
+.status-page .mode-notice {
   margin-top: var(--space-8);
-  padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-medium);
-}
-
-.status-mode > strong {
-  font-family: var(--font-ibm-plex-mono), monospace;
-  font-size: var(--font-size-mono);
-  letter-spacing: 0.1em;
-}
-
-.status-mode > span {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
-/* The same tones the operator console uses, so SIMULATED reads identically on both. */
-.status-mode-simulated {
-  border-color: var(--color-warning);
-  background: var(--color-warning-muted);
-}
-
-.status-mode-simulated > strong {
-  color: var(--color-warning);
-}
-
-.status-mode-real {
-  border-color: var(--color-error);
-  background: var(--color-error-muted);
-}
-
-.status-mode-real > strong {
-  color: var(--color-error);
 }
 
 .status-panel {
