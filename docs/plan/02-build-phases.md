@@ -109,7 +109,8 @@ the page and a visible title would fight it; a screen reader still gets a title.
 
 *Eighteen pages look finished and render fixtures. This is the largest hidden cost.*
 
-- `/` and `/app/missions` → `/targets/tonight`, `/targets/{slug}`
+- ~~`/` and `/app/missions` → `/targets/tonight`, `/targets/{slug}`~~ Done 2026-09-25 —
+  [`phase-2/01-targets.md`](phase-2/01-targets.md) has the states and the contract trace.
 - `/app/collection` → `/captures`, `/captures/{id}`, `/download`
 - `/app` → `/me`
 - ~~`/app/missions/[slug]/session`, `/app/live` → `/missions/*`~~ Moved to Phase 4 by

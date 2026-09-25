@@ -23,7 +23,7 @@ remaining work easy to underestimate.
 
 | Route | Status | Platform endpoint | Issue |
 | --- | --- | --- | --- |
-| `/` | Fixture | `/targets/tonight` | DV-071 |
+| `/` | **Live** (Tonight section; the rest is still fixture) | `/targets/tonight` | DV-071 |
 | `/pricing` | Copy | `/subscription/plans` | DV-071 |
 | `/observatory` | Copy | — | DV-071 |
 | `/network` | Copy | `/network/nodes` | DV-071 |
@@ -39,8 +39,8 @@ eight targets. `/targets/tonight` exists and is not called.
 | Route | Status | Platform endpoint | Issue |
 | --- | --- | --- | --- |
 | `/app` | Fixture | `/me` | DV-079 |
-| `/app/missions` | Fixture | `/targets/tonight` | DV-074 |
-| `/app/missions/[slug]` | Fixture | `/targets/{slug}` | DV-074 |
+| `/app/missions` | **Live** | `/targets/tonight` | DV-074 |
+| `/app/missions/[slug]` | **Live** | `/targets/{slug}`, `/targets/tonight` | DV-074 |
 | `/app/missions/[slug]/session` | Fixture | `/missions/{id}`, `/command`, `/events` | DV-075 |
 | `/app/missions/[slug]/watch` | Fixture | `/missions/{id}/observers` | DV-104 |
 | `/app/live` | Fixture | `/missions/{id}/events` | DV-075 |
