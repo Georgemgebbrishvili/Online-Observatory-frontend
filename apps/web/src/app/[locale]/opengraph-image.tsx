@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
 
 import { palette } from "@/styles/tokens";
+import { brand } from "@/brand";
 
-export const alt = "Stellar by Astroman — Live Remote Observatory · Tbilisi";
+export const alt = `${brand.en.siteName} — Live Remote Observatory · Tbilisi`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -23,10 +24,10 @@ export default function OpenGraphImage() {
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
         <div style={{ color: palette.neutral300, fontSize: 28 }}>
-          Stellar by Astroman
+          {brand.en.siteName}
         </div>
         <div style={{ display: "flex", maxWidth: 680, fontSize: 72, lineHeight: 1.04 }}>
-          The real sky, live.
+          {brand.en.tagline}
         </div>
         <div style={{ color: palette.neutral300, fontSize: 26 }}>
           Live Remote Observatory · Tbilisi, Georgia

@@ -6,6 +6,7 @@ import { captures, getCapture } from "@/features/collection/captures";
 import { isLocale, locales } from "@/i18n/config";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/collection.css";
+import { brand } from "@/brand";
 
 type CaptureDetailPageProps = {
   params: Promise<{ locale: string; captureId: string }>;
@@ -26,7 +27,7 @@ export async function generateMetadata({
   if (!isLocale(locale) || !capture) return {};
 
   return {
-    title: `${capture.target[locale]} · ${capture.id} · Stellar`,
+    title: `${capture.target[locale]} · ${capture.id} · ${brand.en.name}`,
     description: capture.description[locale],
     robots: { index: false, follow: false },
   };

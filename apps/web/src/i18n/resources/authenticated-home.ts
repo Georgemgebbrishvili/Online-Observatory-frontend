@@ -1,6 +1,8 @@
+import { brand } from "@/brand";
+
 export const authenticatedHomeCopy = {
   en: {
-    metadataTitle: "Home · Stellar",
+    metadataTitle: `Home · ${brand.en.name}`,
     metadataDescription: "Your observatory, missions, and collection for tonight.",
     greeting: (name: string) => `Good evening, ${name}`,
     introduction: "Your observatory is ready. Here is the sky worth seeing tonight.",
@@ -43,7 +45,7 @@ export const authenticatedHomeCopy = {
     minutes: "min",
   },
   ka: {
-    metadataTitle: "მთავარი · სტელარი",
+    metadataTitle: `მთავარი · ${brand.ka.nominative}`,
     metadataDescription: "თქვენი ობსერვატორია, მისიები და დღევანდელი კოლექცია.",
     greeting: (name: string) => `საღამო მშვიდობისა, ${name}`,
     introduction: "თქვენი ობსერვატორია მზადაა. აი, ცა, რომლის ნახვაც დღეს ღირს.",

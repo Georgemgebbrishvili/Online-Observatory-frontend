@@ -1,5 +1,6 @@
 import type { ObservatoryStatusValue } from "@/components/observatory/observatory-status";
 import type { Locale } from "@/i18n/config";
+import { brand } from "@/brand";
 
 type LocalizedText = Record<Locale, string>;
 
@@ -40,8 +41,8 @@ export const observatories: ObservatorySite[] = [
   {
     id: "tbilisi-01",
     name: {
-      en: "Stellar Tbilisi Observatory",
-      ka: "სტელარის თბილისის ობსერვატორია",
+      en: `${brand.en.name} Tbilisi Observatory`,
+      ka: `${brand.ka.genitive} თბილისის ობსერვატორია`,
     },
     location: { en: "Tbilisi, Georgia", ka: "თბილისი, საქართველო" },
     coordinates: { latitude: 41.72, longitude: 44.79 },

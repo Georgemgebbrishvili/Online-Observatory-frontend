@@ -1,15 +1,15 @@
+import { brand } from "@/brand";
+
 export const networkPageCopy = {
   en: {
-    metadataTitle: "Observatory Network · Stellar",
-    metadataDescription:
-      "Stellar's current Tbilisi observatory and the reviewed foundation for future independent observatory nodes.",
-    eyebrow: "STELLAR NETWORK · ONE VERIFIED NODE",
+    metadataTitle: `Observatory Network · ${brand.en.name}`,
+    metadataDescription: `${brand.en.name}'s current Tbilisi observatory and the reviewed foundation for future independent observatory nodes.`,
+    eyebrow: `${brand.en.name.toUpperCase()} NETWORK · ONE VERIFIED NODE`,
     title: "One observatory today. A network when ready.",
-    description:
-      "Stellar currently operates a single observatory in Tbilisi. The platform is being structured so future independent sites can be reviewed, approved, and scheduled without becoming an open telescope marketplace.",
+    description: `${brand.en.name} currently operates a single observatory in Tbilisi. The platform is being structured so future independent sites can be reviewed, approved, and scheduled without becoming an open telescope marketplace.`,
     currentNetwork: "Current network",
     oneActiveNode: "1 active node",
-    approved: "Stellar operated",
+    approved: `${brand.en.name} operated`,
     status: "Status",
     online: "Online",
     location: "Location",
@@ -48,8 +48,7 @@ export const networkPageCopy = {
       },
       MANUAL_APPROVAL: {
         title: "Manual approval",
-        description:
-          "Stellar operators review the complete node before it can receive any mission reservation.",
+        description: `${brand.en.name} operators review the complete node before it can receive any mission reservation.`,
       },
     },
     connectEyebrow: "FUTURE CONCEPT",
@@ -64,23 +63,21 @@ export const networkPageCopy = {
       "A verified owner linked to one physical observatory",
       "Configured telescopes and declared observation capabilities",
       "Geographic coordinates and recurring availability windows",
-      "Approval state controlled by Stellar operators",
+      `Approval state controlled by ${brand.en.name} operators`,
       "Future commercial agreements kept separate from mission safety",
     ],
     observatoryLink: "View the Tbilisi observatory",
     networkLink: "View network architecture",
   },
   ka: {
-    metadataTitle: "ობსერვატორიების ქსელი · სტელარი",
-    metadataDescription:
-      "სტელარის თბილისის ობსერვატორია და სამომავლო დამოუკიდებელი კვანძების შემოწმებადი საფუძველი.",
-    eyebrow: "სტელარის ქსელი · ერთი დადასტურებული კვანძი",
+    metadataTitle: `ობსერვატორიების ქსელი · ${brand.ka.nominative}`,
+    metadataDescription: `${brand.ka.genitive} თბილისის ობსერვატორია და სამომავლო დამოუკიდებელი კვანძების შემოწმებადი საფუძველი.`,
+    eyebrow: `${brand.ka.genitive} ქსელი · ერთი დადასტურებული კვანძი`,
     title: "დღეს ერთი ობსერვატორია. ქსელი — როცა მზად იქნება.",
-    description:
-      "სტელარი ამჟამად თბილისში ერთ ობსერვატორიას მართავს. პლატფორმა ისე იგეგმება, რომ მომავალში დამოუკიდებელი ობიექტები შემოწმდეს, დამტკიცდეს და მისიებში ჩაერთოს ღია ტელესკოპების ბაზრად ქცევის გარეშე.",
+    description: `${brand.ka.nominative} ამჟამად თბილისში ერთ ობსერვატორიას მართავს. პლატფორმა ისე იგეგმება, რომ მომავალში დამოუკიდებელი ობიექტები შემოწმდეს, დამტკიცდეს და მისიებში ჩაერთოს ღია ტელესკოპების ბაზრად ქცევის გარეშე.`,
     currentNetwork: "მიმდინარე ქსელი",
     oneActiveNode: "1 აქტიური კვანძი",
-    approved: "სტელარის მიერ მართული",
+    approved: `${brand.ka.genitive} მიერ მართული`,
     status: "სტატუსი",
     online: "ონლაინ",
     location: "მდებარეობა",
@@ -119,7 +116,7 @@ export const networkPageCopy = {
       },
       MANUAL_APPROVAL: {
         title: "ხელით დამტკიცება",
-        description: "მისიის დაჯავშნამდე სრულ კვანძს სტელარის ოპერატორები ამოწმებენ.",
+        description: `მისიის დაჯავშნამდე სრულ კვანძს ${brand.ka.genitive} ოპერატორები ამოწმებენ.`,
       },
     },
     connectEyebrow: "სამომავლო კონცეფცია",
@@ -134,7 +131,7 @@ export const networkPageCopy = {
       "დადასტურებული მფლობელის დაკავშირებას ერთ ფიზიკურ ობსერვატორიასთან",
       "კონფიგურირებულ ტელესკოპებსა და გამოცხადებულ შესაძლებლობებს",
       "გეოგრაფიულ კოორდინატებსა და განმეორებად ხელმისაწვდომ დროებს",
-      "სტელარის ოპერატორების მიერ მართულ დამტკიცების სტატუსს",
+      `${brand.ka.genitive} ოპერატორების მიერ მართულ დამტკიცების სტატუსს`,
       "სამომავლო კომერციული პირობების გამიჯვნას მისიის უსაფრთხოებისგან",
     ],
     observatoryLink: "თბილისის ობსერვატორიის ნახვა",

@@ -9,6 +9,7 @@ import {
 } from "@/features/observatory/observatories";
 import type { Locale } from "@/i18n/config";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
+import { brand } from "@/brand";
 
 type ObservatoryPageProps = {
   locale: Locale;
@@ -217,7 +218,7 @@ export function ObservatoryPage({ locale }: ObservatoryPageProps) {
           <span>{copy.networkFoundation}</span>
         </Link>
         <Link className="observatory-back-link" href={`/${locale}`}>
-          <span aria-hidden="true">←</span> STELLAR
+          <span aria-hidden="true">←</span> {brand.en.name.toUpperCase()}
         </Link>
       </section>
     </main>

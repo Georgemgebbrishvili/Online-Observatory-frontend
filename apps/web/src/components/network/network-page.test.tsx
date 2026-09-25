@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { brand } from "@/brand";
+
 import { NetworkPage } from "./network-page";
 
 describe("NetworkPage", () => {
@@ -8,7 +10,7 @@ describe("NetworkPage", () => {
     render(<NetworkPage locale="en" />);
 
     expect(
-      screen.getByRole("heading", { name: "Stellar Tbilisi Observatory" }),
+      screen.getByRole("heading", { name: `${brand.en.name} Tbilisi Observatory` }),
     ).toBeVisible();
     expect(screen.getByText("1 active node")).toBeVisible();
     expect(

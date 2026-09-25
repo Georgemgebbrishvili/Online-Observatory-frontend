@@ -1,11 +1,11 @@
+import { brand } from "@/brand";
+
 export const observatoryPageCopy = {
   en: {
-    metadataTitle: "Stellar Tbilisi Observatory",
-    metadataDescription:
-      "Stellar's physical telescope system, configurable equipment, and protected mission path.",
+    metadataTitle: `${brand.en.name} Tbilisi Observatory`,
+    metadataDescription: `${brand.en.name}'s physical telescope system, configurable equipment, and protected mission path.`,
     eyebrow: "PHYSICAL OBSERVATORY · TBILISI 01",
-    statement:
-      "Stellar operates a physical telescope system remotely through secure observatory software.",
+    statement: `${brand.en.name} operates a physical telescope system remotely through secure observatory software.`,
     status: "Observatory status",
     online: "Online",
     statusMode: "Demonstration status",
@@ -34,8 +34,7 @@ export const observatoryPageCopy = {
     missionDescription:
       "A request becomes a capture through a protected sequence managed beside the telescope—not by unrestricted browser controls.",
     safety: "Safety comes before movement",
-    safetyDescription:
-      "Before anything moves, Stellar checks that the mission is allowed, the equipment is ready, and the requested direction is safe.",
+    safetyDescription: `Before anything moves, ${brand.en.name} checks that the mission is allowed, the equipment is ready, and the requested direction is safe.`,
     futureNetwork: "Future network",
     futureDescription:
       "The architecture supports additional observatories, but only physically integrated and verified sites will appear here.",
@@ -49,12 +48,10 @@ export const observatoryPageCopy = {
     east: "E",
   },
   ka: {
-    metadataTitle: "სტელარის თბილისის ობსერვატორია",
-    metadataDescription:
-      "სტელარის ფიზიკური ტელესკოპური სისტემა, მოწყობილობა და უსაფრთხო მისიის გზა.",
+    metadataTitle: `${brand.ka.genitive} თბილისის ობსერვატორია`,
+    metadataDescription: `${brand.ka.genitive} ფიზიკური ტელესკოპური სისტემა, მოწყობილობა და უსაფრთხო მისიის გზა.`,
     eyebrow: "ფიზიკური ობსერვატორია · თბილისი 01",
-    statement:
-      "სტელარი ფიზიკურ ტელესკოპურ სისტემას უსაფრთხო ობსერვატორიული პროგრამით დისტანციურად მართავს.",
+    statement: `${brand.ka.nominative} ფიზიკურ ტელესკოპურ სისტემას უსაფრთხო ობსერვატორიული პროგრამით დისტანციურად მართავს.`,
     status: "ობსერვატორიის სტატუსი",
     online: "ონლაინ",
     statusMode: "სადემონსტრაციო სტატუსი",
@@ -83,8 +80,7 @@ export const observatoryPageCopy = {
     missionDescription:
       "მოთხოვნა კადრად ტელესკოპთან დაცული თანმიმდევრობის გავლით იქცევა — არა ბრაუზერის შეუზღუდავი მართვით.",
     safety: "უსაფრთხოება მოძრაობაზე წინ დგას",
-    safetyDescription:
-      "ნებისმიერი მოძრაობის წინ სტელარი ამოწმებს, რომ მისია ნებადართულია, მოწყობილობა მზადაა და მიმართულება უსაფრთხოა.",
+    safetyDescription: `ნებისმიერი მოძრაობის წინ ${brand.ka.nominative} ამოწმებს, რომ მისია ნებადართულია, მოწყობილობა მზადაა და მიმართულება უსაფრთხოა.`,
     futureNetwork: "სამომავლო ქსელი",
     futureDescription:
       "არქიტექტურა დამატებით ობსერვატორიებს უჭერს მხარს, თუმცა აქ მხოლოდ ფიზიკურად ინტეგრირებული და დადასტურებული ადგილები გამოჩნდება.",

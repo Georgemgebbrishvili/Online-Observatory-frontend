@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
+import { brand } from "@/brand";
 import { captures } from "@/features/collection/captures";
 
 import { CaptureDetail } from "./capture-detail";
@@ -21,7 +22,7 @@ describe("CaptureDetail", () => {
 
     expect(screen.getByRole("heading", { name: "Saturn" })).toBeVisible();
     expect(screen.getByText("Captured by you")).toBeVisible();
-    expect(screen.getByText("Stellar Tbilisi Observatory")).toBeVisible();
+    expect(screen.getByText(`${brand.en.name} Tbilisi Observatory`)).toBeVisible();
     expect(screen.getByRole("link", { name: "Download" })).toHaveAttribute(
       "href",
       "/captures/saturn-dv-0001.svg",
