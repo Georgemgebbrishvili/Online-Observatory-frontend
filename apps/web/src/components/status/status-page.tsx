@@ -6,6 +6,7 @@ import type {
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { ModeNotice } from "@/components/observatory/mode-notice";
 import { Container } from "@/components/ui/container";
 import { StatusIndicator, type StatusTone } from "@/components/ui/status-indicator";
 import type { Locale } from "@/i18n/config";
@@ -114,14 +115,7 @@ export function StatusPage({
           </p>
         </header>
 
-        {/* ObservatoryMode: a page fed by the simulator says so, unmistakably. */}
-        <aside
-          className={`status-mode status-mode-${status.mode.toLowerCase()}`}
-          role="note"
-        >
-          <strong>{mode.banner}</strong>
-          <span>{mode.detail}</span>
-        </aside>
+        <ModeNotice mode={status.mode} label={mode.banner} detail={mode.detail} />
 
         <section className="status-panel" aria-labelledby="status-now">
           <h2 id="status-now">{copy.now.title}</h2>
