@@ -93,3 +93,27 @@ jobs:
           name: playwright-report
           path: apps/web/playwright-report
           retention-days: 14
+
+  # The visual gate, in the image the baselines were generated in (`npm run
+  # visual:update`). The tag must match @playwright/test in apps/web/package.json.
+  visual:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install
+        run: npm ci
+
+      - name: Visual
+        working-directory: apps/web
+        run: npx playwright test --project=visual-setup --project=visual
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: visual-report
+          path: apps/web/playwright-report
+          retention-days: 14
