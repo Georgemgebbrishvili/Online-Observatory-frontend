@@ -78,7 +78,7 @@ const dictionary = {
     demoLabel: "Demonstration data",
     common: {
       watchLive: "Watch Live",
-      planMission: "Plan Mission",
+      viewTarget: "View target",
       illustration: "Catalogue illustration",
       minutes: "min",
       approximateViewers: "approx. viewers",
@@ -86,16 +86,11 @@ const dictionary = {
       currentMission: "Current mission",
       telescope: "Telescope",
       status: "Status",
-      bestTime: "Best time",
+      window: "Window",
+      altitude: "Altitude now",
       duration: "Mission",
       liveLabel: "Live",
       observatoryOnline: "Online",
-      qualities: {
-        Excellent: "Excellent",
-        Good: "Good",
-        Fair: "Fair",
-        Unavailable: "Unavailable",
-      },
     },
     live: {
       index: "01",
@@ -115,57 +110,7 @@ const dictionary = {
       description:
         "A mission begins with an observable target and a real window in the night sky.",
       scheduleNote:
-        "Illustrative observing windows · final availability requires verification",
-      targets: {
-        moon: {
-          name: "Moon",
-          type: "Natural satellite",
-          visibility: "High above horizon",
-          bestTime: "20:10–22:30",
-        },
-        saturn: {
-          name: "Saturn",
-          type: "Planet",
-          visibility: "South-west",
-          bestTime: "21:40–23:15",
-        },
-        jupiter: {
-          name: "Jupiter",
-          type: "Planet",
-          visibility: "Rising east",
-          bestTime: "22:05–01:40",
-        },
-        m31: {
-          name: "M31 Andromeda",
-          type: "Galaxy",
-          visibility: "North-east",
-          bestTime: "22:20–01:10",
-        },
-        m13: {
-          name: "M13",
-          type: "Globular cluster",
-          visibility: "Western sky",
-          bestTime: "20:50–22:40",
-        },
-        m27: {
-          name: "M27",
-          type: "Planetary nebula",
-          visibility: "North-west",
-          bestTime: "21:15–23:35",
-        },
-        m57: {
-          name: "M57",
-          type: "Planetary nebula",
-          visibility: "High west",
-          bestTime: "20:45–22:55",
-        },
-        m42: {
-          name: "M42 Orion",
-          type: "Emission nebula",
-          visibility: "Low south-east",
-          bestTime: "23:30–02:15",
-        },
-      },
+        "Visibility computed live by the observatory · pictures are illustrations, not telescope output",
     },
     howItWorks: {
       index: "03",

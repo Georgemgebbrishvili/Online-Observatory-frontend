@@ -1,17 +1,3 @@
-export const homepageTargets = [
-  { id: "moon", quality: "Excellent", visual: "moon", durationMinutes: 8 },
-  { id: "saturn", quality: "Excellent", visual: "saturn", durationMinutes: 12 },
-  { id: "jupiter", quality: "Excellent", visual: "jupiter", durationMinutes: 10 },
-  { id: "m31", quality: "Good", visual: "galaxy", durationMinutes: 18 },
-  { id: "m13", quality: "Good", visual: "cluster", durationMinutes: 14 },
-  { id: "m27", quality: "Fair", visual: "nebula", durationMinutes: 16 },
-  { id: "m57", quality: "Good", visual: "ring", durationMinutes: 15 },
-  { id: "m42", quality: "Good", visual: "emission", durationMinutes: 20 },
-] as const;
-
-export type HomepageTarget = (typeof homepageTargets)[number];
-export type HomepageTargetId = HomepageTarget["id"];
-
 export const collectionFrames = [
   { id: "m42", visual: "nebula" },
   { id: "moon", visual: "moon" },

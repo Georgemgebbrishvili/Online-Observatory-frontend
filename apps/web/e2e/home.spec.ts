@@ -50,9 +50,11 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
   }
 
-  for (const target of ["Moon", "Saturn", "M31 Andromeda", "M13", "M27", "M57"]) {
+  // Tonight's list comes from GET /targets/tonight on the fake platform.
+  for (const target of ["Saturn", "Albireo", "Moon", "Hercules Cluster", "Venus"]) {
     await expect(page.getByRole("heading", { name: target, exact: true })).toBeVisible();
   }
+  await expect(page.getByText("SIMULATED OBSERVATORY").first()).toBeVisible();
 
   await expect(page.getByRole("heading", { name: "Choose", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Observe", exact: true })).toBeVisible();
@@ -179,39 +181,60 @@ test("keeps the visual system within a mobile viewport", async ({ page }) => {
   await expect(page.getByRole("dialog", { name: "Observation settings" })).toBeVisible();
 });
 
-test("ranks and filters tonight's mission targets", async ({ page }) => {
+test("lists tonight's targets observable-first, with the platform's reasons", async ({
+  page,
+}) => {
   await page.goto("/en/app/missions");
 
-  await expect(page.getByRole("heading", { name: "Available Tonight" })).toBeVisible();
-  await expect(page.getByRole("article").first()).toContainText("Saturn");
+  await expect(page.getByRole("heading", { name: "Tonight's targets" })).toBeVisible();
+  const cards = page.getByRole("article");
+  await expect(cards).toHaveCount(5);
+  // Observable first, then highest: Albireo at 61°, then Saturn at 38°.
+  await expect(cards.nth(0)).toContainText("Albireo");
+  await expect(cards.nth(0)).toContainText("Observable now");
+  await expect(cards.nth(1)).toContainText("Saturn");
+  await expect(page.getByRole("article").filter({ hasText: "Venus" })).toContainText(
+    "Below the horizon",
+  );
 
-  await page.getByRole("button", { name: "Galaxies" }).click();
-  await expect(page.getByRole("heading", { name: "Andromeda Galaxy" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Saturn" })).toBeHidden();
+  // Filters are the contract's types, and only those tonight's list holds.
+  await expect(page.getByRole("button", { name: "Galaxies" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Double stars" }).click();
+  await expect(cards).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "Albireo" })).toBeVisible();
 });
 
-test("shows the consumer mission detail before technical data", async ({ page }) => {
+test("shows a target from the platform, and books rather than starting a fake mission", async ({
+  page,
+}) => {
   await page.goto("/en/app/missions/saturn");
 
   await expect(page.getByRole("heading", { name: "Saturn", exact: true })).toBeVisible();
-  await expect(page.getByText("Clear observing window")).toBeVisible();
-  await expect(page.getByText(`${brand.en.name} Tbilisi Observatory`)).toBeVisible();
-  await expect(page.getByText("23h 12m 41s / −06° 42′ 18″")).toBeHidden();
+  await expect(page.getByText("Observable now")).toBeVisible();
+  // 14:30Z and 01:40Z, read in the observatory's time zone.
+  await expect(page.getByText("18:30 – 05:40")).toBeVisible();
+  await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible();
 
+  // The sidebar lists booking too; this is the page's own action.
+  const book = page.getByRole("main").getByRole("link", { name: "Book an observation" });
+  await expect(book).toHaveAttribute("href", "/en/app/book");
+  await expect(page.getByRole("link", { name: "Start Mission" })).toHaveCount(0);
+});
+
+test("reads fixed-position coordinates in the technical details", async ({ page }) => {
+  await page.goto("/en/app/missions/albireo");
+
+  await expect(page.getByText("19h 30m 43s / +27° 57′ 36″")).toBeHidden();
   await page.getByText("Advanced technical information").click();
-  await expect(page.getByText("23h 12m 41s / −06° 42′ 18″")).toBeVisible();
+  await expect(page.getByText("19h 30m 43s / +27° 57′ 36″")).toBeVisible();
+});
 
-  const startMission = page.getByRole("link", { name: "Start Mission" });
-  await expect(startMission).toHaveAttribute(
-    "href",
-    "/en/app/missions/DV-SIM-001/session",
-  );
-  await startMission.click();
-  await expect(page).toHaveURL(/\/en\/app\/missions\/DV-SIM-001\/session$/, {
-    timeout: 15_000,
-  });
+test("answers an unknown target with the not-found page", async ({ page }) => {
+  // Streamed behind the route's loading.tsx, so the status line is already 200 when
+  // the platform's 404 arrives; the page is what tells the reader.
+  await page.goto("/en/app/missions/no-such-target");
   await expect(
-    page.getByRole("heading", { name: "Preparing your observation" }),
+    page.getByRole("heading", { name: "Observation not found" }),
   ).toBeVisible();
 });
 
@@ -219,11 +242,9 @@ test("keeps missions usable inside a mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/app/missions");
 
-  await expect(
-    page.getByRole("heading", { name: "დღეს დაკვირვებისთვის ხელმისაწვდომია" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "დღევანდელი ობიექტები" })).toBeVisible();
   await page.getByRole("link", { name: "ობიექტის ნახვა" }).first().click();
-  await expect(page.getByRole("link", { name: "დაიწყე მისია" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "დაჯავშნე დაკვირვება" })).toBeVisible();
 
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,

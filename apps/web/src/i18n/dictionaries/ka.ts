@@ -78,7 +78,7 @@ const dictionary = {
     demoLabel: "სადემონსტრაციო მონაცემები",
     common: {
       watchLive: "პირდაპირი დაკვირვების ნახვა",
-      planMission: "მისიის დაგეგმვა",
+      viewTarget: "ობიექტის ნახვა",
       illustration: "საკატალოგო ილუსტრაცია",
       minutes: "წთ",
       approximateViewers: "დაახლ. მაყურებელი",
@@ -86,16 +86,11 @@ const dictionary = {
       currentMission: "მიმდინარე მისია",
       telescope: "ტელესკოპი",
       status: "სტატუსი",
-      bestTime: "საუკეთესო დრო",
+      window: "დაკვირვების დრო",
+      altitude: "მიმდინარე სიმაღლე",
       duration: "მისია",
       liveLabel: "პირდაპირი",
       observatoryOnline: "ონლაინ",
-      qualities: {
-        Excellent: "შესანიშნავი",
-        Good: "კარგი",
-        Fair: "დამაკმაყოფილებელი",
-        Unavailable: "მიუწვდომელი",
-      },
     },
     live: {
       index: "01",
@@ -115,57 +110,7 @@ const dictionary = {
       description:
         "მისია იწყება დაკვირვებადი სამიზნითა და ღამის ცაზე რეალური დროის მონაკვეთით.",
       scheduleNote:
-        "საილუსტრაციო დროები · საბოლოო ხელმისაწვდომობა გადამოწმებას საჭიროებს",
-      targets: {
-        moon: {
-          name: "მთვარე",
-          type: "ბუნებრივი თანამგზავრი",
-          visibility: "ჰორიზონტზე მაღლა",
-          bestTime: "20:10–22:30",
-        },
-        saturn: {
-          name: "სატურნი",
-          type: "პლანეტა",
-          visibility: "სამხრეთ-დასავლეთი",
-          bestTime: "21:40–23:15",
-        },
-        jupiter: {
-          name: "იუპიტერი",
-          type: "პლანეტა",
-          visibility: "ამოდის აღმოსავლეთით",
-          bestTime: "22:05–01:40",
-        },
-        m31: {
-          name: "M31 ანდრომედა",
-          type: "გალაქტიკა",
-          visibility: "ჩრდილო-აღმოსავლეთი",
-          bestTime: "22:20–01:10",
-        },
-        m13: {
-          name: "M13",
-          type: "სფერული გროვა",
-          visibility: "დასავლეთის ცა",
-          bestTime: "20:50–22:40",
-        },
-        m27: {
-          name: "M27",
-          type: "პლანეტარული ნისლეული",
-          visibility: "ჩრდილო-დასავლეთი",
-          bestTime: "21:15–23:35",
-        },
-        m57: {
-          name: "M57",
-          type: "პლანეტარული ნისლეული",
-          visibility: "მაღლა დასავლეთით",
-          bestTime: "20:45–22:55",
-        },
-        m42: {
-          name: "M42 ორიონი",
-          type: "ემისიური ნისლეული",
-          visibility: "დაბლა სამხრეთ-აღმოსავლეთით",
-          bestTime: "23:30–02:15",
-        },
-      },
+        "ხილვადობას ობსერვატორია ახლა ითვლის · სურათები ილუსტრაციებია და არა ტელესკოპის კადრები",
     },
     howItWorks: {
       index: "03",

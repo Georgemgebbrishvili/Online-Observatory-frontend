@@ -1,49 +1,46 @@
 "use client";
 
+import type { TargetType, TonightTarget } from "@darkview/contracts";
 import Link from "next/link";
 import { useState } from "react";
 
+import { TargetAvailability } from "@/components/astronomy/target-availability";
+import {
+  formatWindow,
+  primaryReason,
+  targetDescription,
+  targetName,
+  targetVisual,
+} from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { missionBrowserCopy } from "@/i18n/resources/missions";
-import {
-  rankedMissionTargets,
-  type TargetType,
-  targetTypes,
-} from "@/features/missions/targets";
+import { targetCopy } from "@/i18n/resources/targets";
 
 type MissionBrowserProps = {
   locale: Locale;
+  items: TonightTarget[];
+  timezone: string;
 };
 
-type TargetFilter = "All" | TargetType;
+type TargetFilter = "ALL" | TargetType;
 
-const filters: TargetFilter[] = ["All", ...targetTypes];
-
-function localizedName(locale: Locale, target: (typeof rankedMissionTargets)[number]) {
-  return locale === "ka" ? target.georgianName : target.commonName;
-}
-
-export function MissionBrowser({ locale }: MissionBrowserProps) {
-  const [activeFilter, setActiveFilter] = useState<TargetFilter>("All");
+export function MissionBrowser({ items, locale, timezone }: MissionBrowserProps) {
+  const [activeFilter, setActiveFilter] = useState<TargetFilter>("ALL");
   const copy = missionBrowserCopy[locale];
-  const targets = rankedMissionTargets.filter(
-    (target) => activeFilter === "All" || target.type === activeFilter,
+  const words = targetCopy[locale];
+  // Only the types tonight's list actually holds: a filter that can only ever be empty
+  // is noise.
+  const filters: TargetFilter[] = [
+    "ALL",
+    ...new Set(items.map((item) => item.target.type)),
+  ];
+  const visible = items.filter(
+    (item) => activeFilter === "ALL" || item.target.type === activeFilter,
   );
 
   return (
-    <section className="missions-page" aria-labelledby="missions-title">
-      <header className="missions-hero">
-        <p className="eyebrow">
-          <span aria-hidden="true" />
-          {copy.eyebrow}
-        </p>
-        <div className="missions-hero-copy">
-          <h1 id="missions-title">{copy.title}</h1>
-          <p>{copy.description}</p>
-        </div>
-      </header>
-
-      <div className="mission-filters" role="group" aria-label={copy.title}>
+    <>
+      <div className="mission-filters" role="group" aria-label={copy.filterLabel}>
         {filters.map((filter) => (
           <button
             key={filter}
@@ -52,28 +49,31 @@ export function MissionBrowser({ locale }: MissionBrowserProps) {
             aria-pressed={activeFilter === filter}
             onClick={() => setActiveFilter(filter)}
           >
-            {copy.filters[filter]}
+            {filter === "ALL" ? copy.all : words.typesPlural[filter]}
           </button>
         ))}
       </div>
 
-      {targets.length > 0 ? (
-        <ol className="mission-target-grid" aria-live="polite">
-          {targets.map((target, index) => (
+      <ol className="mission-target-grid" aria-live="polite">
+        {visible.map(({ target, visibility }) => {
+          const name = targetName(target, locale);
+          const reason = primaryReason(visibility);
+          const href = `/${locale}/app/missions/${target.slug}`;
+          return (
             <li key={target.id}>
-              <article className="mission-target-card">
+              <article
+                className="mission-target-card"
+                data-observable={visibility.observable}
+              >
                 <Link
                   className="mission-card-visual-link"
-                  href={`/${locale}/app/missions/${target.slug}`}
-                  aria-label={`${copy.view}: ${localizedName(locale, target)}`}
+                  href={href}
+                  aria-label={`${copy.view}: ${name}`}
                 >
                   <div
-                    className={`mission-target-visual mission-target-visual-${target.imagePreset}`}
+                    className={`mission-target-visual mission-target-visual-${targetVisual(target)}`}
                     aria-hidden="true"
                   >
-                    <span className="mission-rank">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
                     <i />
                     <b />
                   </div>
@@ -83,62 +83,50 @@ export function MissionBrowser({ locale }: MissionBrowserProps) {
                   <header>
                     <div>
                       <p>
-                        {copy.types[target.type]} · {target.catalogId}
+                        {words.types[target.type]}
+                        {target.catalogId ? ` · ${target.catalogId}` : ""}
                       </p>
                       <h2>
-                        <Link href={`/${locale}/app/missions/${target.slug}`}>
-                          {localizedName(locale, target)}
-                        </Link>
+                        <Link href={href}>{name}</Link>
                       </h2>
                     </div>
-                    <span className="mission-availability">
-                      <i aria-hidden="true" />
-                      {index === 0 ? copy.ranked : copy.available}
-                    </span>
+                    <TargetAvailability
+                      observable={visibility.observable}
+                      label={reason ? words.reasons[reason] : words.observable}
+                    />
                   </header>
 
                   <p className="mission-target-description">
-                    {target.description[locale]}
+                    {targetDescription(target, locale)}
                   </p>
 
                   <dl className="mission-card-data">
                     <div>
                       <dt>{copy.altitude}</dt>
-                      <dd>{target.currentVisibility.altitude}°</dd>
+                      <dd>{Math.round(visibility.horizontal.altitudeDegrees)}°</dd>
                     </div>
                     <div>
                       <dt>{copy.window}</dt>
-                      <dd>{target.currentVisibility.window}</dd>
+                      <dd>{formatWindow(visibility, timezone, locale, words.window)}</dd>
                     </div>
                     <div>
                       <dt>{copy.duration}</dt>
                       <dd>
-                        {target.preferredObservationDuration} {copy.minutes}
+                        {target.expectedMissionMinutes} {copy.minutes}
                       </dd>
                     </div>
                   </dl>
 
-                  <Link
-                    className="mission-card-action"
-                    href={`/${locale}/app/missions/${target.slug}`}
-                  >
+                  <Link className="mission-card-action" href={href}>
                     {copy.view}
                     <span aria-hidden="true">↗</span>
                   </Link>
                 </div>
               </article>
             </li>
-          ))}
-        </ol>
-      ) : (
-        <div className="mission-empty" role="status">
-          <div className="mission-empty-orbit" aria-hidden="true">
-            <span />
-          </div>
-          <h2>{copy.emptyTitle}</h2>
-          <p>{copy.emptyDescription}</p>
-        </div>
-      )}
-    </section>
+          );
+        })}
+      </ol>
+    </>
   );
 }

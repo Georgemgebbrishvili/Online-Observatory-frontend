@@ -30,6 +30,16 @@
   line-height: 1.75;
 }
 
+.missions-page .tonight-notices {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.missions-page .tonight-notices:empty {
+  display: none;
+}
+
 .mission-filters {
   display: flex;
   gap: var(--space-2);
@@ -159,18 +169,6 @@
   height: 100%;
 }
 
-.mission-rank {
-  position: absolute;
-  z-index: 3;
-  top: var(--space-4);
-  left: var(--space-4);
-  color: var(--color-text-tertiary);
-  font-family: var(--font-display);
-  font-size: var(--font-size-label);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-}
-
 .mission-target-visual > i,
 .mission-detail-visual > i {
   position: relative;
@@ -220,30 +218,6 @@
   box-shadow: inset -1.25rem -0.4rem 0 var(--color-scrim-soft);
 }
 
-.mission-target-visual-galaxy > i,
-.mission-detail-visual.mission-target-visual-galaxy > i {
-  width: 8.5rem;
-  height: 2.6rem;
-  border-color: var(--color-photon-border);
-  background: radial-gradient(
-    ellipse,
-    var(--color-text-primary),
-    var(--color-photon-muted) 25%,
-    transparent 68%
-  );
-  filter: blur(0.1rem);
-  transform: rotate(-18deg);
-}
-
-.mission-target-visual-galaxy > b,
-.mission-detail-visual.mission-target-visual-galaxy > b {
-  width: 6rem;
-  height: 1px;
-  background: var(--color-text-secondary);
-  box-shadow: 0 0 1.5rem var(--color-photon);
-  transform: rotate(-18deg);
-}
-
 .mission-target-visual-cluster > i,
 .mission-detail-visual.mission-target-visual-cluster > i {
   border-style: dashed;
@@ -270,7 +244,9 @@
 }
 
 .mission-target-visual-nebula > i,
-.mission-detail-visual.mission-target-visual-nebula > i {
+.mission-target-visual-ring > i,
+.mission-detail-visual.mission-target-visual-nebula > i,
+.mission-detail-visual.mission-target-visual-ring > i {
   width: 6.5rem;
   height: 4rem;
   border-color: var(--color-photon-border);
@@ -281,7 +257,9 @@
 }
 
 .mission-target-visual-nebula > b,
-.mission-detail-visual.mission-target-visual-nebula > b {
+.mission-target-visual-ring > b,
+.mission-detail-visual.mission-target-visual-nebula > b,
+.mission-detail-visual.mission-target-visual-ring > b {
   width: 2.2rem;
   height: 1rem;
   border: 1px solid var(--color-photon);
@@ -314,16 +292,16 @@
 }
 
 .mission-target-body > header {
+  /* The availability sits under the name: a reason is a phrase, not a one-word badge. */
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
   gap: var(--space-3);
 }
 
 .mission-target-body header p,
 .mission-detail-catalog,
-.mission-action-panel > p,
-.mission-expectation > p {
+.mission-action-panel > p {
   margin: 0 0 var(--space-2);
   color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
@@ -344,28 +322,6 @@
   display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
-}
-
-.mission-availability,
-.mission-compatible {
-  display: inline-flex;
-  min-height: 1.75rem;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--color-success);
-  font-size: var(--font-size-caption);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.mission-availability i,
-.mission-compatible i,
-.detail-live-dot {
-  width: 0.38rem;
-  height: 0.38rem;
-  border-radius: var(--radius-full);
-  background: currentColor;
-  box-shadow: 0 0 0.75rem currentColor;
 }
 
 .mission-target-description {
@@ -433,16 +389,6 @@
   font-size: 1rem;
 }
 
-.mission-empty {
-  display: grid;
-  justify-items: center;
-  padding: var(--space-16) var(--space-5);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
-  text-align: center;
-}
-
 .mission-empty-orbit {
   display: grid;
   width: 5rem;
@@ -458,18 +404,6 @@
   height: 0.4rem;
   border-radius: var(--radius-full);
   background: var(--color-photon);
-}
-
-.mission-empty h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-}
-
-.mission-empty p {
-  max-width: 28rem;
-  margin: var(--space-3) 0 0;
-  color: var(--color-text-secondary);
 }
 
 .mission-back-link {
@@ -566,7 +500,6 @@
 }
 
 .mission-stat-grid,
-.mission-expectation,
 .mission-technical,
 .mission-action-panel {
   border: 1px solid var(--color-border-subtle);
@@ -595,29 +528,6 @@
   align-items: center;
   gap: var(--space-2);
   font-size: 0.95rem;
-}
-
-.detail-live-dot {
-  display: inline-block;
-  color: var(--color-success);
-}
-
-.mission-expectation {
-  margin-top: var(--space-4);
-  padding: clamp(var(--space-6), 5vw, var(--space-10));
-  background:
-    linear-gradient(145deg, var(--color-photon-faint), transparent 55%),
-    var(--color-surface-base);
-}
-
-.mission-expectation h2 {
-  max-width: 27ch;
-  margin: var(--space-4) 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 4vw, 2.35rem);
-  font-weight: 450;
-  letter-spacing: -0.04em;
-  line-height: 1.25;
 }
 
 .mission-technical {
@@ -691,35 +601,14 @@
   letter-spacing: -0.035em;
 }
 
-.mission-compatible {
-  margin-top: var(--space-3);
+.mission-action-panel > .mode-notice {
+  margin-top: var(--space-4);
 }
 
-.mission-action-panel > div:not(.mission-action-feedback) {
+.mission-action-panel > div {
   display: grid;
   gap: var(--space-3);
   margin-top: var(--space-8);
-}
-
-.mission-action-feedback {
-  display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-  padding: var(--space-4);
-  border: 1px solid var(--color-photon-border);
-  border-radius: var(--radius-medium);
-  background: var(--color-photon-faint);
-}
-
-.mission-action-feedback strong {
-  color: var(--color-photon);
-  font-size: 0.84rem;
-}
-
-.mission-action-feedback span {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-  line-height: 1.55;
 }
 
 @media (--md) {

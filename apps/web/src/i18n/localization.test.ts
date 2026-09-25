@@ -14,6 +14,7 @@ import { legalCopy } from "@/i18n/resources/legal";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
 import { pricingPageCopy } from "@/i18n/resources/pricing";
 import { authCopy } from "@/i18n/resources/auth";
+import { targetCopy } from "@/i18n/resources/targets";
 
 function resourceShape(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(resourceShape);
@@ -35,7 +36,6 @@ describe("Georgian localization", () => {
     expect(ka.navigation.app.collection).toBe("კოლექცია");
     expect(ka.navigation.public.observatory).toBe("ობსერვატორია");
     expect(ka.home.tonight.eyebrow).toBe("დღევანდელი ცა");
-    expect(missionDetailCopy.ka.start).toBe("დაიწყე მისია");
     expect(liveObservationCopy.ka.capture).toBe("გადაიღე");
     expect(missionSessionCopy.ka.states.CENTERING.title).toBe("ობიექტი დაფიქსირდა");
   });
@@ -55,6 +55,7 @@ describe("Georgian localization", () => {
       [pricingPageCopy.en, pricingPageCopy.ka],
       [authCopy.en, authCopy.ka],
       [legalCopy.en, legalCopy.ka],
+      [targetCopy.en, targetCopy.ka],
     ] as const;
 
     for (const [english, georgian] of resources) {

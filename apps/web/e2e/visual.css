@@ -1,4 +1,14 @@
-/* Applied only while a visual baseline is captured. The dev-server badge is not the product. */
+/* Applied only while a visual baseline is captured. */
+
+/* The dev-server badge is not the product. */
 nextjs-portal {
   display: none !important;
+}
+
+/*
+ * A full-page capture never scrolls, so `content-visibility: auto` would leave every
+ * off-screen section unpainted: the homepage's lower half captured as blank. Paint it all.
+ */
+* {
+  content-visibility: visible !important;
 }
