@@ -83,3 +83,28 @@ Status components accept typed values and select a semantic tone internally. The
 ## Brand assets
 
 The current lockup is a text placeholder. When approved files are supplied, place them in `public/brand` and replace the placeholder without redrawing or generating a logo. Asset provenance must also be added to the private provenance record.
+
+## The product name
+
+The name, its Georgian case forms, both taglines and the maker line live in
+`apps/web/src/brand.ts` and nowhere else. A string names the case it needs —
+`brand.ka.genitive`, `brand.ka.on` — because Georgian declines the name and no single
+token is right in every sentence. `src/brand.test.ts` fails if the name is spelled out
+anywhere else in `apps/web/src`.
+
+## Visual gate
+
+Every public and every `/app` route, in English and Georgian, at 390 and 1440, is
+compared against a committed baseline by the Playwright project `visual`
+(`apps/web/e2e/visual.spec.ts`).
+
+- Baselines are generated **only** inside `mcr.microsoft.com/playwright:v<version>-noble`,
+  by `npm run visual:update`. Never from the host: macOS rasterises fonts differently,
+  and the spec skips itself outside Linux. `npm run visual` compares in the same image.
+  Both need a container runtime (OrbStack or Docker).
+- CI runs `visual` in the same image, with no retries.
+- A visual change is a baseline update **in the same commit** as the change, with the
+  before and after images shown alongside it — in the pull request description, or in
+  the hand-over while work is committed straight to `main`.
+- A baseline that changes with no product change is a determinism bug in the gate. Fix
+  the gate — a mask, the clock, a font wait — rather than regenerating around it.

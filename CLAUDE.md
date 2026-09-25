@@ -233,6 +233,24 @@ buttons, inputs, focus rings, status indicators or live badges. Depth comes from
 surface ramp and borders. `--shadow-*` tokens are shadows, not glows, and the mark's
 glow token is not reachable from component CSS.
 
+## Building a surface
+
+**Components.** A new or changed UI component appears on `/design-system` in its states
+— default, hover, focus-visible, disabled, loading, error, and "simulated" wherever it
+shows telescope output — before any page uses it.
+
+**The surface loop.** Every new page or feature, in this order:
+
+1. **States listed** — loading, empty, error, agent offline, weather hold, simulated,
+   success — in English and Georgian.
+2. **Contract trace** — every value on screen mapped to an operation and field in
+   `packages/contracts/openapi.yaml`, cross-checked against the handler in
+   `../part-1-platform`. A gap goes to `docs/platform-requests/` **before** building.
+3. **Build on `dev:stack`** — the real platform, the simulator.
+4. **Shell contract and visual baselines**, both languages (`docs/design-system.md`,
+   Visual gate).
+5. **Adversarial review, then commit on `main`.**
+
 ## Security and audit
 
 Every change in this repository must be independently verifiable. Treat it accordingly.
