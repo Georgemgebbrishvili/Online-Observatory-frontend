@@ -146,6 +146,8 @@ export const designSystemCopy = {
       elevatedDescription:
         "Reserved for focused layers and content that needs stronger separation.",
       targetCard: "TargetCard — observable and blocked specimens",
+      captureCard:
+        "CaptureCard — a simulated capture with a drawn frame, one with no preview, and the download states",
     },
     overlay: {
       openModal: "Open modal",
@@ -339,6 +341,8 @@ export const designSystemCopy = {
       elevatedDescription:
         "გამოიყენება ფოკუსირებულ ფენებსა და მკაფიოდ გამოსაყოფ კონტენტში.",
       targetCard: "TargetCard — დაკვირვებადი და დაბლოკილი ნიმუშები",
+      captureCard:
+        "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები",
     },
     overlay: {
       openModal: "მოდალის გახსნა",
@@ -456,3 +460,39 @@ export const targetSpecimens: TonightTarget[] = [
     },
   },
 ];
+
+/**
+ * CaptureCard specimens. The frame is a drawn field of points in a data URI, shown
+ * only under the simulated badge: nothing on this page is telescope output.
+ */
+const specimenFrame = `data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#05080d"/>${Array.from(
+    { length: 60 },
+    (_, index) => {
+      const angle = index * 2.39996;
+      const radius = 4 + Math.sqrt(index) * 22;
+      return `<circle cx="${(200 + Math.cos(angle) * radius).toFixed(1)}" cy="${(200 + Math.sin(angle) * radius).toFixed(1)}" r="${(2.6 - index / 30).toFixed(2)}" fill="#dfe6ec"/>`;
+    },
+  ).join("")}</svg>`,
+)}`;
+
+const specimenTitle = { en: "Hercules Cluster", ka: "ჰერკულესის გროვა" } as const;
+
+export const captureSpecimens = [
+  {
+    title: specimenTitle,
+    captureId: "specimen-simulated",
+    thumbnail: specimenFrame,
+    simulated: true,
+    visibility: "PRIVATE",
+    capturedAt: "2026-09-22T20:10:00Z",
+  },
+  {
+    title: specimenTitle,
+    captureId: "specimen-no-preview",
+    thumbnail: null,
+    simulated: false,
+    visibility: "GALLERY",
+    capturedAt: "2026-09-22T20:02:00Z",
+  },
+] as const;

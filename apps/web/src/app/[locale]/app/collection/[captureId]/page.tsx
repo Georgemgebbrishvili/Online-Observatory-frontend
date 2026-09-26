@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { CaptureDetail } from "@/components/collection/capture-detail";
-import { captures, getCapture } from "@/features/collection/captures";
-import { isLocale, locales } from "@/i18n/config";
+import { StatePanel } from "@/components/ui/state-panel";
+import { captureTitle } from "@/features/collection/present";
+import { readCapture } from "@/features/collection/read";
+import { isLocale } from "@/i18n/config";
+import { collectionGalleryCopy } from "@/i18n/resources/collection";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/collection.css";
 import { brand } from "@/brand";
@@ -12,25 +15,17 @@ type CaptureDetailPageProps = {
   params: Promise<{ locale: string; captureId: string }>;
 };
 
-export function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    captures.map((capture) => ({ locale, captureId: capture.id })),
-  );
-}
-
 export async function generateMetadata({
   params,
 }: CaptureDetailPageProps): Promise<Metadata> {
   const { locale, captureId } = await params;
-  const capture = getCapture(captureId);
+  if (!isLocale(locale)) return {};
 
-  if (!isLocale(locale) || !capture) return {};
+  const result = await readCapture(captureId);
+  const robots = { index: false, follow: false };
+  if (result.kind !== "ok") return { robots };
 
-  return {
-    title: `${capture.target[locale]} · ${capture.id} · ${brand.en.name}`,
-    description: capture.description[locale],
-    robots: { index: false, follow: false },
-  };
+  return { title: `${captureTitle(result.entry, locale)} · ${brand.en.name}`, robots };
 }
 
 export default async function CaptureDetailPage({ params }: CaptureDetailPageProps) {
@@ -40,8 +35,20 @@ export default async function CaptureDetailPage({ params }: CaptureDetailPagePro
 
   await requireUser(locale);
 
-  const capture = getCapture(captureId);
-  if (!capture) notFound();
+  const result = await readCapture(captureId);
+  if (result.kind === "not-found") notFound();
+  if (result.kind === "signed-out") redirect(`/${locale}/sign-in`);
+  if (result.kind === "unreachable") {
+    return (
+      <div className="capture-detail-page">
+        <StatePanel
+          variant="error"
+          headingLevel={1}
+          {...collectionGalleryCopy[locale].unreachable}
+        />
+      </div>
+    );
+  }
 
-  return <CaptureDetail capture={capture} locale={locale} />;
+  return <CaptureDetail result={result} locale={locale} />;
 }

@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
+import "@/styles/collection.css";
 import "@/styles/design-system.css";
 import { notFound } from "next/navigation";
 
 import { OpticalRing } from "@/components/astronomy/optical-ring";
 import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { TargetCard } from "@/components/astronomy/target-card";
+import { CaptureCard } from "@/components/collection/capture-card";
+import { CaptureDownloads } from "@/components/collection/capture-downloads";
 import { MissionStatus, missionStatuses } from "@/components/missions/mission-status";
 import { LiveIndicator } from "@/components/observatory/live-indicator";
 import { ModeNotice } from "@/components/observatory/mode-notice";
@@ -24,14 +27,16 @@ import { StatePanel } from "@/components/ui/state-panel";
 import { Tabs } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Container } from "@/components/ui/container";
+import { formatCapturedAt } from "@/features/collection/present";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/collection";
 import { missionSessionCopy } from "@/i18n/resources/missions";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
 import { palette } from "@/styles/tokens";
 
-import { designSystemCopy, targetSpecimens } from "./copy";
+import { captureSpecimens, designSystemCopy, targetSpecimens } from "./copy";
 
 type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
@@ -330,6 +335,40 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 common={dictionary.home.common}
               />
             ))}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.captureCard}</h3>
+          <div className="capture-grid">
+            {captureSpecimens.map((specimen) => (
+              <CaptureCard
+                key={specimen.captureId}
+                captureId={specimen.captureId}
+                href={`/${locale}/design-system#surfaces-title`}
+                title={specimen.title[locale]}
+                reference="M13 · 60000000"
+                capturedAt={formatCapturedAt(specimen.capturedAt, "Asia/Tbilisi", locale)}
+                thumbnail={specimen.thumbnail}
+                simulated={specimen.simulated}
+                visibility={specimen.visibility}
+                copy={collectionGalleryCopy[locale]}
+              />
+            ))}
+            <SurfacePanel>
+              <CaptureDownloads
+                captureId="specimen"
+                fitsAvailable={false}
+                signInPath={`/${locale}/sign-in`}
+                copy={{
+                  download: captureDetailCopy[locale].download,
+                  downloadFits: captureDetailCopy[locale].downloadFits,
+                  noFits: captureDetailCopy[locale].noFits,
+                  downloadFailed: captureDetailCopy[locale].downloadFailed,
+                  downloadNote: captureDetailCopy[locale].downloadNote,
+                }}
+              />
+              <p className="capture-action-feedback" role="note">
+                {captureDetailCopy[locale].downloadFailed}
+              </p>
+            </SurfacePanel>
           </div>
         </section>
 

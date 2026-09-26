@@ -2,7 +2,7 @@
 
 2026-09-26. `/app/collection` and `/app/collection/[captureId]`, from
 `features/collection/captures.ts` to the platform. Traced against `darkview-platform` at
-`acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`. States and trace only; nothing is built yet.
+`acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`. Built 2026-09-26.
 
 ## Contract trace
 
@@ -48,26 +48,28 @@ non-existent one both answer 404 (`app/captures/[captureId]/route.ts`).
 
 ## States, en + ka
 
-Georgian drafts use `docs/georgian-terminology.md`; DV-080 reviews them with a native reader.
+Georgian drafts use `docs/georgian-terminology.md` and the formal register the Collection
+already used; DV-080 reviews them with a native reader. A cursor past the last capture
+shows "No older captures." / „ძველი კადრები აღარ არის." with a link back to the newest.
 
-| State                        | Where it comes from                                   | en                                                                           | ka                                                                         |
-| ---------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Loading                      | `loading.tsx` while the reads resolve                 | Loading your Collection…                                                     | კოლექცია იტვირთება…                                                        |
-| Success                      | `items.length > 0`                                    | —                                                                            | —                                                                          |
-| Empty                        | first page, `items: []`                               | Your Collection is empty. Captures from your observations appear here.       | შენი კოლექცია ცარიელია. დაკვირვებისას გადაღებული კადრები აქ გამოჩნდება.    |
-| Platform unreachable         | any failure, or a body failing the generated schema   | We couldn't load your Collection. Your captures are safe; try again shortly. | კოლექციის ჩატვირთვა ვერ მოხერხდა. შენი კადრები დაცულია — სცადე ცოტა ხანში. |
-| Signed out / session expired | `requireUser`, or a 401 from `/captures`              | → sign-in                                                                    | → შესვლა                                                                   |
-| Simulated                    | `Capture.mode: SIMULATED`, on every card and image    | Simulated capture                                                            | სიმულირებული კადრი                                                         |
-| No thumbnail                 | `thumbnailUrl: null`                                  | No preview for this capture                                                  | ამ კადრს მინიატურა არ აქვს                                                 |
-| Target not in the catalogue  | `targetId` absent from `listTargets` (disabled since) | A target no longer in the catalogue                                          | ობიექტი, რომელიც კატალოგში აღარ არის                                       |
-| Targets unreadable           | `listTargets` fails; captures still shown             | the imaging profile stands as the title (e.g. "Planetary")                   | სათაურად — გადაღების პროფილი                                               |
-| Capture not found            | `getCapture` 404 (not yours, or no such id)           | the page 404s                                                                | the page 404s                                                              |
-| Image link unavailable       | `getCaptureDownload(IMAGE)` fails at render           | The full image could not be loaded. Try again.                               | სრული კადრის ჩატვირთვა ვერ მოხერხდა. სცადე ხელახლა.                        |
-| Download failed              | the click-time `getCaptureDownload` fails             | The download link could not be created. Try again.                           | ჩამოტვირთვის ბმული ვერ შეიქმნა. სცადე ხელახლა.                             |
-| No FITS                      | `fitsAvailable: false`                                | FITS was not recorded for this capture                                       | ამ კადრისთვის FITS არ ჩაწერილა                                             |
-| Private                      | `visibility: PRIVATE`                                 | Private                                                                      | პირადი                                                                     |
-| In the gallery               | `visibility: GALLERY`                                 | In the gallery                                                               | გალერეაში                                                                  |
-| Agent offline, weather hold  | not applicable: captures are stored, not live         | no notice                                                                    | no notice                                                                  |
+| State                        | Where it comes from                                   | en                                                                           | ka                                                                           |
+| ---------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Loading                      | `loading.tsx` while the reads resolve                 | Loading your Collection…                                                     | კოლექცია იტვირთება…                                                          |
+| Success                      | `items.length > 0`                                    | —                                                                            | —                                                                            |
+| Empty                        | first page, `items: []`                               | Your Collection is empty. Captures from your observations appear here.       | თქვენი კოლექცია ცარიელია. დაკვირვებისას გადაღებული კადრები აქ გამოჩნდება.    |
+| Platform unreachable         | any failure, or a body failing the generated schema   | We couldn't load your Collection. Your captures are safe; try again shortly. | კოლექციის ჩატვირთვა ვერ მოხერხდა. თქვენი კადრები დაცულია. სცადეთ ცოტა ხანში. |
+| Signed out / session expired | `requireUser`, or a 401 from `/captures`              | → sign-in                                                                    | → შესვლა                                                                     |
+| Simulated                    | `Capture.mode: SIMULATED`, on every card and image    | Simulated capture                                                            | სიმულირებული კადრი                                                           |
+| No thumbnail                 | `thumbnailUrl: null`                                  | No preview for this capture                                                  | ამ კადრს მინიატურა არ აქვს                                                   |
+| Target not in the catalogue  | `targetId` absent from `listTargets` (disabled since) | A target no longer in the catalogue                                          | ობიექტი, რომელიც კატალოგში აღარ არის                                         |
+| Targets unreadable           | `listTargets` fails; captures still shown             | the imaging profile as the title (e.g. "Planetary"), not called retired      | სათაურად — გადაღების პროფილი                                                 |
+| Capture not found            | `getCapture` 404 (not yours, or no such id)           | the not-found page (a soft 404, see below)                                   | the not-found page                                                           |
+| Image link unavailable       | `getCaptureDownload(IMAGE)` fails at render           | The full image could not be loaded. Try again.                               | სრული კადრის ჩატვირთვა ვერ მოხერხდა. სცადეთ ხელახლა.                         |
+| Download failed              | the click-time `getCaptureDownload` fails             | The download link could not be created. Try again.                           | ჩამოტვირთვის ბმული ვერ შეიქმნა. სცადეთ ხელახლა.                              |
+| No FITS                      | `fitsAvailable: false`                                | FITS was not recorded for this capture                                       | ამ კადრისთვის FITS არ ჩაწერილა                                               |
+| Private                      | `visibility: PRIVATE`                                 | Private                                                                      | პირადი                                                                       |
+| In the gallery               | `visibility: GALLERY`                                 | In the gallery                                                               | გალერეაში                                                                    |
+| Agent offline, weather hold  | not applicable: captures are stored, not live         | no notice                                                                    | no notice                                                                    |
 
 On a freshly seeded `dev:stack` the Collection is **always empty**: the seed writes no
 captures, and no mission can reach `CAPTURING` while the envelope is unmeasured
@@ -75,18 +77,33 @@ captures, and no mission can reach `CAPTURING` while the envelope is unmeasured
 populated state is exercised against `e2e/fake-platform.mjs` only, and its `GET /targets`
 must first be made to answer enabled targets only, as the platform does.
 
-## Open — needs the maintainer before building
+## Decided by the maintainer, 2026-09-26
 
 **Where images load from.** The CSP is `img-src 'self' data: blob:`. Signed URLs point at
 the bucket's origin (`S3_ENDPOINT`: `http://localhost:9000` in dev), and ADR-012 leaves
 the provider unchosen: private bucket, no public path, no CDN in Phase 1. Proxying the
-bytes through this app would undo ADR-012's bandwidth argument. The proposal: one
-non-secret web variable, `DARKVIEW_STORAGE_ORIGIN`, added to `img-src` when set; unset, the
-Collection shows the "No preview" state rather than an image the browser will block.
+bytes through this app would undo ADR-012's bandwidth argument. So: one non-secret web
+variable, `DARKVIEW_STORAGE_ORIGIN`, added to `img-src` when set. A signed URL on any
+other origin, or any URL while it is unset, is shown as "No preview" rather than an image
+the browser will block.
 
-**Downloads open in a tab.** The URL is cross-origin, so `<a download>` is ignored and the
-browser shows the image instead of saving it. Saving would need
-`response-content-disposition` in the presign — a platform change, not raised unless wanted.
+**Downloads open in place.** The link is minted on the click and the page navigates to
+it. It is cross-origin, so `<a download>` would be ignored: the browser shows an image
+rather than saving it, and saves a FITS only if storage sends it as an attachment.
+Saving outright would need `response-content-disposition` in the presign — a platform
+change, accepted as is for now.
+
+## Found on the way
+
+- **Every dynamic page is a soft 404.** `[locale]/loading.tsx` streams the shell as a 200
+  before a page can call `notFound()`, so an unknown capture — and, since slice 1, an
+  unknown target — answers 200 with the not-found page and `noindex`
+  (`node_modules/next/dist/docs/01-app/03-api-reference/04-functions/not-found.md`). The
+  e2e suite asserts the page, not the status. Not changed here.
+- **A disabled target cannot be re-enabled from `/admin/targets`.** The page lists
+  `GET /targets`, which answers enabled targets only, so a disabled one leaves the list on
+  the next load. The fake answered every target, which hid it; it now answers as the
+  platform does. The operator page needs a platform read that includes disabled targets.
 
 ## Deliberate leftovers
 

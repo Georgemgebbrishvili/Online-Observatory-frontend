@@ -21,13 +21,6 @@ export type Capture = {
   description: Record<Locale, string>;
 };
 
-export type ProgressCollection = {
-  id: string;
-  title: Record<Locale, string>;
-  description: Record<Locale, string>;
-  targetCatalogIds: string[];
-};
-
 const observatory = {
   en: `${brand.en.name} Tbilisi Observatory`,
   ka: `${brand.ka.genitive} თბილისის ობსერვატორია`,
@@ -107,50 +100,3 @@ export const captures: Capture[] = [
     },
   },
 ];
-
-export const progressCollections: ProgressCollection[] = [
-  {
-    id: "solar-system",
-    title: { en: "Solar System", ka: "მზის სისტემა" },
-    description: {
-      en: "Our nearest worlds, observed one by one.",
-      ka: "ჩვენთან უახლოესი სამყაროები, თითოეული დაკვირვებით.",
-    },
-    targetCatalogIds: ["MOON", "SATURN", "JUPITER", "MARS"],
-  },
-  {
-    id: "messier-starter",
-    title: { en: "Messier Starter", ka: "მესიეს დასაწყისი" },
-    description: {
-      en: "A first path through the classic Messier catalog.",
-      ka: "პირველი გზა მესიეს კლასიკურ კატალოგში.",
-    },
-    targetCatalogIds: ["M13", "M31", "M42", "M57", "M27"],
-  },
-  {
-    id: "deep-sky",
-    title: { en: "Deep Sky", ka: "ღრმა ცა" },
-    description: {
-      en: "Clusters, galaxies, and nebulae beyond the Solar System.",
-      ka: "გროვები, გალაქტიკები და ნისლეულები მზის სისტემის მიღმა.",
-    },
-    targetCatalogIds: ["M13", "M31", "M42", "M57", "M27", "NGC 7000"],
-  },
-];
-
-export function getCapture(captureId: string) {
-  return captures.find((capture) => capture.id === captureId);
-}
-
-export function getCollectionProgress(collection: ProgressCollection) {
-  const capturedCatalogIds = new Set(captures.map((capture) => capture.catalogId));
-  const completed = collection.targetCatalogIds.filter((id) =>
-    capturedCatalogIds.has(id),
-  ).length;
-
-  return {
-    completed,
-    total: collection.targetCatalogIds.length,
-    percentage: Math.round((completed / collection.targetCatalogIds.length) * 100),
-  };
-}

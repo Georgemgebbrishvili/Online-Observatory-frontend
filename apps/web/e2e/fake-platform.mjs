@@ -12,9 +12,13 @@ import {
   zAdminUpdateTargetRequest,
   zAdminUpdateTargetResponse,
   zApiError,
+  zGetCaptureDownloadResponse,
+  zGetCaptureResponse,
+  zGetMissionResponse,
   zGetObservatoryConditionsResponse,
   zGetObservatoryStatusResponse,
   zListBookableObservatoriesResponse,
+  zListCapturesResponse,
   zGetTargetResponse,
   zListTargetsResponse,
   zListTonightTargetsResponse,
@@ -310,11 +314,73 @@ const missions = [
     requestedAt: "2026-09-22T19:30:00.000Z",
     startedAt: "2026-09-22T20:00:00.000Z",
     endedAt: "2026-09-22T20:12:00.000Z",
-    captureIds: ["60000000-0000-4000-8000-000000000001"],
+    captureIds: [
+      "60000000-0000-4000-8000-000000000001",
+      "60000000-0000-4000-8000-000000000002",
+      "60000000-0000-4000-8000-000000000003",
+    ],
     observable: false,
     observerCapacity: 5,
   },
 ];
+
+// The observer's Collection: three simulated captures from the completed M13 mission,
+// newest first. The first has every asset, the second no FITS, the third nothing but
+// its record -- the agent that took it predates thumbnails. Paged by PAGE_SIZE with the
+// platform's cursor, the last capture's id.
+const storageOrigin = `http://127.0.0.1:${port}`;
+const captures = [
+  { n: 1, at: "2026-09-22T20:10:00.000Z", assets: ["THUMBNAIL", "IMAGE", "FITS"] },
+  { n: 2, at: "2026-09-22T20:06:00.000Z", assets: ["THUMBNAIL", "IMAGE"] },
+  { n: 3, at: "2026-09-22T20:02:00.000Z", assets: [] },
+].map(({ assets, at, n }) => ({
+  assets,
+  capture: zGetCaptureResponse.parse({
+    id: `60000000-0000-4000-8000-00000000000${n}`,
+    missionId: "22000000-0000-4000-8000-000000000003",
+    userId,
+    targetId: "30000000-0000-4000-8000-000000000013",
+    capturedAt: at,
+    imagingProfile: "GLOBULAR_CLUSTER",
+    opticalConfig: "F6_3_REDUCER",
+    exposureMilliseconds: 4000,
+    gain: 200,
+    framesStacked: 30 * n,
+    integrationSeconds: 120 * n,
+    widthPx: 3840,
+    heightPx: 2160,
+    solvedFocalLengthMm: n === 1 ? 948.2 : null,
+    fitsAvailable: assets.includes("FITS"),
+    visibility: "PRIVATE",
+    mode: "SIMULATED",
+    thumbnailUrl: null,
+  }),
+}));
+
+// A stand-in for a presigned GET: the bucket's origin, a key, a signature that means nothing.
+function signed(id, kind) {
+  return `${storageOrigin}/storage/${id}/${kind.toLowerCase()}?X-Amz-Signature=fake`;
+}
+
+function withThumbnail({ assets, capture }) {
+  return {
+    ...capture,
+    thumbnailUrl: assets.includes("THUMBNAIL") ? signed(capture.id, "THUMBNAIL") : null,
+  };
+}
+
+// A drawn field of points, deterministic, so a baseline is stable. It stands in for a
+// simulated frame and is only ever shown under the simulated badge.
+function simulatedFrame() {
+  const points = Array.from({ length: 90 }, (_, index) => {
+    const angle = index * 2.39996;
+    const radius = 6 + Math.sqrt(index) * 30;
+    const x = (800 + Math.cos(angle) * radius).toFixed(1);
+    const y = (450 + Math.sin(angle) * radius * 0.9).toFixed(1);
+    return `<circle cx="${x}" cy="${y}" r="${(3.2 - index / 40).toFixed(2)}" fill="#dfe6ec"/>`;
+  }).join("");
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900"><rect width="1600" height="900" fill="#05080d"/>${points}</svg>`;
+}
 
 const auditEvents = [
   {
@@ -535,7 +601,34 @@ async function json(request) {
 
 const routes = {
   "GET /observatories": (_request, response) => send(response, 200, observatories),
-  "GET /targets": (_request, response) => send(response, 200, targets),
+  // Enabled only, as the platform answers (features/targets/catalogue.ts).
+  "GET /targets": (_request, response) =>
+    send(
+      response,
+      200,
+      zListTargetsResponse.parse({
+        ...targets,
+        items: targets.items.filter((row) => row.enabled),
+      }),
+    ),
+  "GET /captures": (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const cursor = new URL(request.url, "http://fake").searchParams.get("cursor");
+    const mine = captures.filter((row) => row.capture.userId === user.id);
+    // As the platform: a cursor it does not know starts nowhere, not at the top.
+    const start = cursor ? mine.findIndex((row) => row.capture.id === cursor) + 1 : 0;
+    const rows = cursor && start === 0 ? [] : mine.slice(start, start + PAGE_SIZE);
+    const hasMore = start + PAGE_SIZE < mine.length && rows.length > 0;
+    send(
+      response,
+      200,
+      zListCapturesResponse.parse({
+        items: rows.map(withThumbnail),
+        page: { hasMore, nextCursor: hasMore ? rows.at(-1).capture.id : null },
+      }),
+    );
+  },
   [`GET /admin/observatories/${observatoryId}/state`]: (request, response) => {
     if (operator(request, response)) send(response, 200, observatoryState());
   },
@@ -709,6 +802,58 @@ http
       const found = targets.items.find((row) => row.slug === slug[1] && row.enabled);
       if (!found) return error(response, 404, "NOT_FOUND", "No such target.");
       return send(response, 200, zGetTargetResponse.parse(found));
+    }
+    const owned = path.match(/^\/(captures|missions)\/([0-9a-f-]+)(\/download)?$/);
+    if (owned && request.method === "GET") {
+      const user = sessionUser(request);
+      if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+      const [, collection, id, download] = owned;
+      if (collection === "missions" && !download) {
+        const mission = missions.find((row) => row.id === id && row.userId === user.id);
+        if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+        return send(response, 200, zGetMissionResponse.parse(mission));
+      }
+      // Somebody else's capture and no capture are the same 404.
+      const row = captures.find(
+        (c) => c.capture.id === id && c.capture.userId === user.id,
+      );
+      if (collection !== "captures" || !row)
+        return error(response, 404, "NOT_FOUND", "No such capture.");
+      if (!download)
+        return send(response, 200, zGetCaptureResponse.parse(withThumbnail(row)));
+      const kind = new URL(request.url, "http://fake").searchParams.get("kind");
+      if (!["IMAGE", "THUMBNAIL", "FITS", "UNMARKED"].includes(kind))
+        return error(
+          response,
+          422,
+          "VALIDATION_FAILED",
+          "A capture asset kind is required.",
+        );
+      if (!row.assets.includes(kind))
+        return error(response, 404, "NOT_FOUND", "No such capture.");
+      return send(
+        response,
+        200,
+        zGetCaptureDownloadResponse.parse({
+          kind,
+          url: signed(id, kind),
+          expiresAt: new Date(Date.now() + 5 * 60_000).toISOString(),
+        }),
+      );
+    }
+    const stored = path.match(/^\/storage\/([0-9a-f-]+)\/(thumbnail|image|fits)$/);
+    if (stored && request.method === "GET") {
+      if (stored[2] === "fits") {
+        response.writeHead(200, {
+          "content-type": "application/fits",
+          "content-disposition": `attachment; filename="${stored[1]}.fits"`,
+        });
+        return response.end(
+          "SIMPLE  =                    T / simulated, not a real frame",
+        );
+      }
+      response.writeHead(200, { "content-type": "image/svg+xml" });
+      return response.end(simulatedFrame());
     }
     const target = path.match(/^\/admin\/targets\/([0-9a-f-]+)$/);
     if (target && request.method === "PATCH") {

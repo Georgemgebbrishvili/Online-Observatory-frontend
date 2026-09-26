@@ -2,7 +2,7 @@ import path from "node:path";
 
 import type { NextConfig } from "next";
 
-import { platformApiBaseUrl } from "./src/lib/platform/config";
+import { platformApiBaseUrl, storageOrigin } from "./src/lib/platform/config";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -24,7 +24,7 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  `img-src 'self' data: blob:${storageOrigin ? ` ${storageOrigin}` : ""}`,
   "font-src 'self'",
   // ADR-016 §4: the API is same-origin at /api, so nothing else needs reaching.
   "connect-src 'self'",

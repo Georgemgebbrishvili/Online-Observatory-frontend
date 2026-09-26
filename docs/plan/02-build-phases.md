@@ -111,7 +111,8 @@ the page and a visible title would fight it; a screen reader still gets a title.
 
 - ~~`/` and `/app/missions` → `/targets/tonight`, `/targets/{slug}`~~ Done 2026-09-25 —
   [`phase-2/01-targets.md`](phase-2/01-targets.md) has the states and the contract trace.
-- `/app/collection` → `/captures`, `/captures/{id}`, `/download`
+- ~~`/app/collection` → `/captures`, `/captures/{id}`, `/download`~~ Done 2026-09-26 —
+  [`phase-2/02-collection.md`](phase-2/02-collection.md) has the states and the contract trace.
 - `/app` → `/me`
 - ~~`/app/missions/[slug]/session`, `/app/live` → `/missions/*`~~ Moved to Phase 4 by
   the maintainer on 2026-09-25: wiring the read side here and the commands there would

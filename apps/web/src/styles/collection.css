@@ -92,21 +92,6 @@
   height: 150%;
 }
 
-.featured-index {
-  position: absolute;
-  z-index: 3;
-  bottom: var(--space-4);
-  left: var(--space-4);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-small);
-  background: var(--color-scrim);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.1em;
-}
-
 .featured-capture-copy {
   display: flex;
   flex-direction: column;
@@ -178,20 +163,17 @@
   align-self: stretch;
 }
 
-.capture-archive,
-.progress-collections {
+.capture-archive {
   padding-top: clamp(var(--space-16), 9vw, 8rem);
 }
 
-.capture-archive > header,
-.progress-collections > header {
+.capture-archive > header {
   display: grid;
   gap: var(--space-3);
   margin-bottom: var(--space-8);
 }
 
-.capture-archive > header h2,
-.progress-collections > header h2 {
+.capture-archive > header h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2rem, 5vw, 3.5rem);
@@ -199,8 +181,7 @@
   letter-spacing: -0.045em;
 }
 
-.capture-archive > header p,
-.progress-collections > header p {
+.capture-archive > header p {
   max-width: 38rem;
   margin: 0;
   color: var(--color-text-secondary);
@@ -275,11 +256,60 @@
   text-transform: uppercase;
 }
 
-.capture-card-image > .capture-privacy {
+.capture-card-image > .capture-badges,
+.featured-capture-image > .capture-badges {
   position: absolute;
   z-index: 3;
   top: var(--space-4);
   right: var(--space-4);
+}
+
+.capture-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* Stated on every simulated image, in the simulated observatory's own colours. */
+.capture-simulated {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-full);
+  background: var(--color-scrim-strong);
+  color: var(--color-warning);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.capture-no-preview {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+  inset: 0;
+  text-align: center;
+}
+
+.capture-no-preview > span {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.capture-retired {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
 }
 
 .capture-privacy::before {
@@ -290,7 +320,7 @@
   content: "";
 }
 
-.capture-privacy-public {
+.capture-privacy-gallery {
   border-color: var(--color-success-border);
   color: var(--color-success);
 }
@@ -325,65 +355,6 @@
   margin: var(--space-3) 0 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-label);
-}
-
-.progress-collection-grid {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.progress-collection-card {
-  display: flex;
-  min-height: 18rem;
-  flex-direction: column;
-  padding: var(--space-6);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background:
-    radial-gradient(circle at top right, var(--color-photon-faint), transparent 12rem),
-    var(--color-surface-base);
-}
-
-.progress-collection-card > span {
-  color: var(--color-photon);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.1em;
-}
-
-.progress-collection-card h3 {
-  margin: auto 0 var(--space-3);
-  font-family: var(--font-display);
-  font-size: 1.65rem;
-  font-weight: 500;
-  letter-spacing: -0.04em;
-}
-
-.progress-collection-card p {
-  min-height: 3rem;
-  margin: 0 0 var(--space-6);
-  color: var(--color-text-secondary);
-  font-size: 0.85rem;
-  line-height: 1.6;
-}
-
-.collection-progress-track {
-  height: 2px;
-  overflow: hidden;
-  background: var(--color-border-strong);
-}
-
-.collection-progress-track span {
-  display: block;
-  height: 100%;
-  background: var(--color-photon);
-}
-
-.progress-collection-card > strong {
-  margin-top: var(--space-3);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-  font-weight: 550;
 }
 
 .capture-detail-back {
@@ -472,12 +443,6 @@
   z-index: 3;
   right: var(--space-4);
   bottom: var(--space-4);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-small);
-  background: var(--color-scrim);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
 }
 
 .capture-detail-lower {
@@ -487,13 +452,23 @@
 }
 
 .capture-detail-story {
+  align-self: start;
   padding: clamp(var(--space-6), 5vw, var(--space-10));
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
   background: var(--color-surface-base);
 }
 
-.capture-detail-story > p:first-child {
+.capture-detail-story > h2 {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.capture-detail-story > h2 + p {
   max-width: 33ch;
   margin: 0;
   font-family: var(--font-display);
@@ -503,8 +478,45 @@
   line-height: 1.35;
 }
 
+.capture-downloads {
+  margin-top: var(--space-8);
+}
+
+.capture-detail-story > .capture-downloads:first-child {
+  margin-top: 0;
+}
+
 .capture-actions {
   display: grid;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.capture-no-fits,
+.capture-download-note {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.capture-download-note {
+  margin-top: var(--space-4);
+}
+
+.featured-capture-time {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.collection-state {
+  margin-top: var(--space-6);
+}
+
+.collection-pages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: var(--space-3);
   margin-top: var(--space-8);
 }
@@ -571,10 +583,6 @@
 
   .capture-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .progress-collection-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .capture-actions {

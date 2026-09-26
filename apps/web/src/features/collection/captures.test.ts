@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { captures, getCollectionProgress, progressCollections } from "./captures";
+import { captures } from "./captures";
 
 describe("capture collection model", () => {
   it("records the complete capture provenance model", () => {
@@ -17,13 +17,5 @@ describe("capture collection model", () => {
         visibility: expect.stringMatching(/PUBLIC|PRIVATE/),
       });
     }
-  });
-
-  it("computes generic progress from collection target definitions", () => {
-    expect(progressCollections.map(getCollectionProgress)).toEqual([
-      { completed: 2, total: 4, percentage: 50 },
-      { completed: 2, total: 5, percentage: 40 },
-      { completed: 2, total: 6, percentage: 33 },
-    ]);
   });
 });

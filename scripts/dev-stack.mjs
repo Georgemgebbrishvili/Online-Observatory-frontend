@@ -22,6 +22,7 @@ const stateDirectory = path.join(repositoryRoot, "dev/.state");
 const API_URL = "http://127.0.0.1:4000";
 const AGENT_CLOUD_URL = "ws://localhost:4001/ws/agent";
 const FAKE_API_URL = "http://127.0.0.1:4100";
+const STORAGE_ORIGIN = "http://localhost:9000";
 
 function fail(message) {
   console.error(`\n\x1b[31mdev-stack: ${message}\x1b[0m\n`);
@@ -319,7 +320,8 @@ async function stack() {
 
   start("web", "npm", ["run", "dev"], {
     cwd: repositoryRoot,
-    env: { DARKVIEW_PLATFORM_API_URL: API_URL },
+    // The platform signs capture URLs for dev/README.md's S3_ENDPOINT.
+    env: { DARKVIEW_PLATFORM_API_URL: API_URL, DARKVIEW_STORAGE_ORIGIN: STORAGE_ORIGIN },
   });
   await waitFor("http://localhost:3000/en", "the web app", 120);
   if (!stopping)
@@ -342,7 +344,11 @@ async function fake() {
 
   start("web", "npm", ["run", "dev"], {
     cwd: repositoryRoot,
-    env: { DARKVIEW_PLATFORM_API_URL: FAKE_API_URL },
+    // The fake serves its own capture images.
+    env: {
+      DARKVIEW_PLATFORM_API_URL: FAKE_API_URL,
+      DARKVIEW_STORAGE_ORIGIN: FAKE_API_URL,
+    },
   });
   await waitFor("http://localhost:3000/en", "the web app", 120);
   if (!stopping)

@@ -35,7 +35,7 @@ export const appRoutes = [
 export const parameterisedRoutes = [
   "app/missions/saturn",
   "app/missions/DV-SIM-001/session",
-  "app/collection/CAP-DV-0001",
+  "app/collection/60000000-0000-4000-8000-000000000001",
 ] as const;
 
 /** Only reachable with no session; an authenticated visitor is redirected away. */

@@ -1,190 +1,193 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ViewTransition } from "react";
 
+import { StatePanel } from "@/components/ui/state-panel";
 import {
-  captures,
-  getCollectionProgress,
-  progressCollections,
-  type Capture,
-} from "@/features/collection/captures";
+  captureReference,
+  captureTitle,
+  formatCapturedAt,
+} from "@/features/collection/present";
+import type { CollectionEntry, CollectionResult } from "@/features/collection/read";
+import { targetDescription } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
 
+import { CaptureBadges, CaptureCard, CaptureImage } from "./capture-card";
+
 type CollectionGalleryProps = {
+  result: Exclude<CollectionResult, { kind: "signed-out" }>;
+  /** True past the first page: no featured capture, and a way back to the newest. */
+  paged: boolean;
   locale: Locale;
 };
 
-function formatDate(locale: Locale, capturedAt: string) {
-  return new Intl.DateTimeFormat(locale === "ka" ? "ka-GE" : "en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Tbilisi",
-  }).format(new Date(capturedAt));
-}
-
-function CaptureCard({ capture, locale }: { capture: Capture; locale: Locale }) {
+function Featured({
+  entry,
+  locale,
+  timezone,
+}: {
+  entry: CollectionEntry;
+  locale: Locale;
+  timezone: string;
+}) {
   const copy = collectionGalleryCopy[locale];
+  const { capture, target, thumbnail } = entry;
+  const title = captureTitle(entry, locale);
+  const href = `/${locale}/app/collection/${capture.id}`;
+  const about = target ? targetDescription(target, locale) : null;
 
   return (
-    <article className="capture-card">
+    <section className="featured-capture" aria-labelledby="featured-capture-title">
       <Link
-        className="capture-card-image"
-        href={`/${locale}/app/collection/${capture.id}`}
-        aria-label={`${copy.view}: ${capture.target[locale]}`}
+        className="featured-capture-image"
+        href={href}
+        aria-label={`${copy.view}: ${title}`}
       >
-        <ViewTransition
-          name={`capture-${capture.id}`}
-          share="capture-morph"
-          default="none"
-        >
-          <Image
-            src={capture.thumbnailUrl}
-            alt={copy.imageAlt(capture.target[locale])}
-            fill
-            sizes="(min-width: 1440px) 25vw, (min-width: 768px) 42vw, 92vw"
-            unoptimized
-          />
-        </ViewTransition>
-        <span className="capture-card-corners" aria-hidden="true" />
-        <span
-          className={`capture-privacy capture-privacy-${capture.visibility.toLowerCase()}`}
-        >
-          {capture.visibility === "PUBLIC" ? copy.public : copy.private}
+        <CaptureImage
+          alt={copy.imageAlt(title)}
+          captureId={capture.id}
+          noPreview={copy.noPreview}
+          preload
+          sizes="(min-width: 1120px) 62vw, 100vw"
+          src={thumbnail}
+        />
+        <span className="featured-reticle" aria-hidden="true">
+          <i />
+          <i />
         </span>
+        <CaptureBadges
+          simulated={capture.mode === "SIMULATED"}
+          simulatedLabel={copy.simulated}
+          visibility={capture.visibility}
+          visibilityLabel={copy.visibility[capture.visibility]}
+        />
       </Link>
-      <div className="capture-card-copy">
-        <span>
-          {capture.catalogId} · {capture.id}
-        </span>
-        <h3>
-          <Link href={`/${locale}/app/collection/${capture.id}`}>
-            {capture.target[locale]}
-          </Link>
-        </h3>
-        <p>
-          {formatDate(locale, capture.capturedAt)} ·{" "}
-          {copy.presets[capture.processingPreset]}
+      <div className="featured-capture-copy">
+        <span>{copy.featured}</span>
+        <p>{captureReference(entry)}</p>
+        <h2 id="featured-capture-title">{title}</h2>
+        {entry.retired && <p className="capture-retired">{copy.retiredTarget}</p>}
+        {about && <blockquote>{about}</blockquote>}
+        <p className="featured-capture-time">
+          {formatCapturedAt(capture.capturedAt, timezone, locale)}
         </p>
+        <Link className="button button-primary button-large" href={href}>
+          <span>{copy.view}</span>
+        </Link>
       </div>
-    </article>
+    </section>
   );
 }
 
-export function CollectionGallery({ locale }: CollectionGalleryProps) {
+export function CollectionGallery({ locale, paged, result }: CollectionGalleryProps) {
   const copy = collectionGalleryCopy[locale];
-  const [featuredCapture, ...archiveCaptures] = captures;
+  const base = `/${locale}/app/collection`;
+
+  const hero = (
+    <header className="collection-hero">
+      <p className="eyebrow">
+        <span aria-hidden="true" />
+        {copy.eyebrow}
+      </p>
+      <div>
+        <h1>{copy.title}</h1>
+        <p>{copy.description}</p>
+      </div>
+    </header>
+  );
+
+  if (result.kind === "unreachable") {
+    return (
+      <div className="collection-page">
+        {hero}
+        <div className="collection-state">
+          <StatePanel variant="error" headingLevel={2} {...copy.unreachable} />
+        </div>
+      </div>
+    );
+  }
+
+  if (result.entries.length === 0) {
+    const state = paged ? copy.noOlder : copy.empty;
+    return (
+      <div className="collection-page">
+        {hero}
+        <div className="collection-state">
+          <StatePanel
+            headingLevel={2}
+            title={state.title}
+            description={state.description}
+            action={
+              <Link
+                className="button button-secondary"
+                href={paged ? base : `/${locale}/app/missions`}
+              >
+                <span>{state.action}</span>
+              </Link>
+            }
+          />
+        </div>
+      </div>
+    );
+  }
+
+  const [first, ...rest] = result.entries;
+  const featured = paged ? null : first;
+  const archive = paged ? result.entries : rest;
 
   return (
     <div className="collection-page">
-      <header className="collection-hero">
-        <p className="eyebrow">
-          <span aria-hidden="true" />
-          {copy.eyebrow}
-        </p>
-        <div>
-          <h1>{copy.title}</h1>
-          <p>{copy.description}</p>
-        </div>
-      </header>
+      {hero}
 
-      <section className="featured-capture" aria-labelledby="featured-capture-title">
-        <Link
-          className="featured-capture-image"
-          href={`/${locale}/app/collection/${featuredCapture.id}`}
-        >
-          <ViewTransition
-            name={`capture-${featuredCapture.id}`}
-            share="capture-morph"
-            default="none"
-          >
-            <Image
-              src={featuredCapture.originalAssetUrl}
-              alt={copy.imageAlt(featuredCapture.target[locale])}
-              fill
-              preload
-              sizes="(min-width: 1120px) 62vw, 100vw"
-              unoptimized
-            />
-          </ViewTransition>
-          <span className="featured-reticle" aria-hidden="true">
-            <i />
-            <i />
-          </span>
-          <span className="featured-index">
-            01 / {String(captures.length).padStart(2, "0")}
-          </span>
-        </Link>
-        <div className="featured-capture-copy">
-          <span>{copy.featured}</span>
-          <p>
-            {featuredCapture.catalogId} · {featuredCapture.id}
-          </p>
-          <h2 id="featured-capture-title">{featuredCapture.target[locale]}</h2>
-          <blockquote>{featuredCapture.description[locale]}</blockquote>
-          <dl>
-            <div>
-              <dt>{copy.captured}</dt>
-              <dd>{formatDate(locale, featuredCapture.capturedAt)}</dd>
-            </div>
-            <div>
-              <dt>{copy.observatory}</dt>
-              <dd>{featuredCapture.observatory[locale]}</dd>
-            </div>
-            <div>
-              <dt>{copy.preset}</dt>
-              <dd>{copy.presets[featuredCapture.processingPreset]}</dd>
-            </div>
-          </dl>
-          <Link
-            className="button button-primary button-large"
-            href={`/${locale}/app/collection/${featuredCapture.id}`}
-          >
-            <span>{copy.view}</span>
-          </Link>
-        </div>
-      </section>
+      {featured && (
+        <Featured entry={featured} locale={locale} timezone={result.timezone} />
+      )}
 
-      <section className="capture-archive" aria-labelledby="capture-archive-title">
-        <header>
-          <h2 id="capture-archive-title">{copy.allCaptures}</h2>
-          <p>{copy.allDescription}</p>
-        </header>
-        <div className="capture-grid">
-          {archiveCaptures.map((capture) => (
-            <CaptureCard key={capture.id} capture={capture} locale={locale} />
-          ))}
-        </div>
-      </section>
+      {archive.length > 0 && (
+        <section className="capture-archive" aria-labelledby="capture-archive-title">
+          <header>
+            <h2 id="capture-archive-title">{copy.allCaptures}</h2>
+            <p>{copy.allDescription}</p>
+          </header>
+          <div className="capture-grid">
+            {archive.map((entry) => (
+              <CaptureCard
+                key={entry.capture.id}
+                captureId={entry.capture.id}
+                href={`${base}/${entry.capture.id}`}
+                title={captureTitle(entry, locale)}
+                reference={captureReference(entry)}
+                capturedAt={formatCapturedAt(
+                  entry.capture.capturedAt,
+                  result.timezone,
+                  locale,
+                )}
+                thumbnail={entry.thumbnail}
+                simulated={entry.capture.mode === "SIMULATED"}
+                visibility={entry.capture.visibility}
+                copy={copy}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
-      <section
-        className="progress-collections"
-        aria-labelledby="progress-collections-title"
-      >
-        <header>
-          <h2 id="progress-collections-title">{copy.progress}</h2>
-          <p>{copy.progressDescription}</p>
-        </header>
-        <div className="progress-collection-grid">
-          {progressCollections.map((collection, index) => {
-            const progress = getCollectionProgress(collection);
-            return (
-              <article key={collection.id} className="progress-collection-card">
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{collection.title[locale]}</h3>
-                <p>{collection.description[locale]}</p>
-                <div className="collection-progress-track" aria-hidden="true">
-                  <span style={{ width: `${progress.percentage}%` }} />
-                </div>
-                <strong>
-                  {progress.completed} / {progress.total} {copy.observed}
-                </strong>
-              </article>
-            );
-          })}
-        </div>
-      </section>
+      {(paged || result.nextCursor) && (
+        <nav className="collection-pages" aria-label={copy.allCaptures}>
+          {paged && (
+            <Link className="button button-ghost" href={base}>
+              <span>{copy.newestCaptures}</span>
+            </Link>
+          )}
+          {result.nextCursor && (
+            <Link
+              className="button button-secondary"
+              href={`${base}?cursor=${encodeURIComponent(result.nextCursor)}`}
+            >
+              <span>{copy.olderCaptures}</span>
+            </Link>
+          )}
+        </nav>
+      )}
     </div>
   );
 }

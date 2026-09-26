@@ -32,7 +32,7 @@ Contrast for every token pair is measured in `docs/design/contrast.md`. The one 
 - Surfaces: `Card`, `SurfacePanel`, `Modal`, `Sheet`, `Tooltip`
 - Feedback: `Skeleton`, `StatePanel`
 - Forms: `Field`, `TextInput`, `TextArea`, `Checkbox`
-- Stellar motifs: `OpticalRing`, `LiveIndicator`, `ObservatoryStatus`, `TargetAvailability`, `MissionStatus`, `ModeNotice`, `TargetCard`
+- Stellar motifs: `OpticalRing`, `LiveIndicator`, `ObservatoryStatus`, `TargetAvailability`, `MissionStatus`, `ModeNotice`, `TargetCard`, `CaptureCard`
 
 The internal `/design-system` route redirects to the active locale and renders every supported component state. It is marked `noindex` and is not a product feature page.
 

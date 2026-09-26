@@ -1,53 +1,53 @@
-"use client";
-
-import Image from "next/image";
 import Link from "next/link";
-import { useState, ViewTransition } from "react";
 
-import type { Capture, CaptureVisibility } from "@/features/collection/captures";
+import {
+  captureReference,
+  captureTitle,
+  formatCapturedAt,
+  formatExposure,
+  formatFrameSize,
+  formatIntegration,
+} from "@/features/collection/present";
+import type { CaptureResult } from "@/features/collection/read";
+import { targetDescription } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
-import { captureDetailCopy } from "@/i18n/resources/collection";
+import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/collection";
+
+import { CaptureBadges, CaptureImage } from "./capture-card";
+import { CaptureDownloads } from "./capture-downloads";
 
 type CaptureDetailProps = {
-  capture: Capture;
+  result: Extract<CaptureResult, { kind: "ok" }>;
   locale: Locale;
 };
 
-export function CaptureDetail({ capture, locale }: CaptureDetailProps) {
-  const [visibility, setVisibility] = useState<CaptureVisibility>(capture.visibility);
-  const [feedback, setFeedback] = useState<string | null>(null);
+export function CaptureDetail({ locale, result }: CaptureDetailProps) {
   const copy = captureDetailCopy[locale];
-  const capturedAt = new Date(
-    new Date(capture.capturedAt).getTime() + 4 * 60 * 60 * 1000,
-  );
-  const captureDate = copy.formatDate(
-    capturedAt.getUTCDate(),
-    copy.months[capturedAt.getUTCMonth()],
-    capturedAt.getUTCFullYear(),
-    `${String(capturedAt.getUTCHours()).padStart(2, "0")}:${String(
-      capturedAt.getUTCMinutes(),
-    ).padStart(2, "0")}`,
-  );
+  const gallery = collectionGalleryCopy[locale];
+  const { entry, image, observatory, timezone } = result;
+  const { capture, target } = entry;
+  const title = captureTitle(entry, locale);
+  const about = target ? targetDescription(target, locale) : null;
+  const frameSize = formatFrameSize(capture);
 
-  async function shareCapture() {
-    if (visibility === "PRIVATE") {
-      setFeedback(copy.privateShare);
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setFeedback(copy.copied);
-    } catch {
-      setFeedback(copy.copyFailed);
-    }
-  }
-
-  function toggleVisibility() {
-    const nextVisibility = visibility === "PUBLIC" ? "PRIVATE" : "PUBLIC";
-    setVisibility(nextVisibility);
-    setFeedback(nextVisibility === "PUBLIC" ? copy.privacyPublic : copy.privacyPrivate);
-  }
+  const provenance: [string, string][] = [
+    [copy.source, copy.sources[capture.mode]],
+    [copy.profile, gallery.profiles[capture.imagingProfile]],
+    [copy.optics, copy.opticalConfigs[capture.opticalConfig]],
+    ...(capture.solvedFocalLengthMm
+      ? ([[copy.solvedFocalLength, `${Math.round(capture.solvedFocalLengthMm)} mm`]] as [
+          string,
+          string,
+        ][])
+      : []),
+    [copy.exposure, formatExposure(capture.exposureMilliseconds, locale)],
+    [copy.gain, String(capture.gain)],
+    [copy.stack, copy.frames(capture.framesStacked)],
+    [copy.integration, formatIntegration(capture.integrationSeconds, locale)],
+    ...(frameSize ? ([[copy.frameSize, frameSize]] as [string, string][]) : []),
+    [copy.mission, capture.missionId],
+    [copy.captureId, capture.id],
+  ];
 
   return (
     <article className="capture-detail-page">
@@ -57,112 +57,86 @@ export function CaptureDetail({ capture, locale }: CaptureDetailProps) {
 
       <header className="capture-detail-header">
         <div>
-          <p>
-            {capture.catalogId} · {capture.id}
-          </p>
-          <h1>{capture.target[locale]}</h1>
+          <p>{captureReference(entry)}</p>
+          <h1>{title}</h1>
+          {entry.retired && <p className="capture-retired">{gallery.retiredTarget}</p>}
           <strong>{copy.capturedBy}</strong>
         </div>
         <dl>
           <div>
             <dt>{copy.date}</dt>
-            <dd>{captureDate}</dd>
+            <dd>{formatCapturedAt(capture.capturedAt, timezone, locale)}</dd>
           </div>
-          <div>
-            <dt>{copy.observatory}</dt>
-            <dd>{capture.observatory[locale]}</dd>
-          </div>
+          {observatory && (
+            <div>
+              <dt>{copy.observatory}</dt>
+              <dd>{locale === "ka" ? observatory.nameKa : observatory.nameEn}</dd>
+            </div>
+          )}
         </dl>
       </header>
 
       <figure className="capture-detail-image">
-        <ViewTransition
-          name={`capture-${capture.id}`}
-          share="capture-morph"
-          default="none"
-        >
-          <Image
-            src={capture.originalAssetUrl}
-            alt={copy.imageAlt(capture.target[locale])}
-            fill
+        {image.kind === "failed" ? (
+          <span className="capture-no-preview" role="alert">
+            <span aria-hidden="true">!</span>
+            {copy.imageFailed}
+          </span>
+        ) : (
+          <CaptureImage
+            alt={gallery.imageAlt(title)}
+            captureId={capture.id}
+            noPreview={gallery.noPreview}
             preload
             sizes="(min-width: 1120px) 74vw, 100vw"
-            unoptimized
+            src={image.kind === "ok" ? image.url : null}
           />
-        </ViewTransition>
+        )}
         <span className="capture-detail-corners" aria-hidden="true" />
         <figcaption>
-          {copy.original} · {copy.presets[capture.processingPreset]}
+          <CaptureBadges
+            simulated={capture.mode === "SIMULATED"}
+            simulatedLabel={gallery.simulated}
+            visibility={capture.visibility}
+            visibilityLabel={gallery.visibility[capture.visibility]}
+          />
         </figcaption>
       </figure>
 
       <div className="capture-detail-lower">
         <div className="capture-detail-story">
-          <p>{capture.description[locale]}</p>
-          <div className="capture-actions">
-            <a
-              className="button button-primary button-large"
-              href={capture.originalAssetUrl}
-              download={`${capture.id}.svg`}
-            >
-              <span>{copy.download}</span>
-            </a>
-            <button
-              className="button button-secondary button-large"
-              type="button"
-              onClick={shareCapture}
-            >
-              <span>{copy.share}</span>
-            </button>
-            <button
-              className="button button-secondary button-large"
-              type="button"
-              onClick={toggleVisibility}
-            >
-              <span>{visibility === "PUBLIC" ? copy.makePrivate : copy.makePublic}</span>
-            </button>
-            <Link
-              className="button button-ghost button-large"
-              href={`/${locale}/app/missions/${capture.missionId}/session`}
-            >
-              <span>{copy.viewMission}</span>
-            </Link>
-          </div>
-          {feedback && (
-            <p className="capture-action-feedback" role="status">
-              {feedback}
-            </p>
+          {about && (
+            <>
+              <h2>{copy.aboutTarget}</h2>
+              <p>{about}</p>
+            </>
           )}
+          <CaptureDownloads
+            captureId={capture.id}
+            fitsAvailable={capture.fitsAvailable}
+            signInPath={`/${locale}/sign-in`}
+            copy={{
+              download: copy.download,
+              downloadFits: copy.downloadFits,
+              noFits: copy.noFits,
+              downloadFailed: copy.downloadFailed,
+              downloadNote: copy.downloadNote,
+            }}
+          />
         </div>
 
         <aside className="capture-provenance">
           <h2>{copy.provenance}</h2>
           <dl>
+            {provenance.map(([term, value]) => (
+              <div key={term}>
+                <dt>{term}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
             <div>
-              <dt>{copy.telescope}</dt>
-              <dd>{capture.telescope}</dd>
-            </div>
-            <div>
-              <dt>{copy.mission}</dt>
-              <dd>{capture.missionId}</dd>
-            </div>
-            <div>
-              <dt>{copy.captureId}</dt>
-              <dd>{capture.id}</dd>
-            </div>
-            <div>
-              <dt>{copy.preset}</dt>
-              <dd>{copy.presets[capture.processingPreset]}</dd>
-            </div>
-            <div>
-              <dt>{copy.visibility}</dt>
-              <dd>
-                <span
-                  className={`capture-privacy capture-privacy-${visibility.toLowerCase()}`}
-                >
-                  {visibility === "PUBLIC" ? copy.public : copy.private}
-                </span>
-              </dd>
+              <dt>{copy.visibilityLabel}</dt>
+              <dd>{gallery.visibility[capture.visibility]}</dd>
             </div>
           </dl>
         </aside>
