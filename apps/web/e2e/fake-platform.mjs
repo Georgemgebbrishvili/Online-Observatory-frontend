@@ -19,6 +19,7 @@ import {
   zGetObservatoryStatusResponse,
   zListBookableObservatoriesResponse,
   zListCapturesResponse,
+  zListMissionsResponse,
   zGetTargetResponse,
   zListTargetsResponse,
   zListTonightTargetsResponse,
@@ -293,7 +294,10 @@ const missions = [
     state: "SCHEDULED",
     failureReason: null,
     mode: "SIMULATED",
-    scheduledStartAt: "2026-09-24T20:00:00.000Z",
+    // Upcoming is judged against the server's real clock, which the visual gate cannot
+    // fix, so this stays far enough ahead to be upcoming on every run, and fixed so a
+    // baseline never drifts.
+    scheduledStartAt: "2030-01-15T18:00:00.000Z",
     requestedAt: "2026-09-23T18:00:00.000Z",
     startedAt: null,
     endedAt: null,
@@ -611,6 +615,30 @@ const routes = {
         items: targets.items.filter((row) => row.enabled),
       }),
     ),
+  // As the platform: the caller's missions by requestedAt desc, keyset on the id.
+  "GET /missions": (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const cursor = new URL(request.url, "http://fake").searchParams.get("cursor");
+    const mine = missions
+      .filter((row) => row.userId === user.id)
+      .sort(
+        (left, right) =>
+          right.requestedAt.localeCompare(left.requestedAt) ||
+          right.id.localeCompare(left.id),
+      );
+    const start = cursor ? mine.findIndex((row) => row.id === cursor) + 1 : 0;
+    const rows = cursor && start === 0 ? [] : mine.slice(start, start + PAGE_SIZE);
+    const hasMore = start + PAGE_SIZE < mine.length && rows.length > 0;
+    send(
+      response,
+      200,
+      zListMissionsResponse.parse({
+        items: rows,
+        page: { hasMore, nextCursor: hasMore ? rows.at(-1).id : null },
+      }),
+    );
+  },
   "GET /captures": (request, response) => {
     const user = sessionUser(request);
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");

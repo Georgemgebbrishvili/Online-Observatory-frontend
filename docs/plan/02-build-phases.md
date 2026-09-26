@@ -113,13 +113,16 @@ the page and a visible title would fight it; a screen reader still gets a title.
   [`phase-2/01-targets.md`](phase-2/01-targets.md) has the states and the contract trace.
 - ~~`/app/collection` → `/captures`, `/captures/{id}`, `/download`~~ Done 2026-09-26 —
   [`phase-2/02-collection.md`](phase-2/02-collection.md) has the states and the contract trace.
-- `/app` → `/me`
+- ~~`/app` → `/me`~~ Done 2026-09-26 — [`phase-2/03-dashboard.md`](phase-2/03-dashboard.md)
+  has the states and the contract trace.
 - ~~`/app/missions/[slug]/session`, `/app/live` → `/missions/*`~~ Moved to Phase 4 by
   the maintainer on 2026-09-25: wiring the read side here and the commands there would
   build the live room twice. Both pages keep their fixture until Phase 4.
 - Resolve the `shared-observations` `/v1/*` debt per [#1](https://github.com/Georgemgebbrishvili/Online-Observatory-frontend/issues/1). **Do not build
   on it until it is contract-backed.**
-- Delete `homepage-data.ts` and the committed capture SVGs once real data flows.
+- Delete `homepage-data.ts` and the committed capture SVGs once real data flows. The
+  capture SVGs went on 2026-09-26 with slice 3; `homepage-data.ts` still feeds the public
+  homepage's drawn illustrations.
 
 **Done when:** no customer surface renders a fixture, except where the platform has no
 endpoint and the page says so, and except `/app/live` and

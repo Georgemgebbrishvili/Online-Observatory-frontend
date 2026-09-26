@@ -325,26 +325,44 @@ test("prioritizes the live viewport on mobile", async ({ page }) => {
   expect(dimensions.scrollWidth).toBe(dimensions.clientWidth);
 });
 
-test("presents a personalized authenticated home without dashboard overload", async ({
-  page,
-}) => {
+test("the /app dashboard reads the platform, section by section", async ({ page }) => {
   await page.goto("/en/app");
 
   await expect(
     page.getByRole("heading", { name: "Good evening, Observer" }),
   ).toBeVisible();
+  // The highest observable target in the fake's fixed sky.
   await expect(
-    page.getByRole("heading", { name: "Saturn is excellent tonight" }),
+    page.getByRole("heading", { name: "Albireo is up tonight" }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Observe Saturn" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Observe Albireo" })).toHaveAttribute(
     "href",
-    "/en/app/missions/saturn",
+    "/en/app/missions/albireo",
   );
-  await expect(page.getByRole("heading", { name: "Live now" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Upcoming missions" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Continue exploring" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Collection progress" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Tbilisi Observatory" })).toBeVisible();
+  await expect(page.locator(".home-illustration figcaption")).toHaveText("Illustration");
+
+  const observatory = page.locator(".home-observatory");
+  await expect(
+    observatory.getByRole("heading", { name: "Stellar Tbilisi" }),
+  ).toBeVisible();
+  await expect(observatory.getByText("Simulated observatory")).toBeVisible();
+  await expect(
+    observatory.getByText("Celestron NexStar 6SE · 150 mm · 1500 mm"),
+  ).toBeVisible();
+
+  const upcoming = page.locator(".home-upcoming");
+  await expect(upcoming.getByRole("heading", { name: "Saturn" })).toBeVisible();
+  await expect(upcoming.getByText("15 January 2030")).toBeVisible();
+  await expect(upcoming.getByText("Simulated")).toBeVisible();
+
+  await expect(page.getByRole("heading", { name: "Also up tonight" })).toBeVisible();
+  await expect(page.locator(".home-recent-captures a")).toHaveCount(2);
+  await expect(page.locator(".home-capture-simulated")).toHaveCount(2);
+
+  // Nothing the platform cannot back.
+  await expect(page.getByRole("heading", { name: "Live now" })).toBeHidden();
+  await expect(page.getByText("41.72")).toBeHidden();
+  await expect(page.getByText(/excellent/i)).toBeHidden();
 });
 
 test("keeps the Georgian authenticated home within a mobile viewport", async ({
@@ -354,10 +372,10 @@ test("keeps the Georgian authenticated home within a mobile viewport", async ({
   await page.goto("/ka/app");
 
   await expect(
-    page.getByRole("heading", { name: "საღამო მშვიდობისა, დამკვირვებელი" }),
+    page.getByRole("heading", { name: "საღამო მშვიდობისა, Observer" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "სატურნი დღეს შესანიშნავად ჩანს" }),
+    page.getByRole("heading", { name: "ალბირეო დღეს ღამით ჩანს" }),
   ).toBeVisible();
 
   const viewport = await page.evaluate(() => ({
@@ -397,7 +415,6 @@ test("explains the physical observatory and configurable equipment", async ({ pa
     page.getByText("No future observatory partners are being represented."),
   ).toBeVisible();
 });
-
 test("preserves observatory locale and mobile width", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/observatory");

@@ -73,21 +73,23 @@ function failure(error: unknown): { kind: "signed-out" } | { kind: "unreachable"
     : { kind: "unreachable" };
 }
 
-const readObservatories = cache(async (): Promise<BookableObservatory[] | null> => {
-  try {
-    return zListBookableObservatoriesResponse.parse(
-      await platformRequest<unknown>("/observatories"),
-    ).items;
-  } catch {
-    return null;
-  }
-});
+export const readObservatories = cache(
+  async (): Promise<BookableObservatory[] | null> => {
+    try {
+      return zListBookableObservatoriesResponse.parse(
+        await platformRequest<unknown>("/observatories"),
+      ).items;
+    } catch {
+      return null;
+    }
+  },
+);
 
 /**
  * GET /targets, every page. A capture names its target only by id, and the catalogue
  * answers enabled targets only, so a target disabled since is simply absent.
  */
-const readCatalogue = cache(async (): Promise<Map<string, Target> | null> => {
+export const readCatalogue = cache(async (): Promise<Map<string, Target> | null> => {
   const byId = new Map<string, Target>();
   let cursor: string | null = null;
   try {
@@ -125,11 +127,14 @@ export function cursorOf(value: string | string[] | undefined) {
 }
 
 /** GET /captures: one page of the signed-in user's Collection, newest first. */
-export async function readCollection(cursor: string | null): Promise<CollectionResult> {
+export async function readCollection(
+  cursor: string | null,
+  limit = pageSize,
+): Promise<CollectionResult> {
   try {
     const query = cursor ? `&cursor=${encodeURIComponent(cursor)}` : "";
     const [page, catalogue, observatories] = await Promise.all([
-      platformRequest<unknown>(`/captures?limit=${pageSize}${query}`).then((value) =>
+      platformRequest<unknown>(`/captures?limit=${limit}${query}`).then((value) =>
         zListCapturesResponse.parse(value),
       ),
       readCatalogue(),

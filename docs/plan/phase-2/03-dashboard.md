@@ -2,7 +2,7 @@
 
 2026-09-26. `/app` (`components/home/authenticated-home.tsx`), from
 `features/home/dashboard.ts` to the platform. Traced against `darkview-platform` at
-`acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`. States and trace only; nothing is built yet.
+`acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`. Built 2026-09-26.
 
 ## Contract trace, section by section
 
@@ -73,16 +73,24 @@ Collection are empty there. The populated states run against `e2e/fake-platform.
 whose observer has one scheduled mission (`21000000-…-0002`, Saturn, 2026-09-24) —
 already in the past against the visual gate's fixed clock, which needs a future one.
 
-## Open — needs the maintainer before building
+## Decided by the maintainer, 2026-09-26
 
-**The fake needs a future scheduled mission.** Adding one changes the operator missions
-table (`/admin/missions`, paged two at a time) and the DV-078 evidence it photographs.
-The alternative is to move the existing scheduled mission's date forward, which changes
-the same table less. The proposal: move the date, and leave the evidence as recorded.
+**The fake's scheduled mission moved forward.** `21000000-…-0002` (Saturn) now starts
+2030-01-15. Upcoming is judged against the server's real clock, which the visual gate
+cannot fix, so the date is far enough ahead to be upcoming on every run and fixed so a
+baseline never drifts. The DV-078 evidence stays as recorded. The fake also answers
+`GET /missions` now, ordered and paged as the platform pages it.
+
+## Found on the way
+
+- `BookableObservatory.city` has one language, so the Georgian page prints "Tbilisi".
+  A `cityKa` would be a contract change; not raised yet.
+- Every simulated thumbnail is badged, however small: "Simulated" rather than the
+  Collection's longer label, which does not fit an 8rem tile.
 
 ## Deliberate leftovers
 
 - `features/missions/targets.ts` stays for the session page (Phase 4).
 - `features/live/live-data.ts` stays for `/app/live` (Phase 4).
 - `features/home/dashboard.ts`, `features/collection/captures.ts` and
-  `public/captures/*.svg` go with this slice: the dashboard is their last reader.
+  `public/captures/*.svg` are deleted: the dashboard was their last reader.

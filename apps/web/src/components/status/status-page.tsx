@@ -12,13 +12,16 @@ import { StatusIndicator, type StatusTone } from "@/components/ui/status-indicat
 import type { Locale } from "@/i18n/config";
 import type { StatusCopy } from "@/i18n/resources/status";
 
-const linkTone: Record<PublicObservatoryStatus["link"], StatusTone> = {
+export const linkTone: Record<PublicObservatoryStatus["link"], StatusTone> = {
   ONLINE: "success",
   DEGRADED: "warning",
   OFFLINE: "danger",
 };
 
-const weatherTone: Record<PublicObservatoryStatus["weather"]["status"], StatusTone> = {
+export const weatherTone: Record<
+  PublicObservatoryStatus["weather"]["status"],
+  StatusTone
+> = {
   CLEAR: "success",
   CLOUDY: "warning",
   UNSAFE: "danger",

@@ -108,8 +108,12 @@ test("a capture with no images and no FITS says so", async ({ page }) => {
 test("an unknown capture and a malformed id are both not found", async ({ page }) => {
   for (const id of ["60000000-0000-4000-8000-000000000009", "CAP-DV-0001"]) {
     await page.goto(`/en/app/collection/${id}`);
-    await expect(page.getByRole("heading", { name: "Observation not found" })).toBeVisible();
-    await expect(page.locator('meta[name="robots"][content*="noindex"]').first()).toBeAttached();
+    await expect(
+      page.getByRole("heading", { name: "Observation not found" }),
+    ).toBeVisible();
+    await expect(
+      page.locator('meta[name="robots"][content*="noindex"]').first(),
+    ).toBeAttached();
   }
 });
 

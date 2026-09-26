@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { AuthenticatedHome } from "@/components/home/authenticated-home";
+import { readCollection } from "@/features/collection/read";
+import { readObservatoryPanel, readUpcoming } from "@/features/home/read";
+import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
 import { requireUser } from "@/lib/platform/session";
+import "@/styles/collection.css";
+import "@/styles/missions.css";
 import "@/styles/authenticated-home.css";
 
 type AppHomePageProps = {
@@ -25,7 +30,28 @@ export default async function AppHomePage({ params }: AppHomePageProps) {
     notFound();
   }
 
-  await requireUser(locale);
+  const user = await requireUser(locale);
 
-  return <AuthenticatedHome locale={locale} />;
+  // Each section stands on its own: one failed read never blanks the page.
+  const [tonight, panel, upcoming, collection] = await Promise.all([
+    readTonight(locale),
+    readObservatoryPanel(),
+    readUpcoming(),
+    readCollection(null, 3),
+  ]);
+  // The session ended between the check above and the reads.
+  if (upcoming.kind === "signed-out" || collection.kind === "signed-out") {
+    redirect(`/${locale}/sign-in`);
+  }
+
+  return (
+    <AuthenticatedHome
+      locale={locale}
+      displayName={user.displayName ?? null}
+      tonight={tonight}
+      panel={panel}
+      upcoming={upcoming}
+      collection={collection}
+    />
+  );
 }

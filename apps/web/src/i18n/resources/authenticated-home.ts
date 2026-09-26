@@ -1,90 +1,128 @@
 import { brand } from "@/brand";
 
-export const authenticatedHomeCopy = {
+type StateCopy = { title: string; description: string };
+
+type AuthenticatedHomeCopy = {
+  metadataTitle: string;
+  metadataDescription: string;
+  greeting: (name: string | null) => string;
+  introduction: string;
+  tonight: string;
+  recommendation: (target: string) => string;
+  observe: (target: string) => string;
+  exploreTonight: string;
+  window: string;
+  altitude: string;
+  illustration: string;
+  observatory: string;
+  telescope: string;
+  simulatedObservatory: string;
+  fullStatus: string;
+  statusUnavailable: StateCopy;
+  noObservatory: StateCopy;
+  upcoming: string;
+  simulated: string;
+  viewTarget: string;
+  retiredTarget: string;
+  noUpcoming: StateCopy & { action: string };
+  upcomingUnavailable: StateCopy;
+  alsoTonight: string;
+  alsoTonightDescription: string;
+  discover: string;
+  collection: string;
+  collectionDescription: string;
+  openCollection: string;
+};
+
+export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> = {
   en: {
     metadataTitle: `Home · ${brand.en.name}`,
     metadataDescription: "Your observatory, missions, and collection for tonight.",
-    greeting: (name: string) => `Good evening, ${name}`,
-    introduction: "Your observatory is ready. Here is the sky worth seeing tonight.",
+    greeting: (name) => (name ? `Good evening, ${name}` : "Good evening."),
+    introduction:
+      "Here is what the observatory can see tonight, and what is ahead for you.",
     tonight: "Tonight",
-    excellent: "Excellent visibility",
-    recommendation: (target: string) => `${target} is excellent tonight`,
-    recommendationDescription:
-      "The rings are sharply placed above our safety horizon, with a clear observation window ahead.",
-    observe: (target: string) => `Observe ${target}`,
+    recommendation: (target) => `${target} is up tonight`,
+    observe: (target) => `Observe ${target}`,
     exploreTonight: "See all tonight",
-    bestWindow: "Best window",
+    window: "Window tonight",
     altitude: "Altitude now",
-    liveNow: "Live now",
-    liveBadge: "LIVE",
-    publicObservation: "Public observation",
-    watchLive: "Watch live",
-    viewers: "viewers",
-    by: "Mission by",
-    upcoming: "Upcoming missions",
-    scheduled: "Scheduled",
-    simulated: "Simulated schedule",
-    viewMission: "View mission",
-    continueExploring: "Continue exploring",
-    continueDescription: "Objects you have not yet added to your collection.",
-    discover: "Discover",
-    collection: "Collection progress",
-    collectionDescription: "A quiet record of the sky you have made your own.",
-    observations: "Observations completed",
-    unique: "Unique objects",
-    recent: "Recent captures",
-    openCollection: "Open collection",
-    observatory: "Observatory status",
-    online: "Online",
-    clear: "Ready for tonight's observations",
-    locationLabel: "Location",
-    coordinates: "41.72° N · 44.79° E",
+    illustration: "Illustration",
+    observatory: "Observatory",
     telescope: "Telescope",
-    telescopeValue: "Celestron NexStar 6SE",
-    location: "Tbilisi, Georgia",
-    minutes: "min",
+    simulatedObservatory: "Simulated observatory",
+    fullStatus: "Full status",
+    statusUnavailable: {
+      title: "Observatory status is unavailable right now.",
+      description: "The rest of this page is unaffected.",
+    },
+    noObservatory: {
+      title: "No observatory is listed.",
+      description: "There is nothing to report yet.",
+    },
+    upcoming: "Upcoming observations",
+    simulated: "Simulated",
+    viewTarget: "View target",
+    retiredTarget: "A target no longer in the catalogue",
+    noUpcoming: {
+      title: "No upcoming observations.",
+      description: "Book one from tonight's targets.",
+      action: "See tonight's targets",
+    },
+    upcomingUnavailable: {
+      title: "Your upcoming observations could not be loaded.",
+      description: "Try again shortly.",
+    },
+    alsoTonight: "Also up tonight",
+    alsoTonightDescription: "Other targets the observatory can reach tonight.",
+    discover: "Discover",
+    collection: "Your Collection",
+    collectionDescription: "Your most recent captures.",
+    openCollection: "Open collection",
   },
   ka: {
     metadataTitle: `მთავარი · ${brand.ka.nominative}`,
     metadataDescription: "თქვენი ობსერვატორია, მისიები და დღევანდელი კოლექცია.",
-    greeting: (name: string) => `საღამო მშვიდობისა, ${name}`,
-    introduction: "თქვენი ობსერვატორია მზადაა. აი, ცა, რომლის ნახვაც დღეს ღირს.",
+    greeting: (name) => (name ? `საღამო მშვიდობისა, ${name}` : "საღამო მშვიდობისა."),
+    introduction: "აი, რას ხედავს ობსერვატორია დღეს ღამით და რა გელით წინ.",
     tonight: "დღეს ღამით",
-    excellent: "შესანიშნავი ხილვადობა",
-    recommendation: (target: string) => `${target} დღეს შესანიშნავად ჩანს`,
-    recommendationDescription:
-      "რგოლები უსაფრთხო ჰორიზონტზე მაღლაა, წინ კი მკაფიო დაკვირვების დროა.",
-    observe: (target: string) => `${target}-ზე დაკვირვება`,
+    recommendation: (target) => `${target} დღეს ღამით ჩანს`,
+    observe: (target) => `${target}-ზე დაკვირვება`,
     exploreTonight: "დღევანდელი ცის ნახვა",
-    bestWindow: "საუკეთესო დრო",
+    window: "დღევანდელი დრო",
     altitude: "სიმაღლე ახლა",
-    liveNow: "პირდაპირი დაკვირვება",
-    liveBadge: "LIVE",
-    publicObservation: "საჯარო დაკვირვება",
-    watchLive: "დაკვირვების ნახვა",
-    viewers: "მაყურებელი",
-    by: "მისიის ავტორი",
-    upcoming: "დაგეგმილი მისიები",
-    scheduled: "დაგეგმილი",
-    simulated: "სიმულირებული განრიგი",
-    viewMission: "მისიის ნახვა",
-    continueExploring: "განაგრძეთ აღმოჩენა",
-    continueDescription: "ობიექტები, რომლებიც თქვენს კოლექციაში ჯერ არ არის.",
-    discover: "აღმოჩენა",
-    collection: "კოლექციის პროგრესი",
-    collectionDescription: "თქვენ მიერ მოპოვებული ცის მშვიდი ჩანაწერი.",
-    observations: "დასრულებული დაკვირვება",
-    unique: "უნიკალური ობიექტი",
-    recent: "ბოლო კადრები",
-    openCollection: "კოლექციის გახსნა",
-    observatory: "ობსერვატორიის სტატუსი",
-    online: "ონლაინ",
-    clear: "მზადაა დღევანდელი დაკვირვებებისთვის",
-    locationLabel: "მდებარეობა",
-    coordinates: "41.72° ჩ.გ. · 44.79° ა.გ.",
+    illustration: "ილუსტრაცია",
+    observatory: "ობსერვატორია",
     telescope: "ტელესკოპი",
-    telescopeValue: "Celestron NexStar 6SE",
-    location: "თბილისი, საქართველო",
-    minutes: "წთ",
+    simulatedObservatory: "სიმულირებული ობსერვატორია",
+    fullStatus: "სრული სტატუსი",
+    statusUnavailable: {
+      title: "ობსერვატორიის სტატუსი ახლა მიუწვდომელია.",
+      description: "გვერდის დანარჩენი ნაწილი ჩვეულებრივ მუშაობს.",
+    },
+    noObservatory: {
+      title: "ობსერვატორია არ არის მითითებული.",
+      description: "ჯერჯერობით საანგარიშო არაფერია.",
+    },
+    upcoming: "დაგეგმილი დაკვირვებები",
+    simulated: "სიმულაცია",
+    viewTarget: "ობიექტის ნახვა",
+    retiredTarget: "ობიექტი, რომელიც კატალოგში აღარ არის",
+    noUpcoming: {
+      title: "დაგეგმილი დაკვირვება არ არის.",
+      description: "დაჯავშნეთ ამაღამ ხილული ობიექტებიდან.",
+      action: "ამაღამ ხილული ობიექტები",
+    },
+    upcomingUnavailable: {
+      title: "დაგეგმილი დაკვირვებების ჩატვირთვა ვერ მოხერხდა.",
+      description: "სცადეთ ცოტა ხანში.",
+    },
+    alsoTonight: "ასევე ჩანს დღეს ღამით",
+    alsoTonightDescription:
+      "სხვა ობიექტები, რომლებსაც ობსერვატორია დღეს ღამით მისწვდება.",
+    discover: "აღმოჩენა",
+    collection: "თქვენი კოლექცია",
+    collectionDescription: "თქვენი ბოლო კადრები.",
+    openCollection: "კოლექციის გახსნა",
   },
-} as const;
+};
