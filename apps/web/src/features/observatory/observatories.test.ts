@@ -21,7 +21,6 @@ describe("observatory configuration", () => {
       model: "NexStar 6SE",
       configurationStatus: "EXPECTED_MVP",
     });
-    expect(observatory?.camera.configurationStatus).toBe("EXPECTED_MVP");
   });
 
   it("models the complete protected mission path", () => {

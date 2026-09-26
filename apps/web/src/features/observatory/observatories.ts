@@ -16,15 +16,6 @@ export type TelescopeConfiguration = {
   configurationStatus: EquipmentConfigurationStatus;
 };
 
-export type CameraConfiguration = {
-  manufacturer?: string;
-  model?: string;
-  type: LocalizedText;
-  cooling: LocalizedText;
-  connection: LocalizedText;
-  configurationStatus: EquipmentConfigurationStatus;
-};
-
 export type ObservatorySite = {
   id: string;
   name: LocalizedText;
@@ -33,7 +24,6 @@ export type ObservatorySite = {
   status: ObservatoryStatusValue;
   statusMode: "DEMONSTRATION" | "TELEMETRY";
   telescope: TelescopeConfiguration;
-  camera: CameraConfiguration;
   capabilities: string[];
 };
 
@@ -55,15 +45,6 @@ export const observatories: ObservatorySite[] = [
       aperture: "150 mm",
       focalLength: "1500 mm",
       mount: { en: "Computerized alt-azimuth", ka: "კომპიუტერული ალტ-აზიმუტური" },
-      configurationStatus: "EXPECTED_MVP",
-    },
-    camera: {
-      type: { en: "Cooled astronomy camera", ka: "გაგრილებადი ასტრონომიული კამერა" },
-      cooling: { en: "Regulated sensor cooling", ka: "სენსორის რეგულირებადი გაგრილება" },
-      connection: {
-        en: "Observatory computer only",
-        ka: "მხოლოდ ობსერვატორიის კომპიუტერთან",
-      },
       configurationStatus: "EXPECTED_MVP",
     },
     capabilities: ["PLANETARY", "LUNAR", "BRIGHT_DEEP_SKY"],

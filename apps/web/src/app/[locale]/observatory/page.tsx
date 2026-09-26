@@ -5,7 +5,9 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ObservatoryPage } from "@/components/observatory/observatory-page";
 import { JsonLd } from "@/components/seo/json-ld";
+import { readObservatoryPanel } from "@/features/home/read";
 import { observatories } from "@/features/observatory/observatories";
+import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
@@ -41,7 +43,11 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
     notFound();
   }
 
-  const dictionary = await getDictionary(locale);
+  const [dictionary, panel, tonight] = await Promise.all([
+    getDictionary(locale),
+    readObservatoryPanel(),
+    readTonight(locale),
+  ]);
   const copy = observatoryPageCopy[locale];
   const observatory = observatories[0];
 
@@ -59,15 +65,10 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
             addressLocality: locale === "ka" ? "თბილისი" : "Tbilisi",
             addressCountry: "GE",
           },
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: observatory.coordinates.latitude,
-            longitude: observatory.coordinates.longitude,
-          },
         }}
       />
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
-      <ObservatoryPage locale={locale} />
+      <ObservatoryPage locale={locale} panel={panel} tonight={tonight} />
       <SiteFooter footer={dictionary.footer} locale={locale} path="observatory" />
     </div>
   );

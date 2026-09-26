@@ -183,6 +183,8 @@ why not.
 *Explicitly last, by the maintainer's instruction.*
 
 - Visual pass across every surface now that structure is settled.
+  `/observatory` went first, on 2026-09-26, by
+  [ADR-026](../decisions/ADR-026-observatory-page-redesign-ahead-of-phase-7.md).
 - Motion, per the brand's three durations.
 - DV-080 Georgian QA with a native reader.
 - DV-081 accessibility, responsive and performance pass; WCAG 2.1 AA verified, not assumed.

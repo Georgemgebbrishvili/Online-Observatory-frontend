@@ -385,34 +385,53 @@ test("keeps the Georgian authenticated home within a mobile viewport", async ({
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("explains the physical observatory and configurable equipment", async ({ page }) => {
+test("the observatory's first screen carries status, tonight, the instrument and both actions", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory");
 
   await expect(
-    page.getByRole("heading", { level: 1, name: `${brand.en.name} Tbilisi Observatory` }),
+    page.getByRole("heading", { level: 1, name: "Stellar Tbilisi" }),
   ).toBeVisible();
-  await expect(
-    page
-      .getByRole("region", { name: `${brand.en.name} Tbilisi Observatory` })
-      .getByText("Tbilisi, Georgia", {
-        exact: true,
-      }),
-  ).toBeVisible();
-  await expect(
-    page.getByText(
-      `${brand.en.name} operates a physical telescope system remotely through secure observatory software.`,
-    ),
-  ).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Observatory status" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "NexStar 6SE" })).toBeVisible();
-  await expect(page.getByText("Expected MVP configuration")).toBeVisible();
-  await expect(page.getByText("Demonstration status")).toBeVisible();
+
+  const status = page.locator(".observatory-live");
+  await expect(status.getByText("SIMULATED OBSERVATORY")).toBeVisible();
+  await expect(status.getByText("Online", { exact: true })).toBeVisible();
+  await expect(status.getByText("Clear", { exact: true })).toBeVisible();
+
+  const tonight = page.locator(".observatory-tonight");
+  await expect(tonight.getByRole("link", { name: /Albireo/ })).toHaveAttribute(
+    "href",
+    "/en/app/missions/albireo",
+  );
+
+  const instrument = page.locator(".observatory-instrument");
+  await expect(instrument.getByText("Celestron NexStar 6SE")).toBeVisible();
+  await expect(instrument.getByText("ZWO ASI585MC")).toBeVisible();
+
+  const primary = page.getByRole("link", { name: "See tonight's targets" });
+  const live = page.getByRole("link", { name: "Open the live view" });
+  await expect(primary).toHaveAttribute("href", "/en/app/missions");
+  await expect(live).toHaveAttribute("href", "/en/app/live");
+
+  // All of it before any scrolling.
+  for (const locator of [status, tonight, instrument, primary, live]) {
+    const box = await locator.boundingBox();
+    expect(box && box.y + box.height).toBeLessThanOrEqual(900);
+  }
+
+  // Claims the platform does not back are gone.
+  await expect(page.getByText(/41\.72/)).toHaveCount(0);
+  await expect(page.getByText(/cooled|cooling/i)).toHaveCount(0);
+  await expect(page.getByText("Demonstration status")).toHaveCount(0);
+  const jsonLd = await page
+    .locator('script[type="application/ld+json"]')
+    .allTextContents();
+  expect(jsonLd.join("")).not.toContain("GeoCoordinates");
+
   await expect(
     page.getByRole("heading", { name: "Safety comes before movement" }),
-  ).toBeVisible();
-  await expect(page.getByText("Sun avoidance")).toBeVisible();
-  await expect(
-    page.getByText("No future observatory partners are being represented."),
   ).toBeVisible();
 });
 test("preserves observatory locale and mobile width", async ({ page }) => {
@@ -422,7 +441,8 @@ test("preserves observatory locale and mobile width", async ({ page }) => {
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: `${brand.ka.genitive} თბილისის ობსერვატორია`,
+      // The platform's name for the observatory (BookableObservatory.nameKa).
+      name: "სტელარი თბილისი",
     }),
   ).toBeVisible();
   await page.getByRole("button", { name: "ნავიგაციის გახსნა" }).click();

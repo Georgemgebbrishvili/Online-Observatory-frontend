@@ -4,18 +4,409 @@
   padding: 0 var(--space-page) clamp(var(--space-16), 8vw, 8rem);
 }
 
-.observatory-page-hero {
+/* The first screen: identity, live status and the two actions, then tonight and the
+   instrument. ADR-026. Depth from the surface ramp and borders; no glow, no glass. */
+.observatory-first {
   display: grid;
-  gap: clamp(var(--space-10), 6vw, var(--space-20));
-  align-items: center;
-  min-height: min(52rem, calc(100vh - 5rem));
-  padding-block: clamp(var(--space-12), 8vw, 7rem);
+  gap: var(--space-5);
+  padding-block: var(--space-6) var(--space-12);
   border-bottom: 1px solid var(--color-border-strong);
 }
 
-.observatory-page-hero-copy > p,
-.observatory-status-panel header span,
-.observatory-equipment header span,
+.observatory-first-main,
+.observatory-first-side {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.observatory-eyebrow {
+  margin: 0;
+  color: var(--color-photon);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.13em;
+}
+
+.observatory-first h1 {
+  margin: 0;
+  /* Georgian compounds run wider than the line on a phone; the viewport cap keeps
+     whole words without a per-locale size. */
+  font-size: min(var(--font-size-hero), 10.6vw);
+  line-height: 1.05;
+}
+
+/* On a phone the first screen is for status and the two actions; the sentence waits. */
+.observatory-statement {
+  display: none;
+  max-width: 40rem;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+  line-height: 1.6;
+}
+
+.observatory-live,
+.observatory-tonight,
+.observatory-instrument {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+}
+
+.observatory-live > header,
+.observatory-tonight > header,
+.observatory-instrument > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+}
+
+.observatory-live h2,
+.observatory-tonight h2,
+.observatory-instrument h2 {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.observatory-tonight > header p {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.observatory-text-link {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-label);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.observatory-text-link:hover {
+  color: var(--color-photon);
+}
+
+.observatory-live-rows {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.observatory-live-rows div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.observatory-live-rows dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.observatory-live-rows dd {
+  margin: 0;
+}
+
+.observatory-live-mission {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-label);
+  font-weight: 600;
+}
+
+.observatory-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.observatory-actions .button {
+  justify-content: center;
+  text-align: center;
+}
+
+.observatory-actions small {
+  grid-column: 1 / -1;
+}
+
+.observatory-live .mode-notice {
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.observatory-actions > small {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.observatory-tonight-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.observatory-tonight-list li + li {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.observatory-tonight-list a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  min-height: 2.75rem;
+  padding-block: var(--space-3);
+  color: inherit;
+  text-decoration: none;
+}
+
+.observatory-tonight-list a > span:last-child {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  color: var(--color-text-tertiary);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-standard) var(--ease-standard);
+}
+
+.observatory-tonight-list a:hover > span:last-child {
+  color: var(--color-photon);
+  transform: translateX(2px);
+}
+
+.observatory-tonight-name,
+.observatory-tonight-meta {
+  grid-column: 1;
+}
+
+.observatory-tonight-name {
+  font-family: var(--font-display);
+  font-size: var(--font-size-body-lg);
+  letter-spacing: -0.02em;
+}
+
+.observatory-tonight-meta {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.observatory-instrument dl {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.observatory-instrument dl div {
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.observatory-instrument dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.observatory-instrument dd {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.observatory-instrument dd span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.telescope-drawing {
+  position: relative;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-medium);
+  background:
+    linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px),
+    var(--color-night);
+  background-size:
+    2rem 2rem,
+    2rem 2rem,
+    auto;
+}
+
+.telescope-drawing svg {
+  display: block;
+  width: 100%;
+  max-height: 11rem;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.telescope-drawing figcaption {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-2);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.telescope-drawing-ground {
+  stroke: var(--color-border-strong);
+}
+
+.telescope-drawing-line,
+.telescope-drawing-body {
+  stroke: var(--color-text-tertiary);
+  stroke-width: 1.25;
+}
+
+.telescope-drawing-body {
+  fill: var(--color-surface-raised);
+}
+
+.telescope-drawing-corrector,
+.telescope-drawing-arc,
+.telescope-drawing-pivot {
+  stroke: var(--color-photon-border);
+  stroke-width: 1.25;
+}
+
+.telescope-drawing-light {
+  stroke: var(--color-photon-border);
+  stroke-dasharray: 3 5;
+  stroke-width: 1.25;
+}
+
+.telescope-drawing-star {
+  fill: var(--color-text-primary);
+}
+
+/* The tube is drawn level, then rotated to point at the star: the slew is that rotation. */
+.telescope-drawing-tube {
+  transform: rotate(-28deg);
+  transform-box: view-box;
+  transform-origin: 184px 85px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .observatory-first-main > *,
+  .observatory-first-side > * {
+    animation: observatory-reveal var(--duration-instrument) var(--ease-standard) both;
+  }
+
+  .observatory-first-main > :nth-child(2) {
+    animation-delay: 60ms;
+  }
+
+  .observatory-first-main > :nth-child(3) {
+    animation-delay: 120ms;
+  }
+
+  .observatory-first-main > :nth-child(4) {
+    animation-delay: 180ms;
+  }
+
+  .observatory-first-main > :nth-child(5) {
+    animation-delay: 240ms;
+  }
+
+  .observatory-first-side > :nth-child(1) {
+    animation-delay: 160ms;
+  }
+
+  .observatory-first-side > :nth-child(2) {
+    animation-delay: 260ms;
+  }
+
+  .telescope-drawing-tube {
+    animation: telescope-slew var(--duration-instrument) var(--ease-standard) 400ms both;
+  }
+
+  .telescope-drawing-light {
+    animation: telescope-light var(--duration-state) var(--ease-standard) 1200ms both;
+  }
+}
+
+@keyframes observatory-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@keyframes telescope-slew {
+  from {
+    transform: rotate(-6deg);
+  }
+}
+
+@keyframes telescope-light {
+  from {
+    opacity: 0;
+  }
+}
+
+.observatory-text-link:focus-visible,
+.observatory-tonight-list a:focus-visible {
+  outline: 2px solid var(--color-photon);
+  outline-offset: 3px;
+}
+
+@media (--sm) {
+  .observatory-actions {
+    grid-template-columns: repeat(2, max-content);
+    align-items: center;
+  }
+}
+
+@media (--md) {
+  .observatory-statement {
+    display: block;
+  }
+}
+
+@media (--lg) {
+  .observatory-first {
+    grid-template-columns: minmax(0, 1.15fr) minmax(22rem, 0.85fr);
+    gap: var(--space-8);
+    align-items: start;
+    padding-block: var(--space-8) var(--space-16);
+  }
+
+  .observatory-first-main {
+    gap: var(--space-5);
+  }
+
+  .observatory-live-rows {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .observatory-live-rows div {
+    display: grid;
+    justify-content: start;
+  }
+}
+
 .observatory-mission-path header > span,
 .observatory-safety header > span,
 .observatory-network header > span {
@@ -26,166 +417,6 @@
   letter-spacing: 0.13em;
 }
 
-.observatory-page-hero h1 {
-  max-width: 16ch;
-  margin-top: var(--space-6);
-  /* Georgian compounds run wider than the line at the 44px mobile hero; the viewport
-     cap keeps whole words without a per-locale size. No effect above ~600px. */
-  font-size: min(var(--font-size-hero), 10.6vw);
-}
-
-.observatory-page-hero-copy > strong {
-  display: block;
-  margin-top: var(--space-5);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-  font-weight: 500;
-}
-
-.observatory-page-hero blockquote {
-  max-width: 42rem;
-  margin: var(--space-8) 0;
-  padding-left: var(--space-5);
-  border-left: 1px solid var(--color-photon);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-  line-height: 1.65;
-}
-
-.observatory-telescope-visual {
-  position: relative;
-  min-height: clamp(28rem, 62vw, 42rem);
-  overflow: hidden;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-panel);
-  background:
-    radial-gradient(circle at 50% 42%, var(--color-photon-muted), transparent 27%),
-    var(--color-surface-base);
-  box-shadow: var(--shadow-panel);
-}
-
-.observatory-visual-grid {
-  position: absolute;
-  background:
-    linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px);
-  background-size: 3.5rem 3.5rem;
-  inset: 0;
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    var(--color-mask) 20%,
-    var(--color-mask) 80%,
-    transparent
-  );
-}
-
-.observatory-telescope-tube,
-.observatory-telescope-corrector,
-.observatory-telescope-arm,
-.observatory-telescope-base,
-.observatory-visual-axis {
-  position: absolute;
-  display: block;
-}
-
-.observatory-telescope-tube {
-  width: min(62%, 21rem);
-  height: 7rem;
-  border: 1px solid var(--color-text-tertiary);
-  border-radius: 3.5rem 1rem 1rem 3.5rem;
-  background: linear-gradient(
-    165deg,
-    var(--color-surface-hover),
-    var(--color-surface-base)
-  );
-  top: 30%;
-  left: 17%;
-  transform: rotate(-28deg);
-}
-
-.observatory-telescope-corrector {
-  width: 7.5rem;
-  height: 7.5rem;
-  border: 2px solid var(--color-photon-border);
-  border-radius: var(--radius-full);
-  background: radial-gradient(
-    circle,
-    var(--color-photon-muted),
-    var(--color-scrim-strong)
-  );
-  top: calc(30% - 0.25rem);
-  left: 13%;
-  transform: rotate(-28deg);
-}
-
-.observatory-telescope-arm {
-  width: 3.5rem;
-  height: 16rem;
-  border: 1px solid var(--color-text-tertiary);
-  border-radius: var(--radius-large);
-  background: linear-gradient(
-    90deg,
-    var(--color-surface-raised),
-    var(--color-border-subtle),
-    var(--color-surface-base)
-  );
-  top: 45%;
-  left: 52%;
-  transform: rotate(16deg);
-}
-
-.observatory-telescope-base {
-  width: 14rem;
-  height: 5rem;
-  border: 1px solid var(--color-text-tertiary);
-  border-radius: 50%;
-  background: linear-gradient(var(--color-optical-glass), var(--color-surface-base));
-  bottom: 10%;
-  left: calc(52% - 5.25rem);
-}
-
-.observatory-visual-axis {
-  width: 17rem;
-  aspect-ratio: 1;
-  border: 1px solid var(--color-photon-border);
-  border-radius: var(--radius-full);
-  top: 28%;
-  left: calc(52% - 8.5rem);
-}
-
-.observatory-visual-axis::before,
-.observatory-visual-axis::after {
-  position: absolute;
-  background: var(--color-photon-border);
-  content: "";
-}
-
-.observatory-visual-axis::before {
-  width: 150%;
-  height: 1px;
-  top: 50%;
-  left: -25%;
-}
-
-.observatory-visual-axis::after {
-  width: 1px;
-  height: 150%;
-  top: -25%;
-  left: 50%;
-}
-
-.observatory-telescope-visual small {
-  position: absolute;
-  right: var(--space-5);
-  bottom: var(--space-5);
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-  letter-spacing: 0.11em;
-}
-
-.observatory-status-panel,
-.observatory-equipment > article,
 .observatory-mission-path,
 .observatory-safety,
 .observatory-network {
@@ -194,30 +425,6 @@
   background: var(--color-surface-base);
 }
 
-.observatory-status-panel {
-  margin-top: clamp(var(--space-12), 7vw, var(--space-20));
-  overflow: hidden;
-}
-
-.observatory-status-panel > header,
-.observatory-equipment article > header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
-  padding: var(--space-5) clamp(var(--space-5), 4vw, var(--space-8));
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.observatory-status-panel header > div,
-.observatory-equipment header > div {
-  display: flex;
-  gap: var(--space-4);
-  align-items: baseline;
-}
-
-.observatory-status-panel h2,
-.observatory-equipment h2,
 .observatory-mission-path h2,
 .observatory-safety h2,
 .observatory-network h2 {
@@ -225,161 +432,6 @@
   font-family: var(--font-display);
   font-weight: 450;
   letter-spacing: -0.045em;
-}
-
-.observatory-status-panel h2,
-.observatory-equipment h2 {
-  font-size: var(--font-size-h1);
-}
-
-.observatory-status-content {
-  display: grid;
-}
-
-.observatory-status-content > div {
-  padding: clamp(var(--space-6), 4vw, var(--space-10));
-}
-
-.observatory-status-content > div strong {
-  color: var(--color-warning);
-  font-size: var(--font-size-label);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.observatory-status-content > div p {
-  max-width: 41rem;
-  margin: var(--space-3) 0 0;
-  color: var(--color-text-secondary);
-  line-height: 1.65;
-}
-
-.observatory-status-content dl,
-.observatory-equipment dl {
-  display: grid;
-  margin: 0;
-}
-
-.observatory-status-content dl {
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.observatory-status-content dl div,
-.observatory-equipment dl div {
-  display: grid;
-  grid-template-columns: minmax(7rem, 0.8fr) minmax(0, 1.2fr);
-  gap: var(--space-5);
-  padding: var(--space-4) clamp(var(--space-5), 4vw, var(--space-8));
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.observatory-status-content dl div:last-child,
-.observatory-equipment dl div:last-child {
-  border-bottom: 0;
-}
-
-.observatory-status-content dt,
-.observatory-equipment dt {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-}
-
-.observatory-status-content dd,
-.observatory-equipment dd {
-  margin: 0;
-  font-size: var(--font-size-label);
-  font-weight: 600;
-}
-
-.observatory-equipment {
-  display: grid;
-  gap: var(--space-4);
-  margin-top: var(--space-4);
-}
-
-.observatory-equipment > article {
-  overflow: hidden;
-}
-
-.observatory-equipment header small {
-  max-width: 10rem;
-  color: var(--color-warning);
-  font-size: var(--font-size-caption);
-  text-align: right;
-}
-
-.equipment-name {
-  min-height: 15rem;
-  padding: clamp(var(--space-6), 5vw, var(--space-10));
-  background:
-    radial-gradient(circle at 88% 28%, var(--color-photon-muted), transparent 12rem),
-    var(--color-night);
-}
-
-.equipment-name > p,
-.equipment-name > h3 {
-  margin: 0;
-}
-
-.equipment-name > p:first-child {
-  color: var(--color-photon);
-  font-size: var(--font-size-label);
-  font-weight: 650;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.equipment-name > h3 {
-  max-width: 10ch;
-  margin-top: var(--space-3);
-  font-family: var(--font-display);
-  font-size: var(--font-size-h2);
-  font-weight: 450;
-  letter-spacing: -0.055em;
-  line-height: 1;
-}
-
-.equipment-name-camera {
-  position: relative;
-  overflow: hidden;
-}
-
-.equipment-name-camera > span {
-  position: absolute;
-  width: 13rem;
-  aspect-ratio: 1;
-  border: 1px solid var(--color-photon-border);
-  border-radius: var(--radius-full);
-  top: 50%;
-  right: -3rem;
-  transform: translateY(-50%);
-}
-
-.equipment-name-camera > span::after {
-  position: absolute;
-  border: 1px solid var(--color-optical-medium);
-  border-radius: inherit;
-  content: "";
-  inset: 22%;
-}
-
-.equipment-name-camera > h3,
-.equipment-name-camera > p {
-  position: relative;
-  z-index: 1;
-}
-
-.equipment-name-camera > h3 {
-  max-width: 8ch;
-  margin-top: 0;
-  font-size: var(--font-size-h2);
-}
-
-.equipment-name-camera > p {
-  max-width: 28rem;
-  margin-top: var(--space-5);
-  color: var(--color-text-secondary);
-  line-height: 1.6;
 }
 
 .observatory-mission-path,
@@ -591,23 +643,6 @@
 }
 
 @media (--md) {
-  .observatory-page-hero {
-    grid-template-columns: minmax(0, 0.95fr) minmax(26rem, 1.05fr);
-  }
-
-  .observatory-status-content {
-    grid-template-columns: minmax(0, 1.2fr) minmax(22rem, 0.8fr);
-  }
-
-  .observatory-status-content dl {
-    border-top: 0;
-    border-left: 1px solid var(--color-border-subtle);
-  }
-
-  .observatory-equipment {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .observatory-mission-path > header,
   .observatory-network > header {
     grid-template-columns: 3rem minmax(0, 1fr);
@@ -654,35 +689,5 @@
 
   .observatory-network-track article {
     grid-template-columns: minmax(0, 1fr) auto;
-  }
-}
-
-@media (--below-md) {
-  .observatory-page-hero {
-    min-height: 0;
-  }
-
-  .observatory-status-panel > header,
-  .observatory-equipment article > header {
-    align-items: flex-start;
-  }
-
-  .observatory-status-panel header > div,
-  .observatory-equipment header > div {
-    display: grid;
-  }
-
-  .observatory-status-content dl div,
-  .observatory-equipment dl div {
-    grid-template-columns: 1fr;
-    gap: var(--space-1);
-  }
-
-  .observatory-telescope-corrector {
-    left: 6%;
-  }
-
-  .observatory-telescope-tube {
-    left: 12%;
   }
 }
