@@ -22,7 +22,7 @@ type AuthenticatedHomeCopy = {
   noObservatory: StateCopy;
   upcoming: string;
   simulated: string;
-  viewTarget: string;
+  openMission: string;
   retiredTarget: string;
   noUpcoming: StateCopy & { action: string };
   upcomingUnavailable: StateCopy;
@@ -62,7 +62,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     },
     upcoming: "Upcoming observations",
     simulated: "Simulated",
-    viewTarget: "View target",
+    openMission: "Open mission",
     retiredTarget: "A target no longer in the catalogue",
     noUpcoming: {
       title: "No upcoming observations.",
@@ -106,7 +106,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     },
     upcoming: "დაგეგმილი დაკვირვებები",
     simulated: "სიმულაცია",
-    viewTarget: "ობიექტის ნახვა",
+    openMission: "მისიის გახსნა",
     retiredTarget: "ობიექტი, რომელიც კატალოგში აღარ არის",
     noUpcoming: {
       title: "დაგეგმილი დაკვირვება არ არის.",

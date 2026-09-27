@@ -253,40 +253,6 @@ test("keeps missions usable inside a mobile viewport", async ({ page }) => {
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("runs a visibly simulated mission through data-driven states", async ({ page }) => {
-  await page.goto("/en/app/missions/DV-SIM-001/session");
-
-  await expect(page.getByText("SIMULATED OBSERVATORY").first()).toBeVisible();
-  await expect(page.getByText(/no commands are sent to hardware/)).toBeVisible();
-  await expect(page.getByText("Saturn visible")).toBeVisible();
-
-  await page.getByRole("button", { name: "Advance state" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Moving telescope to Saturn" }),
-  ).toBeVisible();
-  await expect(page.getByText("Telescope slew started")).toBeVisible();
-
-  await page.getByLabel("Test a failure state").selectOption("WEATHER_HOLD");
-  await expect(page.getByRole("heading", { name: "Weather hold" })).toBeVisible();
-  await expect(page.getByText("Mission placed on weather hold")).toBeVisible();
-});
-
-test("keeps the mission session within a mobile viewport", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/ka/app/missions/DV-SIM-001/session");
-
-  await expect(page.getByText("SIMULATED OBSERVATORY").first()).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "თქვენი დაკვირვება მზადდება" }),
-  ).toBeVisible();
-
-  const viewport = await page.evaluate(() => ({
-    clientWidth: document.documentElement.clientWidth,
-    scrollWidth: document.documentElement.scrollWidth,
-  }));
-  expect(viewport.scrollWidth).toBe(viewport.clientWidth);
-});
-
 test("operates the live capture instrument without mount controls", async ({ page }) => {
   await page.goto("/en/app/live");
 

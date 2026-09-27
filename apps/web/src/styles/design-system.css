@@ -398,3 +398,20 @@
     grid-template-columns: 3rem minmax(0, 1fr);
   }
 }
+
+.ds-room-specimens {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (--lg) {
+  .ds-preview-specimens {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ds-dial-specimens {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 8.75rem));
+  gap: var(--space-4);
+}

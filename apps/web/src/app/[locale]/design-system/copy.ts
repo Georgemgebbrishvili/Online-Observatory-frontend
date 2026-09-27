@@ -1,5 +1,5 @@
+import type { MissionEvent, TonightTarget } from "@darkview/contracts";
 import type { Locale } from "@/i18n/config";
-import type { TonightTarget } from "@darkview/contracts";
 
 import { brand } from "@/brand";
 
@@ -149,6 +149,10 @@ export const designSystemCopy = {
       captureCard:
         "CaptureCard — a simulated capture with a drawn frame, one with no preview, and the download states",
       slotRow: "SlotRow — available, booked, and held for weather",
+      missionSteps: "MissionSteps — at a step, complete, and stopped by a failure",
+      pointingDial:
+        "PointingDial — high in the south, low in the west, below the horizon",
+      targetPreview: "TargetPreview — a planet's plate, and a target with none",
     },
     overlay: {
       openModal: "Open modal",
@@ -345,6 +349,9 @@ export const designSystemCopy = {
       captureCard:
         "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები",
       slotRow: "SlotRow — თავისუფალი, დაჯავშნილი და ამინდის გამო შეჩერებული",
+      missionSteps: "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული",
+      pointingDial: "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ",
+      targetPreview: "TargetPreview — პლანეტის ილუსტრაცია და ობიექტი ილუსტრაციის გარეშე",
     },
     overlay: {
       openModal: "მოდალის გახსნა",
@@ -519,4 +526,25 @@ export const slotSpecimens = [
   priceMinor: 4500,
   currency: "GEL" as const,
   unavailableReason: slot.unavailableReason as "ALREADY_BOOKED" | "WEATHER_HOLD" | null,
+}));
+
+/** PointingDial specimens: positions, not a reading of any sky. */
+export const dialSpecimens = [
+  { altitudeDegrees: 42.1, azimuthDegrees: 143.6 },
+  { altitudeDegrees: 8.5, azimuthDegrees: 281 },
+  { altitudeDegrees: -12, azimuthDegrees: 20 },
+] as const;
+
+/** A history for the stopped MissionSteps specimen: slewing, then a hardware error. */
+export const stepSpecimenHistory = (
+  ["SCHEDULED", "SLEWING", "HARDWARE_ERROR"] as const
+).map((state, index): MissionEvent => ({
+  id: `70000000-0000-4000-8000-00000000000${index}`,
+  missionId: "20000000-0000-4000-8000-000000000001",
+  at: `2026-09-23T20:0${index}:00.000Z`,
+  state,
+  failureReason: state === "HARDWARE_ERROR" ? "MOUNT_FAULT" : null,
+  source: "AGENT",
+  commandId: null,
+  detail: null,
 }));

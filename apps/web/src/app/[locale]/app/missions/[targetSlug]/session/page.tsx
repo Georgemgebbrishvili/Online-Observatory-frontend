@@ -1,58 +1,55 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
-import { MissionSessionView } from "@/components/missions/mission-session";
-import {
-  developmentMissions,
-  getDevelopmentMission,
-} from "@/features/missions/simulator";
-import { getMissionTarget } from "@/features/missions/targets";
-import { isLocale, locales } from "@/i18n/config";
-import { missionSessionCopy } from "@/i18n/resources/missions";
+import { MissionRoom } from "@/components/room/mission-room";
+import { readRoom } from "@/features/missions/read-room";
+import { fill } from "@/features/operator/format";
+import { isLocale } from "@/i18n/config";
+import { roomCopy } from "@/i18n/resources/room";
 import { requireUser } from "@/lib/platform/session";
-import "@/styles/mission-session.css";
-import { brand } from "@/brand";
+import "@/styles/collection.css";
+import "@/styles/room.css";
 
-type MissionSessionPageProps = {
+// The segment is named for the target page it shares a level with; here its value is
+// the mission's id (ADR-027 §1).
+type MissionRoomPageProps = {
   params: Promise<{ locale: string; targetSlug: string }>;
 };
 
-export function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    developmentMissions.map((mission) => ({
-      locale,
-      targetSlug: mission.id,
-    })),
-  );
-}
-
 export async function generateMetadata({
   params,
-}: MissionSessionPageProps): Promise<Metadata> {
+}: MissionRoomPageProps): Promise<Metadata> {
   const { locale, targetSlug: missionId } = await params;
-  const definition = getDevelopmentMission(missionId);
-  const target = definition ? getMissionTarget(definition.targetSlug) : undefined;
-
-  if (!isLocale(locale) || !target) return {};
-
-  const name = locale === "ka" ? target.georgianName : target.commonName;
+  if (!isLocale(locale)) return {};
+  const result = await readRoom(missionId, locale);
+  const target = result.kind === "ok" ? result.room.target : null;
+  const name = target ? (locale === "ka" ? target.nameKa : target.nameEn) : "—";
   return {
-    title: `${name} · ${missionSessionCopy[locale].metadataMission} ${missionId} · ${brand.en.name}`,
+    title: fill(roomCopy[locale].metadataTitle, { target: name }),
     robots: { index: false, follow: false },
   };
 }
 
-export default async function MissionSessionPage({ params }: MissionSessionPageProps) {
+export default async function MissionRoomPage({ params }: MissionRoomPageProps) {
   const { locale, targetSlug: missionId } = await params;
-
   if (!isLocale(locale)) notFound();
 
   await requireUser(locale);
 
-  const definition = getDevelopmentMission(missionId);
-  const target = definition ? getMissionTarget(definition.targetSlug) : undefined;
+  const result = await readRoom(missionId, locale);
+  if (result.kind === "not-found") notFound();
+  if (result.kind === "signed-out") redirect(`/${locale}/sign-in`);
+  if (result.kind === "unreachable") {
+    const copy = roomCopy[locale];
+    return (
+      <div className="room">
+        <header className="room-head" role="alert">
+          <h1>{copy.unreachable.title}</h1>
+          <p>{copy.unreachable.description}</p>
+        </header>
+      </div>
+    );
+  }
 
-  if (!definition || !target) notFound();
-
-  return <MissionSessionView definition={definition} locale={locale} target={target} />;
+  return <MissionRoom room={result.room} locale={locale} />;
 }

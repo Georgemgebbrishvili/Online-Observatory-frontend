@@ -1,0 +1,516 @@
+/*
+ * The live room (ADR-027): SIDERA's arrangement in this product's brand. Feed at the centre,
+ * steps beneath it, dial and readings to the right; one column on a phone, in the order
+ * of reading. No glow, no glass: depth is the surface ramp and borders.
+ */
+
+.room {
+  display: grid;
+  gap: var(--space-6);
+  width: min(100%, 94rem);
+  padding: var(--space-8) var(--space-page) var(--space-16);
+}
+
+.room > *,
+.room-grid > * {
+  min-width: 0;
+}
+
+.room-head {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.room-head > * {
+  margin: 0;
+}
+
+.room-head h1 {
+  max-width: none;
+  font-size: var(--font-size-h1);
+}
+
+.room-head > p:not(.eyebrow) {
+  max-width: 44rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+}
+
+.room-head .eyebrow {
+  margin-bottom: 0;
+}
+
+.room-back {
+  justify-self: start;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.room-back:hover {
+  color: var(--color-text-primary);
+}
+
+.room-head .room-reason {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--color-warning);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body);
+}
+
+.room-grid {
+  display: grid;
+  gap: var(--space-5);
+}
+
+@media (--lg) {
+  .room-grid {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    grid-template-areas:
+      "feed side"
+      "steps side"
+      "captures captures"
+      "history history";
+    align-items: start;
+  }
+
+  .room-grid > .room-feed {
+    grid-area: feed;
+  }
+
+  .room-grid > .mission-steps {
+    grid-area: steps;
+  }
+
+  .room-grid > .room-side {
+    grid-area: side;
+  }
+
+  .room-grid > .room-captures {
+    grid-area: captures;
+  }
+
+  .room-grid > .room-history {
+    grid-area: history;
+  }
+}
+
+@media (--xl) {
+  .room-grid {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-areas:
+      "feed side"
+      "steps side"
+      "captures history";
+  }
+}
+
+.room-side {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.room-panel {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+}
+
+.room-panel h2 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-h3);
+}
+
+.room-muted,
+.room-note {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.room-note {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+/* The feed's place. Before a stream exists it holds the target preview. */
+
+.target-preview {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.target-preview-stage {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-night);
+}
+
+/* The whole plate, full height: a planet spans up to half of it (Mars, 17–66 %), so
+   cropping it to the stage would cut one off. Its faint ground fades out at the sides
+   rather than ending in an edge. */
+.target-preview-stage {
+  position: relative;
+}
+
+/* Absolute, so 100% is the stage's height: a grid item's percentage height does not
+   resolve against an aspect-ratio box. */
+.target-preview-stage img {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: auto;
+  height: 100%;
+  transform: translateX(-50%);
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    var(--color-mask) 15%,
+    var(--color-mask) 85%,
+    transparent
+  );
+}
+
+.target-preview figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.target-preview-caption {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+}
+
+/* The five steps. */
+
+.mission-steps {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+}
+
+.mission-steps header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.mission-steps h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.mission-steps header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+}
+
+.mission-steps ol {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mission-steps li {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+/* The connector, from each step's dot to the next one's. */
+.mission-steps li:not(:last-child)::after {
+  position: absolute;
+  top: 1rem;
+  left: calc(50% + 1.25rem);
+  width: calc(100% - 2.5rem + var(--space-2));
+  height: 1px;
+  background: var(--color-border-subtle);
+  content: "";
+}
+
+.mission-steps li[data-status="done"]:not(:last-child)::after {
+  background: var(--color-photon-border);
+}
+
+.mission-step-dot {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-raised);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+}
+
+.mission-step-dot svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+}
+
+.mission-step-name {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.mission-step-note {
+  color: var(--color-warning);
+  font-size: var(--font-size-caption);
+}
+
+[data-status="done"] .mission-step-dot {
+  border-color: var(--color-photon-border);
+  color: var(--color-photon);
+}
+
+[data-status="done"] .mission-step-name {
+  color: var(--color-text-secondary);
+}
+
+[data-status="current"] .mission-step-dot {
+  border-color: var(--color-photon);
+  background: var(--color-photon);
+  color: var(--color-on-photon);
+}
+
+[data-status="current"] .mission-step-name {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+[data-status="stopped"] .mission-step-dot {
+  border-color: var(--color-warning-border);
+  background: var(--color-warning-muted);
+  color: var(--color-warning);
+}
+
+[data-status="stopped"] .mission-step-name {
+  color: var(--color-text-primary);
+}
+
+/* On a phone the five names do not fit side by side: the steps become a bar, and only
+   the step the mission is at keeps its name. */
+@media (--below-md) {
+  .mission-steps ol {
+    gap: var(--space-1);
+  }
+
+  .mission-steps li:not(:last-child)::after {
+    content: none;
+  }
+
+  .mission-step-dot {
+    width: 100%;
+    height: 4px;
+    border: 0;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    background: var(--color-border-subtle);
+    color: transparent;
+  }
+
+  .mission-step-dot svg {
+    display: none;
+  }
+
+  [data-status="done"] .mission-step-dot {
+    background: var(--color-photon-border);
+  }
+
+  [data-status="current"] .mission-step-dot {
+    background: var(--color-photon);
+  }
+
+  [data-status="stopped"] .mission-step-dot {
+    background: var(--color-warning);
+  }
+
+  .mission-steps li:not([aria-current]) .mission-step-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .mission-steps li[aria-current] {
+    justify-items: start;
+    text-align: start;
+  }
+}
+
+/* The dial and its values. */
+
+.room-pointing-body {
+  display: grid;
+  grid-template-columns: 8.75rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.pointing-dial {
+  width: 100%;
+  height: auto;
+}
+
+.pointing-dial-rim {
+  fill: var(--color-night);
+  stroke: var(--color-border-strong);
+}
+
+.pointing-dial-ring {
+  fill: none;
+  stroke: var(--color-border-subtle);
+  stroke-dasharray: 2 3;
+}
+
+.pointing-dial-tick {
+  stroke: var(--color-border-strong);
+}
+
+.pointing-dial-cardinal,
+.pointing-dial-north {
+  fill: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+}
+
+.pointing-dial-north {
+  fill: var(--color-text-primary);
+}
+
+.pointing-dial-centre {
+  fill: var(--color-text-tertiary);
+}
+
+.pointing-dial-target line {
+  stroke: var(--color-photon-border);
+}
+
+.pointing-dial-target circle {
+  fill: none;
+  stroke: var(--color-photon);
+}
+
+.pointing-dial-target .pointing-dial-target-dot {
+  fill: var(--color-photon);
+  stroke: none;
+}
+
+.room-values,
+.room-readings {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.room-values div,
+.room-readings div {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.room-readings dd {
+  justify-self: start;
+}
+
+.room-values dt,
+.room-readings dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.room-values dd,
+.room-readings dd {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body);
+}
+
+/* Captures and history. */
+
+.room-captures header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.room-captures header h2 {
+  margin: 0;
+}
+
+.room-captures header a {
+  color: var(--color-photon);
+  font-size: var(--font-size-label);
+}
+
+.room-capture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-4);
+}
+
+.room-history ol {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.room-history li {
+  display: grid;
+  gap: var(--space-1);
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--color-border-subtle);
+}
+
+.room-history li:first-child {
+  border-left-color: var(--color-photon);
+}
+
+.room-history time {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.room-history strong {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+}
+
+.room-history span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}

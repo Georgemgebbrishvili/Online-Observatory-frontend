@@ -33,6 +33,8 @@ function masks(page: Page) {
     page.locator("[data-field]").filter({ hasText: /\d{1,2}:\d{2}|ago|წინ/ }),
     page.locator(".status-observatory .data"),
     page.locator(".status-source"),
+    // The room's forecast hour is the one the server read it in.
+    page.locator(".room-reading-live"),
   ];
 }
 

@@ -256,14 +256,12 @@ export function AuthenticatedHome({
                       <h3>{name}</h3>
                       {mission.mode === "SIMULATED" && <small>{copy.simulated}</small>}
                     </div>
-                    {target && (
-                      <Link
-                        href={`/${locale}/app/missions/${target.slug}`}
-                        aria-label={`${copy.viewTarget}: ${name}`}
-                      >
-                        <span aria-hidden="true">→</span>
-                      </Link>
-                    )}
+                    <Link
+                      href={`/${locale}/app/missions/${mission.id}/session`}
+                      aria-label={`${copy.openMission}: ${name}`}
+                    >
+                      <span aria-hidden="true">→</span>
+                    </Link>
                   </article>
                 );
               })}

@@ -109,7 +109,7 @@ export const readCatalogue = cache(async (): Promise<Map<string, Target> | null>
   }
 });
 
-function entryOf(
+export function entryOf(
   capture: Capture,
   catalogue: Map<string, Target> | null,
 ): CollectionEntry {

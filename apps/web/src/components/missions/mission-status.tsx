@@ -1,11 +1,8 @@
 import { StatusIndicator, type StatusTone } from "@/components/ui/status-indicator";
-import {
-  missionFailureStates,
-  missionStates,
-  type MissionState,
-} from "@/features/missions/domain";
+import type { MissionState } from "@darkview/contracts";
+import { zMissionState } from "@darkview/contracts/zod";
 
-export const missionStatuses = [...missionStates, ...missionFailureStates] as const;
+export const missionStatuses = zMissionState.options;
 
 export type MissionStatusValue = MissionState;
 

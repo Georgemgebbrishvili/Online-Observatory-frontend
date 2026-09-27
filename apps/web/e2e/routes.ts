@@ -34,7 +34,10 @@ export const appRoutes = [
  */
 export const parameterisedRoutes = [
   "app/missions/saturn",
-  "app/missions/DV-SIM-001/session",
+  // The fake platform's three missions: observing, scheduled, complete.
+  "app/missions/20000000-0000-4000-8000-000000000001/session",
+  "app/missions/21000000-0000-4000-8000-000000000002/session",
+  "app/missions/22000000-0000-4000-8000-000000000003/session",
   "app/collection/60000000-0000-4000-8000-000000000001",
 ] as const;
 

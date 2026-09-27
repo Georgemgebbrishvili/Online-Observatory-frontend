@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/booking.css";
+import "@/styles/room.css";
 import "@/styles/collection.css";
 import "@/styles/design-system.css";
 import { notFound } from "next/navigation";
@@ -8,6 +9,11 @@ import { OpticalRing } from "@/components/astronomy/optical-ring";
 import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { TargetCard } from "@/components/astronomy/target-card";
 import { SlotRow } from "@/components/booking/booking-night";
+import { MissionSteps } from "@/components/room/mission-steps";
+import { PointingDial } from "@/components/room/pointing-dial";
+import { TargetPreview } from "@/components/room/target-preview";
+import { missionProgress, plateFor } from "@/features/missions/room";
+import { fill } from "@/features/operator/format";
 import { CaptureCard } from "@/components/collection/capture-card";
 import { CaptureDownloads } from "@/components/collection/capture-downloads";
 import { MissionStatus, missionStatuses } from "@/components/missions/mission-status";
@@ -33,7 +39,7 @@ import { formatCapturedAt } from "@/features/collection/present";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/collection";
-import { missionSessionCopy } from "@/i18n/resources/missions";
+import { roomCopy } from "@/i18n/resources/room";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
 import { palette } from "@/styles/tokens";
@@ -41,7 +47,9 @@ import { palette } from "@/styles/tokens";
 import {
   captureSpecimens,
   designSystemCopy,
+  dialSpecimens,
   slotSpecimens,
+  stepSpecimenHistory,
   targetSpecimens,
 } from "./copy";
 
@@ -137,6 +145,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
   if (!isLocale(locale)) notFound();
 
   const copy = designSystemCopy[locale];
+  const room = roomCopy[locale];
   const dictionary = await getDictionary(locale);
 
   return (
@@ -293,7 +302,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   <MissionStatus
                     key={status}
                     status={status}
-                    label={missionSessionCopy[locale].states[status].title.replace(
+                    label={roomCopy[locale].states[status].title.replace(
                       "{target}",
                       "M42",
                     )}
@@ -388,6 +397,59 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               />
             ))}
           </ol>
+          <h3 className="ds-subheading">{copy.cards.missionSteps}</h3>
+          <div className="ds-room-specimens">
+            {(
+              [
+                ["VERIFYING", null],
+                ["COMPLETE", null],
+                ["HARDWARE_ERROR", stepSpecimenHistory],
+              ] as const
+            ).map(([state, events]) => {
+              const statuses = missionProgress(state, events);
+              const at = statuses.findIndex((step) => step !== "done");
+              return (
+                <MissionSteps
+                  key={state}
+                  id={`ds-mission-steps-${state}`}
+                  // Three on one page: each landmark needs its own name.
+                  title={`${room.steps.title} — ${room.states[state].title}`}
+                  names={room.steps.names}
+                  statuses={statuses}
+                  position={fill(room.steps.stepOf, {
+                    step: String(at === -1 ? 5 : at + 1),
+                  })}
+                  stopped={room.steps.stopped}
+                />
+              );
+            })}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.pointingDial}</h3>
+          <div className="ds-dial-specimens">
+            {dialSpecimens.map((position) => (
+              <PointingDial
+                key={position.azimuthDegrees}
+                position={position}
+                label={room.pointing.dial}
+                cardinals={room.pointing.cardinals}
+              />
+            ))}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.targetPreview}</h3>
+          <div className="ds-room-specimens ds-preview-specimens">
+            <TargetPreview
+              plate={plateFor("saturn")}
+              name="Saturn"
+              caption={room.feed.illustration}
+              note={fill(room.feed.before, { target: "Saturn" })}
+            />
+            <TargetPreview
+              plate={plateFor("m13-hercules-cluster")}
+              name="M13"
+              caption={room.feed.illustration}
+              note={fill(room.feed.before, { target: "M13" })}
+            />
+          </div>
         </section>
 
         <section className="ds-section" aria-labelledby="overlays-title">

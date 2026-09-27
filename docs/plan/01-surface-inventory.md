@@ -41,7 +41,7 @@ eight targets. `/targets/tonight` exists and is not called.
 | `/app` | **Live** | `/me`, `/targets/tonight`, `/observatories/{id}/state`, `/missions`, `/captures` | DV-079 |
 | `/app/missions` | **Live** | `/targets/tonight` | DV-074 |
 | `/app/missions/[slug]` | **Live** | `/targets/{slug}`, `/targets/tonight` | DV-074 |
-| `/app/missions/[slug]/session` | Fixture | `/missions/{id}`, `/command`, `/events` | DV-075 |
+| `/app/missions/[slug]/session` | **Live, read** (Phase 4 slice 1; feed and commands to come) | `/missions/{id}`, `/events`; `/command` in slice 3 | DV-075 |
 | `/app/missions/[slug]/watch` | Fixture | `/missions/{id}/observers` | DV-104 |
 | `/app/live` | Fixture | `/missions/{id}/events` | DV-075 |
 | `/app/collection` | **Live** | `/captures` | DV-076 |

@@ -19,6 +19,7 @@ import {
   zGetObservatoryStatusResponse,
   zListBookableObservatoriesResponse,
   zListCapturesResponse,
+  zListMissionEventsResponse,
   zListMissionsResponse,
   zListSlotsResponse,
   zGetTargetResponse,
@@ -328,6 +329,49 @@ const missions = [
     observerCapacity: 5,
   },
 ];
+
+// GET /missions/{id}/events: each mission's history, oldest first as the platform
+// orders it, one minute apart from the mission's start. Paged by PAGE_SIZE with the
+// platform's cursor, the last event's id, so the room reads more than one page.
+const missionHistories = {
+  [missions[0].id]: [
+    "REQUESTED",
+    "SCHEDULED",
+    "PREPARING",
+    "SLEWING",
+    "VERIFYING",
+    "CENTERING",
+    "OBSERVING",
+  ],
+  [missions[1].id]: ["REQUESTED", "SCHEDULED"],
+  [missions[2].id]: [
+    "REQUESTED",
+    "SCHEDULED",
+    "PREPARING",
+    "SLEWING",
+    "VERIFYING",
+    "CENTERING",
+    "OBSERVING",
+    "CAPTURING",
+    "PROCESSING",
+    "COMPLETE",
+  ],
+};
+const missionEvents = Object.fromEntries(
+  missions.map((mission, missionIndex) => [
+    mission.id,
+    missionHistories[mission.id].map((state, index) => ({
+      id: `7${missionIndex}000000-0000-4000-8000-0000000000${String(index).padStart(2, "0")}`,
+      missionId: mission.id,
+      at: new Date(Date.parse(mission.requestedAt) + index * 60_000).toISOString(),
+      state,
+      failureReason: null,
+      source: index < 2 ? "CLOUD" : "AGENT",
+      commandId: null,
+      detail: null,
+    })),
+  ]),
+);
 
 // The observer's Collection: three simulated captures from the completed M13 mission,
 // newest first. The first has every asset, the second no FITS, the third nothing but
@@ -866,6 +910,29 @@ http
       const found = targets.items.find((row) => row.slug === slug[1] && row.enabled);
       if (!found) return error(response, 404, "NOT_FOUND", "No such target.");
       return send(response, 200, zGetTargetResponse.parse(found));
+    }
+    const history = path.match(/^\/missions\/([0-9a-f-]+)\/events$/);
+    if (history && request.method === "GET") {
+      const user = sessionUser(request);
+      if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+      // Existence is private: somebody else's mission is the same 404 as none.
+      const mission = missions.find(
+        (row) => row.id === history[1] && row.userId === user.id,
+      );
+      if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+      const events = missionEvents[mission.id];
+      const cursor = new URL(request.url, "http://fake").searchParams.get("cursor");
+      const start = cursor ? events.findIndex((row) => row.id === cursor) + 1 : 0;
+      const items = cursor && start === 0 ? [] : events.slice(start, start + PAGE_SIZE);
+      const hasMore = start + PAGE_SIZE < events.length && items.length > 0;
+      return send(
+        response,
+        200,
+        zListMissionEventsResponse.parse({
+          items,
+          page: { hasMore, nextCursor: hasMore ? items.at(-1).id : null },
+        }),
+      );
     }
     const owned = path.match(/^\/(captures|missions)\/([0-9a-f-]+)(\/download)?$/);
     if (owned && request.method === "GET") {
