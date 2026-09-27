@@ -55,7 +55,7 @@ export function NetworkPage({ locale }: NetworkPageProps) {
             <i />
           </span>
           <div className="network-map-label">
-            <span>41.72° N · 44.79° E</span>
+            <span>{observatory.location[locale]}</span>
             <strong>{copy.mapSite}</strong>
           </div>
         </div>
@@ -82,13 +82,6 @@ export function NetworkPage({ locale }: NetworkPageProps) {
             <div>
               <dt>{copy.status}</dt>
               <dd>{copy.approved}</dd>
-            </div>
-            <div>
-              <dt>{copy.coordinates}</dt>
-              <dd>
-                {observatory.coordinates.latitude}° N ·{" "}
-                {observatory.coordinates.longitude}° E
-              </dd>
             </div>
             <div>
               <dt>{copy.telescope}</dt>

@@ -20,7 +20,6 @@ export type ObservatorySite = {
   id: string;
   name: LocalizedText;
   location: LocalizedText;
-  coordinates: { latitude: number; longitude: number };
   status: ObservatoryStatusValue;
   statusMode: "DEMONSTRATION" | "TELEMETRY";
   telescope: TelescopeConfiguration;
@@ -35,7 +34,6 @@ export const observatories: ObservatorySite[] = [
       ka: `${brand.ka.genitive} თბილისის ობსერვატორია`,
     },
     location: { en: "Tbilisi, Georgia", ka: "თბილისი, საქართველო" },
-    coordinates: { latitude: 41.72, longitude: 44.79 },
     status: "ONLINE",
     statusMode: "DEMONSTRATION",
     telescope: {
