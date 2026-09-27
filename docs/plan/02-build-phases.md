@@ -145,6 +145,10 @@ on a phone.
 
 *The product's reason to exist. Hardest, and it depends on Phase 3 for entry.*
 
+Started on 2026-09-27, ahead of Phase 3's end, in the SIDERA console's layout by
+[ADR-027](../decisions/ADR-027-the-live-room-takes-the-sidera-console-layout.md);
+sliced in [`phase-4/`](phase-4/README.md).
+
 - Wire `/app/missions/[slug]/session` and `/app/live` to `/missions/{id}` and
   `/missions/{id}/events`, replacing their fixture — moved here from Phase 2.
 - Mission session: state machine, live view, capture, safe-nudge.
@@ -185,6 +189,8 @@ why not.
 - Visual pass across every surface now that structure is settled.
   `/observatory` went first, on 2026-09-26, by
   [ADR-026](../decisions/ADR-026-observatory-page-redesign-ahead-of-phase-7.md).
+  The live room's layout went on 2026-09-27, with its wiring, by
+  [ADR-027](../decisions/ADR-027-the-live-room-takes-the-sidera-console-layout.md).
 - Motion, per the brand's three durations.
 - DV-080 Georgian QA with a native reader.
 - DV-081 accessibility, responsive and performance pass; WCAG 2.1 AA verified, not assumed.
