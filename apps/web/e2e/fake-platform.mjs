@@ -20,6 +20,7 @@ import {
   zListBookableObservatoriesResponse,
   zListCapturesResponse,
   zListMissionsResponse,
+  zListSlotsResponse,
   zGetTargetResponse,
   zListTargetsResponse,
   zListTonightTargetsResponse,
@@ -615,6 +616,41 @@ const routes = {
         items: targets.items.filter((row) => row.enabled),
       }),
     ),
+  // GET /slots. Fixed, so every run and every baseline sees the same night: nine
+  // 30-minute slots from 18:00 Tbilisi (UTC+4, no DST) on the platform's 40-minute
+  // stride, the second one booked. Public, like the platform's.
+  "GET /slots": (request, response) => {
+    const query = new URL(request.url, "http://fake").searchParams;
+    const date = query.get("date") ?? "";
+    if (query.get("observatoryId") !== observatoryId) {
+      return error(response, 404, "NOT_FOUND", "No such observatory.");
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return error(response, 422, "VALIDATION_FAILED", "`date` must be YYYY-MM-DD.");
+    }
+    const dusk = Date.parse(`${date}T14:00:00.000Z`);
+    send(
+      response,
+      200,
+      zListSlotsResponse.parse({
+        observatoryId,
+        date,
+        items: Array.from({ length: 9 }, (_, index) => {
+          const startAt = dusk + index * 40 * 60_000;
+          return {
+            observatoryId,
+            startAt: new Date(startAt).toISOString(),
+            endAt: new Date(startAt + 30 * 60_000).toISOString(),
+            durationMinutes: 30,
+            available: index !== 1,
+            priceMinor: 4500,
+            currency: "GEL",
+            unavailableReason: index === 1 ? "ALREADY_BOOKED" : null,
+          };
+        }),
+      }),
+    );
+  },
   // As the platform: the caller's missions by requestedAt desc, keyset on the id.
   "GET /missions": (request, response) => {
     const user = sessionUser(request);

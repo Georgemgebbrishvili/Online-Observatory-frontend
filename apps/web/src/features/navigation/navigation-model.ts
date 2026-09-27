@@ -42,7 +42,7 @@ export const plannedDestinations = appDestinations.filter(
 );
 
 /** Segments `/app/[destination]` renders itself, rather than a route of its own. */
-const ownRoute = new Set(["", "missions", "live", "collection"]);
+const ownRoute = new Set(["", "missions", "live", "collection", "book"]);
 
 export function isAppDestinationSegment(
   segment: string,

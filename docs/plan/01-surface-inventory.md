@@ -25,7 +25,7 @@ remaining work easy to underestimate.
 | --- | --- | --- | --- |
 | `/` | **Live** (Tonight section; the rest is still fixture) | `/targets/tonight` | DV-071 |
 | `/pricing` | Copy | `/subscription/plans` | DV-071 |
-| `/observatory` | Copy | — | DV-071 |
+| `/observatory` | **Live** (status and tonight; ADR-026) | `/observatories/{id}/state`, `/targets/tonight` | DV-071 |
 | `/network` | Copy | `/network/nodes` | DV-071 |
 | `/status` | **Live** | `/observatories/{id}/state`, `/conditions` | DV-073 |
 | `/terms`, `/privacy`, `/refunds` | Copy (draft) | — | DV-072 |
@@ -38,14 +38,14 @@ eight targets. `/targets/tonight` exists and is not called.
 
 | Route | Status | Platform endpoint | Issue |
 | --- | --- | --- | --- |
-| `/app` | Fixture | `/me` | DV-079 |
+| `/app` | **Live** | `/me`, `/targets/tonight`, `/observatories/{id}/state`, `/missions`, `/captures` | DV-079 |
 | `/app/missions` | **Live** | `/targets/tonight` | DV-074 |
 | `/app/missions/[slug]` | **Live** | `/targets/{slug}`, `/targets/tonight` | DV-074 |
 | `/app/missions/[slug]/session` | Fixture | `/missions/{id}`, `/command`, `/events` | DV-075 |
 | `/app/missions/[slug]/watch` | Fixture | `/missions/{id}/observers` | DV-104 |
 | `/app/live` | Fixture | `/missions/{id}/events` | DV-075 |
-| `/app/collection` | Fixture | `/captures` | DV-076 |
-| `/app/collection/[captureId]` | Fixture | `/captures/{id}`, `/download` | DV-076 |
+| `/app/collection` | **Live** | `/captures` | DV-076 |
+| `/app/collection/[captureId]` | **Live** | `/captures/{id}`, `/download` | DV-076 |
 
 Every authenticated surface is fixture-backed. The collection renders four committed
 SVG files.

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import en from "@/i18n/dictionaries/en";
 import ka from "@/i18n/dictionaries/ka";
 import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
+import { bookingCopy } from "@/i18n/resources/booking";
 import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/collection";
 import { liveObservationCopy, safeNudgeCopy } from "@/i18n/resources/live";
 import {
@@ -44,6 +45,7 @@ describe("Georgian localization", () => {
     const resources = [
       [en, ka],
       [authenticatedHomeCopy.en, authenticatedHomeCopy.ka],
+      [bookingCopy.en, bookingCopy.ka],
       [collectionGalleryCopy.en, collectionGalleryCopy.ka],
       [captureDetailCopy.en, captureDetailCopy.ka],
       [liveObservationCopy.en, liveObservationCopy.ka],

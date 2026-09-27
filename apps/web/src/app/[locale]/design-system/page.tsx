@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/styles/booking.css";
 import "@/styles/collection.css";
 import "@/styles/design-system.css";
 import { notFound } from "next/navigation";
@@ -6,6 +7,7 @@ import { notFound } from "next/navigation";
 import { OpticalRing } from "@/components/astronomy/optical-ring";
 import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { TargetCard } from "@/components/astronomy/target-card";
+import { SlotRow } from "@/components/booking/booking-night";
 import { CaptureCard } from "@/components/collection/capture-card";
 import { CaptureDownloads } from "@/components/collection/capture-downloads";
 import { MissionStatus, missionStatuses } from "@/components/missions/mission-status";
@@ -36,7 +38,12 @@ import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
 import { palette } from "@/styles/tokens";
 
-import { captureSpecimens, designSystemCopy, targetSpecimens } from "./copy";
+import {
+  captureSpecimens,
+  designSystemCopy,
+  slotSpecimens,
+  targetSpecimens,
+} from "./copy";
 
 type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
@@ -370,6 +377,17 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               </p>
             </SurfacePanel>
           </div>
+          <h3 className="ds-subheading">{copy.cards.slotRow}</h3>
+          <ol className="slot-list">
+            {slotSpecimens.map((slot) => (
+              <SlotRow
+                key={slot.startAt}
+                {...slot}
+                timezone="Asia/Tbilisi"
+                locale={locale}
+              />
+            ))}
+          </ol>
         </section>
 
         <section className="ds-section" aria-labelledby="overlays-title">

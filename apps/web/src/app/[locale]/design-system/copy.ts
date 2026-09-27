@@ -148,6 +148,7 @@ export const designSystemCopy = {
       targetCard: "TargetCard — observable and blocked specimens",
       captureCard:
         "CaptureCard — a simulated capture with a drawn frame, one with no preview, and the download states",
+      slotRow: "SlotRow — available, booked, and held for weather",
     },
     overlay: {
       openModal: "Open modal",
@@ -343,6 +344,7 @@ export const designSystemCopy = {
       targetCard: "TargetCard — დაკვირვებადი და დაბლოკილი ნიმუშები",
       captureCard:
         "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები",
+      slotRow: "SlotRow — თავისუფალი, დაჯავშნილი და ამინდის გამო შეჩერებული",
     },
     overlay: {
       openModal: "მოდალის გახსნა",
@@ -496,3 +498,25 @@ export const captureSpecimens = [
     capturedAt: "2026-09-22T20:02:00Z",
   },
 ] as const;
+
+/** SlotRow specimens: one of each state a night can show. Not a reading of any night. */
+export const slotSpecimens = [
+  { available: true, unavailableReason: null, startAt: "2026-09-26T14:00:00Z" },
+  {
+    available: false,
+    unavailableReason: "ALREADY_BOOKED",
+    startAt: "2026-09-26T14:40:00Z",
+  },
+  {
+    available: false,
+    unavailableReason: "WEATHER_HOLD",
+    startAt: "2026-09-26T15:20:00Z",
+  },
+].map((slot) => ({
+  ...slot,
+  endAt: new Date(Date.parse(slot.startAt) + 30 * 60_000).toISOString(),
+  durationMinutes: 30,
+  priceMinor: 4500,
+  currency: "GEL" as const,
+  unavailableReason: slot.unavailableReason as "ALREADY_BOOKED" | "WEATHER_HOLD" | null,
+}));
