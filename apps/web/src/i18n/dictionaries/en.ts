@@ -61,19 +61,28 @@ const dictionary = {
   },
   home: {
     hero: {
-      eyebrow: `${brand.en.name.toUpperCase()} · BY ASTROMAN`,
-      title: "Explore the real universe.",
-      description:
-        "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
-      primaryCta: "Start a Mission",
-      secondaryCta: "Watch Live",
-      visualLabel: "Remote observatory interface",
-      visualTitle: "Real telescope access",
-      visualTarget: "Target · Saturn",
-      visualLocation: "Tbilisi, Georgia",
-      visualOperation: "Server-controlled optics",
-      visualStatus: "Online",
-      visualLive: "Live",
+      eyebrow: brand.en.tagline,
+      cta: "Book an observation",
+      showTarget: "Show {target}",
+      nextSection: "Go to the next section",
+      illustration: "Illustration — not telescope output",
+      targets: {
+        saturn: {
+          name: "Saturn",
+          description:
+            "Its rings hold steady in a live stack from our 6-inch Celestron in Tbilisi. Book a slot, choose Saturn, and watch the telescope turn to it.",
+        },
+        jupiter: {
+          name: "Jupiter",
+          description:
+            "Cloud belts and the four Galilean moons, built up from short exposures while you watch. Book a slot and keep what you capture.",
+        },
+        mars: {
+          name: "Mars",
+          description:
+            "A small ochre disc that shows its markings best near opposition. Choose it from the operator's approved targets and see the real camera feed.",
+        },
+      },
     },
     demoLabel: "Demonstration data",
     common: {

@@ -67,6 +67,12 @@ export const designSystemCopy = {
         "Clear labels, guidance, validation, and disabled states.",
         "§08 Surface mapping · §05 Typography (16px UI minimum)",
       ],
+      showcase: [
+        "10",
+        "Target showcase",
+        "The homepage hero: one featured target, and two more that feature themselves on press. Every plate is captioned as an illustration.",
+        "ADR-028 · §09 anti-pattern 04",
+      ],
     },
     palette: "Core palette",
     paletteNames: [
@@ -266,6 +272,12 @@ export const designSystemCopy = {
         "ფორმები",
         "გასაგები ეტიკეტები, მინიშნებები და ვალიდაცია.",
         "§08 Surface mapping · §05 Typography (16px UI minimum)",
+      ],
+      showcase: [
+        "10",
+        "სამიზნეების ვიტრინა",
+        "მთავარი გვერდის პირველი ეკრანი: ერთი რჩეული სამიზნე და ორი სხვა, რომლებიც დაჭერისას მის ადგილს იკავებს. ყველა ფირფიტა ილუსტრაციად არის მონიშნული.",
+        "ADR-028 · §09 anti-pattern 04",
       ],
     },
     palette: "ძირითადი პალიტრა",

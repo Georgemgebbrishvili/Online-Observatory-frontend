@@ -1,9 +1,9 @@
 import { CollectionFrame } from "@/components/astronomy/collection-frame";
 import { OpticalRing } from "@/components/astronomy/optical-ring";
 import { TargetCard } from "@/components/astronomy/target-card";
+import { TargetShowcase } from "@/components/astronomy/target-showcase";
 import { TonightNotices } from "@/components/astronomy/tonight-notices";
 import { SectionHeading } from "@/components/layout/section-heading";
-import { HeroObservatoryVisual } from "@/components/observatory/hero-observatory-visual";
 import { LiveIndicator } from "@/components/observatory/live-indicator";
 import { ObservatoryStatus } from "@/components/observatory/observatory-status";
 import { ButtonLink } from "@/components/ui/button";
@@ -27,27 +27,11 @@ type HomeShellProps = {
 export function HomeShell({ content, locale, tonight }: HomeShellProps) {
   return (
     <main id="main-content" className="public-home">
-      <section className="home-hero" aria-labelledby="home-title">
-        <Container className="home-hero-grid">
-          <div className="home-hero-copy">
-            <p className="eyebrow">
-              <span aria-hidden="true" />
-              {content.hero.eyebrow}
-            </p>
-            <h1 id="home-title">{content.hero.title}</h1>
-            <p>{content.hero.description}</p>
-            <div className="home-hero-actions">
-              <ButtonLink href="#tonight" size="large">
-                {content.hero.primaryCta}
-              </ButtonLink>
-              <ButtonLink href="#live" size="large" variant="secondary">
-                {content.hero.secondaryCta}
-              </ButtonLink>
-            </div>
-          </div>
-          <HeroObservatoryVisual content={content.hero} demoLabel={content.demoLabel} />
-        </Container>
-      </section>
+      <TargetShowcase
+        content={content.hero}
+        bookHref={`/${locale}/app/book`}
+        nextHref="#live"
+      />
 
       <section
         className="home-section live-section"

@@ -9,6 +9,7 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { siteUrl } from "@/lib/seo";
 import "@/styles/homepage.css";
+import "@/styles/showcase.css";
 import { brand } from "@/brand";
 
 type HomePageProps = {

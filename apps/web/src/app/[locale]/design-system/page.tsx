@@ -3,6 +3,7 @@ import "@/styles/booking.css";
 import "@/styles/room.css";
 import "@/styles/collection.css";
 import "@/styles/design-system.css";
+import "@/styles/showcase.css";
 import { notFound } from "next/navigation";
 
 import { OpticalRing } from "@/components/astronomy/optical-ring";
@@ -12,6 +13,7 @@ import { SlotRow } from "@/components/booking/booking-night";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
 import { TargetPreview } from "@/components/room/target-preview";
+import { TargetShowcase } from "@/components/astronomy/target-showcase";
 import { missionProgress, plateFor } from "@/features/missions/room";
 import { fill } from "@/features/operator/format";
 import { CaptureCard } from "@/components/collection/capture-card";
@@ -581,6 +583,16 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <Button type="submit">{copy.form.submit}</Button>
             </form>
           </SurfacePanel>
+        </section>
+
+        <section className="ds-section" aria-labelledby="showcase-title">
+          <SectionHeader id="showcase-title" section={copy.sections.showcase} />
+          <TargetShowcase
+            content={dictionary.home.hero}
+            bookHref={`/${locale}/app/book`}
+            nextHref="#showcase-title"
+            contained
+          />
         </section>
       </Container>
     </main>

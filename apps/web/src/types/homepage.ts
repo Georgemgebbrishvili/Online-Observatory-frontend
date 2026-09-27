@@ -1,4 +1,7 @@
-import type { CollectionFrameId } from "@/features/targets/homepage-data";
+import type {
+  CollectionFrameId,
+  ShowcaseTargetId,
+} from "@/features/targets/homepage-data";
 
 type HomepageSectionHeading = {
   index: string;
@@ -10,17 +13,11 @@ type HomepageSectionHeading = {
 export type HomepageDictionary = {
   hero: {
     eyebrow: string;
-    title: string;
-    description: string;
-    primaryCta: string;
-    secondaryCta: string;
-    visualLabel: string;
-    visualTitle: string;
-    visualTarget: string;
-    visualLocation: string;
-    visualOperation: string;
-    visualStatus: string;
-    visualLive: string;
+    cta: string;
+    showTarget: string;
+    nextSection: string;
+    illustration: string;
+    targets: Record<ShowcaseTargetId, { name: string; description: string }>;
   };
   demoLabel: string;
   common: {

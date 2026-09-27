@@ -6,28 +6,43 @@ import { appSidebar, bottomNavigation, liveViewport } from "./selectors";
 test("communicates real telescope access in the English hero", async ({ page }) => {
   await page.goto("/en");
 
-  await expect(
-    page.getByRole("heading", { name: "Explore the real universe." }),
-  ).toBeVisible();
-  await expect(
-    page.getByText(
-      "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
-    ),
-  ).toBeVisible();
+  const hero = page.getByRole("region", { name: "Saturn" });
+  await expect(page.getByRole("heading", { level: 1, name: "Saturn" })).toBeVisible();
+  await expect(hero.getByText("The real sky, live.")).toBeVisible();
+  await expect(hero.getByText(/Its rings hold steady in a live stack/)).toBeVisible();
   await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
-  await expect(page.getByRole("link", { name: "Start a Mission" })).toHaveAttribute(
+  await expect(hero.getByRole("link", { name: "Book an observation" })).toHaveAttribute(
     "href",
-    "#tonight",
+    "/en/app/book",
   );
+  // ADR-028: the plates are illustration, and the hero says so.
+  await expect(hero.getByText("Illustration — not telescope output")).toBeVisible();
   await expect(page.getByText("Demonstration data").first()).toBeVisible();
+});
+
+test("features a side target on press, and comes back round", async ({ page }) => {
+  await page.goto("/en");
+
+  const title = page.getByRole("heading", { level: 1 });
+  await page.getByRole("button", { name: "Show Jupiter" }).click();
+  await expect(title).toHaveText("Jupiter");
+  await expect(page.getByText(/Cloud belts and the four Galilean moons/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Show Saturn" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Show Mars" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Show Mars" }).click();
+  await expect(title).toHaveText("Mars");
+  await page.getByRole("button", { name: "Show Saturn" }).click();
+  await expect(title).toHaveText("Saturn");
+  await expect(page.getByRole("button", { name: "Show Jupiter" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Show Mars" })).toBeVisible();
 });
 
 test("renders Georgian content and switches locale", async ({ page }) => {
   await page.goto("/ka");
 
-  await expect(
-    page.getByRole("heading", { name: "აღმოაჩინეთ რეალური სამყარო." }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "სატურნი" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "აჩვენე: იუპიტერი" })).toBeVisible();
   await page.getByRole("link", { name: "ენა: English" }).click();
   await expect(page).toHaveURL(/\/en$/);
 });
@@ -51,8 +66,12 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
   }
 
   // Tonight's list comes from GET /targets/tonight on the fake platform.
+  // Scoped: the hero features Saturn too.
+  const tonight = page.locator("#tonight");
   for (const target of ["Saturn", "Albireo", "Moon", "Hercules Cluster", "Venus"]) {
-    await expect(page.getByRole("heading", { name: target, exact: true })).toBeVisible();
+    await expect(
+      tonight.getByRole("heading", { name: target, exact: true }),
+    ).toBeVisible();
   }
   await expect(page.getByText("SIMULATED OBSERVATORY").first()).toBeVisible();
 
@@ -74,7 +93,7 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
   }));
 
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
-  await expect(page.getByRole("link", { name: "Start a Mission" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Book an observation" })).toBeVisible();
 });
 
 test("provides the complete public navigation on desktop and mobile", async ({
