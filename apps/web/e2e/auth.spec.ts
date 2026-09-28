@@ -62,3 +62,27 @@ test("signs out and ends the session", async ({ page }) => {
   await page.goto("/en/app");
   await expect(page).toHaveURL(/\/en\/sign-in$/, { timeout: firstCompile });
 });
+
+test("creates an account, and asks for the email before any session", async ({
+  page,
+  context,
+}) => {
+  const email = `new-${Date.now()}@example.com`;
+  const secret = "a long enough password";
+
+  await page.goto("/en/register");
+  await page.getByLabel("Name").fill("New Observer");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill(secret);
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL(/\/en\/verify-email$/, { timeout: firstCompile });
+  // ADR-016: no session until the address is verified.
+  expect((await context.cookies()).map((cookie) => cookie.name)).not.toContain(
+    "darkview_session",
+  );
+
+  await signIn(page, email, secret);
+  await expect(page.getByRole("main").getByRole("alert")).toHaveText(
+    "Verify your email before signing in.",
+  );
+});

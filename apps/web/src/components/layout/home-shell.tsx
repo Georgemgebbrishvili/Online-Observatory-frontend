@@ -1,137 +1,84 @@
-import { CollectionFrame } from "@/components/astronomy/collection-frame";
-import { OpticalRing } from "@/components/astronomy/optical-ring";
-import { TargetCard } from "@/components/astronomy/target-card";
-import { TargetShowcase } from "@/components/astronomy/target-showcase";
+import Link from "next/link";
+import type { CSSProperties } from "react";
+
 import { TonightNotices } from "@/components/astronomy/tonight-notices";
-import { SectionHeading } from "@/components/layout/section-heading";
-import { LiveIndicator } from "@/components/observatory/live-indicator";
-import { ObservatoryStatus } from "@/components/observatory/observatory-status";
-import { ButtonLink } from "@/components/ui/button";
+import { CountUp } from "@/components/home/count-up";
+import { MagneticLink } from "@/components/home/magnetic-link";
+import { RevealRoot } from "@/components/home/reveal";
+import { TargetRail } from "@/components/home/target-rail";
+import { ModeNotice } from "@/components/observatory/mode-notice";
+import { linkTone, weatherTone } from "@/components/status/status-page";
 import { Container } from "@/components/ui/container";
-import {
-  liveObservatorySnapshot,
-  observatoryNodes,
-  privateSessionDurations,
-} from "@/features/observatory/homepage-data";
-import { collectionFrames } from "@/features/targets/homepage-data";
+import { StatePanel } from "@/components/ui/state-panel";
+import { StatusIndicator } from "@/components/ui/status-indicator";
+import type { ObservatoryPanelResult } from "@/features/home/read";
+import { privateSessionDurations } from "@/features/observatory/homepage-data";
 import type { TonightResult } from "@/features/targets/read";
 import type { Locale } from "@/i18n/config";
+import { observatoryPageCopy } from "@/i18n/resources/observatory";
+import { statusCopy } from "@/i18n/resources/status";
 import type { Dictionary } from "@/i18n/types";
 
 type HomeShellProps = {
   content: Dictionary["home"];
   locale: Locale;
   tonight: TonightResult;
+  panel: ObservatoryPanelResult;
 };
 
-export function HomeShell({ content, locale, tonight }: HomeShellProps) {
+/** A section's opening: kicker, a title that rises out of its mask, and a lede. */
+function Heading({
+  description,
+  eyebrow,
+  id,
+  title,
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  description?: string;
+}) {
   return (
-    <main id="main-content" className="public-home">
-      <TargetShowcase
-        content={content.hero}
-        bookHref={`/${locale}/app/book`}
-        nextHref="#live"
-      />
+    <header className="home-heading">
+      <p className="home-kicker" data-reveal="rise">
+        {eyebrow}
+      </p>
+      <h2 id={id} className="home-display" data-reveal="mask">
+        <span>{title}</span>
+      </h2>
+      {description && (
+        <p className="home-lede" data-reveal="rise">
+          {description}
+        </p>
+      )}
+    </header>
+  );
+}
 
-      <section
-        className="home-section live-section"
-        id="live"
-        aria-labelledby="live-title"
-      >
-        <Container>
-          <SectionHeading {...content.live} id="live-title" />
-          <div className="live-console">
-            <header>
-              <div>
-                <span>{content.demoLabel}</span>
-                <h3>{content.live.observatoryName}</h3>
-              </div>
-              <div className="live-console-state">
-                <LiveIndicator active={false} label={content.common.liveLabel} />
-                <ObservatoryStatus
-                  status={liveObservatorySnapshot.status}
-                  label={content.common.observatoryOnline}
-                />
-              </div>
-            </header>
-            <div className="live-console-grid">
-              <div className="live-target-orbit" aria-hidden="true">
-                <OpticalRing size="large" active />
-                <span className="saturn-mark">
-                  <i />
-                </span>
-              </div>
-              <dl>
-                <div>
-                  <dt>{content.common.currentTarget}</dt>
-                  <dd>{content.live.targetName}</dd>
-                </div>
-                <div>
-                  <dt>{content.common.currentMission}</dt>
-                  <dd>{content.live.currentMission}</dd>
-                </div>
-                <div>
-                  <dt>{content.common.telescope}</dt>
-                  <dd>{content.live.telescopeState}</dd>
-                </div>
-                <div>
-                  <dt>{content.common.approximateViewers}</dt>
-                  <dd>~{liveObservatorySnapshot.viewerCount}</dd>
-                </div>
-              </dl>
-            </div>
-            <footer>
-              <span>{content.demoLabel}</span>
-              <ButtonLink href="#live" variant="secondary">
-                {content.common.watchLive}
-              </ButtonLink>
-            </footer>
-          </div>
-        </Container>
-      </section>
+export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
+  const words = statusCopy[locale];
+  const observatoryCopy = observatoryPageCopy[locale];
+  const instrument = content.instrument;
+  const telescope = panel.kind === "ok" ? panel.observatory.telescope : null;
 
-      <section
-        className="home-section tonight-section"
-        id="tonight"
-        aria-labelledby="tonight-title"
-      >
+  return (
+    <RevealRoot className="public-home">
+      <section className="home-band home-steps" id="about" aria-labelledby="steps-title">
         <Container>
-          <SectionHeading {...content.tonight} id="tonight-title" />
-          <p className="section-data-note">{content.tonight.scheduleNote}</p>
-          <div className="tonight-notices">
-            <TonightNotices result={tonight} locale={locale} />
-          </div>
-          {tonight.kind === "ok" && (
-            <div className="target-grid">
-              {tonight.items.map((item) => (
-                <TargetCard
-                  key={item.target.id}
-                  item={item}
-                  timezone={tonight.observatory.timezone}
-                  locale={locale}
-                  common={content.common}
-                />
-              ))}
-            </div>
-          )}
-        </Container>
-      </section>
-
-      <section
-        className="home-section process-section"
-        id="about"
-        aria-labelledby="process-title"
-      >
-        <Container>
-          <SectionHeading {...content.howItWorks} id="process-title" />
-          <ol className="process-list">
+          <Heading id="steps-title" {...content.howItWorks} />
+          <ol className="home-step-list">
             {content.howItWorks.steps.map((step, index) => (
-              <li key={step.title}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.description}</p>
-                </div>
+              <li
+                key={step.title}
+                data-reveal="rise"
+                style={{ "--reveal-delay": `${index * 120}ms` } as CSSProperties}
+              >
+                <span className="home-step-rule" aria-hidden="true" />
+                <span className="home-numeral" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
               </li>
             ))}
           </ol>
@@ -139,131 +86,201 @@ export function HomeShell({ content, locale, tonight }: HomeShellProps) {
       </section>
 
       <section
-        className="home-section real-observatory-section"
-        id="observatory"
-        aria-labelledby="observatory-title"
+        className="home-band home-tonight"
+        id="tonight"
+        aria-labelledby="tonight-title"
       >
         <Container>
-          <SectionHeading {...content.realObservatory} id="observatory-title" />
-          <div className="observatory-feature">
-            <div className="observatory-blueprint" aria-hidden="true">
-              <span className="blueprint-dome" />
-              <span className="blueprint-base" />
-              <span className="blueprint-axis" />
-              <OpticalRing size="medium" />
-            </div>
-            <div className="observatory-details">
-              <p>{content.realObservatory.statement}</p>
-              <dl>
-                <div>
-                  <dt>{content.realObservatory.locationLabel}</dt>
-                  <dd>{content.realObservatory.location}</dd>
-                </div>
-                <div>
-                  <dt>{content.realObservatory.cameraLabel}</dt>
-                  <dd>{content.realObservatory.camera}</dd>
-                </div>
-                <div>
-                  <dt>{content.realObservatory.operationLabel}</dt>
-                  <dd>{content.realObservatory.operation}</dd>
-                </div>
-                <div>
-                  <dt>{content.realObservatory.telescopeLabel}</dt>
-                  <dd>{content.realObservatory.telescope}</dd>
-                </div>
-              </dl>
-            </div>
+          <Heading id="tonight-title" {...content.tonight} />
+          <div className="home-tonight-notices">
+            <TonightNotices result={tonight} locale={locale} />
           </div>
+        </Container>
+        {tonight.kind === "ok" && tonight.items.length > 0 && (
+          <div data-reveal="rise">
+            <TargetRail
+              items={tonight.items}
+              timezone={tonight.observatory.timezone}
+              locale={locale}
+              common={content.common}
+              copy={content.tonight}
+            />
+          </div>
+        )}
+        <Container>
+          <p className="home-note">{content.tonight.scheduleNote}</p>
         </Container>
       </section>
 
       <section
-        className="home-section collection-section"
-        id="collection"
-        aria-labelledby="collection-title"
+        className="home-band home-instrument"
+        id="live"
+        aria-labelledby="instrument-title"
       >
-        <Container>
-          <SectionHeading {...content.collection} id="collection-title" />
-          <div className="collection-statement">
-            <p>{content.collection.statement}</p>
-            <span>{content.collection.disclaimer}</span>
+        <Container className="home-instrument-grid">
+          <div>
+            <Heading id="instrument-title" {...instrument} />
+            <dl className="home-stats">
+              {telescope && (
+                <>
+                  <div data-reveal="rise">
+                    <dt>{instrument.aperture}</dt>
+                    <dd>
+                      <CountUp value={telescope.apertureMm} />
+                      <small>{instrument.millimetres}</small>
+                    </dd>
+                  </div>
+                  <div
+                    data-reveal="rise"
+                    style={{ "--reveal-delay": "100ms" } as CSSProperties}
+                  >
+                    <dt>{instrument.focalLength}</dt>
+                    <dd>
+                      <CountUp value={telescope.focalLengthMm} />
+                      <small>{instrument.millimetres}</small>
+                    </dd>
+                  </div>
+                  <div
+                    data-reveal="rise"
+                    style={{ "--reveal-delay": "200ms" } as CSSProperties}
+                  >
+                    <dt>{instrument.focalRatio}</dt>
+                    <dd>
+                      <CountUp
+                        prefix="f/"
+                        value={telescope.focalLengthMm / telescope.apertureMm}
+                      />
+                    </dd>
+                  </div>
+                </>
+              )}
+              <div
+                data-reveal="rise"
+                style={{ "--reveal-delay": "300ms" } as CSSProperties}
+              >
+                <dt>{instrument.camera}</dt>
+                <dd className="home-stat-text">
+                  {instrument.cameraValue}
+                  <small>{instrument.cameraNote}</small>
+                </dd>
+              </div>
+            </dl>
+            {telescope && (
+              <p className="home-note">
+                {telescope.manufacturer} {telescope.model}
+              </p>
+            )}
           </div>
-          <div className="collection-grid">
-            {collectionFrames.map((frame) => (
-              <CollectionFrame
-                key={frame.id}
-                id={frame.id}
-                visual={frame.visual}
-                name={content.collection.frames[frame.id].name}
-                catalog={content.collection.frames[frame.id].catalog}
-                demoLabel={content.demoLabel}
+
+          <aside
+            className="home-status"
+            aria-labelledby="home-status-title"
+            data-reveal="rise"
+          >
+            <header>
+              <h3 id="home-status-title">{observatoryCopy.liveStatus}</h3>
+              <Link href={`/${locale}/status`}>
+                {observatoryCopy.fullStatus} <span aria-hidden="true">→</span>
+              </Link>
+            </header>
+            {panel.kind === "unreachable" && (
+              <StatePanel
+                variant="error"
+                headingLevel={3}
+                {...observatoryCopy.statusUnavailable}
               />
-            ))}
-          </div>
+            )}
+            {panel.kind === "no-observatory" && (
+              <StatePanel headingLevel={3} {...observatoryCopy.noObservatory} />
+            )}
+            {panel.kind === "ok" && (
+              <>
+                <ModeNotice
+                  mode={panel.status.mode}
+                  label={words.mode[panel.status.mode].banner}
+                  detail={words.mode[panel.status.mode].detail}
+                />
+                <dl>
+                  <div>
+                    <dt>{words.now.link}</dt>
+                    <dd>
+                      <StatusIndicator
+                        label={words.link[panel.status.link]}
+                        tone={linkTone[panel.status.link]}
+                      />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{words.now.weather}</dt>
+                    <dd>
+                      <StatusIndicator
+                        label={words.weather[panel.status.weather.status]}
+                        tone={weatherTone[panel.status.weather.status]}
+                      />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{words.now.hold}</dt>
+                    <dd>
+                      <StatusIndicator
+                        label={
+                          panel.status.weather.holdActive
+                            ? words.now.holdActive
+                            : words.now.holdInactive
+                        }
+                        tone={panel.status.weather.holdActive ? "danger" : "success"}
+                      />
+                    </dd>
+                  </div>
+                </dl>
+                {panel.status.missionInProgress && (
+                  <p className="home-status-mission">
+                    {/* A target name only while its owner has opted in (ADR-007). */}
+                    {panel.status.currentTargetName
+                      ? observatoryCopy.observingNow(panel.status.currentTargetName)
+                      : observatoryCopy.missionInProgress}
+                  </p>
+                )}
+              </>
+            )}
+          </aside>
         </Container>
       </section>
 
-      <section
-        className="home-section network-section"
-        id="network"
-        aria-labelledby="network-title"
-      >
-        <Container>
-          <SectionHeading {...content.network} id="network-title" />
-          <div className="network-track">
-            {observatoryNodes.map((node) => (
-              <article key={node.id} className="network-node">
-                <div className="network-node-mark" aria-hidden="true">
-                  <span />
-                </div>
-                <div>
-                  <span>{content.demoLabel}</span>
-                  <h3>{content.network.observatoryName}</h3>
-                  <p>{content.network.location}</p>
-                </div>
-                <div>
-                  <ObservatoryStatus status="ONLINE" label={content.network.active} />
-                  <p>{content.network.descriptionLine}</p>
-                </div>
-              </article>
-            ))}
-            <p className="network-future-note">{content.network.futureNote}</p>
+      <section className="home-final" id="final-cta" aria-labelledby="final-cta-title">
+        <div className="home-final-sky" aria-hidden="true" />
+        <Container className="home-final-inner">
+          <p className="home-kicker" data-reveal="rise">
+            {content.finalCta.eyebrow}
+          </p>
+          <h2 id="final-cta-title" className="home-display" data-reveal="mask">
+            <span>{content.finalCta.title}</span>
+          </h2>
+          <p className="home-lede" data-reveal="rise">
+            {content.finalCta.description}
+          </p>
+          <div className="home-final-actions" data-reveal="rise">
+            <MagneticLink className="home-pill" href={`/${locale}/app/book`}>
+              {content.finalCta.action}
+            </MagneticLink>
+            <MagneticLink className="home-pill home-pill-quiet" href="#tonight">
+              {content.finalCta.secondary}
+            </MagneticLink>
           </div>
-        </Container>
-      </section>
-
-      <section
-        className="home-section private-section"
-        id="private-observatory"
-        aria-labelledby="private-title"
-      >
-        <Container>
-          <SectionHeading {...content.privateObservatory} id="private-title" />
-          <div className="session-list">
-            {privateSessionDurations.map((duration) => (
-              <article key={duration} className="session-option">
-                <span>{content.privateObservatory.sessionLabel}</span>
-                <strong>
+          <div className="home-private" data-reveal="rise">
+            <strong>{content.finalCta.privateTitle}</strong>
+            <ul>
+              {privateSessionDurations.map((duration) => (
+                <li key={duration}>
                   {duration} {content.common.minutes}
-                </strong>
-                <p>{content.privateObservatory.sessionDescription}</p>
-                <small>{content.privateObservatory.availability}</small>
-              </article>
-            ))}
+                </li>
+              ))}
+            </ul>
+            <p>{content.finalCta.privateNote}</p>
           </div>
+          <p className="home-final-caption">{content.hero.illustration}</p>
         </Container>
       </section>
-
-      <section className="final-cta" id="final-cta" aria-labelledby="final-cta-title">
-        <Container>
-          <p>{content.finalCta.eyebrow}</p>
-          <h2 id="final-cta-title">{content.finalCta.title}</h2>
-          <span>{content.finalCta.description}</span>
-          <ButtonLink href="#tonight" size="large">
-            {content.finalCta.action}
-          </ButtonLink>
-        </Container>
-      </section>
-    </main>
+    </RevealRoot>
   );
 }

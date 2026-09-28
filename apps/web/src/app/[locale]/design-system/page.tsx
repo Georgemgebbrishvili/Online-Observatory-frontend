@@ -3,7 +3,8 @@ import "@/styles/booking.css";
 import "@/styles/room.css";
 import "@/styles/collection.css";
 import "@/styles/design-system.css";
-import "@/styles/showcase.css";
+import "@/styles/planet-hero.css";
+import "@/styles/homepage.css";
 import { notFound } from "next/navigation";
 
 import { OpticalRing } from "@/components/astronomy/optical-ring";
@@ -13,7 +14,11 @@ import { SlotRow } from "@/components/booking/booking-night";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
 import { TargetPreview } from "@/components/room/target-preview";
-import { TargetShowcase } from "@/components/astronomy/target-showcase";
+import { CountUp } from "@/components/home/count-up";
+import { homeFonts } from "@/components/home/fonts";
+import { MagneticLink } from "@/components/home/magnetic-link";
+import { PlanetHero } from "@/components/home/planet-hero";
+import { TargetRail } from "@/components/home/target-rail";
 import { missionProgress, plateFor } from "@/features/missions/room";
 import { fill } from "@/features/operator/format";
 import { CaptureCard } from "@/components/collection/capture-card";
@@ -587,12 +592,49 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
 
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
-          <TargetShowcase
+          <PlanetHero
             content={dictionary.home.hero}
-            bookHref={`/${locale}/app/book`}
-            nextHref="#showcase-title"
+            navigation={dictionary.navigation}
+            locale={locale}
+            nextId="showcase-title"
             contained
           />
+        </section>
+
+        <section className="ds-section" aria-labelledby="homepage-title">
+          <SectionHeader id="homepage-title" section={copy.sections.homepage} />
+          <div className={`home-page public-home ds-home-specimen ${homeFonts}`}>
+            <TargetRail
+              items={targetSpecimens}
+              timezone="Asia/Tbilisi"
+              locale={locale}
+              common={dictionary.home.common}
+              copy={dictionary.home.tonight}
+            />
+            <div className="home-final-actions">
+              <MagneticLink className="home-pill" href="#homepage-title">
+                {dictionary.home.finalCta.action}
+              </MagneticLink>
+              <MagneticLink className="home-pill home-pill-quiet" href="#homepage-title">
+                {dictionary.home.finalCta.secondary}
+              </MagneticLink>
+            </div>
+            <dl className="home-stats">
+              <div>
+                <dt>{dictionary.home.instrument.aperture}</dt>
+                <dd>
+                  <CountUp value={150} />
+                  <small>{dictionary.home.instrument.millimetres}</small>
+                </dd>
+              </div>
+              <div>
+                <dt>{dictionary.home.instrument.focalRatio}</dt>
+                <dd>
+                  <CountUp prefix="f/" value={10} />
+                </dd>
+              </div>
+            </dl>
+          </div>
         </section>
       </Container>
     </main>

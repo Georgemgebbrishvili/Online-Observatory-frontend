@@ -1,10 +1,6 @@
-import type {
-  CollectionFrameId,
-  ShowcaseTargetId,
-} from "@/features/targets/homepage-data";
+import type { PlanetId } from "@/features/targets/homepage-data";
 
 type HomepageSectionHeading = {
-  index: string;
   eyebrow: string;
   title: string;
   description: string;
@@ -14,76 +10,47 @@ export type HomepageDictionary = {
   hero: {
     eyebrow: string;
     cta: string;
-    showTarget: string;
+    showPlanet: string;
     nextSection: string;
     illustration: string;
-    targets: Record<ShowcaseTargetId, { name: string; description: string }>;
+    /** Each lede is two lines; the wide layout breaks between them. */
+    planets: Record<PlanetId, { name: string; lede: [string, string] }>;
   };
-  demoLabel: string;
   common: {
-    watchLive: string;
     viewTarget: string;
     illustration: string;
     minutes: string;
-    approximateViewers: string;
-    currentTarget: string;
-    currentMission: string;
-    telescope: string;
-    status: string;
     window: string;
     altitude: string;
     duration: string;
-    liveLabel: string;
-    observatoryOnline: string;
   };
-  live: HomepageSectionHeading & {
-    observatoryName: string;
-    targetName: string;
-    currentMission: string;
-    telescopeState: string;
+  howItWorks: HomepageSectionHeading & {
+    steps: readonly { title: string; description: string }[];
   };
   tonight: HomepageSectionHeading & {
     scheduleNote: string;
+    railLabel: string;
+    all: string;
+    previous: string;
+    next: string;
   };
-  howItWorks: HomepageSectionHeading & {
-    steps: readonly {
-      title: string;
-      description: string;
-    }[];
-  };
-  realObservatory: HomepageSectionHeading & {
-    statement: string;
-    locationLabel: string;
-    location: string;
-    cameraLabel: string;
+  instrument: HomepageSectionHeading & {
+    aperture: string;
+    focalLength: string;
+    focalRatio: string;
     camera: string;
-    operationLabel: string;
-    operation: string;
-    telescopeLabel: string;
-    telescope: string;
-  };
-  collection: HomepageSectionHeading & {
-    statement: string;
-    disclaimer: string;
-    frames: Record<CollectionFrameId, { name: string; catalog: string }>;
-  };
-  network: HomepageSectionHeading & {
-    observatoryName: string;
-    active: string;
-    location: string;
-    descriptionLine: string;
-    futureNote: string;
-  };
-  privateObservatory: HomepageSectionHeading & {
-    sessionLabel: string;
-    sessionDescription: string;
-    availability: string;
+    cameraValue: string;
+    cameraNote: string;
+    millimetres: string;
   };
   finalCta: {
     eyebrow: string;
     title: string;
     description: string;
     action: string;
+    secondary: string;
+    privateTitle: string;
+    privateNote: string;
   };
 };
 

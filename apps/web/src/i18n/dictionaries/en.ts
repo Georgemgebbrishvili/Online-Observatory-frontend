@@ -61,142 +61,96 @@ const dictionary = {
   },
   home: {
     hero: {
-      eyebrow: brand.en.tagline,
-      cta: "Book an observation",
-      showTarget: "Show {target}",
-      nextSection: "Go to the next section",
+      eyebrow: "PLANET",
+      cta: "RESERVE A SLOT",
+      showPlanet: "Show {planet}",
+      nextSection: "Scroll to next section",
       illustration: "Illustration — not telescope output",
-      targets: {
-        saturn: {
-          name: "Saturn",
-          description:
-            "Its rings hold steady in a live stack from our 6-inch Celestron in Tbilisi. Book a slot, choose Saturn, and watch the telescope turn to it.",
+      planets: {
+        earth: {
+          name: "EARTH",
+          lede: [
+            "The planet we observe from. A real telescope in Tbilisi, Georgia, shows you the sky",
+            "live. Reserve an observation slot and watch the real camera feed.",
+          ],
         },
-        jupiter: {
-          name: "Jupiter",
-          description:
-            "Cloud belts and the four Galilean moons, built up from short exposures while you watch. Book a slot and keep what you capture.",
+        venus: {
+          name: "VENUS",
+          lede: [
+            "The brightest planet in our sky, showing phases like a small Moon. Reserve an",
+            "observation slot and watch it live through a real telescope.",
+          ],
         },
         mars: {
-          name: "Mars",
-          description:
-            "A small ochre disc that shows its markings best near opposition. Choose it from the operator's approved targets and see the real camera feed.",
+          name: "MARS",
+          lede: [
+            "The rust-red world, its markings clearest near opposition. Reserve an observation",
+            "slot and watch it live through a real telescope in Tbilisi.",
+          ],
         },
       },
     },
-    demoLabel: "Demonstration data",
     common: {
-      watchLive: "Watch Live",
       viewTarget: "View target",
       illustration: "Catalogue illustration",
       minutes: "min",
-      approximateViewers: "approx. viewers",
-      currentTarget: "Current target",
-      currentMission: "Current mission",
-      telescope: "Telescope",
-      status: "Status",
       window: "Window",
       altitude: "Altitude now",
       duration: "Mission",
-      liveLabel: "Live",
-      observatoryOnline: "Online",
-    },
-    live: {
-      index: "01",
-      eyebrow: "Live now",
-      title: "A real observatory, in motion.",
-      description:
-        "Follow the current telescope state, target, and active mission from one precise live interface.",
-      observatoryName: `${brand.en.name} Tbilisi Observatory`,
-      targetName: "Saturn",
-      currentMission: "DV-042 · Saturn opposition survey",
-      telescopeState: "Tracking target",
-    },
-    tonight: {
-      index: "02",
-      eyebrow: "Tonight's sky",
-      title: "Choose what the telescope sees next.",
-      description:
-        "A mission begins with an observable target and a real window in the night sky.",
-      scheduleNote:
-        "Visibility computed live by the observatory · pictures are illustrations, not telescope output",
     },
     howItWorks: {
-      index: "03",
       eyebrow: `How ${brand.en.name} works`,
       title: "Three steps. One real observation.",
-      description: `${brand.en.name} turns observatory access into a clear mission from selection to capture.`,
+      description: `${brand.en.name} turns time on a real telescope into one clear mission, from choosing a target to keeping what you captured.`,
       steps: [
-        { title: "Choose", description: "Pick an object from tonight's observable sky." },
+        {
+          title: "Choose",
+          description: "Pick a target from tonight's observable sky and reserve a slot.",
+        },
         {
           title: "Observe",
-          description: "A real telescope automatically finds and tracks it.",
+          description:
+            "At your slot the telescope in Tbilisi slews to it, and you watch the live view build up.",
         },
         {
           title: "Keep",
-          description:
-            "Capture your own astronomical image and add it to your collection.",
+          description: "Capture the stacked frame and keep it in your collection.",
         },
       ],
     },
-    realObservatory: {
-      index: "04",
-      eyebrow: "Real observatory",
-      title: "Software connected to physical optics.",
-      description: `${brand.en.name} missions are designed to move through protected observatory software to a real telescope and camera—never directly from a browser.`,
-      statement:
-        "Every command stays server-side. Every observation stays tied to a verified mission.",
-      locationLabel: "Location",
-      location: "Tbilisi, Georgia",
-      cameraLabel: "Camera",
-      camera: "ZWO ASI585MC colour camera",
-      operationLabel: "Operation",
-      operation: "Real-time mission state",
-      telescopeLabel: "Telescope",
-      telescope: "Parked · demonstration state",
-    },
-    collection: {
-      index: "05",
-      eyebrow: "Your collection",
-      title: "A visual record of where you looked.",
+    tonight: {
+      eyebrow: "Tonight's sky",
+      title: "Choose what the telescope sees next.",
       description:
-        "Each completed mission can become a personal observation you can revisit, compare, and keep.",
-      statement: `These are not stock images. They are observations captured through ${brand.en.name}.`,
-      disclaimer: "Development placeholders · no telescope captures are represented",
-      frames: {
-        m42: { name: "Orion Nebula", catalog: "M42 · placeholder frame" },
-        moon: { name: "Lunar terminator", catalog: "Moon · placeholder frame" },
-        m13: { name: "Hercules Cluster", catalog: "M13 · placeholder frame" },
-      },
+        "Every target the observatory knows, with what it can see tonight and why it cannot see the rest.",
+      scheduleNote:
+        "Visibility computed live by the observatory · pictures are illustrations, not telescope output",
+      railLabel: "Tonight's targets",
+      all: "All",
+      previous: "Previous targets",
+      next: "Next targets",
     },
-    network: {
-      index: "06",
-      eyebrow: "Observatory network",
-      title: "One active node. Built to grow carefully.",
+    instrument: {
+      eyebrow: "The instrument",
+      title: "One real telescope, in Tbilisi.",
       description:
-        "The platform architecture can support additional observatories without implying a network that does not yet exist.",
-      observatoryName: "Tbilisi Observatory",
-      active: "Active",
-      location: "Tbilisi · Georgia",
-      descriptionLine: `Primary ${brand.en.name} observatory node`,
-      futureNote:
-        "Future nodes will be announced only after physical integration and verification.",
-    },
-    privateObservatory: {
-      index: "07",
-      eyebrow: "Private observatory",
-      title: "A longer window for your own sky plan.",
-      description:
-        "Premium private sessions will offer dedicated observatory time for deeper, self-directed exploration.",
-      sessionLabel: "Private session",
-      sessionDescription: "Dedicated telescope window",
-      availability: "Coming later · checkout not enabled",
+        "Commanded only by the observatory's own software, never directly from a browser. What you see is what its camera sees.",
+      aperture: "Aperture",
+      focalLength: "Focal length",
+      focalRatio: "Focal ratio",
+      camera: "Camera",
+      cameraValue: "ZWO ASI585MC",
+      cameraNote: "One-shot colour, live-stacked",
+      millimetres: "mm",
     },
     finalCta: {
       eyebrow: "Begin with tonight",
       title: "Your next observation starts here.",
       description: `Choose an observable target and shape your first ${brand.en.name} mission.`,
-      action: "Explore Tonight's Sky",
+      action: "Reserve a slot",
+      secondary: "Explore tonight's sky",
+      privateTitle: "Private sessions",
+      privateNote: "Longer, dedicated telescope windows are coming later.",
     },
   },
   footer: {

@@ -1,7 +1,7 @@
 # ADR-028 — The Homepage Hero Takes the Target-Showcase Composition
 
 - **Date:** 2026-09-27
-- **Status:** APPROVED
+- **Status:** SUPERSEDED by ADR-029 (2026-09-27)
 - **Decided by:** project maintainer
 - **Amends:** `docs/plan/02-build-phases.md`, Phase 7, for the homepage hero only, as
   ADR-026 did for `/observatory` and ADR-027 for the live room; ADR-027 §6, which kept

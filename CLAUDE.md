@@ -233,6 +233,14 @@ buttons, inputs, focus rings, status indicators or live badges. Depth comes from
 surface ramp and borders. `--shadow-*` tokens are shadows, not glows, and the mark's
 glow token is not reachable from component CSS.
 
+**A second exception (ADR-029, ADR-030).** The homepage planet hero — `PlanetHero` and
+`apps/web/src/styles/planet-hero.css` — follows the maintainer's reference spec instead
+of Brand v2.0: its white button glow, blurred scroll control and menu panel, its fonts
+and its cyan. The homepage's sections below it (`HomeShell`,
+`apps/web/src/styles/homepage.css`) take the hero's fonts, night, cyan and white pill,
+but not its glow or blur. Both carry the "Illustration — not telescope output" caption
+wherever a rendered planet appears. No other surface may cite either.
+
 ## Building a surface
 
 **Components.** A new or changed UI component appears on `/design-system` in its states

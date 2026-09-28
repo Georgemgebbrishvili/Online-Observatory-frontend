@@ -415,3 +415,11 @@
   grid-template-columns: repeat(3, minmax(0, 8.75rem));
   gap: var(--space-4);
 }
+
+/* ADR-030: the homepage's pieces on their own night, as the homepage shows them. */
+.ds-home-specimen {
+  display: grid;
+  gap: var(--space-8);
+  padding-block: var(--space-8);
+  border-radius: var(--radius-panel);
+}

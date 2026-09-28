@@ -1,15 +1,17 @@
 import { notFound } from "next/navigation";
 
+import { homeFonts } from "@/components/home/fonts";
+import { PlanetHero } from "@/components/home/planet-hero";
 import { HomeShell } from "@/components/layout/home-shell";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
+import { readObservatoryPanel } from "@/features/home/read";
 import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { siteUrl } from "@/lib/seo";
 import "@/styles/homepage.css";
-import "@/styles/showcase.css";
+import "@/styles/planet-hero.css";
 import { brand } from "@/brand";
 
 type HomePageProps = {
@@ -23,12 +25,13 @@ export default async function HomePage({ params }: HomePageProps) {
     notFound();
   }
 
-  const [dictionary, tonight] = await Promise.all([
+  const [dictionary, tonight, panel] = await Promise.all([
     getDictionary(locale),
     readTonight(locale),
+    readObservatoryPanel(),
   ]);
   return (
-    <div className="site-frame">
+    <div className={`site-frame home-page ${homeFonts}`}>
       <JsonLd
         data={[
           {
@@ -47,8 +50,18 @@ export default async function HomePage({ params }: HomePageProps) {
           },
         ]}
       />
-      <SiteHeader locale={locale} navigation={dictionary.navigation} />
-      <HomeShell content={dictionary.home} locale={locale} tonight={tonight} />
+      <PlanetHero
+        content={dictionary.home.hero}
+        navigation={dictionary.navigation}
+        locale={locale}
+        nextId="about"
+      />
+      <HomeShell
+        content={dictionary.home}
+        locale={locale}
+        tonight={tonight}
+        panel={panel}
+      />
       <SiteFooter footer={dictionary.footer} locale={locale} />
     </div>
   );

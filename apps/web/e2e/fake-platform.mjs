@@ -28,8 +28,10 @@ import {
   zMissionCommandAccepted,
   zOperatorObservatoryState,
   zOperatorOverrideRequest,
+  zRegisterRequest,
   zSetObservatoryModeRequest,
   zUser,
+  zVerifyEmailRequest,
 } from "@darkview/contracts/zod";
 
 const port = Number(process.env.FAKE_PLATFORM_PORT ?? 4100);
@@ -66,6 +68,11 @@ const users = new Map(
   ]),
 );
 const sessions = new Map();
+// Accounts registered through POST /auth/register: their own password, and the links
+// awaiting verification. The link is printed rather than mailed, as dev/mail-sink.mjs
+// prints it on the full stack.
+const passwords = new Map();
+const pendingVerifications = new Map();
 
 // One simulated first-party observatory with one live mission, as the simulator
 // agent would report it. PARK takes a moment to land, like a real mount.
@@ -827,13 +834,62 @@ const routes = {
   "POST /auth/sign-in": async (request, response) => {
     const body = await json(request);
     const user = users.get(body?.email);
-    if (!user || body?.password !== fakePassword) {
+    if (!user || body?.password !== (passwords.get(body.email) ?? fakePassword)) {
+      const pending = [...pendingVerifications.values()].find(
+        (entry) => entry.user.email === body?.email && entry.password === body?.password,
+      );
+      if (pending) return error(response, 403, "FORBIDDEN", "Verify your email first.");
       return error(response, 401, "UNAUTHENTICATED", "Email or password is incorrect.");
     }
     const token = randomUUID();
     const csrf = randomUUID();
     sessions.set(token, { user, csrf });
     send(response, 200, zUser.parse(user), {
+      "set-cookie": [
+        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
+        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+      ],
+    });
+  },
+  // ADR-016: 202 whether or not the address holds an account, and no session until
+  // the address is verified.
+  "POST /auth/register": async (request, response) => {
+    const body = zRegisterRequest.safeParse(await json(request));
+    if (!body.success) {
+      return error(response, 422, "VALIDATION_FAILED", "Name, email and password.");
+    }
+    const { displayName, email, locale, password } = body.data;
+    if (!users.has(email)) {
+      const token = randomUUID();
+      pendingVerifications.set(token, {
+        password,
+        user: zUser.parse({
+          id: randomUUID(),
+          email,
+          displayName,
+          role: "USER",
+          locale,
+          createdAt: new Date().toISOString(),
+        }),
+      });
+      console.log(
+        `[fake-platform] verify ${email}: ${appOrigin}/${locale}/verify-email/${token}`,
+      );
+    }
+    send(response, 202, undefined);
+  },
+  "POST /auth/verify-email": async (request, response) => {
+    const body = zVerifyEmailRequest.safeParse(await json(request));
+    if (!body.success) return error(response, 422, "VALIDATION_FAILED", "A token.");
+    const pending = pendingVerifications.get(body.data.token);
+    if (!pending) return error(response, 403, "FORBIDDEN", "This link is not valid.");
+    pendingVerifications.delete(body.data.token);
+    users.set(pending.user.email, pending.user);
+    passwords.set(pending.user.email, pending.password);
+    const token = randomUUID();
+    const csrf = randomUUID();
+    sessions.set(token, { user: pending.user, csrf });
+    send(response, 200, zUser.parse(pending.user), {
       "set-cookie": [
         `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
         `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,

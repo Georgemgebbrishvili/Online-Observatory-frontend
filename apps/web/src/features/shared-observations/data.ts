@@ -49,7 +49,10 @@ export async function getSharedMissionView(missionId: string) {
       `/v1/missions/${encodeURIComponent(missionId)}/shared-view`,
     );
   } catch (error) {
-    if (error instanceof PlatformError && (error.status === 403 || error.status === 404)) {
+    if (
+      error instanceof PlatformError &&
+      (error.status === 403 || error.status === 404)
+    ) {
       return null;
     }
     throw error;

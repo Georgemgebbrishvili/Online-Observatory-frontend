@@ -139,7 +139,9 @@ describe("readNight", () => {
     expect(result.kind === "ok" && result.slots[0].startAt).toBe("2026-09-26T23:00:00Z");
     // The night in progress is read once, not again for the page.
     expect(
-      platformRequest.mock.calls.filter(([path]) => String(path).includes("date=2026-09-26")),
+      platformRequest.mock.calls.filter(([path]) =>
+        String(path).includes("date=2026-09-26"),
+      ),
     ).toHaveLength(1);
   });
 

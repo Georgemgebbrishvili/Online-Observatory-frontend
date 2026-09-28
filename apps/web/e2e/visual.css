@@ -12,3 +12,44 @@ nextjs-portal {
 * {
   content-visibility: visible !important;
 }
+
+/*
+ * The planet hero's clips never hold still: capture the still behind them. Its entrance
+ * is shown at its end, whether or not it has started when the capture is taken.
+ */
+.planet-hero video {
+  visibility: hidden !important;
+}
+
+.planet-hero *,
+.planet-hero *::after {
+  animation: none !important;
+}
+
+.planet-hero.anim .ent-line,
+.planet-hero.anim .rule span,
+.planet-hero.anim .navbar::after,
+.planet-hero.anim .links a[aria-current="page"]::after {
+  transform: none !important;
+}
+
+.planet-hero.anim .logo,
+.planet-hero.anim .links a,
+.planet-hero.anim .burger,
+.planet-hero.anim .lede,
+.planet-hero.anim .label,
+.planet-hero.anim .cta a,
+.planet-hero.anim .scroll,
+.planet-hero.anim .caption,
+.planet-hero.anim .sky {
+  opacity: 1 !important;
+}
+
+/* A capture never scrolls, so no reveal would fire: show every one in its final state. */
+[data-reveal],
+[data-reveal] > span,
+.home-step-rule {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
