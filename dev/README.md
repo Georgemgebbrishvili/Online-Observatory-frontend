@@ -126,8 +126,8 @@ refuses to clobber an existing file:
 ```bash
 ( set -C; s() { openssl rand -hex 32; }; cat > /Users/nika/Desktop/Darkview/part-1-platform/.env <<EOF
 NODE_ENV=development
-DATABASE_URL=postgresql://darkview:darkview@localhost:5432/darkview?schema=public
-DATABASE_TEST_URL=postgresql://darkview:darkview@localhost:5432/darkview_test
+DATABASE_URL=postgresql://darkview:darkview@localhost:5433/darkview?schema=public
+DATABASE_TEST_URL=postgresql://darkview:darkview@localhost:5433/darkview_test
 APP_URL=http://localhost:3000
 AUTH_SECRET=$(s)
 STREAM_SIGNING_SECRET=$(s)
@@ -154,7 +154,7 @@ Notes on the values:
   `127.0.0.1:3000`.** The platform checks `Origin` on every mutation against this exact
   origin, and realtime admits mission-channel handshakes only from it. On `127.0.0.1`,
   sign-in, registration and booking all fail with a cross-origin refusal.
-- Postgres and MinIO credentials match `dev/docker-compose.yml`. They are local-only
+- Postgres and SeaweedFS (S3) credentials match `dev/docker-compose.yml`. They are local-only
   placeholders and are published on `127.0.0.1` only.
 - `EMAIL_VERIFICATION_WEBHOOK_URL` points at `dev/mail-sink.mjs`, which the stack
   starts. It prints each verification link instead of sending an email.
@@ -169,7 +169,7 @@ cd /Users/nika/Desktop/Darkview/part-2-clients
 npm run dev:stack:setup
 ```
 
-This starts Postgres (with `darkview` and `darkview_test`) and MinIO (with the
+This starts Postgres (with `darkview` and `darkview_test`) and SeaweedFS, the S3 store (with the
 `darkview-captures` bucket). Then, in the platform checkout, it runs:
 
 - `npm ci`
@@ -212,7 +212,7 @@ dev-safety-envelope.md.
 
 **Stopping.** Ctrl-C stops every process with SIGTERM, which is how the agent parks. If
 one process exits, the rest are stopped and the script names which one it was. Postgres
-and MinIO keep running for the next start:
+and SeaweedFS keep running for the next start:
 
 ```bash
 npm run dev:stack:down                                              # stop the containers
@@ -266,4 +266,4 @@ the proposed fix (a second, night-side simulated demo observatory in the seed).
 | Sign-in, register or booking refused as cross-origin | The site was opened on `127.0.0.1`, not `localhost`.                                     |
 | `mail` exits at start                                | `EMAIL_VERIFICATION_WEBHOOK_SECRET` is missing or shorter than 32 characters.            |
 | `agent` loops `link down … retrying`                 | Realtime is not up, or the database was not seeded (no `deviceTokenHash`). Rerun step 5. |
-| Port 5432 in use                                     | Another Postgres is running, e.g. Homebrew's: `brew services stop postgresql@16`.        |
+| Port 5433 in use                                     | Something else holds it: `lsof -i :5433`. The stack uses 5433 so a Homebrew Postgres on 5432 can stay. |

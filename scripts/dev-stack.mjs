@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The local dev stack: Postgres and MinIO in containers, the platform's API, realtime
+// The local dev stack: Postgres and SeaweedFS (S3) in containers, the platform's API, realtime
 // service and simulated agent from the read-only platform checkout, and this web app.
 //
 //   node scripts/dev-stack.mjs          run everything; Ctrl-C stops it
@@ -113,8 +113,8 @@ function startServices() {
       "`docker compose` is not available. Install a container runtime (dev/README.md, step 1).",
     );
   }
-  compose("up", "--detach", "--wait", "postgres", "minio");
-  compose("run", "--rm", "minio-bucket");
+  compose("up", "--detach", "--wait", "postgres", "storage");
+  compose("run", "--rm", "storage-bucket");
 }
 
 function readSeedIdentity() {
