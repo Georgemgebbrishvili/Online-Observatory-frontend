@@ -1,6 +1,6 @@
 # DV-077 — Operator console, evidence
 
-Captured 2026-09-23 on branch `web/dv-077-operator-console` at commit `484f42e`.
+Captured 2026-09-23 on branch `web/dv-077-operator-console` at commit `3b74a3b` (`484f42e` before the 2026-09-28 author-email rewrite).
 
 Everything below runs against `apps/web/e2e/fake-platform.mjs`, a simulated first-party
 observatory with one live mission. No hardware exists yet, and nothing in this repository
