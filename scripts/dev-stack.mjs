@@ -129,7 +129,25 @@ function readSeedIdentity() {
       "could not read DEMO_IDS.observatory and DEMO_AGENT_DEVICE_TOKEN from development-seed.ts.",
     );
   }
-  return { observatoryId, deviceToken };
+  // The night-side observatory (platform #146), where it is dark during Tbilisi's day.
+  // Optional: a platform checkout from before it simply runs one agent.
+  const nightObservatoryId = seed.match(/\bnightObservatory:\s*"([0-9a-f-]{36})"/)?.[1];
+  const nightDeviceToken = seed.match(
+    /DEMO_NIGHT_AGENT_DEVICE_TOKEN\s*=\s*"([^"]+)"/,
+  )?.[1];
+  const nightSite = seed.match(
+    /DEMO_NIGHT_SITE\s*=\s*\{\s*latitude:\s*(-?[\d.]+),\s*longitude:\s*(-?[\d.]+)/,
+  );
+  const night =
+    nightObservatoryId && nightDeviceToken && nightSite
+      ? {
+          observatoryId: nightObservatoryId,
+          deviceToken: nightDeviceToken,
+          latitude: nightSite[1],
+          longitude: nightSite[2],
+        }
+      : null;
+  return { observatoryId, deviceToken, night };
 }
 
 function run(command, args, options = {}) {
@@ -171,7 +189,15 @@ function setup() {
   console.log("\n\x1b[32mdev-stack: setup complete. Next: npm run dev:stack\x1b[0m\n");
 }
 
-const COLOURS = { fake: 31, mail: 34, api: 36, realtime: 35, agent: 33, web: 32 };
+const COLOURS = {
+  fake: 31,
+  mail: 34,
+  api: 36,
+  realtime: 35,
+  agent: 33,
+  night: 93,
+  web: 32,
+};
 const children = new Map();
 let stopping = false;
 let usesContainers = false;
@@ -264,7 +290,7 @@ async function waitFor(url, name, timeoutSeconds) {
 async function stack() {
   checkPlatform();
   versionGuard();
-  const { observatoryId, deviceToken } = readSeedIdentity();
+  const { observatoryId, deviceToken, night } = readSeedIdentity();
   const python = path.join(platformDir, "agent/.venv/bin/python");
   if (!fs.existsSync(python))
     fail("agent/.venv is missing. Run npm run dev:stack:setup first.");
@@ -317,6 +343,23 @@ async function stack() {
       DARKVIEW_AGENT_ENV_FILE: path.join(stateDirectory, "agent.env"),
     },
   });
+
+  if (night) {
+    start("night", python, ["-m", "darkview_agent"], {
+      cwd: path.join(platformDir, "agent"),
+      env: {
+        DARKVIEW_AGENT_DRIVER_MODE: "SIMULATED",
+        DARKVIEW_AGENT_OBSERVATORY_ID: night.observatoryId,
+        DARKVIEW_AGENT_CLOUD_URL: AGENT_CLOUD_URL,
+        DARKVIEW_AGENT_DEVICE_TOKEN: night.deviceToken,
+        // Its own site, or its daylight lock would judge Mauna Kea by Tbilisi's Sun.
+        DARKVIEW_AGENT_SITE_LATITUDE: night.latitude,
+        DARKVIEW_AGENT_SITE_LONGITUDE: night.longitude,
+        DARKVIEW_AGENT_STATE_PATH: path.join(stateDirectory, "night-agent-state.sqlite3"),
+        DARKVIEW_AGENT_ENV_FILE: path.join(stateDirectory, "night-agent.env"),
+      },
+    });
+  }
 
   start("web", "npm", ["run", "dev"], {
     cwd: repositoryRoot,
