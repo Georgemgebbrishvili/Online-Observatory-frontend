@@ -164,18 +164,18 @@ reconciled once at merge time.
 ## The platform repository
 
 The local dev stack (`dev/README.md`) runs `darkview-platform` from a sibling checkout,
-`../part-1-platform` by default. That checkout is Beka's and is used, never changed.
+`../part-1-platform` by default. That checkout is Beka's.
 
-- Read-only. Never edit, format, commit, checkout, pull or stash there. The only
-  commands allowed there are: `npm ci`, `npm run db:generate`, `npm run db:deploy`,
-  `npm run db:seed`, the dev servers, creating `agent/.venv`, running the agent,
-  `git fetch --tags`, and the read-only `git show` (both run by
-  `npm run contracts:sync`).
-- NEVER `npm run db:migrate` — it is `prisma migrate dev` and can generate new
+- Since ADR-031 (2026-09-28) agents may work in it, on a branch, under **its own**
+  `CLAUDE.md`. Never from this repository's tooling: the stack only runs `npm ci`,
+  `npm run db:generate`, `npm run db:deploy`, `npm run db:seed`, the dev servers and the
+  agent there, and `npm run contracts:sync` only `git fetch --tags` and `git show`.
+- NEVER `npm run db:migrate` from here — it is `prisma migrate dev` and can generate new
   migration files in Beka's repo.
 - A missing endpoint, field or behaviour is never invented or worked around here.
   Write `docs/platform-requests/<name>.md` (the screen that needs it, the proposed
-  contract shape, what it blocks) and stop.
+  contract shape, what it blocks), file it as an issue on the platform repository, and
+  build it there.
 - Fixture data is allowed only in `e2e/fake-platform.mjs` and in UI states badged
   "simulated".
 
