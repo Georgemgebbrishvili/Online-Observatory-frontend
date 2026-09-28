@@ -3,19 +3,15 @@
 From a clean machine to the web client running against the real platform, with the
 observatory on the simulator. Every command is below, in order.
 
-**What does not work yet, and why.** Three things stop the full "booked mission reaches a
-capture" run on a freshly seeded stack. Each is raised against the platform and is not
-worked around here:
+**What does not work yet, and why.** One thing stops the full "booked mission reaches a
+capture" run: a booking's sandbox payment cannot complete from the client
+([sandbox-checkout.md](../docs/platform-requests/sandbox-checkout.md), platform #149).
 
-| Blocked                                                                 | Request                                                                    |
-| ----------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Every slew, at any hour: `MAX_ALT_SAFE` is null in the seed             | [dev-safety-envelope.md](../docs/platform-requests/dev-safety-envelope.md) |
-| Operator sign-in: the demo password is recorded nowhere                 | [demo-passwords.md](../docs/platform-requests/demo-passwords.md)           |
-| Anything in daylight: no slots, and both halves apply the daylight lock | [dev-daylight.md](../docs/platform-requests/dev-daylight.md)               |
-
-What does work: the platform, simulator and web client come up together, and you can
-register, verify and sign in as a customer. The agent links to realtime. You can browse
-targets, and at night you can see and reserve slots.
+What does work, since platform #145–#147 (2026-09-28): the platform, both simulated
+agents and the web client come up together. You can register, verify and sign in as a
+customer, sign in as the demo operator, and see slots at any hour of the Tbilisi day on the
+night-side observatory. Both agents report their envelope MEASURED from the simulator's
+stand-in, which no real observatory will accept (platform ADR-032).
 
 ## Fake mode: any hour, no Docker, no platform
 
@@ -229,41 +225,42 @@ After wiping the data, run step 5 again.
    Open it within 30 minutes.
 3. You are signed in as a customer.
 
-**Operator console, `/en/admin`:** blocked. The seeded `demo.operator@darkview.invalid`
-has a password nobody has written down, and no route grants the operator role. See
-[demo-passwords.md](../docs/platform-requests/demo-passwords.md). Once it is answered: sign
-in as that account, open `/en/admin`, and the demo observatory shows ONLINE while `agent`
-is running.
+**Demo accounts.** The seed prints them; all three share the password
+`darkview demo password`:
+
+| Account  | Email                            |
+| -------- | -------------------------------- |
+| Customer | `demo.observer@darkview.invalid` |
+| Operator | `demo.operator@darkview.invalid` |
+| Viewer   | `demo.viewer@darkview.invalid`   |
+
+**Operator console, `/en/admin`:** sign in as the operator. Both demo observatories show
+ONLINE while `agent` and `night` are running.
 
 ## 8. Book a mission and capture
 
-**Blocked** by [dev-safety-envelope.md](../docs/platform-requests/dev-safety-envelope.md),
-and in daylight also by [dev-daylight.md](../docs/platform-requests/dev-daylight.md). Once
-those are resolved: at night, book a slot for the demo observatory, choose a target, start
-the mission when the slot opens, and capture from the live room.
+**Blocked** at payment by [sandbox-checkout.md](../docs/platform-requests/sandbox-checkout.md).
+Once it is answered: book a slot, choose a target, start the mission when the slot opens,
+and capture from the live room. By day, use the night-side observatory.
 
 ## Daylight
 
 The agent computes the Sun itself and refuses slews while it is above the daylight lock.
 The cloud does the same from the observatory's database coordinates, and offers slots
-only in astronomical darkness inside the seeded 18:00–23:59 Tbilisi window. None of it
-can be switched off here, and none of it should be:
-
-- **Changing `SITE_LATITUDE`/`SITE_LONGITUDE` alone** gets you nothing: the cloud refuses first.
-- **`DARKVIEW_AGENT_ATTENDED`** asserts that an operator is physically at the telescope. It
-  would also not help, because the cloud never issues a daylight override.
-
-[dev-daylight.md](../docs/platform-requests/dev-daylight.md) has the full investigation and
-the proposed fix (a second, night-side simulated demo observatory in the seed).
+only in astronomical darkness inside each observatory's availability windows. None of it
+is switched off here. Instead the seed has a second simulated demo observatory on Mauna
+Kea (`Pacific/Honolulu`), where it is night during Tbilisi's working day, and `dev:stack`
+starts a second agent, `night`, with that site. Leave `SITE_LATITUDE`/`SITE_LONGITUDE` on
+Tbilisi: they are the first agent's.
 
 ## Troubleshooting
 
-| Symptom                                              | Cause                                                                                    |
-| ---------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `docker compose is not available`                    | Step 1.                                                                                  |
-| `…/.env is missing`                                  | Step 4.                                                                                  |
-| API exits at start naming an `S3_*` variable         | The platform `.env` is missing the S3 block.                                             |
-| Sign-in, register or booking refused as cross-origin | The site was opened on `127.0.0.1`, not `localhost`.                                     |
-| `mail` exits at start                                | `EMAIL_VERIFICATION_WEBHOOK_SECRET` is missing or shorter than 32 characters.            |
-| `agent` loops `link down … retrying`                 | Realtime is not up, or the database was not seeded (no `deviceTokenHash`). Rerun step 5. |
+| Symptom                                              | Cause                                                                                                  |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `docker compose is not available`                    | Step 1.                                                                                                |
+| `…/.env is missing`                                  | Step 4.                                                                                                |
+| API exits at start naming an `S3_*` variable         | The platform `.env` is missing the S3 block.                                                           |
+| Sign-in, register or booking refused as cross-origin | The site was opened on `127.0.0.1`, not `localhost`.                                                   |
+| `mail` exits at start                                | `EMAIL_VERIFICATION_WEBHOOK_SECRET` is missing or shorter than 32 characters.                          |
+| `agent` loops `link down … retrying`                 | Realtime is not up, or the database was not seeded (no `deviceTokenHash`). Rerun step 5.               |
 | Port 5433 in use                                     | Something else holds it: `lsof -i :5433`. The stack uses 5433 so a Homebrew Postgres on 5432 can stay. |
