@@ -53,3 +53,15 @@ nextjs-portal {
   transform: none !important;
   transition: none !important;
 }
+
+/*
+ * /app/book: the nights are the server's next seven days, masked, but their names change
+ * length with the weekday. One width for every date, so the chips hold still.
+ */
+.booking-nights time {
+  display: inline-block;
+  width: 7em;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
