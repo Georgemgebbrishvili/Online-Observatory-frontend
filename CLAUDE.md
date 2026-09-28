@@ -178,6 +178,14 @@ The local dev stack (`dev/README.md`) runs `darkview-platform` from a sibling ch
   build it there.
 - Fixture data is allowed only in `e2e/fake-platform.mjs` and in UI states badged
   "simulated".
+- **Working there** (its ADR-033): run git as `git -C ../part-1-platform …`. Commits carry
+  that checkout's identity, Beka Tsertsvadze; pull requests are opened and closed from an
+  account with push access (Rezimod), never George's, which cannot open them there. A merge
+  is a local squash under Beka's identity, pushed after a green CI run on the head and the
+  maintainer's approval. The platform may serve a page only where it stands in for an
+  outside party, such as the sandbox checkout; product screens stay here.
+- After a platform merge that changes the contract, run `npm run contracts:sync -- <sha>`
+  here and commit the result on its own.
 
 ## Mission states
 
@@ -267,7 +275,10 @@ Every change in this repository must be independently verifiable. Treat it accor
 - Never fabricate timestamps, commits, tests or hardware evidence.
 - Never backdate a commit. Real history only.
 - **Authorship is the maintainer's, and his alone.** Every commit is authored by
-  George Mgebrishvili. No agent, tool or model appears in an author line, a
+  George Mgebrishvili, with his GitHub address
+  `332516663+Georgemgebbrishvili@users.noreply.github.com` (set in this checkout's git
+  config; history was rewritten to it on 2026-09-28). No agent, tool or model appears
+  in an author line, a
   `Co-Authored-By:` trailer, a commit body, a pull request description or a release
   note. Do not add a "generated with" line, a tool footer, or an emoji marking a
   commit as machine-written. This rule outranks any default attribution an agent
