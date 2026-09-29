@@ -431,6 +431,68 @@ paths:
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
 
+  /targets/visibility:
+    get:
+      operationId: listSlotTargets
+      tags: [targets]
+      summary: The catalogue judged across one slot, at one observatory.
+      description: |
+        Which targets a slot can deliver (#151). The same rules `GET /targets/tonight`
+        applies at one instant -- altitude, the target's minimum altitude, Sun angle,
+        Moon separation -- plus the observatory's safety envelope as a slew is judged:
+        its minimum and measured maximum altitude, horizon mask, forbidden azimuth
+        sectors and Sun exclusion. Evaluated at `startAt`, every five minutes after it,
+        and at the slot's end; a target is `observable` only when every one of those
+        instants passes.
+
+        `observable` is exactly what `POST /bookings` enforces for the same slot:
+        a target that is not observable here is refused there with
+        `TARGET_NOT_OBSERVABLE`. The length rule (ADR-015 §2) is not repeated here;
+        compare `expectedMissionMinutes` with `durationMinutes`.
+
+        Conditions of the whole observatory -- offline, weather hold, an unmeasured
+        safety envelope -- are the slot's, and `GET /slots` reports them; they are
+        not in `blockReasons` here. `atStart` is the full single-instant assessment,
+        with every reason `GET /targets/tonight` would give.
+
+        404 when no bookable observatory has that id, on the same rule `GET /slots`
+        applies.
+      security: []
+      parameters:
+        - name: observatoryId
+          in: query
+          required: true
+          description: An `id` from `GET /observatories`.
+          schema:
+            type: string
+            format: uuid
+        - name: startAt
+          in: query
+          required: true
+          description: The slot's start, a `startAt` from `GET /slots`.
+          schema:
+            type: string
+            format: date-time
+        - name: durationMinutes
+          in: query
+          required: true
+          description: The slot's length, its `durationMinutes`.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 240
+      responses:
+        "200":
+          description: Every catalogue target with its assessment across the slot.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SlotTargetList"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
   /targets/{slug}:
     get:
       operationId: getTarget
@@ -525,6 +587,12 @@ paths:
 
         The slot's length decides which targets it can deliver (ADR-015 §2). A target
         whose `expectedMissionMinutes` exceeds `durationMinutes` is 422.
+
+        The target must also be observable across the slot at that observatory, as
+        `GET /targets/visibility` judges it (#151). One that is not -- below the
+        horizon or the minimum altitude, behind the horizon mask, too near the Sun or
+        the Moon -- is 422 `TARGET_NOT_OBSERVABLE`, with the reasons in
+        `details.blockReasons`.
 
         A reserved slot is held while payment is outstanding. The hold expires, and the
         slot returns to the available list, if payment does not complete in time; the
@@ -928,7 +996,9 @@ paths:
         length, at no charge, and is confirmed at once. It must be a slot `GET /slots`
         offers. The target may change. 409 with no open entitlement or when the slot is
         taken; 422 for an instant that is not an offered slot, or for a target whose
-        `expectedMissionMinutes` exceeds the slot's length (ADR-015 §2).
+        `expectedMissionMinutes` exceeds the slot's length (ADR-015 §2). A target that
+        is not observable across the new slot is 422 `TARGET_NOT_OBSERVABLE`, as on
+        `POST /bookings` (#151).
       parameters:
         - $ref: "#/components/parameters/BookingId"
       requestBody:
@@ -1284,6 +1354,40 @@ paths:
         "409":
           $ref: "#/components/responses/Conflict"
 
+  /missions/{missionId}/watch:
+    get:
+      operationId: getMissionWatchView
+      tags: [missions]
+      summary: One read of a live session for the people allowed to watch it.
+      description: |
+        Everything a watch page needs in one call (ADR-034): the mission, its target,
+        its observatory and instrument, the controller's display name, and the
+        caller's own observer seat.
+
+        Readable by the session owner, by a caller holding an attached observer seat,
+        and -- only while the owner has opened the session to observers
+        (`Mission.observable`) and the mission is live -- by any signed-in user, who
+        needs it to decide whether to buy a seat. Everybody else gets 404, exactly as
+        for a mission that does not exist.
+
+        It grants nothing. ADR-007 stands: an observer receives mission state and the
+        live view and nothing else, so this carries no captures and no way to save
+        one. The audience is `observerCount`, the seats attached; there is no
+        presence count.
+      parameters:
+        - $ref: "#/components/parameters/MissionId"
+      responses:
+        "200":
+          description: The watch view.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissionWatchView"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /missions/{missionId}/events:
     get:
       operationId: listMissionEvents
@@ -1341,6 +1445,38 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: setCaptureVisibility
+      tags: [captures]
+      summary: Publish a capture to the gallery, or take it back.
+      description: |
+        Owner only: a capture belonging to anyone else answers 404, as getCapture does.
+        Idempotent -- setting the visibility a capture already has answers 200 and
+        changes nothing. PRIVATE is always accepted. GALLERY is refused with 409 for a
+        SIMULATED capture, which is never presented as telescope output.
+      parameters:
+        - $ref: "#/components/parameters/CaptureId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetCaptureVisibilityRequest"
+      responses:
+        "200":
+          description: The capture.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Capture"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
 
   /captures/{captureId}/download:
     get:
@@ -2225,6 +2361,7 @@ components:
         - SESSION_NOT_OWNER
         - MISSION_NOT_ACTIVE
         - MISSION_NOT_OBSERVABLE
+        - TARGET_NOT_OBSERVABLE
         - OBSERVER_CAPACITY_REACHED
         - OBSERVER_CANNOT_COMMAND
         - OBSERVATORY_OFFLINE
@@ -2603,6 +2740,52 @@ components:
         evaluatedAt:
           type: string
           format: date-time
+
+    SlotVisibility:
+      type: object
+      description: One target judged across one slot (#151). Computed at request time.
+      additionalProperties: false
+      required: [observable, blockReasons, atStart]
+      properties:
+        observable:
+          type: boolean
+          description: True when no instant of the slot is blocked. `POST /bookings` refuses the target when false.
+        blockReasons:
+          type: array
+          description: Every reason found at any instant of the slot, in the order first met. Empty when observable.
+          items:
+            $ref: "#/components/schemas/VisibilityBlockReason"
+        atStart:
+          $ref: "#/components/schemas/TargetVisibility"
+
+    SlotTarget:
+      type: object
+      additionalProperties: false
+      required: [target, visibility]
+      properties:
+        target:
+          $ref: "#/components/schemas/Target"
+        visibility:
+          $ref: "#/components/schemas/SlotVisibility"
+
+    SlotTargetList:
+      type: object
+      additionalProperties: false
+      required: [observatoryId, startAt, durationMinutes, items]
+      properties:
+        observatoryId:
+          type: string
+          format: uuid
+        startAt:
+          type: string
+          format: date-time
+        durationMinutes:
+          type: integer
+          exclusiveMinimum: 0
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SlotTarget"
 
     # ---------------------------------------------------------------------------
     # Observatory state
@@ -4073,6 +4256,41 @@ components:
         observable:
           type: boolean
 
+    MissionWatchView:
+      type: object
+      description: |
+        A live session as somebody allowed to watch it sees it (ADR-034). Built from
+        existing schemas; it adds no capture and no save capability (ADR-007).
+      additionalProperties: false
+      required:
+        - mission
+        - target
+        - observatory
+        - ownerDisplayName
+        - observerCount
+        - myObserverSeat
+      properties:
+        mission:
+          $ref: "#/components/schemas/Mission"
+        target:
+          $ref: "#/components/schemas/Target"
+        observatory:
+          $ref: "#/components/schemas/BookableObservatory"
+        ownerDisplayName:
+          type: [string, "null"]
+          description: The controller's display name, as `User.displayName`.
+        observerCount:
+          type: integer
+          minimum: 0
+          description: |
+            Observer seats attached now, equal to `mission.observerCount`. The
+            audience shown on a watch page; there is no separate presence count.
+        myObserverSeat:
+          oneOf:
+            - $ref: "#/components/schemas/MissionObserver"
+            - type: "null"
+          description: The caller's attached observer seat, or null if they hold none.
+
     MissionEventSource:
       type: string
       enum: [CLOUD, AGENT, OPERATOR]
@@ -4527,6 +4745,14 @@ components:
       type: string
       description: PRIVATE by default. Publishing to the public gallery is opt-in.
       enum: [PRIVATE, GALLERY]
+
+    SetCaptureVisibilityRequest:
+      type: object
+      additionalProperties: false
+      required: [visibility]
+      properties:
+        visibility:
+          $ref: "#/components/schemas/CaptureVisibility"
 
     Capture:
       type: object
@@ -5902,6 +6128,14 @@ components:
           minimum: 0
         ambientTemperatureC:
           type: [number, "null"]
+        pointing:
+          oneOf:
+            - $ref: "#/components/schemas/HorizontalCoordinates"
+            - type: "null"
+          description: |
+            Where the mount is pointing, rounded to 0.1°. Null when the agent has not reported
+            a position. Sent only on the channel of the mission it belongs to. Read-only: no
+            client message addresses the mount, and this field does not change that.
 
     MissionStreamInfo:
       type: object

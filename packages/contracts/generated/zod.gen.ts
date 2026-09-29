@@ -24,6 +24,7 @@ export const zErrorCode = z.enum([
     'SESSION_NOT_OWNER',
     'MISSION_NOT_ACTIVE',
     'MISSION_NOT_OBSERVABLE',
+    'TARGET_NOT_OBSERVABLE',
     'OBSERVER_CAPACITY_REACHED',
     'OBSERVER_CANNOT_COMMAND',
     'OBSERVATORY_OFFLINE',
@@ -227,6 +228,27 @@ export const zTonightTargetList = z.strictObject({
     observatoryId: z.uuid(),
     items: z.array(zTonightTarget),
     evaluatedAt: z.iso.datetime()
+});
+
+/**
+ * One target judged across one slot (#151). Computed at request time.
+ */
+export const zSlotVisibility = z.strictObject({
+    observable: z.boolean(),
+    blockReasons: z.array(zVisibilityBlockReason),
+    atStart: zTargetVisibility
+});
+
+export const zSlotTarget = z.strictObject({
+    target: zTarget,
+    visibility: zSlotVisibility
+});
+
+export const zSlotTargetList = z.strictObject({
+    observatoryId: z.uuid(),
+    startAt: z.iso.datetime(),
+    durationMinutes: z.int().gt(0),
+    items: z.array(zSlotTarget)
 });
 
 /**
@@ -1237,6 +1259,10 @@ export const zCaptureAssetKind = z.enum([
  */
 export const zCaptureVisibility = z.enum(['PRIVATE', 'GALLERY']);
 
+export const zSetCaptureVisibilityRequest = z.strictObject({
+    visibility: zCaptureVisibility
+});
+
 export const zCapture = z.strictObject({
     id: z.uuid(),
     missionId: z.uuid(),
@@ -1304,6 +1330,20 @@ export const zBookableObservatory = z.strictObject({
 
 export const zBookableObservatoryList = z.strictObject({
     items: z.array(zBookableObservatory)
+});
+
+/**
+ * A live session as somebody allowed to watch it sees it (ADR-034). Built from
+ * existing schemas; it adds no capture and no save capability (ADR-007).
+ *
+ */
+export const zMissionWatchView = z.strictObject({
+    mission: zMission,
+    target: zTarget,
+    observatory: zBookableObservatory,
+    ownerDisplayName: z.string().nullable(),
+    observerCount: z.int().gte(0),
+    myObserverSeat: zMissionObserver.nullable()
 });
 
 /**
@@ -1910,7 +1950,8 @@ export const zMissionTelemetryUpdate = z.strictObject({
     centeringIteration: z.int().gte(0).nullish(),
     residualArcminutes: z.number().nullish(),
     nudgeUsedDegrees: z.number().gte(0).nullish(),
-    ambientTemperatureC: z.number().nullish()
+    ambientTemperatureC: z.number().nullish(),
+    pointing: zHorizontalCoordinates.nullish()
 });
 
 /**
@@ -2122,6 +2163,17 @@ export const zListTonightTargetsQuery = z.object({
  * Targets with their current visibility assessment.
  */
 export const zListTonightTargetsResponse = zTonightTargetList;
+
+export const zListSlotTargetsQuery = z.object({
+    observatoryId: z.uuid(),
+    startAt: z.iso.datetime(),
+    durationMinutes: z.int().gte(1).lte(240)
+});
+
+/**
+ * Every catalogue target with its assessment across the slot.
+ */
+export const zListSlotTargetsResponse = zSlotTargetList;
 
 export const zGetTargetPath = z.object({
     slug: z.string().regex(/^[a-z0-9-]+$/)
@@ -2365,6 +2417,15 @@ export const zPurchaseObserverPackPath = z.object({
  */
 export const zPurchaseObserverPackResponse = zObserverPackWithPaymentIntent;
 
+export const zGetMissionWatchViewPath = z.object({
+    missionId: z.uuid()
+});
+
+/**
+ * The watch view.
+ */
+export const zGetMissionWatchViewResponse = zMissionWatchView;
+
 export const zListMissionEventsPath = z.object({
     missionId: z.uuid()
 });
@@ -2397,6 +2458,17 @@ export const zGetCapturePath = z.object({
  * The capture.
  */
 export const zGetCaptureResponse = zCapture;
+
+export const zSetCaptureVisibilityBody = zSetCaptureVisibilityRequest;
+
+export const zSetCaptureVisibilityPath = z.object({
+    captureId: z.uuid()
+});
+
+/**
+ * The capture.
+ */
+export const zSetCaptureVisibilityResponse = zCapture;
 
 export const zGetCaptureDownloadPath = z.object({
     captureId: z.uuid()

@@ -35,6 +35,7 @@ export const ErrorCode = {
     SESSION_NOT_OWNER: 'SESSION_NOT_OWNER',
     MISSION_NOT_ACTIVE: 'MISSION_NOT_ACTIVE',
     MISSION_NOT_OBSERVABLE: 'MISSION_NOT_OBSERVABLE',
+    TARGET_NOT_OBSERVABLE: 'TARGET_NOT_OBSERVABLE',
     OBSERVER_CAPACITY_REACHED: 'OBSERVER_CAPACITY_REACHED',
     OBSERVER_CANNOT_COMMAND: 'OBSERVER_CANNOT_COMMAND',
     OBSERVATORY_OFFLINE: 'OBSERVATORY_OFFLINE',
@@ -315,6 +316,33 @@ export type TonightTargetList = {
     observatoryId: string;
     items: Array<TonightTarget>;
     evaluatedAt: string;
+};
+
+/**
+ * One target judged across one slot (#151). Computed at request time.
+ */
+export type SlotVisibility = {
+    /**
+     * True when no instant of the slot is blocked. `POST /bookings` refuses the target when false.
+     */
+    observable: boolean;
+    /**
+     * Every reason found at any instant of the slot, in the order first met. Empty when observable.
+     */
+    blockReasons: Array<VisibilityBlockReason>;
+    atStart: TargetVisibility;
+};
+
+export type SlotTarget = {
+    target: Target;
+    visibility: SlotVisibility;
+};
+
+export type SlotTargetList = {
+    observatoryId: string;
+    startAt: string;
+    durationMinutes: number;
+    items: Array<SlotTarget>;
 };
 
 /**
@@ -1440,6 +1468,31 @@ export type MissionObservationSettings = {
     observable: boolean;
 };
 
+/**
+ * A live session as somebody allowed to watch it sees it (ADR-034). Built from
+ * existing schemas; it adds no capture and no save capability (ADR-007).
+ *
+ */
+export type MissionWatchView = {
+    mission: Mission;
+    target: Target;
+    observatory: BookableObservatory;
+    /**
+     * The controller's display name, as `User.displayName`.
+     */
+    ownerDisplayName: string | null;
+    /**
+     * Observer seats attached now, equal to `mission.observerCount`. The
+     * audience shown on a watch page; there is no separate presence count.
+     *
+     */
+    observerCount: number;
+    /**
+     * The caller's attached observer seat, or null if they hold none.
+     */
+    myObserverSeat: MissionObserver | null;
+};
+
 export const MissionEventSource = {
     CLOUD: 'CLOUD',
     AGENT: 'AGENT',
@@ -1805,6 +1858,10 @@ export const CaptureVisibility = { PRIVATE: 'PRIVATE', GALLERY: 'GALLERY' } as c
  * PRIVATE by default. Publishing to the public gallery is opt-in.
  */
 export type CaptureVisibility = typeof CaptureVisibility[keyof typeof CaptureVisibility];
+
+export type SetCaptureVisibilityRequest = {
+    visibility: CaptureVisibility;
+};
 
 export type Capture = {
     id: string;
@@ -2663,6 +2720,13 @@ export type MissionTelemetryUpdate = {
     residualArcminutes?: number | null;
     nudgeUsedDegrees?: number | null;
     ambientTemperatureC?: number | null;
+    /**
+     * Where the mount is pointing, rounded to 0.1°. Null when the agent has not reported
+     * a position. Sent only on the channel of the mission it belongs to. Read-only: no
+     * client message addresses the mount, and this field does not change that.
+     *
+     */
+    pointing?: HorizontalCoordinates | null;
 };
 
 /**
@@ -3126,6 +3190,48 @@ export type ListTonightTargetsResponses = {
 };
 
 export type ListTonightTargetsResponse = ListTonightTargetsResponses[keyof ListTonightTargetsResponses];
+
+export type ListSlotTargetsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * An `id` from `GET /observatories`.
+         */
+        observatoryId: string;
+        /**
+         * The slot's start, a `startAt` from `GET /slots`.
+         */
+        startAt: string;
+        /**
+         * The slot's length, its `durationMinutes`.
+         */
+        durationMinutes: number;
+    };
+    url: '/targets/visibility';
+};
+
+export type ListSlotTargetsErrors = {
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type ListSlotTargetsError = ListSlotTargetsErrors[keyof ListSlotTargetsErrors];
+
+export type ListSlotTargetsResponses = {
+    /**
+     * Every catalogue target with its assessment across the slot.
+     */
+    200: SlotTargetList;
+};
+
+export type ListSlotTargetsResponse = ListSlotTargetsResponses[keyof ListSlotTargetsResponses];
 
 export type GetTargetData = {
     body?: never;
@@ -4114,6 +4220,37 @@ export type PurchaseObserverPackResponses = {
 
 export type PurchaseObserverPackResponse = PurchaseObserverPackResponses[keyof PurchaseObserverPackResponses];
 
+export type GetMissionWatchViewData = {
+    body?: never;
+    path: {
+        missionId: string;
+    };
+    query?: never;
+    url: '/missions/{missionId}/watch';
+};
+
+export type GetMissionWatchViewErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+};
+
+export type GetMissionWatchViewError = GetMissionWatchViewErrors[keyof GetMissionWatchViewErrors];
+
+export type GetMissionWatchViewResponses = {
+    /**
+     * The watch view.
+     */
+    200: MissionWatchView;
+};
+
+export type GetMissionWatchViewResponse = GetMissionWatchViewResponses[keyof GetMissionWatchViewResponses];
+
 export type ListMissionEventsData = {
     body?: never;
     path: {
@@ -4212,6 +4349,45 @@ export type GetCaptureResponses = {
 };
 
 export type GetCaptureResponse = GetCaptureResponses[keyof GetCaptureResponses];
+
+export type SetCaptureVisibilityData = {
+    body: SetCaptureVisibilityRequest;
+    path: {
+        captureId: string;
+    };
+    query?: never;
+    url: '/captures/{captureId}';
+};
+
+export type SetCaptureVisibilityErrors = {
+    /**
+     * Not authenticated.
+     */
+    401: ApiError;
+    /**
+     * Not found, or not owned by the caller.
+     */
+    404: ApiError;
+    /**
+     * Conflicts with current state, for example a slot already taken or a session already held.
+     */
+    409: ApiError;
+    /**
+     * Well-formed but rejected by validation or by the safety envelope.
+     */
+    422: ApiError;
+};
+
+export type SetCaptureVisibilityError = SetCaptureVisibilityErrors[keyof SetCaptureVisibilityErrors];
+
+export type SetCaptureVisibilityResponses = {
+    /**
+     * The capture.
+     */
+    200: Capture;
+};
+
+export type SetCaptureVisibilityResponse = SetCaptureVisibilityResponses[keyof SetCaptureVisibilityResponses];
 
 export type GetCaptureDownloadData = {
     body?: never;
