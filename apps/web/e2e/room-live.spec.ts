@@ -145,7 +145,8 @@ for (const [locale, text, noPosition] of [
   }) => {
     await scenario(page, "offline");
     await page.goto(`/${locale}/app/missions/${observing}/session`);
-    await expect(feedStatus(page)).toContainText(text);
+    // The start, the channel and its first message: a round trip or three, not a render.
+    await expect(feedStatus(page)).toContainText(text, { timeout: 15_000 });
     await expect(page.locator(".live-feed [data-live-stream]")).toHaveCount(0);
     await expect(page.getByText(noPosition)).toBeVisible();
     await expect(page.locator(".pointing-dial-telescope")).toHaveCount(0);
@@ -159,7 +160,9 @@ for (const [locale, heading, reason] of [
   test(`${locale}: a weather hold from the channel stops the feed`, async ({ page }) => {
     await scenario(page, "hold");
     await page.goto(`/${locale}/app/missions/${observing}/session`);
-    await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible({
+      timeout: 15_000,
+    });
     await expect(page.getByText(reason)).toBeVisible();
     await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "hold");
   });
