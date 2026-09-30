@@ -12,12 +12,14 @@ import {
   zAdminUpdateTargetRequest,
   zAdminUpdateTargetResponse,
   zApiError,
+  zGetBookingResponse,
   zGetCaptureDownloadResponse,
   zGetCaptureResponse,
   zGetMissionResponse,
   zGetObservatoryConditionsResponse,
   zGetObservatoryStatusResponse,
   zListBookableObservatoriesResponse,
+  zListBookingsResponse,
   zListCapturesResponse,
   zListMissionEventsResponse,
   zListMissionsResponse,
@@ -343,6 +345,150 @@ const missions = [
 // GET /missions/{id}/events: each mission's history, oldest first as the platform
 // orders it, one minute apart from the mission's start. Paged by PAGE_SIZE with the
 // platform's cursor, the last event's id, so the room reads more than one page.
+// Phase 3 slice 3: the observer's bookings, one in every state, as `GET /bookings` answers
+// them: latest slot first, keyset on the id. Four to a page, so paging is exercised.
+//
+// Cancelling and refunding change a booking. The change is kept for the session that
+// made it, so a test that cancels or refunds signs in on a session of its own, and every
+// other test, and every baseline, sees the bookings as they are here.
+const BOOKINGS_PAGE_SIZE = 4;
+const booking = (row) => ({
+  userId,
+  observatoryId,
+  durationMinutes: 30,
+  priceMinor: 4500,
+  currency: "GEL",
+  paymentId: null,
+  missionId: null,
+  tierDiscountMinor: 0,
+  loyaltyPointsRedeemed: 0,
+  subscriptionMinutesSpent: 0,
+  entitlement: null,
+  ...row,
+});
+const bookings = [
+  booking({
+    id: "52000000-0000-4000-8000-000000000003",
+    targetId: "30000000-0000-4000-8000-000000000021",
+    slotStartAt: "2030-01-16T15:20:00.000Z",
+    status: "PENDING_PAYMENT",
+    paymentId: "62000000-0000-4000-8000-000000000003",
+    createdAt: "2026-09-29T09:00:00.000Z",
+  }),
+  booking({
+    id: "51000000-0000-4000-8000-000000000002",
+    targetId: "30000000-0000-4000-8000-000000000006",
+    slotStartAt: "2030-01-15T18:00:00.000Z",
+    status: "CONFIRMED",
+    paymentId: "61000000-0000-4000-8000-000000000002",
+    missionId: "21000000-0000-4000-8000-000000000002",
+    tierDiscountMinor: 450,
+    createdAt: "2026-09-25T09:00:00.000Z",
+  }),
+  booking({
+    id: "50000000-0000-4000-8000-000000000001",
+    targetId: "30000000-0000-4000-8000-000000000013",
+    slotStartAt: "2026-09-23T20:00:00.000Z",
+    status: "CONFIRMED",
+    paymentId: "60000000-0000-4000-8000-000000000001",
+    missionId,
+    createdAt: "2026-09-21T09:00:00.000Z",
+  }),
+  booking({
+    id: "53000000-0000-4000-8000-000000000004",
+    targetId: "30000000-0000-4000-8000-000000000031",
+    slotStartAt: "2026-09-20T16:00:00.000Z",
+    status: "CONFIRMED",
+    paymentId: "63000000-0000-4000-8000-000000000004",
+    entitlement: {
+      status: "OPEN",
+      cause: "WEATHER",
+      minutesLost: 18,
+      expiresAt: "2026-10-20T16:30:00.000Z",
+      rescheduledBookingId: null,
+    },
+    createdAt: "2026-09-18T09:00:00.000Z",
+  }),
+  booking({
+    id: "54000000-0000-4000-8000-000000000005",
+    targetId: "30000000-0000-4000-8000-000000000032",
+    slotStartAt: "2026-09-18T15:00:00.000Z",
+    status: "EXPIRED",
+    paymentId: "64000000-0000-4000-8000-000000000005",
+    createdAt: "2026-09-17T09:00:00.000Z",
+  }),
+  booking({
+    id: "55000000-0000-4000-8000-000000000006",
+    targetId: "30000000-0000-4000-8000-000000000013",
+    slotStartAt: "2026-09-15T17:20:00.000Z",
+    status: "REFUNDED",
+    paymentId: "65000000-0000-4000-8000-000000000006",
+    entitlement: {
+      status: "REFUNDED",
+      cause: "OBSERVATORY_FAULT",
+      minutesLost: 30,
+      expiresAt: "2026-10-15T17:50:00.000Z",
+      rescheduledBookingId: null,
+    },
+    createdAt: "2026-09-14T09:00:00.000Z",
+  }),
+  booking({
+    id: "56000000-0000-4000-8000-000000000007",
+    targetId: "30000000-0000-4000-8000-000000000006",
+    slotStartAt: "2026-09-12T16:40:00.000Z",
+    status: "CANCELLED",
+    paymentId: "66000000-0000-4000-8000-000000000007",
+    createdAt: "2026-09-11T09:00:00.000Z",
+  }),
+].map((row) => zGetBookingResponse.parse(row));
+const bookingChanges = new Map();
+// Bookings made through `POST /bookings`, by the session that made them.
+const createdBookings = new Map();
+
+/** The caller's bookings, with the changes their session has made. */
+function bookingsOf(request, user) {
+  const session = cookiesOf(request)[sessionCookie];
+  const changes = bookingChanges.get(session) ?? new Map();
+  return [...bookings, ...(createdBookings.get(session) ?? [])]
+    .filter((row) => row.userId === user.id)
+    .map((row) => changes.get(row.id) ?? row);
+}
+
+async function changeBooking(request, response, id, action) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const row = bookingsOf(request, user).find((candidate) => candidate.id === id);
+  if (!row) return error(response, 404, "NOT_FOUND", "No such booking.");
+  // As `cancelMyBooking` and the refund: the same refusals, the same codes.
+  if (action === "cancel" && row.status === "CONFIRMED") {
+    return error(
+      response,
+      409,
+      "CONFLICT",
+      "A paid booking cannot be cancelled until refunds are available.",
+    );
+  }
+  if (action === "cancel" && row.status !== "PENDING_PAYMENT") {
+    return error(response, 409, "CONFLICT", `The booking is already ${row.status}.`);
+  }
+  if (action === "refund" && row.entitlement?.status !== "OPEN") {
+    return error(response, 409, "CONFLICT", "No open entitlement.");
+  }
+  const changed = zGetBookingResponse.parse(
+    action === "cancel"
+      ? { ...row, status: "CANCELLED" }
+      : {
+          ...row,
+          status: "REFUNDED",
+          entitlement: { ...row.entitlement, status: "REFUNDED" },
+        },
+  );
+  const key = cookiesOf(request)[sessionCookie];
+  if (!bookingChanges.has(key)) bookingChanges.set(key, new Map());
+  bookingChanges.get(key).set(id, changed);
+  send(response, 200, changed);
+}
+
 const missionHistories = {
   [missions[0].id]: [
     "REQUESTED",
@@ -702,6 +848,29 @@ const routes = {
             unavailableReason: index === 1 ? "ALREADY_BOOKED" : null,
           };
         }),
+      }),
+    );
+  },
+  // As the platform: latest slot first, the id as the tiebreak, keyset on the id.
+  "GET /bookings": (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const cursor = new URL(request.url, "http://fake").searchParams.get("cursor");
+    const mine = bookingsOf(request, user).sort(
+      (left, right) =>
+        right.slotStartAt.localeCompare(left.slotStartAt) ||
+        right.id.localeCompare(left.id),
+    );
+    const start = cursor ? mine.findIndex((row) => row.id === cursor) + 1 : 0;
+    const rows =
+      cursor && start === 0 ? [] : mine.slice(start, start + BOOKINGS_PAGE_SIZE);
+    const hasMore = start + BOOKINGS_PAGE_SIZE < mine.length && rows.length > 0;
+    send(
+      response,
+      200,
+      zListBookingsResponse.parse({
+        items: rows,
+        page: { hasMore, nextCursor: hasMore ? rows.at(-1).id : null },
       }),
     );
   },
@@ -1296,6 +1465,20 @@ http
     const stream = path.match(/^\/stream\/mission\/([0-9a-f-]+)$/);
     if (stream && request.method === "GET")
       return serveStream(request, response, stream[1]);
+
+    const ownBooking = path.match(/^\/bookings\/([0-9a-f-]+)(?:\/(cancel|refund))?$/);
+    if (ownBooking && !ownBooking[2] && request.method === "GET") {
+      const user = sessionUser(request);
+      if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+      // Somebody else's booking and no booking are the same 404.
+      const row = bookingsOf(request, user).find(
+        (candidate) => candidate.id === ownBooking[1],
+      );
+      if (!row) return error(response, 404, "NOT_FOUND", "No such booking.");
+      return send(response, 200, zGetBookingResponse.parse(row));
+    }
+    if (ownBooking?.[2] && request.method === "POST")
+      return await changeBooking(request, response, ownBooking[1], ownBooking[2]);
 
     const owned = path.match(/^\/(captures|missions)\/([0-9a-f-]+)(\/download)?$/);
     if (owned && request.method === "GET") {

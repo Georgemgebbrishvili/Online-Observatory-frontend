@@ -161,6 +161,10 @@ export const designSystemCopy = {
       captureCard:
         "CaptureCard — a simulated capture with a drawn frame, one with no preview, and the download states",
       slotRow: "SlotRow — available, booked, and held for weather",
+      bookingRow:
+        "BookingRow — awaiting payment, confirmed, cancelled, expired, refunded",
+      bookingActions:
+        "BookingActions — cancel, asking to confirm, cancelling, refund, refunding, refund refused",
       missionSteps: "MissionSteps — at a step, complete, and stopped by a failure",
       pointingDial:
         "PointingDial — high in the south, low in the west, below the horizon, the telescope slewing to the target, the telescope with no position",
@@ -375,6 +379,10 @@ export const designSystemCopy = {
       captureCard:
         "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები",
       slotRow: "SlotRow — თავისუფალი, დაჯავშნილი და ამინდის გამო შეჩერებული",
+      bookingRow:
+        "BookingRow — გადახდას ელოდება, დადასტურებული, გაუქმებული, ვადაგასული, თანხა დაბრუნებული",
+      bookingActions:
+        "BookingActions — გაუქმება, დადასტურების კითხვა, უქმდება, თანხის დაბრუნება, ბრუნდება, დაბრუნება უარყოფილია",
       missionSteps: "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული",
       pointingDial:
         "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ, ტელესკოპი ობიექტისკენ მიიწევს, ტელესკოპი მდებარეობის გარეშე",

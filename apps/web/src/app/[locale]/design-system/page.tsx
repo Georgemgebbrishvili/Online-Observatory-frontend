@@ -10,7 +10,11 @@ import { notFound } from "next/navigation";
 import { OpticalRing } from "@/components/astronomy/optical-ring";
 import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { TargetCard } from "@/components/astronomy/target-card";
-import { SlotRow } from "@/components/booking/booking-night";
+import { BookingActionsView } from "@/components/booking/booking-actions";
+import { BookingRow } from "@/components/booking/booking-list";
+import { formatPrice, SlotRow } from "@/components/booking/booking-night";
+import { formatSlot } from "@/features/booking/present";
+import { bookingActionsCopy, bookingsCopy } from "@/i18n/resources/bookings";
 import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
@@ -147,6 +151,14 @@ export async function generateMetadata({
     robots: { index: false, follow: false },
   };
 }
+
+const bookingStatusSpecimens = [
+  "PENDING_PAYMENT",
+  "CONFIRMED",
+  "CANCELLED",
+  "EXPIRED",
+  "REFUNDED",
+] as const;
 
 const liveSpecimens: readonly LiveStatus[] = [
   "not-started",
@@ -420,6 +432,49 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               />
             ))}
           </ol>
+          <h3 className="ds-subheading">{copy.cards.bookingRow}</h3>
+          <ol className="booking-list">
+            {bookingStatusSpecimens.map((status, index) => (
+              <BookingRow
+                key={status}
+                href="#"
+                title={["Saturn", "Albireo", "M13", "Venus", "Moon"][index]}
+                slot={formatSlot(
+                  `2026-10-0${index + 1}T14:00:00Z`,
+                  30,
+                  "Asia/Tbilisi",
+                  locale,
+                )}
+                price={formatPrice(4500, "GEL", locale)}
+                status={status}
+                statusLabel={bookingsCopy[locale].status[status]}
+              />
+            ))}
+          </ol>
+          <h3 className="ds-subheading">{copy.cards.bookingActions}</h3>
+          <div className="ds-room-specimens">
+            {(
+              [
+                [true, false, false, null, null],
+                [true, false, true, null, null],
+                [true, false, true, "cancel", null],
+                [false, true, false, null, null],
+                [false, true, false, "refund", null],
+                [false, true, false, null, bookingActionsCopy(locale).refundUnavailable],
+              ] as const
+            ).map(([cancellable, refundable, confirming, pending, feedback], index) => (
+              <SurfacePanel key={index}>
+                <BookingActionsView
+                  cancellable={cancellable}
+                  refundable={refundable}
+                  confirming={confirming}
+                  pending={pending}
+                  feedback={feedback}
+                  copy={bookingActionsCopy(locale)}
+                />
+              </SurfacePanel>
+            ))}
+          </div>
           <h3 className="ds-subheading">{copy.cards.missionSteps}</h3>
           <div className="ds-room-specimens">
             {(

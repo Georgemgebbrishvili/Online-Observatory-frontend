@@ -20,6 +20,7 @@ export const appRoutes = [
   "app/live",
   "app/collection",
   "app/profile",
+  "app/bookings",
   // Reachable and honest about not being built yet. Phase 1's Done-when.
   "app/book",
   "app/subscription",
@@ -39,6 +40,9 @@ export const parameterisedRoutes = [
   "app/missions/21000000-0000-4000-8000-000000000002/session",
   "app/missions/22000000-0000-4000-8000-000000000003/session",
   "app/collection/60000000-0000-4000-8000-000000000001",
+  // Two of the fake platform's bookings: awaiting payment, and a slot lost to weather.
+  "app/bookings/52000000-0000-4000-8000-000000000003",
+  "app/bookings/53000000-0000-4000-8000-000000000004",
 ] as const;
 
 /** Only reachable with no session; an authenticated visitor is redirected away. */

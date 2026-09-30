@@ -27,11 +27,18 @@ html[lang="ka"] .booking-hero h1 {
   max-width: none;
 }
 
-.booking-hero > p:last-child {
+.booking-hero > p:not(.eyebrow) {
   max-width: 40rem;
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-body-lg);
+}
+
+.booking-bookings {
+  justify-self: start;
+  color: var(--color-photon);
+  font-size: var(--font-size-label);
+  font-weight: 600;
 }
 
 .booking-nights h2,
@@ -173,6 +180,190 @@ html[lang="ka"] .booking-hero h1 {
 
 @media (prefers-reduced-motion: reduce) {
   .booking-nights a {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* Your bookings (Phase 3 slice 3). */
+
+.booking-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+  list-style: none;
+}
+
+.booking-row + .booking-row {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.booking-row a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.booking-row a:hover {
+  background: var(--color-surface-raised);
+}
+
+.booking-row-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-body-lg);
+  letter-spacing: -0.02em;
+}
+
+.booking-row-slot {
+  grid-column: 1;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.booking-row-price {
+  grid-row: 1;
+  grid-column: 2;
+  justify-self: end;
+  font-weight: 600;
+}
+
+.booking-row-status {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.booking-row[data-status="CANCELLED"] .booking-row-title,
+.booking-row[data-status="EXPIRED"] .booking-row-title {
+  color: var(--color-text-tertiary);
+}
+
+@media (--md) {
+  .booking-row a {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 7rem minmax(10rem, auto);
+  }
+
+  .booking-row-slot,
+  .booking-row-price,
+  .booking-row-status {
+    grid-row: 1;
+    grid-column: auto;
+  }
+}
+
+.booking-pages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.booking-back {
+  justify-self: start;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.booking-back:hover {
+  color: var(--color-text-primary);
+}
+
+.booking-detail .booking-hero .status-indicator {
+  justify-self: start;
+}
+
+.booking-facts {
+  display: grid;
+  max-width: 40rem;
+  margin: 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.booking-facts div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.booking-facts dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.booking-facts dd {
+  margin: 0;
+  font-size: var(--font-size-label);
+  font-weight: 550;
+}
+
+.booking-entitlement,
+.booking-rule {
+  max-width: 40rem;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.booking-entitlement {
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
+}
+
+.booking-observe {
+  justify-self: start;
+}
+
+.booking-actions {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+}
+
+.booking-confirm {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.booking-confirm p {
+  margin: 0;
+}
+
+.booking-confirm div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.booking-feedback {
+  max-width: 40rem;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-photon-border);
+  border-radius: var(--radius-medium);
+  background: var(--color-photon-faint);
+  color: var(--color-photon);
+  font-size: var(--font-size-label);
+}
+
+.booking-page a:focus-visible,
+.booking-page button:focus-visible {
+  outline: 2px solid var(--color-photon);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-row a {
     transition-duration: 0.01ms;
   }
 }

@@ -108,6 +108,9 @@ export function BookingNight({ locale, result }: BookingNightProps) {
         </p>
         <h1>{copy.title}</h1>
         <p>{copy.introduction}</p>
+        <Link className="booking-bookings" href={`/${locale}/app/bookings`}>
+          {copy.yourBookings}
+        </Link>
       </header>
 
       {result.kind === "unreachable" && (

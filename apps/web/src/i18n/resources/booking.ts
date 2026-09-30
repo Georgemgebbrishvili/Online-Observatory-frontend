@@ -10,6 +10,7 @@ type BookingCopy = {
   eyebrow: string;
   title: string;
   introduction: string;
+  yourBookings: string;
   nights: string;
   slots: string;
   minutes: (count: number) => string;
@@ -30,6 +31,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
     title: "Time on the telescope.",
     introduction:
       "Every slot is cut from astronomical darkness at the observatory, in its own time zone.",
+    yourBookings: "Your bookings",
     nights: "Choose a night",
     slots: "Observing time",
     minutes: (count) => `${count} min`,
@@ -68,6 +70,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
     title: "დრო ტელესკოპთან.",
     introduction:
       "ყოველი სლოტი ობსერვატორიის ასტრონომიული სიბნელიდან იჭრება, მისივე დროის სარტყელში.",
+    yourBookings: "თქვენი ჯავშნები",
     nights: "აირჩიეთ ღამე",
     slots: "დაკვირვების დრო",
     minutes: (count) => `${count} წთ`,
