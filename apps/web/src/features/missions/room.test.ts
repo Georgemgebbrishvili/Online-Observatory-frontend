@@ -1,7 +1,7 @@
 import type { MissionEvent, MissionState } from "@darkview/contracts";
 import { describe, expect, it } from "vitest";
 
-import { dialPoint, missionPhase, missionProgress, plateFor, stepOf } from "./room";
+import { dialPoint, missionProgress, plateFor, stepOf } from "./room";
 
 function event(state: MissionState, index: number): MissionEvent {
   return {
@@ -77,13 +77,6 @@ describe("the room's steps", () => {
 
   it("stops at the first step when the history could not be read", () => {
     expect(missionProgress("FAILED", null)[0]).toBe("stopped");
-  });
-
-  it("says whether a live view is ahead, now, or over", () => {
-    expect(missionPhase("SCHEDULED")).toBe("before");
-    expect(missionPhase("OBSERVING")).toBe("during");
-    expect(missionPhase("COMPLETE")).toBe("ended");
-    expect(missionPhase("WEATHER_HOLD")).toBe("ended");
   });
 });
 

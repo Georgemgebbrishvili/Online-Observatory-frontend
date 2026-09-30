@@ -364,7 +364,12 @@ async function stack() {
   start("web", "npm", ["run", "dev"], {
     cwd: repositoryRoot,
     // The platform signs capture URLs for dev/README.md's S3_ENDPOINT.
-    env: { DARKVIEW_PLATFORM_API_URL: API_URL, DARKVIEW_STORAGE_ORIGIN: STORAGE_ORIGIN },
+    // The mission channel and the live view are the realtime service's (ADR-011).
+    env: {
+      DARKVIEW_PLATFORM_API_URL: API_URL,
+      DARKVIEW_REALTIME_URL: "http://127.0.0.1:4001",
+      DARKVIEW_STORAGE_ORIGIN: STORAGE_ORIGIN,
+    },
   });
   await waitFor("http://localhost:3000/en", "the web app", 120);
   if (!stopping)
@@ -390,6 +395,7 @@ async function fake() {
     // The fake serves its own capture images.
     env: {
       DARKVIEW_PLATFORM_API_URL: FAKE_API_URL,
+      DARKVIEW_REALTIME_URL: FAKE_API_URL,
       DARKVIEW_STORAGE_ORIGIN: FAKE_API_URL,
     },
   });

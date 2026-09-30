@@ -86,7 +86,7 @@ beforeEach(() => {
 
 describe("readRoom", () => {
   it("answers anything that is not a mission id as not found, without asking", async () => {
-    expect(await readRoom("DV-SIM-001", "en")).toEqual({ kind: "not-found" });
+    expect(await readRoom("DV-SIM-001")).toEqual({ kind: "not-found" });
     expect(platformRequest).not.toHaveBeenCalled();
   });
 
@@ -96,26 +96,26 @@ describe("readRoom", () => {
         throw new PlatformError("", 404);
       },
     });
-    expect(await readRoom(missionId, "en")).toEqual({ kind: "not-found" });
+    expect(await readRoom(missionId)).toEqual({ kind: "not-found" });
 
     platform({
       [`/missions/${missionId}`]: () => {
         throw new PlatformError("", 401);
       },
     });
-    expect(await readRoom(missionId, "en")).toEqual({ kind: "signed-out" });
+    expect(await readRoom(missionId)).toEqual({ kind: "signed-out" });
 
     platform({
       [`/missions/${missionId}`]: () => {
         throw new PlatformError("", 503);
       },
     });
-    expect(await readRoom(missionId, "en")).toEqual({ kind: "unreachable" });
+    expect(await readRoom(missionId)).toEqual({ kind: "unreachable" });
   });
 
   it("reads every page of the history, oldest first", async () => {
     platform();
-    const result = await readRoom(missionId, "en");
+    const result = await readRoom(missionId);
     expect(result.kind === "ok" && result.room.events?.map((row) => row.id)).toEqual([
       event(0).id,
       event(1).id,
@@ -129,7 +129,7 @@ describe("readRoom", () => {
         throw new PlatformError("", 503);
       },
     });
-    const result = await readRoom(missionId, "en");
+    const result = await readRoom(missionId);
     expect(result).toMatchObject({
       kind: "ok",
       room: {
@@ -145,9 +145,17 @@ describe("readRoom", () => {
     });
   });
 
+  it("reads tonight's sky at the mission's own observatory", async () => {
+    platform();
+    await readRoom(missionId);
+    expect(platformRequest).toHaveBeenCalledWith(
+      `/targets/tonight?observatoryId=${mission.observatoryId}`,
+    );
+  });
+
   it("asks for the eight newest captures only", async () => {
     platform();
-    await readRoom(missionId, "en");
+    await readRoom(missionId);
     const asked = platformRequest.mock.calls
       .map(([path]) => String(path))
       .filter((path) => path.startsWith("/captures/"));

@@ -6,7 +6,8 @@ type TargetPreviewProps = {
   name: string;
   /** "Illustration — not telescope output". Shown with every plate, never without. */
   caption: string;
-  note: string;
+  /** Omitted in the live feed, whose status line says what is happening. */
+  note?: string;
 };
 
 /**
@@ -25,10 +26,12 @@ export function TargetPreview({ caption, name, note, plate }: TargetPreviewProps
           <OpticalRing size="large" label={name} />
         )}
       </div>
-      <figcaption>
-        {plate && <span className="target-preview-caption">{caption}</span>}
-        <span>{note}</span>
-      </figcaption>
+      {(plate || note) && (
+        <figcaption>
+          {plate && <span className="target-preview-caption">{caption}</span>}
+          {note && <span>{note}</span>}
+        </figcaption>
+      )}
     </figure>
   );
 }

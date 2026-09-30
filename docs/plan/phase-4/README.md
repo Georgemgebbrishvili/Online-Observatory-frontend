@@ -18,8 +18,8 @@ designed screen follow in later slices; the plan lists them under Phase 4.
 
 **The mount's position is not published to customers.** `MissionTelemetryUpdate` drops
 `pointingHorizontal` on purpose (`apps/realtime/src/mission/protocol.ts:94-99`). Raised as
-[`mission-pointing.md`](../../platform-requests/mission-pointing.md). Until answered, the
-dial shows the target's position from `listTonightTargets` and says so.
+[`mission-pointing.md`](../../platform-requests/mission-pointing.md), answered in platform
+`14ac895` as `MissionTelemetryUpdate.pointing`; slice 2 wires the dial to it.
 
 **No live camera metadata.** Exposure, gain, stacked-frame count and frame sequence
 (`LiveFrameHeader`) travel agent → cloud only, and the MJPEG stream carries no headers.

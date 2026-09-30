@@ -14,6 +14,7 @@ import {
   zGetObservatoryConditionsResponse,
   zGetObservatoryStatusResponse,
   zListMissionEventsResponse,
+  zListTonightTargetsResponse,
   zMissionId,
 } from "@darkview/contracts/zod";
 import { cache } from "react";
@@ -24,8 +25,6 @@ import {
   readObservatories,
   type CollectionEntry,
 } from "@/features/collection/read";
-import { readTonight } from "@/features/targets/read";
-import type { Locale } from "@/i18n/config";
 import { PlatformError, platformRequest } from "@/lib/platform/client";
 
 export type Room = {
@@ -87,58 +86,58 @@ async function readCaptures(ids: readonly string[]) {
  * is required; every other read is lost on its own, and the room says what is missing.
  */
 // cache(): generateMetadata and the page read the same mission in one request.
-export const readRoom = cache(
-  async (missionId: string, locale: Locale): Promise<RoomResult> => {
-    if (!zMissionId.safeParse(missionId).success) return { kind: "not-found" };
-    const id = encodeURIComponent(missionId);
+export const readRoom = cache(async (missionId: string): Promise<RoomResult> => {
+  if (!zMissionId.safeParse(missionId).success) return { kind: "not-found" };
+  const id = encodeURIComponent(missionId);
 
-    let mission: Mission;
-    try {
-      mission = zGetMissionResponse.parse(
-        await platformRequest<unknown>(`/missions/${id}`),
-      );
-    } catch (error) {
-      if (error instanceof PlatformError && error.status === 404)
-        return { kind: "not-found" };
-      if (error instanceof PlatformError && error.status === 401)
-        return { kind: "signed-out" };
-      return { kind: "unreachable" };
-    }
+  let mission: Mission;
+  try {
+    mission = zGetMissionResponse.parse(
+      await platformRequest<unknown>(`/missions/${id}`),
+    );
+  } catch (error) {
+    if (error instanceof PlatformError && error.status === 404)
+      return { kind: "not-found" };
+    if (error instanceof PlatformError && error.status === 401)
+      return { kind: "signed-out" };
+    return { kind: "unreachable" };
+  }
 
-    const observatoryId = encodeURIComponent(mission.observatoryId);
-    const [catalogue, observatories, events, tonight, status, conditions, captures] =
-      await Promise.all([
-        readCatalogue(),
-        readObservatories(),
-        readEvents(id).catch(() => null),
-        readTonight(locale),
-        platformRequest<unknown>(`/observatories/${observatoryId}/state`)
-          .then((value) => zGetObservatoryStatusResponse.parse(value))
-          .catch(() => null),
-        platformRequest<unknown>(`/observatories/${observatoryId}/conditions`)
-          .then((value) => zGetObservatoryConditionsResponse.parse(value))
-          .catch(() => null),
-        readCaptures(mission.captureIds ?? []),
-      ]);
+  const observatoryId = encodeURIComponent(mission.observatoryId);
+  const [catalogue, observatories, events, tonight, status, conditions, captures] =
+    await Promise.all([
+      readCatalogue(),
+      readObservatories(),
+      readEvents(id).catch(() => null),
+      // The mission's own observatory: another site has another sky.
+      platformRequest<unknown>(`/targets/tonight?observatoryId=${observatoryId}`)
+        .then((value) => zListTonightTargetsResponse.parse(value).items)
+        .catch(() => null),
+      platformRequest<unknown>(`/observatories/${observatoryId}/state`)
+        .then((value) => zGetObservatoryStatusResponse.parse(value))
+        .catch(() => null),
+      platformRequest<unknown>(`/observatories/${observatoryId}/conditions`)
+        .then((value) => zGetObservatoryConditionsResponse.parse(value))
+        .catch(() => null),
+      readCaptures(mission.captureIds ?? []),
+    ]);
 
-    return {
-      kind: "ok",
-      room: {
-        mission,
-        target: catalogue?.get(mission.targetId) ?? null,
-        events,
-        tonight:
-          tonight.kind === "ok"
-            ? (tonight.items.find((item) => item.target.id === mission.targetId) ?? null)
-            : "unreadable",
-        status,
-        conditions,
-        captures,
-        timezone:
-          observatories?.find((candidate) => candidate.id === mission.observatoryId)
-            ?.timezone ?? "UTC",
-        readAt: Date.now(),
-      },
-    };
-  },
-);
+  return {
+    kind: "ok",
+    room: {
+      mission,
+      target: catalogue?.get(mission.targetId) ?? null,
+      events,
+      tonight: tonight
+        ? (tonight.find((item) => item.target.id === mission.targetId) ?? null)
+        : "unreadable",
+      status,
+      conditions,
+      captures,
+      timezone:
+        observatories?.find((candidate) => candidate.id === mission.observatoryId)
+          ?.timezone ?? "UTC",
+      readAt: Date.now(),
+    },
+  };
+});

@@ -11,6 +11,7 @@ import { OpticalRing } from "@/components/astronomy/optical-ring";
 import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { TargetCard } from "@/components/astronomy/target-card";
 import { SlotRow } from "@/components/booking/booking-night";
+import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
 import { TargetPreview } from "@/components/room/target-preview";
@@ -19,6 +20,7 @@ import { homeFonts } from "@/components/home/fonts";
 import { MagneticLink } from "@/components/home/magnetic-link";
 import { PlanetHero } from "@/components/home/planet-hero";
 import { TargetRail } from "@/components/home/target-rail";
+import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor } from "@/features/missions/room";
 import { fill } from "@/features/operator/format";
 import { CaptureCard } from "@/components/collection/capture-card";
@@ -145,6 +147,20 @@ export async function generateMetadata({
     robots: { index: false, follow: false },
   };
 }
+
+const liveSpecimens: readonly LiveStatus[] = [
+  "not-started",
+  "starting",
+  "connecting",
+  "live",
+  "reconnecting",
+  "offline",
+  "hold",
+  "expired",
+  "ended",
+  "refused",
+  "error",
+];
 
 export default async function DesignSystemPage({ params }: DesignSystemPageProps) {
   const { locale } = await params;
@@ -441,6 +457,18 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 cardinals={room.pointing.cardinals}
               />
             ))}
+            <PointingDial
+              position={dialSpecimens[0]}
+              telescope={{ altitudeDegrees: 30, azimuthDegrees: 120 }}
+              label={room.pointing.dial}
+              cardinals={room.pointing.cardinals}
+            />
+            <PointingDial
+              position={dialSpecimens[0]}
+              telescope={null}
+              label={room.pointing.dial}
+              cardinals={room.pointing.cardinals}
+            />
           </div>
           <h3 className="ds-subheading">{copy.cards.targetPreview}</h3>
           <div className="ds-room-specimens ds-preview-specimens">
@@ -456,6 +484,83 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               caption={room.feed.illustration}
               note={fill(room.feed.before, { target: "M13" })}
             />
+          </div>
+          <h3 className="ds-subheading">{copy.cards.liveFeed}</h3>
+          <div className="ds-room-specimens ds-preview-specimens">
+            {liveSpecimens.map((status) => {
+              const text =
+                status === "not-started"
+                  ? {
+                      title: room.live.notStarted.title,
+                      description: fill(room.live.notStarted.before, {
+                        time: formatCapturedAt(
+                          "2030-01-15T18:00:00.000Z",
+                          "Asia/Tbilisi",
+                          locale,
+                        ),
+                      }),
+                    }
+                  : status === "refused"
+                    ? {
+                        title: room.live.refused.title,
+                        description: room.live.refused.reasons.SAFETY_REFUSED ?? "",
+                      }
+                    : {
+                        title: room.live.status[status].title,
+                        description: fill(room.live.status[status].description, {
+                          target: "Saturn",
+                        }),
+                      };
+              return (
+                <LiveFeed
+                  key={status}
+                  status={status}
+                  stream={
+                    status === "live"
+                      ? {
+                          // An empty frame: nothing here stands for telescope output.
+                          url: `data:image/svg+xml,${encodeURIComponent(
+                            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10"><rect width="16" height="10" fill="${palette.neutral950}"/></svg>`,
+                          )}`,
+                          simulated: true,
+                          alt: fill(room.live.streamAltSimulated, { target: "Saturn" }),
+                        }
+                      : null
+                  }
+                  preview={
+                    <TargetPreview
+                      plate={plateFor("saturn")}
+                      name="Saturn"
+                      caption={room.feed.illustration}
+                    />
+                  }
+                  title={text.title}
+                  description={text.description}
+                  labels={{
+                    simulated: room.live.simulated,
+                    live: room.live.live,
+                    timeLeft: room.live.timeLeft,
+                  }}
+                  timeLeft={
+                    ["connecting", "live", "reconnecting"].includes(status)
+                      ? { text: "24:00", iso: "PT1440S" }
+                      : null
+                  }
+                  action={
+                    status === "not-started" || status === "starting" ? (
+                      <Button
+                        disabled={status === "not-started"}
+                        loading={status === "starting"}
+                      >
+                        {room.live.actions.start}
+                      </Button>
+                    ) : status === "refused" || status === "error" ? (
+                      <Button variant="secondary">{room.live.actions.retry}</Button>
+                    ) : undefined
+                  }
+                />
+              );
+            })}
           </div>
         </section>
 

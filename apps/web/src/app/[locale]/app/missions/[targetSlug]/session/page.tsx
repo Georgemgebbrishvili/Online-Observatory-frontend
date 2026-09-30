@@ -21,7 +21,7 @@ export async function generateMetadata({
 }: MissionRoomPageProps): Promise<Metadata> {
   const { locale, targetSlug: missionId } = await params;
   if (!isLocale(locale)) return {};
-  const result = await readRoom(missionId, locale);
+  const result = await readRoom(missionId);
   const target = result.kind === "ok" ? result.room.target : null;
   const name = target ? (locale === "ka" ? target.nameKa : target.nameEn) : "—";
   return {
@@ -36,7 +36,7 @@ export default async function MissionRoomPage({ params }: MissionRoomPageProps) 
 
   await requireUser(locale);
 
-  const result = await readRoom(missionId, locale);
+  const result = await readRoom(missionId);
   if (result.kind === "not-found") notFound();
   if (result.kind === "signed-out") redirect(`/${locale}/sign-in`);
   if (result.kind === "unreachable") {

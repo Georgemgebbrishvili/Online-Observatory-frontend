@@ -28,7 +28,7 @@ export function stepOf(state: MissionState): number | null {
  */
 export function missionProgress(
   state: MissionState,
-  events: readonly MissionEvent[] | null,
+  events: readonly Pick<MissionEvent, "state">[] | null,
 ): StepStatus[] {
   const step = stepOf(state);
   const reached =
@@ -47,15 +47,6 @@ export function missionProgress(
   });
 }
 
-export type MissionPhase = "before" | "during" | "ended";
-
-/** Where the mission stands relative to a live view: not yet, now, or over. */
-export function missionPhase(state: MissionState): MissionPhase {
-  const step = stepOf(state);
-  if (step === null || state === "COMPLETE") return "ended";
-  return step === 0 ? "before" : "during";
-}
-
 /**
  * A point on the sky dial: the horizon at the rim, the zenith at the centre, north up
  * and east to the right. Null below the horizon, which the dial does not draw.
@@ -70,8 +61,9 @@ export function dialPoint(
   const distance = radius * (1 - Math.min(altitudeDegrees, 90) / 90);
   const angle = (azimuthDegrees * Math.PI) / 180;
   return {
-    x: centre + distance * Math.sin(angle),
-    y: centre - distance * Math.cos(angle),
+    // Two decimals, so the server's render and the browser's agree to the digit.
+    x: Math.round((centre + distance * Math.sin(angle)) * 100) / 100,
+    y: Math.round((centre - distance * Math.cos(angle)) * 100) / 100,
   };
 }
 

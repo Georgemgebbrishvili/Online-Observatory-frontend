@@ -33,9 +33,6 @@ test("the room reads an observing mission from the platform", async ({ page }) =
 
   // M13 has no plate: nothing on the page is presented as an illustration.
   await expect(page.getByText("Illustration — not telescope output")).toHaveCount(0);
-  await expect(
-    page.getByText("The live view is not connected on this page yet."),
-  ).toBeVisible();
 });
 
 test("a scheduled planet shows its plate, captioned as an illustration", async ({
@@ -55,9 +52,6 @@ test("a scheduled planet shows its plate, captioned as an illustration", async (
     )
     .toBeGreaterThan(0);
   await expect(preview).toContainText("Illustration — not telescope output");
-  await expect(preview).toContainText(
-    "The live view opens here when the telescope reaches Saturn.",
-  );
 });
 
 test("a complete mission shows its captures and every step done", async ({ page }) => {
@@ -115,7 +109,7 @@ test("the Georgian room fits a phone", async ({ page }) => {
 
   for (const box of [
     await page.locator("h1").boundingBox(),
-    await page.locator(".target-preview-stage").boundingBox(),
+    await page.locator(".live-feed").boundingBox(),
   ]) {
     expect(box?.x).toBeGreaterThanOrEqual(16);
     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(390 - 16);

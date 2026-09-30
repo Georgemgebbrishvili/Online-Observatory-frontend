@@ -163,8 +163,10 @@ export const designSystemCopy = {
       slotRow: "SlotRow — available, booked, and held for weather",
       missionSteps: "MissionSteps — at a step, complete, and stopped by a failure",
       pointingDial:
-        "PointingDial — high in the south, low in the west, below the horizon",
+        "PointingDial — high in the south, low in the west, below the horizon, the telescope slewing to the target, the telescope with no position",
       targetPreview: "TargetPreview — a planet's plate, and a target with none",
+      liveFeed:
+        "LiveFeed — not started, starting, connecting, live (simulated), reconnecting, offline, weather hold, expired, closed, refused, error",
     },
     overlay: {
       openModal: "Open modal",
@@ -374,8 +376,11 @@ export const designSystemCopy = {
         "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები",
       slotRow: "SlotRow — თავისუფალი, დაჯავშნილი და ამინდის გამო შეჩერებული",
       missionSteps: "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული",
-      pointingDial: "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ",
+      pointingDial:
+        "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ, ტელესკოპი ობიექტისკენ მიიწევს, ტელესკოპი მდებარეობის გარეშე",
       targetPreview: "TargetPreview — პლანეტის ილუსტრაცია და ობიექტი ილუსტრაციის გარეშე",
+      liveFeed:
+        "LiveFeed — დაუწყებელი, იწყება, კავშირი მყარდება, პირდაპირი (სიმულირებული), კავშირი აღდგება, ოფლაინ, ამინდის გამო შეჩერებული, დრო ამოწურული, დახურული, უარყოფილი, შეცდომა",
     },
     overlay: {
       openModal: "მოდალის გახსნა",

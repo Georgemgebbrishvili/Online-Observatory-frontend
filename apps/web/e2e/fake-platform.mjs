@@ -2,7 +2,7 @@
 // ADR-016 specifies — exact Origin check on every mutation, two cookies, a session
 // valid only when both arrive — and every body it sends is parsed by the generated
 // contract validators, so it cannot drift into a shape the contract does not have.
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import http from "node:http";
 
 import {
@@ -25,11 +25,14 @@ import {
   zGetTargetResponse,
   zListTargetsResponse,
   zListTonightTargetsResponse,
+  zMissionChannelMessage,
+  zMissionClientMessage,
   zMissionCommandAccepted,
   zOperatorObservatoryState,
   zOperatorOverrideRequest,
   zRegisterRequest,
   zSetObservatoryModeRequest,
+  zStartMissionSessionResponse,
   zUser,
   zVerifyEmailRequest,
 } from "@darkview/contracts/zod";
@@ -934,6 +937,303 @@ async function cancelMission(request, response, id) {
   send(response, 200, mission);
 }
 
+// Phase 4 slice 2: the live session, the mission channel and the stream, as the platform's
+// API (POST /missions/{id}/start) and realtime service (/ws/mission/{id},
+// /stream/mission/{id}) answer them. The web app proxies both realtime paths here.
+//
+// A test picks a scenario with the `fake_live` cookie, per browser context, so parallel
+// tests never share one: slow, error, offline, hold, drop, expire, forbidden, open. The
+// fake does not rotate a session on a second start as the platform does, because every
+// parallel test signs in as the same observer and would revoke the others'.
+const liveSessions = new Map();
+const streamTokens = new Map();
+const LIVE_STATES = [
+  "PREPARING",
+  "SLEWING",
+  "VERIFYING",
+  "CENTERING",
+  "OBSERVING",
+  "CAPTURING",
+];
+const SESSION_MINUTES = 30;
+const STREAM_TTL_SECONDS = 300;
+
+// One JPEG, drawn by code and deterministic: a field of points standing in for a simulated
+// camera frame. Only ever offered with mode SIMULATED.
+const simulatedJpeg = Buffer.from(
+  "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",
+  "base64",
+);
+
+async function startSession(request, response, id) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const mission = missions.find((row) => row.id === id && row.userId === user.id);
+  if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+  const scenario = cookiesOf(request).fake_live ?? null;
+
+  if (scenario === "slow") await new Promise((resolve) => setTimeout(resolve, 1500));
+  if (scenario === "error") return error(response, 500, "INTERNAL", "Simulated failure.");
+
+  const scheduled = mission.state === "SCHEDULED";
+  // As ADR-018: no start before the booked slot opens. `open` stands in for a slot that has.
+  if (scheduled && scenario !== "open") {
+    return error(
+      response,
+      409,
+      "MISSION_NOT_ACTIVE",
+      "The booked slot has not started yet.",
+    );
+  }
+  if (!scheduled && !LIVE_STATES.includes(mission.state)) {
+    return error(response, 409, "MISSION_NOT_ACTIVE", "No live session to open.");
+  }
+
+  const issuedAt = new Date();
+  const expiresAt =
+    scenario === "expire"
+      ? new Date(issuedAt.getTime() + 4_000)
+      : scenario === "open"
+        ? new Date(Date.parse(mission.scheduledStartAt) + SESSION_MINUTES * 60_000)
+        : new Date(issuedAt.getTime() + SESSION_MINUTES * 60_000);
+  const session = zStartMissionSessionResponse.parse({
+    sessionId: randomUUID(),
+    missionId: mission.id,
+    userId: user.id,
+    issuedAt: issuedAt.toISOString(),
+    expiresAt: expiresAt.toISOString(),
+    missionChannelUrl: `/ws/mission/${mission.id}`,
+    allowedCommands: ["NUDGE", "CAPTURE", "RECENTER", "ABORT"],
+  });
+  liveSessions.set(session.sessionId, { ...session, scenario });
+  send(response, 200, session);
+}
+
+function channelMessage(body) {
+  return zMissionChannelMessage.parse({
+    messageId: randomUUID(),
+    sentAt: new Date().toISOString(),
+    ...body,
+  });
+}
+
+// What the channel says to one subscriber, by scenario. Every message is parsed by the
+// generated validator on its way out.
+function subscribed(socket, mission, session) {
+  const say = (body) =>
+    socket.sendJson(channelMessage({ missionId: mission.id, ...body }));
+  const state = (value, failureReason = null) =>
+    say({ type: "MISSION_STATE", state: value, failureReason, remainingSeconds: null });
+  // `pointing` as the realtime service rounds it, to 0.1°; null when there is none.
+  const telemetry = (link, pointing = null) =>
+    say({
+      type: "MISSION_TELEMETRY",
+      mode: "SIMULATED",
+      link,
+      tracking: link === "ONLINE",
+      centeringIteration: null,
+      residualArcminutes: null,
+      nudgeUsedDegrees: null,
+      ambientTemperatureC: null,
+      pointing,
+    });
+  const at = (altitudeDegrees, azimuthDegrees) => ({ altitudeDegrees, azimuthDegrees });
+
+  switch (session.scenario) {
+    case "hold":
+      state("WEATHER_HOLD", "WEATHER_UNSAFE");
+      return telemetry("ONLINE", at(18, 290));
+    case "offline":
+      state(mission.state);
+      return telemetry("OFFLINE");
+    case "drop":
+      state(mission.state);
+      return setTimeout(() => socket.destroy(), 300);
+    case "open": {
+      // The mount leaves park, travels to Saturn (tonight 38°, 160°) and settles on it.
+      state("PREPARING");
+      telemetry("ONLINE", null);
+      const steps = [
+        () => state("SLEWING"),
+        () => telemetry("ONLINE", at(5, 100)),
+        () => telemetry("ONLINE", at(20, 130)),
+        () => telemetry("ONLINE", at(33.4, 152.6)),
+        () => state("CENTERING"),
+        () => telemetry("ONLINE", at(38, 160)),
+      ];
+      const timers = steps.map((step, index) => setTimeout(step, 800 + index * 400));
+      return socket.on("close", () => timers.forEach(clearTimeout));
+    }
+    default: {
+      state(mission.state);
+      telemetry("ONLINE", at(18, 290));
+      const token = randomUUID();
+      const expiresAt = new Date(
+        Math.min(Date.now() + STREAM_TTL_SECONDS * 1000, Date.parse(session.expiresAt)),
+      );
+      streamTokens.set(token, {
+        missionId: mission.id,
+        userId: session.userId,
+        expiresAt,
+      });
+      say({
+        type: "MISSION_STREAM",
+        streamUrl: `${appOrigin}/stream/mission/${mission.id}?t=${token}`,
+        encoding: "JPEG",
+        mode: "SIMULATED",
+        expiresAt: expiresAt.toISOString(),
+      });
+    }
+  }
+}
+
+function onChannelMessage(socket, missionId, user, raw) {
+  let parsed;
+  try {
+    parsed = zMissionClientMessage.safeParse(JSON.parse(raw));
+  } catch {
+    parsed = { success: false };
+  }
+  const refuse = (code, message) => {
+    socket.sendJson(channelMessage({ type: "MISSION_ERROR", code, message }));
+    socket.close();
+  };
+  if (!parsed.success) return refuse("BAD_REQUEST", "Message rejected.");
+  if (parsed.data.type === "CLIENT_PING") return;
+
+  const session = liveSessions.get(parsed.data.sessionId);
+  const mission = missions.find((row) => row.id === missionId);
+  // One refusal for every cause, as the realtime service words it.
+  if (
+    !mission ||
+    !session ||
+    session.scenario === "forbidden" ||
+    parsed.data.missionId !== missionId ||
+    session.missionId !== missionId ||
+    session.userId !== user.id ||
+    Date.parse(session.expiresAt) <= Date.now()
+  ) {
+    return refuse("FORBIDDEN", "No live session for this mission is yours.");
+  }
+  subscribed(socket, mission, session);
+}
+
+// Just enough of RFC 6455 for the channel: text frames, ping, close. No dependency.
+function acceptWebSocket(request, socket) {
+  const accept = createHash("sha1")
+    .update(`${request.headers["sec-websocket-key"]}258EAFA5-E914-47DA-95CA-C5AB0DC85B11`)
+    .digest("base64");
+  socket.write(
+    "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n" +
+      `Sec-WebSocket-Accept: ${accept}\r\n\r\n`,
+  );
+
+  const frame = (opcode, payload) => {
+    const length = payload.length;
+    const head =
+      length < 126
+        ? Buffer.from([0x80 | opcode, length])
+        : Buffer.from([0x80 | opcode, 126, length >> 8, length & 0xff]);
+    if (!socket.destroyed) socket.write(Buffer.concat([head, payload]));
+  };
+  socket.sendJson = (body) => frame(0x1, Buffer.from(JSON.stringify(body)));
+  socket.close = () => {
+    frame(0x8, Buffer.alloc(0));
+    socket.end();
+  };
+
+  let buffered = Buffer.alloc(0);
+  socket.on("data", (chunk) => {
+    buffered = Buffer.concat([buffered, chunk]);
+    while (buffered.length >= 2) {
+      const opcode = buffered[0] & 0x0f;
+      let length = buffered[1] & 0x7f;
+      let offset = 2;
+      if (length === 126) {
+        if (buffered.length < 4) return;
+        length = buffered.readUInt16BE(2);
+        offset = 4;
+      } else if (length === 127) {
+        return socket.destroy();
+      }
+      if (buffered.length < offset + 4 + length) return;
+      const mask = buffered.subarray(offset, offset + 4);
+      const payload = Buffer.from(
+        buffered
+          .subarray(offset + 4, offset + 4 + length)
+          .map((byte, index) => byte ^ mask[index % 4]),
+      );
+      buffered = buffered.subarray(offset + 4 + length);
+      if (opcode === 0x1) socket.emit("text", payload.toString("utf8"));
+      else if (opcode === 0x8) socket.close();
+      else if (opcode === 0x9) frame(0xa, payload);
+    }
+  });
+  socket.on("error", () => socket.destroy());
+}
+
+function upgrade(request, socket) {
+  const match = new URL(request.url, "http://fake").pathname.match(
+    /^\/ws\/mission\/([0-9a-f-]+)$/,
+  );
+  if (!match) return socket.destroy();
+  // As the realtime service: Origin first, then the session cookie.
+  if (request.headers.origin !== appOrigin) {
+    socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
+    return socket.destroy();
+  }
+  const user = sessionUser(request);
+  if (!user) {
+    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+    return socket.destroy();
+  }
+  acceptWebSocket(request, socket);
+  socket.on("text", (raw) => onChannelMessage(socket, match[1], user, raw));
+}
+
+// GET /stream/mission/{id}?t=…: MJPEG, one frame a second, until the grant lapses. Every
+// refusal is the same 404, as the realtime service answers.
+function serveStream(request, response, missionId) {
+  const url = new URL(request.url, "http://fake");
+  const grant = streamTokens.get(url.searchParams.get("t") ?? "");
+  const user = sessionUser(request);
+  if (
+    !grant ||
+    !user ||
+    grant.missionId !== missionId ||
+    grant.userId !== user.id ||
+    grant.expiresAt.getTime() <= Date.now()
+  ) {
+    response.writeHead(404, { "cache-control": "no-store" });
+    return response.end();
+  }
+  const boundary = `fake-${randomUUID()}`;
+  response.writeHead(200, {
+    "content-type": `multipart/x-mixed-replace; boundary=${boundary}`,
+    "cache-control": "no-store, no-transform",
+  });
+  const write = () =>
+    response.write(
+      Buffer.concat([
+        Buffer.from(
+          `--${boundary}\r\nContent-Type: image/jpeg\r\nContent-Length: ${simulatedJpeg.length}\r\n\r\n`,
+        ),
+        simulatedJpeg,
+        Buffer.from("\r\n"),
+      ]),
+    );
+  write();
+  const every = setInterval(write, 1000);
+  const deadline = setTimeout(
+    () => response.end(),
+    grant.expiresAt.getTime() - Date.now(),
+  );
+  response.on("close", () => {
+    clearInterval(every);
+    clearTimeout(deadline);
+  });
+}
+
 async function patchTarget(request, response, id) {
   if (!operator(request, response)) return;
   const body = zAdminUpdateTargetRequest.safeParse(await json(request));
@@ -990,6 +1290,13 @@ http
         }),
       );
     }
+    const start = path.match(/^\/missions\/([0-9a-f-]+)\/start$/);
+    if (start && request.method === "POST")
+      return await startSession(request, response, start[1]);
+    const stream = path.match(/^\/stream\/mission\/([0-9a-f-]+)$/);
+    if (stream && request.method === "GET")
+      return serveStream(request, response, stream[1]);
+
     const owned = path.match(/^\/(captures|missions)\/([0-9a-f-]+)(\/download)?$/);
     if (owned && request.method === "GET") {
       const user = sessionUser(request);
@@ -1048,4 +1355,5 @@ http
     }
     error(response, 404, "NOT_FOUND", "Not implemented by the fake.");
   })
+  .on("upgrade", upgrade)
   .listen(port, "127.0.0.1");

@@ -44,7 +44,14 @@ async function capture(page: Page, route: string, locale: string, width: string)
   await expect(page.locator("h1").first()).toBeAttached();
   // Every image decoded. Not "networkidle": the dev server holds connections open,
   // and on some routes it never settles.
-  await page.waitForFunction(() => [...document.images].every((image) => image.complete));
+  // The live room settles first: a feed still starting or connecting is a moment, not a
+  // state. Its MJPEG stream never "completes" -- it replaces itself -- so it is not waited on.
+  await page.waitForFunction(() => !document.querySelector(".room [data-live-busy]"));
+  await page.waitForFunction(() =>
+    [...document.images].every(
+      (image) => image.complete || "liveStream" in image.dataset,
+    ),
+  );
 
   const firaGOLoaded = await page.evaluate(async () => {
     await document.fonts.ready;

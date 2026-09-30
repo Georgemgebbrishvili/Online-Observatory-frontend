@@ -2,7 +2,11 @@ import path from "node:path";
 
 import type { NextConfig } from "next";
 
-import { platformApiBaseUrl, storageOrigin } from "./src/lib/platform/config";
+import {
+  platformApiBaseUrl,
+  platformRealtimeUrl,
+  storageOrigin,
+} from "./src/lib/platform/config";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -58,8 +62,17 @@ const nextConfig: NextConfig = {
   // ADR-016 §4: the API is served on this host at /api. In production the reverse
   // proxy routes /api before a request reaches this app; in development this
   // rewrite stands in for it, so the API sees this origin and its cookies land here.
+  // The realtime service's two paths (ADR-011) are the same arrangement: the mission
+  // channel's WebSocket upgrade and the MJPEG stream, both on this origin.
   async rewrites() {
-    return [{ source: "/api/:path*", destination: `${platformApiBaseUrl}/:path*` }];
+    return [
+      { source: "/api/:path*", destination: `${platformApiBaseUrl}/:path*` },
+      { source: "/ws/mission/:id", destination: `${platformRealtimeUrl}/ws/mission/:id` },
+      {
+        source: "/stream/mission/:id",
+        destination: `${platformRealtimeUrl}/stream/mission/:id`,
+      },
+    ];
   },
   turbopack: {
     root: path.join(import.meta.dirname, "../.."),

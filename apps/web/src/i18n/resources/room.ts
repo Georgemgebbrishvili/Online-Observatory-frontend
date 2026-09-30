@@ -1,10 +1,12 @@
 import type {
+  ErrorCode,
   MissionFailureReason,
   MissionEventSource,
   MissionState,
 } from "@darkview/contracts";
 
 import { brand } from "@/brand";
+import type { LiveStatus } from "@/features/missions/live";
 
 type StatePresentation = {
   title: string;
@@ -14,6 +16,19 @@ type StatePresentation = {
 
 type StateCopy = { title: string; description: string };
 
+type LiveCopy = {
+  status: Record<Exclude<LiveStatus, "not-started" | "refused">, StateCopy>;
+  notStarted: { title: string; before: string; open: string };
+  refused: { title: string; reasons: Partial<Record<ErrorCode, string>>; other: string };
+  liveReal: string;
+  actions: { start: string; retry: string; reopen: string };
+  simulated: string;
+  live: string;
+  timeLeft: string;
+  streamAlt: string;
+  streamAltSimulated: string;
+};
+
 type RoomCopy = {
   metadataTitle: string;
   back: string;
@@ -22,8 +37,6 @@ type RoomCopy = {
     label: string;
     illustration: string;
     before: string;
-    during: string;
-    ended: string;
   };
   steps: {
     title: string;
@@ -44,6 +57,9 @@ type RoomCopy = {
     unknown: string;
     note: string;
     computedAt: string;
+    titleTelescope: string;
+    noPosition: string;
+    telescopeNote: string;
   };
   readings: { title: string; cloud: string; cloudUnknown: string };
   history: {
@@ -53,6 +69,7 @@ type RoomCopy = {
     sources: Record<MissionEventSource, string>;
   };
   captures: { title: string; empty: string; all: string };
+  live: LiveCopy;
   states: Record<MissionState, StatePresentation>;
   reasons: Record<MissionFailureReason, string>;
   unreachable: StateCopy;
@@ -66,8 +83,6 @@ const en: RoomCopy = {
     label: "Live view",
     illustration: "Illustration — not telescope output",
     before: "The live view opens here when the telescope reaches {target}.",
-    during: "The live view is not connected on this page yet.",
-    ended: "This observation has ended.",
   },
   steps: {
     title: "Progress",
@@ -86,8 +101,12 @@ const en: RoomCopy = {
     none: "—",
     below: "Below the horizon now.",
     unknown: "Tonight's sky could not be read.",
-    note: "The target's position, not the telescope's. The telescope's own position is not published yet.",
+    note: "The target's position, not the telescope's. The telescope's own appears here during the observation.",
     computedAt: "Computed at {time}.",
+    titleTelescope: "Where the telescope points",
+    noPosition: "The telescope has not reported a position.",
+    telescopeNote:
+      "The telescope's position as the observatory reports it, to a tenth of a degree. The dashed ring is {target}.",
   },
   readings: {
     title: "Observatory",
@@ -104,6 +123,77 @@ const en: RoomCopy = {
     title: "Captures from this mission",
     empty: "No captures yet.",
     all: "Your Collection",
+  },
+  live: {
+    status: {
+      starting: {
+        title: "Starting",
+        description: "Opening your session with the observatory.",
+      },
+      connecting: {
+        title: "Connecting",
+        description: "Waiting for the first picture from the camera.",
+      },
+      live: {
+        title: "Live",
+        description: "Simulator output, not telescope output.",
+      },
+      reconnecting: {
+        title: "Reconnecting",
+        description: "The connection to the observatory dropped. Trying again.",
+      },
+      offline: {
+        title: "Observatory offline",
+        description:
+          "The observatory is not connected. The live view comes back when it reconnects.",
+      },
+      hold: {
+        title: "Weather hold",
+        description:
+          "The sky is not safe for observing. The mission waits for it to clear.",
+      },
+      expired: {
+        title: "Your time is up",
+        description:
+          "Your observing session has ended. Your captures stay in your Collection.",
+      },
+      ended: {
+        title: "Live view closed",
+        description: "This mission's live view has closed.",
+      },
+      error: {
+        title: "Something went wrong",
+        description: "The platform did not answer. Try again in a moment.",
+      },
+    },
+    notStarted: {
+      title: "Not started",
+      before: "Your slot opens at {time}. You can start the observation from then.",
+      open: "Your slot is open. Starting turns the telescope to {target}.",
+    },
+    refused: {
+      title: "The live view could not open",
+      reasons: {
+        MISSION_NOT_ACTIVE:
+          "This mission cannot be started now: its slot has not opened, or has ended.",
+        SAFETY_REFUSED:
+          "The observatory's safety checks refused the target at this moment. Try again in a few minutes.",
+        SAFETY_NOT_CONFIGURED:
+          "The telescope's safe limits have not been measured yet, so it may not move.",
+        CONFLICT: "Another observation is running at this observatory.",
+        SESSION_NOT_OWNER: "Another session holds this mission.",
+        FORBIDDEN: "This observation is open in another window or tab.",
+        NOT_FOUND: "This mission is no longer available.",
+      },
+      other: "The platform refused to open the live view.",
+    },
+    liveReal: "The camera's picture, as it arrives.",
+    actions: { start: "Start observation", retry: "Try again", reopen: "Watch here" },
+    simulated: "Simulated",
+    live: "Live",
+    timeLeft: "Time left",
+    streamAlt: "Live view of {target}",
+    streamAltSimulated: "Simulated live view of {target}",
   },
   states: {
     REQUESTED: {
@@ -217,8 +307,6 @@ const ka: RoomCopy = {
     label: "პირდაპირი ხედი",
     illustration: "ილუსტრაცია — არა ტელესკოპის კადრი",
     before: "პირდაპირი ხედი აქ გაიხსნება, როცა ტელესკოპი ობიექტს მიაღწევს: {target}.",
-    during: "პირდაპირი ხედი ამ გვერდზე ჯერ არ არის დაკავშირებული.",
-    ended: "ეს დაკვირვება დასრულდა.",
   },
   steps: {
     title: "მიმდინარეობა",
@@ -237,8 +325,12 @@ const ka: RoomCopy = {
     none: "—",
     below: "ახლა ჰორიზონტს ქვემოთაა.",
     unknown: "ამაღამინდელი ცის წაკითხვა ვერ მოხერხდა.",
-    note: "ეს ობიექტის მდებარეობაა და არა ტელესკოპის. ტელესკოპის საკუთარი მდებარეობა ჯერ არ ქვეყნდება.",
+    note: "ეს ობიექტის მდებარეობაა და არა ტელესკოპის. ტელესკოპის მდებარეობა აქ დაკვირვების დროს გამოჩნდება.",
     computedAt: "გამოთვლილია {time}-ზე.",
+    titleTelescope: "სად იყურება ტელესკოპი",
+    noPosition: "ტელესკოპს მდებარეობა ჯერ არ გადმოუცია.",
+    telescopeNote:
+      "ტელესკოპის მდებარეობა, როგორც ობსერვატორია აცნობებს, გრადუსის მეათედამდე. წყვეტილი რგოლი ობიექტია: {target}.",
   },
   readings: {
     title: "ობსერვატორია",
@@ -255,6 +347,76 @@ const ka: RoomCopy = {
     title: "ამ მისიის კადრები",
     empty: "კადრები ჯერ არ არის.",
     all: "თქვენი კოლექცია",
+  },
+  live: {
+    status: {
+      starting: {
+        title: "იწყება",
+        description: "ობსერვატორიასთან თქვენი სესია იხსნება.",
+      },
+      connecting: {
+        title: "კავშირი მყარდება",
+        description: "ველოდებით კამერის პირველ კადრს.",
+      },
+      live: {
+        title: "პირდაპირი ხედი",
+        description: "სიმულატორის გამოსახულება და არა ტელესკოპის კადრი.",
+      },
+      reconnecting: {
+        title: "კავშირი აღდგება",
+        description: "ობსერვატორიასთან კავშირი გაწყდა. ვცდილობთ თავიდან.",
+      },
+      offline: {
+        title: "ობსერვატორია ოფლაინშია",
+        description:
+          "ობსერვატორია არ არის დაკავშირებული. პირდაპირი ხედი კავშირის აღდგენისთანავე დაბრუნდება.",
+      },
+      hold: {
+        title: "მისია ამინდის გამო შეჩერდა",
+        description: "ცა დაკვირვებისთვის უსაფრთხო არ არის. მისია გამოდარებას ელოდება.",
+      },
+      expired: {
+        title: "დრო ამოიწურა",
+        description:
+          "თქვენი დაკვირვების სესია დასრულდა. კადრები თქვენს კოლექციაში რჩება.",
+      },
+      ended: {
+        title: "პირდაპირი ხედი დაიხურა",
+        description: "ამ მისიის პირდაპირი ხედი დაიხურა.",
+      },
+      error: {
+        title: "რაღაც შეფერხდა",
+        description: "პლატფორმამ არ უპასუხა. სცადეთ ცოტა ხანში.",
+      },
+    },
+    notStarted: {
+      title: "ჯერ არ დაწყებულა",
+      before: "თქვენი დრო {time}-ზე იწყება. დაკვირვებას მაშინ დაიწყებთ.",
+      open: "თქვენი დრო დაიწყო. დაწყებისას ტელესკოპი ობიექტისკენ შებრუნდება: {target}.",
+    },
+    refused: {
+      title: "პირდაპირი ხედი ვერ გაიხსნა",
+      reasons: {
+        MISSION_NOT_ACTIVE:
+          "ამ მისიის ახლა დაწყება შეუძლებელია: მისი დრო ჯერ არ დაწყებულა ან უკვე დასრულდა.",
+        SAFETY_REFUSED:
+          "ობსერვატორიის უსაფრთხოების შემოწმებამ ობიექტი ამ წუთას უარყო. სცადეთ რამდენიმე წუთში.",
+        SAFETY_NOT_CONFIGURED:
+          "ტელესკოპის უსაფრთხო ზღვრები ჯერ არ არის გაზომილი, ამიტომ ის ვერ იმოძრავებს.",
+        CONFLICT: "ამ ობსერვატორიაში სხვა დაკვირვება მიმდინარეობს.",
+        SESSION_NOT_OWNER: "ეს მისია სხვა სესიას უკავია.",
+        FORBIDDEN: "ეს დაკვირვება სხვა ფანჯარაში ან ჩანართშია გახსნილი.",
+        NOT_FOUND: "ეს მისია აღარ არის ხელმისაწვდომი.",
+      },
+      other: "პლატფორმამ პირდაპირი ხედის გახსნაზე უარი თქვა.",
+    },
+    liveReal: "კამერის გამოსახულება, როგორც მოდის.",
+    actions: { start: "დაიწყე დაკვირვება", retry: "სცადე თავიდან", reopen: "აქ ნახვა" },
+    simulated: "სიმულირებული",
+    live: "პირდაპირი",
+    timeLeft: "დარჩენილი დრო",
+    streamAlt: "პირდაპირი ხედი: {target}",
+    streamAltSimulated: "სიმულირებული პირდაპირი ხედი: {target}",
   },
   states: {
     REQUESTED: {

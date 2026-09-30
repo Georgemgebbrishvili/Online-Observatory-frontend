@@ -115,6 +115,8 @@ export default defineConfig({
       timeout: 120_000,
       env: {
         DARKVIEW_PLATFORM_API_URL: "http://127.0.0.1:4110",
+        // The fake stands in for the realtime service too: the channel and the stream.
+        DARKVIEW_REALTIME_URL: "http://127.0.0.1:4110",
         // The fake serves its own capture images, as a bucket would.
         DARKVIEW_STORAGE_ORIGIN: "http://127.0.0.1:4110",
         APP_URL: "http://localhost:3100",

@@ -3,6 +3,10 @@
 Raised 2026-09-27 from Phase 4 (`docs/plan/phase-4/README.md`). Against
 `darkview-platform` at `acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`.
 
+**Answered** by platform `14ac895` (#160): `MissionTelemetryUpdate.pointing`, as proposed,
+sent to the owner and to seated observers. The room's dial reads it since Phase 4 slice 2
+(`docs/plan/phase-4/02-live.md`).
+
 ## What blocks
 
 The live room shows a pointing dial: the sky as a circle, horizon at the rim, zenith at
