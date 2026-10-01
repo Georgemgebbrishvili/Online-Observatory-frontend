@@ -46,7 +46,8 @@ export function nightsFrom(first: string, count = nightsShown) {
 const halfDay = 12 * 60 * 60_000;
 
 /**
- * GET /slots for one night on the first-party observatory (ADR-003). A requested date
+ * GET /slots for one night on the first-party observatory (ADR-003), or on
+ * `observatoryId` when a reschedule names the booking's own. A requested date
  * outside the seven nights shown is ignored rather than sent: it is user input.
  *
  * `GET /slots` names a night by the date its evening falls on, so after midnight the
@@ -56,10 +57,13 @@ const halfDay = 12 * 60 * 60_000;
 export async function readNight(
   requested: string | undefined,
   now = Date.now(),
+  observatoryId?: string,
 ): Promise<NightResult> {
   const observatories = await readObservatories();
   if (!observatories) return { kind: "unreachable" };
-  const observatory = observatories.find((candidate) => candidate.kind === "FIRST_PARTY");
+  const observatory = observatories.find((candidate) =>
+    observatoryId ? candidate.id === observatoryId : candidate.kind === "FIRST_PARTY",
+  );
   if (!observatory) return { kind: "no-observatory" };
 
   const id = encodeURIComponent(observatory.id);

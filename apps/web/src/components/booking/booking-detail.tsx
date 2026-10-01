@@ -10,6 +10,7 @@ import type { BookingEntry } from "@/features/booking/bookings";
 import { bookingReference, formatDay, formatSlot } from "@/features/booking/present";
 import type { Locale } from "@/i18n/config";
 import { bookingActionsCopy, bookingsCopy } from "@/i18n/resources/bookings";
+import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { statusCopy } from "@/i18n/resources/status";
 
 type BookingDetailProps = {
@@ -125,6 +126,15 @@ export function BookingDetail({ entry, locale, mode }: BookingDetailProps) {
           href={`/${locale}/app/missions/${booking.missionId}/session`}
         >
           <span>{copy.openObservation}</span>
+        </Link>
+      )}
+
+      {open && (
+        <Link
+          className="button button-secondary button-large booking-reschedule"
+          href={`/${locale}/app/book?reschedule=${booking.id}`}
+        >
+          <span>{rescheduleCopy[locale].offer}</span>
         </Link>
       )}
 

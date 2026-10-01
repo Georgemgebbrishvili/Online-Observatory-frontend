@@ -36,6 +36,8 @@ import {
   zOperatorObservatoryState,
   zOperatorOverrideRequest,
   zRegisterRequest,
+  zRescheduleBookingBody,
+  zRescheduleBookingResponse,
   zSetObservatoryModeRequest,
   zStartMissionSessionResponse,
   zUser,
@@ -599,6 +601,84 @@ async function createBooking(request, response) {
   payments.set(paymentId, { session, bookingId: booking.id, locale: locale ?? "en" });
   if (key) idempotentBookings.set(`${session}:${key}`, answer);
   send(response, 201, answer);
+}
+
+/**
+ * A free replacement for a lost slot, as `rescheduleMyBooking` answers: an OPEN
+ * entitlement, a slot GET /slots offers, a target up across it; confirmed at once, free,
+ * and the entitlement claimed. The fake makes no mission for it.
+ */
+async function rescheduleBooking(request, response, id) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const session = cookiesOf(request)[sessionCookie];
+  const original = bookingsOf(request, user).find((candidate) => candidate.id === id);
+  if (!original) return error(response, 404, "NOT_FOUND", "No such booking.");
+  if (original.entitlement?.status !== "OPEN")
+    return error(
+      response,
+      409,
+      "CONFLICT",
+      "This booking has no open refund or reschedule.",
+    );
+
+  const body = zRescheduleBookingBody.safeParse(await json(request));
+  if (!body.success)
+    return error(
+      response,
+      422,
+      "VALIDATION_FAILED",
+      "RescheduleBookingRequest is malformed.",
+    );
+  const { slotStartAt } = body.data;
+  const targetId = body.data.targetId ?? original.targetId;
+  const index = slotAt(slotStartAt);
+  if (index === null)
+    return error(response, 422, "VALIDATION_FAILED", "That is not an offered slot.");
+  if (index === 1 || index === TAKEN_SLOT_INDEX)
+    return error(response, 409, "SLOT_UNAVAILABLE", "That slot has just been taken.");
+  const judged = slotTargets(slotStartAt, original.durationMinutes).items.find(
+    (item) => item.target.id === targetId,
+  );
+  if (!judged) return error(response, 404, "NOT_FOUND", "No such target.");
+  if (!judged.visibility.observable)
+    return error(
+      response,
+      422,
+      "TARGET_NOT_OBSERVABLE",
+      "The target is not observable across that slot.",
+    );
+
+  const replacement = zRescheduleBookingResponse.parse({
+    ...original,
+    id: randomUUID(),
+    targetId,
+    slotStartAt: new Date(slotStartAt).toISOString(),
+    status: "CONFIRMED",
+    priceMinor: 0,
+    paymentId: null,
+    missionId: null,
+    tierDiscountMinor: 0,
+    loyaltyPointsRedeemed: 0,
+    subscriptionMinutesSpent: 0,
+    entitlement: null,
+    createdAt: new Date().toISOString(),
+  });
+  if (!createdBookings.has(session)) createdBookings.set(session, []);
+  createdBookings.get(session).push(replacement);
+  if (!bookingChanges.has(session)) bookingChanges.set(session, new Map());
+  bookingChanges.get(session).set(
+    id,
+    zGetBookingResponse.parse({
+      ...original,
+      entitlement: {
+        ...original.entitlement,
+        status: "RESCHEDULED",
+        rescheduledBookingId: replacement.id,
+      },
+    }),
+  );
+  send(response, 201, replacement);
 }
 
 /** The sandbox provider's page, standing in for a hosted checkout: pay or decline. */
@@ -1627,6 +1707,9 @@ http
     const checkout = path.match(/^\/payments\/([0-9a-f-]+)\/sandbox-checkout$/);
     if (checkout && ["GET", "POST"].includes(request.method))
       return await sandboxCheckout(request, response, checkout[1]);
+    const reschedule = path.match(/^\/bookings\/([0-9a-f-]+)\/reschedule$/);
+    if (reschedule && request.method === "POST")
+      return await rescheduleBooking(request, response, reschedule[1]);
     const ownBooking = path.match(/^\/bookings\/([0-9a-f-]+)(?:\/(cancel|refund))?$/);
     if (ownBooking && !ownBooking[2] && request.method === "GET") {
       const user = sessionUser(request);

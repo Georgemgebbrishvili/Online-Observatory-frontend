@@ -4,11 +4,14 @@ import { notFound } from "next/navigation";
 
 import { SlotRow } from "@/components/booking/booking-night";
 import { ReserveForm } from "@/components/booking/reserve-form";
+import { RescheduleClosed } from "@/components/booking/reschedule-closed";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { StatePanel } from "@/components/ui/state-panel";
 import { readOffer } from "@/features/booking/offer";
+import { readReschedule } from "@/features/booking/reschedule";
 import { targetName } from "@/features/targets/present";
 import { isLocale } from "@/i18n/config";
+import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { reserveCopy } from "@/i18n/resources/reserve";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
@@ -17,7 +20,7 @@ import "@/styles/booking.css";
 
 type ReservePageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ startAt?: string | string[] }>;
+  searchParams: Promise<{ startAt?: string | string[]; reschedule?: string | string[] }>;
 };
 
 export async function generateMetadata({ params }: ReservePageProps): Promise<Metadata> {
@@ -32,12 +35,35 @@ export default async function ReservePage({ params, searchParams }: ReservePageP
 
   await requireUser(locale);
 
-  const { startAt } = await searchParams;
-  const result = await readOffer(typeof startAt === "string" ? startAt : undefined);
+  const { startAt, reschedule: rescheduleParam } = await searchParams;
+  const reschedule = await readReschedule(rescheduleParam);
+  if (reschedule.kind === "closed") {
+    return <RescheduleClosed bookingId={reschedule.bookingId} locale={locale} />;
+  }
+
+  const lost = reschedule.kind === "open" ? reschedule.booking : null;
+  const offer =
+    reschedule.kind === "unreachable"
+      ? ({ kind: "unreachable" } as const)
+      : await readOffer(
+          typeof startAt === "string" ? startAt : undefined,
+          lost?.observatoryId,
+        );
+  // A replacement is for the lost slot's length (rescheduleBooking).
+  const result =
+    lost &&
+    offer.kind === "ok" &&
+    offer.offer.slot.durationMinutes !== lost.durationMinutes
+      ? ({ kind: "not-offered", date: offer.offer.date } as const)
+      : offer;
   const copy = reserveCopy[locale];
+  const replacing = rescheduleCopy[locale];
   const targets = targetCopy[locale];
+  const rescheduleQuery = lost ? `reschedule=${encodeURIComponent(lost.id)}` : "";
   const night = (date: string | null) =>
-    date ? `/${locale}/app/book?date=${date}` : `/${locale}/app/book`;
+    date
+      ? `/${locale}/app/book?date=${date}${rescheduleQuery && `&${rescheduleQuery}`}`
+      : `/${locale}/app/book${rescheduleQuery && `?${rescheduleQuery}`}`;
 
   return (
     <div className="booking-page reserve-page">
@@ -64,6 +90,7 @@ export default async function ReservePage({ params, searchParams }: ReservePageP
             : copy.eyebrow}
         </p>
         <h1>{copy.title}</h1>
+        {lost && <p>{replacing.replacing}</p>}
       </header>
 
       {result.kind === "unreachable" && (
@@ -94,6 +121,7 @@ export default async function ReservePage({ params, searchParams }: ReservePageP
           <ol className="slot-list">
             <SlotRow
               {...result.offer.slot}
+              priceLabel={lost ? replacing.free : undefined}
               timezone={result.offer.observatory.timezone}
               locale={locale}
             />
@@ -124,9 +152,21 @@ export default async function ReservePage({ params, searchParams }: ReservePageP
                 }))}
                 locale={locale}
                 signInPath={`/${locale}/sign-in`}
-                copy={copy.form}
+                copy={
+                  lost
+                    ? {
+                        ...copy.form,
+                        reserve: replacing.form.book,
+                        reserving: replacing.form.booking,
+                        redirecting: replacing.form.booking,
+                      }
+                    : copy.form
+                }
+                replacing={
+                  lost ? { bookingId: lost.id, targetId: lost.targetId } : undefined
+                }
               />
-              <p className="booking-rule">{copy.note}</p>
+              <p className="booking-rule">{lost ? replacing.note : copy.note}</p>
             </>
           )}
 

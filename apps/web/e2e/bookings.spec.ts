@@ -127,7 +127,7 @@ test.describe("changing a booking", () => {
 
     await expect(
       page.getByText(
-        "18 minutes of this slot were lost to the weather. You can take a refund until 20 October 2026.",
+        "18 minutes of this slot were lost to the weather. You can take a refund or a free slot until 20 October 2026.",
       ),
     ).toBeVisible();
     await page.getByRole("button", { name: "Take the refund" }).click();

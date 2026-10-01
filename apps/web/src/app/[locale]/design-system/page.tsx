@@ -16,6 +16,7 @@ import { ReserveFormView } from "@/components/booking/reserve-form";
 import { formatPrice, SlotRow } from "@/components/booking/booking-night";
 import { formatSlot } from "@/features/booking/present";
 import { bookingActionsCopy, bookingsCopy } from "@/i18n/resources/bookings";
+import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { reserveCopy } from "@/i18n/resources/reserve";
 import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
@@ -429,10 +430,19 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <SlotRow
                 key={slot.startAt}
                 {...slot}
+                href="#"
                 timezone="Asia/Tbilisi"
                 locale={locale}
               />
             ))}
+            {/* Replacing a lost slot: the same row, free. */}
+            <SlotRow
+              {...slotSpecimens[0]}
+              href="#"
+              priceLabel={rescheduleCopy[locale].free}
+              timezone="Asia/Tbilisi"
+              locale={locale}
+            />
           </ol>
           <h3 className="ds-subheading">{copy.cards.bookingRow}</h3>
           <ol className="booking-list">

@@ -1,4 +1,4 @@
-import type { Currency, Slot, SlotUnavailableReason } from "@darkview/contracts";
+import type { Booking, Currency, Slot, SlotUnavailableReason } from "@darkview/contracts";
 import Link from "next/link";
 
 import { ModeNotice } from "@/components/observatory/mode-notice";
@@ -6,6 +6,7 @@ import { StatePanel } from "@/components/ui/state-panel";
 import type { NightResult } from "@/features/booking/read";
 import type { Locale } from "@/i18n/config";
 import { bookingCopy } from "@/i18n/resources/booking";
+import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { statusCopy } from "@/i18n/resources/status";
 
 function intlLocale(locale: Locale) {
@@ -34,6 +35,8 @@ type SlotRowProps = {
   locale: Locale;
   /** Where an available slot leads: its reserve page. None where the slot is already chosen. */
   href?: string;
+  /** In place of the slot's price: a reschedule's is free. */
+  priceLabel?: string;
 };
 
 /** One slot: its time in the observatory's zone, its length, its price, and whether it can be had. */
@@ -44,6 +47,7 @@ export function SlotRow({
   endAt,
   href,
   locale,
+  priceLabel,
   priceMinor,
   startAt,
   timezone,
@@ -72,7 +76,9 @@ export function SlotRow({
         {zone && <small>{zone}</small>}
       </span>
       <span className="slot-length">{copy.minutes(durationMinutes)}</span>
-      <span className="slot-price">{formatPrice(priceMinor, currency, locale)}</span>
+      <span className="slot-price">
+        {priceLabel ?? formatPrice(priceMinor, currency, locale)}
+      </span>
       <span className="slot-state">
         {available && href ? (
           <Link
@@ -96,10 +102,13 @@ export function SlotRow({
 type BookingNightProps = {
   locale: Locale;
   result: NightResult;
+  /** A booking whose lost slot is being replaced: its telescope, its length, for free. */
+  reschedule?: Booking | null;
 };
 
-export function BookingNight({ locale, result }: BookingNightProps) {
+export function BookingNight({ locale, reschedule, result }: BookingNightProps) {
   const copy = bookingCopy[locale];
+  const replacing = reschedule ? `&reschedule=${encodeURIComponent(reschedule.id)}` : "";
   const night = new Intl.DateTimeFormat(intlLocale(locale), {
     weekday: "short",
     day: "numeric",
@@ -119,7 +128,7 @@ export function BookingNight({ locale, result }: BookingNightProps) {
             : copy.eyebrow}
         </p>
         <h1>{copy.title}</h1>
-        <p>{copy.introduction}</p>
+        <p>{reschedule ? rescheduleCopy[locale].replacing : copy.introduction}</p>
         <Link className="booking-bookings" href={`/${locale}/app/bookings`}>
           {copy.yourBookings}
         </Link>
@@ -148,7 +157,7 @@ export function BookingNight({ locale, result }: BookingNightProps) {
               {result.nights.map((date) => (
                 <li key={date}>
                   <Link
-                    href={`/${locale}/app/book?date=${date}`}
+                    href={`/${locale}/app/book?date=${date}${replacing}`}
                     aria-current={date === result.date ? "date" : undefined}
                   >
                     {/* A calendar date, not an instant: formatted in UTC so it never shifts. */}
@@ -171,7 +180,13 @@ export function BookingNight({ locale, result }: BookingNightProps) {
                   <SlotRow
                     key={slot.startAt}
                     {...slot}
-                    href={`/${locale}/app/book/reserve?startAt=${encodeURIComponent(slot.startAt)}`}
+                    // A replacement is for the lost slot's length (rescheduleBooking).
+                    available={
+                      slot.available &&
+                      (!reschedule || slot.durationMinutes === reschedule.durationMinutes)
+                    }
+                    priceLabel={reschedule ? rescheduleCopy[locale].free : undefined}
+                    href={`/${locale}/app/book/reserve?startAt=${encodeURIComponent(slot.startAt)}${replacing}`}
                     timezone={result.observatory.timezone}
                     locale={locale}
                   />

@@ -1,7 +1,10 @@
 "use client";
 
 import type { Locale } from "@darkview/contracts";
-import { zCreateBookingResponse } from "@darkview/contracts/zod";
+import {
+  zCreateBookingResponse,
+  zRescheduleBookingResponse,
+} from "@darkview/contracts/zod";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +29,8 @@ type ReserveFormProps = {
   locale: Locale;
   signInPath: string;
   copy: ReserveFormCopy;
+  /** A lost booking being replaced for free: its slot is claimed, not bought. */
+  replacing?: { bookingId: string; targetId: string };
 };
 
 export type ReservePhase = "idle" | "reserving" | "redirecting";
@@ -106,6 +111,10 @@ export function checkoutTarget(redirectUrl: string, origin: string) {
  * The target, then `createBooking`. The Idempotency-Key is minted once per visit, so a
  * second press after a failure returns the booking the first one made, if it did, rather
  * than holding a second slot.
+ *
+ * Replacing a lost slot is `rescheduleBooking` instead, which takes no key: the
+ * entitlement is claimed once, so a repeat is 409 CONFLICT, and that answer goes back to
+ * the lost booking, which says what became of it.
  */
 export function ReserveForm({
   choices,
@@ -113,12 +122,14 @@ export function ReserveForm({
   durationMinutes,
   locale,
   observatoryId,
+  replacing,
   signInPath,
   slotStartAt,
 }: ReserveFormProps) {
   const [key] = useState(() => crypto.randomUUID());
   const [targetId, setTargetId] = useState<string | null>(
-    choices.length === 1 ? choices[0].id : null,
+    choices.find((choice) => choice.id === replacing?.targetId)?.id ??
+      (choices.length === 1 ? choices[0].id : null),
   );
   const [phase, setPhase] = useState<Phase>("idle");
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -129,6 +140,19 @@ export function ReserveForm({
     setPhase("reserving");
     setFeedback(null);
     try {
+      if (replacing) {
+        const booking = await apiRequest(
+          `/bookings/${encodeURIComponent(replacing.bookingId)}/reschedule`,
+          {
+            method: "POST",
+            body: { slotStartAt, targetId },
+            schema: zRescheduleBookingResponse,
+          },
+        );
+        setPhase("redirecting");
+        navigateWithFreshSession(`/${locale}/app/bookings/${booking.id}`);
+        return;
+      }
       const { booking, paymentIntent } = await apiRequest("/bookings", {
         method: "POST",
         headers: { "Idempotency-Key": key },
@@ -150,6 +174,11 @@ export function ReserveForm({
         return;
       }
       const code = error instanceof ApiRequestError ? error.error?.code : undefined;
+      if (replacing && code === "CONFLICT") {
+        setPhase("redirecting");
+        navigateWithFreshSession(`/${locale}/app/bookings/${replacing.bookingId}`);
+        return;
+      }
       setFeedback(
         code === "SLOT_UNAVAILABLE" || code === "CONFLICT"
           ? copy.taken

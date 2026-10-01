@@ -327,7 +327,8 @@ html[lang="ka"] .booking-hero h1 {
   color: var(--color-text-primary);
 }
 
-.booking-observe {
+.booking-observe,
+.booking-reschedule {
   justify-self: start;
 }
 

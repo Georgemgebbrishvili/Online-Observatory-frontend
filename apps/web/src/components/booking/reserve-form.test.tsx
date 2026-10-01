@@ -192,3 +192,73 @@ describe("ReserveForm", () => {
     expect(assign).not.toHaveBeenCalled();
   });
 });
+
+describe("ReserveForm replacing a lost slot", () => {
+  const lostId = "53000000-0000-4000-8000-000000000004";
+
+  function renderReplacing() {
+    return render(
+      <ReserveForm
+        observatoryId={observatoryId}
+        slotStartAt={slotStartAt}
+        durationMinutes={30}
+        choices={choices}
+        locale="en"
+        signInPath="/en/sign-in"
+        copy={copy}
+        replacing={{ bookingId: lostId, targetId: choices[1].id }}
+      />,
+    );
+  }
+
+  it("keeps the lost booking's target, claims the slot and opens the new booking", async () => {
+    fetchMock.mockResolvedValue(
+      answer(201, {
+        ...created(null).booking,
+        status: "CONFIRMED",
+        priceMinor: 0,
+        paymentId: null,
+      }),
+    );
+    renderReplacing();
+
+    expect(screen.getByRole("radio", { name: /Saturn/ })).toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: copy.reserve }));
+
+    await waitFor(() =>
+      expect(assign).toHaveBeenCalledWith(`/en/app/bookings/${bookingId}`),
+    );
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe(`/api/bookings/${lostId}/reschedule`);
+    expect(init.method).toBe("POST");
+    expect(init.headers["Idempotency-Key"]).toBeUndefined();
+    expect(JSON.parse(init.body)).toEqual({ slotStartAt, targetId: choices[1].id });
+  });
+
+  it("goes back to the lost booking when its free slot is already claimed", async () => {
+    fetchMock.mockResolvedValue(
+      answer(409, {
+        code: "CONFLICT",
+        message: "This booking has no open refund or reschedule.",
+      }),
+    );
+    renderReplacing();
+    fireEvent.click(screen.getByRole("button", { name: copy.reserve }));
+    await waitFor(() =>
+      expect(assign).toHaveBeenCalledWith(`/en/app/bookings/${lostId}`),
+    );
+  });
+
+  it("says a slot taken a moment ago was taken", async () => {
+    fetchMock.mockResolvedValue(
+      answer(409, {
+        code: "SLOT_UNAVAILABLE",
+        message: "That slot has just been taken.",
+      }),
+    );
+    renderReplacing();
+    fireEvent.click(screen.getByRole("button", { name: copy.reserve }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(copy.taken);
+    expect(assign).not.toHaveBeenCalled();
+  });
+});

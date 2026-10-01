@@ -180,6 +180,17 @@ describe("readOffer", () => {
     expect(platformRequest).not.toHaveBeenCalled();
   });
 
+  it("reads a reschedule's slot on the booking's own observatory, and on no other", async () => {
+    const startAt = "2030-01-15T14:00:00.000Z";
+    platform([slot(startAt)], { observatoryId, startAt, durationMinutes: 30, items: [] });
+
+    expect(await readOffer(startAt, observatoryId)).toMatchObject({ kind: "ok" });
+    expect(await readOffer(startAt, "10000000-0000-4000-8000-000000000009")).toEqual({
+      kind: "not-offered",
+      date: null,
+    });
+  });
+
   it("is unreachable when the slot's targets cannot be read", async () => {
     platform([slot("2030-01-15T14:00:00.000Z")]);
     expect(await readOffer("2030-01-15T14:00:00.000Z")).toEqual({ kind: "unreachable" });

@@ -109,7 +109,7 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     paidCannotCancel: "A paid booking cannot be cancelled until refunds are available.",
     cause: { WEATHER: "the weather", OBSERVATORY_FAULT: "an observatory fault" },
     lostSlot: (minutes, cause, until) =>
-      `${minutes} minutes of this slot were lost to ${cause}. You can take a refund until ${until}.`,
+      `${minutes} minutes of this slot were lost to ${cause}. You can take a refund or a free slot until ${until}.`,
     refunded: "This slot was lost on our side, and the amount paid has been returned.",
     rescheduled: "This slot was lost on our side, and replaced with a free one.",
     rescheduledTo: "See the new booking",
@@ -182,7 +182,7 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
       "გადახდილი ჯავშნის გაუქმება შეუძლებელია, სანამ თანხის დაბრუნება არ ამოქმედდება.",
     cause: { WEATHER: "ამინდის", OBSERVATORY_FAULT: "ობსერვატორიის ხარვეზის" },
     lostSlot: (minutes, cause, until) =>
-      `ამ დროიდან ${minutes} წუთი ${cause} გამო დაიკარგა. თანხის დაბრუნება შესაძლებელია ${until}-მდე.`,
+      `ამ დროიდან ${minutes} წუთი ${cause} გამო დაიკარგა. ${until}-მდე შეგიძლიათ დაიბრუნოთ თანხა ან აირჩიოთ უფასო დრო.`,
     refunded: "ეს დრო ჩვენი მხრიდან დაიკარგა და გადახდილი თანხა დაბრუნებულია.",
     rescheduled: "ეს დრო ჩვენი მხრიდან დაიკარგა და უფასო დროით შეიცვალა.",
     rescheduledTo: "ახალი ჯავშნის ნახვა",

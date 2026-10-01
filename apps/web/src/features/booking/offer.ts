@@ -41,18 +41,24 @@ export function bookable({ target, visibility }: SlotTarget, durationMinutes: nu
 }
 
 /**
- * One slot on the first-party observatory (ADR-003), with what it can deliver.
+ * One slot on the first-party observatory (ADR-003), or on `observatoryId` when a
+ * reschedule names the booking's own, with what it can deliver.
  *
  * `startAt` is user input: it is looked up in `GET /slots` for its night, and a slot
  * the platform does not list there, or lists as unavailable, is not offered.
  */
-export async function readOffer(startAt: string | undefined): Promise<OfferResult> {
+export async function readOffer(
+  startAt: string | undefined,
+  observatoryId?: string,
+): Promise<OfferResult> {
   const at = startAt ? Date.parse(startAt) : Number.NaN;
   if (Number.isNaN(at)) return { kind: "not-offered", date: null };
 
   const observatories = await readObservatories();
   if (!observatories) return { kind: "unreachable" };
-  const observatory = observatories.find((candidate) => candidate.kind === "FIRST_PARTY");
+  const observatory = observatories.find((candidate) =>
+    observatoryId ? candidate.id === observatoryId : candidate.kind === "FIRST_PARTY",
+  );
   if (!observatory) return { kind: "not-offered", date: null };
 
   const id = encodeURIComponent(observatory.id);
