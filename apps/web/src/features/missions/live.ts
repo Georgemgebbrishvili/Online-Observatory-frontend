@@ -10,6 +10,8 @@ import type {
 } from "@darkview/contracts";
 import { zMissionChannelMessage } from "@darkview/contracts/zod";
 
+import type { CommandVerdict } from "./controls";
+
 /**
  * The live room's feed, as the platform describes it (Phase 4 slice 2): the session
  * from `startMissionSession`, what `/ws/mission/{id}` has said, and the signed MJPEG
@@ -59,6 +61,11 @@ export type LiveState = {
   /** The channel's MISSION_ERROR, when it refused this session. */
   channelError: ErrorCode | null;
   expired: boolean;
+  /**
+   * The agent's verdicts, by `commandId` (slice 3). Kept rather than handled as they
+   * arrive: a verdict can land before the 202 that names its command.
+   */
+  verdicts: Record<string, CommandVerdict>;
 };
 
 export type LiveEvent =
@@ -119,6 +126,7 @@ export function initialLive(
     socket: "closed",
     channelError: null,
     expired: false,
+    verdicts: {},
   } satisfies LiveState;
 }
 
@@ -202,8 +210,18 @@ function onMessage(state: LiveState, message: MissionChannelMessage): LiveState 
         stream: null,
         pointing: undefined,
       };
-    case "MISSION_CAPTURE_READY":
     case "MISSION_COMMAND_RESULT":
+      return {
+        ...state,
+        verdicts: {
+          ...state.verdicts,
+          [message.commandId]: {
+            status: message.status,
+            rejectionReason: message.rejectionReason ?? null,
+          },
+        },
+      };
+    case "MISSION_CAPTURE_READY":
       return state;
   }
 }

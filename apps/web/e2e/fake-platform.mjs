@@ -40,6 +40,8 @@ import {
   zRescheduleBookingResponse,
   zSetObservatoryModeRequest,
   zStartMissionSessionResponse,
+  zSubmitMissionCommandBody,
+  zSubmitMissionCommandResponse,
   zUser,
   zVerifyEmailRequest,
 } from "@darkview/contracts/zod";
@@ -1001,8 +1003,8 @@ function send(response, status, body, headers = {}) {
   response.end(body === undefined ? undefined : JSON.stringify(body));
 }
 
-function error(response, status, code, message) {
-  send(response, status, zApiError.parse({ code, message }));
+function error(response, status, code, message, details) {
+  send(response, status, zApiError.parse({ code, message, ...(details && { details }) }));
 }
 
 function cookiesOf(request) {
@@ -1427,6 +1429,10 @@ function channelMessage(body) {
 // What the channel says to one subscriber, by scenario. Every message is parsed by the
 // generated validator on its way out.
 function subscribed(socket, mission, session) {
+  // Slice 3: a command's verdict comes back on the channel of the session that sent it.
+  session.sockets ??= new Set();
+  session.sockets.add(socket);
+  socket.on("close", () => session.sockets.delete(socket));
   const say = (body) =>
     socket.sendJson(channelMessage({ missionId: mission.id, ...body }));
   const state = (value, failureReason = null) =>
@@ -1492,6 +1498,81 @@ function subscribed(socket, mission, session) {
       });
     }
   }
+}
+
+// Phase 4 slice 3: `submitMissionCommand`, as the platform's API answers it, and the
+// agent's one verdict on the channel. The `fake_command` cookie picks the outcome for this
+// browser context: unset, the agent accepts; `refuse`, it refuses a nudge past its limit;
+// `cloud`, the cloud refuses it first (409); `silent`, no verdict ever comes.
+const COMMAND_TTL_SECONDS = 15;
+
+async function submitCommand(request, response, id) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const mission = missions.find((row) => row.id === id && row.userId === user.id);
+  if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+  const body = zSubmitMissionCommandBody.safeParse(await json(request));
+  if (!body.success)
+    return error(
+      response,
+      422,
+      "VALIDATION_FAILED",
+      "MissionCommandRequest is malformed.",
+    );
+
+  const session = [...liveSessions.values()]
+    .filter(
+      (candidate) =>
+        candidate.missionId === id &&
+        candidate.userId === user.id &&
+        Date.parse(candidate.expiresAt) > Date.now(),
+    )
+    .at(-1);
+  if (!session)
+    return error(response, 409, "MISSION_NOT_ACTIVE", "No session owns this mission.");
+
+  const outcome = cookiesOf(request).fake_command ?? null;
+  if (outcome === "cloud")
+    return error(response, 409, "SAFETY_REFUSED", "MAX_ALT_SAFE is UNMEASURED.", {
+      rejectionReason: "SAFETY_ENVELOPE_UNMEASURED",
+    });
+
+  const { type } = body.data;
+  const issuedAt = new Date();
+  const accepted = zSubmitMissionCommandResponse.parse({
+    commandId: randomUUID(),
+    missionId: id,
+    type: type === "RECENTER" ? "GOTO" : type,
+    issuedAt: issuedAt.toISOString(),
+    expiresAt: new Date(
+      issuedAt.getTime() + (outcome === "silent" ? 1 : COMMAND_TTL_SECONDS) * 1000,
+    ).toISOString(),
+    status: "ACCEPTED",
+  });
+  send(response, 202, accepted);
+  if (outcome === "silent") return;
+
+  const say = (body) => {
+    for (const socket of session.sockets ?? [])
+      socket.sendJson(channelMessage({ missionId: id, ...body }));
+  };
+  const refused = outcome === "refuse" && type === "NUDGE";
+  setTimeout(() => {
+    say({
+      type: "MISSION_COMMAND_RESULT",
+      commandId: accepted.commandId,
+      status: refused ? "REJECTED" : "ACCEPTED",
+      rejectionReason: refused ? "SAFETY_NUDGE_LIMIT_EXCEEDED" : null,
+    });
+    if (refused) return;
+    const state = (value, failureReason = null) =>
+      say({ type: "MISSION_STATE", state: value, failureReason, remainingSeconds: null });
+    if (type === "CAPTURE") {
+      state("CAPTURING");
+      setTimeout(() => state("OBSERVING"), 1200);
+    }
+    if (type === "ABORT") state("CANCELLED", "CUSTOMER_CANCELLED");
+  }, 300);
 }
 
 function onChannelMessage(socket, missionId, user, raw) {
@@ -1697,6 +1778,9 @@ http
         }),
       );
     }
+    const command = path.match(/^\/missions\/([0-9a-f-]+)\/command$/);
+    if (command && request.method === "POST")
+      return await submitCommand(request, response, command[1]);
     const start = path.match(/^\/missions\/([0-9a-f-]+)\/start$/);
     if (start && request.method === "POST")
       return await startSession(request, response, start[1]);

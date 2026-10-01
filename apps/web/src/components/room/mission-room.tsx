@@ -58,6 +58,7 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
         targetName={name}
         targetSlug={target?.slug ?? null}
         plate={target ? plateFor(target.slug) : null}
+        imagingProfile={target?.imagingProfile ?? null}
         timezone={timezone}
         opensAtText={
           mission.scheduledStartAt

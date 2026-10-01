@@ -1,6 +1,11 @@
 "use client";
 
-import type { Mission, MissionEvent, TargetVisibility } from "@darkview/contracts";
+import type {
+  ImagingProfile,
+  Mission,
+  MissionEvent,
+  TargetVisibility,
+} from "@darkview/contracts";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -17,10 +22,12 @@ import { useLiveSession, useNow } from "@/features/missions/use-live-session";
 import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
 import { roomCopy } from "@/i18n/resources/room";
+import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { statusCopy } from "@/i18n/resources/status";
 
 import { LiveFeed } from "./live-feed";
 import { MissionSteps } from "./mission-steps";
+import { RoomControls } from "./room-controls";
 import { RoomPointing } from "./room-pointing";
 import { TargetPreview } from "./target-preview";
 
@@ -37,6 +44,8 @@ type RoomLiveProps = {
    * would format it in English, and the render would not hydrate.
    */
   opensAtText: string | null;
+  /** The target's profile, which a capture names; null when the target is no longer offered. */
+  imagingProfile: ImagingProfile | null;
   /** The target tonight, for the pointing dial; null when it could not be read. */
   visibility: TargetVisibility | null;
   /** The observatory's readings, rendered on the server, beside the pointing dial. */
@@ -72,6 +81,7 @@ function describe(copy: Copy, live: LiveState, named: (text: string) => string) 
 export function RoomLive({
   children,
   events,
+  imagingProfile,
   locale,
   mission,
   opensAtText,
@@ -195,6 +205,20 @@ export function RoomLive({
             timeLeft={left && left.seconds > 0 ? left : null}
             action={button}
             onStreamError={onStreamError}
+          />
+          <RoomControls
+            missionId={mission.id}
+            missionState={state}
+            connected={
+              live.session !== null &&
+              live.socket === "open" &&
+              !live.expired &&
+              live.channelError === null
+            }
+            verdicts={live.verdicts}
+            imagingProfile={imagingProfile}
+            signInPath={`/${locale}/sign-in`}
+            copy={roomControlsCopy[locale]}
           />
         </section>
 

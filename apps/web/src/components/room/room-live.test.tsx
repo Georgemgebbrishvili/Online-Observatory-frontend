@@ -8,7 +8,9 @@ import { RoomLive } from "./room-live";
 
 // As MissionRoom does on the server.
 function opensAt({ scheduledStartAt }: Mission, locale: "en" | "ka") {
-  return scheduledStartAt ? formatCapturedAt(scheduledStartAt, "Asia/Tbilisi", locale) : null;
+  return scheduledStartAt
+    ? formatCapturedAt(scheduledStartAt, "Asia/Tbilisi", locale)
+    : null;
 }
 
 const refresh = vi.fn();
@@ -98,6 +100,7 @@ function renderRoom(overrides: Partial<Mission> = {}, locale: "en" | "ka" = "en"
       mission={{ ...mission, ...overrides }}
       events={[]}
       targetName={locale === "ka" ? "ჰერკულესის გროვა" : "Hercules Cluster"}
+      imagingProfile="GLOBULAR_CLUSTER"
       targetSlug="m13-hercules-cluster"
       plate={null}
       timezone="Asia/Tbilisi"
@@ -327,6 +330,7 @@ describe("RoomLive", () => {
         mission={{ ...mission, ...props, state: "PREPARING" }}
         events={[]}
         targetName="Hercules Cluster"
+        imagingProfile="GLOBULAR_CLUSTER"
         targetSlug="m13-hercules-cluster"
         plate={null}
         timezone="Asia/Tbilisi"

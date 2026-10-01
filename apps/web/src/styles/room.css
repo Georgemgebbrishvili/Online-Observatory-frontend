@@ -614,3 +614,118 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
 }
+
+/* Slice 3: the controls, beneath the feed. Arrows on a cross, actions beside them. */
+.room-feed {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.room-controls {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.room-controls h2 {
+  margin: 0;
+}
+
+.room-controls .room-muted {
+  margin: 0;
+}
+
+.room-controls-move {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.room-controls-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 2.75rem);
+  grid-template-areas:
+    ". up ."
+    "left . right"
+    ". down .";
+  gap: var(--space-2);
+}
+
+.room-controls-arrow {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  cursor: pointer;
+}
+
+.room-controls-arrow:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+}
+
+.room-controls-arrow:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.room-controls-arrow:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.room-controls-up {
+  grid-area: up;
+}
+
+.room-controls-down {
+  grid-area: down;
+}
+
+.room-controls-left {
+  grid-area: left;
+}
+
+.room-controls-right {
+  grid-area: right;
+}
+
+.room-controls-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.room-controls-stop {
+  justify-self: start;
+}
+
+.room-controls-confirm {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-medium);
+}
+
+.room-controls-confirm p {
+  margin: 0;
+}
+
+.room-controls-confirm div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.room-controls-status {
+  min-height: 1.5em;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}

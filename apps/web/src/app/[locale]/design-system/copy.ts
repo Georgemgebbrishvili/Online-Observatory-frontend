@@ -168,6 +168,8 @@ export const designSystemCopy = {
       reserveForm:
         "ReserveForm — nothing chosen, a target chosen, reserving, opening the payment page, the slot taken",
       missionSteps: "MissionSteps — at a step, complete, and stopped by a failure",
+      roomControls:
+        "RoomControls — observing, waiting for the telescope, done, refused, no answer, asking to stop, before centring, while capturing, no capture",
       pointingDial:
         "PointingDial — high in the south, low in the west, below the horizon, the telescope slewing to the target, the telescope with no position",
       targetPreview: "TargetPreview — a planet's plate, and a target with none",
@@ -388,6 +390,8 @@ export const designSystemCopy = {
       reserveForm:
         "ReserveForm — არაფერია არჩეული, ობიექტი არჩეულია, იჯავშნება, იხსნება გადახდის გვერდი, დრო დაკავებულია",
       missionSteps: "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული",
+      roomControls:
+        "RoomControls — დაკვირვება, ტელესკოპის მოლოდინი, შესრულდა, უარი, პასუხი არ არის, შეჩერების კითხვა, ცენტრირებამდე, გადაღებისას, გადაღების გარეშე",
       pointingDial:
         "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ, ტელესკოპი ობიექტისკენ მიიწევს, ტელესკოპი მდებარეობის გარეშე",
       targetPreview: "TargetPreview — პლანეტის ილუსტრაცია და ობიექტი ილუსტრაციის გარეშე",

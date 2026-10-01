@@ -21,6 +21,8 @@ import { reserveCopy } from "@/i18n/resources/reserve";
 import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
+import { RoomControlsView } from "@/components/room/room-controls";
+import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { TargetPreview } from "@/components/room/target-preview";
 import { CountUp } from "@/components/home/count-up";
 import { homeFonts } from "@/components/home/fonts";
@@ -510,6 +512,80 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   feedback={feedback}
                 />
               </SurfacePanel>
+            ))}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.roomControls}</h3>
+          <div className="ds-room-specimens">
+            {(
+              [
+                [
+                  { move: true, capture: true, stop: true, waiting: null },
+                  null,
+                  null,
+                  false,
+                ],
+                [
+                  { move: true, capture: true, stop: true, waiting: null },
+                  { control: "up", relayed: true },
+                  null,
+                  false,
+                ],
+                [
+                  { move: true, capture: true, stop: true, waiting: null },
+                  null,
+                  { control: "capture", outcome: { kind: "done" } },
+                  false,
+                ],
+                [
+                  { move: true, capture: true, stop: true, waiting: null },
+                  null,
+                  {
+                    control: "right",
+                    outcome: { kind: "refused", reason: "SAFETY_NUDGE_LIMIT_EXCEEDED" },
+                  },
+                  false,
+                ],
+                [
+                  { move: true, capture: true, stop: true, waiting: null },
+                  null,
+                  { control: "recenter", outcome: { kind: "no-answer" } },
+                  false,
+                ],
+                [
+                  { move: true, capture: true, stop: true, waiting: null },
+                  null,
+                  null,
+                  true,
+                ],
+                [
+                  { move: false, capture: false, stop: true, waiting: "centring" },
+                  null,
+                  null,
+                  false,
+                ],
+                [
+                  { move: false, capture: false, stop: true, waiting: "capturing" },
+                  null,
+                  null,
+                  false,
+                ],
+                [
+                  { move: true, capture: false, stop: true, waiting: null },
+                  null,
+                  null,
+                  false,
+                ],
+              ] as const
+            ).map(([offered, pending, outcome, confirmingStop], index) => (
+              <RoomControlsView
+                key={index}
+                offered={offered}
+                pending={pending}
+                outcome={outcome}
+                confirmingStop={confirmingStop}
+                copy={roomControlsCopy[locale]}
+                label={`${roomControlsCopy[locale].title} ${index + 1}`}
+              />
             ))}
           </div>
           <h3 className="ds-subheading">{copy.cards.missionSteps}</h3>
