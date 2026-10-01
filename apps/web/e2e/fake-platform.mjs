@@ -12,6 +12,8 @@ import {
   zAdminUpdateTargetRequest,
   zAdminUpdateTargetResponse,
   zApiError,
+  zCreateBookingBody,
+  zCreateBookingResponse,
   zGetBookingResponse,
   zGetCaptureDownloadResponse,
   zGetCaptureResponse,
@@ -23,6 +25,7 @@ import {
   zListCapturesResponse,
   zListMissionEventsResponse,
   zListMissionsResponse,
+  zListSlotTargetsResponse,
   zListSlotsResponse,
   zGetTargetResponse,
   zListTargetsResponse,
@@ -489,6 +492,149 @@ async function changeBooking(request, response, id, action) {
   send(response, 200, changed);
 }
 
+// Phase 3 slices 2 and 4: reserving a slot and the sandbox checkout, as `POST /bookings`
+// and `GET|POST /payments/{id}/sandbox-checkout` answer them. The slots are GET /slots';
+// the ninth is refused as taken a moment ago, standing in for the race the exclusion
+// constraint settles. A booking made here belongs to the session that made it, like the
+// changes above, and is listed with the others.
+const TAKEN_SLOT_INDEX = 8;
+const idempotentBookings = new Map();
+const payments = new Map();
+
+/** Which of GET /slots' nine slots an instant starts, or null for none. */
+function slotAt(startAt) {
+  const at = Date.parse(startAt);
+  // Every slot starts within six hours of its night's 14:00 UTC.
+  const night = new Date(at - 14 * 3_600_000).toISOString().slice(0, 10);
+  const index = (at - Date.parse(`${night}T14:00:00.000Z`)) / (40 * 60_000);
+  return Number.isInteger(index) && index >= 0 && index < 9 ? index : null;
+}
+
+/** A slot judged as the fake's sky judges tonight: the same targets up, the same reasons. */
+function slotTargets(startAt, durationMinutes) {
+  return zListSlotTargetsResponse.parse({
+    observatoryId,
+    startAt,
+    durationMinutes,
+    items: tonightTargets().items.map(({ target, visibility }) => ({
+      target,
+      visibility: {
+        observable: visibility.observable,
+        blockReasons: visibility.blockReasons,
+        atStart: visibility,
+      },
+    })),
+  });
+}
+
+async function createBooking(request, response) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const session = cookiesOf(request)[sessionCookie];
+  const key = request.headers["idempotency-key"];
+  const replay = key && idempotentBookings.get(`${session}:${key}`);
+  if (replay) return send(response, 201, replay);
+
+  const body = zCreateBookingBody.safeParse(await json(request));
+  if (!body.success)
+    return error(response, 422, "VALIDATION_FAILED", "Malformed booking.");
+  const {
+    observatoryId: requested,
+    targetId,
+    slotStartAt,
+    durationMinutes,
+    locale,
+  } = body.data;
+  if (requested !== observatoryId)
+    return error(response, 404, "NOT_FOUND", "No such observatory.");
+  const index = slotAt(slotStartAt);
+  if (index === null || durationMinutes !== 30)
+    return error(response, 422, "VALIDATION_FAILED", "That is not an offered slot.");
+  if (index === 1 || index === TAKEN_SLOT_INDEX)
+    return error(response, 409, "SLOT_UNAVAILABLE", "That slot has just been booked.");
+  const judged = slotTargets(slotStartAt, durationMinutes).items.find(
+    (item) => item.target.id === targetId,
+  );
+  if (!judged) return error(response, 404, "NOT_FOUND", "No such target.");
+  if (!judged.visibility.observable)
+    return error(
+      response,
+      422,
+      "TARGET_NOT_OBSERVABLE",
+      "The target is not observable across that slot.",
+    );
+
+  const paymentId = randomUUID();
+  const booking = zGetBookingResponse.parse({
+    id: randomUUID(),
+    userId: user.id,
+    observatoryId,
+    targetId,
+    slotStartAt: new Date(slotStartAt).toISOString(),
+    durationMinutes,
+    status: "PENDING_PAYMENT",
+    priceMinor: 4500,
+    currency: "GEL",
+    paymentId,
+    missionId: null,
+    tierDiscountMinor: 0,
+    loyaltyPointsRedeemed: 0,
+    subscriptionMinutesSpent: 0,
+    entitlement: null,
+    createdAt: new Date().toISOString(),
+  });
+  const answer = zCreateBookingResponse.parse({
+    booking,
+    paymentIntent: {
+      paymentId,
+      provider: "SANDBOX",
+      status: "PENDING",
+      // As the platform: its checkout page, on the web client's origin under /api.
+      redirectUrl: `${appOrigin}/api/payments/${paymentId}/sandbox-checkout`,
+      expiresAt: new Date(Date.now() + 15 * 60_000).toISOString(),
+    },
+  });
+  if (!createdBookings.has(session)) createdBookings.set(session, []);
+  createdBookings.get(session).push(booking);
+  payments.set(paymentId, { session, bookingId: booking.id, locale: locale ?? "en" });
+  if (key) idempotentBookings.set(`${session}:${key}`, answer);
+  send(response, 201, answer);
+}
+
+/** The sandbox provider's page, standing in for a hosted checkout: pay or decline. */
+async function sandboxCheckout(request, response, paymentId) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const session = cookiesOf(request)[sessionCookie];
+  const payment = payments.get(paymentId);
+  if (!payment || payment.session !== session)
+    return error(response, 404, "NOT_FOUND", "No such payment.");
+
+  if (request.method === "GET") {
+    response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return response.end(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Sandbox checkout</title></head><body>
+<h1>Sandbox checkout</h1><p>No money moves.</p>
+<form method="post"><button name="result" value="PAID">Pay</button><button name="result" value="DECLINED">Decline</button></form>
+</body></html>`);
+  }
+
+  let raw = "";
+  for await (const chunk of request) raw += chunk;
+  const result = new URLSearchParams(raw).get("result");
+  if (result !== "PAID" && result !== "DECLINED")
+    return error(response, 422, "VALIDATION_FAILED", "Pay or decline.");
+  const rows = createdBookings.get(session);
+  const index = rows.findIndex((row) => row.id === payment.bookingId);
+  rows[index] = zGetBookingResponse.parse({
+    ...rows[index],
+    status: result === "PAID" ? "CONFIRMED" : "CANCELLED",
+  });
+  response.writeHead(303, {
+    location: `${appOrigin}/${payment.locale}/app/bookings/${payment.bookingId}`,
+  });
+  response.end();
+}
+
 const missionHistories = {
   [missions[0].id]: [
     "REQUESTED",
@@ -850,6 +996,18 @@ const routes = {
         }),
       }),
     );
+  },
+  "POST /bookings": createBooking,
+  // As the platform: public, and 404 for an observatory it does not list.
+  "GET /targets/visibility": (request, response) => {
+    const query = new URL(request.url, "http://fake").searchParams;
+    if (query.get("observatoryId") !== observatoryId)
+      return error(response, 404, "NOT_FOUND", "No such observatory.");
+    const startAt = query.get("startAt") ?? "";
+    const durationMinutes = Number(query.get("durationMinutes"));
+    if (Number.isNaN(Date.parse(startAt)) || !Number.isInteger(durationMinutes))
+      return error(response, 422, "VALIDATION_FAILED", "startAt and durationMinutes.");
+    send(response, 200, slotTargets(startAt, durationMinutes));
   },
   // As the platform: latest slot first, the id as the tiebreak, keyset on the id.
   "GET /bookings": (request, response) => {
@@ -1466,6 +1624,9 @@ http
     if (stream && request.method === "GET")
       return serveStream(request, response, stream[1]);
 
+    const checkout = path.match(/^\/payments\/([0-9a-f-]+)\/sandbox-checkout$/);
+    if (checkout && ["GET", "POST"].includes(request.method))
+      return await sandboxCheckout(request, response, checkout[1]);
     const ownBooking = path.match(/^\/bookings\/([0-9a-f-]+)(?:\/(cancel|refund))?$/);
     if (ownBooking && !ownBooking[2] && request.method === "GET") {
       const user = sessionUser(request);

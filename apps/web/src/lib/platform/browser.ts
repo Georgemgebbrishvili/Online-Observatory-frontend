@@ -22,12 +22,20 @@ type Schema<T> = { parse: (value: unknown) => T };
 
 export async function apiRequest<T = void>(
   path: string,
-  init: { method?: string; body?: unknown; schema?: Schema<T> } = {},
+  init: {
+    method?: string;
+    body?: unknown;
+    headers?: Record<string, string>;
+    schema?: Schema<T>;
+  } = {},
 ): Promise<T> {
   const response = await fetch(`/api${path}`, {
     method: init.method ?? "GET",
     credentials: "same-origin",
-    headers: init.body === undefined ? undefined : { "content-type": "application/json" },
+    headers: {
+      ...init.headers,
+      ...(init.body === undefined ? {} : { "content-type": "application/json" }),
+    },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
     cache: "no-store",
   });

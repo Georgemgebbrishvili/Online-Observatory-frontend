@@ -165,6 +165,8 @@ export const designSystemCopy = {
         "BookingRow — awaiting payment, confirmed, cancelled, expired, refunded",
       bookingActions:
         "BookingActions — cancel, asking to confirm, cancelling, refund, refunding, refund refused",
+      reserveForm:
+        "ReserveForm — nothing chosen, a target chosen, reserving, opening the payment page, the slot taken",
       missionSteps: "MissionSteps — at a step, complete, and stopped by a failure",
       pointingDial:
         "PointingDial — high in the south, low in the west, below the horizon, the telescope slewing to the target, the telescope with no position",
@@ -383,6 +385,8 @@ export const designSystemCopy = {
         "BookingRow — გადახდას ელოდება, დადასტურებული, გაუქმებული, ვადაგასული, თანხა დაბრუნებული",
       bookingActions:
         "BookingActions — გაუქმება, დადასტურების კითხვა, უქმდება, თანხის დაბრუნება, ბრუნდება, დაბრუნება უარყოფილია",
+      reserveForm:
+        "ReserveForm — არაფერია არჩეული, ობიექტი არჩეულია, იჯავშნება, იხსნება გადახდის გვერდი, დრო დაკავებულია",
       missionSteps: "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული",
       pointingDial:
         "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ, ტელესკოპი ობიექტისკენ მიიწევს, ტელესკოპი მდებარეობის გარეშე",

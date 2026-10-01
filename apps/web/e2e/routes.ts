@@ -43,6 +43,8 @@ export const parameterisedRoutes = [
   // Two of the fake platform's bookings: awaiting payment, and a slot lost to weather.
   "app/bookings/52000000-0000-4000-8000-000000000003",
   "app/bookings/53000000-0000-4000-8000-000000000004",
+  // The fake platform's first slot on the night the visual gate's clock is held to.
+  "app/book/reserve?startAt=2026-09-25T14:00:00.000Z",
 ] as const;
 
 /** Only reachable with no session; an authenticated visitor is redirected away. */

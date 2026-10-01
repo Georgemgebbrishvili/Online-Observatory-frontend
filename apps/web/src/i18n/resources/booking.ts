@@ -15,9 +15,9 @@ type BookingCopy = {
   slots: string;
   minutes: (count: number) => string;
   available: string;
+  choose: string;
   unavailable: string;
   reasons: Record<SlotUnavailableReason, string>;
-  reservingSoon: StateCopy;
   noSlots: StateCopy;
   unreachable: StateCopy;
   noObservatory: StateCopy;
@@ -36,6 +36,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
     slots: "Observing time",
     minutes: (count) => `${count} min`,
     available: "Available",
+    choose: "Choose",
     unavailable: "Unavailable",
     reasons: {
       ALREADY_BOOKED: "Booked",
@@ -44,11 +45,6 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
       OBSERVATORY_OFFLINE: "Observatory offline",
       MAINTENANCE: "Maintenance",
       IN_THE_PAST: "Already started",
-    },
-    reservingSoon: {
-      title: "Reserving a slot is not open yet.",
-      description:
-        "It opens once the platform can confirm which targets each slot can deliver, so you are never sold a target that has set.",
     },
     noSlots: {
       title: "No observing time this night.",
@@ -75,6 +71,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
     slots: "დაკვირვების დრო",
     minutes: (count) => `${count} წთ`,
     available: "თავისუფალია",
+    choose: "არჩევა",
     unavailable: "მიუწვდომელია",
     reasons: {
       ALREADY_BOOKED: "დაჯავშნილია",
@@ -83,11 +80,6 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
       OBSERVATORY_OFFLINE: "ობსერვატორია ოფლაინია",
       MAINTENANCE: "ტექნიკური სამუშაოები",
       IN_THE_PAST: "უკვე დაიწყო",
-    },
-    reservingSoon: {
-      title: "სლოტის დაჯავშნა ჯერ არ არის ხელმისაწვდომი.",
-      description:
-        "გაიხსნება, როცა პლატფორმა შეძლებს დაადასტუროს, რომელი ობიექტები ჩანს თითოეულ სლოტში — რომ არასოდეს მიიღოთ უკვე ჩასული ობიექტი.",
     },
     noSlots: {
       title: "ამ ღამეს დაკვირვების დრო არ არის.",

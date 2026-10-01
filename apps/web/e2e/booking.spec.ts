@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // Phase 3 slice 1, against e2e/fake-platform.mjs: nine 30-minute slots from 18:00
 // Tbilisi every night, the second booked.
 
-test("/app/book lists a night's slots from the platform, and says reserving is not open", async ({
+test("/app/book lists a night's slots from the platform, each open one a way to reserve it", async ({
   page,
 }) => {
   await page.goto("/en/app/book");
@@ -26,12 +26,11 @@ test("/app/book lists a night's slots from the platform, and says reserving is n
   await expect(slots.first()).toContainText("GMT+4");
   await expect(slots.first()).toContainText("30 min");
   await expect(slots.first()).toContainText("GEL");
-  await expect(slots.first()).toContainText("Available");
-  await expect(slots.nth(1)).toContainText("Booked");
-
   await expect(
-    page.getByRole("heading", { name: "Reserving a slot is not open yet." }),
-  ).toBeVisible();
+    slots.first().getByRole("link", { name: "Choose 18:00–18:30" }),
+  ).toHaveAttribute("href", /\/en\/app\/book\/reserve\?startAt=.+T14%3A00%3A00\.000Z$/);
+  await expect(slots.nth(1)).toContainText("Booked");
+  await expect(slots.nth(1).getByRole("link")).toHaveCount(0);
 
   // Another night is a link to the same page for that date.
   const third = nights.nth(2);

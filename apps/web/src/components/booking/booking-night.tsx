@@ -32,6 +32,8 @@ type SlotRowProps = {
   unavailableReason?: SlotUnavailableReason | null;
   timezone: string;
   locale: Locale;
+  /** Where an available slot leads: its reserve page. None where the slot is already chosen. */
+  href?: string;
 };
 
 /** One slot: its time in the observatory's zone, its length, its price, and whether it can be had. */
@@ -40,6 +42,7 @@ export function SlotRow({
   currency,
   durationMinutes,
   endAt,
+  href,
   locale,
   priceMinor,
   startAt,
@@ -71,11 +74,20 @@ export function SlotRow({
       <span className="slot-length">{copy.minutes(durationMinutes)}</span>
       <span className="slot-price">{formatPrice(priceMinor, currency, locale)}</span>
       <span className="slot-state">
-        {available
-          ? copy.available
-          : unavailableReason
-            ? copy.reasons[unavailableReason]
-            : copy.unavailable}
+        {available && href ? (
+          <Link
+            href={href}
+            aria-label={`${copy.choose} ${time.format(new Date(startAt))}–${time.format(new Date(endAt))}`}
+          >
+            {copy.choose}
+          </Link>
+        ) : available ? (
+          copy.available
+        ) : unavailableReason ? (
+          copy.reasons[unavailableReason]
+        ) : (
+          copy.unavailable
+        )}
       </span>
     </li>
   );
@@ -159,6 +171,7 @@ export function BookingNight({ locale, result }: BookingNightProps) {
                   <SlotRow
                     key={slot.startAt}
                     {...slot}
+                    href={`/${locale}/app/book/reserve?startAt=${encodeURIComponent(slot.startAt)}`}
                     timezone={result.observatory.timezone}
                     locale={locale}
                   />
@@ -166,8 +179,6 @@ export function BookingNight({ locale, result }: BookingNightProps) {
               </ol>
             )}
           </section>
-
-          <StatePanel headingLevel={2} {...copy.reservingSoon} />
         </>
       )}
     </div>

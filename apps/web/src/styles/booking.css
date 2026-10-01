@@ -27,6 +27,13 @@ html[lang="ka"] .booking-hero h1 {
   max-width: none;
 }
 
+/* "დააკვირდებით?" alone is wider than a phone's column at hero size. */
+@media (--below-md) {
+  html[lang="ka"] .reserve-page .booking-hero h1 {
+    font-size: var(--font-size-h1);
+  }
+}
+
 .booking-hero > p:not(.eyebrow) {
   max-width: 40rem;
   margin: 0;
@@ -364,6 +371,141 @@ html[lang="ka"] .booking-hero h1 {
 
 @media (prefers-reduced-motion: reduce) {
   .booking-row a {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* Reserve a slot (Phase 3 slices 2 and 4). */
+
+.slot-state a {
+  color: var(--color-photon);
+  text-decoration: none;
+}
+
+.slot-state a:hover {
+  text-decoration: underline;
+}
+
+.reserve-form {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+  max-width: 40rem;
+}
+
+.reserve-form fieldset {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.reserve-form legend {
+  margin-bottom: var(--space-3);
+  padding: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.reserve-choices {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reserve-choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface-base);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.reserve-choice:hover {
+  border-color: var(--color-border-strong);
+}
+
+.reserve-choice:has(input:checked) {
+  border-color: var(--color-photon-border);
+  background: var(--color-photon-faint);
+}
+
+.reserve-choice:has(input:focus-visible) {
+  outline: 2px solid var(--color-photon);
+  outline-offset: 3px;
+}
+
+.reserve-choice input {
+  grid-row: span 2;
+  margin: 0;
+  accent-color: var(--color-photon);
+}
+
+.reserve-choice-name {
+  font-family: var(--font-display);
+  font-size: var(--font-size-body-lg);
+  letter-spacing: -0.02em;
+}
+
+.reserve-choice-detail {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.reserve-form fieldset:disabled .reserve-choice {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.reserve-withheld {
+  max-width: 40rem;
+}
+
+.reserve-withheld h2 {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.reserve-withheld ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reserve-withheld li {
+  display: grid;
+  gap: var(--space-1);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.reserve-withheld li span:first-child {
+  color: var(--color-text-secondary);
+}
+
+.reserve-withheld li span:last-child {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reserve-choice {
     transition-duration: 0.01ms;
   }
 }

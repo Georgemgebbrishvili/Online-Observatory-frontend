@@ -12,9 +12,11 @@ import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { TargetCard } from "@/components/astronomy/target-card";
 import { BookingActionsView } from "@/components/booking/booking-actions";
 import { BookingRow } from "@/components/booking/booking-list";
+import { ReserveFormView } from "@/components/booking/reserve-form";
 import { formatPrice, SlotRow } from "@/components/booking/booking-night";
 import { formatSlot } from "@/features/booking/present";
 import { bookingActionsCopy, bookingsCopy } from "@/i18n/resources/bookings";
+import { reserveCopy } from "@/i18n/resources/reserve";
 import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
@@ -471,6 +473,31 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   pending={pending}
                   feedback={feedback}
                   copy={bookingActionsCopy(locale)}
+                />
+              </SurfacePanel>
+            ))}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.reserveForm}</h3>
+          <div className="ds-room-specimens">
+            {(
+              [
+                [null, "idle", null],
+                ["saturn", "idle", null],
+                ["saturn", "reserving", null],
+                ["saturn", "redirecting", null],
+                ["saturn", "idle", reserveCopy[locale].form.taken],
+              ] as const
+            ).map(([targetId, phase, feedback], index) => (
+              <SurfacePanel key={index}>
+                <ReserveFormView
+                  choices={[
+                    { id: "albireo", name: "Albireo", detail: "β Cyg" },
+                    { id: "saturn", name: "Saturn", detail: "" },
+                  ]}
+                  copy={reserveCopy[locale].form}
+                  targetId={targetId}
+                  phase={phase}
+                  feedback={feedback}
                 />
               </SurfacePanel>
             ))}

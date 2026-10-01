@@ -35,6 +35,8 @@ function masks(page: Page) {
     page.locator(".status-source"),
     // The room's forecast hour is the one the server read it in.
     page.locator(".room-reading-live"),
+    // The live stream: a frame has arrived or not yet, and it is not waited on (below).
+    page.locator(".live-feed [data-live-stream]"),
   ];
 }
 
@@ -61,7 +63,8 @@ async function capture(page: Page, route: string, locale: string, width: string)
   });
   expect(firaGOLoaded, "FiraGO must be loaded before capture").toBe(true);
 
-  const name = `${locale}-${(route || "home").replaceAll("/", "-")}-${width}.png`;
+  // A query string is part of some routes; a file name keeps letters, digits and dashes.
+  const name = `${locale}-${(route || "home").replace(/[^a-z0-9-]+/gi, "-")}-${width}.png`;
   await expect(page).toHaveScreenshot(name, {
     fullPage: true,
     mask: masks(page),
