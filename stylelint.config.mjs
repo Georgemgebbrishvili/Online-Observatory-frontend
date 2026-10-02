@@ -92,20 +92,6 @@ const config = {
         },
       },
     },
-    {
-      // ADR-029: the homepage planet hero is the maintainer's reference, transcribed.
-      // It overrides Brand v2.0 for that surface only — its own colours, glow, glass,
-      // type sizes and pixel-derived breakpoints. No other file may join this entry.
-      files: ["apps/web/src/styles/planet-hero.css"],
-      rules: {
-        "color-no-hex": null,
-        "color-named": null,
-        "function-disallowed-list": null,
-        "media-feature-name-disallowed-list": null,
-        "property-disallowed-list": null,
-        "declaration-property-value-allowed-list": null,
-      },
-    },
   ],
 };
 

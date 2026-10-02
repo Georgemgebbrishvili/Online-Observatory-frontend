@@ -109,35 +109,8 @@
   --color-shadow: color-mix(in srgb, var(--st-black) 38%, transparent);
 
   /*
-   * ADR-030 — the homepage carries the planet hero's language below it: its night, its
-   * cyan, its white pill. For the homepage's sections only; nothing else reads these.
-   */
-  --home-night: #04101f;
-  --home-surface: #0a1a30;
-  --home-surface-hover: #10233f;
-  --home-ink: #fff;
-  --home-ink-soft: color-mix(in srgb, #fff 74%, transparent);
-  --home-ink-faint: color-mix(in srgb, #fff 52%, transparent);
-  --home-line: color-mix(in srgb, #fff 12%, transparent);
-  --home-line-strong: color-mix(in srgb, #fff 24%, transparent);
-  --home-cyan: #79dce8;
-  --home-cyan-faint: color-mix(in srgb, #79dce8 14%, transparent);
-  --home-pill-ink: #071227;
-  --home-pill: linear-gradient(180deg, #fff 0%, #d6e8f8 4%, #d9ecfe 72%, #fff 100%);
-  --home-veil: linear-gradient(
-    180deg,
-    #04101f 0%,
-    color-mix(in srgb, #04101f 55%, transparent) 55%,
-    color-mix(in srgb, #04101f 80%, transparent) 100%
-  );
-  --font-size-home-display: clamp(2.5rem, 1.4rem + 3.8vw, 4.75rem);
-  --font-size-home-numeral: clamp(3rem, 2rem + 3vw, 5rem);
-  --font-size-home-stat: clamp(2.25rem, 1.6rem + 2.2vw, 3.5rem);
-  --font-size-home-step: clamp(1.5rem, 1.25rem + 0.8vw, 2rem);
-
-  /*
    * ADR-039 type. Georgian has no glyphs in the Latin faces, so each stack falls through
-   * to a face that has Mkhedruli: Noto Sans Georgian (condensed) for headline and label,
+   * to a face that has Mkhedruli: Noto Sans Georgian for headline and label,
    * FiraGO for body and for the words in a data line. Families load in
    * app/[locale]/layout.tsx.
    */

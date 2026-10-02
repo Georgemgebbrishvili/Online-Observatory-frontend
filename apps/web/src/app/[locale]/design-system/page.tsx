@@ -3,13 +3,10 @@ import "@/styles/booking.css";
 import "@/styles/room.css";
 import "@/styles/collection.css";
 import "@/styles/design-system.css";
-import "@/styles/planet-hero.css";
 import "@/styles/homepage.css";
 import { notFound } from "next/navigation";
 
-import { OpticalRing } from "@/components/astronomy/optical-ring";
 import { TargetAvailability } from "@/components/astronomy/target-availability";
-import { TargetCard } from "@/components/astronomy/target-card";
 import { BookingActionsView } from "@/components/booking/booking-actions";
 import { BookingRow } from "@/components/booking/booking-list";
 import { ReserveFormView } from "@/components/booking/reserve-form";
@@ -27,11 +24,9 @@ import { WatchView, type WatchPhase } from "@/components/room/mission-watch";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { TargetPreview } from "@/components/room/target-preview";
-import { CountUp } from "@/components/home/count-up";
-import { homeFonts } from "@/components/home/fonts";
-import { MagneticLink } from "@/components/home/magnetic-link";
-import { PlanetHero } from "@/components/home/planet-hero";
-import { TargetRail } from "@/components/home/target-rail";
+import { FlightPlan } from "@/components/home/flight-plan";
+import { PlateFan } from "@/components/home/plate-fan";
+import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor } from "@/features/missions/room";
 import { fill } from "@/features/operator/format";
@@ -213,7 +208,6 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             <p>{copy.introduction}</p>
             <span className="ds-internal-label">{copy.internal}</span>
           </div>
-          <OpticalRing size="large" active label={copy.opticalLabel} />
         </header>
 
         <section className="ds-section" aria-labelledby="foundations-title">
@@ -436,18 +430,6 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <h3>{copy.cards.elevatedTitle}</h3>
               <p>{copy.cards.elevatedDescription}</p>
             </SurfacePanel>
-          </div>
-          <h3 className="ds-subheading">{copy.cards.targetCard}</h3>
-          <div className="target-grid">
-            {targetSpecimens.map((item) => (
-              <TargetCard
-                key={item.target.id}
-                item={item}
-                timezone="Asia/Tbilisi"
-                locale={locale}
-                common={dictionary.home.common}
-              />
-            ))}
           </div>
           <h3 className="ds-subheading">{copy.cards.captureCard}</h3>
           <div className="capture-grid">
@@ -1032,48 +1014,26 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
 
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
-          <PlanetHero
-            content={dictionary.home.hero}
-            navigation={dictionary.navigation}
-            locale={locale}
-            nextId="showcase-title"
-            contained
-          />
+          <div className="ds-home-specimen">
+            <PlateFan content={dictionary.home.hero} />
+          </div>
         </section>
 
         <section className="ds-section" aria-labelledby="homepage-title">
           <SectionHeader id="homepage-title" section={copy.sections.homepage} />
-          <div className={`home-page public-home ds-home-specimen ${homeFonts}`}>
-            <TargetRail
+          <div className="ds-home-specimen">
+            <FlightPlan
+              steps={dictionary.home.howItWorks.steps.map((step) => ({
+                ...step,
+                status: dictionary.home.howItWorks.status.simulated,
+              }))}
+            />
+            <TonightList
               items={targetSpecimens}
               timezone="Asia/Tbilisi"
               locale={locale}
               common={dictionary.home.common}
-              copy={dictionary.home.tonight}
             />
-            <div className="home-final-actions">
-              <MagneticLink className="home-pill" href="#homepage-title">
-                {dictionary.home.finalCta.action}
-              </MagneticLink>
-              <MagneticLink className="home-pill home-pill-quiet" href="#homepage-title">
-                {dictionary.home.finalCta.secondary}
-              </MagneticLink>
-            </div>
-            <dl className="home-stats">
-              <div>
-                <dt>{dictionary.home.instrument.aperture}</dt>
-                <dd>
-                  <CountUp value={150} />
-                  <small>{dictionary.home.instrument.millimetres}</small>
-                </dd>
-              </div>
-              <div>
-                <dt>{dictionary.home.instrument.focalRatio}</dt>
-                <dd>
-                  <CountUp prefix="f/" value={10} />
-                </dd>
-              </div>
-            </dl>
           </div>
         </section>
       </Container>

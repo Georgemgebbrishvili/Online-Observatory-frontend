@@ -1,4 +1,4 @@
-import type { PlanetId } from "@/features/targets/homepage-data";
+import type { FanPlate } from "@/features/targets/homepage-data";
 
 type HomepageSectionHeading = {
   eyebrow: string;
@@ -8,39 +8,50 @@ type HomepageSectionHeading = {
 
 export type HomepageDictionary = {
   hero: {
-    eyebrow: string;
+    kicker: string;
+    /** The headline's first line, then the one sunset line. */
+    headline: string;
+    sunset: string;
+    lede: string;
     cta: string;
-    showPlanet: string;
-    nextSection: string;
+    secondary: string;
     illustration: string;
-    /** Each lede is two lines; the wide layout breaks between them. */
-    planets: Record<PlanetId, { name: string; lede: [string, string] }>;
+    fanLabel: string;
+    plates: Record<FanPlate, string>;
+    plateType: string;
+    stats: {
+      observableNow: string;
+      aperture: string;
+      focalLength: string;
+      telescope: string;
+    };
   };
   common: {
-    viewTarget: string;
-    illustration: string;
     minutes: string;
     window: string;
     altitude: string;
-    duration: string;
   };
   howItWorks: HomepageSectionHeading & {
     steps: readonly { title: string; description: string }[];
+    status: { simulated: string; real: string };
   };
   tonight: HomepageSectionHeading & {
     scheduleNote: string;
-    railLabel: string;
     all: string;
-    previous: string;
-    next: string;
   };
   instrument: HomepageSectionHeading & {
+    telescope: string;
     aperture: string;
     focalLength: string;
     focalRatio: string;
     camera: string;
     cameraValue: string;
     cameraNote: string;
+    mode: string;
+    modeValue: string;
+    modeNote: string;
+    location: string;
+    locationValue: string;
     millimetres: string;
   };
   finalCta: {

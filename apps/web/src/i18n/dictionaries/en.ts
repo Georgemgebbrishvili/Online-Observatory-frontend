@@ -61,86 +61,79 @@ const dictionary = {
   },
   home: {
     hero: {
-      eyebrow: "PLANET",
-      cta: "RESERVE A SLOT",
-      showPlanet: "Show {planet}",
-      nextSection: "Scroll to next section",
+      kicker: "Live telescope · Tbilisi",
+      headline: "The real sky,",
+      sunset: "live.",
+      lede: "A real telescope in Tbilisi, Georgia, shows you the sky live. Reserve an observation slot and watch the real camera feed.",
+      cta: "Reserve a slot",
+      secondary: "Tonight's sky",
       illustration: "Illustration — not telescope output",
-      planets: {
-        earth: {
-          name: "EARTH",
-          lede: [
-            "The planet we observe from. A real telescope in Tbilisi, Georgia, shows you the sky",
-            "live. Reserve an observation slot and watch the real camera feed.",
-          ],
-        },
-        venus: {
-          name: "VENUS",
-          lede: [
-            "The brightest planet in our sky, showing phases like a small Moon. Reserve an",
-            "observation slot and watch it live through a real telescope.",
-          ],
-        },
-        mars: {
-          name: "MARS",
-          lede: [
-            "The rust-red world, its markings clearest near opposition. Reserve an observation",
-            "slot and watch it live through a real telescope in Tbilisi.",
-          ],
-        },
+      fanLabel: "Three planets the telescope observes, drawn as plates",
+      plates: { jupiter: "Jupiter", saturn: "Saturn", mars: "Mars" },
+      plateType: "Planet",
+      stats: {
+        observableNow: "Observable now",
+        aperture: "Aperture · mm",
+        focalLength: "Focal length · mm",
+        telescope: "Telescope · Tbilisi",
       },
     },
     common: {
-      viewTarget: "View target",
-      illustration: "Catalogue illustration",
       minutes: "min",
       window: "Window",
       altitude: "Altitude now",
-      duration: "Mission",
     },
     howItWorks: {
       eyebrow: `How ${brand.en.name} works`,
-      title: "Three steps. One real observation.",
-      description: `${brand.en.name} turns time on a real telescope into one clear mission, from choosing a target to keeping what you captured.`,
+      title: "Four steps. One real observation.",
+      description: `${brand.en.name} turns time on a real telescope into one clear mission, from reserving a slot to keeping what you captured.`,
       steps: [
         {
-          title: "Choose",
+          title: "Reserve",
           description: "Pick a target from tonight's observable sky and reserve a slot.",
         },
         {
-          title: "Observe",
+          title: "Slew",
+          description: "At your slot the telescope in Tbilisi turns to your target.",
+        },
+        {
+          title: "Watch",
           description:
-            "At your slot the telescope in Tbilisi slews to it, and you watch the live view build up.",
+            "You watch its camera live as short exposures stack into a clearer view.",
         },
         {
           title: "Keep",
           description: "Capture the stacked frame and keep it in your collection.",
         },
       ],
+      status: { simulated: "Simulated today", real: "Live" },
     },
     tonight: {
       eyebrow: "Tonight's sky",
       title: "Choose what the telescope sees next.",
       description:
-        "Every target the observatory knows, with what it can see tonight and why it cannot see the rest.",
-      scheduleNote:
-        "Visibility computed live by the observatory · pictures are illustrations, not telescope output",
-      railLabel: "Tonight's targets",
-      all: "All",
-      previous: "Previous targets",
-      next: "Next targets",
+        "What the observatory can see tonight, and why it cannot see the rest.",
+      scheduleNote: "Visibility computed live by the observatory",
+      all: "All of tonight's targets",
     },
     instrument: {
       eyebrow: "The instrument",
       title: "One real telescope, in Tbilisi.",
       description:
         "Commanded only by the observatory's own software, never directly from a browser. What you see is what its camera sees.",
+      telescope: "Telescope",
       aperture: "Aperture",
       focalLength: "Focal length",
       focalRatio: "Focal ratio",
       camera: "Camera",
       cameraValue: "ZWO ASI585MC",
-      cameraNote: "One-shot colour, live-stacked",
+      cameraNote: "Uncooled, one-shot colour",
+      mode: "Mode",
+      modeValue: "Live view",
+      modeNote:
+        "Short exposures, stacked as you watch. Not long-exposure astrophotography.",
+      location: "Location",
+      locationValue: "Tbilisi, Georgia",
       millimetres: "mm",
     },
     finalCta: {
@@ -158,7 +151,7 @@ const dictionary = {
     brandEndorsement: brand.en.endorsement,
     georgianLanguage: "ქართული",
     englishLanguage: "English",
-    statement: "A premium optical instrument looking into deep space.",
+    statement: "One real telescope in Tbilisi. The real sky, live.",
     product: "Product",
     company: "Company",
     legal: "Legal",

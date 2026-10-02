@@ -3,57 +3,57 @@ import { expect, test } from "@playwright/test";
 import { brand } from "../src/brand";
 import { appSidebar, bottomNavigation, liveViewport } from "./selectors";
 
-test("communicates real telescope access in the English hero", async ({ page }) => {
+test("communicates real telescope access in the English poster hero", async ({
+  page,
+}) => {
   await page.goto("/en");
 
-  await expect(page.getByRole("heading", { level: 1, name: "EARTH" })).toBeVisible();
-  await expect(page.getByText("PLANET", { exact: true })).toBeVisible();
-  await expect(page.getByText(/A real telescope in Tbilisi, Georgia/)).toBeVisible();
-  await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
+  const hero = page.locator(".poster-hero");
   await expect(
-    page.locator(".planet-hero").getByRole("link", { name: "RESERVE A SLOT" }),
-  ).toHaveAttribute("href", "/en/app/book");
-  // The clips are renders; the hero says so (CLAUDE.md, ADR-029 §4).
-  await expect(
-    page.getByText("Illustration — not telescope output").first(),
+    page.getByRole("heading", { level: 1, name: "The real sky, live." }),
   ).toBeVisible();
+  await expect(hero.locator(".title-sunset")).toHaveText("live.");
+  await expect(hero.getByText(/A real telescope in Tbilisi, Georgia/)).toBeVisible();
+  await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
+  await expect(hero.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(
+    "href",
+    "/en/app/book",
+  );
+
+  // The stats are the platform's: tonight's observable count, then the telescope.
+  const stats = hero.locator(".stats-row > div");
+  await expect(stats).toHaveCount(3);
+  await expect(stats.nth(0)).toContainText("Observable now");
+  await expect(stats.nth(1)).toContainText("150");
+  await expect(stats.nth(2)).toContainText("1500");
+
+  // The fan's plates are drawings; the fan says so (CLAUDE.md, ADR-039).
+  const fan = hero.locator(".plate-fan");
+  await expect(fan.locator(".plate-fan-plate")).toHaveCount(3);
+  for (const name of ["Jupiter", "Saturn", "Mars"]) {
+    await expect(fan.getByText(name, { exact: true })).toBeVisible();
+  }
+  await expect(fan.getByText("Illustration — not telescope output")).toBeVisible();
 });
 
-test("features a side planet on press, and comes back round", async ({ page }) => {
-  await page.goto("/en");
-
-  const title = page.getByRole("heading", { level: 1 });
-  const active = page.locator(".planet-hero .sky video.is-active");
-  await expect(active).toHaveAttribute("data-planet", "earth");
-
-  await page.getByRole("button", { name: "Show VENUS" }).click();
-  await expect(title).toHaveText("VENUS");
-  await expect(active).toHaveAttribute("data-planet", "venus");
-  await expect(page.getByText(/The brightest planet in our sky/)).toBeVisible();
-  await expect(page.getByRole("button", { name: "Show EARTH" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Show MARS" })).toBeVisible();
-
-  await page.getByRole("button", { name: "Show MARS" }).click();
-  await expect(title).toHaveText("MARS");
-  await page.getByRole("button", { name: "Show EARTH" }).click();
-  await expect(title).toHaveText("EARTH");
-  await expect(active).toHaveAttribute("data-planet", "earth");
-  await expect(page.locator(".planet-l img.is-shown")).toHaveAttribute(
-    "data-planet",
-    "venus",
-  );
-  await expect(page.locator(".planet-r img.is-shown")).toHaveAttribute(
-    "data-planet",
-    "mars",
-  );
-});
-
-test("renders Georgian content and switches locale", async ({ page }) => {
+test("renders the Georgian poster hero and switches locale", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/ka");
 
-  await expect(page.getByRole("heading", { level: 1, name: "დედამიწა" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "აჩვენე: ვენერა" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "შენი დრო ნამდვილ ცასთან." }),
+  ).toBeVisible();
+  await expect(
+    page.locator(".poster-hero").getByRole("link", { name: "დაჯავშნე დრო" }),
+  ).toHaveAttribute("href", "/ka/app/book");
+  await expect(
+    page.locator(".plate-fan").getByText("ილუსტრაცია — არა ტელესკოპის კადრი"),
+  ).toBeVisible();
+  // Mkhedruli has no capitals: the headline is never uppercased.
+  await expect(page.locator(".poster-hero-title .title-sunset")).toHaveCSS(
+    "text-transform",
+    "none",
+  );
   await page.getByRole("link", { name: "ენა: English" }).click();
   await expect(page).toHaveURL(/\/en$/);
 });
@@ -61,9 +61,8 @@ test("renders Georgian content and switches locale", async ({ page }) => {
 test("renders the complete data-driven public homepage", async ({ page }) => {
   await page.goto("/en");
 
-  // ADR-030: five sections, the hero first.
   for (const heading of [
-    "Three steps. One real observation.",
+    "Four steps. One real observation.",
     "Choose what the telescope sees next.",
     "One real telescope, in Tbilisi.",
     "Your next observation starts here.",
@@ -71,33 +70,47 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 2, name: heading })).toBeVisible();
   }
   for (const gone of [
+    "Three steps. One real observation.",
     "A real observatory, in motion.",
     "A visual record of where you looked.",
-    "One active node. Built to grow carefully.",
   ]) {
     await expect(page.getByRole("heading", { name: gone })).toHaveCount(0);
   }
 
+  // How a session works: four steps, each saying it is simulated today.
+  const steps = page.locator("#about .flight-plan-step");
+  await expect(steps).toHaveCount(4);
+  for (const step of ["Reserve", "Slew", "Watch", "Keep"]) {
+    await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
+  }
+  await expect(page.locator("#about .flight-plan-status")).toHaveText(
+    Array(4).fill("Simulated today"),
+  );
+
   // Tonight's list comes from GET /targets/tonight on the fake platform.
-  // Scoped: the hero names planets too.
   const tonight = page.locator("#tonight");
   for (const target of ["Saturn", "Albireo", "Moon", "Hercules Cluster", "Venus"]) {
     await expect(
       tonight.getByRole("heading", { name: target, exact: true }),
     ).toBeVisible();
   }
-  await expect(page.getByText("SIMULATED OBSERVATORY").first()).toBeVisible();
-
-  for (const step of ["Choose", "Observe", "Keep"]) {
-    await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
-  }
+  await expect(tonight.getByRole("link", { name: "Saturn" })).toHaveAttribute(
+    "href",
+    "/en/app/missions/saturn",
+  );
+  await expect(
+    tonight.getByRole("link", { name: "All of tonight's targets" }),
+  ).toHaveAttribute("href", "/en/app/missions");
+  await expect(tonight.getByText("SIMULATED OBSERVATORY")).toBeVisible();
 
   // The instrument is the platform's telescope, not a fixture.
   const instrument = page.locator("#live");
+  await expect(instrument.getByText("Celestron NexStar 6SE")).toBeVisible();
   await expect(instrument.getByText("150", { exact: true })).toBeVisible();
   await expect(instrument.getByText("1500", { exact: true })).toBeVisible();
   await expect(instrument.getByText("f/10", { exact: true })).toBeVisible();
   await expect(instrument.getByText("ZWO ASI585MC")).toBeVisible();
+  await expect(instrument.getByText(/Not long-exposure astrophotography/)).toBeVisible();
   await expect(instrument.getByText("Online", { exact: true })).toBeVisible();
 
   await expect(page.getByText("30 min", { exact: true })).toBeVisible();
@@ -107,40 +120,21 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
   ).toHaveAttribute("href", "/en/app/book");
 });
 
-test("filters and steps through tonight's rail", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/en");
-
-  const tonight = page.locator("#tonight");
-  const cards = tonight.locator(".target-card");
-  await expect(cards).toHaveCount(5);
-
-  const previous = tonight.getByRole("button", { name: "Previous targets" });
-  const next = tonight.getByRole("button", { name: "Next targets" });
-  await expect(previous).toBeDisabled();
-  await next.click();
-  await expect(previous).toBeEnabled();
-
-  await tonight.getByRole("button", { name: "Moon" }).click();
-  await expect(cards).toHaveCount(1);
-  await expect(tonight.getByRole("heading", { name: "Moon", exact: true })).toBeVisible();
-  await tonight.getByRole("button", { name: "All" }).click();
-  await expect(cards).toHaveCount(5);
-});
-
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/en");
+  for (const locale of ["en", "ka"]) {
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto(`/${locale}`);
 
-  const viewport = await page.evaluate(() => ({
-    clientWidth: document.documentElement.clientWidth,
-    scrollWidth: document.documentElement.scrollWidth,
-  }));
-
-  expect(viewport.scrollWidth).toBe(viewport.clientWidth);
-  await expect(
-    page.locator(".planet-hero").getByRole("link", { name: "RESERVE A SLOT" }),
-  ).toBeVisible();
+      const viewport = await page.evaluate(() => ({
+        clientWidth: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+      }));
+      expect(viewport.scrollWidth, `${locale} at ${width}px`).toBe(viewport.clientWidth);
+      await expect(page.locator(".poster-hero .button-primary")).toBeVisible();
+      await expect(page.locator(".plate-fan-caption")).toBeVisible();
+    }
+  }
 });
 
 test("provides the complete public navigation on desktop and mobile", async ({

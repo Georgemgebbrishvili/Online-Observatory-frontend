@@ -1,18 +1,18 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
 
 import { TonightNotices } from "@/components/astronomy/tonight-notices";
-import { CountUp } from "@/components/home/count-up";
-import { MagneticLink } from "@/components/home/magnetic-link";
-import { RevealRoot } from "@/components/home/reveal";
-import { TargetRail } from "@/components/home/target-rail";
+import { FlightPlan } from "@/components/home/flight-plan";
+import { PosterHero, type HeroStat } from "@/components/home/poster-hero";
+import { TonightList } from "@/components/home/tonight-list";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { linkTone, weatherTone } from "@/components/status/status-page";
+import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { StatePanel } from "@/components/ui/state-panel";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import type { ObservatoryPanelResult } from "@/features/home/read";
 import { privateSessionDurations } from "@/features/observatory/homepage-data";
+import { homeTonightLimit } from "@/features/targets/homepage-data";
 import type { TonightResult } from "@/features/targets/read";
 import type { Locale } from "@/i18n/config";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
@@ -26,7 +26,7 @@ type HomeShellProps = {
   panel: ObservatoryPanelResult;
 };
 
-/** A section's opening: kicker, a title that rises out of its mask, and a lede. */
+/** A section's opening: an orange kicker, an Anton headline and a lede. */
 function Heading({
   description,
   eyebrow,
@@ -40,17 +40,9 @@ function Heading({
 }) {
   return (
     <header className="home-heading">
-      <p className="home-kicker" data-reveal="rise">
-        {eyebrow}
-      </p>
-      <h2 id={id} className="home-display" data-reveal="mask">
-        <span>{title}</span>
-      </h2>
-      {description && (
-        <p className="home-lede" data-reveal="rise">
-          {description}
-        </p>
-      )}
+      <p className="kicker">{eyebrow}</p>
+      <h2 id={id}>{title}</h2>
+      {description && <p className="home-lede">{description}</p>}
     </header>
   );
 }
@@ -60,123 +52,137 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
   const observatoryCopy = observatoryPageCopy[locale];
   const instrument = content.instrument;
   const telescope = panel.kind === "ok" ? panel.observatory.telescope : null;
+  const mode =
+    panel.kind === "ok"
+      ? panel.status.mode
+      : tonight.kind === "ok"
+        ? tonight.observatory.mode
+        : null;
+
+  const stats: HeroStat[] = [];
+  if (tonight.kind === "ok") {
+    stats.push({
+      value: String(tonight.items.filter((item) => item.visibility.observable).length),
+      label: content.hero.stats.observableNow,
+    });
+  }
+  if (telescope) {
+    stats.push(
+      { value: String(telescope.apertureMm), label: content.hero.stats.aperture },
+      { value: String(telescope.focalLengthMm), label: content.hero.stats.focalLength },
+    );
+  } else {
+    stats.push({ value: "1", label: content.hero.stats.telescope });
+  }
+
+  const steps = content.howItWorks.steps.map((step) => ({
+    ...step,
+    status: mode
+      ? mode === "SIMULATED"
+        ? content.howItWorks.status.simulated
+        : content.howItWorks.status.real
+      : undefined,
+  }));
 
   return (
-    <RevealRoot className="public-home">
-      <section className="home-band home-steps" id="about" aria-labelledby="steps-title">
+    <main id="main-content" className="public-home">
+      <PosterHero content={content.hero} locale={locale} stats={stats} />
+
+      <section className="home-band" id="about" aria-labelledby="steps-title">
         <Container>
           <Heading id="steps-title" {...content.howItWorks} />
-          <ol className="home-step-list">
-            {content.howItWorks.steps.map((step, index) => (
-              <li
-                key={step.title}
-                data-reveal="rise"
-                style={{ "--reveal-delay": `${index * 120}ms` } as CSSProperties}
-              >
-                <span className="home-step-rule" aria-hidden="true" />
-                <span className="home-numeral" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </li>
-            ))}
-          </ol>
+          <FlightPlan steps={steps} />
         </Container>
       </section>
 
-      <section
-        className="home-band home-tonight"
-        id="tonight"
-        aria-labelledby="tonight-title"
-      >
-        <Container>
-          <Heading id="tonight-title" {...content.tonight} />
-          <div className="home-tonight-notices">
-            <TonightNotices result={tonight} locale={locale} />
+      <section className="home-band" id="tonight" aria-labelledby="tonight-title">
+        <Container className="home-split">
+          <div>
+            <Heading id="tonight-title" {...content.tonight} />
+            <p className="home-note">{content.tonight.scheduleNote}</p>
           </div>
-        </Container>
-        {tonight.kind === "ok" && tonight.items.length > 0 && (
-          <div data-reveal="rise">
-            <TargetRail
-              items={tonight.items}
-              timezone={tonight.observatory.timezone}
-              locale={locale}
-              common={content.common}
-              copy={content.tonight}
-            />
+          <div className="home-tonight-body">
+            <div className="home-notices">
+              <TonightNotices result={tonight} locale={locale} />
+            </div>
+            {tonight.kind === "ok" && tonight.items.length > 0 && (
+              <>
+                <TonightList
+                  items={tonight.items.slice(0, homeTonightLimit)}
+                  timezone={tonight.observatory.timezone}
+                  locale={locale}
+                  common={content.common}
+                />
+                <ButtonLink
+                  href={`/${locale}/app/missions`}
+                  variant="secondary"
+                  className="home-tonight-all"
+                >
+                  {content.tonight.all}
+                </ButtonLink>
+              </>
+            )}
           </div>
-        )}
-        <Container>
-          <p className="home-note">{content.tonight.scheduleNote}</p>
         </Container>
       </section>
 
-      <section
-        className="home-band home-instrument"
-        id="live"
-        aria-labelledby="instrument-title"
-      >
-        <Container className="home-instrument-grid">
+      <section className="home-band" id="live" aria-labelledby="instrument-title">
+        <Container className="home-split">
           <div>
             <Heading id="instrument-title" {...instrument} />
-            <dl className="home-stats">
+            <dl className="home-specs">
               {telescope && (
                 <>
-                  <div data-reveal="rise">
+                  <div>
+                    <dt>{instrument.telescope}</dt>
+                    <dd>
+                      {telescope.manufacturer} {telescope.model}
+                    </dd>
+                  </div>
+                  <div>
                     <dt>{instrument.aperture}</dt>
-                    <dd>
-                      <CountUp value={telescope.apertureMm} />
+                    <dd className="home-spec-number">
+                      <span>{telescope.apertureMm}</span>
                       <small>{instrument.millimetres}</small>
                     </dd>
                   </div>
-                  <div
-                    data-reveal="rise"
-                    style={{ "--reveal-delay": "100ms" } as CSSProperties}
-                  >
+                  <div>
                     <dt>{instrument.focalLength}</dt>
-                    <dd>
-                      <CountUp value={telescope.focalLengthMm} />
+                    <dd className="home-spec-number">
+                      <span>{telescope.focalLengthMm}</span>
                       <small>{instrument.millimetres}</small>
                     </dd>
                   </div>
-                  <div
-                    data-reveal="rise"
-                    style={{ "--reveal-delay": "200ms" } as CSSProperties}
-                  >
+                  <div>
                     <dt>{instrument.focalRatio}</dt>
-                    <dd>
-                      <CountUp
-                        prefix="f/"
-                        value={telescope.focalLengthMm / telescope.apertureMm}
-                      />
+                    <dd className="home-spec-number">
+                      {`f/${Math.round(telescope.focalLengthMm / telescope.apertureMm)}`}
                     </dd>
                   </div>
                 </>
               )}
-              <div
-                data-reveal="rise"
-                style={{ "--reveal-delay": "300ms" } as CSSProperties}
-              >
+              <div>
                 <dt>{instrument.camera}</dt>
-                <dd className="home-stat-text">
+                <dd>
                   {instrument.cameraValue}
                   <small>{instrument.cameraNote}</small>
                 </dd>
               </div>
+              <div>
+                <dt>{instrument.mode}</dt>
+                <dd>
+                  {instrument.modeValue}
+                  <small>{instrument.modeNote}</small>
+                </dd>
+              </div>
+              <div>
+                <dt>{instrument.location}</dt>
+                <dd>{instrument.locationValue}</dd>
+              </div>
             </dl>
-            {telescope && (
-              <p className="home-note">
-                {telescope.manufacturer} {telescope.model}
-              </p>
-            )}
           </div>
 
-          <aside
-            className="home-status"
-            aria-labelledby="home-status-title"
-            data-reveal="rise"
-          >
+          <aside className="home-status" aria-labelledby="home-status-title">
             <header>
               <h3 id="home-status-title">{observatoryCopy.liveStatus}</h3>
               <Link href={`/${locale}/status`}>
@@ -248,27 +254,20 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
       </section>
 
       <section className="home-final" id="final-cta" aria-labelledby="final-cta-title">
-        <div className="home-final-sky" aria-hidden="true" />
         <Container className="home-final-inner">
-          <p className="home-kicker" data-reveal="rise">
-            {content.finalCta.eyebrow}
-          </p>
-          <h2 id="final-cta-title" className="home-display" data-reveal="mask">
-            <span>{content.finalCta.title}</span>
-          </h2>
-          <p className="home-lede" data-reveal="rise">
-            {content.finalCta.description}
-          </p>
-          <div className="home-final-actions" data-reveal="rise">
-            <MagneticLink className="home-pill" href={`/${locale}/app/book`}>
+          <p className="kicker">{content.finalCta.eyebrow}</p>
+          <h2 id="final-cta-title">{content.finalCta.title}</h2>
+          <p className="home-lede">{content.finalCta.description}</p>
+          <div className="home-final-actions">
+            <ButtonLink href={`/${locale}/app/book`} size="large">
               {content.finalCta.action}
-            </MagneticLink>
-            <MagneticLink className="home-pill home-pill-quiet" href="#tonight">
+            </ButtonLink>
+            <ButtonLink href="#tonight" variant="secondary" size="large">
               {content.finalCta.secondary}
-            </MagneticLink>
+            </ButtonLink>
           </div>
-          <div className="home-private" data-reveal="rise">
-            <strong>{content.finalCta.privateTitle}</strong>
+          <div className="home-private">
+            <h3>{content.finalCta.privateTitle}</h3>
             <ul>
               {privateSessionDurations.map((duration) => (
                 <li key={duration}>
@@ -278,9 +277,8 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
             </ul>
             <p>{content.finalCta.privateNote}</p>
           </div>
-          <p className="home-final-caption">{content.hero.illustration}</p>
         </Container>
       </section>
-    </RevealRoot>
+    </main>
   );
 }

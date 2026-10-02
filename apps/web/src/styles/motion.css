@@ -29,7 +29,6 @@
 @media (hover: hover) and (pointer: fine) {
   :where(
     .card-interactive,
-    .target-card,
     .mission-target-card,
     .capture-card,
     .home-explore-card,
@@ -45,7 +44,6 @@
 
   :where(
     .card-interactive,
-    .target-card,
     .mission-target-card,
     .capture-card,
     .home-explore-card,

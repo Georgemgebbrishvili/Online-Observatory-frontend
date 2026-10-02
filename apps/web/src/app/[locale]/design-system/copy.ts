@@ -74,15 +74,15 @@ export const designSystemCopy = {
       ],
       showcase: [
         "11",
-        "Planet hero",
-        "The homepage hero: one featured planet, and two more that feature themselves on press. Its own type, colour and glow, by ADR-029.",
-        "ADR-029 · overrides §05 and §09 for this hero only",
+        "Plate fan",
+        "Three plates in cream poster frames beside the homepage headline, always captioned as illustrations. A soft shadow under the stock; nothing glows.",
+        "as amended by ADR-039 — the homepage",
       ],
       homepage: [
         "12",
         "Homepage sections",
-        "Below the hero, in its language: tonight's rail with its filters and steps, the white and quiet pills that lean toward the pointer, and the counters.",
-        "ADR-030 · the hero's type and colour, without its glow",
+        "How a session works as four steps between hairlines, each with where it stands today, and tonight's targets as ruled rows from the platform.",
+        "as amended by ADR-039 — the homepage",
       ],
     },
     palette: "Core palette",
@@ -108,9 +108,9 @@ export const designSystemCopy = {
     ],
     typography: "Typography",
     fonts: {
-      headline: "Anton · Headline — Noto Sans Georgian condensed 800",
+      headline: "Anton · Headline — Noto Sans Georgian 800",
       title: "Bowlby One · Sunset title — one line per page",
-      label: "Oswald · Spaced label — Noto Sans Georgian condensed 600",
+      label: "Oswald · Spaced label — Noto Sans Georgian 600",
       body: "Geist · Body — FiraGO",
       data: "JetBrains Mono · Data",
     },
@@ -133,7 +133,6 @@ export const designSystemCopy = {
       caption: "Captions and micro-copy",
       mono: "RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15",
     },
-    opticalLabel: `${brand.en.name} optical interface motif`,
     idle: "Idle",
     liveLabel: "Live",
     observatoryStatuses: {
@@ -191,7 +190,6 @@ export const designSystemCopy = {
       elevatedTitle: "Elevated panel",
       elevatedDescription:
         "Reserved for focused layers and content that needs stronger separation.",
-      targetCard: "TargetCard — observable and blocked specimens",
       captureCard:
         "CaptureCard — a simulated capture with a drawn frame, one with no preview, and the download states",
       slotRow: "SlotRow — available, booked, and held for weather",
@@ -334,15 +332,15 @@ export const designSystemCopy = {
       ],
       showcase: [
         "11",
-        "პლანეტების ეკრანი",
-        "მთავარი გვერდის პირველი ეკრანი: ერთი რჩეული პლანეტა და ორი სხვა, რომლებიც დაჭერისას მის ადგილს იკავებს. საკუთარი შრიფტით, ფერით და ნათებით — ADR-029.",
-        "ADR-029 · overrides §05 and §09 for this hero only",
+        "ფირფიტების მარაო",
+        "სამი ფირფიტა კრემისფერ ჩარჩოებში მთავარი გვერდის სათაურის გვერდით, ყოველთვის ილუსტრაციის წარწერით. რბილი ჩრდილი ქვემოთ; არაფერი ანათებს.",
+        "as amended by ADR-039 — the homepage",
       ],
       homepage: [
         "12",
         "მთავარი გვერდის სექციები",
-        "პირველი ეკრანის ქვემოთ, მისივე ენით: დღევანდელი სამიზნეების ზოლი ფილტრებითა და ღილაკებით, თეთრი და მშვიდი ღილაკები, რომლებიც კურსორისკენ იხრება, და მთვლელები.",
-        "ADR-030 · the hero's type and colour, without its glow",
+        "როგორ მიმდინარეობს სესია — ოთხი ნაბიჯი თხელ ხაზებს შორის, თითოეული იმით, სად დგას დღეს, და დღევანდელი სამიზნეები პლატფორმიდან, ხაზებით გაყოფილ რიგებად.",
+        "as amended by ADR-039 — the homepage",
       ],
     },
     palette: "ძირითადი პალიტრა",
@@ -368,9 +366,9 @@ export const designSystemCopy = {
     ],
     typography: "ტიპოგრაფია",
     fonts: {
-      headline: "Anton · სათაური — Noto Sans Georgian, ვიწრო, 800",
+      headline: "Anton · სათაური — Noto Sans Georgian 800",
       title: "Bowlby One · მზის ჩასვლის სათაური — ერთი ხაზი გვერდზე",
-      label: "Oswald · ეტიკეტი — Noto Sans Georgian, ვიწრო, 600",
+      label: "Oswald · ეტიკეტი — Noto Sans Georgian 600",
       body: "Geist · ტექსტი — FiraGO",
       data: "JetBrains Mono · მონაცემები",
     },
@@ -393,7 +391,6 @@ export const designSystemCopy = {
       caption: "წარწერები და მოკლე ტექსტი",
       mono: "RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15",
     },
-    opticalLabel: `${brand.ka.genitive} ოპტიკური ინტერფეისის მოტივი`,
     idle: "უმოქმედო",
     liveLabel: "პირდაპირი",
     observatoryStatuses: {
@@ -451,7 +448,6 @@ export const designSystemCopy = {
       elevatedTitle: "ამაღლებული პანელი",
       elevatedDescription:
         "გამოიყენება ფოკუსირებულ ფენებსა და მკაფიოდ გამოსაყოფ კონტენტში.",
-      targetCard: "TargetCard — დაკვირვებადი და დაბლოკილი ნიმუშები",
       captureCard:
         "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები",
       slotRow: "SlotRow — თავისუფალი, დაჯავშნილი და ამინდის გამო შეჩერებული",

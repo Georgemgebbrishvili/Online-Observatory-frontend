@@ -5,7 +5,6 @@ import {
   Geist,
   JetBrains_Mono,
   Noto_Sans_Georgian,
-  Noto_Serif_Georgian,
   Oswald,
 } from "next/font/google";
 import localFont from "next/font/local";
@@ -73,15 +72,6 @@ const notoSansGeorgian = Noto_Sans_Georgian({
   preload: false,
 });
 
-// Still read by homepage.css and planet-hero.css for Georgian until B2 replaces them.
-const notoSerifGeorgian = Noto_Serif_Georgian({
-  subsets: ["georgian", "latin"],
-  weight: ["500", "600"],
-  variable: "--font-noto-serif-georgian",
-  display: "swap",
-  preload: false,
-});
-
 const fontVariables = [
   firaGO,
   anton,
@@ -90,7 +80,6 @@ const fontVariables = [
   geist,
   jetBrainsMono,
   notoSansGeorgian,
-  notoSerifGeorgian,
 ]
   .map((font) => font.variable)
   .join(" ");
