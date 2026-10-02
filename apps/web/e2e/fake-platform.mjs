@@ -40,6 +40,8 @@ import {
   zRescheduleBookingResponse,
   zSetObservatoryModeRequest,
   zStartMissionSessionResponse,
+  zSetMissionObservationBody,
+  zSetMissionObservationResponse,
   zSubmitMissionCommandBody,
   zSubmitMissionCommandResponse,
   zUser,
@@ -1575,6 +1577,42 @@ async function submitCommand(request, response, id) {
   }, 300);
 }
 
+// Phase 4 slice 4: the owner opens or closes the session to observers, as
+// `setMissionObservation` answers. The change is the answer's only: the mission row is
+// shared by every parallel test and stays as it is.
+async function setObservation(request, response, id) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const mission = missions.find((row) => row.id === id && row.userId === user.id);
+  if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+  const body = zSetMissionObservationBody.safeParse(await json(request));
+  if (!body.success)
+    return error(
+      response,
+      422,
+      "VALIDATION_FAILED",
+      "MissionObservationSettings is malformed.",
+    );
+  if (!LIVE_STATES.includes(mission.state))
+    return error(
+      response,
+      409,
+      "MISSION_NOT_ACTIVE",
+      `A mission in ${mission.state} has no session to open.`,
+    );
+  const { observable } = body.data;
+  send(
+    response,
+    200,
+    zSetMissionObservationResponse.parse({
+      ...mission,
+      observable,
+      observerCapacity: 5,
+      observerCount: observable ? (mission.observerCount ?? 0) : 0,
+    }),
+  );
+}
+
 function onChannelMessage(socket, missionId, user, raw) {
   let parsed;
   try {
@@ -1778,6 +1816,9 @@ http
         }),
       );
     }
+    const observation = path.match(/^\/missions\/([0-9a-f-]+)\/observation$/);
+    if (observation && request.method === "PATCH")
+      return await setObservation(request, response, observation[1]);
     const command = path.match(/^\/missions\/([0-9a-f-]+)\/command$/);
     if (command && request.method === "POST")
       return await submitCommand(request, response, command[1]);

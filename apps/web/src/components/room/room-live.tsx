@@ -23,11 +23,13 @@ import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
 import { roomCopy } from "@/i18n/resources/room";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
+import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { statusCopy } from "@/i18n/resources/status";
 
 import { LiveFeed } from "./live-feed";
 import { MissionSteps } from "./mission-steps";
 import { RoomControls } from "./room-controls";
+import { RoomSharing } from "./room-sharing";
 import { RoomPointing } from "./room-pointing";
 import { TargetPreview } from "./target-preview";
 
@@ -231,6 +233,15 @@ export function RoomLive({
         />
 
         <div className="room-side">
+          <RoomSharing
+            missionId={mission.id}
+            missionState={state}
+            observable={mission.observable ?? false}
+            observerCount={mission.observerCount ?? 0}
+            observerCapacity={mission.observerCapacity ?? 5}
+            signInPath={`/${locale}/sign-in`}
+            copy={roomSharingCopy[locale]}
+          />
           <RoomPointing
             locale={locale}
             targetName={targetName}

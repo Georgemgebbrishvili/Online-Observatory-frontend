@@ -22,6 +22,8 @@ import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
 import { RoomControlsView } from "@/components/room/room-controls";
+import { RoomSharingView } from "@/components/room/room-sharing";
+import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { TargetPreview } from "@/components/room/target-preview";
 import { CountUp } from "@/components/home/count-up";
@@ -512,6 +514,31 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   feedback={feedback}
                 />
               </SurfacePanel>
+            ))}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.roomSharing}</h3>
+          <div className="ds-room-specimens">
+            {(
+              [
+                [false, 0, false, false, null],
+                [false, 0, true, false, null],
+                [true, 2, false, false, null],
+                [true, 2, false, true, null],
+                [true, 2, false, false, "copied"],
+                [true, 2, false, false, "ended"],
+              ] as const
+            ).map(([observable, count, saving, confirming, notice], index) => (
+              <RoomSharingView
+                key={index}
+                observable={observable}
+                count={count}
+                capacity={5}
+                saving={saving}
+                confirming={confirming}
+                notice={notice}
+                copy={roomSharingCopy[locale]}
+                label={`${roomSharingCopy[locale].title} ${index + 1}`}
+              />
             ))}
           </div>
           <h3 className="ds-subheading">{copy.cards.roomControls}</h3>

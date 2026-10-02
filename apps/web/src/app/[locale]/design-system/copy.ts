@@ -168,6 +168,8 @@ export const designSystemCopy = {
       reserveForm:
         "ReserveForm — nothing chosen, a target chosen, reserving, opening the payment page, the slot taken",
       missionSteps: "MissionSteps — at a step, complete, and stopped by a failure",
+      roomSharing:
+        "RoomSharing — private, opening, open with two watching, asking to stop, link copied, session ended",
       roomControls:
         "RoomControls — observing, waiting for the telescope, done, refused, no answer, asking to stop, before centring, while capturing, no capture",
       pointingDial:
@@ -390,6 +392,8 @@ export const designSystemCopy = {
       reserveForm:
         "ReserveForm — არაფერია არჩეული, ობიექტი არჩეულია, იჯავშნება, იხსნება გადახდის გვერდი, დრო დაკავებულია",
       missionSteps: "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული",
+      roomSharing:
+        "RoomSharing — პირადი, იხსნება, ღიაა ორი მაყურებლით, შეწყვეტის კითხვა, ბმული დაკოპირდა, სესია დასრულდა",
       roomControls:
         "RoomControls — დაკვირვება, ტელესკოპის მოლოდინი, შესრულდა, უარი, პასუხი არ არის, შეჩერების კითხვა, ცენტრირებამდე, გადაღებისას, გადაღების გარეშე",
       pointingDial:

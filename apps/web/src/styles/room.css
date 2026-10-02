@@ -723,9 +723,31 @@
   gap: var(--space-3);
 }
 
-.room-controls-status {
+.room-controls-status,
+.room-sharing-status {
   min-height: 1.5em;
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-label);
+}
+
+/* Slice 4: the owner's sharing panel, beside the dial. */
+.room-sharing {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.room-sharing h2,
+.room-sharing > p {
+  margin: 0;
+}
+
+.room-sharing > p:not(.room-sharing-status) {
+  color: var(--color-text-secondary);
+}
+
+.room-sharing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
 }
