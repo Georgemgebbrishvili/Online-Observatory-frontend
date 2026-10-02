@@ -3,7 +3,7 @@
 Raised 2026-09-24 from `chore/contract-sync`. Against the contract pinned in
 `packages/contracts/SOURCE.json` (`darkview-platform` `acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`).
 
-**Answered** by platform `8debc33` (#159): `getMissionWatchView`, and ADR-034 drops presence. Not yet adopted here: roadmap slice A1.
+**Answered** by platform `8debc33` (#159): `getMissionWatchView`, and ADR-034 drops presence. Adopted by Phase 4 slice 5 ([`05-watch.md`](../plan/phase-4/05-watch.md)), which deletes every `/v1/*` call and the files named below.
 
 The watch page, `/[locale]/app/missions/[targetSlug]/watch`
 (`apps/web/src/app/[locale]/app/missions/[targetSlug]/watch/page.tsx`, rendering

@@ -239,6 +239,7 @@ export function RoomLive({
             observable={mission.observable ?? false}
             observerCount={mission.observerCount ?? 0}
             observerCapacity={mission.observerCapacity ?? 5}
+            watchPath={`/${locale}/app/missions/${mission.id}/watch`}
             signInPath={`/${locale}/sign-in`}
             copy={roomSharingCopy[locale]}
           />

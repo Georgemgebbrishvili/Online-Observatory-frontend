@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 // Phase 4 slice 4, against e2e/fake-platform.mjs: the owner opens the observing mission
-// to observers and closes it again.
+// to observers, copies the watch link, and closes it again.
 const observing = "20000000-0000-4000-8000-000000000001";
 
-test("the owner opens the session and closes it again", async ({ page }) => {
+test("the owner opens the session, copies the watch link, and closes it again", async ({
+  page,
+}) => {
   await page.goto(`/en/app/missions/${observing}/session`);
   const sharing = page.getByRole("region", { name: "Sharing" });
   await expect(sharing).toContainText("Only you can see this session.");
@@ -16,8 +18,17 @@ test("the owner opens the session and closes it again", async ({ page }) => {
   expect((await request).postDataJSON()).toEqual({ observable: true });
   await expect(sharing).toContainText("Others can watch. 0 of 5 seats taken.");
 
-  // No watch link until slice 5's page exists.
-  await expect(sharing.getByRole("button", { name: "Copy watch link" })).toHaveCount(0);
+  // The link to slice 5's watch page, absolute, on the clipboard.
+  await page
+    .context()
+    .grantPermissions(["clipboard-read", "clipboard-write"], {
+      origin: "http://localhost:3100",
+    });
+  await sharing.getByRole("button", { name: "Copy watch link" }).click();
+  await expect(sharing).toContainText("Link copied");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    `http://localhost:3100/en/app/missions/${observing}/watch`,
+  );
 
   await sharing.getByRole("button", { name: "Stop sharing" }).click();
   await sharing

@@ -23,6 +23,7 @@ import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
 import { RoomControlsView } from "@/components/room/room-controls";
 import { RoomSharingView } from "@/components/room/room-sharing";
+import { WatchView, type WatchPhase } from "@/components/room/mission-watch";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { TargetPreview } from "@/components/room/target-preview";
@@ -62,6 +63,7 @@ import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/colle
 import { roomCopy } from "@/i18n/resources/room";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
+import { watchCopy } from "@/i18n/resources/watch";
 import { palette } from "@/styles/tokens";
 
 import {
@@ -540,6 +542,91 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 label={`${roomSharingCopy[locale].title} ${index + 1}`}
               />
             ))}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.watch}</h3>
+          <div className="ds-room-specimens">
+            {(
+              [
+                ["sale", null, false],
+                ["sale", "buy", false],
+                ["loading", null, false],
+                ["error", null, false],
+                ["sale", null, true],
+                ["full", null, true],
+                ["paying", "join", true],
+                ["watching", null, true],
+                ["left", null, true],
+                ["closed", null, false],
+                ["over", null, false],
+                ["owner", null, false],
+                ["not-open", null, false],
+              ] as const satisfies readonly (readonly [
+                WatchPhase,
+                "buy" | "join" | null,
+                boolean,
+              ])[]
+            ).map(([phase, pending, simulated], index) => {
+              const watch = watchCopy[locale];
+              const seen =
+                phase !== "loading" && phase !== "error" && phase !== "not-open";
+              return (
+                <WatchView
+                  key={index}
+                  phase={phase}
+                  copy={watch}
+                  headingLevel={2}
+                  label={`WatchView ${index + 1}`}
+                  target={seen ? "Saturn" : null}
+                  headline={fill(watch.headline, { owner: "Nino", target: "Saturn" })}
+                  seats={fill(watch.seats, {
+                    count: phase === "full" ? "5" : "2",
+                    capacity: "5",
+                  })}
+                  simulated={
+                    simulated
+                      ? {
+                          label: watch.simulated,
+                          detail: statusCopy[locale].mode.SIMULATED.detail,
+                        }
+                      : null
+                  }
+                  pending={pending}
+                  roomPath={`/${locale}/design-system`}
+                  feed={
+                    <LiveFeed
+                      status="live"
+                      stream={{
+                        // An empty frame: nothing here stands for telescope output.
+                        url: `data:image/svg+xml,${encodeURIComponent(
+                          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10"><rect width="16" height="10" fill="${palette.neutral950}"/></svg>`,
+                        )}`,
+                        simulated: true,
+                        alt: fill(room.live.streamAltSimulated, { target: "Saturn" }),
+                      }}
+                      preview={null}
+                      title={room.live.status.live.title}
+                      description={room.live.status.live.description}
+                      labels={{
+                        simulated: room.live.simulated,
+                        live: room.live.live,
+                        timeLeft: room.live.timeLeft,
+                      }}
+                      timeLeft={null}
+                    />
+                  }
+                  steps={
+                    <MissionSteps
+                      id={`ds-watch-steps-${index}`}
+                      title={room.steps.title}
+                      names={room.steps.names}
+                      statuses={missionProgress("OBSERVING", null)}
+                      position={fill(room.steps.stepOf, { step: "4" })}
+                      stopped={room.steps.stopped}
+                    />
+                  }
+                />
+              );
+            })}
           </div>
           <h3 className="ds-subheading">{copy.cards.roomControls}</h3>
           <div className="ds-room-specimens">

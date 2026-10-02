@@ -26,8 +26,6 @@ type RoomSharingViewProps = {
   copy: RoomSharingCopy;
   /** The region's name when it is not the heading: specimens side by side need their own. */
   label?: string;
-  /** False until there is a watch page to send people to (slice 5). */
-  linkable?: boolean;
   onSet?: (observable: boolean) => void;
   onCopy?: () => void;
   onConfirming?: (confirming: boolean) => void;
@@ -40,7 +38,6 @@ export function RoomSharingView({
   copy,
   count,
   label,
-  linkable = true,
   notice,
   observable,
   onConfirming,
@@ -72,11 +69,9 @@ export function RoomSharingView({
             {copy.open} {fill(copy.seats, people)}
           </p>
           <div className="room-sharing-actions">
-            {linkable && (
-              <Button variant="secondary" disabled={saving} onClick={() => onCopy?.()}>
-                {copy.copyLink}
-              </Button>
-            )}
+            <Button variant="secondary" disabled={saving} onClick={() => onCopy?.()}>
+              {copy.copyLink}
+            </Button>
             {!confirming && (
               <Button
                 variant="ghost"
@@ -145,11 +140,8 @@ type RoomSharingProps = {
   observable: boolean;
   observerCount: number;
   observerCapacity: number;
-  /**
-   * Where a watcher goes, absolute when copied. Absent until slice 5 rebuilds the watch
-   * page on `getMissionWatchView`: the page there today still calls the retired `/v1`.
-   */
-  watchPath?: string;
+  /** Where a watcher goes (slice 5's watch page), absolute when copied. */
+  watchPath: string;
   signInPath: string;
   copy: RoomSharingCopy;
 };
@@ -215,7 +207,6 @@ export function RoomSharing({
   }
 
   async function copyLink() {
-    if (!watchPath) return;
     try {
       await navigator.clipboard.writeText(
         new URL(watchPath, window.location.origin).href,
@@ -235,7 +226,6 @@ export function RoomSharing({
       confirming={confirming}
       notice={notice}
       copy={copy}
-      linkable={watchPath !== undefined}
       onSet={(observable) => void set(observable)}
       onCopy={() => void copyLink()}
       onConfirming={(next) => {

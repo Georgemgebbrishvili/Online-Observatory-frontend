@@ -128,21 +128,6 @@ describe("RoomSharing", () => {
     expect(screen.getByRole("button", { name: copy.openAction })).toBeEnabled();
   });
 
-  it("offers no watch link while there is no watch page to send people to", () => {
-    render(
-      <RoomSharing
-        missionId={missionId}
-        missionState="OBSERVING"
-        observable
-        observerCount={0}
-        observerCapacity={5}
-        signInPath="/en/sign-in"
-        copy={copy}
-      />,
-    );
-    expect(screen.queryByRole("button", { name: copy.copyLink })).toBeNull();
-  });
-
   it("is not offered outside a live session", () => {
     render(sharing(false, 0, "SCHEDULED"));
     expect(screen.queryByRole("heading", { name: copy.title })).toBeNull();

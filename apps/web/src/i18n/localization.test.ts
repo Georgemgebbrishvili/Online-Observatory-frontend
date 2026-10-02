@@ -7,15 +7,13 @@ import { bookingCopy } from "@/i18n/resources/booking";
 import { roomCopy } from "@/i18n/resources/room";
 import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/collection";
 import { liveObservationCopy, safeNudgeCopy } from "@/i18n/resources/live";
-import {
-  missionBrowserCopy,
-  missionDetailCopy,
-} from "@/i18n/resources/missions";
+import { missionBrowserCopy, missionDetailCopy } from "@/i18n/resources/missions";
 import { legalCopy } from "@/i18n/resources/legal";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
 import { pricingPageCopy } from "@/i18n/resources/pricing";
 import { authCopy } from "@/i18n/resources/auth";
 import { targetCopy } from "@/i18n/resources/targets";
+import { watchCopy } from "@/i18n/resources/watch";
 
 function resourceShape(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(resourceShape);
@@ -58,6 +56,7 @@ describe("Georgian localization", () => {
       [authCopy.en, authCopy.ka],
       [legalCopy.en, legalCopy.ka],
       [targetCopy.en, targetCopy.ka],
+      [watchCopy.en, watchCopy.ka],
     ] as const;
 
     for (const [english, georgian] of resources) {

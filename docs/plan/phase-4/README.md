@@ -5,15 +5,15 @@
 the SIDERA console's layout. Traced against `darkview-platform` at
 `acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`.
 
-| Slice | Surface                                                  | Operations                                                                                   |
-| ----- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 1     | The room, read: state, steps, target, history, captures  | `getMission`, `listMissionEvents`, `listTonightTargets`, `getObservatoryStatus`, `getObservatoryConditions`, `getCapture` |
-| 2     | The room, live: the feed and the mission channel         | `startMissionSession`, WSS `/ws/mission/{id}` (`MissionChannelMessage`), the MJPEG `streamUrl` |
-| 3     | The room, controlled: nudge, re-centre, capture, abort   | `submitMissionCommand`, WSS `MissionCommandResult`                                           |
-| 4     | The owner's sharing control (DV-105)                     | `setMissionObservation`, [`04-sharing.md`](04-sharing.md)                                    |
+| Slice | Surface                                                 | Operations                                                                                                                     |
+| ----- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 1     | The room, read: state, steps, target, history, captures | `getMission`, `listMissionEvents`, `listTonightTargets`, `getObservatoryStatus`, `getObservatoryConditions`, `getCapture`      |
+| 2     | The room, live: the feed and the mission channel        | `startMissionSession`, WSS `/ws/mission/{id}` (`MissionChannelMessage`), the MJPEG `streamUrl`                                 |
+| 3     | The room, controlled: nudge, re-centre, capture, abort  | `submitMissionCommand`, WSS `MissionCommandResult`                                                                             |
+| 4     | The owner's sharing control (DV-105)                    | `setMissionObservation`, [`04-sharing.md`](04-sharing.md)                                                                      |
+| 5     | The watch page and the observer's seat (DV-104, DV-106) | `getMissionWatchView`, `purchaseObserverPack`, `joinMissionAsObserver`, `leaveMissionAsObserver`, [`05-watch.md`](05-watch.md) |
 
-The rest of Phase 4 (the watch page, observer seats, `/app/live`, every failure state,
-the close refund copy) is Track A of
+The rest of Phase 4 (`/app/live`, every failure state, the close refund copy) is Track A of
 [`../04-roadmap-to-launch.md`](../04-roadmap-to-launch.md).
 
 ## Found while tracing

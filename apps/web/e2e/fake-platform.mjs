@@ -18,6 +18,8 @@ import {
   zGetCaptureDownloadResponse,
   zGetCaptureResponse,
   zGetMissionResponse,
+  zGetMissionWatchViewResponse,
+  zJoinMissionAsObserverResponse,
   zGetObservatoryConditionsResponse,
   zGetObservatoryStatusResponse,
   zListBookableObservatoriesResponse,
@@ -35,6 +37,7 @@ import {
   zMissionCommandAccepted,
   zOperatorObservatoryState,
   zOperatorOverrideRequest,
+  zPurchaseObserverPackResponse,
   zRegisterRequest,
   zRescheduleBookingBody,
   zRescheduleBookingResponse,
@@ -65,6 +68,19 @@ const fakeAccounts = {
     role: "OPERATOR",
     displayName: "Operator",
   },
+  // Phase 4 slice 5: Nino owns the sessions open to watchers; the observer and the
+  // Georgian-speaking watcher sit in them. Their locale is where the checkout returns.
+  "nino@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000003",
+    role: "USER",
+    displayName: "Nino",
+  },
+  "watcher@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000004",
+    role: "USER",
+    displayName: "Watcher",
+    locale: "ka",
+  },
 };
 const fakePassword = "correct horse battery";
 
@@ -76,7 +92,7 @@ const users = new Map(
       email,
       displayName: account.displayName,
       role: account.role,
-      locale: "en",
+      locale: account.locale ?? "en",
       createdAt: "2026-09-01T00:00:00.000Z",
     }),
   ]),
@@ -707,6 +723,13 @@ async function sandboxCheckout(request, response, paymentId) {
   const result = new URLSearchParams(raw).get("result");
   if (result !== "PAID" && result !== "DECLINED")
     return error(response, 422, "VALIDATION_FAILED", "Pay or decline.");
+  if (payment.missionId) {
+    settlePack(payment, result);
+    response.writeHead(303, {
+      location: `${appOrigin}/${payment.locale}/app/missions/${payment.missionId}/watch`,
+    });
+    return response.end();
+  }
   const rows = createdBookings.get(session);
   const index = rows.findIndex((row) => row.id === payment.bookingId);
   rows[index] = zGetBookingResponse.parse({
@@ -1613,7 +1636,268 @@ async function setObservation(request, response, id) {
   );
 }
 
-function onChannelMessage(socket, missionId, user, raw) {
+// Phase 4 slice 5: watching somebody else's session, as `getMissionWatchView`,
+// `purchaseObserverPack`, `joinMissionAsObserver` and `leaveMissionAsObserver` answer, and
+// the channel admitting an attached seat. Two sessions Nino has opened to watchers, kept
+// out of `missions` so no list, baseline or operator view changes: one with seats free,
+// one with every seat sold.
+//
+// The packs and seats belong to the session that bought them, as the booking changes do,
+// so a test that buys signs in on a session of its own and parallel tests never share a
+// seat. The `fake_watch` cookie picks a scenario per browser context: `settling`, the
+// checkout's payment settles two joins late; `offline`, the agent is not connected;
+// `closed`, Nino closes the session to watchers a moment after the channel opens.
+//
+// The checkout is the platform's as docs/platform-requests/observer-pack-checkout.md
+// asks for it: an Observer Pack payment carries a redirectUrl, and the checkout returns
+// to the watch page in the account's locale.
+const ninoId = fakeAccounts["nino@darkview.test"].id;
+const watchedMissions = [
+  {
+    id: "23000000-0000-4000-8000-000000000004",
+    userId: ninoId,
+    bookingId: "54000000-0000-4000-8000-000000000004",
+    targetId: "30000000-0000-4000-8000-000000000006",
+    observatoryId,
+    state: "OBSERVING",
+    failureReason: null,
+    mode: "SIMULATED",
+    scheduledStartAt: "2026-09-23T20:00:00.000Z",
+    requestedAt: "2026-09-23T19:40:00.000Z",
+    startedAt: "2026-09-23T20:00:00.000Z",
+    endedAt: null,
+    captureIds: [],
+    observable: true,
+    observerCapacity: 5,
+    observerCount: 2,
+  },
+  {
+    id: "24000000-0000-4000-8000-000000000005",
+    userId: ninoId,
+    bookingId: "55000000-0000-4000-8000-000000000005",
+    targetId: "30000000-0000-4000-8000-000000000006",
+    observatoryId,
+    state: "OBSERVING",
+    failureReason: null,
+    mode: "SIMULATED",
+    scheduledStartAt: "2026-09-23T20:00:00.000Z",
+    requestedAt: "2026-09-23T19:40:00.000Z",
+    startedAt: "2026-09-23T20:00:00.000Z",
+    endedAt: null,
+    captureIds: [],
+    observable: true,
+    observerCapacity: 5,
+    observerCount: 5,
+  },
+];
+// session → missionId → { pack, seat, closed, settlesAfter }
+const watchSeats = new Map();
+const OBSERVER_PACK_PRICE_MINOR = 1500;
+
+function watchable(id) {
+  return [...missions, ...watchedMissions].find((row) => row.id === id) ?? null;
+}
+
+function seatOf(request, id) {
+  const session = cookiesOf(request)[sessionCookie];
+  if (!watchSeats.has(session)) watchSeats.set(session, new Map());
+  const seats = watchSeats.get(session);
+  if (!seats.has(id)) seats.set(id, { pack: null, seat: null, closed: false });
+  return seats.get(id);
+}
+
+/** As the platform: open while the owner has opened it, the mission is live, and this
+ * session has not seen Nino close it. */
+function openToWatchers(mission, seat) {
+  return (
+    Boolean(mission.observable) && LIVE_STATES.includes(mission.state) && !seat.closed
+  );
+}
+
+function watchedMission(mission, seat) {
+  return {
+    ...mission,
+    observable: openToWatchers(mission, seat),
+    observerCount: (mission.observerCount ?? 0) + (seat.seat ? 1 : 0),
+  };
+}
+
+function getWatchView(request, response, id) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const mission = watchable(id);
+  const seat = mission && seatOf(request, id);
+  // The owner, a seat attached, or anybody while it is open: everyone else, the same 404.
+  if (
+    !mission ||
+    (mission.userId !== user.id && !seat.seat && !openToWatchers(mission, seat))
+  )
+    return error(response, 404, "NOT_FOUND", "No such mission.");
+  const owner = [...users.values()].find((row) => row.id === mission.userId);
+  const shown = watchedMission(mission, seat);
+  send(
+    response,
+    200,
+    zGetMissionWatchViewResponse.parse({
+      mission: shown,
+      target: targets.items.find((row) => row.id === mission.targetId),
+      observatory: observatories.items[0],
+      ownerDisplayName: owner?.displayName ?? null,
+      observerCount: shown.observerCount,
+      myObserverSeat: seat.seat,
+    }),
+  );
+}
+
+/** The refusals purchase and join share, in the platform's order; null when there is none. */
+function seatRefusal(response, mission, seat, user) {
+  if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+  if (mission.userId === user.id)
+    return error(
+      response,
+      409,
+      "CONFLICT",
+      "The controller cannot observe their own session.",
+    );
+  if (!LIVE_STATES.includes(mission.state))
+    return error(response, 409, "MISSION_NOT_ACTIVE", "Nothing to observe.");
+  if (!openToWatchers(mission, seat))
+    return error(
+      response,
+      403,
+      "MISSION_NOT_OBSERVABLE",
+      "The controller has not opened this session to observers.",
+    );
+  return null;
+}
+
+function purchasePack(request, response, id) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const mission = watchable(id);
+  const seat = mission && seatOf(request, id);
+  if (seatRefusal(response, mission, seat, user)) return;
+  // One pack per person per mission: asking again returns it, paid or still held.
+  if (seat.pack) return send(response, 201, seat.pack);
+  if ((mission.observerCount ?? 0) >= mission.observerCapacity)
+    return error(
+      response,
+      409,
+      "OBSERVER_CAPACITY_REACHED",
+      `All ${mission.observerCapacity} observer seats are taken.`,
+    );
+  const paymentId = randomUUID();
+  const holdExpiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
+  seat.pack = zPurchaseObserverPackResponse.parse({
+    observerPack: {
+      id: randomUUID(),
+      missionId: id,
+      userId: user.id,
+      status: "PENDING_PAYMENT",
+      priceMinor: OBSERVER_PACK_PRICE_MINOR,
+      currency: "GEL",
+      paymentId,
+      holdExpiresAt,
+      createdAt: new Date().toISOString(),
+    },
+    paymentIntent: {
+      paymentId,
+      provider: "SANDBOX",
+      status: "PENDING",
+      redirectUrl: `${appOrigin}/api/payments/${paymentId}/sandbox-checkout`,
+      expiresAt: holdExpiresAt,
+    },
+  });
+  payments.set(paymentId, {
+    session: cookiesOf(request)[sessionCookie],
+    missionId: id,
+    locale: user.locale,
+    settling: cookiesOf(request).fake_watch === "settling",
+  });
+  send(response, 201, seat.pack);
+}
+
+/** The checkout's answer for an Observer Pack: the pack paid, or released. */
+function settlePack(payment, result) {
+  const seat = watchSeats.get(payment.session).get(payment.missionId);
+  const paid = result === "PAID";
+  seat.pack = zPurchaseObserverPackResponse.parse({
+    observerPack: {
+      ...seat.pack.observerPack,
+      status: paid ? "PAID" : "CANCELLED",
+      holdExpiresAt: null,
+    },
+    paymentIntent: { ...seat.pack.paymentIntent, status: paid ? "CAPTURED" : "FAILED" },
+  });
+  if (!paid) seat.pack = null;
+  // `settling`: the provider's callback is late, so the next two joins still answer 402.
+  seat.settlesAfter = paid && payment.settling ? 2 : 0;
+}
+
+function joinSeat(request, response, id) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const mission = watchable(id);
+  const seat = mission && seatOf(request, id);
+  if (seatRefusal(response, mission, seat, user)) return;
+  if (seat.pack?.observerPack.status !== "PAID" || seat.settlesAfter > 0) {
+    if (seat.settlesAfter > 0) seat.settlesAfter -= 1;
+    return error(
+      response,
+      402,
+      "PAYMENT_REQUIRED",
+      "An Observer Pack seat for this session has not been paid for.",
+    );
+  }
+  if (!seat.seat) {
+    if ((mission.observerCount ?? 0) >= mission.observerCapacity)
+      return error(
+        response,
+        409,
+        "OBSERVER_CAPACITY_REACHED",
+        `All ${mission.observerCapacity} observer seats are taken.`,
+      );
+    seat.seat = zJoinMissionAsObserverResponse.parse({
+      id: randomUUID(),
+      missionId: id,
+      userId: user.id,
+      joinedAt: new Date().toISOString(),
+      leftAt: null,
+    });
+  }
+  send(response, 201, seat.seat);
+}
+
+/** Leaving frees the connection, never the seat; idempotent, as the platform's. */
+function leaveSeat(request, response, id) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  if (!watchable(id)) return error(response, 404, "NOT_FOUND", "No such mission.");
+  seatOf(request, id).seat = null;
+  send(response, 204);
+}
+
+/** An observer's subscribe: admitted on an attached seat, with nothing to command. */
+function subscribedObserver(socket, mission, user, request) {
+  const seat = seatOf(request, mission.id);
+  const scenario = cookiesOf(request).fake_watch ?? null;
+  // The room's channel, as an observer hears it: the state, the telemetry, the stream.
+  subscribed(socket, mission, {
+    scenario: scenario === "offline" ? "offline" : null,
+    userId: user.id,
+    expiresAt: new Date(Date.now() + SESSION_MINUTES * 60_000).toISOString(),
+  });
+  if (scenario !== "closed") return;
+  // Nino closes the session: every seat detached, and the channel hung up.
+  const timer = setTimeout(() => {
+    seat.seat = null;
+    seat.closed = true;
+    socket.close();
+  }, 1500);
+  socket.on("close", () => clearTimeout(timer));
+}
+
+function onChannelMessage(socket, missionId, user, raw, request) {
   let parsed;
   try {
     parsed = zMissionClientMessage.safeParse(JSON.parse(raw));
@@ -1626,6 +1910,20 @@ function onChannelMessage(socket, missionId, user, raw) {
   };
   if (!parsed.success) return refuse("BAD_REQUEST", "Message rejected.");
   if (parsed.data.type === "CLIENT_PING") return;
+
+  // An observer states no session (ADR-007): the seat is the grant.
+  if (parsed.data.sessionId === null) {
+    const mission = watchable(missionId);
+    const seat = mission && seatOf(request, missionId);
+    if (
+      !mission ||
+      parsed.data.missionId !== missionId ||
+      !seat.seat ||
+      !openToWatchers(mission, seat)
+    )
+      return refuse("FORBIDDEN", "No live session for this mission is yours.");
+    return subscribedObserver(socket, mission, user, request);
+  }
 
   const session = liveSessions.get(parsed.data.sessionId);
   const mission = missions.find((row) => row.id === missionId);
@@ -1714,7 +2012,7 @@ function upgrade(request, socket) {
     return socket.destroy();
   }
   acceptWebSocket(request, socket);
-  socket.on("text", (raw) => onChannelMessage(socket, match[1], user, raw));
+  socket.on("text", (raw) => onChannelMessage(socket, match[1], user, raw, request));
 }
 
 // GET /stream/mission/{id}?t=…: MJPEG, one frame a second, until the grant lapses. Every
@@ -1819,6 +2117,17 @@ http
     const observation = path.match(/^\/missions\/([0-9a-f-]+)\/observation$/);
     if (observation && request.method === "PATCH")
       return await setObservation(request, response, observation[1]);
+    const watch = path.match(/^\/missions\/([0-9a-f-]+)\/watch$/);
+    if (watch && request.method === "GET")
+      return getWatchView(request, response, watch[1]);
+    const pack = path.match(/^\/missions\/([0-9a-f-]+)\/observer-pack$/);
+    if (pack && request.method === "POST")
+      return purchasePack(request, response, pack[1]);
+    const observers = path.match(/^\/missions\/([0-9a-f-]+)\/observers$/);
+    if (observers && request.method === "POST")
+      return joinSeat(request, response, observers[1]);
+    if (observers && request.method === "DELETE")
+      return leaveSeat(request, response, observers[1]);
     const command = path.match(/^\/missions\/([0-9a-f-]+)\/command$/);
     if (command && request.method === "POST")
       return await submitCommand(request, response, command[1]);

@@ -41,6 +41,32 @@ attached seat may open the channel and the stream).
 | Live view                       | WSS `/ws/mission/{id}` as an observer: `MissionStreamInfo.streamUrl`, telemetry, state; no commands    |
 | Refunds                         | `ObserverPack.refundedMinor`: not readable after a close until platform #169                           |
 
+## Found while building
+
+**An Observer Pack cannot be paid on the platform today.** `purchaseObserverPack` opens
+its `SANDBOX` payment with no `redirectUrl`, and the sandbox checkout answers only
+booking payments and returns only to a booking. Raised as
+[`observer-pack-checkout.md`](../../platform-requests/observer-pack-checkout.md). Until it
+is answered the page says seats cannot be paid for yet; the fake platform behaves as
+proposed there, so the flow is tested end to end.
+
+**The checkout says nothing on the way back.** Its return address is built by the
+platform, so before leaving for it the page notes the mission in `sessionStorage`. On
+return it asks `joinMissionAsObserver` up to five times, two seconds apart, while the
+answer is 402, then offers "Check again".
+
+**A close does not hang up on an observer.** The realtime service keeps an observer's
+socket after the owner closes; the stream refuses the next request
+(`mayWatchMission`), and a fresh subscribe is refused. So the page treats a failed
+picture and every closed channel the same way: it reads the watch view again, and a 404
+or a missing seat is "closed by owner".
+
+**Buying twice is not paying twice.** A seat outlives a connection, and
+`purchaseObserverPack` returns the same pack, already `PAID`, to someone who left. The
+page then joins without a checkout. After Leave it offers "Watch again"
+(en "You left. Your seat stays yours until the session ends." · ka "თქვენ გახვედით.
+ადგილი სესიის დასრულებამდე თქვენია." · "ხელახლა ყურება").
+
 ## States, en + ka
 
 | State             | Where it comes from                                    | en                                                                       | ka                                                                                      |
@@ -50,7 +76,7 @@ attached seat may open the channel and the stream).
 | Seat for sale     | `myObserverSeat` null, seats free                      | {owner} is observing {target}. {count} of {capacity} seats taken. · Buy a seat | {owner} აკვირდება: {target}. დაკავებულია {count} ადგილი {capacity}-დან. · ადგილის ყიდვა |
 | Full              | 409 `OBSERVER_CAPACITY_REACHED`                        | Every seat is taken.                                                     | ყველა ადგილი დაკავებულია.                                                               |
 | Paying            | back from the checkout, join answers 402               | Waiting for your payment to settle                                       | ველოდებით გადახდის დადასტურებას                                                         |
-| Watching          | `myObserverSeat` set, channel open                     | You are watching. You cannot move the telescope or keep captures. · Leave | თქვენ უყურებთ. ტელესკოპის მართვა და კადრების შენახვა შეუძლებელია. · გასვლა              |
+| Watching          | `myObserverSeat` set, channel open                     | You are watching. You cannot move the telescope or keep captures. · Stop watching | თქვენ უყურებთ. ტელესკოპის მართვა და კადრების შენახვა შეუძლებელია. · ყურების შეწყვეტა     |
 | Agent offline     | the channel's observatory status                       | The observatory is offline.                                              | ობსერვატორია გათიშულია.                                                                 |
 | Simulated         | `MissionStreamInfo.mode` = SIMULATED                   | Simulated observatory                                                    | სიმულირებული ობსერვატორია                                                               |
 | Closed by owner   | the channel closes, then the read answers 404          | The owner closed this session to watchers.                               | მფლობელმა სესია მაყურებლებისთვის დახურა.                                                |

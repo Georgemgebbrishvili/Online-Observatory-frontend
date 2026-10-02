@@ -39,6 +39,8 @@ export const parameterisedRoutes = [
   "app/missions/20000000-0000-4000-8000-000000000001/session",
   "app/missions/21000000-0000-4000-8000-000000000002/session",
   "app/missions/22000000-0000-4000-8000-000000000003/session",
+  // The observing mission's watch page, which its owner is sent on from.
+  "app/missions/20000000-0000-4000-8000-000000000001/watch",
   "app/collection/60000000-0000-4000-8000-000000000001",
   // Two of the fake platform's bookings: awaiting payment, and a slot lost to weather.
   "app/bookings/52000000-0000-4000-8000-000000000003",

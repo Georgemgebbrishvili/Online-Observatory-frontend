@@ -170,6 +170,8 @@ export const designSystemCopy = {
       missionSteps: "MissionSteps — at a step, complete, and stopped by a failure",
       roomSharing:
         "RoomSharing — private, opening, open with two watching, asking to stop, link copied, session ended",
+      watch:
+        "WatchView — a seat for sale, buying, loading, error, simulated, full, paying, watching, left, closed by the owner, ended, the owner, not open",
       roomControls:
         "RoomControls — observing, waiting for the telescope, done, refused, no answer, asking to stop, before centring, while capturing, no capture",
       pointingDial:
@@ -394,6 +396,8 @@ export const designSystemCopy = {
       missionSteps: "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული",
       roomSharing:
         "RoomSharing — პირადი, იხსნება, ღიაა ორი მაყურებლით, შეწყვეტის კითხვა, ბმული დაკოპირდა, სესია დასრულდა",
+      watch:
+        "WatchView — ადგილი იყიდება, იყიდება, იტვირთება, შეცდომა, სიმულირებული, სავსეა, გადახდის მოლოდინი, ყურება, გასული, მფლობელმა დახურა, დასრულდა, მფლობელი, არ არის ღია",
       roomControls:
         "RoomControls — დაკვირვება, ტელესკოპის მოლოდინი, შესრულდა, უარი, პასუხი არ არის, შეჩერების კითხვა, ცენტრირებამდე, გადაღებისას, გადაღების გარეშე",
       pointingDial:

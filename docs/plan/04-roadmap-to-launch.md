@@ -18,12 +18,13 @@ which stays the record of Phases 0–4. The decisions behind it:
 | 0 Rename, tokens, issues                      | Done        | `074d4cc`, `0071602`, issues #1–#3                                                                |
 | 1 Shell, breakpoints, shell contract          | Done        | One item open: route groups and layouts, plus `[targetSlug]` carrying a mission id                |
 | 2 Targets, collection, dashboard              | Done        | `d059f31`, `da33bd2`, `e77e36c`                                                                   |
-| 2 `/v1/*` shared-observation debt (#1)        | **Open**    | Answered by the platform (#159, `getMissionWatchView`, ADR-034), never adopted here               |
+| 2 `/v1/*` shared-observation debt (#1)        | Done here   | Deleted by 4.5 ([`phase-4/05-watch.md`](phase-4/05-watch.md)), on `getMissionWatchView`           |
 | 3 Slots, reserve, checkout, bookings, refunds | Done        | `43b45f6`, `820207f`, `78f6961`, `d9c20df`                                                        |
 | 3 Resume a pending payment                    | Blocked     | [booking-payment-intent](../platform-requests/booking-payment-intent.md), unanswered              |
 | 4.1–4.3 Room: read, live, controls            | Done        | `992e476`, `c10d979`, `1ce8b84`, `5c6528e`                                                        |
-| 4.4 Sharing control                           | Done here   | [`phase-4/04-sharing.md`](phase-4/04-sharing.md); the watch link waits for 4.5                    |
-| 4.5–4.8 Watch, seats, `/app/live`, failures   | Not started | Track A below                                                                                     |
+| 4.4 Sharing control                           | Done here   | [`phase-4/04-sharing.md`](phase-4/04-sharing.md); the watch link is on since 4.5                  |
+| 4.5–4.6 Watch page, observer seat             | Done here   | [`05-watch.md`](phase-4/05-watch.md); paying needs platform request `observer-pack-checkout`      |
+| 4.7–4.8 `/app/live`, failures                 | Not started | Track A below                                                                                     |
 | 5 Commerce and account                        | Not started | Split by ADR-037: account before launch, the rest after                                           |
 | 6 Mobile                                      | Not started | After launch (ADR-037); no `apps/mobile`                                                          |
 | Hosted demo                                   | Paused      | Platform PR #166 unmerged; production Vercel has no env vars                                      |
