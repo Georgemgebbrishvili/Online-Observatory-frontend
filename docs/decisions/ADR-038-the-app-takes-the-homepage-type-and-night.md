@@ -1,7 +1,7 @@
 # ADR-038 — The App Takes the Homepage's Type and Night
 
 - **Date:** 2026-10-02
-- **Status:** APPROVED
+- **Status:** SUPERSEDED by `ADR-039-every-surface-takes-the-stellar-poster-language.md` (2026-10-02)
 - **Decided by:** project maintainer
 - **Amends:** `ADR-030-the-homepage-carries-the-hero-language.md`, which confined the
   hero's fonts, night and cyan to the homepage. Brand Identity System v2.0 for typography

@@ -29,7 +29,7 @@ When documents conflict, this order decides:
 1. This file (CLAUDE.md)
 2. Approved decision records in `docs/decisions/`
 3. Darkview Brand Identity System **v2.0** — everything except the name and the
-   mark, which ADR-025 overrides
+   mark, which ADR-025 overrides, and colour and type, which ADR-039 overrides
 4. Darkview Phase 1 Final Master Plan
 5. Darkview Build Plan — engineering detail only where it does not contradict 1–4
 6. The current GitHub issue and its acceptance criteria
@@ -218,14 +218,16 @@ rejected after `expiresAt`, and rejected if the session is not the current owner
 ## Design and brand
 
 Source: Darkview Brand Identity System v2.0, as amended by ADR-025 for the name and
-the mark. Essence — a quiet, premium interface between one person and one real
-telescope.
+the mark and by ADR-039 for colour and type (the Stellar poster language).
+Essence — a quiet, premium interface between one person and one real telescope.
 
 Tagline: *The real sky, live.*
 Georgian: *შენი დრო ნამდვილ ცასთან.*
 
-Core colors: Stellar Night `#05080D` · Observatory Blue `#111722` ·
-Photon Blue `#5CC8FF` · primary text `#F2F5F7` · secondary text `#AAB4BE`.
+Core colors (ADR-039): night `#000000` · cream ink `#F6ECD8` and its opacity ramp ·
+orange `#E8742F` for actions · yellow `#FFD36B` for live and simulated · Photon Blue
+`#5CC8FF` for data and focus. Type: Anton, Bowlby One, Oswald, Geist, JetBrains Mono;
+Georgian in Noto Sans Georgian (condensed) and FiraGO.
 
 Avoid: purple-nebula SaaS gradients, cartoon astronomy, fake NASA/military HUD
 decoration, heavy glassmorphism and glow, stock space imagery presented as
@@ -241,13 +243,10 @@ buttons, inputs, focus rings, status indicators or live badges. Depth comes from
 surface ramp and borders. `--shadow-*` tokens are shadows, not glows, and the mark's
 glow token is not reachable from component CSS.
 
-**A second exception (ADR-029, ADR-030).** The homepage planet hero — `PlanetHero` and
-`apps/web/src/styles/planet-hero.css` — follows the maintainer's reference spec instead
-of Brand v2.0: its white button glow, blurred scroll control and menu panel, its fonts
-and its cyan. The homepage's sections below it (`HomeShell`,
-`apps/web/src/styles/homepage.css`) take the hero's fonts, night, cyan and white pill,
-but not its glow or blur. Both carry the "Illustration — not telescope output" caption
-wherever a rendered planet appears. No other surface may cite either.
+**The poster language (ADR-039)** applies to every surface, the homepage included. It
+takes the Stellar project's colour, type and panels, and none of its glow: buttons are
+filled without a halo, and the live picture carries no reticle or brackets. Every
+rendered or drawn object is captioned "Illustration — not telescope output".
 
 ## Building a surface
 

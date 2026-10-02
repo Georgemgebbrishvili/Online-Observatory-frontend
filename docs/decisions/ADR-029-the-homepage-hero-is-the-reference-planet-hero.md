@@ -1,7 +1,7 @@
 # ADR-029 — The Homepage Hero Is the Reference Planet Hero, Transcribed
 
 - **Date:** 2026-09-27
-- **Status:** APPROVED
+- **Status:** SUPERSEDED by `ADR-039-every-surface-takes-the-stellar-poster-language.md` (2026-10-02)
 - **Decided by:** project maintainer
 - **Supersedes:** ADR-028.
 - **Overrides:** Brand Identity System v2.0 (§05 typography, §04 palette, §09

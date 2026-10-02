@@ -1,7 +1,7 @@
 # ADR-030 — The Homepage Carries the Hero's Language, in Five Sections
 
 - **Date:** 2026-09-27
-- **Status:** APPROVED
+- **Status:** SUPERSEDED by `ADR-039-every-surface-takes-the-stellar-poster-language.md` (2026-10-02)
 - **Decided by:** project maintainer
 - **Extends:** ADR-029, from the homepage hero to the homepage below it.
 - **Amends:** `docs/plan/02-build-phases.md`, Phase 7, for the homepage only, as ADR-026

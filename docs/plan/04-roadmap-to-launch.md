@@ -8,8 +8,8 @@ which stays the record of Phases 0–4. The decisions behind it:
   ten observers, and a refund when a session is closed.
 - [ADR-037](../decisions/ADR-037-web-first-launch-and-design-before-breadth.md): web
   first, design before breadth, `/app/live` redirects.
-- [ADR-038](../decisions/ADR-038-the-app-takes-the-homepage-type-and-night.md): the app
-  takes the homepage's type and night.
+- [ADR-039](../decisions/ADR-039-every-surface-takes-the-stellar-poster-language.md): every
+  surface takes the Stellar poster language (ADR-038 superseded).
 
 ## Where we are
 
@@ -96,29 +96,25 @@ Every slice follows the surface loop in `CLAUDE.md`:
 | A4  | **4.8 Failure screens**: `WEATHER_HOLD`, `NOT_VISIBLE`, `HARDWARE_ERROR`, `CANCELLED`, `FAILED`, heartbeat loss, agent offline. One `fake-platform.mjs` scenario each                 | Each state has a designed screen and an e2e test in both languages                |
 | A5  | **4.9 Close refund copy**: the close confirmation and the watch page say what an observer gets back. Blocked on platform #168 merging and #169 (the read path), then `contracts:sync` | The copy matches `ObserverPack.refundedMinor`                                     |
 
-### Track B — The design pass (ADR-037, ADR-038)
+### Track B — The design pass ([ADR-039](../decisions/ADR-039-every-surface-takes-the-stellar-poster-language.md))
 
-Direction: **the instrument at night.** Cosmic through precision and the real sky, solid
-through one type system, one night, and a surface ramp used with intent. Every slice
-regenerates its baselines.
+The maintainer rejected the built look on 2026-10-02 and chose the Stellar project's
+poster language (`stellarr.club`): pitch black, cream ink, Anton and Oswald, orange
+actions, yellow for live, and the console's panels in the live room. No glow, no
+reticle. ADR-038's direction was superseded before it was built. Every slice regenerates
+its baselines in both languages.
 
-| #   | Slice                                                                                                                                                                                                                                                        |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| B1  | **Tokens (ADR-038):** the homepage night and ramp, the type pair on `:root` through `next/font` in the root layout, AA contrast re-verified. Delete the stale stylelint exemptions (including the missing `mission-session.css`). Every baseline regenerated |
-| B2  | **App shell:** full-height sticky sidebar. Booking moves out of "Not yet available". A compact one-line simulated banner under the header. Check the 390 bottom nav against content                                                                          |
-| B3  | **Georgian pass:** translate "Observer", "Tbilisi" and the simulated badge. Apply the `min()` cap to app headings. Set a minimum label size under `:lang(ka)`                                                                                                |
-| B4  | **Hierarchy:** one app heading scale (`--font-size-h1`; hero size only on marketing heroes and a target's name). Three surfaces with clear jobs (well, panel, featured). Delete the radial washes in seven files                                             |
-| B5  | **`NightContext` component**, shown on `/design-system` first: darkness window, moon phase, twilight, coordinates in mono                                                                                                                                    |
-| B6  | **`/app` home:** `NightContext` on top, and the bento grid rebalanced so it has no empty halves and no orphan card                                                                                                                                           |
-| B7  | **Booking:** a night timeline above the slot table (`/app/book`). Booking detail in two columns, with the target, the hold countdown, and the primary action above the destructive one                                                                       |
-| B8  | **Live room:** a mono instrument readout strip (values from `MissionTelemetryUpdate` only). Tighten the controls panel                                                                                                                                       |
-| B9  | **Star-field texture** token and utility, on marketing sections and app page headers only. Never behind a feed or a capture                                                                                                                                  |
-| B10 | **Collection:** an archive that reads as one even when it holds one capture. Simulated captures look deliberate, not like placeholders                                                                                                                       |
-| B11 | **Marketing:** fold `/network` into `/observatory` (one site exists). Observatory reads as instrument, then safety, then site. Pricing shows what exists today, with no internal config panel                                                                |
-| B12 | **Placeholders:** Profile, Subscription, Loyalty and Passes get a consistent "coming" state with a real reason, until they are built                                                                                                                         |
-| B13 | **Visual gate coverage:** baselines for auth, 404, error, watch and the operator console                                                                                                                                                                     |
+| #   | Slice                                                                                                                                                                                       |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1  | **Foundations:** tokens, fonts (Georgian included), buttons, panels, chips, kickers, stats, form controls. The app shell's header, sidebar and footer. `/design-system` shows them all. Stale stylelint exemptions go |
+| B2  | **Homepage:** a poster hero in place of the planet hero, then the sections below it (how a session works as a step row, the targets, the observatory, the call to book)                      |
+| B3  | **Live room and watch page:** the console's panels, step tracker, dial and controls, with one orange action under a clean picture                                                           |
+| B4  | **Public pages:** observatory (with `/network` folded in), status, pricing, and the legal pages                                                                                            |
+| B5  | **App pages:** home (no empty halves), targets and a target, booking and its night, bookings, collection, and the coming-soon placeholders                                                  |
+| B6  | **Visual gate coverage:** auth, 404, error and the operator console get baselines                                                                                                          |
 
-Track A slices that come after B4 are built in the new system, so nothing is styled twice.
+Track A slices that come after B1 are built in the new language, so nothing is styled
+twice.
 
 ### Track C — Launch-critical platform and account
 
@@ -190,9 +186,9 @@ Apple enrolment, which starts now.
 
 ```
 now      A1 watch page (unblocks the sharing link)
-         B1–B4 design foundations
-         A2–A4 on the new system
-         B5–B13 page by page
+         B1 design foundations, B2 homepage, B3 live room
+         A3–A4 on the new system
+         B4–B6 page by page
          C1 filed immediately; C3–C4 as the platform answers
 parallel D demo as soon as the maintainer's five items land; E runs against it
 gated    F (outside parties), G (hardware)
