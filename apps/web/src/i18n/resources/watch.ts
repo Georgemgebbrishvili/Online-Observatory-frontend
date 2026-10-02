@@ -26,6 +26,10 @@ export type WatchCopy = {
   over: string;
   owner: string;
   ownerAction: string;
+  /** The owner's panel, under the target's name. */
+  ownerNote: string;
+  /** The panel that holds the seat and its actions. */
+  seatTitle: string;
   failed: string;
 };
 
@@ -53,6 +57,9 @@ export const watchCopy: Record<"en" | "ka", WatchCopy> = {
     over: "This session has ended.",
     owner: "This is your session.",
     ownerAction: "Go to the live room",
+    ownerNote:
+      "You control it from the live room. Watching is for the people you share it with.",
+    seatTitle: "Your seat",
     failed: "Something went wrong. Try again.",
   },
   ka: {
@@ -78,6 +85,8 @@ export const watchCopy: Record<"en" | "ka", WatchCopy> = {
     over: "ეს სესია დასრულდა.",
     owner: "ეს თქვენი სესიაა.",
     ownerAction: "ცოცხალ ოთახში გადასვლა",
+    ownerNote: "მას ცოცხალი ოთახიდან მართავთ. ყურება მათთვისაა, ვისაც სესიას გაუზიარებთ.",
+    seatTitle: "თქვენი ადგილი",
     failed: "რაღაც შეფერხდა. სცადეთ თავიდან.",
   },
 };

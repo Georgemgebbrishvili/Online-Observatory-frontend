@@ -199,13 +199,14 @@ export const designSystemCopy = {
         "BookingActions — cancel, asking to confirm, cancelling, refund, refunding, refund refused",
       reserveForm:
         "ReserveForm — nothing chosen, a target chosen, reserving, opening the payment page, the slot taken",
-      missionSteps: "MissionSteps — at a step, complete, and stopped by a failure",
+      missionSteps:
+        "MissionSteps — the tracker at a step, complete, and stopped by a failure",
       roomSharing:
         "RoomSharing — private, opening, open with two watching, asking to stop, link copied, session ended",
       watch:
         "WatchView — a seat for sale, buying, loading, error, simulated, full, paying, watching, left, closed by the owner, ended, the owner, not open",
       roomControls:
-        "RoomControls — observing, waiting for the telescope, done, refused, no answer, asking to stop, before centring, while capturing, no capture",
+        "RoomControls — hand control observing, waiting for the telescope, capture started, refused, no answer, before centring, while capturing, no capture; then Capture, and the session panel's Stop, asking to stop and stopping",
       pointingDial:
         "PointingDial — high in the south, low in the west, below the horizon, the telescope slewing to the target, the telescope with no position",
       targetPreview: "TargetPreview — a planet's plate, and a target with none",
@@ -463,7 +464,7 @@ export const designSystemCopy = {
       watch:
         "WatchView — ადგილი იყიდება, იყიდება, იტვირთება, შეცდომა, სიმულირებული, სავსეა, გადახდის მოლოდინი, ყურება, გასული, მფლობელმა დახურა, დასრულდა, მფლობელი, არ არის ღია",
       roomControls:
-        "RoomControls — დაკვირვება, ტელესკოპის მოლოდინი, შესრულდა, უარი, პასუხი არ არის, შეჩერების კითხვა, ცენტრირებამდე, გადაღებისას, გადაღების გარეშე",
+        "RoomControls — მართვა დაკვირვებისას, ტელესკოპის მოლოდინი, გადაღება დაიწყო, უარი, პასუხი არ არის, ცენტრირებამდე, გადაღებისას, გადაღების გარეშე; შემდეგ გადაღება და სესიის პანელის შეჩერება, შეჩერების კითხვა და შეჩერება",
       pointingDial:
         "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ, ტელესკოპი ობიექტისკენ მიიწევს, ტელესკოპი მდებარეობის გარეშე",
       targetPreview: "TargetPreview — პლანეტის ილუსტრაცია და ობიექტი ილუსტრაციის გარეშე",

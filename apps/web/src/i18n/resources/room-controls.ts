@@ -5,6 +5,8 @@ import type { Control } from "@/features/missions/controls";
 /** Strings only, so the copy can cross into the client component whole. */
 export type RoomControlsCopy = {
   title: string;
+  /** The panel that holds Stop. */
+  sessionTitle: string;
   /** Read by a screen reader with each arrow: the step is the client's constant. */
   step: string;
   labels: Record<Control, string>;
@@ -27,6 +29,7 @@ export type RoomControlsCopy = {
 export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
   en: {
     title: "Controls",
+    sessionTitle: "Session",
     step: "{step} arcminutes",
     labels: {
       up: "Higher",
@@ -89,6 +92,7 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
   },
   ka: {
     title: "მართვა",
+    sessionTitle: "სესია",
     step: "{step} რკალური წუთი",
     labels: {
       up: "მაღლა",

@@ -4,7 +4,24 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CommandVerdict } from "@/features/missions/controls";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
 
-import { RoomControls } from "./room-controls";
+import {
+  RoomCaptureAction,
+  RoomControlsView,
+  RoomSessionView,
+  useRoomControls,
+} from "./room-controls";
+
+/** The hook and its three views, as the room composes them. */
+function RoomControls(props: Parameters<typeof useRoomControls>[0]) {
+  const state = useRoomControls(props);
+  return (
+    <>
+      <RoomControlsView {...state} copy={copy} />
+      <RoomCaptureAction {...state} copy={copy} />
+      <RoomSessionView {...state} copy={copy} />
+    </>
+  );
+}
 
 const copy = roomControlsCopy.en;
 const missionId = "20000000-0000-4000-8000-000000000001";
@@ -47,7 +64,6 @@ function controls(verdicts: Record<string, CommandVerdict> = {}, state = "OBSERV
       verdicts={verdicts}
       imagingProfile="GLOBULAR_CLUSTER"
       signInPath="/en/sign-in"
-      copy={copy}
     />
   );
 }
@@ -168,6 +184,8 @@ describe("RoomControls", () => {
 
     view.rerender(controls({}, "COMPLETE"));
     expect(screen.queryByRole("heading", { name: copy.title })).toBeNull();
+    expect(screen.queryByRole("heading", { name: copy.sessionTitle })).toBeNull();
+    expect(screen.queryByRole("button")).toBeNull();
   });
 
   it("sends a signed-out customer to sign in", async () => {

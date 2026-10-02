@@ -1,6 +1,7 @@
 import "server-only";
 
 import type {
+  BookableObservatory,
   Mission,
   MissionEvent,
   PublicObservatoryStatus,
@@ -38,6 +39,8 @@ export type Room = {
   status: PublicObservatoryStatus | null;
   conditions: ViewingConditions | null;
   captures: CollectionEntry[];
+  /** The mission's observatory, from `listBookableObservatories`; null when unread. */
+  observatory: BookableObservatory | null;
   timezone: string;
   /** When the room was read, so the forecast hour is the hour it was read in. */
   readAt: number;
@@ -122,6 +125,9 @@ export const readRoom = cache(async (missionId: string): Promise<RoomResult> => 
       readCaptures(mission.captureIds ?? []),
     ]);
 
+  const observatory =
+    observatories?.find((candidate) => candidate.id === mission.observatoryId) ?? null;
+
   return {
     kind: "ok",
     room: {
@@ -134,9 +140,8 @@ export const readRoom = cache(async (missionId: string): Promise<RoomResult> => 
       status,
       conditions,
       captures,
-      timezone:
-        observatories?.find((candidate) => candidate.id === mission.observatoryId)
-          ?.timezone ?? "UTC",
+      observatory,
+      timezone: observatory?.timezone ?? "UTC",
       readAt: Date.now(),
     },
   };

@@ -1,7 +1,14 @@
-import type { MissionEvent, MissionState } from "@darkview/contracts";
+import type {
+  BookableObservatory,
+  MissionEvent,
+  MissionState,
+  Target,
+} from "@darkview/contracts";
 import { describe, expect, it } from "vitest";
 
-import { dialPoint, missionProgress, plateFor, stepOf } from "./room";
+import { roomCopy } from "@/i18n/resources/room";
+
+import { dialPoint, feedPlates, missionProgress, plateFor, stepOf } from "./room";
 
 function event(state: MissionState, index: number): MissionEvent {
   return {
@@ -103,5 +110,50 @@ describe("the plates", () => {
     expect(plateFor("saturn")).toBe("/plates/saturn.webp");
     expect(plateFor("m57-ring-nebula")).toBeNull();
     expect(plateFor("m13-hercules-cluster")).toBeNull();
+  });
+});
+
+describe("feedPlates", () => {
+  const observatory: BookableObservatory = {
+    id: "10000000-0000-4000-8000-000000000001",
+    slug: "tbilisi",
+    kind: "FIRST_PARTY",
+    nameEn: "Tbilisi Observatory",
+    nameKa: "თბილისის ობსერვატორია",
+    city: "Tbilisi",
+    countryCode: "GE",
+    timezone: "Asia/Tbilisi",
+    telescope: {
+      manufacturer: "Celestron",
+      model: "NexStar 6SE",
+      apertureMm: 150,
+      focalLengthMm: 1500,
+    },
+  };
+  const m13 = {
+    nameEn: "Hercules Cluster",
+    nameKa: "ჰერკულესის გროვა",
+    opticalConfig: "F10_NATIVE",
+    coordinates: { raHours: 16.695, decDegrees: 36.4613, epoch: "J2000" },
+  } as Target;
+
+  it("names the first-party camera and the target's optics, and a fixed target's RA/Dec", () => {
+    expect(feedPlates(observatory, m13, "en", roomCopy.en.feed)).toEqual({
+      instrument: ["Tbilisi Observatory", "ZWO ASI585MC · 1500 mm · f/10"],
+      subject: { name: "Hercules Cluster", coordinates: "16h 41m 42s / +36° 27′ 41″" },
+    });
+  });
+
+  it("names only a partner's published telescope, and invents nothing it lacks", () => {
+    const partner = { ...observatory, kind: "PARTNER" } as const;
+    const saturn = { ...m13, nameEn: "Saturn", coordinates: null } as Target;
+    expect(feedPlates(partner, saturn, "en", roomCopy.en.feed)).toEqual({
+      instrument: ["Tbilisi Observatory", "Celestron NexStar 6SE"],
+      subject: { name: "Saturn", coordinates: null },
+    });
+    expect(feedPlates(null, null, "ka", roomCopy.ka.feed)).toEqual({
+      instrument: null,
+      subject: null,
+    });
   });
 });

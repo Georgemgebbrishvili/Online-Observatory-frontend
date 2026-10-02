@@ -4,6 +4,7 @@ import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
 import { roomCopy } from "@/i18n/resources/room";
 
+import { PanelHead } from "./panel-head";
 import { PointingDial } from "./pointing-dial";
 
 type RoomPointingProps = {
@@ -44,7 +45,12 @@ export function RoomPointing({
 
   return (
     <section className="room-panel room-pointing" aria-labelledby="room-pointing-title">
-      <h2 id="room-pointing-title">{named(live ? copy.titleTelescope : copy.title)}</h2>
+      <PanelHead
+        id="room-pointing-title"
+        icon="pointing"
+        title={named(live ? copy.titleTelescope : copy.title)}
+        meta={`${copy.altitude} · ${copy.azimuth}`}
+      />
       <div className="room-pointing-body">
         <PointingDial
           position={visibility?.horizontal ?? null}
@@ -54,13 +60,13 @@ export function RoomPointing({
         />
         {visibility || live ? (
           <dl className="room-values">
-            <div>
+            <div className="room-value-main">
               <dt>{copy.altitude}</dt>
               <dd className="data" data-pointing="altitude">
                 {shown ? `${shown.altitudeDegrees.toFixed(1)}°` : copy.none}
               </dd>
             </div>
-            <div>
+            <div className="room-value-main">
               <dt>{copy.azimuth}</dt>
               <dd className="data" data-pointing="azimuth">
                 {shown ? `${shown.azimuthDegrees.toFixed(1)}°` : copy.none}

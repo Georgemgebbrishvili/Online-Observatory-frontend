@@ -31,6 +31,8 @@ import {
   navigateWithFreshSession,
 } from "@/lib/platform/browser";
 
+import { PanelHead } from "./panel-head";
+
 const arrows = [
   ["up", "↑"],
   ["left", "←"],
@@ -38,22 +40,26 @@ const arrows = [
   ["down", "↓"],
 ] as const;
 
-type RoomControlsViewProps = {
+/** The controls in one moment, drawn from props alone: the design system shows each. */
+export type RoomControlsState = {
   offered: Offered;
-  copy: RoomControlsCopy;
   /** A command in flight: which control, and whether the request itself has been answered. */
   pending: { control: Control; relayed: boolean } | null;
   outcome: { control: Control; outcome: Outcome } | null;
   confirmingStop: boolean;
-  /** The region's name when it is not the heading: specimens side by side need their own. */
-  label?: string;
   onPress?: (control: Control) => void;
   onConfirmingStop?: (confirming: boolean) => void;
 };
 
+type ViewProps = RoomControlsState & {
+  copy: RoomControlsCopy;
+  /** The region's name when it is not the heading: specimens side by side need their own. */
+  label?: string;
+};
+
 function describe(
   copy: RoomControlsCopy,
-  outcome: RoomControlsViewProps["outcome"],
+  outcome: RoomControlsState["outcome"],
 ): string | null {
   if (!outcome) return null;
   switch (outcome.outcome.kind) {
@@ -68,17 +74,19 @@ function describe(
   }
 }
 
-/** The controls in one state, drawn from props alone: the design system shows each. */
+/**
+ * Hand control: the four nudges on a pad around re-centre, as the console draws it, and
+ * what the last command came to. Present for every live moment; the pad only while the
+ * target is being observed.
+ */
 export function RoomControlsView({
-  confirmingStop,
   copy,
   label,
   offered,
-  onConfirmingStop,
   onPress,
   outcome,
   pending,
-}: RoomControlsViewProps) {
+}: ViewProps) {
   const titleId = useId();
   if (!offered.stop) return null;
   const busy = pending !== null;
@@ -91,7 +99,12 @@ export function RoomControlsView({
       aria-labelledby={label ? undefined : titleId}
       aria-label={label}
     >
-      <h2 id={titleId}>{copy.title}</h2>
+      <PanelHead
+        id={titleId}
+        icon="hand"
+        title={copy.title}
+        meta={offered.move ? `${NUDGE_STEP_ARCMINUTES}′` : undefined}
+      />
 
       {offered.waiting && (
         <p className="room-muted">
@@ -100,46 +113,81 @@ export function RoomControlsView({
       )}
 
       {offered.move && (
-        <div className="room-controls-move">
-          <div className="room-controls-pad">
-            {arrows.map(([control, glyph]) => (
-              <button
-                key={control}
-                type="button"
-                className={`room-controls-arrow room-controls-${control}`}
-                aria-label={`${copy.labels[control]}, ${step}`}
-                disabled={busy}
-                aria-busy={pending?.control === control}
-                onClick={() => onPress?.(control)}
-              >
-                <span aria-hidden="true">{glyph}</span>
-              </button>
-            ))}
-          </div>
-          <div className="room-controls-actions">
-            <Button
-              variant="secondary"
+        <div className="room-controls-pad">
+          {arrows.map(([control, glyph]) => (
+            <button
+              key={control}
+              type="button"
+              className={`room-controls-arrow room-controls-${control}`}
+              aria-label={`${copy.labels[control]}, ${step}`}
               disabled={busy}
-              loading={pending?.control === "recenter"}
-              onClick={() => onPress?.("recenter")}
+              aria-busy={pending?.control === control}
+              onClick={() => onPress?.(control)}
             >
-              {copy.labels.recenter}
-            </Button>
-            {offered.capture ? (
-              <Button
-                disabled={busy}
-                loading={pending?.control === "capture"}
-                onClick={() => onPress?.("capture")}
-              >
-                {copy.labels.capture}
-              </Button>
-            ) : (
-              <p className="room-muted">{copy.noCapture}</p>
-            )}
-          </div>
+              <span aria-hidden="true">{glyph}</span>
+            </button>
+          ))}
+          <button
+            type="button"
+            className="room-controls-centre"
+            disabled={busy}
+            aria-busy={pending?.control === "recenter"}
+            onClick={() => onPress?.("recenter")}
+          >
+            {copy.labels.recenter}
+          </button>
         </div>
       )}
 
+      {offered.move && !offered.capture && <p className="room-muted">{copy.noCapture}</p>}
+
+      <p className="room-controls-status" aria-live="polite">
+        {pending ? (pending.relayed ? copy.waiting : copy.sending) : message}
+      </p>
+    </section>
+  );
+}
+
+/** Capture, the room's one primary action while the target is observed. */
+export function RoomCaptureAction({
+  copy,
+  offered,
+  onPress,
+  pending,
+}: Pick<ViewProps, "copy" | "offered" | "onPress" | "pending">) {
+  if (!offered.capture) return null;
+  return (
+    <Button
+      size="large"
+      disabled={pending !== null}
+      loading={pending?.control === "capture"}
+      onClick={() => onPress?.("capture")}
+    >
+      {copy.labels.capture}
+    </Button>
+  );
+}
+
+/** The session panel: Stop, asked twice, at any live moment. */
+export function RoomSessionView({
+  confirmingStop,
+  copy,
+  label,
+  offered,
+  onConfirmingStop,
+  onPress,
+  pending,
+}: ViewProps) {
+  const titleId = useId();
+  if (!offered.stop) return null;
+  const busy = pending !== null;
+  return (
+    <section
+      className="room-panel room-session"
+      aria-labelledby={label ? undefined : titleId}
+      aria-label={label}
+    >
+      <PanelHead id={titleId} icon="session" title={copy.sessionTitle} />
       {confirmingStop ? (
         <div
           className="room-controls-confirm"
@@ -169,18 +217,14 @@ export function RoomControlsView({
         </div>
       ) : (
         <Button
-          variant="ghost"
-          className="room-controls-stop"
+          variant="secondary"
+          className="room-session-stop"
           disabled={busy}
           onClick={() => onConfirmingStop?.(true)}
         >
           {copy.labels.stop}
         </Button>
       )}
-
-      <p className="room-controls-status" aria-live="polite">
-        {pending ? (pending.relayed ? copy.waiting : copy.sending) : message}
-      </p>
     </section>
   );
 }
@@ -202,24 +246,23 @@ type RoomControlsProps = {
   verdicts: Record<string, CommandVerdict>;
   imagingProfile: ImagingProfile | null;
   signInPath: string;
-  copy: RoomControlsCopy;
 };
 
 /**
- * Nudge, re-centre, capture and stop (Phase 4 slice 3). Each press is one
+ * Nudge, re-centre, capture and stop (Phase 4 slice 3), whose views sit apart in the
+ * room: the pad at the side, Capture under the feed, Stop in the session panel. Each press is one
  * `submitMissionCommand`; a 202 means relayed, so the control stays locked until the
  * agent's `MISSION_COMMAND_RESULT` names it, or its envelope expires unanswered. Commands
  * carry no idempotency key, so none is ever retried by itself.
  */
-export function RoomControls({
+export function useRoomControls({
   connected,
-  copy,
   imagingProfile,
   missionId,
   missionState,
   signInPath,
   verdicts,
-}: RoomControlsProps) {
+}: RoomControlsProps): RoomControlsState {
   // The latest press: its command once relayed, and its outcome once known. An outcome
   // set here is the request's own (a refusal, an error, no answer); otherwise it is
   // the agent's verdict, read from the channel's.
@@ -294,20 +337,15 @@ export function RoomControls({
 
   const stopped = command?.control === "stop" && outcome?.kind === "done";
 
-  return (
-    <RoomControlsView
-      offered={offered}
-      copy={copy}
-      pending={
-        pending && { control: pending.control, relayed: pending.commandId !== null }
-      }
-      outcome={command && outcome ? { control: command.control, outcome } : null}
-      confirmingStop={confirmingStop && !stopped}
-      onPress={(control) => void press(control)}
-      onConfirmingStop={(confirming) => {
-        if (!pending) setCommand(null);
-        setConfirmingStop(confirming);
-      }}
-    />
-  );
+  return {
+    offered,
+    pending: pending && { control: pending.control, relayed: pending.commandId !== null },
+    outcome: command && outcome ? { control: command.control, outcome } : null,
+    confirmingStop: confirmingStop && !stopped,
+    onPress: (control) => void press(control),
+    onConfirmingStop: (confirming) => {
+      if (!pending) setCommand(null);
+      setConfirmingStop(confirming);
+    },
+  };
 }

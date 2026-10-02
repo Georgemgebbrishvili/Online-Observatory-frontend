@@ -41,12 +41,16 @@ test("a nudge is relayed, answered by the telescope, and the controls unlock", a
 test("a capture runs, and the controls return when it is done", async ({ page }) => {
   await openRoom(page);
   const controls = page.getByRole("region", { name: "Controls" });
-  await controls.getByRole("button", { name: "Capture" }).click();
+  // Capture is the one primary action, under the feed with the steps.
+  const capture = page.locator(".live-feed-action").getByRole("button", {
+    name: "Capture",
+  });
+  await capture.click();
 
   await expect(
     controls.getByText("Capturing. The controls return when it is done."),
   ).toBeVisible();
-  await expect(controls.getByRole("button", { name: "Capture" })).toBeVisible();
+  await expect(capture).toBeVisible();
 });
 
 test("the telescope's own refusal is named, though the cloud approved it", async ({
@@ -84,15 +88,17 @@ test("a command with no answer gives up at its deadline", async ({ page }) => {
 
 test("stopping asks first, then ends the observation", async ({ page }) => {
   await openRoom(page);
-  const controls = page.getByRole("region", { name: "Controls" });
-  await controls.getByRole("button", { name: "Stop" }).click();
+  // Stop lives in the session panel, beside the hand control.
+  const session = page.getByRole("region", { name: "Session" });
+  await session.getByRole("button", { name: "Stop" }).click();
 
-  const confirm = controls.getByRole("group", { name: "Stop the observation?" });
+  const confirm = session.getByRole("group", { name: "Stop the observation?" });
   await expect(confirm).toContainText("your remaining time is not returned");
   await confirm.getByRole("button", { name: "Stop" }).click();
 
   await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "ended");
   await expect(page.getByRole("region", { name: "Controls" })).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Session" })).toHaveCount(0);
 });
 
 test("the Georgian controls fit a phone", async ({ page }) => {

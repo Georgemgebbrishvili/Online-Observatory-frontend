@@ -1,7 +1,9 @@
 /*
- * The live room (ADR-027): SIDERA's arrangement in this product's brand. Feed at the centre,
- * steps beneath it, dial and readings to the right; one column on a phone, in the order
- * of reading. No glow, no glass: depth is the surface ramp and borders.
+ * The live room (ADR-027) in the reference console's look (ADR-039): the feed as a deep
+ * well at the centre with small instrument plates in its corners, the step tracker and
+ * the one orange action under it, warm plate panels to the right; one column on a
+ * phone, in the order of reading. No glow, no glass, nothing over the picture but the
+ * plates: no reticle, no corner brackets, no crosshair.
  */
 
 .room {
@@ -59,7 +61,7 @@
 
 .room-grid {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 
 @media (--lg) {
@@ -67,7 +69,6 @@
     grid-template-columns: minmax(0, 1fr) 20rem;
     grid-template-areas:
       "feed side"
-      "steps side"
       "captures captures"
       "history history";
     align-items: start;
@@ -75,10 +76,6 @@
 
   .room-grid > .room-feed {
     grid-area: feed;
-  }
-
-  .room-grid > .mission-steps {
-    grid-area: steps;
   }
 
   .room-grid > .room-side {
@@ -99,26 +96,72 @@
     grid-template-columns: minmax(0, 1fr) 22rem;
     grid-template-areas:
       "feed side"
-      "steps side"
       "captures history";
   }
 }
 
 .room-side {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 
+/* A console panel: the plate, the strong rule, 14px. */
 .room-panel {
-  padding: var(--space-5);
-  border: 1px solid var(--color-border-subtle);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
+  background: var(--color-surface-raised);
 }
 
-.room-panel h2 {
-  margin: 0 0 var(--space-4);
-  font-size: var(--font-size-h3);
+/* Its header: a small orange icon, a tracked caps title, a meta label on the right. */
+.panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.panel-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.panel-title svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  fill: none;
+  stroke: var(--color-accent-ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.panel-meta {
+  margin: 0;
+  color: var(--color-accent-ink);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel-meta a:hover {
+  color: var(--color-accent-hover);
 }
 
 .room-muted,
@@ -133,7 +176,7 @@
   font-size: var(--font-size-caption);
 }
 
-/* The feed's place. Before a stream exists it holds the target preview. */
+/* The target preview: what stands in the feed's place before a stream exists. */
 
 .target-preview {
   display: grid;
@@ -142,6 +185,7 @@
 }
 
 .target-preview-stage {
+  position: relative;
   display: grid;
   place-items: center;
   aspect-ratio: 16 / 10;
@@ -152,14 +196,9 @@
 }
 
 /* The whole plate, full height: a planet spans up to half of it (Mars, 17–66 %), so
-   cropping it to the stage would cut one off. Its faint ground fades out at the sides
-   rather than ending in an edge. */
-.target-preview-stage {
-  position: relative;
-}
-
-/* Absolute, so 100% is the stage's height: a grid item's percentage height does not
-   resolve against an aspect-ratio box. */
+   cropping it to the stage would cut one off. Absolute, so 100% is the stage's height:
+   a grid item's percentage height does not resolve against an aspect-ratio box. Its
+   faint ground fades out at the sides rather than ending in an edge. */
 .target-preview-stage img {
   position: absolute;
   top: 0;
@@ -190,11 +229,27 @@
   font-size: var(--font-size-caption);
 }
 
-/* The live feed (slice 2): the stream, or the preview, and one status line under it. */
+/*
+ * The feed (slice 2). The well is deep and framed by the strong rule; the picture fills
+ * it edge to edge. Its plates sit in the corners once the well is wide enough to keep
+ * them off the middle of the picture, and in a row under it until then.
+ */
 
 .live-feed {
   display: grid;
   gap: var(--space-4);
+}
+
+.live-feed-well {
+  container: feed / inline-size;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+}
+
+.live-feed-view {
+  display: grid;
 }
 
 .live-feed-stage {
@@ -203,8 +258,6 @@
   place-items: center;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
   background: var(--color-night);
 }
 
@@ -226,25 +279,140 @@
   right: var(--space-4);
 }
 
+.live-feed-well .target-preview {
+  gap: 0;
+}
+
+.live-feed-well .target-preview-stage {
+  border: 0;
+  border-radius: 0;
+}
+
+.live-feed-well .target-preview figcaption {
+  padding: var(--space-3) var(--space-4) 0;
+}
+
+.live-feed-plates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.live-feed-plate {
+  display: grid;
+  gap: var(--space-1);
+  max-width: 100%;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--color-scrim-strong);
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.live-feed-plate-instrument > span:first-child {
+  color: var(--color-text-primary);
+}
+
+.live-feed-plate-data,
+.live-feed-time time {
+  color: var(--color-photon);
+}
+
+.live-feed-time {
+  display: block;
+}
+
+@container feed (min-width: 34rem) {
+  .live-feed-view {
+    position: relative;
+  }
+
+  .live-feed-plates {
+    position: absolute;
+    inset: 0;
+    display: block;
+    padding: 0;
+    pointer-events: none;
+  }
+
+  .live-feed-plate {
+    position: absolute;
+    max-width: 46%;
+  }
+
+  .live-feed-plate-instrument {
+    top: var(--space-4);
+    left: var(--space-4);
+  }
+
+  .live-feed-plate-subject {
+    bottom: var(--space-4);
+    left: var(--space-4);
+  }
+
+  .live-feed-time {
+    right: var(--space-4);
+    bottom: var(--space-4);
+  }
+
+  /* Before a stream, the top right is free: the illustration's caption sits there. */
+  .live-feed-well .target-preview figcaption {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    max-width: 46%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-control);
+    background: var(--color-scrim-strong);
+  }
+}
+
+/* Under the well: the tracker, then what is happening and the one action. */
+.live-feed-flow {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+}
+
+.live-feed-flow > .mission-steps {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
 .live-feed-status {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3) var(--space-5);
-  padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
+  gap: var(--space-4) var(--space-5);
+}
+
+.live-feed-flow > .mission-steps + .live-feed-status {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .live-feed-status > [role] {
   display: grid;
-  flex: 1 1 18rem;
+  flex: 1 1 16rem;
   gap: var(--space-1);
 }
 
 .live-feed-status strong {
-  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-semibold);
 }
 
 .live-feed-status span {
@@ -252,55 +420,40 @@
   font-size: var(--font-size-label);
 }
 
+.live-feed-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+@media (--below-sm) {
+  .live-feed-action,
+  .live-feed-action .button {
+    width: 100%;
+  }
+}
+
 /* A hold is amber, as the room marks a stopped mission (ADR-027 §7); nothing else is. */
-.live-feed[data-live-status="hold"] .live-feed-status {
+.live-feed[data-live-status="hold"] .live-feed-status > [role] {
+  padding-left: var(--space-3);
   border-left: 2px solid var(--color-warning);
 }
 
 /* An actionable failure: the status line offers to try again. */
-.live-feed[data-live-status="error"] .live-feed-status,
-.live-feed[data-live-status="refused"] .live-feed-status {
+.live-feed[data-live-status="error"] .live-feed-status > [role],
+.live-feed[data-live-status="refused"] .live-feed-status > [role] {
+  padding-left: var(--space-3);
   border-left: 2px solid var(--color-error);
 }
 
-.live-feed-time {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
-.live-feed-time time {
-  color: var(--color-text-primary);
-}
-
-/* The five steps. */
+/* The step tracker: numbered circles joined by a line, done checked, current ringed. */
 
 .mission-steps {
-  padding: var(--space-5);
-  border: 1px solid var(--color-border-subtle);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
-}
-
-.mission-steps header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  margin-bottom: var(--space-5);
-}
-
-.mission-steps h2 {
-  margin: 0;
-  font-size: var(--font-size-h3);
-}
-
-.mission-steps header p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-caption);
+  background: var(--color-surface-raised);
 }
 
 .mission-steps ol {
@@ -316,23 +469,24 @@
   position: relative;
   display: grid;
   justify-items: center;
+  align-content: start;
   gap: var(--space-2);
   text-align: center;
 }
 
-/* The connector, from each step's dot to the next one's. */
+/* The connector, from each step's circle to the next one's. */
 .mission-steps li:not(:last-child)::after {
   position: absolute;
   top: 1rem;
   left: calc(50% + 1.25rem);
   width: calc(100% - 2.5rem + var(--space-2));
   height: 1px;
-  background: var(--color-border-subtle);
+  background: var(--color-border-strong);
   content: "";
 }
 
 .mission-steps li[data-status="done"]:not(:last-child)::after {
-  background: var(--color-photon-border);
+  background: var(--color-accent-border);
 }
 
 .mission-step-dot {
@@ -340,9 +494,9 @@
   width: 2rem;
   height: 2rem;
   place-items: center;
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-control);
   border-radius: var(--radius-full);
-  background: var(--color-surface-raised);
+  background: var(--color-surface-base);
   color: var(--color-text-tertiary);
   font-family: var(--font-mono);
   font-size: var(--font-size-caption);
@@ -360,17 +514,25 @@
 
 .mission-step-name {
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-label);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.3;
+  text-transform: uppercase;
 }
 
 .mission-step-note {
-  color: var(--color-warning);
+  color: var(--color-accent-ink);
+  font-family: var(--font-mono);
   font-size: var(--font-size-caption);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 [data-status="done"] .mission-step-dot {
-  border-color: var(--color-photon-border);
-  color: var(--color-photon);
+  border-color: var(--color-accent-border);
+  color: var(--color-accent-ink);
 }
 
 [data-status="done"] .mission-step-name {
@@ -378,18 +540,16 @@
 }
 
 [data-status="current"] .mission-step-dot {
-  border-color: var(--color-photon);
-  background: var(--color-photon);
-  color: var(--color-on-photon);
+  border: 2px solid var(--color-accent);
+  color: var(--color-accent-ink);
 }
 
 [data-status="current"] .mission-step-name {
   color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
 }
 
 [data-status="stopped"] .mission-step-dot {
-  border-color: var(--color-warning-border);
+  border: 2px solid var(--color-warning);
   background: var(--color-warning-muted);
   color: var(--color-warning);
 }
@@ -398,8 +558,13 @@
   color: var(--color-text-primary);
 }
 
-/* On a phone the five names do not fit side by side: the steps become a bar, and only
-   the step the mission is at keeps its name. */
+[data-status="stopped"] .mission-step-note {
+  color: var(--color-warning);
+}
+
+/* On a phone the five names do not fit side by side: the steps become a bar, as the
+   console's phone layout draws them, and only the step the mission is at keeps its
+   name. */
 @media (--below-md) {
   .mission-steps ol {
     gap: var(--space-1);
@@ -415,7 +580,7 @@
     border: 0;
     border-radius: var(--radius-full);
     overflow: hidden;
-    background: var(--color-border-subtle);
+    background: var(--color-border-strong);
     color: transparent;
   }
 
@@ -424,18 +589,20 @@
   }
 
   [data-status="done"] .mission-step-dot {
-    background: var(--color-photon-border);
+    background: var(--color-accent-border);
   }
 
   [data-status="current"] .mission-step-dot {
-    background: var(--color-photon);
+    border: 0;
+    background: var(--color-accent);
   }
 
   [data-status="stopped"] .mission-step-dot {
+    border: 0;
     background: var(--color-warning);
   }
 
-  .mission-steps li:not([aria-current]) .mission-step-name {
+  .mission-steps li:not([aria-current]) :is(.mission-step-name, .mission-step-note) {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -450,7 +617,7 @@
   }
 }
 
-/* The dial and its values. */
+/* The pointing dial and its readings. */
 
 .room-pointing-body {
   display: grid;
@@ -465,18 +632,18 @@
 }
 
 .pointing-dial-rim {
-  fill: var(--color-night);
-  stroke: var(--color-border-strong);
+  fill: var(--color-accent-muted);
+  stroke: var(--color-accent-border);
 }
 
 .pointing-dial-ring {
   fill: none;
-  stroke: var(--color-border-subtle);
+  stroke: var(--color-border-strong);
   stroke-dasharray: 2 3;
 }
 
 .pointing-dial-tick {
-  stroke: var(--color-border-strong);
+  stroke: var(--color-border-control);
 }
 
 .pointing-dial-cardinal,
@@ -487,7 +654,7 @@
 }
 
 .pointing-dial-north {
-  fill: var(--color-text-primary);
+  fill: var(--color-accent-ink);
 }
 
 .pointing-dial-centre {
@@ -511,7 +678,7 @@
 /* The target, once the telescope has a marker of its own: where the mount is going. */
 .pointing-dial-reference {
   fill: none;
-  stroke: var(--color-border-strong);
+  stroke: var(--color-text-tertiary);
   stroke-dasharray: 2 2;
 }
 
@@ -550,7 +717,11 @@
 .room-values dt,
 .room-readings dt {
   color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .room-values dd,
@@ -560,25 +731,18 @@
   font-size: var(--font-size-body);
 }
 
-/* Captures and history. */
-
-.room-captures header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  margin-bottom: var(--space-4);
-}
-
-.room-captures header h2 {
-  margin: 0;
-}
-
-.room-captures header a {
+/* Altitude and azimuth: the live readout, large, in data blue. */
+.room-values .room-value-main dd {
   color: var(--color-photon);
-  font-size: var(--font-size-label);
+  font-size: var(--font-size-h3);
+  line-height: 1.1;
 }
+
+.room-readings .room-reading-live {
+  color: var(--color-photon);
+}
+
+/* Captures and history. */
 
 .room-capture-grid {
   display: grid;
@@ -602,7 +766,7 @@
 }
 
 .room-history li:first-child {
-  border-left-color: var(--color-photon);
+  border-left-color: var(--color-accent);
 }
 
 .room-history time {
@@ -620,66 +784,103 @@
   font-size: var(--font-size-caption);
 }
 
-/* Slice 3: the controls, beneath the feed. Arrows on a cross, actions beside them. */
+/* Slice 3: hand control, a pad of four nudges around re-centre. */
 .room-feed {
   display: grid;
   gap: var(--space-4);
 }
 
-.room-controls {
+.room-controls,
+.room-session {
   display: grid;
   gap: var(--space-4);
 }
 
-.room-controls h2 {
-  margin: 0;
+.room-controls .panel-head,
+.room-session .panel-head {
+  margin-bottom: 0;
 }
 
 .room-controls .room-muted {
   margin: 0;
 }
 
-.room-controls-move {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-5);
-}
-
 .room-controls-pad {
   display: grid;
-  grid-template-columns: repeat(3, 2.75rem);
+  grid-template-columns: 3rem auto 3rem;
+  grid-template-rows: 3rem 4.5rem 3rem;
   grid-template-areas:
     ". up ."
-    "left . right"
+    "left centre right"
     ". down .";
-  gap: var(--space-2);
+  justify-content: center;
+  place-items: center;
+  gap: var(--space-1);
+}
+
+.room-controls-arrow,
+.room-controls-centre {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border-control);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
 }
 
 .room-controls-arrow {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1px solid var(--color-border-strong);
+  width: 3rem;
+  height: 3rem;
   border-radius: var(--radius-control);
-  background: var(--color-surface-raised);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-lg);
-  cursor: pointer;
-}
-
-.room-controls-arrow:hover:not(:disabled) {
   background: var(--color-surface-hover);
+  font-size: var(--font-size-body-lg);
 }
 
-.room-controls-arrow:focus-visible {
+/* Re-centre: the round middle of the pad, in the action colour. It widens into a pill
+   for a label longer than the circle, as the Georgian one is. */
+.room-controls-centre {
+  grid-area: centre;
+  min-width: 4.5rem;
+  height: 4.5rem;
+  padding: var(--space-1) var(--space-3);
+  white-space: nowrap;
+  border-color: var(--color-accent-border);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-muted);
+  color: var(--color-accent-ink);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.room-controls-arrow:hover:not(:disabled),
+.room-controls-centre:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent-hover);
+}
+
+.room-controls-arrow:active:not(:disabled),
+.room-controls-centre:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.room-controls-arrow:focus-visible,
+.room-controls-centre:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
-.room-controls-arrow:disabled {
-  color: var(--color-text-tertiary);
+.room-controls-arrow:disabled,
+.room-controls-centre:disabled {
+  border-color: var(--color-border-subtle);
+  color: var(--color-text-disabled);
   cursor: not-allowed;
 }
 
@@ -699,15 +900,8 @@
   grid-area: right;
 }
 
-.room-controls-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.room-controls-stop {
-  justify-self: start;
+.room-session-stop {
+  width: 100%;
 }
 
 .room-controls-confirm {
@@ -716,6 +910,7 @@
   padding: var(--space-4);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-medium);
+  background: var(--color-surface-base);
 }
 
 .room-controls-confirm p {
@@ -736,13 +931,16 @@
   font-size: var(--font-size-label);
 }
 
-/* Slice 4: the owner's sharing panel, beside the dial. */
+/* Slice 4: the owner's sharing panel. */
 .room-sharing {
   display: grid;
   gap: var(--space-3);
 }
 
-.room-sharing h2,
+.room-sharing .panel-head {
+  margin-bottom: var(--space-1);
+}
+
 .room-sharing > p {
   margin: 0;
 }
@@ -758,7 +956,7 @@
 }
 
 /* Slice 5: the watch page, an observer's seat on somebody else's session. The room's
-   feed and steps, without the owner's controls, side panels, captures or history. */
+   feed and tracker, read only, beside the seat panel; no controls, captures or history. */
 .watch {
   display: grid;
   gap: var(--space-6);
@@ -769,10 +967,19 @@
   min-width: 0;
 }
 
+.watch-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
 .watch-panel {
   display: grid;
   gap: var(--space-3);
   max-width: 44rem;
+}
+
+.watch-panel .panel-head {
+  margin-bottom: var(--space-1);
 }
 
 .watch-panel > p {
@@ -791,16 +998,16 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
-}
-
-.watch-grid {
-  display: grid;
-  gap: var(--space-5);
+  margin-top: var(--space-2);
 }
 
 @media (--lg) {
-  .watch-grid {
+  .watch-grid[data-watching] {
     grid-template-columns: minmax(0, 1fr) 20rem;
     align-items: start;
+  }
+
+  .watch-grid[data-watching] .watch-panel {
+    max-width: none;
   }
 }

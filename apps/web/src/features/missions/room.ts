@@ -1,4 +1,12 @@
-import type { MissionEvent, MissionState } from "@darkview/contracts";
+import type {
+  BookableObservatory,
+  MissionEvent,
+  MissionState,
+  OpticalConfig,
+  Target,
+} from "@darkview/contracts";
+
+import { formatCoordinates } from "@/features/targets/present";
 
 /**
  * The room's five steps, each the primary states it covers (ADR-027 §4). Failure and
@@ -80,4 +88,46 @@ const plates: Record<string, string> = {
 
 export function plateFor(slug: string) {
   return plates[slug] ?? null;
+}
+
+/** What the feed's corner plates say: the instrument, and the target. */
+export type FeedPlates = {
+  /** Observatory name, then the camera and optics; null when the observatory is unread. */
+  instrument: string[] | null;
+  /** The target's name, and its J2000 RA/Dec when it is a fixed target. */
+  subject: { name: string; coordinates: string | null } | null;
+};
+
+/**
+ * The feed's plates, from the contract only. The camera and the C6's optical
+ * configurations are the first-party observatory's (ADR-001, `OpticalConfig`); a
+ * partner publishes only its telescope, so that is all its plate names.
+ */
+export function feedPlates(
+  observatory: BookableObservatory | null,
+  target: Target | null,
+  locale: "en" | "ka",
+  labels: { camera: string; optics: Record<OpticalConfig, string> },
+): FeedPlates {
+  const name = (named: { nameEn: string; nameKa: string }) =>
+    locale === "ka" ? named.nameKa : named.nameEn;
+  const instrument = observatory
+    ? [
+        name(observatory),
+        observatory.kind === "FIRST_PARTY"
+          ? [labels.camera, target && labels.optics[target.opticalConfig]]
+              .filter(Boolean)
+              .join(" · ")
+          : `${observatory.telescope.manufacturer} ${observatory.telescope.model}`,
+      ]
+    : null;
+  return {
+    instrument,
+    subject: target
+      ? {
+          name: name(target),
+          coordinates: target.coordinates ? formatCoordinates(target.coordinates) : null,
+        }
+      : null,
+  };
 }

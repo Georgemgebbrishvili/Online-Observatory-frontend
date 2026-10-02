@@ -14,6 +14,8 @@ import {
   navigateWithFreshSession,
 } from "@/lib/platform/browser";
 
+import { PanelHead } from "./panel-head";
+
 export type SharingNotice = "copied" | "ended" | "failed" | null;
 
 type RoomSharingViewProps = {
@@ -62,7 +64,12 @@ export function RoomSharingView({
       aria-labelledby={label ? undefined : titleId}
       aria-label={label}
     >
-      <h2 id={titleId}>{copy.title}</h2>
+      <PanelHead
+        id={titleId}
+        icon="share"
+        title={copy.title}
+        meta={observable && notice !== "ended" ? `${count} / ${capacity}` : undefined}
+      />
       {notice === "ended" ? null : observable ? (
         <>
           <p>

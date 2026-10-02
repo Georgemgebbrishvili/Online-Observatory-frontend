@@ -9,13 +9,14 @@ import {
   formatCapturedAt,
 } from "@/features/collection/present";
 import type { Room } from "@/features/missions/read-room";
-import { plateFor } from "@/features/missions/room";
+import { feedPlates, plateFor } from "@/features/missions/room";
 import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
 import { roomCopy } from "@/i18n/resources/room";
 import { statusCopy } from "@/i18n/resources/status";
 
+import { PanelHead } from "./panel-head";
 import { RoomLive } from "./room-live";
 
 type MissionRoomProps = {
@@ -42,7 +43,16 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
   const copy = roomCopy[locale];
   const status = statusCopy[locale];
   const captureCopy = collectionGalleryCopy[locale];
-  const { captures, conditions, events, mission, target, timezone, tonight } = room;
+  const {
+    captures,
+    conditions,
+    events,
+    mission,
+    observatory,
+    target,
+    timezone,
+    tonight,
+  } = room;
 
   const name = target ? (locale === "ka" ? target.nameKa : target.nameEn) : "—";
   const named = (template: string) => fill(template, { target: name });
@@ -66,9 +76,21 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
             : null
         }
         visibility={visibility ?? null}
+        plates={feedPlates(observatory, target, locale, copy.feed)}
         readings={
           <section className="room-panel" aria-labelledby="room-readings-title">
-            <h2 id="room-readings-title">{copy.readings.title}</h2>
+            <PanelHead
+              id="room-readings-title"
+              icon="observatory"
+              title={copy.readings.title}
+              meta={
+                observatory
+                  ? locale === "ka"
+                    ? observatory.nameKa
+                    : observatory.nameEn
+                  : undefined
+              }
+            />
             <dl className="room-readings">
               <div>
                 <dt>{status.now.link}</dt>
@@ -109,10 +131,12 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
           className="room-panel room-captures"
           aria-labelledby="room-captures-title"
         >
-          <header>
-            <h2 id="room-captures-title">{copy.captures.title}</h2>
-            <Link href={`/${locale}/app/collection`}>{copy.captures.all}</Link>
-          </header>
+          <PanelHead
+            id="room-captures-title"
+            icon="captures"
+            title={copy.captures.title}
+            meta={<Link href={`/${locale}/app/collection`}>{copy.captures.all}</Link>}
+          />
           {captures.length === 0 ? (
             <p className="room-muted">{copy.captures.empty}</p>
           ) : (
@@ -140,7 +164,7 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
         </section>
 
         <section className="room-panel room-history" aria-labelledby="room-history-title">
-          <h2 id="room-history-title">{copy.history.title}</h2>
+          <PanelHead id="room-history-title" icon="history" title={copy.history.title} />
           {!events || events.length === 0 ? (
             <p className="room-muted">
               {events ? copy.history.empty : copy.history.unreadable}

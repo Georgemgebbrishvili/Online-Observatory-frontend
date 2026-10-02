@@ -12,7 +12,7 @@ import { checkoutTarget } from "@/components/booking/reserve-form";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { LoadingState } from "@/components/ui/loading-state";
-import { missionProgress, plateFor } from "@/features/missions/room";
+import { feedPlates, missionProgress, plateFor } from "@/features/missions/room";
 import { useWatchChannel } from "@/features/missions/use-watch-channel";
 import {
   clearCheckout,
@@ -34,6 +34,7 @@ import {
 
 import { LiveFeed } from "./live-feed";
 import { MissionSteps } from "./mission-steps";
+import { PanelHead } from "./panel-head";
 import { TargetPreview } from "./target-preview";
 
 export type WatchPhase =
@@ -62,6 +63,8 @@ type WatchViewProps = {
   copy: WatchCopy;
   /** The target's name, for the eyebrow; null before the view is read. */
   target?: string | null;
+  /** The observatory's name, on the seat panel; null before the view is read. */
+  observatory?: string | null;
   /** "{owner} is observing {target}.", filled. */
   headline?: string | null;
   /** "{count} of {capacity} seats taken.", filled. */
@@ -72,9 +75,8 @@ type WatchViewProps = {
   notice?: string | null;
   /** The live room, for the owner. */
   roomPath?: string;
-  /** The feed and the steps, while watching. */
+  /** The feed, with its steps, while watching. */
   feed?: ReactNode;
-  steps?: ReactNode;
   /** 2 for specimens side by side on the design system, which has its own h1. */
   headingLevel?: 1 | 2;
   label?: string;
@@ -99,6 +101,7 @@ export function WatchView({
   headline,
   label,
   notice,
+  observatory,
   onBuy,
   onJoin,
   onLeave,
@@ -107,7 +110,6 @@ export function WatchView({
   roomPath,
   seats,
   simulated,
-  steps,
   target,
 }: WatchViewProps) {
   const Heading = headingLevel === 2 ? "h2" : "h1";
@@ -131,12 +133,17 @@ export function WatchView({
     phase === "loading" ? (
       <LoadingState label={copy.loading} lines={3} />
     ) : phase === "owner" && roomPath ? (
-      <div className="watch-actions">
-        <ButtonLink href={roomPath}>{copy.ownerAction}</ButtonLink>
-      </div>
+      <>
+        <p>{copy.ownerNote}</p>
+        <div className="watch-actions">
+          <ButtonLink href={roomPath} size="large">
+            {copy.ownerAction}
+          </ButtonLink>
+        </div>
+      </>
     ) : phase === "sale" ? (
       <div className="watch-actions">
-        <Button loading={pending === "buy"} onClick={() => onBuy?.()}>
+        <Button size="large" loading={pending === "buy"} onClick={() => onBuy?.()}>
           {copy.buy}
         </Button>
       </div>
@@ -201,23 +208,28 @@ export function WatchView({
         <ModeNotice mode="SIMULATED" label={simulated.label} detail={simulated.detail} />
       )}
 
-      {(body || notice) && (
-        <div className="room-panel watch-panel">
-          {body}
-          {notice && (
-            <p className="watch-notice" role="alert">
-              {notice}
-            </p>
-          )}
-        </div>
-      )}
-
-      {phase === "watching" && (feed || steps) && (
-        <div className="watch-grid">
-          {feed}
-          {steps}
-        </div>
-      )}
+      <div
+        className="watch-grid"
+        data-watching={phase === "watching" && feed ? "true" : undefined}
+      >
+        {phase === "watching" && feed}
+        {(body || notice) && (
+          <div className="room-panel watch-panel">
+            <PanelHead
+              level={headingLevel === 2 ? 3 : 2}
+              icon={phase === "owner" ? "observatory" : "seat"}
+              title={phase === "owner" && target ? target : copy.seatTitle}
+              meta={observatory ?? undefined}
+            />
+            {body}
+            {notice && (
+              <p className="watch-notice" role="alert">
+                {notice}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
@@ -437,6 +449,7 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
       phase={shown}
       copy={copy}
       target={targetName}
+      observatory={locale === "ka" ? view.observatory.nameKa : view.observatory.nameEn}
       headline={fill(copy.headline, {
         owner: view.ownerDisplayName ?? copy.someone,
         target: targetName,
@@ -477,6 +490,7 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
                 caption={room.feed.illustration}
               />
             }
+            plates={feedPlates(view.observatory, target, locale, room.feed)}
             title={text.title}
             description={text.description}
             labels={{
@@ -485,18 +499,19 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
               timeLeft: room.live.timeLeft,
             }}
             timeLeft={null}
+            steps={
+              <MissionSteps
+                title={room.steps.title}
+                names={room.steps.names}
+                statuses={statuses}
+                position={fill(room.steps.stepOf, { step: String(reached + 1) })}
+                now={room.steps.now}
+                stopped={room.steps.stopped}
+              />
+            }
             onStreamError={onStreamError}
           />
         </section>
-      }
-      steps={
-        <MissionSteps
-          title={room.steps.title}
-          names={room.steps.names}
-          statuses={statuses}
-          position={fill(room.steps.stepOf, { step: String(reached + 1) })}
-          stopped={room.steps.stopped}
-        />
       }
     />
   );

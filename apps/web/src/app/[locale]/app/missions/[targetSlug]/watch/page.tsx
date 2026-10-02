@@ -60,6 +60,9 @@ export default async function WatchPage({ params }: WatchPageProps) {
           phase="owner"
           copy={copy}
           target={locale === "ka" ? view.target.nameKa : view.target.nameEn}
+          observatory={
+            locale === "ka" ? view.observatory.nameKa : view.observatory.nameEn
+          }
           roomPath={`/${locale}/app/missions/${view.mission.id}/session`}
         />
       </div>

@@ -1,5 +1,7 @@
 import type { StepStatus } from "@/features/missions/room";
 
+import { PanelHead } from "./panel-head";
+
 type MissionStepsProps = {
   /** The heading's id; unique on the page. */
   id?: string;
@@ -8,6 +10,8 @@ type MissionStepsProps = {
   statuses: readonly StepStatus[];
   /** "Step 3 of 5", already filled. */
   position: string;
+  /** The current step's sub-label. */
+  now: string;
   stopped: string;
 };
 
@@ -19,10 +23,15 @@ function CheckIcon() {
   );
 }
 
-/** The room's five steps (ADR-027 §4): done, current, stopped or still ahead. */
+/**
+ * The room's five steps (ADR-027 §4), as the console's tracker: numbered circles joined
+ * by a line, done steps checked, the current one ringed. A failure or hold stops the
+ * flow at the step reached and is named there, never as a step of its own.
+ */
 export function MissionSteps({
   id = "mission-steps-title",
   names,
+  now,
   position,
   statuses,
   stopped,
@@ -30,10 +39,7 @@ export function MissionSteps({
 }: MissionStepsProps) {
   return (
     <section className="mission-steps" aria-labelledby={id}>
-      <header>
-        <h2 id={id}>{title}</h2>
-        <p>{position}</p>
-      </header>
+      <PanelHead id={id} icon="progress" title={title} meta={position} />
       <ol>
         {names.map((name, index) => {
           const status = statuses[index] ?? "pending";
@@ -49,6 +55,7 @@ export function MissionSteps({
                 {status === "done" ? <CheckIcon /> : `0${index + 1}`}
               </span>
               <span className="mission-step-name">{name}</span>
+              {status === "current" && <span className="mission-step-note">{now}</span>}
               {status === "stopped" && (
                 <span className="mission-step-note">{stopped}</span>
               )}

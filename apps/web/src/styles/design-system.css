@@ -455,3 +455,10 @@
 .ds-kicker-sample .display {
   font-size: var(--font-size-hero);
 }
+
+.ds-capture-specimens {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}

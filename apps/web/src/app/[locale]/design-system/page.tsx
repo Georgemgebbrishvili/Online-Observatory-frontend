@@ -18,7 +18,11 @@ import { reserveCopy } from "@/i18n/resources/reserve";
 import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PointingDial } from "@/components/room/pointing-dial";
-import { RoomControlsView } from "@/components/room/room-controls";
+import {
+  RoomCaptureAction,
+  RoomControlsView,
+  RoomSessionView,
+} from "@/components/room/room-controls";
 import { RoomSharingView } from "@/components/room/room-sharing";
 import { WatchView, type WatchPhase } from "@/components/room/mission-watch";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
@@ -28,7 +32,7 @@ import { FlightPlan } from "@/components/home/flight-plan";
 import { PlateFan } from "@/components/home/plate-fan";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
-import { missionProgress, plateFor } from "@/features/missions/room";
+import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
 import { fill } from "@/features/operator/format";
 import { CaptureCard } from "@/components/collection/capture-card";
 import { CaptureDownloads } from "@/components/collection/capture-downloads";
@@ -193,6 +197,14 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
 
   const copy = designSystemCopy[locale];
   const room = roomCopy[locale];
+  // The feed's plates as the first-party observatory fills them, for Saturn.
+  const specimenPlates: FeedPlates = {
+    instrument: [
+      locale === "ka" ? "თბილისის ობსერვატორია" : "Tbilisi Observatory",
+      `${room.feed.camera} · ${room.feed.optics.F10_NATIVE}`,
+    ],
+    subject: { name: locale === "ka" ? "სატურნი" : "Saturn", coordinates: null },
+  };
   const dictionary = await getDictionary(locale);
 
   return (
@@ -612,6 +624,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   headingLevel={2}
                   label={`WatchView ${index + 1}`}
                   target={seen ? "Saturn" : null}
+                  observatory={seen ? specimenPlates.instrument?.[0] : null}
                   headline={fill(watch.headline, { owner: "Nino", target: "Saturn" })}
                   seats={fill(watch.seats, {
                     count: phase === "full" ? "5" : "2",
@@ -647,16 +660,18 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                         timeLeft: room.live.timeLeft,
                       }}
                       timeLeft={null}
-                    />
-                  }
-                  steps={
-                    <MissionSteps
-                      id={`ds-watch-steps-${index}`}
-                      title={room.steps.title}
-                      names={room.steps.names}
-                      statuses={missionProgress("OBSERVING", null)}
-                      position={fill(room.steps.stepOf, { step: "4" })}
-                      stopped={room.steps.stopped}
+                      plates={specimenPlates}
+                      steps={
+                        <MissionSteps
+                          id={`ds-watch-steps-${index}`}
+                          title={room.steps.title}
+                          names={room.steps.names}
+                          statuses={missionProgress("OBSERVING", null)}
+                          position={fill(room.steps.stepOf, { step: "4" })}
+                          now={room.steps.now}
+                          stopped={room.steps.stopped}
+                        />
+                      }
                     />
                   }
                 />
@@ -737,6 +752,37 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               />
             ))}
           </div>
+          <div className="ds-room-specimens ds-session-specimens">
+            <div className="ds-capture-specimens">
+              <RoomCaptureAction
+                offered={{ move: true, capture: true, stop: true, waiting: null }}
+                pending={null}
+                copy={roomControlsCopy[locale]}
+              />
+              <RoomCaptureAction
+                offered={{ move: true, capture: true, stop: true, waiting: null }}
+                pending={{ control: "capture", relayed: false }}
+                copy={roomControlsCopy[locale]}
+              />
+            </div>
+            {(
+              [
+                [false, null],
+                [true, null],
+                [true, { control: "stop", relayed: true }],
+              ] as const
+            ).map(([confirmingStop, pending], index) => (
+              <RoomSessionView
+                key={index}
+                offered={{ move: true, capture: true, stop: true, waiting: null }}
+                pending={pending}
+                outcome={null}
+                confirmingStop={confirmingStop}
+                copy={roomControlsCopy[locale]}
+                label={`${roomControlsCopy[locale].sessionTitle} ${index + 1}`}
+              />
+            ))}
+          </div>
           <h3 className="ds-subheading">{copy.cards.missionSteps}</h3>
           <div className="ds-room-specimens">
             {(
@@ -759,6 +805,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   position={fill(room.steps.stepOf, {
                     step: String(at === -1 ? 5 : at + 1),
                   })}
+                  now={room.steps.now}
                   stopped={room.steps.stopped}
                 />
               );
@@ -858,6 +905,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                     live: room.live.live,
                     timeLeft: room.live.timeLeft,
                   }}
+                  plates={specimenPlates}
                   timeLeft={
                     ["connecting", "live", "reconnecting"].includes(status)
                       ? { text: "24:00", iso: "PT1440S" }

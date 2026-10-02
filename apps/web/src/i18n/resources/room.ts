@@ -3,6 +3,7 @@ import type {
   MissionFailureReason,
   MissionEventSource,
   MissionState,
+  OpticalConfig,
 } from "@darkview/contracts";
 
 import { brand } from "@/brand";
@@ -37,11 +38,16 @@ type RoomCopy = {
     label: string;
     illustration: string;
     before: string;
+    /** The first-party observatory's camera (ADR-001); a partner's is not published. */
+    camera: string;
+    /** `Target.opticalConfig`, short, for the feed's instrument plate. */
+    optics: Record<OpticalConfig, string>;
   };
   steps: {
     title: string;
     names: [string, string, string, string, string];
     stepOf: string;
+    now: string;
     stopped: string;
   };
   pointing: {
@@ -83,11 +89,18 @@ const en: RoomCopy = {
     label: "Live view",
     illustration: "Illustration — not telescope output",
     before: "The live view opens here when the telescope reaches {target}.",
+    camera: "ZWO ASI585MC",
+    optics: {
+      F20_BARLOW: "3000 mm · f/20",
+      F10_NATIVE: "1500 mm · f/10",
+      F6_3_REDUCER: "945 mm · f/6.3",
+    },
   },
   steps: {
     title: "Progress",
     names: ["Prepare", "Slew", "Centre", "Observe", "Capture"],
     stepOf: "Step {step} of 5",
+    now: "Now",
     stopped: "Stopped here",
   },
   pointing: {
@@ -307,11 +320,18 @@ const ka: RoomCopy = {
     label: "პირდაპირი ხედი",
     illustration: "ილუსტრაცია — არა ტელესკოპის კადრი",
     before: "პირდაპირი ხედი აქ გაიხსნება, როცა ტელესკოპი ობიექტს მიაღწევს: {target}.",
+    camera: "ZWO ASI585MC",
+    optics: {
+      F20_BARLOW: "3000 mm · f/20",
+      F10_NATIVE: "1500 mm · f/10",
+      F6_3_REDUCER: "945 mm · f/6.3",
+    },
   },
   steps: {
     title: "მიმდინარეობა",
     names: ["მომზადება", "მიმართვა", "ცენტრირება", "დაკვირვება", "გადაღება"],
     stepOf: "ნაბიჯი {step} 5-დან",
+    now: "ახლა",
     stopped: "აქ შეჩერდა",
   },
   pointing: {
