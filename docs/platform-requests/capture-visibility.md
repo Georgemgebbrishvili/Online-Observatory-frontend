@@ -3,6 +3,8 @@
 Raised 2026-09-26 from Phase 2 slice 2 (`docs/plan/phase-2/02-collection.md`). Against
 `darkview-platform` at `acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`.
 
+**Answered** by platform `10b7c34` (#158). Not yet wired here: after launch, per `docs/plan/04-roadmap-to-launch.md`.
+
 ## What blocks
 
 `Capture.visibility` is `PRIVATE | GALLERY`, and the contract says "Publishing to the

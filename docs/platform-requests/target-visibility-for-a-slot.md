@@ -3,6 +3,8 @@
 Raised 2026-09-26 from Phase 3 (`docs/plan/phase-3/README.md`). Against
 `darkview-platform` at `acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`.
 
+**Answered** by platform `392e773` (#157); Phase 3 slice 2 wires it (`820207f`).
+
 ## What blocks
 
 The booking flow is: choose a slot, then choose a target for it. The client can filter

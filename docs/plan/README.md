@@ -8,11 +8,13 @@ this repository's route tree.
 | [`01-surface-inventory.md`](01-surface-inventory.md) | Every page the product needs, what exists, and what the platform can already do that nothing calls |
 | [`02-build-phases.md`](02-build-phases.md) | The order to build it in, and why that order |
 | [`03-design-system.md`](03-design-system.md) | The token and component layer everything else consumes |
+| [`04-roadmap-to-launch.md`](04-roadmap-to-launch.md) | **Where we are and the order of work to launch** (2026-10-02, supersedes the sequence in 02) |
+| [`hosting.md`](hosting.md) | Hosting the demo |
 | [`../decisions/ADR-025-the-product-is-renamed-stellar.md`](../decisions/ADR-025-the-product-is-renamed-stellar.md) | The rename, the logo, and the glow exception |
 
-## The short version
+## The short version (as of 2026-09-24)
 
-The platform exposes **54 endpoints**. The client calls **16**. Twenty-four routes
+The platform exposed **54 endpoints** then; it has 68 on 2026-10-02. The client calls **16**. Twenty-four routes
 exist; six are wired, eighteen render fixtures or prose. The most finished surface is
 the operator console — not anything a customer touches.
 

@@ -1,5 +1,12 @@
 # Hosting the demo
 
+> **Changed 2026-10-01, after this was written:** Cloudflare is dropped for now. A
+> temporary subdomain of astroman.ge (DNS at hostnodes.ge, where the store and mail live
+> and nothing else is touched) points at a small proxy on Fly. The proxy routes
+> `/ws/mission/*` and `/stream/mission/*` to realtime and everything else to the Vercel
+> site. A dedicated domain comes later. Where the text below says Cloudflare in front,
+> read the Fly proxy.
+
 2026-10-01. Decisions by Nika, this date: a **demo** first (sandbox checkout, simulated
 observatory, no real money, no hardware); Prisma Postgres; Fly.io for the long-lived
 services; Cloudflare in front of one domain; the verification email through Resend from

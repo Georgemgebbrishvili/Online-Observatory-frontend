@@ -5,6 +5,8 @@ Raised 2026-09-24 from `chore/dev-stack-and-boundary`. Against `darkview-platfor
 [dev-safety-envelope.md](dev-safety-envelope.md): until that is resolved every slew is
 refused at any hour, so daylight is the second blocker, not the first.
 
+**Answered** by platform `41b39e9` (#153).
+
 ## What blocks
 
 At 14:00 Tbilisi a simulated mission cannot be booked, let alone slewed:

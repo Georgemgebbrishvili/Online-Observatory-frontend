@@ -6,9 +6,9 @@
 | Slice | Surface                                       | Operations                                                          |
 | ----- | --------------------------------------------- | ------------------------------------------------------------------- |
 | 1     | `/app/book` — slots for a night               | `listBookableObservatories`, `listSlots`                            |
-| 2     | Reserve — target for the slot, then hold it   | `createBooking` (with `Idempotency-Key`) — **blocked**, see below   |
+| 2     | Reserve — target for the slot, then hold it   | `createBooking` (with `Idempotency-Key`) — done, `820207f`          |
 | 3     | `/app/bookings`, `/app/bookings/[id]`         | `listBookings`, `getBooking`, `cancelBooking`, `rescheduleBooking`  |
-| 4     | Payment handoff                               | `PaymentIntent.redirectUrl` — **blocked**, see below                |
+| 4     | Payment handoff                               | `PaymentIntent.redirectUrl` — done, `820207f`                       |
 | 5     | Start the booked mission (ADR-018)            | `startMissionSession` — the handoff into Phase 4                    |
 
 Refunds, loyalty points, vouchers and subscription minutes are Phase 5 (commerce), which
@@ -43,5 +43,8 @@ with 409 until refunds exist (`features/booking/manage.ts:77`, maintainer decisi
 2026-09-14). Slice 3 shows that as a stated rule, not an error.
 
 **Done when** (from the plan): a customer books, sees it, changes it and cancels it, in
-both languages, on a phone. "Books" needs slice 4, so Phase 3 cannot finish before the
-platform request is answered.
+both languages, on a phone. Both requests were answered (platform #154, #157) and slices
+2 and 4 shipped in `820207f`; the reschedule followed in `d9c20df`. What remains is
+resuming a pending payment, blocked on
+[`booking-payment-intent.md`](../../platform-requests/booking-payment-intent.md)
+(roadmap slice C3).

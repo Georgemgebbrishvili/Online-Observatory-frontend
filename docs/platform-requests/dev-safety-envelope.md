@@ -3,6 +3,8 @@
 Raised 2026-09-24 from `chore/dev-stack-and-boundary`. Against `darkview-platform` at
 `acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`.
 
+**Answered** by platform `41b39e9` (#153).
+
 ## What blocks
 
 The development seed writes the demo observatory's `SafetyEnvelope` with

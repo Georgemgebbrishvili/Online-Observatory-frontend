@@ -10,9 +10,11 @@ the SIDERA console's layout. Traced against `darkview-platform` at
 | 1     | The room, read: state, steps, target, history, captures  | `getMission`, `listMissionEvents`, `listTonightTargets`, `getObservatoryStatus`, `getObservatoryConditions`, `getCapture` |
 | 2     | The room, live: the feed and the mission channel         | `startMissionSession`, WSS `/ws/mission/{id}` (`MissionChannelMessage`), the MJPEG `streamUrl` |
 | 3     | The room, controlled: nudge, re-centre, capture, abort   | `submitMissionCommand`, WSS `MissionCommandResult`                                           |
+| 4     | The owner's sharing control (DV-105)                     | `setMissionObservation`, [`04-sharing.md`](04-sharing.md)                                    |
 
-Observer view (DV-104), the sharing control (DV-105), and every failure state as a
-designed screen follow in later slices; the plan lists them under Phase 4.
+The rest of Phase 4 (the watch page, observer seats, `/app/live`, every failure state,
+the close refund copy) is Track A of
+[`../04-roadmap-to-launch.md`](../04-roadmap-to-launch.md).
 
 ## Found while tracing
 

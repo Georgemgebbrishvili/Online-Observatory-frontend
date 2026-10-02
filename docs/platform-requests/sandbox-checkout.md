@@ -3,6 +3,8 @@
 Raised 2026-09-26 from Phase 3 (`docs/plan/phase-3/README.md`). Against
 `darkview-platform` at `acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`.
 
+**Answered** by platform `471f05a` (#154); Phase 3 slice 4 wires it (`820207f`).
+
 ## What blocks
 
 `createBooking` answers with a `PaymentIntent` whose `redirectUrl` is null: the `SANDBOX`

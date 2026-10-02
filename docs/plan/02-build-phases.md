@@ -1,5 +1,9 @@
 # Stellar — build phases
 
+> **2026-10-02:** the order of the remaining work is
+> [`04-roadmap-to-launch.md`](04-roadmap-to-launch.md) (ADR-037). This document stays the
+> record of Phases 0–4. Its "Sequence" and Phase 7's "explicitly last" are superseded.
+
 Seven phases from the current tree to a complete, responsive, navigable product in two
 languages. Structure and behaviour first; visual polish is Phase 7 and deliberately last.
 
@@ -202,8 +206,8 @@ why not.
   The underlying reason is that `webServer` runs `next dev`, which compiles routes on
   demand: the shell contract visits 32 route/locale combinations at once and forces
   the whole route tree to compile under parallel load. Either cap `workers`, or build
-  once and serve with `next start` for e2e. **CI is unaffected** — the workflow runs
-  contracts, lint, typecheck, unit tests and build, not Playwright.
+  once and serve with `next start` for e2e. CI runs e2e and the visual gate too
+  (`.github/workflows/ci.yml`), with two retries.
 
 ## Sequence
 

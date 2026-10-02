@@ -3,6 +3,8 @@
 Raised 2026-09-24 from `chore/contract-sync`. Against the contract pinned in
 `packages/contracts/SOURCE.json` (`darkview-platform` `acca64803fe81c9a6c9ef9fe3b562b7537edcbd5`).
 
+**Answered** by platform `8debc33` (#159): `getMissionWatchView`, and ADR-034 drops presence. Not yet adopted here: roadmap slice A1.
+
 The watch page, `/[locale]/app/missions/[targetSlug]/watch`
 (`apps/web/src/app/[locale]/app/missions/[targetSlug]/watch/page.tsx`, rendering
 `components/missions/shared-mission.tsx`), calls six `/v1/*` endpoints that are not in the
