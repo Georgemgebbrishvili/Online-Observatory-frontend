@@ -3,6 +3,8 @@
 - **Date:** 2026-08-31
 - **Status:** APPROVED
 - **Decided by:** project maintainer
+- **Amended by:** `ADR-036-ten-observers-and-a-refund-for-the-time-a-close-takes.md`
+  (2026-10-02): ten observers, not five, and a refund when the owner closes a session.
 - **Partially supersedes:** `ADR-003-phase-1-scope-boundary.md` — the shared-observation
   portion of the frozen surface only. Everything else ADR-003 froze stays frozen.
 
