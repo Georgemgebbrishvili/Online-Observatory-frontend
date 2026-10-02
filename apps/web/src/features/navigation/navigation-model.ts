@@ -11,11 +11,12 @@
 export const appDestinations = [
   { key: "home", segment: "", icon: "home", group: "primary" },
   { key: "missions", segment: "missions", icon: "missions", group: "primary" },
+  // Built in Phase 3. In the sidebar beside the five; the bottom bar holds five only.
+  { key: "book", segment: "book", icon: "book", group: "sidebar" },
   { key: "live", segment: "live", icon: "live", group: "primary" },
   { key: "collection", segment: "collection", icon: "collection", group: "primary" },
   { key: "profile", segment: "profile", icon: "profile", group: "primary" },
   // Surfaces the platform already supports and nothing calls. See the inventory §3.
-  { key: "book", segment: "book", icon: "book", group: "planned", phase: 3 },
   {
     key: "subscription",
     segment: "subscription",
@@ -34,6 +35,11 @@ export type NavigationIconName = AppDestination["icon"];
 /** The five that fit a bottom bar and earn a place in it. */
 export const primaryDestinations = appDestinations.filter(
   (destination) => destination.group === "primary",
+);
+
+/** The sidebar's working destinations: the five, and booking. */
+export const sidebarDestinations = appDestinations.filter(
+  (destination) => destination.group !== "planned",
 );
 
 /** Reachable, navigable, and honest about not being built. */

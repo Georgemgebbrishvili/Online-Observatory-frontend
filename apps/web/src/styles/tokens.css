@@ -1,85 +1,108 @@
 /*
- * Design tokens v3 — Brand Identity System v2.0, as amended by ADR-025.
- * The ramp, elevation, breakpoint and spacing rules are docs/plan/03-design-system.md.
+ * Design tokens — the poster language, ADR-039 (2026-10-02), over the spacing,
+ * breakpoint and motion rules of docs/plan/03-design-system.md.
  * The only file in apps/web/src allowed to hold a colour literal (stylelint enforces it).
  * tokens.ts mirrors the palette for surfaces CSS cannot reach; a test keeps them equal.
  */
 :root {
-  /* §04 Primary palette, secondary palette and neutral scale */
-  --st-neutral-950: #05080d;
-  --st-neutral-900: #0b0f15;
-  --st-neutral-800: #111722;
-  --st-neutral-700: #1a2330;
-  --st-neutral-600: #2a3645;
-  --st-neutral-500: #4c5a68;
-  --st-neutral-400: #778492;
-  --st-neutral-300: #aab4be;
-  --st-neutral-200: #d0d6dc;
-  --st-neutral-100: #f2f5f7;
+  /* ADR-039 palette. Cream is the base every ink, plate and rule is cut from. */
+  --st-black: #000000;
+  --st-deep: #050505;
+  --st-cream: #f3e6cc;
+  --st-ink: #f6ecd8;
+  --st-orange: #e8742f;
+  --st-orange-hi: #f6a63f;
+  --st-orange-ink: #f6b062;
+  --st-on-orange: #1a0f08;
+  --st-yellow: #ffd36b;
   --st-photon: #5cc8ff;
-  --st-deep-signal: #1677a3;
+  --st-sun-1: #fff3d2;
+  --st-sun-2: #ffd36b;
+  --st-sun-3: #f7931f;
+  --st-sun-4: #e0481f;
+  --st-sun-5: #a81c14;
   --st-star-brass: #d9a45b;
-  --st-lunar-silver: #a8b2bc;
-  --st-optical-glass: #263a49;
   --st-success: #4fd1a5;
   --st-warning: #e5b454;
   --st-error: #ff6b6b;
-  --st-info: #78afff;
-  --st-black: #000;
 
   /*
-   * §08 Surface mapping · dark mode, and §11 semantic tokens.
-   *
-   * v3 §1 — the surface ramp, deepest first. Two adjacent surfaces must be at least
-   * two steps apart: night beside surface-base differs by six sRGB units and reads
-   * as flat, which is why alternating sections use surface-raised.
-   *
-   *   night          page background, the deepest level
-   *   surface-base   recessed wells — a viewport inside a panel
-   *   surface-raised panels, cards, alternating sections
-   *   surface-hover  interactive hover only
+   * Ground. Night is the page; surface-base is a well (the feed, data, inputs).
+   * Plate is cream at 4.5% and 8.5%. Here it is mixed over night rather than left
+   * translucent, so a dialog or a menu laid over content stays opaque; on the night
+   * ground the two are the same colour.
    */
-  --color-night: var(--st-neutral-950);
-  --color-surface-base: var(--st-neutral-900);
-  --color-surface-raised: var(--st-neutral-800);
-  --color-surface-hover: var(--st-neutral-700);
-  --color-border-subtle: var(--st-neutral-600);
-  --color-border-strong: var(--st-neutral-500);
-  --color-border-control: var(--st-neutral-400);
-  --color-text-primary: var(--st-neutral-100);
-  --color-text-secondary: var(--st-neutral-300);
-  --color-text-tertiary: var(--st-neutral-400);
-  --color-text-technical: var(--st-lunar-silver);
+  --color-night: var(--st-black);
+  --color-surface-base: var(--st-deep);
+  --color-surface-raised: color-mix(in srgb, var(--st-cream) 4.5%, var(--st-black));
+  --color-surface-hover: color-mix(in srgb, var(--st-cream) 8.5%, var(--st-black));
+
+  /* Rule and strong rule are hairlines. A form control's edge needs 3:1 (SC 1.4.11). */
+  --color-border-subtle: color-mix(in srgb, var(--st-cream) 11%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--st-cream) 20%, transparent);
+  --color-border-control: color-mix(in srgb, var(--st-cream) 40%, transparent);
+
+  /* Ink 1–4 */
+  --color-text-primary: var(--st-ink);
+  --color-text-secondary: color-mix(in srgb, var(--st-cream) 76%, transparent);
+  --color-text-tertiary: color-mix(in srgb, var(--st-cream) 56%, transparent);
+  --color-text-disabled: color-mix(in srgb, var(--st-cream) 34%, transparent);
+  --color-text-technical: var(--color-text-secondary);
+
+  /* Orange for actions. accent-ink is orange text on the night ground. */
+  --color-accent: var(--st-orange);
+  --color-accent-hover: var(--st-orange-hi);
+  --color-accent-ink: var(--st-orange-ink);
+  --color-on-accent: var(--st-on-orange);
+  --gradient-accent: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--st-orange-hi) 45%, var(--st-orange)) 0%,
+    var(--st-orange) 100%
+  );
+
+  /* Yellow for anything live or current, and for the Simulated chip. */
+  --color-live: var(--st-yellow);
+  --color-simulated: var(--st-yellow);
+
+  /* Photon Blue for data: readouts, charts, and the keyboard focus ring. */
   --color-photon: var(--st-photon);
-  --color-photon-hover: color-mix(in srgb, var(--st-photon) 82%, var(--st-neutral-100));
-  --color-photon-deep: var(--st-deep-signal);
-  --color-on-photon: var(--st-neutral-950);
+  --color-on-photon: var(--st-black);
+
+  /* The title gradient, as a text fill on one display line per page at most. */
+  --gradient-sunset: linear-gradient(
+    180deg,
+    var(--st-sun-1) 22%,
+    var(--st-sun-2) 42%,
+    var(--st-sun-3) 58%,
+    var(--st-sun-4) 72%,
+    var(--st-sun-5) 86%
+  );
+
   --color-star-brass: var(--st-star-brass);
-  --color-optical-glass: var(--st-optical-glass);
   --color-success: var(--st-success);
   --color-warning: var(--st-warning);
   --color-error: var(--st-error);
-  --color-info: var(--st-info);
-  /* §08 Live observation page, rule 04: the conventional red LIVE dot, only when genuinely live */
-  --color-live: var(--st-error);
 
   /* Tints derived from the palette above — no new hues */
+  --color-accent-muted: color-mix(in srgb, var(--st-orange) 12%, transparent);
+  --color-accent-border: color-mix(in srgb, var(--st-orange) 55%, transparent);
+  --color-live-border: color-mix(in srgb, var(--st-yellow) 50%, transparent);
   --color-photon-faint: color-mix(in srgb, var(--st-photon) 7%, transparent);
   --color-photon-muted: color-mix(in srgb, var(--st-photon) 14%, transparent);
   --color-photon-border: color-mix(in srgb, var(--st-photon) 34%, transparent);
   --color-success-muted: color-mix(in srgb, var(--st-success) 13%, transparent);
-  --color-success-border: color-mix(in srgb, var(--st-success) 30%, transparent);
+  --color-success-border: color-mix(in srgb, var(--st-success) 40%, transparent);
   --color-warning-muted: color-mix(in srgb, var(--st-warning) 13%, transparent);
-  --color-warning-border: color-mix(in srgb, var(--st-warning) 30%, transparent);
+  --color-warning-border: color-mix(in srgb, var(--st-warning) 40%, transparent);
   --color-error-muted: color-mix(in srgb, var(--st-error) 13%, transparent);
-  --color-error-border: color-mix(in srgb, var(--st-error) 30%, transparent);
-  --color-overlay-hover: color-mix(in srgb, var(--st-neutral-100) 5%, transparent);
-  --color-overlay-active: color-mix(in srgb, var(--st-neutral-100) 8%, transparent);
-  --color-optical-faint: color-mix(in srgb, var(--st-lunar-silver) 15%, transparent);
-  --color-optical-medium: color-mix(in srgb, var(--st-lunar-silver) 24%, transparent);
-  --color-scrim-soft: color-mix(in srgb, var(--st-neutral-950) 60%, transparent);
-  --color-scrim: color-mix(in srgb, var(--st-neutral-950) 74%, transparent);
-  --color-scrim-strong: color-mix(in srgb, var(--st-neutral-950) 94%, transparent);
+  --color-error-border: color-mix(in srgb, var(--st-error) 40%, transparent);
+  --color-overlay-hover: color-mix(in srgb, var(--st-cream) 5%, transparent);
+  --color-overlay-active: color-mix(in srgb, var(--st-cream) 8%, transparent);
+  --color-optical-faint: color-mix(in srgb, var(--st-cream) 12%, transparent);
+  --color-optical-medium: color-mix(in srgb, var(--st-cream) 20%, transparent);
+  --color-scrim-soft: color-mix(in srgb, var(--st-black) 60%, transparent);
+  --color-scrim: color-mix(in srgb, var(--st-black) 74%, transparent);
+  --color-scrim-strong: color-mix(in srgb, var(--st-black) 94%, transparent);
   --color-panel-overlay: var(--color-scrim-strong);
   --color-backdrop: var(--color-scrim);
   --color-mask: var(--st-black);
@@ -112,29 +135,52 @@
   --font-size-home-stat: clamp(2.25rem, 1.6rem + 2.2vw, 3.5rem);
   --font-size-home-step: clamp(1.5rem, 1.25rem + 0.8vw, 2rem);
 
-  /* §05 Typography — families are loaded in app/[locale]/layout.tsx */
-  --font-display: var(--font-noto-serif-georgian), "Noto Serif Georgian", Georgia, serif;
-  --font-body: var(--font-firago), FiraGO, system-ui, sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+  /*
+   * ADR-039 type. Georgian has no glyphs in the Latin faces, so each stack falls through
+   * to a face that has Mkhedruli: Noto Sans Georgian (condensed) for headline and label,
+   * FiraGO for body and for the words in a data line. Families load in
+   * app/[locale]/layout.tsx.
+   */
+  --font-headline: var(--font-anton), var(--font-noto-sans-georgian), Impact, sans-serif;
+  --font-title:
+    var(--font-bowlby-one), var(--font-noto-sans-georgian), Impact, sans-serif;
+  --font-label: var(--font-oswald), var(--font-noto-sans-georgian), sans-serif;
+  --font-body: var(--font-geist), var(--font-firago), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), var(--font-firago), ui-monospace, monospace;
+  /* The name every page stylesheet already uses for its headings. */
+  --font-display: var(--font-headline);
 
-  /* §05 Type scale: brand pt × 1.6 = px; hero is 44px mobile → 64px desktop */
-  --font-size-hero: clamp(2.75rem, 1.9rem + 3.4vw, 4rem);
-  --font-size-h1: clamp(1.875rem, 1.6rem + 1.1vw, 2.25rem);
-  --font-size-h2: 1.8rem;
+  /* Anton and Bowlby One have one weight. Georgian takes 800 and 900. */
+  --font-weight-headline: var(--font-weight-regular);
+  --font-weight-title: var(--font-weight-regular);
+  --font-weight-label: var(--font-weight-medium);
+
+  /* Type scale. Anton is condensed, so the display steps run larger than a serif's. */
+  --font-size-display: clamp(2.875rem, 1.6rem + 5.4vw, 6.75rem);
+  --font-size-hero: clamp(2.75rem, 1.9rem + 3.4vw, 4.5rem);
+  --font-size-h1: clamp(2rem, 1.6rem + 1.4vw, 2.75rem);
+  --font-size-h2: 2rem;
   --font-size-h3: 1.375rem;
-  --font-size-body-lg: 1.1875rem;
+  --font-size-stat: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
+  --font-size-body-lg: 1.125rem;
   --font-size-body: 1rem;
   --font-size-label: 0.875rem;
   --font-size-caption: 0.8125rem;
+  --font-size-kicker: 0.78125rem;
   --font-size-mono: 0.875rem;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --leading-display: 1.1;
+  --font-weight-bold: 700;
+  --font-weight-heavy: 800;
+  --font-weight-black: 900;
+  --leading-display: 0.95;
   --leading-heading: 1.25;
-  --leading-body: 1.55;
-  --leading-body-georgian: 1.65;
-  --tracking-label: 0.08em;
+  --leading-body: 1.6;
+  --leading-body-georgian: 1.7;
+  --tracking-headline: 0.005em;
+  --tracking-label: 0.16em;
+  --tracking-kicker: 0.32em;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -142,61 +188,53 @@
   --space-4: 1rem;
   --space-5: 1.25rem;
   --space-6: 1.5rem;
-  --space-7: 1.75rem;
   --space-8: 2rem;
-  --space-9: 2.25rem;
   --space-10: 2.5rem;
-  --space-11: 2.75rem;
   --space-12: 3rem;
-  --space-14: 3.5rem;
   --space-16: 4rem;
   --space-20: 5rem;
-  --space-page: clamp(var(--space-5), 4vw, 4.5rem);
-  /* v3 §5 — semantic aliases, so a component names its intent, not a number. */
-  --space-section: var(--space-16);
-  --space-card: var(--space-6);
-  --space-stack: var(--space-4);
+  --space-page: clamp(var(--space-4), 4vw, 4.5rem);
 
   --size-touch: 2.75rem;
-  --size-app-sidebar: 17rem;
+  --size-app-sidebar: 16rem;
   --size-app-bottom-nav: 4.75rem;
 
-  /* §07 Iconography and §08 Button styles */
+  /* ADR-039: panels 14px, small panels and buttons 10px. */
   --radius-small: 0.5rem;
   --radius-control: 0.625rem;
-  --radius-medium: 0.75rem;
-  --radius-panel: 1rem;
+  --radius-medium: 0.625rem;
+  --radius-panel: 0.875rem;
   --radius-large: 1.5rem;
   --radius-full: 9999px;
   --icon-stroke: 1.5;
 
   /*
-   * §09 anti-pattern 04 — shadows separate layers; nothing glows. ADR-025 §3 makes
-   * one exception, the comet mark as a logo, and its token lives beside the logo
-   * component rather than here so component CSS cannot reach it.
-   *
-   * v3 §2 — three elevations, each a surface step plus a border, never a glow:
-   *   flat     surface-raised + border-subtle                      cards, list rows
-   *   raised   surface-raised + border-strong + shadow-small       panels
-   *   overlay  surface-raised + border-strong + shadow-dialog + scrim   dialogs
+   * Nothing glows (ADR-039, "Still binding"). Depth comes from the plate and the rule.
+   * These are drop shadows, kept for layers that genuinely sit over content: a dialog,
+   * a menu, a tooltip. The comet mark's glow (ADR-025 §3) lives beside the logo.
    */
-  --shadow-small: 0 0.5rem 1.5rem color-mix(in srgb, var(--st-black) 18%, transparent);
+  --shadow-small: 0 0.5rem 1.5rem color-mix(in srgb, var(--st-black) 40%, transparent);
   --shadow-panel: 0 2.5rem 8rem var(--color-shadow);
-  --shadow-dialog: 0 2rem 7rem color-mix(in srgb, var(--st-black) 62%, transparent);
+  --shadow-dialog: 0 2rem 7rem color-mix(in srgb, var(--st-black) 70%, transparent);
   --focus-ring: 2px solid var(--color-photon);
 
-  /* §07 Motion principles: UI 160–220ms, instrument 500–1200ms, wonder 4–8s */
+  /* Motion: UI 160–220ms, instrument 500–1200ms */
   --duration-fast: 160ms;
   --duration-standard: 200ms;
   --duration-state: 220ms;
   --duration-instrument: 800ms;
-  --duration-wonder: 6s;
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-@theme inline {
-  --color-stellar-night: var(--color-night);
-  --color-stellar-surface: var(--color-surface-raised);
-  --color-stellar-photon: var(--color-photon);
-  --color-stellar-text: var(--color-text-primary);
+/* Mkhedruli has no capitals: the Georgian headline is weight, not case. On :lang, not
+   :root, so a Georgian sample inside an English page takes it too. */
+:lang(ka) {
+  /* Georgian first, so a Latin word in a Georgian headline keeps the same voice and no
+     system fallback for Anton can catch a Mkhedruli letter. */
+  --font-headline: var(--font-noto-sans-georgian), sans-serif;
+  --font-title: var(--font-noto-sans-georgian), sans-serif;
+  --font-label: var(--font-noto-sans-georgian), sans-serif;
+  --font-weight-headline: var(--font-weight-heavy);
+  --font-weight-title: var(--font-weight-black);
+  --font-weight-label: var(--font-weight-semibold);
 }

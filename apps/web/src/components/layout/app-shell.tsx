@@ -32,16 +32,26 @@ function ObservatoryState({ navigation }: Pick<AppShellProps, "navigation">) {
 export function AppShell({ children, locale, logoutLabel, navigation }: AppShellProps) {
   return (
     <div className="app-shell">
+      {/*
+       * The aside fills the whole column, however long the page; its contents stick to
+       * the viewport. A sticky aside of 100vh painted only the first screen's height.
+       */}
       <aside className="app-sidebar" aria-label={navigation.sidebarAriaLabel}>
-        <a className="app-brand" href={`/${locale}`}>
-          <BrandLockup
-            ariaLabel={navigation.brandAriaLabel}
-            endorsement={navigation.brandEndorsement}
+        <div className="app-sidebar-inner">
+          <a className="app-brand" href={`/${locale}`}>
+            <BrandLockup
+              ariaLabel={navigation.brandAriaLabel}
+              endorsement={navigation.brandEndorsement}
+            />
+          </a>
+          <AppNavigation locale={locale} navigation={navigation} placement="sidebar" />
+          <SignOutButton
+            className="app-logout-form"
+            label={logoutLabel}
+            locale={locale}
           />
-        </a>
-        <AppNavigation locale={locale} navigation={navigation} placement="sidebar" />
-        <SignOutButton className="app-logout-form" label={logoutLabel} locale={locale} />
-        <ObservatoryState navigation={navigation} />
+          <ObservatoryState navigation={navigation} />
+        </div>
       </aside>
 
       <header className="app-mobile-header">

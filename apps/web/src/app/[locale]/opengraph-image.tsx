@@ -17,19 +17,17 @@ export default function OpenGraphImage() {
         alignItems: "center",
         justifyContent: "space-between",
         padding: "84px 96px",
-        background: palette.neutral950,
-        color: palette.neutral100,
+        background: palette.black,
+        color: palette.ink,
         fontFamily: "sans-serif",
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
-        <div style={{ color: palette.neutral300, fontSize: 28 }}>
-          {brand.en.siteName}
-        </div>
+        <div style={{ color: palette.cream, fontSize: 28 }}>{brand.en.siteName}</div>
         <div style={{ display: "flex", maxWidth: 680, fontSize: 72, lineHeight: 1.04 }}>
           {brand.en.tagline}
         </div>
-        <div style={{ color: palette.neutral300, fontSize: 26 }}>
+        <div style={{ color: palette.cream, fontSize: 26 }}>
           Live Remote Observatory · Tbilisi, Georgia
         </div>
       </div>
@@ -41,7 +39,7 @@ export default function OpenGraphImage() {
           height: 330,
           alignItems: "center",
           justifyContent: "center",
-          border: `2px solid ${palette.neutral500}`,
+          border: `2px solid ${palette.orange}`,
           borderRadius: "50%",
         }}
       >
@@ -50,7 +48,7 @@ export default function OpenGraphImage() {
             display: "flex",
             width: 190,
             height: 190,
-            border: `2px solid ${palette.neutral600}`,
+            border: `2px solid ${palette.starBrass}`,
             borderRadius: "50%",
           }}
         />
@@ -60,7 +58,7 @@ export default function OpenGraphImage() {
             display: "flex",
             width: 42,
             height: 42,
-            border: `3px solid ${palette.photon}`,
+            border: `3px solid ${palette.yellow}`,
             borderRadius: "50%",
           }}
         />

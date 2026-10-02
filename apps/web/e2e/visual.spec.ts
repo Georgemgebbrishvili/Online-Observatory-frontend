@@ -55,13 +55,21 @@ async function capture(page: Page, route: string, locale: string, width: string)
     ),
   );
 
-  const firaGOLoaded = await page.evaluate(async () => {
+  // The body face for the locale (ADR-039): Geist for English, FiraGO for Georgian.
+  const bodyFace = locale === "ka" ? "firago" : "geist";
+  const bodyLoaded = await page.evaluate(async (face) => {
     await document.fonts.ready;
-    return [...document.fonts].some(
-      (face) => /firago/i.test(face.family) && face.status === "loaded",
-    );
-  });
-  expect(firaGOLoaded, "FiraGO must be loaded before capture").toBe(true);
+    return [...document.fonts].some((loaded) => {
+      const family = loaded.family.toLowerCase();
+      // next/font also declares a "<face> Fallback" from a system font: not the face.
+      return (
+        family.includes(face) &&
+        !family.includes("fallback") &&
+        loaded.status === "loaded"
+      );
+    });
+  }, bodyFace);
+  expect(bodyLoaded, `${bodyFace} must be loaded before capture`).toBe(true);
 
   // A query string is part of some routes; a file name keeps letters, digits and dashes.
   const name = `${locale}-${(route || "home").replace(/[^a-z0-9-]+/gi, "-")}-${width}.png`;

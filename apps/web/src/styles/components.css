@@ -16,26 +16,43 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ADR-039: one hot primary, everything else quiet. Oswald label, 10px radius, no glow. */
 .button {
   display: inline-flex;
-  min-height: 2.75rem;
+  min-height: 3rem;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   border: 1px solid transparent;
   border-radius: var(--radius-control);
   cursor: pointer;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-label);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
   transition:
-    background-color var(--duration-standard) var(--ease-standard),
-    border-color var(--duration-standard) var(--ease-standard),
-    color var(--duration-standard) var(--ease-standard);
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
 }
 
-.button:disabled {
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button[aria-busy] {
+  cursor: progress;
+}
+
+.button:disabled:not([aria-busy]) {
+  border-color: var(--color-border-subtle);
+  background: transparent;
+  color: var(--color-text-disabled);
   cursor: not-allowed;
-  opacity: 0.42;
 }
 
 .button-small {
@@ -44,30 +61,36 @@
 }
 
 .button-medium {
-  padding-inline: var(--space-5);
-}
-
-.button-large {
-  min-height: 3.25rem;
   padding-inline: var(--space-6);
 }
 
+.button-large {
+  min-height: 3.5rem;
+  padding-inline: var(--space-8);
+  font-size: var(--font-size-body);
+}
+
 .button-primary {
-  background: var(--color-photon);
-  color: var(--color-on-photon);
+  background: var(--gradient-accent);
+  color: var(--color-on-accent);
 }
 
 .button-primary:hover:not(:disabled) {
-  background: var(--color-photon-hover);
+  background: var(--color-accent-hover);
+}
+
+.button-primary:disabled:not([aria-busy]) {
+  background: var(--color-surface-raised);
 }
 
 .button-secondary {
-  border-color: var(--color-border-subtle);
+  border-color: var(--color-border-strong);
   background: var(--color-surface-raised);
   color: var(--color-text-primary);
 }
 
 .button-secondary:hover:not(:disabled) {
+  border-color: var(--color-text-disabled);
   background: var(--color-surface-hover);
 }
 
@@ -77,17 +100,18 @@
 }
 
 .button-ghost:hover:not(:disabled) {
-  background: var(--color-surface-raised);
+  background: var(--color-overlay-hover);
   color: var(--color-text-primary);
 }
 
 .button-danger {
-  border-color: var(--color-error);
+  border-color: var(--color-error-border);
   background: transparent;
   color: var(--color-error);
 }
 
 .button-danger:hover:not(:disabled) {
+  border-color: var(--color-error);
   background: var(--color-error-muted);
 }
 
@@ -130,9 +154,9 @@
   min-width: var(--size-touch);
   height: var(--size-touch);
   place-items: center;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-small);
-  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
   color: var(--color-text-secondary);
   cursor: pointer;
   transition:
@@ -158,28 +182,33 @@
 }
 
 .icon-button-active {
-  border-color: var(--color-photon-border);
-  background: var(--color-photon-muted);
-  color: var(--color-photon);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-muted);
+  color: var(--color-accent-ink);
 }
 
+/* ADR-039 chips: an outlined pill. A yellow dot means live or simulated. */
 .chip {
   display: inline-flex;
   min-height: 2rem;
   align-items: center;
+  gap: var(--space-2);
   padding-inline: var(--space-3);
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
-  background: var(--color-surface-base);
+  background: transparent;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-medium);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .chip-selected {
-  border-color: var(--color-photon-border);
-  background: var(--color-photon-muted);
-  color: var(--color-photon);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-muted);
+  color: var(--color-accent-ink);
 }
 
 .status-indicator {
@@ -188,13 +217,15 @@
   align-items: center;
   gap: var(--space-2);
   padding-inline: var(--space-3);
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
-  background: var(--color-surface-base);
+  background: transparent;
   color: var(--color-text-secondary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-label);
   letter-spacing: var(--tracking-label);
+  line-height: 1.3;
   text-transform: uppercase;
   /* A Georgian status label runs to ~293px. nowrap made the pill push the page
      sideways at 320; wrapping only happens where it genuinely does not fit. */
@@ -203,45 +234,106 @@
 
 .status-dot {
   flex-shrink: 0;
-  width: 0.35rem;
-  height: 0.35rem;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: var(--radius-full);
   background: currentColor;
 }
 
+/* Live or current: yellow, ADR-039. */
 .status-active {
-  border-color: var(--color-photon-border);
-  background: var(--color-photon-muted);
-  color: var(--color-photon);
+  border-color: var(--color-live-border);
+  color: var(--color-live);
 }
 
 .status-success {
   border-color: var(--color-success-border);
-  background: var(--color-success-muted);
   color: var(--color-success);
 }
 
 .status-warning {
   border-color: var(--color-warning-border);
-  background: var(--color-warning-muted);
   color: var(--color-warning);
 }
 
 .status-danger {
   border-color: var(--color-error-border);
-  background: var(--color-error-muted);
   color: var(--color-error);
 }
 
-.card,
-.surface-panel {
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
-  box-shadow: var(--shadow-small);
+/*
+ * The simulated badge, on every simulated picture and capture. A yellow outlined chip
+ * with a yellow dot, over a scrim so it reads on any frame. Lived in collection.css,
+ * which only the collection imports; the room uses it too.
+ */
+.capture-simulated {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-live-border);
+  border-radius: var(--radius-full);
+  background: var(--color-scrim-strong);
+  color: var(--color-simulated);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.3;
+  text-transform: uppercase;
 }
 
-.card {
+.capture-simulated::before {
+  flex-shrink: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  content: "";
+}
+
+/* Stats row: Anton numbers over Oswald labels, under a hairline. */
+.stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8) var(--space-12);
+  margin: 0;
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.stats-row > div {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.stat-value {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-headline);
+  font-size: var(--font-size-stat);
+  font-weight: var(--font-weight-headline);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  font-synthesis: none;
+}
+
+.stat-label {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+}
+
+/* ADR-039 panels: plate, strong rule, 14px. Depth from the plate and the border only. */
+.card,
+.surface-panel {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
   background: var(--color-surface-raised);
 }
 
@@ -258,14 +350,9 @@
 
 .card-interactive:hover,
 .card-interactive:focus-within {
-  border-color: var(--color-border-strong);
+  border-color: var(--color-text-disabled);
   background: var(--color-surface-hover);
   transform: translateY(-2px);
-}
-
-/* text-tertiary on surface-hover is 4.14:1 — below AA; see docs/design/contrast.md */
-.card-interactive:is(:hover, :focus-within) .card-header p {
-  color: var(--color-text-secondary);
 }
 
 .card-header,
@@ -280,22 +367,26 @@
 }
 
 .card-header p {
-  margin: 0 0 var(--space-2);
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-label);
+  margin: 0 0 var(--space-3);
+  color: var(--color-accent-ink);
+  font-family: var(--font-label);
+  font-size: var(--font-size-kicker);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-kicker);
   text-transform: uppercase;
 }
 
+/* Panel titles are voice, not posters: Geist, sentence case, like the console's. */
 .card-header h3,
-.state-panel h3,
+.state-panel :is(h1, h2, h3),
 .dialog-header h2 {
   margin: 0;
   font-family: var(--font-body);
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
   line-height: var(--leading-heading);
+  text-transform: none;
 }
 
 .card-content {
@@ -320,9 +411,8 @@
 }
 
 .surface-panel-elevated {
-  border-color: var(--color-border-strong);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-panel);
+  border-color: var(--color-text-disabled);
+  background: var(--color-surface-hover);
 }
 
 .dialog {
@@ -454,8 +544,11 @@
 
 .field-label {
   color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-medium);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .input,
@@ -465,7 +558,7 @@
   min-height: var(--size-touch);
   border: 1px solid var(--color-border-control);
   border-radius: var(--radius-control);
-  background: var(--color-night);
+  background: var(--color-surface-base);
   color: var(--color-text-primary);
   font-size: var(--font-size-body);
   transition: border-color var(--duration-standard) var(--ease-standard);
@@ -490,7 +583,14 @@
 .input:hover,
 .textarea:hover,
 .select:hover {
-  border-color: var(--color-text-secondary);
+  border-color: var(--color-text-tertiary);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--color-accent);
+  outline: none;
 }
 
 .input:focus-visible,
@@ -562,19 +662,19 @@
   place-items: center;
   border: 1px solid var(--color-border-control);
   border-radius: var(--radius-small);
-  background: var(--color-night);
+  background: var(--color-surface-base);
 }
 
 .checkbox input:checked + span[aria-hidden] {
-  border-color: var(--color-photon);
-  background: var(--color-photon);
+  border-color: var(--color-accent);
+  background: var(--color-accent);
 }
 
 .checkbox input:checked + span[aria-hidden]::after {
   width: 0.27rem;
   height: 0.52rem;
-  border-right: 2px solid var(--color-on-photon);
-  border-bottom: 2px solid var(--color-on-photon);
+  border-right: 2px solid var(--color-on-accent);
+  border-bottom: 2px solid var(--color-on-accent);
   content: "";
   transform: translateY(-1px) rotate(45deg);
 }
@@ -602,7 +702,6 @@
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-small);
   background: var(--color-surface-hover);
-  box-shadow: var(--shadow-small);
   color: var(--color-text-primary);
   font-size: var(--font-size-caption);
   line-height: 1.4;
@@ -628,9 +727,9 @@
 
 .tabs {
   overflow: hidden;
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
+  background: var(--color-surface-raised);
 }
 
 .tab-list {
@@ -649,10 +748,13 @@
   padding-inline: var(--space-4);
   border: 0;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   cursor: pointer;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
+  font-family: var(--font-label);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .tab:hover {
@@ -660,7 +762,7 @@
 }
 
 .tab[aria-selected="true"] {
-  color: var(--color-photon);
+  color: var(--color-text-primary);
 }
 
 .tab[aria-selected="true"]::after {
@@ -668,8 +770,8 @@
   right: var(--space-3);
   bottom: 0;
   left: var(--space-3);
-  height: 1px;
-  background: var(--color-photon);
+  height: 2px;
+  background: var(--color-accent);
   content: "";
 }
 
@@ -754,7 +856,7 @@
   padding: var(--space-8);
   border: 1px dashed var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
+  background: var(--color-surface-raised);
   text-align: center;
 }
 
@@ -849,8 +951,9 @@
   align-items: center;
   gap: var(--space-2);
   color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-label);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
@@ -890,44 +993,57 @@
   }
 }
 
-/* ObservatoryMode: a page fed by the simulator says so, unmistakably. */
+/*
+ * ObservatoryMode: a page fed by the simulator says so, in one compact line — the mode
+ * as a chip (yellow for simulated, ADR-039; red for the real telescope), then a short
+ * sentence. It wraps only where the line genuinely does not fit.
+ */
 .mode-notice {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-medium);
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
 }
 
 .mode-notice > strong {
-  font-family: var(--font-ibm-plex-mono), monospace;
-  font-size: var(--font-size-mono);
-  letter-spacing: 0.1em;
+  display: inline-flex;
+  min-height: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-3);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-full);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.mode-notice > strong::before {
+  width: 0.4rem;
+  height: 0.4rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  content: "";
 }
 
 .mode-notice > span {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
-/* The same tones the operator console uses, so SIMULATED reads identically on both. */
-.mode-notice-simulated {
-  border-color: var(--color-warning);
-  background: var(--color-warning-muted);
+  min-width: 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
 }
 
 .mode-notice-simulated > strong {
-  color: var(--color-warning);
-}
-
-.mode-notice-real {
-  border-color: var(--color-error);
-  background: var(--color-error-muted);
+  border-color: var(--color-live-border);
+  color: var(--color-simulated);
 }
 
 .mode-notice-real > strong {
+  border-color: var(--color-error-border);
   color: var(--color-error);
 }
 

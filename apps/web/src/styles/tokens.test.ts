@@ -31,7 +31,7 @@ function resolve(value: string): Rgba {
   if (reference) return resolve(declarations.get(reference[1])!);
   if (value.startsWith("#")) return parseHex(value);
   const mix = value.match(
-    /^color-mix\(in srgb, (var\([^)]+\)) (\d+)%, (transparent|var\([^)]+\))\)$/,
+    /^color-mix\(in srgb, (var\([^)]+\)) ([\d.]+)%, (transparent|var\([^)]+\))\)$/,
   );
   if (!mix) throw new Error(`Unresolvable token value: ${value}`);
   const weight = Number(mix[2]) / 100;
@@ -72,15 +72,15 @@ const textTokens = [
   "text-primary",
   "text-secondary",
   "text-tertiary",
-  "text-technical",
+  "accent-ink",
+  "live",
   "photon",
   "success",
   "warning",
   "error",
-  "info",
 ];
-// Measured below AA and therefore never paired in the library.
-const restricted = new Set(["text-tertiary on surface-hover"]);
+// Measured below AA and therefore never paired in the library. Empty since ADR-039.
+const restricted = new Set<string>();
 
 type Pair = {
   foreground: string;
@@ -100,30 +100,26 @@ function measure(
   const base = token(background);
   const ground = fill ? over(token(fill), base) : base;
   const label = fill ? `${fill} over ${background}` : background;
-  return {
-    foreground,
-    background: label,
-    use,
-    minimum,
-    ratio: contrast(token(foreground), ground),
-  };
+  // Ink 2–4 and the rules are cream at an opacity: measure what actually reaches the eye.
+  const ink = over(token(foreground), ground);
+  return { foreground, background: label, use, minimum, ratio: contrast(ink, ground) };
 }
 
 const pairs: Pair[] = [
   ...textTokens.flatMap((fg) => surfaces.map((bg) => measure(fg, bg, "text", 4.5))),
-  measure("on-photon", "photon", "primary button label", 4.5),
-  measure("on-photon", "photon-hover", "primary button label, hover", 4.5),
-  ...["border-control", "photon", "error"].flatMap((fg) =>
+  measure("on-accent", "accent", "primary button label", 4.5),
+  measure("on-accent", "accent-hover", "primary button label, hover", 4.5),
+  measure("on-photon", "photon", "checked control, data fill", 4.5),
+  ...["border-control", "accent", "photon", "error"].flatMap((fg) =>
     surfaces.map((bg) => measure(fg, bg, "control boundary / focus ring (1.4.11)", 3)),
   ),
-  ...[
-    ["photon", "photon-muted"],
-    ["success", "success-muted"],
-    ["warning", "warning-muted"],
-    ["error", "error-muted"],
-  ].flatMap(([fg, fill]) =>
-    ["surface-base", "surface-raised"].map((bg) =>
-      measure(fg, bg, "status indicator text", 4.5, fill),
+  ...["live", "error"].map((fg) =>
+    measure(
+      fg,
+      "surface-base",
+      "simulated / mode chip over a picture",
+      4.5,
+      "scrim-strong",
     ),
   ),
 ];
@@ -147,17 +143,29 @@ function table() {
 }
 
 describe("design tokens", () => {
-  it("uses the five core colours CLAUDE.md names, exactly", () => {
-    expect(declarations.get("--st-neutral-950")).toBe("#05080d");
-    expect(declarations.get("--st-neutral-800")).toBe("#111722");
-    expect(declarations.get("--st-photon")).toBe("#5cc8ff");
-    expect(declarations.get("--st-neutral-100")).toBe("#f2f5f7");
-    expect(declarations.get("--st-neutral-300")).toBe("#aab4be");
-    expect(token("night")).toEqual(parseHex("#05080d"));
-    expect(token("surface-raised")).toEqual(parseHex("#111722"));
+  it("uses the ADR-039 ground, ink and colour roles, exactly", () => {
+    expect(token("night")).toEqual(parseHex("#000000"));
+    expect(token("surface-base")).toEqual(parseHex("#050505"));
+    expect(token("text-primary")).toEqual(parseHex("#f6ecd8"));
+    expect(token("accent")).toEqual(parseHex("#e8742f"));
+    expect(token("accent-hover")).toEqual(parseHex("#f6a63f"));
+    expect(token("accent-ink")).toEqual(parseHex("#f6b062"));
+    expect(token("on-accent")).toEqual(parseHex("#1a0f08"));
+    expect(token("live")).toEqual(parseHex("#ffd36b"));
+    expect(token("simulated")).toEqual(parseHex("#ffd36b"));
     expect(token("photon")).toEqual(parseHex("#5cc8ff"));
-    expect(token("text-primary")).toEqual(parseHex("#f2f5f7"));
-    expect(token("text-secondary")).toEqual(parseHex("#aab4be"));
+    expect(declarations.get("--color-surface-raised")).toBe(
+      "color-mix(in srgb, var(--st-cream) 4.5%, var(--st-black))",
+    );
+    expect(declarations.get("--color-text-secondary")).toBe(
+      "color-mix(in srgb, var(--st-cream) 76%, transparent)",
+    );
+    expect(declarations.get("--color-border-subtle")).toBe(
+      "color-mix(in srgb, var(--st-cream) 11%, transparent)",
+    );
+    expect(declarations.get("--color-border-strong")).toBe(
+      "color-mix(in srgb, var(--st-cream) 20%, transparent)",
+    );
   });
 
   it("keeps tokens.ts identical to the palette in tokens.css", () => {
@@ -176,7 +184,9 @@ describe("design tokens", () => {
   });
 
   it("defines the five breakpoints v3 permits, and no sixth", () => {
-    const declared = [...breakpointsCss.matchAll(/@custom-media --([a-z-]+) \(([^)]+)\);/g)];
+    const declared = [
+      ...breakpointsCss.matchAll(/@custom-media --([a-z-]+) \(([^)]+)\);/g),
+    ];
     expect(Object.fromEntries(declared.map((m) => [m[1], m[2]]))).toEqual({
       xs: "min-width: 20rem",
       sm: "min-width: 30rem",

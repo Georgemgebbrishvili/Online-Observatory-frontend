@@ -7,6 +7,7 @@ import { NavigationIcon } from "@/components/navigation/navigation-icon";
 import {
   plannedDestinations,
   primaryDestinations,
+  sidebarDestinations,
   type AppDestination,
 } from "@/features/navigation/navigation-model";
 import type { Locale } from "@/i18n/config";
@@ -55,7 +56,7 @@ export function AppNavigation({ locale, navigation, placement }: AppNavigationPr
         // of the two is ever displayed, so they are never both in the a11y tree.
         data-placement={placement}
       >
-        {primaryDestinations.map(link)}
+        {(placement === "sidebar" ? sidebarDestinations : primaryDestinations).map(link)}
       </nav>
 
       {/*

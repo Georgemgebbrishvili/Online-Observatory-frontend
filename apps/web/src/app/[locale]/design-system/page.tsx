@@ -79,28 +79,36 @@ type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
 };
 
+// ADR-039 roles. The value column is the palette entry, or the opacity of cream.
 const swatches = [
-  ["night", palette.neutral950],
-  ["surface-base", palette.neutral900],
-  ["surface-raised", palette.neutral800],
-  ["surface-hover", palette.neutral700],
-  ["border-subtle", palette.neutral600],
-  ["text-primary", palette.neutral100],
-  ["text-secondary", palette.neutral300],
-  ["text-tertiary", palette.neutral400],
+  ["night", palette.black],
+  ["surface-base", palette.deep],
+  ["surface-raised", "cream 4.5%"],
+  ["surface-hover", "cream 8.5%"],
+  ["border-subtle", "cream 11%"],
+  ["border-strong", "cream 20%"],
+  ["text-primary", palette.ink],
+  ["text-secondary", "cream 76%"],
+  ["text-tertiary", "cream 56%"],
+  ["text-disabled", "cream 34%"],
+  ["accent", palette.orange],
+  ["accent-hover", palette.orangeHi],
+  ["accent-ink", palette.orangeInk],
+  ["live", palette.yellow],
   ["photon", palette.photon],
-  ["photon-deep", palette.deepSignal],
   ["success", palette.success],
   ["warning", palette.warning],
   ["error", palette.error],
-  ["info", palette.info],
 ] as const;
 
 const typeScale = [
+  "display",
   "hero",
   "h1",
   "h2",
   "h3",
+  "stat",
+  "kicker",
   "body-lg",
   "body",
   "label",
@@ -232,16 +240,33 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <h3>{copy.typography}</h3>
               <div className="ds-type-specimens">
                 <div>
-                  <span>{copy.displayFont}</span>
-                  <p className="ds-display-type">{copy.displaySample}</p>
+                  <span>{copy.fonts.headline}</span>
+                  <p className="headline">{copy.displaySample}</p>
+                  <p className="headline" lang="ka">
+                    {copy.georgianSample}
+                  </p>
                 </div>
                 <div>
-                  <span>{copy.bodyFont}</span>
+                  <span>{copy.fonts.title}</span>
+                  <p>
+                    <span className="title-sunset">{copy.titleSample}</span>
+                  </p>
+                </div>
+                <div>
+                  <span>{copy.fonts.label}</span>
+                  <p className="label ds-label-type">{copy.labelSample}</p>
+                  <p className="label ds-label-type" lang="ka">
+                    {copy.georgianLabelSample}
+                  </p>
+                </div>
+                <div>
+                  <span>{copy.fonts.body}</span>
                   <p>{copy.bodySample}</p>
+                  <p lang="ka">{copy.georgianBodySample}</p>
                 </div>
                 <div>
-                  <span>{copy.monoFont}</span>
-                  <p className="data">{copy.typeScale.mono}</p>
+                  <span>{copy.fonts.data}</span>
+                  <p className="data ds-data-type">{copy.typeScale.mono}</p>
                 </div>
                 <div className="ds-token-row">
                   <code>04</code>
@@ -272,6 +297,22 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
           </SurfacePanel>
         </section>
 
+        <section className="ds-section" aria-labelledby="poster-title">
+          <SectionHeader id="poster-title" section={copy.sections.poster} />
+          <div className="ds-kicker-sample">
+            <p className="kicker">{copy.poster.kicker}</p>
+            <p className="display">{copy.poster.headline}</p>
+            <div className="stats-row">
+              {copy.poster.stats.map(([value, label]) => (
+                <div key={label}>
+                  <p className="stat-value">{value}</p>
+                  <p className="stat-label">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="ds-section" aria-labelledby="actions-title">
           <SectionHeader id="actions-title" section={copy.sections.actions} />
           <SurfacePanel>
@@ -284,6 +325,17 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <Button disabled>{copy.buttons.disabled}</Button>
             </div>
             <div className="ds-component-row">
+              <Button size="small">{copy.buttons.small}</Button>
+              <Button size="medium">{copy.buttons.medium}</Button>
+              <Button size="large">{copy.buttons.large}</Button>
+              <Button variant="secondary" disabled>
+                {copy.buttons.disabled}
+              </Button>
+              <Button variant="secondary" loading>
+                {copy.buttons.loading}
+              </Button>
+            </div>
+            <div className="ds-component-row">
               <IconButton label={copy.buttons.search}>
                 <SearchIcon />
               </IconButton>
@@ -293,6 +345,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <Chip>{copy.chips[0]}</Chip>
               <Chip>{copy.chips[1]}</Chip>
               <Chip selected>{copy.chips[2]}</Chip>
+              <span className="capture-simulated">{copy.simulatedBadge}</span>
             </div>
           </SurfacePanel>
         </section>
@@ -598,7 +651,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                       stream={{
                         // An empty frame: nothing here stands for telescope output.
                         url: `data:image/svg+xml,${encodeURIComponent(
-                          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10"><rect width="16" height="10" fill="${palette.neutral950}"/></svg>`,
+                          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10"><rect width="16" height="10" fill="${palette.black}"/></svg>`,
                         )}`,
                         simulated: true,
                         alt: fill(room.live.streamAltSimulated, { target: "Saturn" }),
@@ -802,7 +855,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                       ? {
                           // An empty frame: nothing here stands for telescope output.
                           url: `data:image/svg+xml,${encodeURIComponent(
-                            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10"><rect width="16" height="10" fill="${palette.neutral950}"/></svg>`,
+                            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10"><rect width="16" height="10" fill="${palette.black}"/></svg>`,
                           )}`,
                           simulated: true,
                           alt: fill(room.live.streamAltSimulated, { target: "Saturn" }),

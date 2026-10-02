@@ -20,4 +20,4 @@ SHA-256 of the unsubsetted upstream files:
 | FiraGO-Medium.woff2   | `9203c293bfa0d4536c3a24dd50110083529d19211230c87eff7f2f8f1fefa57a` |
 | FiraGO-SemiBold.woff2 | `e95ee22a90196bac9d8abee81fab0df53e86cc29246789962fe9d2df38d41569` |
 
-FiraGO has no prime glyphs (′ ″). Coordinates are set in IBM Plex Mono, which has them.
+FiraGO has no prime glyphs (′ ″). Coordinates are set in the data face, `--font-mono` (JetBrains Mono since ADR-039).

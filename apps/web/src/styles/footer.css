@@ -1,50 +1,53 @@
-/* The site footer, used by every public route. It lived in homepage.css, which only
-   the home page imports, so every other route rendered it unstyled. */
+/* The site footer, used by every public route. ADR-039: night under a hairline, Oswald
+   column heads, quiet links that come up to full ink on hover. */
 
 .site-footer {
+  border-top: 1px solid var(--color-border-subtle);
   background: var(--color-night);
 }
 
 .footer-grid {
   display: grid;
-  gap: var(--space-12);
-  padding-block: var(--space-12);
+  gap: var(--space-10);
+  padding-block: var(--space-10) var(--space-12);
 }
 
 .footer-brand p {
   max-width: 26rem;
-  margin: var(--space-4) 0 0;
+  margin: var(--space-3) 0 0;
   color: var(--color-text-tertiary);
-  font-size: 0.8rem;
+  font-size: var(--font-size-label);
   line-height: 1.65;
 }
 
 .footer-nav {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-8) var(--space-5);
+  gap: var(--space-8) var(--space-4);
 }
 
 .footer-nav > div {
   display: grid;
   align-content: start;
-  gap: var(--space-3);
+  gap: var(--space-1);
 }
 
 .footer-nav h2 {
   margin: 0 0 var(--space-2);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-weight: var(--font-weight-label);
+  letter-spacing: 0.28em;
+  line-height: 1.4;
   text-transform: uppercase;
 }
 
 .footer-nav a,
 .footer-nav span {
   width: fit-content;
-  color: var(--color-text-secondary);
-  font-size: 0.82rem;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
 }
 
 .footer-nav a {
@@ -62,11 +65,14 @@
 }
 
 .footer-nav span {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
   color: var(--color-text-tertiary);
 }
 
 .footer-nav a:focus-visible {
-  outline: 2px solid var(--color-photon);
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -78,6 +84,7 @@
 
 @media (--lg) {
   .footer-grid {
-    grid-template-columns: minmax(18rem, 0.85fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr);
+    gap: var(--space-12);
   }
 }

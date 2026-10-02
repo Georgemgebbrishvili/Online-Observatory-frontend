@@ -1,7 +1,14 @@
+/*
+ * The app shell in the poster language (ADR-039): a night bar with the mark,
+ * spaced links with an underline for the current page, and one orange action on the
+ * right. The signed-in sidebar is night under a hairline; the current item is a plate
+ * with an orange rule. Nothing is blurred and nothing glows.
+ */
 .site-header {
   position: relative;
   z-index: 20;
-  background: var(--color-panel-overlay);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-night);
 }
 
 .public-navigation,
@@ -17,9 +24,9 @@
   flex: none;
   place-content: center;
   gap: var(--space-1);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-small);
-  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
   color: var(--color-text-primary);
   cursor: pointer;
 }
@@ -47,8 +54,7 @@
   display: none;
   padding: var(--space-3) var(--space-page) var(--space-5);
   border-bottom: 1px solid var(--color-border-strong);
-  background: var(--color-surface-base);
-  box-shadow: var(--shadow-panel);
+  background: var(--color-night);
 }
 
 .public-mobile-menu[data-open] {
@@ -65,7 +71,8 @@
   align-items: center;
   border-bottom: 1px solid var(--color-border-subtle);
   color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
 }
 
 .public-mobile-menu > div {
@@ -82,6 +89,7 @@
   align-items: center;
   color: var(--color-text-secondary);
   font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
 }
 
 .public-mobile-menu .button {
@@ -94,16 +102,14 @@
 .public-mobile-menu a:focus-visible,
 .app-brand:focus-visible,
 .app-navigation a:focus-visible {
-  outline: 2px solid var(--color-photon);
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
 .app-shell {
   min-height: 100vh;
   padding-bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
-  background:
-    radial-gradient(circle at 82% 18%, var(--color-photon-faint), transparent 22rem),
-    var(--color-night);
+  background: var(--color-night);
 }
 
 .app-sidebar,
@@ -116,29 +122,33 @@
   z-index: 15;
   top: 0;
   display: flex;
-  min-height: 5.25rem;
+  min-height: 4.5rem;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-3) var(--space-5);
   border-bottom: 1px solid var(--color-border-subtle);
-  background: var(--color-panel-overlay);
+  background: var(--color-night);
 }
 
 .app-logout-form {
   margin-top: auto;
-  padding-inline: var(--space-4);
+  padding-top: var(--space-6);
 }
 
 .app-logout-form button,
 .app-mobile-logout button {
   min-height: 2.75rem;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-medium);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
-  font: inherit;
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
   transition:
     border-color var(--duration-standard),
     color var(--duration-standard);
@@ -150,13 +160,13 @@
 
 .app-logout-form button:hover,
 .app-mobile-logout button:hover {
-  border-color: var(--color-photon-border);
+  border-color: var(--color-text-disabled);
   color: var(--color-text-primary);
 }
 
 .app-logout-form button:focus-visible,
 .app-mobile-logout button:focus-visible {
-  outline: 2px solid var(--color-photon);
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -179,9 +189,9 @@
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-medium);
-  background: var(--color-surface-base);
+  background: var(--color-surface-raised);
 }
 
 .app-observatory-state > div {
@@ -191,16 +201,17 @@
 
 .app-observatory-state > div:first-child > span {
   color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.1em;
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .app-observatory-state strong {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--font-size-label);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
 }
 
 .app-observatory-state small {
@@ -231,10 +242,10 @@
 }
 
 .app-navigation a {
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   transition:
-    background-color var(--duration-standard) var(--ease-standard),
-    color var(--duration-standard) var(--ease-standard);
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
 }
 
 .app-navigation a:hover {
@@ -249,14 +260,15 @@
 }
 
 .app-nav-icon svg {
-  width: 1.3rem;
-  height: 1.3rem;
+  width: 1.25rem;
+  height: 1.25rem;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.5;
+  stroke-width: var(--icon-stroke);
 }
 
+/* Opaque night, not a frosted bar: ADR-039 forbids backdrop-filter. */
 .app-navigation-bottom {
   position: fixed;
   z-index: 25;
@@ -269,8 +281,7 @@
   padding: var(--space-1) max(var(--space-2), env(safe-area-inset-left))
     env(safe-area-inset-bottom) max(var(--space-2), env(safe-area-inset-right));
   border-top: 1px solid var(--color-border-strong);
-  background: var(--color-panel-overlay);
-  box-shadow: 0 -1rem 3rem var(--color-shadow);
+  background: var(--color-night);
 }
 
 .app-navigation-bottom a {
@@ -283,8 +294,11 @@
   justify-content: center;
   gap: var(--space-1);
   border-radius: var(--radius-small);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -297,7 +311,7 @@
 
 @media (--below-md) {
   .app-mobile-header {
-    min-height: 4.5rem;
+    min-height: 4rem;
     gap: var(--space-2);
     padding: var(--space-2) max(var(--space-3), env(safe-area-inset-right)) var(--space-2)
       max(var(--space-3), env(safe-area-inset-left));
@@ -329,8 +343,7 @@
 }
 
 .app-navigation-bottom a[aria-current="page"] {
-  background: var(--color-photon-faint);
-  color: var(--color-photon);
+  color: var(--color-text-primary);
 }
 
 .app-navigation-bottom a[aria-current="page"]::before {
@@ -339,7 +352,7 @@
   width: 1.5rem;
   height: 2px;
   border-radius: var(--radius-full);
-  background: var(--color-photon);
+  background: var(--color-accent);
   content: "";
 }
 
@@ -390,7 +403,7 @@
 }
 
 .app-preview-instrument span:nth-child(3) {
-  border-color: var(--color-photon-border);
+  border-color: var(--color-accent-border);
   inset: 47%;
 }
 
@@ -403,34 +416,55 @@
   .public-navigation {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-6);
+    min-width: 0;
   }
 
   .public-navigation a,
   .public-sign-in {
+    position: relative;
     display: inline-flex;
     min-height: 2.75rem;
     align-items: center;
-    padding-inline: var(--space-3);
-    border-radius: var(--radius-small);
-    color: var(--color-text-secondary);
+    color: var(--color-text-tertiary);
     font-size: var(--font-size-label);
     font-weight: var(--font-weight-medium);
-    transition:
-      background-color var(--duration-fast) var(--ease-standard),
-      color var(--duration-fast) var(--ease-standard);
+    white-space: nowrap;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .public-sign-in {
+    padding-inline: var(--space-3);
+  }
+
+  /* The reference's underline: drawn in on hover, held on the current page. */
+  .public-navigation a::after {
+    position: absolute;
+    right: 0;
+    bottom: var(--space-2);
+    left: 0;
+    height: 1px;
+    background: currentColor;
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--duration-fast) var(--ease-standard);
   }
 
   .public-navigation a:hover,
+  .public-navigation a[aria-current="page"],
   .public-sign-in:hover {
-    background: var(--color-overlay-hover);
     color: var(--color-text-primary);
+  }
+
+  .public-navigation a:is(:hover, :focus-visible, [aria-current="page"])::after {
+    transform: scaleX(1);
   }
 
   .public-actions {
     display: flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: var(--space-2);
   }
 
   .app-shell {
@@ -439,50 +473,65 @@
     padding-bottom: 0;
   }
 
+  /* The column runs the page's full height; its contents stay in view. */
   .app-sidebar {
+    display: block;
+    border-right: 1px solid var(--color-border-subtle);
+    background: var(--color-night);
+  }
+
+  .app-sidebar-inner {
     position: sticky;
     top: 0;
     display: flex;
-    height: 100vh;
+    max-height: 100vh;
+    min-height: 100vh;
     flex-direction: column;
-    padding: var(--space-8) var(--space-5) var(--space-5);
-    border-right: 1px solid var(--color-border-subtle);
-    background: var(--color-surface-base);
+    overflow-y: auto;
+    padding: var(--space-6) var(--space-4) var(--space-5);
+    scrollbar-width: thin;
   }
 
   .app-sidebar .app-brand {
-    margin: 0 var(--space-3) var(--space-12);
+    margin: 0 var(--space-3) var(--space-10);
   }
 
   .app-navigation-sidebar {
     display: grid;
-    gap: var(--space-2);
+    gap: var(--space-1);
   }
 
-  .app-navigation-sidebar a {
+  .app-navigation-sidebar a,
+  .app-navigation-planned a {
     position: relative;
     display: flex;
-    min-height: 3.25rem;
+    min-height: 2.75rem;
     align-items: center;
     gap: var(--space-3);
     padding-inline: var(--space-3);
+    border: 1px solid transparent;
     border-radius: var(--radius-medium);
     font-size: var(--font-size-label);
     font-weight: var(--font-weight-medium);
   }
 
+  .app-navigation-sidebar a:hover {
+    background: var(--color-overlay-hover);
+  }
+
   .app-navigation-sidebar a[aria-current="page"] {
-    background: var(--color-photon-faint);
+    border-color: var(--color-border-subtle);
+    background: var(--color-surface-raised);
     color: var(--color-text-primary);
   }
 
   .app-navigation-sidebar a[aria-current="page"]::before {
     position: absolute;
-    left: 0;
+    left: -1px;
     width: 2px;
-    height: 1.5rem;
+    height: 1.25rem;
     border-radius: var(--radius-full);
-    background: var(--color-photon);
+    background: var(--color-accent);
     content: "";
   }
 
@@ -501,21 +550,15 @@
   .app-nav-group {
     margin: 0 var(--space-3) var(--space-2);
     color: var(--color-text-tertiary);
+    font-family: var(--font-label);
     font-size: var(--font-size-caption);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-label);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
   }
 
   .app-navigation-planned a {
-    display: flex;
-    min-height: 2.75rem;
-    align-items: center;
-    gap: var(--space-3);
-    padding-inline: var(--space-3);
-    border-radius: var(--radius-medium);
     color: var(--color-text-tertiary);
-    font-size: var(--font-size-label);
   }
 
   .app-navigation-planned a[aria-current="page"] {
@@ -528,7 +571,7 @@
   }
 
   .app-sidebar .app-observatory-state {
-    margin-top: auto;
+    margin-top: var(--space-4);
   }
 
   .app-mobile-header,

@@ -26,13 +26,19 @@ body {
   font-weight: var(--font-weight-regular);
   line-height: var(--leading-body);
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-accent-muted);
+  color: var(--color-text-primary);
 }
 
 html[lang="ka"] body {
   line-height: var(--leading-body-georgian);
 }
 
-html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow) {
+html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow, .kicker) {
   overflow-wrap: anywhere;
 }
 
@@ -45,6 +51,58 @@ html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow) {
 :where(code, kbd, samp, time, .data) {
   font-family: var(--font-mono);
   font-size: var(--font-size-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * ADR-039 headlines: Anton, uppercase, tight. :where keeps the specificity at zero, so a
+ * page or component that sets its own heading face (a card title in Geist) still wins.
+ * font-synthesis: none stops a page weight from faking a bold Anton.
+ */
+:where(h1, h2, h3, h4, .display, .headline) {
+  font-family: var(--font-headline);
+  font-weight: var(--font-weight-headline);
+  letter-spacing: var(--tracking-headline);
+  line-height: var(--leading-display);
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+.display {
+  margin: 0;
+  font-size: var(--font-size-display);
+}
+
+/* The one sunset line a page may carry: Bowlby One, the gradient as a text fill. */
+.title-sunset {
+  display: inline-block;
+  background: var(--gradient-sunset);
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-title);
+  font-weight: var(--font-weight-title);
+  letter-spacing: 0.02em;
+  line-height: 1.02;
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+:where(h1, h2, h3, h4, .display, .headline, .title-sunset):lang(ka) {
+  line-height: 1.15;
+}
+
+/* Spaced labels and kickers: Oswald, uppercase, tracked. */
+.label {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.tabular {
   font-variant-numeric: tabular-nums;
 }
 
@@ -139,16 +197,20 @@ a {
 }
 
 .brand-wordmark {
-  font-family: var(--font-body);
+  font-family: var(--font-title);
   font-size: var(--font-size-body-lg);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: -0.01em;
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .brand-endorsement {
   color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
   letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .language-link {
@@ -156,10 +218,11 @@ a {
   min-height: 2.75rem;
   align-items: center;
   padding-inline: var(--space-3);
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-medium);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-label);
   transition:
     color var(--duration-fast) var(--ease-standard),
     background-color var(--duration-fast) var(--ease-standard);
@@ -174,32 +237,32 @@ main {
   flex: 1;
 }
 
-.eyebrow {
+/* The kicker above a headline. .eyebrow is the name the pages already use. */
+.eyebrow,
+.kicker {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin: 0 0 var(--space-6);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.18em;
+  margin: 0 0 var(--space-4);
+  color: var(--color-accent-ink);
+  font-family: var(--font-label);
+  font-size: var(--font-size-kicker);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-kicker);
+  line-height: 1.4;
   text-transform: uppercase;
 }
 
 .eyebrow span {
-  width: 1.75rem;
+  width: 1.5rem;
   height: 1px;
-  background: var(--color-photon);
+  background: currentColor;
 }
 
 h1 {
-  max-width: 13ch;
+  max-width: 16ch;
   margin: 0;
-  font-family: var(--font-display);
   font-size: var(--font-size-hero);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.015em;
-  line-height: var(--leading-display);
 }
 
 .site-footer {
@@ -215,7 +278,7 @@ h1 {
 }
 
 .not-found p {
-  color: var(--color-photon);
+  color: var(--color-accent-ink);
 }
 
 .not-found h1 {
@@ -224,7 +287,7 @@ h1 {
 }
 
 .not-found a {
-  color: var(--color-text-secondary);
+  color: var(--color-accent-ink);
 }
 
 @media (prefers-reduced-motion: reduce) {

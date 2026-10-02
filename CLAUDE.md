@@ -227,7 +227,7 @@ Georgian: *შენი დრო ნამდვილ ცასთან.*
 Core colors (ADR-039): night `#000000` · cream ink `#F6ECD8` and its opacity ramp ·
 orange `#E8742F` for actions · yellow `#FFD36B` for live and simulated · Photon Blue
 `#5CC8FF` for data and focus. Type: Anton, Bowlby One, Oswald, Geist, JetBrains Mono;
-Georgian in Noto Sans Georgian (condensed) and FiraGO.
+Georgian in Noto Sans Georgian and FiraGO.
 
 Avoid: purple-nebula SaaS gradients, cartoon astronomy, fake NASA/military HUD
 decoration, heavy glassmorphism and glow, stock space imagery presented as

@@ -75,14 +75,13 @@
   }
 }
 
+/* The dot breathes; it never throws a halo (ADR-039: no glow on status indicators). */
 @keyframes observatory-online-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 transparent;
-    opacity: 0.8;
+    opacity: 0.55;
   }
   50% {
-    box-shadow: 0 0 0 0.22rem var(--color-success-muted);
     opacity: 1;
   }
 }

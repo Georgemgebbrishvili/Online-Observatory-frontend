@@ -7,6 +7,7 @@ import {
   isPreviewSegment,
   plannedDestinations,
   primaryDestinations,
+  sidebarDestinations,
 } from "./navigation-model";
 
 describe("app navigation model", () => {
@@ -22,9 +23,19 @@ describe("app navigation model", () => {
     ]);
   });
 
+  it("lists booking with the working destinations in the sidebar, not as planned", () => {
+    expect(sidebarDestinations.map((destination) => destination.key)).toEqual([
+      "home",
+      "missions",
+      "book",
+      "live",
+      "collection",
+      "profile",
+    ]);
+  });
+
   it("carries the planned surfaces the inventory found missing", () => {
     expect(plannedDestinations.map((destination) => destination.key)).toEqual([
-      "book",
       "subscription",
       "loyalty",
       "passes",
@@ -57,7 +68,7 @@ describe("app navigation model", () => {
     const planned = appDestinations
       .map((destination) => destination.segment)
       .filter((segment) => isPlannedSegment(segment));
-    expect(planned).toEqual(["book", "subscription", "loyalty", "passes"]);
+    expect(planned).toEqual(["subscription", "loyalty", "passes"]);
     // profile is a preview, but it is not advertised as unbuilt.
     expect(isPlannedSegment("profile")).toBe(false);
   });

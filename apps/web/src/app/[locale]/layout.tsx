@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Noto_Serif_Georgian } from "next/font/google";
+import {
+  Anton,
+  Bowlby_One,
+  Geist,
+  JetBrains_Mono,
+  Noto_Sans_Georgian,
+  Noto_Serif_Georgian,
+  Oswald,
+} from "next/font/google";
 import localFont from "next/font/local";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
@@ -20,20 +28,72 @@ const firaGO = localFont({
   display: "swap",
 });
 
+// ADR-039 type. Anton for headlines, Bowlby One for the one sunset title, Oswald for
+// spaced labels, Geist for body, JetBrains Mono for data.
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-anton",
+  display: "swap",
+});
+
+const bowlbyOne = Bowlby_One({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-bowlby-one",
+  display: "swap",
+  preload: false,
+});
+
+const oswald = Oswald({
+  subsets: ["latin"],
+  variable: "--font-oswald",
+  display: "swap",
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+  preload: false,
+});
+
+// The Mkhedruli headline and label face, variable in weight. Its width axis narrows Latin
+// but hardly Mkhedruli, so Georgian headlines are heavy at their natural width.
+const notoSansGeorgian = Noto_Sans_Georgian({
+  subsets: ["georgian"],
+  variable: "--font-noto-sans-georgian",
+  display: "swap",
+  preload: false,
+});
+
+// Still read by homepage.css and planet-hero.css for Georgian until B2 replaces them.
 const notoSerifGeorgian = Noto_Serif_Georgian({
   subsets: ["georgian", "latin"],
   weight: ["500", "600"],
   variable: "--font-noto-serif-georgian",
   display: "swap",
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-ibm-plex-mono",
-  display: "swap",
   preload: false,
 });
+
+const fontVariables = [
+  firaGO,
+  anton,
+  bowlbyOne,
+  oswald,
+  geist,
+  jetBrainsMono,
+  notoSansGeorgian,
+  notoSerifGeorgian,
+]
+  .map((font) => font.variable)
+  .join(" ");
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -84,10 +144,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   const dictionary = await getDictionary(locale);
   return (
-    <html
-      lang={locale}
-      className={`${firaGO.variable} ${notoSerifGeorgian.variable} ${ibmPlexMono.variable}`}
-    >
+    <html lang={locale} className={fontVariables}>
       <body>
         <a className="skip-link" href="#main-content">
           {dictionary.navigation.skip}

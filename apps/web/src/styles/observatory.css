@@ -142,11 +142,6 @@
   grid-column: 1 / -1;
 }
 
-.observatory-live .mode-notice {
-  gap: var(--space-1) var(--space-3);
-  padding: var(--space-3) var(--space-4);
-}
-
 .observatory-actions > small {
   color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);

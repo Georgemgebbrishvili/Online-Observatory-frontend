@@ -11,18 +11,15 @@ const fontSizeFromScale = [
   "inherit",
 ];
 
-// v3 §4 holds everywhere except these eight, which still carry 60 hardcoded font
-// sizes. Their media queries were migrated in Phase 1, so §3 now holds everywhere with
-// no exception at all. This list shrinks to nothing. Do not add a file to it.
+// v3 §4 holds everywhere except these five, which still carry hardcoded font sizes.
+// Their media queries were migrated in Phase 1, so §3 now holds everywhere with no
+// exception at all. This list shrinks to nothing. Do not add a file to it.
 const awaitingV3Migration = [
   "apps/web/src/styles/auth.css",
   "apps/web/src/styles/authenticated-home.css",
   "apps/web/src/styles/collection.css",
-  "apps/web/src/styles/footer.css",
   "apps/web/src/styles/live.css",
-  "apps/web/src/styles/mission-session.css",
   "apps/web/src/styles/missions.css",
-  "apps/web/src/styles/shared-mission.css",
 ];
 
 /** @type {import("stylelint").Config} */
@@ -81,6 +78,7 @@ const config = {
         "apps/web/src/styles/components.css",
         "apps/web/src/styles/globals.css",
         "apps/web/src/styles/navigation.css",
+        "apps/web/src/styles/footer.css",
         "apps/web/src/styles/design-system.css",
       ],
       rules: {

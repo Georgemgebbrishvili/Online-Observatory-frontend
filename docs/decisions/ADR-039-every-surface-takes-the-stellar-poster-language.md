@@ -59,14 +59,17 @@ They decided:
 
 | Role            | Latin            | Georgian (no Mkhedruli in the Latin faces)              |
 | --------------- | ---------------- | ------------------------------------------------------- |
-| Headline        | Anton, uppercase | Noto Sans Georgian, condensed (`wdth` 75), weight 800   |
-| Title (sunset)  | Bowlby One       | Noto Sans Georgian, condensed, weight 900               |
-| Spaced label    | Oswald, uppercase, tracked | Noto Sans Georgian, condensed, weight 600, not tracked |
+| Headline        | Anton, uppercase | Noto Sans Georgian, weight 800                          |
+| Title (sunset)  | Bowlby One       | Noto Sans Georgian, weight 900                          |
+| Spaced label    | Oswald, uppercase, tracked | Noto Sans Georgian, weight 600, not tracked     |
 | Body            | Geist            | FiraGO                                                  |
 | Data            | JetBrains Mono   | JetBrains Mono for digits; FiraGO for words             |
 
 Georgian has no capitals, so `text-transform: uppercase` never applies to it.
-Mkhedruli is not letter-spaced.
+Mkhedruli is not letter-spaced. Noto Sans Georgian's width axis narrows its Latin but
+hardly its Mkhedruli (measured 2026-10-02), and no Google face offers a condensed
+Mkhedruli, so Georgian headlines are heavy at their natural width. On Georgian pages
+the whole headline is set in Noto Sans Georgian, Latin words included.
 
 ### Components
 

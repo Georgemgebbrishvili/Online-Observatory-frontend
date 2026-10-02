@@ -52,6 +52,7 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
               key={link.href}
               href={link.href}
               prefetch={link.href.includes("#") ? false : undefined}
+              aria-current={link.href === pathname ? "page" : undefined}
             >
               {link.label}
             </Link>

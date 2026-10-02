@@ -13,7 +13,7 @@ export const observatoryStatuses = [
 export type ObservatoryStatusValue = (typeof observatoryStatuses)[number];
 
 const statusTone: Record<ObservatoryStatusValue, StatusTone> = {
-  ONLINE: "success",
+  ONLINE: "active",
   PREPARING: "neutral",
   OBSERVING: "active",
   PARKED: "neutral",
