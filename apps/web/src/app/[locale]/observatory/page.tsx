@@ -12,6 +12,7 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
+import "@/styles/public-pages.css";
 import "@/styles/observatory.css";
 
 type ObservatoryRouteProps = {

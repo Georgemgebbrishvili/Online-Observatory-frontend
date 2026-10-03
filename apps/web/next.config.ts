@@ -59,6 +59,17 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Design slice B4: /network was one site drawn as a network. Its content is a
+  // section of /observatory now, and the old address keeps working (308).
+  async redirects() {
+    return [
+      {
+        source: "/:locale(en|ka)/network",
+        destination: "/:locale/observatory#network",
+        permanent: true,
+      },
+    ];
+  },
   // ADR-016 §4: the API is served on this host at /api. In production the reverse
   // proxy routes /api before a request reaches this app; in development this
   // rewrite stands in for it, so the API sees this origin and its cookies land here.

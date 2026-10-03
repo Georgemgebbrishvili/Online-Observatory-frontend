@@ -27,14 +27,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  :where(
-    .card-interactive,
-    .mission-target-card,
-    .capture-card,
-    .home-explore-card,
-    .network-node-card,
-    .pricing-offering:not([data-feature-enabled="false"])
-  ) {
+  :where(.card-interactive, .mission-target-card, .capture-card, .home-explore-card) {
     transition:
       border-color var(--duration-standard) var(--ease-standard),
       background-color var(--duration-standard) var(--ease-standard),
@@ -42,14 +35,10 @@
       transform var(--duration-state) var(--ease-standard);
   }
 
-  :where(
-    .card-interactive,
-    .mission-target-card,
-    .capture-card,
-    .home-explore-card,
-    .network-node-card,
-    .pricing-offering:not([data-feature-enabled="false"])
-  ):is(:hover, :focus-within) {
+  :where(.card-interactive, .mission-target-card, .capture-card, .home-explore-card):is(
+    :hover,
+    :focus-within
+  ) {
     box-shadow: 0 1.15rem 3rem var(--color-shadow);
     transform: translateY(-2px);
   }

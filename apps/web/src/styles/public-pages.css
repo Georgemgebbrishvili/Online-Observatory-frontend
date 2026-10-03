@@ -1,0 +1,190 @@
+/*
+ * The public pages in the poster language (ADR-039, design slice B4): observatory,
+ * status, pricing and the legal documents. The homepage's section patterns, shared —
+ * a kicker and an Anton headline to open, hairlines between rows, mono figures, plate
+ * panels — so the public site reads as one. Tokens only; no glow, no blur.
+ */
+
+/* minmax(0, 1fr): an implicit track grows to its widest content, and the status table
+   would carry every section past a 320px screen. */
+.public-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding-bottom: var(--space-16);
+}
+
+/* The opening: kicker, Anton headline, lede. */
+.page-hero {
+  padding-block: var(--space-10) var(--space-12);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.page-hero h1 {
+  max-width: 18ch;
+  /* The observatory's Georgian name in Noto Sans Georgian 800 is wider than a 320px line at the
+     hero size; the viewport cap keeps whole words. */
+  font-size: min(var(--font-size-hero), 11vw);
+}
+
+.page-lede {
+  max-width: 52ch;
+  margin: var(--space-5) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+}
+
+/* A section below the opening. */
+.page-section {
+  padding-block: var(--space-16);
+  scroll-margin-top: var(--space-8);
+}
+
+.page-section + .page-section {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.section-heading {
+  min-width: 0;
+  max-width: 46rem;
+}
+
+.section-heading h2 {
+  max-width: 22ch;
+  margin: 0;
+  font-size: var(--font-size-h1);
+}
+
+.page-split {
+  display: grid;
+  gap: var(--space-10);
+}
+
+/* Ruled rows: a spaced label, then the value; figures in mono. */
+.ruled-specs {
+  min-width: 0;
+  margin: 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.ruled-specs > div {
+  display: grid;
+  gap: var(--space-1) var(--space-4);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.ruled-specs dt {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: var(--leading-body);
+  text-transform: uppercase;
+}
+
+.ruled-specs dd {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.ruled-specs dd small {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+/* A number and its unit, in mono: data reads in Photon Blue (ADR-039). */
+.figure {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--color-photon);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.figure small {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+/* A plate: the panel. Depth from the plate and the border only. */
+.plate {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+}
+
+.plate > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+}
+
+.plate-title {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/* A spaced, orange text link: "Full status →". */
+.page-link {
+  border-radius: var(--radius-small);
+  color: var(--color-accent-ink);
+  font-family: var(--font-label);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.page-link:hover {
+  color: var(--color-accent-hover);
+}
+
+.page-link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 4px;
+}
+
+@media (--md) {
+  .ruled-specs > div {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  }
+
+  .plate {
+    padding: var(--space-6);
+  }
+}
+
+@media (--lg) {
+  .page-hero {
+    padding-block: var(--space-12) var(--space-16);
+  }
+
+  .page-section {
+    padding-block: var(--space-20);
+  }
+
+  .page-split {
+    align-items: start;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: var(--space-16);
+  }
+}

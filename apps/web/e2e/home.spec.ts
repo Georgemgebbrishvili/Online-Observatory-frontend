@@ -449,7 +449,7 @@ test("the observatory's first screen carries status, tonight, the instrument and
 
   // Claims the platform does not back are gone.
   await expect(page.getByText(/41\.72/)).toHaveCount(0);
-  await expect(page.getByText(/cooled|cooling/i)).toHaveCount(0);
+  await expect(page.getByText(/\b(cooled|cooling)\b/i)).toHaveCount(0);
   await expect(page.getByText("Demonstration status")).toHaveCount(0);
   const jsonLd = await page
     .locator('script[type="application/ld+json"]')
@@ -457,8 +457,21 @@ test("the observatory's first screen carries status, tonight, the instrument and
   expect(jsonLd.join("")).not.toContain("GeoCoordinates");
 
   await expect(
-    page.getByRole("heading", { name: "Safety comes before movement" }),
+    page.getByRole("heading", { name: "Nothing moves until it is allowed to." }),
   ).toBeVisible();
+  await expect(
+    page.getByText("Illustration — not telescope output", { exact: true }),
+  ).toBeVisible();
+});
+
+test("/network is folded into the observatory page", async ({ page }) => {
+  const response = await page.request.get("/en/network", { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  expect(response.headers().location).toMatch(/\/en\/observatory#network$/);
+
+  await page.goto("/ka/network");
+  await expect(page).toHaveURL(/\/ka\/observatory#network$/);
+  await expect(page.locator("#network")).toContainText("დღეს — ერთი ადგილი.");
 });
 test("preserves observatory locale and mobile width", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -484,29 +497,35 @@ test("preserves observatory locale and mobile width", async ({ page }) => {
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("shows configured offerings without invented prices or checkout", async ({
+test("shows what exists today, without invented prices or concept tiers", async ({
   page,
 }) => {
   await page.goto("/en/pricing");
 
   await expect(
-    page.getByRole("heading", { name: "Choose how deeply you look." }),
+    page.getByRole("heading", { level: 1, name: "What it costs today." }),
   ).toBeVisible();
-  for (const offering of ["Observer", "Explorer", "Advanced", "Private Observatory"]) {
+  for (const offering of ["Watch", "An observation slot"]) {
     await expect(page.getByRole("heading", { name: offering })).toBeVisible();
   }
-
   await expect(page.getByText("Free", { exact: true })).toBeVisible();
-  await expect(page.getByText("Price to be confirmed").first()).toBeVisible();
-  await expect(page.getByText("Future · feature disabled")).toBeVisible();
-  await expect(page.getByText("Payments and checkout are not enabled.")).toBeVisible();
-  await expect(page.getByRole("button", { name: /checkout|subscribe|buy/i })).toHaveCount(
-    0,
+  await expect(page.getByText("Priced per slot", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Book an observation" })).toHaveAttribute(
+    "href",
+    "/en/app/book",
   );
 
-  for (const duration of ["30", "60", "120"]) {
-    await expect(page.getByText(duration, { exact: true })).toBeVisible();
-  }
+  // Provisional once, and the future in one note.
+  await expect(page.getByText(/provisional/i)).toHaveCount(1);
+  await expect(
+    page.getByText(/Subscriptions, observation passes and private sessions/),
+  ).toBeVisible();
+
+  // The internal configuration is not the public's business.
+  await expect(
+    page.getByText(/2026-08-draft|Configuration version|concept/i),
+  ).toHaveCount(0);
+  await expect(page.getByText(/\d+(\.\d+)?\s?(GEL|₾)/)).toHaveCount(0);
 });
 
 test("keeps localized pricing inside the mobile viewport", async ({ page }) => {
@@ -514,7 +533,7 @@ test("keeps localized pricing inside the mobile viewport", async ({ page }) => {
   await page.goto("/ka/pricing");
 
   await expect(
-    page.getByRole("heading", { name: "აირჩიეთ, რამდენად ღრმად გაიხედავთ." }),
+    page.getByRole("heading", { level: 1, name: "რა ღირს დღეს." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "ნავიგაციის გახსნა" }).click();
   await expect(page.getByRole("link", { name: "ენა: English" })).toHaveAttribute(

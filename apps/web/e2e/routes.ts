@@ -5,7 +5,6 @@
 export const publicRoutes = [
   "",
   "pricing",
-  "network",
   "observatory",
   "status",
   "terms",

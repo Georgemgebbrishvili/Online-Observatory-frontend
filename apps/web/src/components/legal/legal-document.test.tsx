@@ -26,7 +26,7 @@ describe("LegalDocumentPage", () => {
     }
   });
 
-  it("renders a pending section as pending, with no prose of its own", () => {
+  it("renders a pending section as one muted line, with no prose of its own", () => {
     render(
       <LegalDocumentPage
         copy={legalCopy.en}
@@ -40,11 +40,44 @@ describe("LegalDocumentPage", () => {
       .closest("section");
 
     expect(pending).not.toBeNull();
-    const body = within(pending as HTMLElement);
-    expect(body.getByText("Awaiting legal review")).toBeVisible();
-    // The only paragraph is the shared explanation. Anything else would be invented law.
-    expect(pending?.querySelectorAll("p")).toHaveLength(1);
-    expect(body.getByText(legalCopy.en.pendingDetail)).toBeVisible();
+    expect(
+      within(pending as HTMLElement).getByText("Awaiting legal review"),
+    ).toBeVisible();
+    // No paragraph at all. Anything else would be invented law.
+    expect(pending?.querySelectorAll("p")).toHaveLength(0);
+  });
+
+  it("says once, at the top, how many sections await review", () => {
+    render(
+      <LegalDocumentPage
+        copy={legalCopy.en}
+        document={legalCopy.en.documents.privacy}
+        locale="en"
+      />,
+    );
+
+    const note = screen.getByRole("note");
+    expect(note).toHaveTextContent("7 of 8 sections are awaiting legal review.");
+    expect(note).toHaveTextContent(legalCopy.en.pendingDetail);
+    expect(
+      screen.getAllByText(legalCopy.en.pendingDetail, { exact: false }),
+    ).toHaveLength(1);
+  });
+
+  it("lists every section in the contents, linked to it", () => {
+    render(
+      <LegalDocumentPage
+        copy={legalCopy.en}
+        document={legalCopy.en.documents.terms}
+        locale="en"
+      />,
+    );
+
+    const contents = within(screen.getByRole("navigation", { name: "Contents" }));
+    const links = contents.getAllByRole("link");
+    expect(links).toHaveLength(legalCopy.en.documents.terms.sections.length);
+    expect(links[0]).toHaveAttribute("href", "#section-1");
+    expect(document.getElementById("section-1")).not.toBeNull();
   });
 
   it("renders a settled section's decided text", () => {

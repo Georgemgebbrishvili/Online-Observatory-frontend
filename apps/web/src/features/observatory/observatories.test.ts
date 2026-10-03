@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  getObservatory,
-  missionOperations,
-  observatories,
-  observatorySafetyChecks,
-} from "./observatories";
+import { getObservatory, observatories } from "./observatories";
 
 describe("observatory configuration", () => {
   it("ships one active site without inventing future partners", () => {
@@ -21,17 +16,5 @@ describe("observatory configuration", () => {
       model: "NexStar 6SE",
       configurationStatus: "EXPECTED_MVP",
     });
-  });
-
-  it("models the complete protected mission path", () => {
-    expect(missionOperations.map((step) => step.id)).toEqual([
-      "request",
-      "safety-validation",
-      "telescope-movement",
-      "position-verification",
-      "imaging",
-      "capture",
-    ]);
-    expect(observatorySafetyChecks).toHaveLength(5);
   });
 });

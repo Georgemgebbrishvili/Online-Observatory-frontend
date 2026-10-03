@@ -1,145 +1,68 @@
-.observatory-page {
-  width: min(100%, 94rem);
-  margin-inline: auto;
-  padding: 0 var(--space-page) clamp(var(--space-16), 8vw, 8rem);
-}
+/*
+ * /observatory in the poster language (ADR-039, slice B4). The first screen keeps what
+ * ADR-026 put on it — live status, tonight, the instrument and both actions — and the
+ * page then reads as a narrative: the instrument, safety, the site and its network.
+ * Shared patterns live in public-pages.css.
+ */
 
-/* The first screen: identity, live status and the two actions, then tonight and the
-   instrument. ADR-026. Depth from the surface ramp and borders; no glow, no glass. */
-.observatory-first {
+/* THE FIRST SCREEN */
+.observatory-first-grid {
   display: grid;
-  gap: var(--space-5);
-  padding-block: var(--space-6) var(--space-12);
-  border-bottom: 1px solid var(--color-border-strong);
+  gap: var(--space-6);
 }
 
 .observatory-first-main,
 .observatory-first-side {
   display: grid;
   align-content: start;
-  gap: var(--space-4);
-}
-
-.observatory-eyebrow {
-  margin: 0;
-  color: var(--color-photon);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.13em;
+  gap: var(--space-5);
+  min-width: 0;
 }
 
 .observatory-first h1 {
   margin: 0;
-  /* Georgian compounds run wider than the line on a phone; the viewport cap keeps
-     whole words without a per-locale size. */
-  font-size: min(var(--font-size-hero), 10.6vw);
-  line-height: 1.05;
 }
 
 /* On a phone the first screen is for status and the two actions; the sentence waits. */
 .observatory-statement {
   display: none;
-  max-width: 40rem;
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-  line-height: 1.6;
-}
-
-.observatory-live,
-.observatory-tonight,
-.observatory-instrument {
-  display: grid;
-  align-content: start;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
-}
-
-.observatory-live > header,
-.observatory-tonight > header,
-.observatory-instrument > header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-}
-
-.observatory-live h2,
-.observatory-tonight h2,
-.observatory-instrument h2 {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.observatory-tonight > header p {
-  margin: 0;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-label);
-}
-
-.observatory-text-link {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-label);
-  font-weight: 600;
-  text-decoration: none;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-.observatory-text-link:hover {
-  color: var(--color-photon);
+  margin-top: 0;
 }
 
 .observatory-live-rows {
   display: grid;
-  gap: var(--space-3);
   margin: 0;
 }
 
-.observatory-live-rows div {
+.observatory-live-rows > div {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: var(--space-2) var(--space-4);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .observatory-live-rows dt {
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-label);
 }
 
 .observatory-live-rows dd {
+  min-width: 0;
   margin: 0;
 }
 
 .observatory-live-mission {
   margin: 0;
-  color: var(--color-text-primary);
+  color: var(--color-live);
   font-size: var(--font-size-label);
-  font-weight: 600;
 }
 
 .observatory-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
-}
-
-.observatory-actions .button {
-  justify-content: center;
-  text-align: center;
-}
-
-.observatory-actions small {
-  grid-column: 1 / -1;
 }
 
 .observatory-actions > small {
@@ -147,15 +70,21 @@
   font-size: var(--font-size-caption);
 }
 
+.observatory-tonight > header p {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
 .observatory-tonight-list {
-  display: grid;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
   list-style: none;
 }
 
-.observatory-tonight-list li + li {
-  border-top: 1px solid var(--color-border-subtle);
+.observatory-tonight-list li {
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .observatory-tonight-list a {
@@ -163,59 +92,82 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-1) var(--space-3);
-  min-height: 2.75rem;
+  min-height: var(--size-touch);
   padding-block: var(--space-3);
-  color: inherit;
-  text-decoration: none;
+  border-radius: var(--radius-small);
 }
 
-.observatory-tonight-list a > span:last-child {
+.observatory-tonight-name {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-headline);
+  letter-spacing: var(--tracking-headline);
+  line-height: var(--leading-display);
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+.observatory-tonight-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.observatory-tonight-meta .figure {
+  font-size: var(--font-size-caption);
+}
+
+.observatory-tonight-arrow {
   grid-row: 1 / span 2;
   grid-column: 2;
   color: var(--color-text-tertiary);
   transition:
     color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-standard) var(--ease-standard);
+    transform var(--duration-fast) var(--ease-standard);
 }
 
-.observatory-tonight-list a:hover > span:last-child {
-  color: var(--color-photon);
-  transform: translateX(2px);
+@media (hover: hover) {
+  .observatory-tonight-list a:hover .observatory-tonight-name,
+  .observatory-tonight-list a:hover .observatory-tonight-arrow {
+    color: var(--color-accent-ink);
+  }
+
+  .observatory-tonight-list a:hover .observatory-tonight-arrow {
+    transform: translateX(0.25rem);
+  }
 }
 
-.observatory-tonight-name,
-.observatory-tonight-meta {
-  grid-column: 1;
-}
-
-.observatory-tonight-name {
-  font-family: var(--font-display);
-  font-size: var(--font-size-body-lg);
-  letter-spacing: -0.02em;
-}
-
-.observatory-tonight-meta {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-label);
+.observatory-tonight-list a:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .observatory-instrument dl {
   display: grid;
-  gap: var(--space-3);
   margin: 0;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
-.observatory-instrument dl div {
+.observatory-instrument dl > div {
   display: grid;
   gap: var(--space-1);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-border-subtle);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.observatory-instrument dl > div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .observatory-instrument dt {
   color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -225,31 +177,38 @@
   margin: 0;
 }
 
+.observatory-instrument dd strong {
+  font-weight: var(--font-weight-semibold);
+}
+
 .observatory-instrument dd span {
   color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+}
+
+/* 01 · THE INSTRUMENT */
+.observatory-instrument-intro,
+.observatory-instrument-detail {
+  display: grid;
+  align-content: start;
+  gap: var(--space-10);
+  min-width: 0;
 }
 
 .telescope-drawing {
   position: relative;
   margin: 0;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-medium);
-  background:
-    linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px),
-    var(--color-night);
-  background-size:
-    2rem 2rem,
-    2rem 2rem,
-    auto;
+  padding: var(--space-4) var(--space-4) var(--space-10);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
 }
 
 .telescope-drawing svg {
   display: block;
   width: 100%;
-  max-height: 11rem;
+  max-height: 14rem;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -257,12 +216,12 @@
 
 .telescope-drawing figcaption {
   position: absolute;
-  right: var(--space-3);
-  bottom: var(--space-2);
+  right: var(--space-4);
+  bottom: var(--space-3);
+  left: var(--space-4);
   color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-align: right;
 }
 
 .telescope-drawing-ground {
@@ -282,12 +241,12 @@
 .telescope-drawing-corrector,
 .telescope-drawing-arc,
 .telescope-drawing-pivot {
-  stroke: var(--color-photon-border);
+  stroke: var(--color-accent-ink);
   stroke-width: 1.25;
 }
 
 .telescope-drawing-light {
-  stroke: var(--color-photon-border);
+  stroke: var(--color-accent-border);
   stroke-dasharray: 3 5;
   stroke-width: 1.25;
 }
@@ -301,6 +260,98 @@
   transform: rotate(-28deg);
   transform-box: view-box;
   transform-origin: 184px 85px;
+}
+
+.observatory-optics h3 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.observatory-optics > p {
+  max-width: 52ch;
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-secondary);
+}
+
+.observatory-optics ul {
+  display: grid;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.observatory-optics li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+/* 02 · SAFETY — seven rules between hairlines. */
+.observatory-rules {
+  display: grid;
+  margin: var(--space-10) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-accent-border);
+  list-style: none;
+}
+
+.observatory-rules li {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-2) var(--space-4);
+  padding-block: var(--space-6);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.observatory-rule-index {
+  grid-row: span 2;
+  padding-top: var(--space-1);
+  color: var(--color-accent-ink);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+}
+
+.observatory-rules h3 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.observatory-rules p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+/* 03 · THE SITE, and the network within it */
+.observatory-network {
+  display: grid;
+  gap: var(--space-8);
+  margin-top: var(--space-16);
+  padding-top: var(--space-10);
+  border-top: 1px solid var(--color-border-subtle);
+  scroll-margin-top: var(--space-8);
+}
+
+.observatory-network h3 {
+  margin: 0;
+  font-size: var(--font-size-h2);
+}
+
+.observatory-network header p:last-child {
+  max-width: 52ch;
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-secondary);
+}
+
+.observatory-network dd .status-indicator {
+  justify-self: start;
+  margin-top: var(--space-1);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -361,16 +412,14 @@
   }
 }
 
-.observatory-text-link:focus-visible,
-.observatory-tonight-list a:focus-visible {
-  outline: 2px solid var(--color-photon);
-  outline-offset: 3px;
-}
-
 @media (--sm) {
   .observatory-actions {
     grid-template-columns: repeat(2, max-content);
     align-items: center;
+  }
+
+  .observatory-actions > small {
+    grid-column: 1 / -1;
   }
 }
 
@@ -378,311 +427,64 @@
   .observatory-statement {
     display: block;
   }
+
+  .observatory-rules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-10);
+  }
+
+  .observatory-optics ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .observatory-optics li {
+    display: grid;
+    align-content: start;
+    justify-content: start;
+    padding: var(--space-5) var(--space-4) var(--space-5) 0;
+  }
+
+  .observatory-optics li + li {
+    padding-left: var(--space-4);
+    border-left: 1px solid var(--color-border-subtle);
+  }
+
+  .observatory-network {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: var(--space-10);
+  }
 }
 
 @media (--lg) {
-  .observatory-first {
-    grid-template-columns: minmax(0, 1.15fr) minmax(22rem, 0.85fr);
-    gap: var(--space-8);
+  .observatory-first-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(22rem, 0.9fr);
+    gap: var(--space-12);
     align-items: start;
-    padding-block: var(--space-8) var(--space-16);
-  }
-
-  .observatory-first-main {
-    gap: var(--space-5);
   }
 
   .observatory-live-rows {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--color-border-subtle);
   }
 
-  .observatory-live-rows div {
+  .observatory-live-rows > div {
     display: grid;
+    align-content: start;
     justify-content: start;
-  }
-}
-
-.observatory-mission-path header > span,
-.observatory-safety header > span,
-.observatory-network header > span {
-  margin: 0;
-  color: var(--color-photon);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.13em;
-}
-
-.observatory-mission-path,
-.observatory-safety,
-.observatory-network {
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
-}
-
-.observatory-mission-path h2,
-.observatory-safety h2,
-.observatory-network h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 450;
-  letter-spacing: -0.045em;
-}
-
-.observatory-mission-path,
-.observatory-safety,
-.observatory-network {
-  margin-top: clamp(var(--space-16), 9vw, 8rem);
-  padding: clamp(var(--space-6), 5vw, var(--space-10));
-}
-
-.observatory-mission-path > header,
-.observatory-network > header {
-  display: grid;
-  gap: var(--space-5);
-}
-
-.observatory-mission-path h2,
-.observatory-safety h2,
-.observatory-network h2 {
-  font-size: var(--font-size-h1);
-}
-
-.observatory-mission-path header p,
-.observatory-safety header p,
-.observatory-network header p {
-  max-width: 42rem;
-  margin: var(--space-4) 0 0;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-}
-
-.observatory-mission-path ol,
-.observatory-safety ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.observatory-mission-path ol {
-  display: grid;
-  gap: 0;
-  margin-top: var(--space-10);
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.observatory-mission-path li {
-  position: relative;
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr) auto;
-  gap: var(--space-4);
-  align-items: center;
-  min-height: 5rem;
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.observatory-mission-path li > span,
-.observatory-safety li > span {
-  color: var(--color-photon);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-}
-
-.observatory-mission-path li > strong {
-  font-family: var(--font-display);
-  font-size: var(--font-size-body-lg);
-  font-weight: 500;
-}
-
-.observatory-mission-path li > i {
-  color: var(--color-text-tertiary);
-  font-style: normal;
-}
-
-.observatory-safety {
-  background:
-    radial-gradient(circle at 90% 10%, var(--color-photon-muted), transparent 22rem),
-    var(--color-surface-base);
-}
-
-.observatory-safety > header {
-  max-width: 48rem;
-}
-
-.observatory-safety ol {
-  display: grid;
-  margin-top: var(--space-10);
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.observatory-safety li {
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr);
-  gap: var(--space-4);
-  padding-block: var(--space-5);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.observatory-safety li h3,
-.observatory-safety li p {
-  margin: 0;
-}
-
-.observatory-safety li h3 {
-  font-family: var(--font-display);
-  font-size: var(--font-size-h3);
-  font-weight: 500;
-}
-
-.observatory-safety li p {
-  max-width: 39rem;
-  margin-top: var(--space-2);
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-}
-
-.observatory-network-track {
-  position: relative;
-  margin-top: var(--space-10);
-  padding-left: var(--space-8);
-}
-
-.observatory-network-track::before {
-  position: absolute;
-  width: 1px;
-  background: linear-gradient(
-    var(--color-photon),
-    var(--color-optical-faint),
-    transparent
-  );
-  content: "";
-  top: 0;
-  bottom: 0;
-  left: 0.45rem;
-}
-
-.observatory-network-track article {
-  display: grid;
-  gap: var(--space-5);
-  align-items: center;
-  padding-bottom: var(--space-8);
-}
-
-.observatory-network-node {
-  position: absolute;
-  width: 1rem;
-  height: 1rem;
-  border: 3px solid var(--color-night);
-  border-radius: var(--radius-full);
-  background: var(--color-photon);
-  top: 0.3rem;
-  left: 0;
-}
-
-.observatory-network-track article small {
-  color: var(--color-success);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.observatory-network-track article h3,
-.observatory-network-track article p {
-  margin: 0;
-}
-
-.observatory-network-track article h3 {
-  margin-block: var(--space-2);
-  font-family: var(--font-display);
-  font-size: var(--font-size-h3);
-  font-weight: 450;
-  letter-spacing: -0.04em;
-}
-
-.observatory-network-track article p,
-.observatory-network-track > p {
-  color: var(--color-text-secondary);
-}
-
-.observatory-network > .button {
-  margin-top: var(--space-6);
-}
-
-.observatory-network-track > p {
-  margin: 0;
-  padding: var(--space-8) 0;
-  border-top: 1px dashed var(--color-border-strong);
-}
-
-.observatory-back-link {
-  display: inline-flex;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: var(--space-3);
-  margin-top: var(--space-6);
-  border-radius: var(--radius-small);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-  font-weight: 650;
-  letter-spacing: 0.1em;
-}
-
-.observatory-back-link:hover {
-  color: var(--color-text-primary);
-}
-
-.observatory-back-link:focus-visible {
-  outline: 2px solid var(--color-photon);
-  outline-offset: 3px;
-}
-
-@media (--md) {
-  .observatory-mission-path > header,
-  .observatory-network > header {
-    grid-template-columns: 3rem minmax(0, 1fr);
+    padding: var(--space-3) var(--space-3) 0 0;
+    border-top: 0;
   }
 
-  .observatory-mission-path ol {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+  .observatory-live-rows > div + div {
+    padding-left: var(--space-3);
+    border-left: 1px solid var(--color-border-subtle);
   }
 
-  .observatory-mission-path li {
-    grid-template-columns: 1fr;
-    align-content: space-between;
-    min-height: 10rem;
-    padding: var(--space-4);
-    border-right: 1px solid var(--color-border-subtle);
+  .observatory-rules {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .observatory-mission-path li:last-child {
-    border-right: 0;
-  }
-
-  .observatory-mission-path li > i {
-    position: absolute;
-    z-index: 2;
-    top: 50%;
-    right: -0.55rem;
-    width: 1.1rem;
-    background: var(--color-surface-base);
-    text-align: center;
-  }
-
-  .observatory-safety ol {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .observatory-safety li:nth-child(odd) {
-    padding-right: var(--space-8);
-    border-right: 1px solid var(--color-border-subtle);
-  }
-
-  .observatory-safety li:nth-child(even) {
-    padding-left: var(--space-8);
-  }
-
-  .observatory-network-track article {
-    grid-template-columns: minmax(0, 1fr) auto;
+  .observatory-network {
+    gap: var(--space-16);
   }
 }

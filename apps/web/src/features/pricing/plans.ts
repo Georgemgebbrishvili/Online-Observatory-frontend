@@ -2,113 +2,65 @@ import type { Locale } from "@/i18n/config";
 
 type LocalizedText = Record<Locale, string>;
 
-export type PriceConfiguration =
-  | { kind: "FREE"; amountMinor: 0 }
-  | {
-      kind: "CONFIGURABLE";
-      amountMinor?: number;
-      currency?: string;
-      billingInterval?: "MONTHLY" | "SESSION";
-    };
-
-export type OfferingAvailability = "AVAILABLE" | "CONCEPT" | "FUTURE";
-
+/**
+ * What the public pricing page may say exists today. Watching is free. A slot is sold
+ * by the platform, which prices each one (the slot's `priceMinor`); this page carries
+ * no amount of its own, so it cannot drift from the platform or state a price nobody
+ * has approved.
+ */
 export type PricingOffering = {
-  id: "observer" | "explorer" | "advanced" | "private-observatory";
+  id: "watch" | "slot";
   name: LocalizedText;
   description: LocalizedText;
-  availability: OfferingAvailability;
-  featureFlag?: keyof typeof pricingFeatureFlags;
-  price: PriceConfiguration;
+  price: { kind: "FREE" } | { kind: "PER_SLOT" };
   features: LocalizedText[];
-  sessionDurations?: number[];
+  action: { href: string; label: LocalizedText };
 };
 
-export type PricingConfiguration = {
-  version: string;
-  currency: string | null;
-  paymentsEnabled: boolean;
-  offerings: PricingOffering[];
-};
-
-export const pricingFeatureFlags = {
-  advancedOffering: false,
-} as const;
-
-export const pricingConfiguration: PricingConfiguration = {
-  version: "2026-08-draft",
-  currency: null,
-  paymentsEnabled: false,
-  offerings: [
-    {
-      id: "observer",
-      name: { en: "Observer", ka: "დამკვირვებელი" },
-      description: {
-        en: "Begin with the shared sky and follow real public observations.",
-        ka: "დაიწყეთ საერთო ცით და თვალყური ადევნეთ საჯარო დაკვირვებებს.",
-      },
-      availability: "AVAILABLE",
-      price: { kind: "FREE", amountMinor: 0 },
-      features: [
-        { en: "Watch public live missions", ka: "საჯარო პირდაპირი მისიების ყურება" },
-        { en: "Browse Tonight's Sky", ka: "დღევანდელი ცის დათვალიერება" },
-        { en: "Explore the object catalog", ka: "ობიექტების კატალოგის აღმოჩენა" },
-      ],
+export const pricingOfferings: PricingOffering[] = [
+  {
+    id: "watch",
+    name: { en: "Watch", ka: "ყურება" },
+    description: {
+      en: "Follow public live observations and plan your own.",
+      ka: "უყურეთ საჯარო პირდაპირ დაკვირვებებს და დაგეგმეთ საკუთარი.",
     },
-    {
-      id: "explorer",
-      name: { en: "Explorer", ka: "მკვლევარი" },
-      description: {
-        en: "A future subscription concept for building a personal observing practice.",
-        ka: "სამომავლო გამოწერის კონცეფცია პირადი დაკვირვების გამოცდილებისთვის.",
-      },
-      availability: "CONCEPT",
-      price: { kind: "CONFIGURABLE", billingInterval: "MONTHLY" },
-      features: [
-        { en: "Mission credits", ka: "მისიის კრედიტები" },
-        { en: "Personal captures", ka: "პირადი კადრები" },
-        { en: "Personal collection", ka: "პირადი კოლექცია" },
-        { en: "Scheduled observations", ka: "დაგეგმილი დაკვირვებები" },
-      ],
+    price: { kind: "FREE" },
+    features: [
+      { en: "Public live observations", ka: "საჯარო პირდაპირი დაკვირვებები" },
+      { en: "Tonight's sky", ka: "დღევანდელი ცა" },
+      { en: "The target catalogue", ka: "ობიექტების კატალოგი" },
+    ],
+    action: {
+      href: "app/missions",
+      label: { en: "Explore tonight's sky", ka: "დღევანდელი ცის ნახვა" },
     },
-    {
-      id: "advanced",
-      name: { en: "Advanced", ka: "გაფართოებული" },
-      description: {
-        en: "A feature-gated future path for longer and more technical observations.",
-        ka: "ფუნქციით შეზღუდული სამომავლო გზა უფრო ხანგრძლივი და ტექნიკური დაკვირვებებისთვის.",
-      },
-      availability: "FUTURE",
-      featureFlag: "advancedOffering",
-      price: { kind: "CONFIGURABLE", billingInterval: "MONTHLY" },
-      features: [
-        { en: "Priority reservations", ka: "პრიორიტეტული დაჯავშნა" },
-        { en: "Advanced processing", ka: "გაფართოებული დამუშავება" },
-        { en: "Raw and FITS data", ka: "დაუმუშავებელი და FITS მონაცემები" },
-        { en: "Longer observations", ka: "უფრო ხანგრძლივი დაკვირვებები" },
-      ],
+  },
+  {
+    id: "slot",
+    name: { en: "An observation slot", ka: "სადამკვირვებლო სლოტი" },
+    description: {
+      en: "Reserve the telescope, choose an approved target and watch it live.",
+      ka: "დაჯავშნეთ ტელესკოპი, აირჩიეთ დამტკიცებული ობიექტი და უყურეთ მას პირდაპირ.",
     },
-    {
-      id: "private-observatory",
-      name: { en: "Private Observatory", ka: "პირადი ობსერვატორია" },
-      description: {
-        en: "A premium dedicated telescope window for an exclusive observing session.",
-        ka: "ტელესკოპის პრემიუმ გამოყოფილი დრო ექსკლუზიური დაკვირვების სესიისთვის.",
+    price: { kind: "PER_SLOT" },
+    features: [
+      {
+        en: "The telescope, yours for the slot",
+        ka: "ტელესკოპი თქვენია სლოტის განმავლობაში",
       },
-      availability: "CONCEPT",
-      price: { kind: "CONFIGURABLE", billingInterval: "SESSION" },
-      sessionDurations: [30, 60, 120],
-      features: [
-        { en: "Exclusive telescope session", ka: "ტელესკოპის ექსკლუზიური სესია" },
-      ],
+      {
+        en: "Your captures, kept in your collection",
+        ka: "თქვენი კადრები, თქვენს კოლექციაში",
+      },
+      {
+        en: "Live view, never long exposure",
+        ka: "ცოცხალი ხედი, არა ხანგრძლივი ექსპოზიცია",
+      },
+    ],
+    action: {
+      href: "app/book",
+      label: { en: "Book an observation", ka: "დაკვირვების დაჯავშნა" },
     },
-  ],
-};
-
-export function getPricingOffering(offeringId: PricingOffering["id"]) {
-  return pricingConfiguration.offerings.find((offering) => offering.id === offeringId);
-}
-
-export function isOfferingEnabled(offering: PricingOffering) {
-  return offering.featureFlag ? pricingFeatureFlags[offering.featureFlag] : true;
-}
+  },
+];

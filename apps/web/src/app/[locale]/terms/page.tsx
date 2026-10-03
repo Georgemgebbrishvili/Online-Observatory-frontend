@@ -8,6 +8,7 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { legalCopy, legalPaths } from "@/i18n/resources/legal";
 import { localizedMetadata } from "@/lib/seo";
+import "@/styles/public-pages.css";
 import "@/styles/legal.css";
 
 type LegalRouteProps = {

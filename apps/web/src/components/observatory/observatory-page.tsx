@@ -3,13 +3,11 @@ import Link from "next/link";
 
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { linkTone, weatherTone } from "@/components/status/status-page";
+import { ButtonLink } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
 import { StatePanel } from "@/components/ui/state-panel";
 import { StatusIndicator } from "@/components/ui/status-indicator";
-import {
-  missionOperations,
-  observatories,
-  observatorySafetyChecks,
-} from "@/features/observatory/observatories";
+import { observatories } from "@/features/observatory/observatories";
 import type { ObservatoryPanelResult } from "@/features/home/read";
 import { fill } from "@/features/operator/format";
 import { formatWindow, primaryReason, targetName } from "@/features/targets/present";
@@ -18,7 +16,6 @@ import type { Locale } from "@/i18n/config";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
-import { brand } from "@/brand";
 
 type ObservatoryPageProps = {
   locale: Locale;
@@ -27,9 +24,9 @@ type ObservatoryPageProps = {
 };
 
 /**
- * A line drawing of the alt-az fork mount, labelled as a drawing. The tube slews into
- * place once on load -- the one thing on this page that physically moves -- and the
- * light path follows it in. Both are off under prefers-reduced-motion.
+ * A line drawing of the alt-az fork mount, captioned as an illustration (ADR-039). The
+ * tube slews into place once on load -- the one thing on this page that physically
+ * moves -- and the light path follows it in. Both are off under prefers-reduced-motion.
  */
 function TelescopeDrawing({ label }: { label: string }) {
   return (
@@ -83,17 +80,21 @@ function LiveStatus({
   const words = statusCopy[locale];
 
   return (
-    <section className="observatory-live" aria-labelledby="observatory-live-title">
+    <section className="plate observatory-live" aria-labelledby="observatory-live-title">
       <header>
-        <h2 id="observatory-live-title">{copy.liveStatus}</h2>
-        <Link className="observatory-text-link" href={`/${locale}/status`}>
+        <h2 id="observatory-live-title" className="plate-title">
+          {copy.liveStatus}
+        </h2>
+        <Link className="page-link" href={`/${locale}/status`}>
           {copy.fullStatus} <span aria-hidden="true">→</span>
         </Link>
       </header>
       {panel.kind === "unreachable" && (
-        <StatePanel variant="error" {...copy.statusUnavailable} />
+        <StatePanel variant="error" headingLevel={3} {...copy.statusUnavailable} />
       )}
-      {panel.kind === "no-observatory" && <StatePanel {...copy.noObservatory} />}
+      {panel.kind === "no-observatory" && (
+        <StatePanel headingLevel={3} {...copy.noObservatory} />
+      )}
       {panel.kind === "ok" && (
         <>
           <ModeNotice
@@ -154,9 +155,9 @@ function Tonight({ locale, tonight }: { locale: Locale; tonight: TonightResult }
 
   let body;
   if (tonight.kind === "unreachable") {
-    body = <StatePanel variant="error" {...words.unreachable} />;
+    body = <StatePanel variant="error" headingLevel={3} {...words.unreachable} />;
   } else if (tonight.kind === "no-observatory") {
-    body = <StatePanel {...words.noObservatory} />;
+    body = <StatePanel headingLevel={3} {...words.noObservatory} />;
   } else {
     const observable: TonightTarget[] = tonight.items
       .filter((item) => item.visibility.observable)
@@ -165,6 +166,7 @@ function Tonight({ locale, tonight }: { locale: Locale; tonight: TonightResult }
     body =
       observable.length === 0 ? (
         <StatePanel
+          headingLevel={3}
           title={words.noneObservable.title}
           description={
             reason
@@ -181,16 +183,22 @@ function Tonight({ locale, tonight }: { locale: Locale; tonight: TonightResult }
                   {targetName(target, locale)}
                 </span>
                 <span className="observatory-tonight-meta">
-                  {words.types[target.type]} ·{" "}
-                  {Math.round(visibility.horizontal.altitudeDegrees)}° ·{" "}
-                  {formatWindow(
-                    visibility,
-                    tonight.observatory.timezone,
-                    locale,
-                    words.window,
-                  )}
+                  <span>{words.types[target.type]}</span>
+                  <span className="figure">
+                    {Math.round(visibility.horizontal.altitudeDegrees)}°
+                  </span>
+                  <span className="figure">
+                    {formatWindow(
+                      visibility,
+                      tonight.observatory.timezone,
+                      locale,
+                      words.window,
+                    )}
+                  </span>
                 </span>
-                <span aria-hidden="true">→</span>
+                <span className="observatory-tonight-arrow" aria-hidden="true">
+                  →
+                </span>
               </Link>
             </li>
           ))}
@@ -199,9 +207,14 @@ function Tonight({ locale, tonight }: { locale: Locale; tonight: TonightResult }
   }
 
   return (
-    <section className="observatory-tonight" aria-labelledby="observatory-tonight-title">
+    <section
+      className="plate observatory-tonight"
+      aria-labelledby="observatory-tonight-title"
+    >
       <header>
-        <h2 id="observatory-tonight-title">{copy.tonight}</h2>
+        <h2 id="observatory-tonight-title" className="plate-title">
+          {copy.tonight}
+        </h2>
         <p>{copy.tonightDescription}</p>
       </header>
       {body}
@@ -209,7 +222,8 @@ function Tonight({ locale, tonight }: { locale: Locale; tonight: TonightResult }
   );
 }
 
-function Instrument({
+/** The first screen's short version: what the telescope and camera are (ADR-026). */
+function InstrumentSummary({
   locale,
   panel,
 }: {
@@ -221,13 +235,14 @@ function Instrument({
 
   return (
     <section
-      className="observatory-instrument"
+      className="plate observatory-instrument"
       aria-labelledby="observatory-instrument-title"
     >
       <header>
-        <h2 id="observatory-instrument-title">{copy.instrument}</h2>
+        <h2 id="observatory-instrument-title" className="plate-title">
+          {copy.instrument}
+        </h2>
       </header>
-      <TelescopeDrawing label={copy.drawing} />
       <dl>
         {telescope && (
           <div>
@@ -255,6 +270,216 @@ function Instrument({
   );
 }
 
+function InstrumentSection({
+  locale,
+  panel,
+}: {
+  locale: Locale;
+  panel: ObservatoryPanelResult;
+}) {
+  const copy = observatoryPageCopy[locale];
+  const words = copy.instrumentSection;
+  const telescope = panel.kind === "ok" ? panel.observatory.telescope : null;
+
+  return (
+    <section
+      className="page-section"
+      id="instrument"
+      aria-labelledby="observatory-instrument-section-title"
+    >
+      <Container className="page-split">
+        <div className="observatory-instrument-intro">
+          <header className="section-heading">
+            <p className="kicker">{words.kicker}</p>
+            <h2 id="observatory-instrument-section-title">{words.title}</h2>
+            <p className="page-lede">{words.lede}</p>
+          </header>
+          <TelescopeDrawing label={copy.illustration} />
+        </div>
+        <div className="observatory-instrument-detail">
+          <dl className="ruled-specs">
+            {telescope && (
+              <>
+                <div>
+                  <dt>{copy.telescope}</dt>
+                  <dd>
+                    {telescope.manufacturer} {telescope.model}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{words.design}</dt>
+                  <dd>{words.designValue}</dd>
+                </div>
+                <div>
+                  <dt>{copy.aperture}</dt>
+                  <dd>
+                    <span className="figure">
+                      {telescope.apertureMm} <small>{words.millimetres}</small>
+                    </span>
+                  </dd>
+                </div>
+                <div>
+                  <dt>{copy.focalLength}</dt>
+                  <dd>
+                    <span className="figure">
+                      {telescope.focalLengthMm} <small>{words.millimetres}</small>
+                    </span>
+                  </dd>
+                </div>
+                <div>
+                  <dt>{words.focalRatio}</dt>
+                  <dd>
+                    <span className="figure">
+                      {`f/${Math.round(telescope.focalLengthMm / telescope.apertureMm)}`}
+                    </span>
+                  </dd>
+                </div>
+              </>
+            )}
+            <div>
+              <dt>{words.mount}</dt>
+              <dd>{words.mountValue}</dd>
+            </div>
+            <div>
+              <dt>{copy.camera}</dt>
+              <dd>
+                {copy.cameraModel}
+                <small>{words.cameraNote}</small>
+              </dd>
+            </div>
+            <div>
+              <dt>{words.mode}</dt>
+              <dd>
+                {words.modeValue}
+                <small>{words.modeNote}</small>
+              </dd>
+            </div>
+          </dl>
+
+          <div className="observatory-optics">
+            <h3>{words.optics}</h3>
+            <p>{words.opticsLede}</p>
+            <ul>
+              {words.configurations.map((configuration) => (
+                <li key={configuration.value}>
+                  <span className="plate-title">{configuration.name}</span>
+                  <span className="figure">{configuration.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function SafetySection({ locale }: { locale: Locale }) {
+  const words = observatoryPageCopy[locale].safetySection;
+
+  return (
+    <section
+      className="page-section"
+      id="safety"
+      aria-labelledby="observatory-safety-title"
+    >
+      <Container>
+        <header className="section-heading">
+          <p className="kicker">{words.kicker}</p>
+          <h2 id="observatory-safety-title">{words.title}</h2>
+          <p className="page-lede">{words.lede}</p>
+        </header>
+        <ol className="observatory-rules">
+          {words.rules.map((rule, index) => (
+            <li key={rule.title}>
+              <span className="observatory-rule-index">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <h3>{rule.title}</h3>
+              <p>{rule.description}</p>
+            </li>
+          ))}
+        </ol>
+      </Container>
+    </section>
+  );
+}
+
+function SiteSection({
+  locale,
+  panel,
+}: {
+  locale: Locale;
+  panel: ObservatoryPanelResult;
+}) {
+  const copy = observatoryPageCopy[locale];
+  const site = copy.siteSection;
+  const network = copy.networkSection;
+
+  return (
+    <section className="page-section" id="site" aria-labelledby="observatory-site-title">
+      <Container className="page-split">
+        <header className="section-heading">
+          <p className="kicker">{site.kicker}</p>
+          <h2 id="observatory-site-title">{site.title}</h2>
+          <p className="page-lede">{site.lede}</p>
+        </header>
+        <dl className="ruled-specs">
+          <div>
+            <dt>{site.city}</dt>
+            <dd>{site.cityValue}</dd>
+          </div>
+          <div>
+            <dt>{site.placement}</dt>
+            <dd>{site.placementValue}</dd>
+          </div>
+          <div>
+            <dt>{site.precision}</dt>
+            <dd>{site.precisionValue}</dd>
+          </div>
+        </dl>
+      </Container>
+
+      <Container>
+        <div
+          className="observatory-network"
+          id="network"
+          aria-labelledby="observatory-network-title"
+          role="region"
+        >
+          <header>
+            <p className="kicker">{network.kicker}</p>
+            <h3 id="observatory-network-title">{network.title}</h3>
+            <p>{network.lede}</p>
+          </header>
+          <dl className="ruled-specs">
+            <div>
+              <dt>{network.today}</dt>
+              <dd>
+                {network.todayValue}
+                {panel.kind === "ok" && (
+                  <StatusIndicator
+                    label={statusCopy[locale].link[panel.status.link]}
+                    tone={linkTone[panel.status.link]}
+                  />
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>{network.later}</dt>
+              <dd>{network.laterValue}</dd>
+            </div>
+            <div>
+              <dt>{network.applications}</dt>
+              <dd>{network.applicationsValue}</dd>
+            </div>
+          </dl>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
 export function ObservatoryPage({ locale, panel, tonight }: ObservatoryPageProps) {
   const copy = observatoryPageCopy[locale];
   const site = observatories[0];
@@ -266,113 +491,37 @@ export function ObservatoryPage({ locale, panel, tonight }: ObservatoryPageProps
       : site.name[locale];
 
   return (
-    <main id="main-content" className="observatory-page">
-      <section className="observatory-first" aria-labelledby="observatory-page-title">
-        <div className="observatory-first-main">
-          <p className="observatory-eyebrow">{copy.eyebrow}</p>
-          <h1 id="observatory-page-title">{name}</h1>
-          <p className="observatory-statement">{copy.statement}</p>
-          <LiveStatus locale={locale} panel={panel} />
-          <div className="observatory-actions">
-            <Link
-              className="button button-primary button-large"
-              href={`/${locale}/app/missions`}
-            >
-              <span>{copy.seeTonight}</span>
-            </Link>
-            <Link
-              className="button button-secondary button-large"
-              href={`/${locale}/app/live`}
-            >
-              <span>{copy.openLive}</span>
-            </Link>
-            <small>{copy.liveNote}</small>
-          </div>
-        </div>
-        <div className="observatory-first-side">
-          <Tonight locale={locale} tonight={tonight} />
-          <Instrument locale={locale} panel={panel} />
-        </div>
-      </section>
-
-      <section className="observatory-mission-path" aria-labelledby="mission-path-title">
-        <header>
-          <span>01</span>
-          <div>
-            <h2 id="mission-path-title">{copy.missionTitle}</h2>
-            <p>{copy.missionDescription}</p>
-          </div>
-        </header>
-        <ol>
-          {missionOperations.map((operation, index) => (
-            <li key={operation.id}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <strong>{operation.label[locale]}</strong>
-              {index < missionOperations.length - 1 && <i aria-hidden="true">→</i>}
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="observatory-safety" aria-labelledby="observatory-safety-title">
-        <header>
-          <span>02</span>
-          <h2 id="observatory-safety-title">{copy.safety}</h2>
-          <p>{copy.safetyDescription}</p>
-        </header>
-        <ol>
-          {observatorySafetyChecks.map((check, index) => (
-            <li key={check.id}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                <h3>{check.title[locale]}</h3>
-                <p>{check.description[locale]}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
+    <main id="main-content" className="public-page observatory-page">
       <section
-        className="observatory-network"
-        aria-labelledby="observatory-network-title"
+        className="page-hero observatory-first"
+        aria-labelledby="observatory-page-title"
       >
-        <header>
-          <span>03</span>
-          <div>
-            <h2 id="observatory-network-title">{copy.futureNetwork}</h2>
-            <p>{copy.futureDescription}</p>
+        <Container className="observatory-first-grid">
+          <div className="observatory-first-main">
+            <p className="kicker">{copy.eyebrow}</p>
+            <h1 id="observatory-page-title">{name}</h1>
+            <p className="page-lede observatory-statement">{copy.statement}</p>
+            <LiveStatus locale={locale} panel={panel} />
+            <div className="observatory-actions">
+              <ButtonLink href={`/${locale}/app/missions`} size="large">
+                {copy.seeTonight}
+              </ButtonLink>
+              <ButtonLink href={`/${locale}/app/live`} size="large" variant="secondary">
+                {copy.openLive}
+              </ButtonLink>
+              <small>{copy.liveNote}</small>
+            </div>
           </div>
-        </header>
-        <div className="observatory-network-track">
-          {observatories.map((site) => (
-            <article key={site.id}>
-              <span className="observatory-network-node" aria-hidden="true" />
-              <div>
-                <small>{copy.activeSite}</small>
-                <h3>{site.name[locale]}</h3>
-                <p>{site.location[locale]}</p>
-              </div>
-              {panel.kind === "ok" && (
-                <StatusIndicator
-                  label={statusCopy[locale].link[panel.status.link]}
-                  tone={linkTone[panel.status.link]}
-                />
-              )}
-            </article>
-          ))}
-          <p>{copy.noPartners}</p>
-        </div>
-        <Link
-          className="button button-secondary button-large"
-          href={`/${locale}/network`}
-        >
-          <span>{copy.networkFoundation}</span>
-        </Link>
-        <Link className="observatory-back-link" href={`/${locale}`}>
-          <span aria-hidden="true">←</span> {brand.en.name.toUpperCase()}
-        </Link>
+          <div className="observatory-first-side">
+            <Tonight locale={locale} tonight={tonight} />
+            <InstrumentSummary locale={locale} panel={panel} />
+          </div>
+        </Container>
       </section>
+
+      <InstrumentSection locale={locale} panel={panel} />
+      <SafetySection locale={locale} />
+      <SiteSection locale={locale} panel={panel} />
     </main>
   );
 }

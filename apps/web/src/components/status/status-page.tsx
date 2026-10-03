@@ -44,15 +44,17 @@ function age(milliseconds: number, copy: StatusCopy["age"]) {
 /** `field` names the row for tests; see the same prop on the operator overview. */
 function Row({
   children,
+  className = "",
   field,
   label,
 }: {
   children: ReactNode;
+  className?: string;
   field: string;
   label: string;
 }) {
   return (
-    <div className="status-row" data-field={field}>
+    <div className={`status-row ${className}`} data-field={field}>
       <dt>{label}</dt>
       <dd>{children}</dd>
     </div>
@@ -72,6 +74,50 @@ function layers(hour: ViewingConditionsHour, unknown: string) {
   // Shown only when the source gave at least one layer: three dashes say nothing.
   if (parts.every((part) => part === null)) return null;
   return parts.map((part) => percent(part, unknown)).join(" / ");
+}
+
+/**
+ * Cloud cover per hour as bars, Photon Blue for data (ADR-039). Decoration for the eye
+ * only: the table beneath carries every figure, so the chart is hidden from assistive
+ * technology. An hour without a figure draws no bar -- unknown is never drawn as clear.
+ */
+function CloudChart({
+  caption,
+  hourLabel,
+  hours,
+  unknown,
+}: {
+  caption: string;
+  hourLabel: (at: string) => string;
+  hours: ViewingConditionsHour[];
+  unknown: string;
+}) {
+  return (
+    <figure className="status-chart">
+      <figcaption className="plate-title">{caption}</figcaption>
+      <ol aria-hidden="true">
+        {hours.map((hour) => {
+          const value = hour.status === "UNKNOWN" ? null : hour.cloudCoverPercent;
+          return (
+            <li key={hour.at} className={value === null ? "status-chart-unknown" : ""}>
+              <span className="status-chart-value">
+                {value === null ? unknown : `${Math.round(value)}%`}
+              </span>
+              <span className="status-chart-track">
+                {value !== null && (
+                  <span
+                    className="status-chart-bar"
+                    style={{ blockSize: `${Math.max(value, 1)}%` }}
+                  />
+                )}
+              </span>
+              <time dateTime={hour.at}>{hourLabel(hour.at)}</time>
+            </li>
+          );
+        })}
+      </ol>
+    </figure>
+  );
 }
 
 export function StatusPage({
@@ -102,35 +148,40 @@ export function StatusPage({
     });
 
   return (
-    <main className="status-page" id="main-content">
-      <Container>
-        <header className="status-header">
-          <span className="status-eyebrow">{copy.eyebrow}</span>
-          <h1>{copy.title}</h1>
-          <p className="status-introduction">{copy.introduction}</p>
-          <p className="status-observatory">
+    <main className="public-page status-page" id="main-content">
+      <section className="page-hero" aria-labelledby="status-title">
+        <Container className="status-hero">
+          <header>
+            <p className="kicker">{copy.eyebrow}</p>
+            <h1 id="status-title">{copy.title}</h1>
+            <p className="page-lede">{copy.introduction}</p>
+          </header>
+          <div className="plate status-observatory">
             <strong>{observatoryName}</strong>
             <span className="data">
               {fill(copy.updated, {
                 age: age(now - Date.parse(status.updatedAt), copy.age),
               })}
             </span>
-          </p>
-        </header>
+            <ModeNotice mode={status.mode} label={mode.banner} detail={mode.detail} />
+          </div>
+        </Container>
+      </section>
 
-        <ModeNotice mode={status.mode} label={mode.banner} detail={mode.detail} />
-
-        <section className="status-panel" aria-labelledby="status-now">
-          <h2 id="status-now">{copy.now.title}</h2>
-          <dl className="status-rows">
-            <Row field="link" label={copy.now.link}>
+      <section className="page-section" aria-labelledby="status-now">
+        <Container>
+          <h2 id="status-now" className="status-heading">
+            {copy.now.title}
+          </h2>
+          <dl className="status-summary">
+            <Row className="plate" field="link" label={copy.now.link}>
               <StatusIndicator
                 label={copy.link[status.link]}
                 tone={linkTone[status.link]}
               />
               <span className="status-note">{copy.linkDetail[status.link]}</span>
             </Row>
-            <Row field="weather" label={copy.now.weather}>
+            <Row className="plate" field="weather" label={copy.now.weather}>
               <StatusIndicator
                 label={copy.weather[status.weather.status]}
                 tone={weatherTone[status.weather.status]}
@@ -139,7 +190,7 @@ export function StatusPage({
                 {copy.now.weatherSource}: {copy.weatherSource[status.weather.source]}
               </span>
             </Row>
-            <Row field="hold" label={copy.now.hold}>
+            <Row className="plate" field="hold" label={copy.now.hold}>
               <StatusIndicator
                 label={
                   status.weather.holdActive ? copy.now.holdActive : copy.now.holdInactive
@@ -150,93 +201,115 @@ export function StatusPage({
                 <span className="status-note">{status.weather.note}</span>
               )}
             </Row>
-            <Row field="mission" label={copy.now.mission}>
-              {status.missionInProgress ? copy.now.yes : copy.now.no}
+            <Row className="plate" field="mission" label={copy.now.mission}>
+              <span className="status-value">
+                {status.missionInProgress ? copy.now.yes : copy.now.no}
+              </span>
             </Row>
+          </dl>
+          <dl className="ruled-specs status-rows">
             <Row field="target" label={copy.now.target}>
               {/* Present only while the session owner has opted in (ADR-007). */}
               {status.currentTargetName ?? copy.now.none}
             </Row>
             <Row field="last-mission" label={copy.now.lastMission}>
-              {status.lastSuccessfulMissionAt
-                ? new Date(status.lastSuccessfulMissionAt).toLocaleString(
+              {status.lastSuccessfulMissionAt ? (
+                <span className="data">
+                  {new Date(status.lastSuccessfulMissionAt).toLocaleString(
                     locale === "ka" ? "ka-GE" : "en-GB",
                     { dateStyle: "medium", timeStyle: "short", timeZone: timezone },
-                  )
-                : copy.now.never}
+                  )}
+                </span>
+              ) : (
+                copy.now.never
+              )}
             </Row>
           </dl>
-        </section>
+        </Container>
+      </section>
 
-        <section className="status-panel" aria-labelledby="status-conditions">
-          <h2 id="status-conditions">{copy.conditions.title}</h2>
-          <p className="status-advisory">{copy.conditions.detail}</p>
+      <section className="page-section" aria-labelledby="status-conditions">
+        <Container>
+          <header className="status-conditions-header">
+            <h2 id="status-conditions" className="status-heading">
+              {copy.conditions.title}
+            </h2>
+            <p className="status-advisory">{copy.conditions.detail}</p>
+          </header>
 
           {hours.length === 0 ? (
             <p className="status-empty">{copy.conditions.empty}</p>
           ) : (
-            <div className="status-table-scroll">
-              <table className="status-table">
-                <thead>
-                  <tr>
-                    <th scope="col">{copy.conditions.hour}</th>
-                    <th scope="col">{copy.conditions.cloud}</th>
-                    <th scope="col">{copy.conditions.cloudLayers}</th>
-                    <th scope="col">{copy.conditions.precipitation}</th>
-                    <th scope="col">{copy.conditions.humidity}</th>
-                    <th scope="col">{copy.conditions.wind}</th>
-                    <th scope="col">{copy.conditions.seeing}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {hours.map((hour) => (
-                    <tr key={hour.at}>
-                      <th scope="row" className="data">
-                        {hourLabel(hour.at)}
-                      </th>
-                      {/* An hour with no stored forecast is unknown, never clear. */}
-                      {hour.status === "UNKNOWN" ? (
-                        <td className="status-unknown-hour" colSpan={6}>
-                          {copy.conditions.unknownHour}
-                        </td>
-                      ) : (
-                        <>
-                          <td className="data">
-                            {percent(hour.cloudCoverPercent, copy.conditions.unknown)}
-                          </td>
-                          <td className="data">
-                            {layers(hour, copy.conditions.unknown) ??
-                              copy.conditions.unknown}
-                          </td>
-                          <td className="data">
-                            {percent(
-                              hour.precipitationProbabilityPercent,
-                              copy.conditions.unknown,
-                            )}
-                          </td>
-                          <td className="data">
-                            {percent(
-                              hour.relativeHumidityPercent,
-                              copy.conditions.unknown,
-                            )}
-                          </td>
-                          <td className="data">
-                            {hour.windSpeedMetresPerSecond === null
-                              ? copy.conditions.unknown
-                              : `${hour.windSpeedMetresPerSecond.toFixed(1)} m/s`}
-                          </td>
-                          <td className="data">
-                            {hour.seeingArcseconds === null
-                              ? copy.conditions.unknown
-                              : `${hour.seeingArcseconds.toFixed(1)}″`}
-                          </td>
-                        </>
-                      )}
+            <>
+              <CloudChart
+                caption={copy.conditions.chartCaption}
+                hourLabel={hourLabel}
+                hours={hours}
+                unknown={copy.conditions.unknown}
+              />
+              <div className="status-table-scroll">
+                <table className="status-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">{copy.conditions.hour}</th>
+                      <th scope="col">{copy.conditions.cloud}</th>
+                      <th scope="col">{copy.conditions.cloudLayers}</th>
+                      <th scope="col">{copy.conditions.precipitation}</th>
+                      <th scope="col">{copy.conditions.humidity}</th>
+                      <th scope="col">{copy.conditions.wind}</th>
+                      <th scope="col">{copy.conditions.seeing}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {hours.map((hour) => (
+                      <tr key={hour.at}>
+                        <th scope="row" className="data">
+                          {hourLabel(hour.at)}
+                        </th>
+                        {/* An hour with no stored forecast is unknown, never clear. */}
+                        {hour.status === "UNKNOWN" ? (
+                          <td className="status-unknown-hour" colSpan={6}>
+                            {copy.conditions.unknownHour}
+                          </td>
+                        ) : (
+                          <>
+                            <td className="data status-cloud">
+                              {percent(hour.cloudCoverPercent, copy.conditions.unknown)}
+                            </td>
+                            <td className="data">
+                              {layers(hour, copy.conditions.unknown) ??
+                                copy.conditions.unknown}
+                            </td>
+                            <td className="data">
+                              {percent(
+                                hour.precipitationProbabilityPercent,
+                                copy.conditions.unknown,
+                              )}
+                            </td>
+                            <td className="data">
+                              {percent(
+                                hour.relativeHumidityPercent,
+                                copy.conditions.unknown,
+                              )}
+                            </td>
+                            <td className="data">
+                              {hour.windSpeedMetresPerSecond === null
+                                ? copy.conditions.unknown
+                                : `${hour.windSpeedMetresPerSecond.toFixed(1)} m/s`}
+                            </td>
+                            <td className="data">
+                              {hour.seeingArcseconds === null
+                                ? copy.conditions.unknown
+                                : `${hour.seeingArcseconds.toFixed(1)}″`}
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
 
           {hours[0]?.source && hours[0].fetchedAt && (
@@ -247,12 +320,12 @@ export function StatusPage({
               })}
             </p>
           )}
-        </section>
 
-        <Link className="status-back" href={`/${locale}`}>
-          {copy.back}
-        </Link>
-      </Container>
+          <Link className="page-link status-back" href={`/${locale}`}>
+            {copy.back}
+          </Link>
+        </Container>
+      </section>
     </main>
   );
 }

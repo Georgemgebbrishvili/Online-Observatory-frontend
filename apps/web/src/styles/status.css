@@ -1,14 +1,8 @@
-/* DV-073. The instrument's own report: readable, quiet, and never dressed up to look
-   more certain than the data behind it. */
-
-.status-page {
-  padding-block: clamp(var(--space-12), 7vw, 6rem) clamp(var(--space-16), 8vw, 8rem);
-}
-
-.status-page .page-container {
-  width: min(100%, 62rem);
-  margin-inline: auto;
-}
+/*
+ * DV-073, in the poster language (ADR-039, slice B4). The instrument's own report:
+ * readable, quiet, and never dressed up to look more certain than the data behind it.
+ * The full width now: a summary of plates, then tonight's forecast drawn and tabled.
+ */
 
 .status-page-unavailable {
   display: grid;
@@ -17,99 +11,75 @@
   padding: var(--space-page);
 }
 
-.status-header {
-  max-width: 46rem;
+.status-hero {
+  display: grid;
+  gap: var(--space-8);
 }
 
-.status-eyebrow {
-  display: block;
-  color: var(--color-photon);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.13em;
-}
-
-.status-header h1 {
-  margin: var(--space-5) 0 0;
-  font-size: var(--font-size-hero);
-}
-
-.status-introduction {
-  margin: var(--space-6) 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-  line-height: 1.6;
+.status-hero h1 {
+  max-width: 16ch;
 }
 
 .status-observatory {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-4);
-  margin: var(--space-6) 0 0;
+  align-self: end;
 }
 
-.status-observatory > span {
+.status-observatory > strong {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-headline);
+  letter-spacing: var(--tracking-headline);
+  line-height: var(--leading-display);
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+.status-observatory > .data {
   color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
-.status-page .mode-notice {
-  margin-top: var(--space-8);
-}
-
-.status-panel {
-  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
-  padding: var(--space-6);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-raised);
-}
-
-.status-panel > h2 {
+.status-heading {
   margin: 0;
-  font-size: var(--font-size-h3);
+  font-size: var(--font-size-h1);
 }
 
-.status-rows {
+/* RIGHT NOW — the four readings as plates, then two ruled rows. */
+.status-summary {
   display: grid;
   gap: var(--space-4);
-  margin: var(--space-6) 0 0;
+  margin: var(--space-8) 0 0;
 }
 
-.status-row {
-  display: grid;
-  gap: var(--space-2);
-  align-items: baseline;
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
+.status-summary .status-row {
+  gap: var(--space-3);
 }
 
-/* The label column's 12rem floor is wider than a 320px page can spare, and a Georgian
-   status label runs to 155px beside it. Stack until there is room for two columns. */
-@media (--sm) {
-  .status-row {
-    grid-template-columns: minmax(12rem, 0.4fr) minmax(0, 1fr);
-  }
-}
-
-.status-row:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-
-.status-row dt {
+.status-summary dt {
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-label);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
-.status-row dd {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
+.status-summary dd {
+  display: grid;
+  justify-items: start;
+  align-content: start;
   gap: var(--space-3);
   margin: 0;
-  font-size: var(--font-size-label);
+}
+
+.status-value {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-headline);
+  letter-spacing: var(--tracking-headline);
+  line-height: var(--leading-display);
+  text-transform: uppercase;
+  font-synthesis: none;
 }
 
 .status-note {
@@ -117,12 +87,20 @@
   font-size: var(--font-size-caption);
 }
 
+.status-rows {
+  margin-top: var(--space-8);
+}
+
+/* TONIGHT'S CONDITIONS */
+.status-conditions-header {
+  display: grid;
+  gap: var(--space-4);
+}
+
 .status-advisory {
   max-width: 68ch;
-  margin: var(--space-4) 0 0;
+  margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-  line-height: 1.6;
 }
 
 .status-empty,
@@ -132,6 +110,80 @@
   font-size: var(--font-size-caption);
 }
 
+/*
+ * The chart: one column per hour, the bar's height the cloud cover. On a phone the hours
+ * outrun the width, so the chart scrolls inside itself, never the page.
+ */
+.status-chart {
+  min-width: 0;
+  margin: var(--space-10) 0 0;
+  padding: var(--space-5);
+  overflow-x: auto;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+}
+
+.status-chart ol {
+  display: grid;
+  grid-auto-columns: minmax(2.75rem, 1fr);
+  grid-auto-flow: column;
+  gap: var(--space-2);
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.status-chart li {
+  display: grid;
+  grid-template-rows: auto 10rem auto;
+  justify-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.status-chart-value {
+  color: var(--color-photon);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-chart-track {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 3rem;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.status-chart-bar {
+  width: 100%;
+  border-radius: var(--radius-small) var(--radius-small) 0 0;
+  background: var(--color-photon-muted);
+  border: 1px solid var(--color-photon-border);
+  border-bottom: 0;
+}
+
+/* No figure, no bar: a dashed outline the height of the track, and the word. */
+.status-chart-unknown .status-chart-value {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-body);
+  text-align: center;
+}
+
+.status-chart-unknown .status-chart-track {
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-small);
+}
+
+.status-chart time {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+/* The table: every figure, ruled, in mono; the cloud column in Photon Blue. */
 .status-table-scroll {
   /* overflow-x alone does not shrink a grid or flex item below its content. */
   min-width: 0;
@@ -154,15 +206,21 @@
 }
 
 .status-table thead th {
+  border-bottom-color: var(--color-border-strong);
   color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .status-table tbody th {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
+}
+
+.status-table td.status-cloud {
+  color: var(--color-photon);
 }
 
 .status-unknown-hour {
@@ -172,7 +230,46 @@
 
 .status-back {
   display: inline-block;
-  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
-  color: var(--color-photon);
-  font-weight: 500;
+  margin-top: var(--space-12);
+}
+
+@media (--below-sm) {
+  /* Twelve hours on a phone: the figures above each bar give way to the table. */
+  .status-chart-value {
+    visibility: hidden;
+  }
+}
+
+@media (--sm) {
+  .status-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (--md) {
+  .status-chart {
+    padding: var(--space-6);
+  }
+
+  .status-chart li {
+    grid-template-rows: auto 12rem auto;
+  }
+}
+
+@media (--lg) {
+  .status-hero {
+    grid-template-columns: minmax(0, 1.4fr) minmax(18rem, 0.6fr);
+    align-items: end;
+    gap: var(--space-16);
+  }
+
+  .status-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .status-conditions-header {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: end;
+    gap: var(--space-16);
+  }
 }

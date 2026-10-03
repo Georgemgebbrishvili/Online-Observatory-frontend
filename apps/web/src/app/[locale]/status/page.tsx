@@ -10,6 +10,7 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { statusCopy } from "@/i18n/resources/status";
 import { localizedMetadata } from "@/lib/seo";
+import "@/styles/public-pages.css";
 import "@/styles/status.css";
 
 // A status page must never be served from cache: a cached reading is a stale one

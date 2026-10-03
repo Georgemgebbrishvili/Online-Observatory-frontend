@@ -1,46 +1,18 @@
 import { describe, expect, it } from "vitest";
 
-import { getPricingOffering, isOfferingEnabled, pricingConfiguration } from "./plans";
+import { pricingOfferings } from "./plans";
 
-describe("pricing configuration", () => {
-  it("stores every offering in one configuration source", () => {
-    expect(pricingConfiguration.offerings.map((offering) => offering.id)).toEqual([
-      "observer",
-      "explorer",
-      "advanced",
-      "private-observatory",
-    ]);
+describe("pricing offerings", () => {
+  it("lists only what exists today", () => {
+    expect(pricingOfferings.map((offering) => offering.id)).toEqual(["watch", "slot"]);
   });
 
-  it("does not invent undecided production prices", () => {
-    const configurableOfferings = pricingConfiguration.offerings.filter(
-      (offering) => offering.price.kind === "CONFIGURABLE",
-    );
-
-    expect(pricingConfiguration.currency).toBeNull();
-    expect(pricingConfiguration.paymentsEnabled).toBe(false);
-    expect(
-      configurableOfferings.every(
-        (offering) =>
-          offering.price.amountMinor === undefined &&
-          offering.price.currency === undefined,
-      ),
-    ).toBe(true);
-  });
-
-  it("keeps Observer free and Advanced feature-gated", () => {
-    expect(getPricingOffering("observer")?.price).toEqual({
+  it("keeps watching free and carries no amount of its own for a slot", () => {
+    expect(pricingOfferings.find((offering) => offering.id === "watch")?.price).toEqual({
       kind: "FREE",
-      amountMinor: 0,
     });
-
-    const advanced = getPricingOffering("advanced");
-    expect(advanced && isOfferingEnabled(advanced)).toBe(false);
-  });
-
-  it("configures the three private session durations", () => {
-    expect(getPricingOffering("private-observatory")?.sessionDurations).toEqual([
-      30, 60, 120,
-    ]);
+    const slot = pricingOfferings.find((offering) => offering.id === "slot");
+    expect(slot?.price).toEqual({ kind: "PER_SLOT" });
+    expect(JSON.stringify(pricingOfferings)).not.toMatch(/amount|currency|GEL|₾/);
   });
 });

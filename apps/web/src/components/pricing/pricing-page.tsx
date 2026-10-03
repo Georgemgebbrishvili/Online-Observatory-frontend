@@ -1,179 +1,91 @@
-import Link from "next/link";
-
-import {
-  getPricingOffering,
-  isOfferingEnabled,
-  pricingConfiguration,
-  type PricingOffering,
-} from "@/features/pricing/plans";
+import { ButtonLink } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
+import { pricingOfferings, type PricingOffering } from "@/features/pricing/plans";
 import type { Locale } from "@/i18n/config";
 import { pricingPageCopy } from "@/i18n/resources/pricing";
 
-type PricingPageProps = {
-  locale: Locale;
-};
-
-function availabilityLabel(offering: PricingOffering, locale: Locale) {
-  const copy = pricingPageCopy[locale];
-
-  if (!isOfferingEnabled(offering)) {
-    return copy.future;
-  }
-
-  return offering.availability === "AVAILABLE" ? copy.available : copy.concept;
-}
-
-function priceLabel(offering: PricingOffering, locale: Locale) {
-  return offering.price.kind === "FREE"
-    ? pricingPageCopy[locale].free
-    : pricingPageCopy[locale].configuredLater;
-}
-
-function OfferingCard({
+function Offering({
+  index,
   locale,
   offering,
-  index,
 }: {
+  index: number;
   locale: Locale;
   offering: PricingOffering;
-  index: number;
 }) {
   const copy = pricingPageCopy[locale];
-  const enabled = isOfferingEnabled(offering);
+  const free = offering.price.kind === "FREE";
 
   return (
-    <article
-      className={`pricing-offering pricing-offering-${offering.id}`}
-      data-feature-enabled={enabled}
-    >
-      <header>
-        <span>{String(index + 1).padStart(2, "0")}</span>
-        <small>{availabilityLabel(offering, locale)}</small>
-      </header>
-      <div className="pricing-offering-name">
-        <h2>{offering.name[locale]}</h2>
-        <strong>{priceLabel(offering, locale)}</strong>
+    <li className="pricing-row" data-offering={offering.id}>
+      <span className="pricing-index">{String(index + 1).padStart(2, "0")}</span>
+      <div className="pricing-name">
+        <h3>{offering.name[locale]}</h3>
         <p>{offering.description[locale]}</p>
       </div>
-      <div className="pricing-offering-features">
-        <span>{copy.included}</span>
+      <div className="pricing-price">
+        <strong className={free ? "pricing-free" : undefined}>
+          {free ? copy.free : copy.perSlot}
+        </strong>
+        {!free && <small>{copy.perSlotNote}</small>}
+      </div>
+      <div className="pricing-features">
+        <span className="plate-title">{copy.included}</span>
         <ul>
           {offering.features.map((feature) => (
-            <li key={feature.en}>
-              <span aria-hidden="true">✓</span>
-              {feature[locale]}
-            </li>
+            <li key={feature.en}>{feature[locale]}</li>
           ))}
         </ul>
       </div>
-      {offering.id === "observer" && (
-        <Link className="button button-primary" href={`/${locale}/app/missions`}>
-          <span>{copy.explore}</span>
-        </Link>
-      )}
-    </article>
+      <ButtonLink
+        className="pricing-action"
+        href={`/${locale}/${offering.action.href}`}
+        variant={free ? "secondary" : "primary"}
+      >
+        {offering.action.label[locale]}
+      </ButtonLink>
+    </li>
   );
 }
 
-export function PricingPage({ locale }: PricingPageProps) {
+export function PricingPage({ locale }: { locale: Locale }) {
   const copy = pricingPageCopy[locale];
-  const standardOfferings = pricingConfiguration.offerings.filter(
-    (offering) => offering.id !== "private-observatory",
-  );
-  const privateOffering = getPricingOffering("private-observatory")!;
 
   return (
-    <main id="main-content" className="pricing-page">
-      <section className="pricing-hero" aria-labelledby="pricing-title">
-        <p>{copy.eyebrow}</p>
-        <h1 id="pricing-title">{copy.title}</h1>
-        <div>
-          <p>{copy.introduction}</p>
-          <span className="pricing-orbit" aria-hidden="true">
-            <i />
-          </span>
-        </div>
+    <main id="main-content" className="public-page pricing-page">
+      <section className="page-hero" aria-labelledby="pricing-title">
+        <Container>
+          <p className="kicker">{copy.eyebrow}</p>
+          <h1 id="pricing-title">{copy.title}</h1>
+          <p className="page-lede">{copy.introduction}</p>
+        </Container>
       </section>
 
-      <aside className="pricing-notice" aria-labelledby="pricing-notice-title">
-        <span>{copy.noticeMarker}</span>
-        <div>
-          <h2 id="pricing-notice-title">{copy.noticeTitle}</h2>
-          <p>{copy.notice}</p>
-        </div>
-        <strong>{copy.noPayment}</strong>
-      </aside>
+      <section className="page-section" aria-labelledby="pricing-offerings-title">
+        <Container>
+          <h2 id="pricing-offerings-title" className="visually-hidden">
+            {copy.offerings}
+          </h2>
+          <ol className="pricing-rows">
+            {pricingOfferings.map((offering, index) => (
+              <Offering
+                key={offering.id}
+                index={index}
+                locale={locale}
+                offering={offering}
+              />
+            ))}
+          </ol>
+          <p className="pricing-provisional">{copy.provisional}</p>
 
-      <section className="pricing-offering-grid" aria-label={copy.offerings}>
-        {standardOfferings.map((offering, index) => (
-          <OfferingCard
-            key={offering.id}
-            offering={offering}
-            index={index}
-            locale={locale}
-          />
-        ))}
+          <aside className="pricing-later" aria-labelledby="pricing-later-title">
+            <h2 id="pricing-later-title" className="plate-title">
+              {copy.laterTitle}
+            </h2>
+            <p>{copy.later}</p>
+          </aside>
+        </Container>
       </section>
-
-      <section className="pricing-private" aria-labelledby="private-pricing-title">
-        <header>
-          <div>
-            <span>04</span>
-            <p>{copy.privateLabel}</p>
-          </div>
-          <small>{availabilityLabel(privateOffering, locale)}</small>
-        </header>
-        <div className="pricing-private-intro">
-          <div>
-            <h2 id="private-pricing-title">{privateOffering.name[locale]}</h2>
-            <strong>{priceLabel(privateOffering, locale)}</strong>
-          </div>
-          <p>{privateOffering.description[locale]}</p>
-        </div>
-        <div className="pricing-session-grid">
-          {privateOffering.sessionDurations?.map((duration, index) => (
-            <article key={duration}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <strong>{duration}</strong>
-              <p>{copy.minutes}</p>
-              <small>{copy.perSession}</small>
-            </article>
-          ))}
-        </div>
-        <div className="pricing-private-footer">
-          <p>
-            <span aria-hidden="true">✓</span>
-            {privateOffering.features[0][locale]}
-          </p>
-          <small>{copy.sessionNote}</small>
-        </div>
-      </section>
-
-      <section className="pricing-configuration" aria-labelledby="pricing-config-title">
-        <div>
-          <span>{copy.configurationMarker}</span>
-          <h2 id="pricing-config-title">{copy.configuration}</h2>
-          <p>{copy.configurationDescription}</p>
-        </div>
-        <dl>
-          <div>
-            <dt>{copy.version}</dt>
-            <dd>{pricingConfiguration.version}</dd>
-          </div>
-          <div>
-            <dt>{copy.currency}</dt>
-            <dd>{pricingConfiguration.currency ?? copy.currencyPending}</dd>
-          </div>
-          <div>
-            <dt>{copy.paymentStatus}</dt>
-            <dd>{copy.paymentDisabled}</dd>
-          </div>
-        </dl>
-      </section>
-
-      <Link className="pricing-back" href={`/${locale}`}>
-        <span aria-hidden="true">←</span> {copy.back}
-      </Link>
     </main>
   );
 }

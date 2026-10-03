@@ -27,6 +27,9 @@ export type LegalCopy = {
   decidedLabel: string;
   pendingLabel: string;
   pendingDetail: string;
+  /** "{pending} of {total}": how many of the document's sections await review. */
+  pendingSummary: string;
+  contents: string;
   back: string;
   documents: Record<LegalDocumentId, LegalDocument>;
 };
@@ -45,7 +48,9 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     notice: `${brand.en.name} has not launched and this document is awaiting legal review. Sections marked as settled record decisions already taken about how the service will work. They are published for transparency and do not yet bind anyone.`,
     decidedLabel: "Settled",
     pendingLabel: "Awaiting legal review",
-    pendingDetail: `This section will be written and reviewed before ${brand.en.name} opens.`,
+    pendingDetail: `Each will be written and reviewed before ${brand.en.name} opens.`,
+    pendingSummary: "{pending} of {total} sections are awaiting legal review.",
+    contents: "Contents",
     back: `Return to ${brand.en.name}`,
     documents: {
       terms: {
@@ -147,7 +152,9 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     notice: `${brand.ka.nominative} ჯერ არ ამოქმედებულა და ეს დოკუმენტი იურიდიულ განხილვას ელოდება. გადაწყვეტილად მონიშნული სექციები ასახავს უკვე მიღებულ გადაწყვეტილებებს სერვისის მუშაობის შესახებ. ისინი გამჭვირვალობისთვისაა გამოქვეყნებული და ჯერ არავის ავალდებულებს.`,
     decidedLabel: "გადაწყვეტილია",
     pendingLabel: "ელოდება იურიდიულ განხილვას",
-    pendingDetail: `ეს სექცია დაიწერება და განიხილება ${brand.ka.genitive} გახსნამდე.`,
+    pendingDetail: `თითოეული დაიწერება და განიხილება ${brand.ka.genitive} გახსნამდე.`,
+    pendingSummary: "{total} სექციიდან {pending} იურიდიულ განხილვას ელოდება.",
+    contents: "სარჩევი",
     back: `${brand.ka.on} დაბრუნება`,
     documents: {
       terms: {
