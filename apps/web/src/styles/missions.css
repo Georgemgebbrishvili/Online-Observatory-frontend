@@ -1,51 +1,36 @@
+/*
+ * Tonight's targets and a target, in the poster language (ADR-039, design slice B5).
+ * Openings, plates, ruled rows and figures come from pages.css. The drawn targets sit
+ * on a plain deep well — no grid, no glow, no reticle — and every one is captioned as
+ * an illustration.
+ */
+
 .missions-page,
 .mission-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   width: min(100%, 90rem);
   margin-inline: auto;
-  padding: clamp(var(--space-8), 5vw, var(--space-16)) var(--space-page)
-    clamp(var(--space-16), 8vw, 7rem);
-}
-
-.missions-hero {
-  padding-bottom: var(--space-8);
-  border-bottom: 1px solid var(--color-border-strong);
-}
-
-.missions-hero-copy {
-  display: grid;
-  gap: var(--space-6);
-}
-
-.missions-hero h1 {
-  max-width: none;
-  font-size: clamp(2.8rem, 7vw, 5.75rem);
-}
-
-.missions-hero-copy > p,
-.mission-detail-description {
-  max-width: 42rem;
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-  line-height: 1.75;
+  padding: 0 var(--space-page) var(--space-16);
 }
 
 .missions-page .tonight-notices {
   display: grid;
   gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  margin-top: var(--space-8);
 }
 
 .missions-page .tonight-notices:empty {
   display: none;
 }
 
+/* FILTERS — chips; the pressed one takes the action colour. */
 .mission-filters {
   display: flex;
   gap: var(--space-2);
   overflow-x: auto;
   margin-inline: calc(-1 * var(--space-page));
-  padding: var(--space-6) var(--space-page);
+  padding: var(--space-8) var(--space-page) var(--space-6);
   scrollbar-width: none;
 }
 
@@ -56,41 +41,34 @@
 .mission-filter {
   min-height: 2.75rem;
   padding-inline: var(--space-4);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--color-text-secondary);
   cursor: pointer;
-  font: inherit;
-  font-size: var(--font-size-label);
-  font-weight: 600;
   white-space: nowrap;
   transition:
-    border-color var(--duration-standard) var(--ease-standard),
-    background-color var(--duration-standard) var(--ease-standard),
-    color var(--duration-standard) var(--ease-standard);
+    border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
 }
 
 .mission-filter:hover {
-  border-color: var(--color-border-strong);
+  border-color: var(--color-text-disabled);
   color: var(--color-text-primary);
 }
 
 .mission-filter[aria-pressed="true"] {
-  border-color: var(--color-photon-border);
-  background: var(--color-photon-muted);
-  color: var(--color-photon);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-muted);
+  color: var(--color-accent-ink);
 }
 
 .mission-filter:focus-visible,
-.mission-target-card a:focus-visible,
-.mission-back-link:focus-visible,
-.mission-detail a:focus-visible,
+.mission-card-visual-link:focus-visible,
+.mission-target-body h2 a:focus-visible,
 .mission-technical summary:focus-visible {
-  outline: 2px solid var(--color-photon);
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
+/* THE LIST */
 .mission-target-grid {
   display: grid;
   gap: var(--space-4);
@@ -99,98 +77,76 @@
   list-style: none;
 }
 
-.mission-target-card {
+.mission-target-grid > li {
   display: grid;
-  min-height: 100%;
-  overflow: hidden;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
-  box-shadow: var(--shadow-small);
+}
+
+.mission-target-card {
+  grid-template-rows: auto 1fr;
   transition:
-    border-color var(--duration-standard) var(--ease-standard),
-    transform var(--duration-standard) var(--ease-standard),
-    box-shadow var(--duration-standard) var(--ease-standard);
+    border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
 }
 
 .mission-target-card:hover,
 .mission-target-card:focus-within {
-  border-color: var(--color-border-strong);
-  box-shadow: var(--shadow-panel);
-  transform: translateY(-2px);
+  border-color: var(--color-text-disabled);
+  background: var(--color-surface-hover);
+}
+
+.mission-card-figure,
+.mission-detail-figure {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+}
+
+.mission-card-figure figcaption,
+.mission-detail-figure figcaption {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
 }
 
 .mission-card-visual-link {
   display: block;
-  min-height: 13rem;
+  border-radius: var(--radius-small);
 }
 
+/* THE DRAWINGS — cream ink on a deep well. */
 .mission-target-visual,
 .mission-detail-visual {
   position: relative;
   display: grid;
   overflow: hidden;
   place-items: center;
-  background:
-    radial-gradient(circle at 50% 48%, var(--color-photon-faint), transparent 28%),
-    linear-gradient(var(--color-optical-faint) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-optical-faint) 1px, transparent 1px),
-    var(--color-night);
-  background-size:
-    auto,
-    3.2rem 3.2rem,
-    3.2rem 3.2rem,
-    auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-small);
+  background: var(--color-surface-base);
 }
 
 .mission-target-visual {
-  min-height: 13rem;
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.mission-target-visual::before,
-.mission-detail-visual::before,
-.mission-target-visual::after,
-.mission-detail-visual::after {
-  position: absolute;
-  background: var(--color-optical-faint);
-  content: "";
-}
-
-.mission-target-visual::before,
-.mission-detail-visual::before {
-  width: 100%;
-  height: 1px;
-}
-
-.mission-target-visual::after,
-.mission-detail-visual::after {
-  width: 1px;
-  height: 100%;
+  min-height: 11rem;
 }
 
 .mission-target-visual > i,
 .mission-detail-visual > i {
   position: relative;
-  z-index: 2;
   display: block;
   width: 5rem;
   height: 5rem;
   border: 1px solid var(--color-text-secondary);
   border-radius: var(--radius-full);
   background: var(--color-surface-raised);
-  box-shadow: 0 0 3rem var(--color-photon-muted);
 }
 
 .mission-target-visual > b,
 .mission-detail-visual > b {
   position: absolute;
-  z-index: 2;
   display: block;
 }
 
-.mission-target-visual-saturn > i,
-.mission-detail-visual.mission-target-visual-saturn > i {
+.mission-target-visual-saturn > i {
   background: linear-gradient(
     165deg,
     var(--color-text-secondary),
@@ -198,8 +154,7 @@
   );
 }
 
-.mission-target-visual-saturn > b,
-.mission-detail-visual.mission-target-visual-saturn > b {
+.mission-target-visual-saturn > b {
   width: 8rem;
   height: 2rem;
   border: 1px solid var(--color-text-secondary);
@@ -207,8 +162,7 @@
   transform: rotate(-12deg);
 }
 
-.mission-target-visual-moon > i,
-.mission-detail-visual.mission-target-visual-moon > i {
+.mission-target-visual-moon > i {
   border: 0;
   background:
     radial-gradient(circle at 37% 32%, var(--color-text-tertiary) 0 5%, transparent 6%),
@@ -218,15 +172,13 @@
   box-shadow: inset -1.25rem -0.4rem 0 var(--color-scrim-soft);
 }
 
-.mission-target-visual-cluster > i,
-.mission-detail-visual.mission-target-visual-cluster > i {
+.mission-target-visual-cluster > i {
   border-style: dashed;
-  border-color: var(--color-optical-medium);
+  border-color: var(--color-text-disabled);
   background: transparent;
 }
 
-.mission-target-visual-cluster > b,
-.mission-detail-visual.mission-target-visual-cluster > b {
+.mission-target-visual-cluster > b {
   width: 0.35rem;
   height: 0.35rem;
   border-radius: var(--radius-full);
@@ -244,39 +196,32 @@
 }
 
 .mission-target-visual-nebula > i,
-.mission-target-visual-ring > i,
-.mission-detail-visual.mission-target-visual-nebula > i,
-.mission-detail-visual.mission-target-visual-ring > i {
+.mission-target-visual-ring > i {
   width: 6.5rem;
   height: 4rem;
-  border-color: var(--color-photon-border);
+  border-color: var(--color-text-disabled);
   border-radius: 58% 42% 63% 37%;
-  background: var(--color-photon-muted);
-  filter: blur(0.25rem);
+  background: var(--color-surface-hover);
   transform: rotate(20deg);
 }
 
 .mission-target-visual-nebula > b,
-.mission-target-visual-ring > b,
-.mission-detail-visual.mission-target-visual-nebula > b,
-.mission-detail-visual.mission-target-visual-ring > b {
+.mission-target-visual-ring > b {
   width: 2.2rem;
   height: 1rem;
-  border: 1px solid var(--color-photon);
+  border: 1px solid var(--color-text-secondary);
   border-radius: 50%;
   transform: rotate(-25deg);
 }
 
-.mission-target-visual-star > i,
-.mission-detail-visual.mission-target-visual-star > i {
+.mission-target-visual-star > i {
   width: 0.7rem;
   height: 0.7rem;
   border: 0;
   background: var(--color-text-primary);
 }
 
-.mission-target-visual-star > b,
-.mission-detail-visual.mission-target-visual-star > b {
+.mission-target-visual-star > b {
   width: 0.5rem;
   height: 0.5rem;
   margin: 2rem 0 0 3rem;
@@ -284,11 +229,11 @@
   background: var(--color-text-secondary);
 }
 
+/* A CARD'S BODY */
 .mission-target-body {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  padding: var(--space-5);
 }
 
 .mission-target-body > header {
@@ -299,37 +244,32 @@
   gap: var(--space-3);
 }
 
-.mission-target-body header p,
-.mission-detail-catalog,
-.mission-action-panel > p {
-  margin: 0 0 var(--space-2);
+.mission-target-body header p {
+  margin: 0 0 var(--space-1);
   color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.1em;
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .mission-target-body h2 {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 520;
-  letter-spacing: -0.035em;
+  font-size: var(--font-size-h2);
 }
 
 .mission-target-body h2 a {
   display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
+  border-radius: var(--radius-small);
 }
 
 .mission-target-description {
   flex: 1;
   margin: var(--space-5) 0;
   color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.65;
 }
 
 .mission-card-data {
@@ -340,6 +280,9 @@
 }
 
 .mission-card-data div {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
   min-width: 0;
   padding: var(--space-4) var(--space-3);
   border-right: 1px solid var(--color-border-subtle);
@@ -354,198 +297,102 @@
   border-right: 0;
 }
 
-.mission-card-data dt,
-.mission-stat-grid dt,
-.mission-technical dt {
+.mission-card-data dt {
   color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }
 
-.mission-card-data dd,
-.mission-stat-grid dd,
-.mission-technical dd {
-  margin: var(--space-1) 0 0;
-  color: var(--color-text-primary);
-  font-size: 0.82rem;
-  font-weight: 550;
+.mission-card-data dd {
+  margin: 0;
+}
+
+.mission-card-data .figure {
+  flex-wrap: wrap;
+  font-size: var(--font-size-mono);
+  gap: 0 var(--space-1);
 }
 
 .mission-card-action {
-  display: flex;
-  min-height: 3rem;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-top: var(--space-4);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-  font-weight: 600;
+  align-self: flex-start;
+  margin-top: var(--space-5);
 }
 
-.mission-card-action:hover {
-  color: var(--color-photon);
-}
-
-.mission-card-action span {
-  font-size: 1rem;
-}
-
-.mission-empty-orbit {
-  display: grid;
-  width: 5rem;
-  height: 5rem;
-  margin-bottom: var(--space-6);
-  place-items: center;
-  border: 1px solid var(--color-optical-medium);
-  border-radius: var(--radius-full);
-}
-
-.mission-empty-orbit span {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: var(--radius-full);
-  background: var(--color-photon);
-}
-
+/* A TARGET */
 .mission-back-link {
   display: inline-flex;
-  min-height: 2.75rem;
+  justify-self: start;
   align-items: center;
+  min-height: 2.75rem;
   gap: var(--space-2);
-  margin-bottom: var(--space-8);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-  font-weight: 600;
-}
-
-.mission-back-link:hover {
-  color: var(--color-text-primary);
+  margin-top: var(--space-8);
 }
 
 .mission-detail-hero {
   display: grid;
   gap: var(--space-8);
-  align-items: stretch;
-  padding-bottom: var(--space-10);
-  border-bottom: 1px solid var(--color-border-strong);
 }
 
 .mission-detail-copy {
   align-self: center;
-}
-
-.mission-detail-copy .eyebrow {
-  margin-bottom: var(--space-8);
+  min-width: 0;
 }
 
 .mission-detail-copy h1 {
   max-width: 12ch;
-  font-size: clamp(3rem, 8vw, 6.25rem);
-}
-
-.mission-detail-description {
-  margin-top: var(--space-6);
+  font-size: min(var(--font-size-hero), 14vw);
 }
 
 .mission-detail-visual {
-  min-height: 22rem;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-panel);
+  min-height: 20rem;
 }
 
-.mission-detail-visual > i {
-  width: 7rem;
-  height: 7rem;
-}
-
-.mission-detail-visual.mission-target-visual-saturn > b {
-  width: 11rem;
-  height: 2.75rem;
-}
-
-.mission-detail-visual small {
-  position: absolute;
-  right: var(--space-4);
-  bottom: var(--space-4);
-  color: var(--color-photon);
-  font-family: var(--font-display);
-  font-size: var(--font-size-label);
-  letter-spacing: 0.08em;
-}
-
-.mission-visual-reticle {
-  position: absolute;
-  z-index: 1;
-  width: min(70%, 17rem);
-  aspect-ratio: 1;
-  border: 1px solid var(--color-optical-medium);
-  border-radius: var(--radius-full);
-}
-
-.mission-visual-reticle span {
-  position: absolute;
-  border: 1px solid var(--color-optical-faint);
-  border-radius: inherit;
-  inset: 18%;
-}
-
-.mission-visual-reticle span:last-child {
-  inset: 38%;
+/* The same drawing, larger: scale composes with each shape's own rotation. */
+.mission-detail-visual > :is(i, b) {
+  scale: 1.4;
 }
 
 .mission-detail-grid {
   display: grid;
-  gap: var(--space-8);
-  padding-top: var(--space-8);
+  gap: var(--space-4);
+  padding-top: var(--space-10);
 }
 
-.mission-stat-grid,
-.mission-technical,
-.mission-action-panel {
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
-}
-
-.mission-stat-grid dl {
+.mission-detail-main {
   display: grid;
-  margin: 0;
+  align-content: start;
+  gap: var(--space-4);
+  min-width: 0;
 }
 
-.mission-stat-grid dl > div {
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-5);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.mission-stat-grid dl > div:last-child {
-  border-bottom: 0;
-}
-
-.mission-stat-grid dd {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: 0.95rem;
-}
-
+/* Its ruled rows sit under the summary only when open: a grid gap would leave space
+   for them when closed. */
 .mission-technical {
+  display: block;
+}
+
+.mission-technical .ruled-specs {
   margin-top: var(--space-4);
-  overflow: hidden;
+}
+
+/* A chip keeps its own width in a ruled row. */
+.mission-detail-main .ruled-specs dd {
+  justify-items: start;
 }
 
 .mission-technical summary {
   display: flex;
-  min-height: 4rem;
+  min-height: 2.75rem;
   align-items: center;
   justify-content: space-between;
-  padding-inline: var(--space-5);
+  border-radius: var(--radius-small);
   cursor: pointer;
   color: var(--color-text-secondary);
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-family: var(--font-label);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
   list-style: none;
+  text-transform: uppercase;
 }
 
 .mission-technical summary::-webkit-details-marker {
@@ -561,82 +408,34 @@
   transform: rotate(45deg);
 }
 
-.mission-technical dl {
-  display: grid;
-  margin: 0;
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.mission-technical dl div {
-  display: grid;
-  grid-template-columns: minmax(7rem, 0.9fr) minmax(0, 1.1fr);
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.mission-technical dl div:last-child {
-  border-bottom: 0;
-}
-
 .mission-technical dd {
   overflow-wrap: anywhere;
 }
 
 .mission-action-panel {
   align-self: start;
-  padding: var(--space-6);
-  border-color: var(--color-border-strong);
-  background:
-    radial-gradient(circle at top right, var(--color-photon-muted), transparent 12rem),
-    var(--color-surface-raised);
-  box-shadow: var(--shadow-panel);
 }
 
 .mission-action-panel h2 {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 520;
-  letter-spacing: -0.035em;
-}
-
-.mission-action-panel > .mode-notice {
-  margin-top: var(--space-4);
+  font-size: var(--font-size-h2);
 }
 
 .mission-action-panel > div {
   display: grid;
-  gap: var(--space-3);
-  margin-top: var(--space-8);
+  margin-top: var(--space-2);
 }
 
 @media (--md) {
-  .missions-hero-copy {
-    grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
-    align-items: end;
-  }
-
   .mission-target-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .mission-stat-grid dl {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .mission-stat-grid dl > div:nth-child(odd) {
-    border-right: 1px solid var(--color-border-subtle);
-  }
-
-  .mission-stat-grid dl > div:nth-last-child(2) {
-    border-bottom: 0;
   }
 }
 
 @media (--lg) {
   .mission-detail-hero {
-    grid-template-columns: minmax(0, 1fr) minmax(24rem, 0.76fr);
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.76fr);
+    padding-top: var(--space-6);
   }
 
   .mission-detail-grid {

@@ -45,7 +45,7 @@ export function MissionBrowser({ items, locale, timezone }: MissionBrowserProps)
           <button
             key={filter}
             type="button"
-            className="mission-filter"
+            className="chip mission-filter"
             aria-pressed={activeFilter === filter}
             onClick={() => setActiveFilter(filter)}
           >
@@ -62,22 +62,25 @@ export function MissionBrowser({ items, locale, timezone }: MissionBrowserProps)
           return (
             <li key={target.id}>
               <article
-                className="mission-target-card"
+                className="mission-target-card plate"
                 data-observable={visibility.observable}
               >
-                <Link
-                  className="mission-card-visual-link"
-                  href={href}
-                  aria-label={`${copy.view}: ${name}`}
-                >
-                  <div
-                    className={`mission-target-visual mission-target-visual-${targetVisual(target)}`}
-                    aria-hidden="true"
+                <figure className="mission-card-figure">
+                  <Link
+                    className="mission-card-visual-link"
+                    href={href}
+                    aria-label={`${copy.view}: ${name}`}
                   >
-                    <i />
-                    <b />
-                  </div>
-                </Link>
+                    <div
+                      className={`mission-target-visual mission-target-visual-${targetVisual(target)}`}
+                      aria-hidden="true"
+                    >
+                      <i />
+                      <b />
+                    </div>
+                  </Link>
+                  <figcaption>{copy.illustration}</figcaption>
+                </figure>
 
                 <div className="mission-target-body">
                   <header>
@@ -103,23 +106,33 @@ export function MissionBrowser({ items, locale, timezone }: MissionBrowserProps)
                   <dl className="mission-card-data">
                     <div>
                       <dt>{copy.altitude}</dt>
-                      <dd>{Math.round(visibility.horizontal.altitudeDegrees)}°</dd>
+                      <dd>
+                        <span className="figure">
+                          {Math.round(visibility.horizontal.altitudeDegrees)}°
+                        </span>
+                      </dd>
                     </div>
                     <div>
                       <dt>{copy.window}</dt>
-                      <dd>{formatWindow(visibility, timezone, locale, words.window)}</dd>
+                      <dd>
+                        <span className="figure">
+                          {formatWindow(visibility, timezone, locale, words.window)}
+                        </span>
+                      </dd>
                     </div>
                     <div>
                       <dt>{copy.duration}</dt>
                       <dd>
-                        {target.expectedMissionMinutes} {copy.minutes}
+                        <span className="figure">
+                          {target.expectedMissionMinutes} <small>{copy.minutes}</small>
+                        </span>
                       </dd>
                     </div>
                   </dl>
 
-                  <Link className="mission-card-action" href={href}>
+                  <Link className="page-link mission-card-action" href={href}>
                     {copy.view}
-                    <span aria-hidden="true">↗</span>
+                    <span aria-hidden="true">→</span>
                   </Link>
                 </div>
               </article>

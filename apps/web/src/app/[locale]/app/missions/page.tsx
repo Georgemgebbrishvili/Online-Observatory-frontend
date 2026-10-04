@@ -7,6 +7,7 @@ import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { missionBrowserCopy } from "@/i18n/resources/missions";
 import { requireUser } from "@/lib/platform/session";
+import "@/styles/pages.css";
 import "@/styles/missions.css";
 
 type MissionsPageProps = {
@@ -33,15 +34,12 @@ export default async function MissionsPage({ params }: MissionsPageProps) {
 
   return (
     <section className="missions-page" aria-labelledby="missions-title">
-      <header className="missions-hero">
-        <p className="eyebrow">
-          <span aria-hidden="true" />
+      <header className="page-hero">
+        <p className="kicker">
           {tonight.kind === "ok" ? tonight.observatory.name : copy.eyebrow}
         </p>
-        <div className="missions-hero-copy">
-          <h1 id="missions-title">{copy.title}</h1>
-          <p>{copy.description}</p>
-        </div>
+        <h1 id="missions-title">{copy.title}</h1>
+        <p className="page-lede">{copy.description}</p>
       </header>
 
       <div className="tonight-notices">

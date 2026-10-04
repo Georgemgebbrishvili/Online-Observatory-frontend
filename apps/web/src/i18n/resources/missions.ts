@@ -23,6 +23,7 @@ export const missionBrowserCopy = {
     view: "View target",
     all: "All",
     filterLabel: "Filter by type",
+    illustration: "Illustration — not telescope output",
   },
   ka: {
     metadataTitle: `მისიები · ${brand.ka.nominative}`,
@@ -46,6 +47,7 @@ export const missionBrowserCopy = {
     view: "ობიექტის ნახვა",
     all: "ყველა",
     filterLabel: "ტიპის მიხედვით გაფილტვრა",
+    illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
   },
 } as const;
 
@@ -68,7 +70,7 @@ export const missionDetailCopy = {
     magnitude: "Apparent magnitude",
     angularSize: "Angular size",
     minimumAltitude: "Minimum altitude",
-    illustration: "illustration",
+    illustration: "Illustration — not telescope output",
   },
   ka: {
     back: "ყველა მისია",
@@ -88,6 +90,6 @@ export const missionDetailCopy = {
     magnitude: "ხილული ვარსკვლავიერი სიდიდე",
     angularSize: "კუთხური ზომა",
     minimumAltitude: "მინიმალური სიმაღლე",
-    illustration: "ილუსტრაცია",
+    illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
   },
 } as const;
