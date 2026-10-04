@@ -6,6 +6,7 @@ import { cursorOf, readCollection } from "@/features/collection/read";
 import { isLocale } from "@/i18n/config";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
 import { requireUser } from "@/lib/platform/session";
+import "@/styles/pages.css";
 import "@/styles/collection.css";
 
 type CollectionPageProps = {

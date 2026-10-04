@@ -360,51 +360,23 @@
   min-width: 0;
 }
 
+/* A destination not built yet: the app's opening, and nothing pretending to be more. */
 .app-preview {
-  position: relative;
-  display: grid;
-  min-height: calc(100vh - 10rem);
-  align-content: center;
-  overflow: hidden;
-  padding: clamp(var(--space-12), 12vw, calc(var(--space-16) * 2)) var(--space-page);
+  width: min(100%, 94rem);
+  margin-inline: auto;
+  padding: var(--space-10) var(--space-page) var(--space-16);
 }
 
 .app-preview h1 {
-  font-size: var(--font-size-hero);
+  max-width: none;
+  font-size: min(var(--font-size-hero), 14vw);
 }
 
 .app-preview > p:last-of-type {
-  max-width: 34rem;
-  margin: var(--space-6) 0 0;
+  max-width: 52ch;
+  margin: var(--space-5) 0 0;
   color: var(--color-text-secondary);
-  line-height: 1.7;
-}
-
-.app-preview-instrument {
-  position: absolute;
-  right: -8rem;
-  bottom: -9rem;
-  width: min(80vw, 34rem);
-  aspect-ratio: 1;
-  border: 1px solid var(--color-optical-medium);
-  border-radius: var(--radius-full);
-  pointer-events: none;
-}
-
-.app-preview-instrument span {
-  position: absolute;
-  border: 1px solid var(--color-optical-faint);
-  border-radius: inherit;
-  inset: 16%;
-}
-
-.app-preview-instrument span:nth-child(2) {
-  inset: 34%;
-}
-
-.app-preview-instrument span:nth-child(3) {
-  border-color: var(--color-accent-border);
-  inset: 47%;
+  font-size: var(--font-size-body-lg);
 }
 
 @media (--lg) {
@@ -578,9 +550,5 @@
   .app-mobile-logout,
   .app-navigation-bottom {
     display: none;
-  }
-
-  .app-preview {
-    min-height: 100vh;
   }
 }

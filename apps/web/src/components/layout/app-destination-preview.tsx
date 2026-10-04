@@ -23,17 +23,11 @@ export function AppDestinationPreview({
       aria-labelledby="app-preview-title"
       data-planned={planned || undefined}
     >
-      <p className="eyebrow">
-        <span aria-hidden="true" />
+      <p className="kicker">
         {planned ? navigation.plannedEyebrow : navigation.previewEyebrow}
       </p>
       <h1 id="app-preview-title">{navigation[destination]}</h1>
       <p>{planned ? navigation.plannedDescription : navigation.previewDescription}</p>
-      <div className="app-preview-instrument" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
     </section>
   );
 }

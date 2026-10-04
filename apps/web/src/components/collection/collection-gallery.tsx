@@ -50,10 +50,6 @@ function Featured({
           sizes="(min-width: 1120px) 62vw, 100vw"
           src={thumbnail}
         />
-        <span className="featured-reticle" aria-hidden="true">
-          <i />
-          <i />
-        </span>
         <CaptureBadges
           simulated={capture.mode === "SIMULATED"}
           simulatedLabel={copy.simulated}
@@ -62,8 +58,8 @@ function Featured({
         />
       </Link>
       <div className="featured-capture-copy">
-        <span>{copy.featured}</span>
-        <p>{captureReference(entry)}</p>
+        <p className="kicker">{copy.featured}</p>
+        <p className="featured-capture-reference">{captureReference(entry)}</p>
         <h2 id="featured-capture-title">{title}</h2>
         {entry.retired && <p className="capture-retired">{copy.retiredTarget}</p>}
         {about && <blockquote>{about}</blockquote>}
@@ -83,15 +79,10 @@ export function CollectionGallery({ locale, paged, result }: CollectionGalleryPr
   const base = `/${locale}/app/collection`;
 
   const hero = (
-    <header className="collection-hero">
-      <p className="eyebrow">
-        <span aria-hidden="true" />
-        {copy.eyebrow}
-      </p>
-      <div>
-        <h1>{copy.title}</h1>
-        <p>{copy.description}</p>
-      </div>
+    <header className="page-hero collection-hero">
+      <p className="kicker">{copy.eyebrow}</p>
+      <h1>{copy.title}</h1>
+      <p className="page-lede">{copy.description}</p>
     </header>
   );
 
@@ -144,10 +135,10 @@ export function CollectionGallery({ locale, paged, result }: CollectionGalleryPr
 
       {archive.length > 0 && (
         <section className="capture-archive" aria-labelledby="capture-archive-title">
-          <header>
+          <div className="section-heading">
             <h2 id="capture-archive-title">{copy.allCaptures}</h2>
-            <p>{copy.allDescription}</p>
-          </header>
+            <p className="page-lede">{copy.allDescription}</p>
+          </div>
           <div className="capture-grid">
             {archive.map((entry) => (
               <CaptureCard

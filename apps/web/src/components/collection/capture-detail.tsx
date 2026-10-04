@@ -51,18 +51,18 @@ export function CaptureDetail({ locale, result }: CaptureDetailProps) {
 
   return (
     <article className="capture-detail-page">
-      <Link className="capture-detail-back" href={`/${locale}/app/collection`}>
+      <Link className="page-link capture-detail-back" href={`/${locale}/app/collection`}>
         <span aria-hidden="true">←</span> {copy.back}
       </Link>
 
       <header className="capture-detail-header">
         <div>
-          <p>{captureReference(entry)}</p>
+          <p className="kicker">{captureReference(entry)}</p>
           <h1>{title}</h1>
           {entry.retired && <p className="capture-retired">{gallery.retiredTarget}</p>}
           <strong>{copy.capturedBy}</strong>
         </div>
-        <dl>
+        <dl className="ruled-specs">
           <div>
             <dt>{copy.date}</dt>
             <dd>{formatCapturedAt(capture.capturedAt, timezone, locale)}</dd>
@@ -92,7 +92,6 @@ export function CaptureDetail({ locale, result }: CaptureDetailProps) {
             src={image.kind === "ok" ? image.url : null}
           />
         )}
-        <span className="capture-detail-corners" aria-hidden="true" />
         <figcaption>
           <CaptureBadges
             simulated={capture.mode === "SIMULATED"}
@@ -104,10 +103,10 @@ export function CaptureDetail({ locale, result }: CaptureDetailProps) {
       </figure>
 
       <div className="capture-detail-lower">
-        <div className="capture-detail-story">
+        <div className="capture-detail-story plate">
           {about && (
             <>
-              <h2>{copy.aboutTarget}</h2>
+              <h2 className="plate-title">{copy.aboutTarget}</h2>
               <p>{about}</p>
             </>
           )}
@@ -125,9 +124,9 @@ export function CaptureDetail({ locale, result }: CaptureDetailProps) {
           />
         </div>
 
-        <aside className="capture-provenance">
-          <h2>{copy.provenance}</h2>
-          <dl>
+        <aside className="capture-provenance plate">
+          <h2 className="plate-title">{copy.provenance}</h2>
+          <dl className="ruled-specs">
             {provenance.map(([term, value]) => (
               <div key={term}>
                 <dt>{term}</dt>

@@ -99,7 +99,6 @@ export function CaptureCard({
           sizes="(min-width: 1440px) 25vw, (min-width: 768px) 42vw, 92vw"
           src={thumbnail}
         />
-        <span className="capture-card-corners" aria-hidden="true" />
         <CaptureBadges
           simulated={simulated}
           simulatedLabel={copy.simulated}
@@ -108,7 +107,7 @@ export function CaptureCard({
         />
       </Link>
       <div className="capture-card-copy">
-        <span>{reference}</span>
+        <span className="capture-card-reference">{reference}</span>
         <h3>
           <Link href={href}>{title}</Link>
         </h3>
