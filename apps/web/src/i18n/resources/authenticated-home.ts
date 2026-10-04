@@ -28,7 +28,6 @@ type AuthenticatedHomeCopy = {
   upcomingUnavailable: StateCopy;
   alsoTonight: string;
   alsoTonightDescription: string;
-  discover: string;
   collection: string;
   collectionDescription: string;
   openCollection: string;
@@ -47,7 +46,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     exploreTonight: "See all tonight",
     window: "Window tonight",
     altitude: "Altitude now",
-    illustration: "Illustration",
+    illustration: "Illustration — not telescope output",
     observatory: "Observatory",
     telescope: "Telescope",
     simulatedObservatory: "Simulated observatory",
@@ -75,7 +74,6 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     },
     alsoTonight: "Also up tonight",
     alsoTonightDescription: "Other targets the observatory can reach tonight.",
-    discover: "Discover",
     collection: "Your Collection",
     collectionDescription: "Your most recent captures.",
     openCollection: "Open collection",
@@ -91,7 +89,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     exploreTonight: "დღევანდელი ცის ნახვა",
     window: "დღევანდელი დრო",
     altitude: "სიმაღლე ახლა",
-    illustration: "ილუსტრაცია",
+    illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
     observatory: "ობსერვატორია",
     telescope: "ტელესკოპი",
     simulatedObservatory: "სიმულირებული ობსერვატორია",
@@ -120,7 +118,6 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     alsoTonight: "ასევე ჩანს დღეს ღამით",
     alsoTonightDescription:
       "სხვა ობიექტები, რომლებსაც ობსერვატორია დღეს ღამით მისწვდება.",
-    discover: "აღმოჩენა",
     collection: "თქვენი კოლექცია",
     collectionDescription: "თქვენი ბოლო კადრები.",
     openCollection: "კოლექციის გახსნა",

@@ -8,7 +8,7 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { pricingPageCopy } from "@/i18n/resources/pricing";
 import { localizedMetadata } from "@/lib/seo";
-import "@/styles/public-pages.css";
+import "@/styles/pages.css";
 import "@/styles/pricing.css";
 
 type PricingRouteProps = {

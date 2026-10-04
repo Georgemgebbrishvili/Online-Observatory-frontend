@@ -27,7 +27,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  :where(.card-interactive, .mission-target-card, .capture-card, .home-explore-card) {
+  :where(.card-interactive, .mission-target-card, .capture-card) {
     transition:
       border-color var(--duration-standard) var(--ease-standard),
       background-color var(--duration-standard) var(--ease-standard),
@@ -35,7 +35,7 @@
       transform var(--duration-state) var(--ease-standard);
   }
 
-  :where(.card-interactive, .mission-target-card, .capture-card, .home-explore-card):is(
+  :where(.card-interactive, .mission-target-card, .capture-card):is(
     :hover,
     :focus-within
   ) {

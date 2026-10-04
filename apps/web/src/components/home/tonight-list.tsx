@@ -12,7 +12,7 @@ type TonightListProps = {
   /** The observatory's, so a window reads in the sky's own local time. */
   timezone: string;
   locale: Locale;
-  common: HomepageDictionary["common"];
+  common: Pick<HomepageDictionary["common"], "altitude" | "window">;
 };
 
 /**

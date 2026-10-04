@@ -3,6 +3,7 @@ import "@/styles/booking.css";
 import "@/styles/room.css";
 import "@/styles/collection.css";
 import "@/styles/design-system.css";
+import "@/styles/pages.css";
 import "@/styles/homepage.css";
 import { notFound } from "next/navigation";
 

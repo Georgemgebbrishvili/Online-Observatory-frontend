@@ -9,7 +9,7 @@ import { isLocale } from "@/i18n/config";
 import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/collection.css";
-import "@/styles/missions.css";
+import "@/styles/pages.css";
 import "@/styles/authenticated-home.css";
 
 type AppHomePageProps = {

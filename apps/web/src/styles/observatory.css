@@ -2,7 +2,7 @@
  * /observatory in the poster language (ADR-039, slice B4). The first screen keeps what
  * ADR-026 put on it — live status, tonight, the instrument and both actions — and the
  * page then reads as a narrative: the instrument, safety, the site and its network.
- * Shared patterns live in public-pages.css.
+ * Shared patterns live in pages.css.
  */
 
 /* THE FIRST SCREEN */

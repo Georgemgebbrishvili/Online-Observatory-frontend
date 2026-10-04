@@ -1,8 +1,8 @@
 /*
- * The public pages in the poster language (ADR-039, design slice B4): observatory,
- * status, pricing and the legal documents. The homepage's section patterns, shared —
- * a kicker and an Anton headline to open, hairlines between rows, mono figures, plate
- * panels — so the public site reads as one. Tokens only; no glow, no blur.
+ * The poster language's page patterns (ADR-039), shared by the public pages (slice B4)
+ * and the app pages (slice B5): a kicker and an Anton headline to open, hairlines
+ * between rows, mono figures, plate panels, tonight's targets as ruled rows — so the
+ * site and the app read as one. Tokens only; no glow, no blur.
  */
 
 /* minmax(0, 1fr): an implicit track grows to its widest content, and the status table
@@ -186,5 +186,142 @@
     align-items: start;
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
     gap: var(--space-16);
+  }
+}
+
+/* Tonight's targets as ruled rows: the homepage and the app home. */
+.tonight-list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.tonight-list > li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-2) var(--space-4);
+  padding-block: var(--space-5);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.tonight-list-index {
+  padding-top: var(--space-1);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+}
+
+.tonight-list-name {
+  min-width: 0;
+}
+
+.tonight-list-name p {
+  margin: 0 0 var(--space-1);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.tonight-list-name h3 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+/* The name's link covers the row, so the whole row is one target. */
+.tonight-list-name a::after {
+  position: absolute;
+  content: "";
+  inset: 0;
+}
+
+.tonight-list-name a:focus-visible {
+  outline: none;
+}
+
+.tonight-list > li:has(a:focus-visible) {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.tonight-list > li .status-indicator {
+  grid-column: 2 / -1;
+  justify-self: start;
+}
+
+.tonight-list dl {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 2 / -1;
+  gap: var(--space-2) var(--space-6);
+  margin: 0;
+}
+
+.tonight-list dl div {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.tonight-list dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.tonight-list dd {
+  margin: 0;
+  color: var(--color-photon);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.tonight-list-arrow {
+  grid-column: 3;
+  grid-row: 1;
+  color: var(--color-text-tertiary);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .tonight-list > li:hover .tonight-list-name h3 {
+    color: var(--color-accent-ink);
+  }
+
+  .tonight-list > li:hover .tonight-list-arrow {
+    color: var(--color-accent-ink);
+    transform: translateX(0.25rem);
+  }
+}
+
+@media (--md) {
+  .tonight-list > li {
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto auto;
+    align-items: center;
+  }
+
+  .tonight-list-name h3 {
+    font-size: var(--font-size-h2);
+  }
+
+  .tonight-list > li .status-indicator {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .tonight-list-arrow {
+    grid-column: 4;
+  }
+
+  .tonight-list dl {
+    grid-column: 2 / -1;
   }
 }

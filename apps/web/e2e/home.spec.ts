@@ -365,7 +365,8 @@ test("the /app dashboard reads the platform, section by section", async ({ page 
     "href",
     "/en/app/missions/albireo",
   );
-  await expect(page.locator(".home-illustration figcaption")).toHaveText("Illustration");
+  // Albireo has no drawn plate, so the recommendation shows no picture at all.
+  await expect(page.locator(".home-illustration")).toHaveCount(0);
 
   const observatory = page.locator(".home-observatory");
   await expect(
