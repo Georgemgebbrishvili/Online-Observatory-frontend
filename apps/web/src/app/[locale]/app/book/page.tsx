@@ -8,6 +8,7 @@ import { readReschedule } from "@/features/booking/reschedule";
 import { isLocale } from "@/i18n/config";
 import { bookingCopy } from "@/i18n/resources/booking";
 import { requireUser } from "@/lib/platform/session";
+import "@/styles/pages.css";
 import "@/styles/booking.css";
 
 type BookPageProps = {

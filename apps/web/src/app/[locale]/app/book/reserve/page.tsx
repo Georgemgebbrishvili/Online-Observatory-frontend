@@ -16,6 +16,7 @@ import { reserveCopy } from "@/i18n/resources/reserve";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
 import { requireUser } from "@/lib/platform/session";
+import "@/styles/pages.css";
 import "@/styles/booking.css";
 
 type ReservePageProps = {
@@ -68,7 +69,7 @@ export default async function ReservePage({ params, searchParams }: ReservePageP
   return (
     <div className="booking-page reserve-page">
       <Link
-        className="booking-back"
+        className="page-link booking-back"
         href={night(
           result.kind === "ok"
             ? result.offer.date
@@ -81,8 +82,7 @@ export default async function ReservePage({ params, searchParams }: ReservePageP
       </Link>
 
       <header className="booking-hero">
-        <p className="eyebrow">
-          <span aria-hidden="true" />
+        <p className="kicker">
           {result.kind === "ok"
             ? locale === "ka"
               ? result.offer.observatory.nameKa

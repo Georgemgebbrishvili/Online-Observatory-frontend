@@ -28,13 +28,12 @@ export function BookingDetail({ entry, locale, mode }: BookingDetailProps) {
 
   return (
     <div className="booking-page booking-detail">
-      <Link className="booking-back" href={base}>
+      <Link className="page-link booking-back" href={base}>
         {copy.back}
       </Link>
 
       <header className="booking-hero">
-        <p className="eyebrow">
-          <span aria-hidden="true" />
+        <p className="kicker">
           {observatory
             ? locale === "ka"
               ? observatory.nameKa

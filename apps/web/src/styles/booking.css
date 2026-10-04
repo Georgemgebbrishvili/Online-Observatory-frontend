@@ -1,3 +1,8 @@
+/*
+ * Booking, reserving and your bookings in the poster language (ADR-039, design slice
+ * B5). Kickers, page links and figures come from pages.css. Orange for every action
+ * (a night, a slot, a choice), Photon Blue for the data; plates for the lists.
+ */
 .booking-page {
   display: grid;
   gap: var(--space-6);
@@ -14,6 +19,10 @@
 .booking-hero {
   display: grid;
   gap: var(--space-3);
+}
+
+.booking-hero .kicker {
+  margin: 0;
 }
 
 .booking-hero h1 {
@@ -34,7 +43,7 @@ html[lang="ka"] .booking-hero h1 {
   }
 }
 
-.booking-hero > p:not(.eyebrow) {
+.booking-hero > p:not(.kicker) {
   max-width: 40rem;
   margin: 0;
   color: var(--color-text-secondary);
@@ -43,18 +52,21 @@ html[lang="ka"] .booking-hero h1 {
 
 .booking-bookings {
   justify-self: start;
-  color: var(--color-photon);
-  font-size: var(--font-size-label);
-  font-weight: 600;
 }
 
+/* Section labels: Oswald, spaced, not the Anton headline. */
 .booking-nights h2,
-.booking-slots h2 {
+.booking-slots h2,
+.reserve-form legend,
+.reserve-withheld h2 {
   margin: 0 0 var(--space-3);
-  color: var(--color-text-secondary);
+  padding: 0;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.13em;
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.4;
   text-transform: uppercase;
 }
 
@@ -78,12 +90,15 @@ html[lang="ka"] .booking-hero h1 {
   min-height: 2.75rem;
   align-items: center;
   padding-inline: var(--space-4);
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
-  background: var(--color-surface-base);
+  background: transparent;
   color: var(--color-text-secondary);
+  font-family: var(--font-label);
   font-size: var(--font-size-label);
-  font-weight: 600;
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
   transition:
@@ -92,19 +107,14 @@ html[lang="ka"] .booking-hero h1 {
 }
 
 .booking-nights a:hover {
-  border-color: var(--color-border-strong);
+  border-color: var(--color-text-disabled);
   color: var(--color-text-primary);
 }
 
 .booking-nights a[aria-current] {
-  border-color: var(--color-photon-border);
-  background: var(--color-photon-faint);
-  color: var(--color-photon);
-}
-
-.booking-nights a:focus-visible {
-  outline: 2px solid var(--color-photon);
-  outline-offset: 3px;
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-muted);
+  color: var(--color-accent-ink);
 }
 
 .slot-list {
@@ -112,9 +122,9 @@ html[lang="ka"] .booking-hero h1 {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
+  background: var(--color-surface-raised);
   list-style: none;
 }
 
@@ -130,38 +140,40 @@ html[lang="ka"] .booking-hero h1 {
   border-top: 1px solid var(--color-border-subtle);
 }
 
+/* A slot's time, length and price are data: mono, the time in Photon Blue. */
 .slot-time {
-  font-family: var(--font-display);
-  font-size: var(--font-size-body-lg);
-  letter-spacing: -0.02em;
+  color: var(--color-photon);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body);
+  font-variant-numeric: tabular-nums;
 }
 
 .slot-time small {
   margin-left: var(--space-2);
   color: var(--color-text-tertiary);
-  font-family: var(--font-body);
   font-size: var(--font-size-caption);
-  letter-spacing: 0;
 }
 
 .slot-length,
 .slot-price {
   color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .slot-price {
   justify-self: end;
   color: var(--color-text-primary);
-  font-weight: 600;
 }
 
 .slot-state {
   justify-self: end;
   color: var(--color-success);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.06em;
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -198,9 +210,9 @@ html[lang="ka"] .booking-hero h1 {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--color-surface-base);
+  background: var(--color-surface-raised);
   list-style: none;
 }
 
@@ -220,26 +232,31 @@ html[lang="ka"] .booking-hero h1 {
 }
 
 .booking-row a:hover {
-  background: var(--color-surface-raised);
+  background: var(--color-surface-hover);
 }
 
 .booking-row-title {
-  font-family: var(--font-display);
-  font-size: var(--font-size-body-lg);
-  letter-spacing: -0.02em;
+  font-family: var(--font-headline);
+  font-size: var(--font-size-h3);
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .booking-row-slot {
   grid-column: 1;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
+  color: var(--color-photon);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .booking-row-price {
   grid-row: 1;
   grid-column: 2;
   justify-self: end;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .booking-row-status {
@@ -274,12 +291,6 @@ html[lang="ka"] .booking-hero h1 {
 
 .booking-back {
   justify-self: start;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
-.booking-back:hover {
-  color: var(--color-text-primary);
 }
 
 .booking-detail .booking-hero .status-indicator {
@@ -297,19 +308,22 @@ html[lang="ka"] .booking-hero h1 {
   display: grid;
   grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
   gap: var(--space-4);
-  padding-block: var(--space-3);
+  padding-block: var(--space-4);
   border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .booking-facts dt {
   color: var(--color-text-tertiary);
+  font-family: var(--font-label);
   font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .booking-facts dd {
   margin: 0;
-  font-size: var(--font-size-label);
-  font-weight: 550;
+  color: var(--color-text-primary);
 }
 
 .booking-entitlement,
@@ -322,8 +336,8 @@ html[lang="ka"] .booking-hero h1 {
 .booking-entitlement {
   padding: var(--space-4) var(--space-5);
   border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-medium);
-  background: var(--color-surface-base);
+  border-radius: var(--radius-small);
+  background: var(--color-surface-raised);
   color: var(--color-text-primary);
 }
 
@@ -353,20 +367,21 @@ html[lang="ka"] .booking-hero h1 {
   gap: var(--space-3);
 }
 
+/* What a reserve, cancel or reschedule attempt answered: the reason it did not go through. */
 .booking-feedback {
   max-width: 40rem;
   margin: 0;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-photon-border);
-  border-radius: var(--radius-medium);
-  background: var(--color-photon-faint);
-  color: var(--color-photon);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-small);
+  background: var(--color-error-muted);
+  color: var(--color-text-primary);
   font-size: var(--font-size-label);
 }
 
 .booking-page a:focus-visible,
 .booking-page button:focus-visible {
-  outline: 2px solid var(--color-photon);
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -379,12 +394,15 @@ html[lang="ka"] .booking-hero h1 {
 /* Reserve a slot (Phase 3 slices 2 and 4). */
 
 .slot-state a {
-  color: var(--color-photon);
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--color-accent-ink);
   text-decoration: none;
 }
 
 .slot-state a:hover {
-  text-decoration: underline;
+  color: var(--color-accent-hover);
 }
 
 .reserve-form {
@@ -402,16 +420,6 @@ html[lang="ka"] .booking-hero h1 {
   border: 0;
 }
 
-.reserve-form legend {
-  margin-bottom: var(--space-3);
-  padding: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
 .reserve-choices {
   display: grid;
   gap: var(--space-2);
@@ -426,37 +434,41 @@ html[lang="ka"] .booking-hero h1 {
   align-items: center;
   gap: var(--space-1) var(--space-3);
   padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-medium);
-  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-small);
+  background: var(--color-surface-raised);
   cursor: pointer;
-  transition: border-color var(--duration-fast) var(--ease-standard);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
 }
 
 .reserve-choice:hover {
-  border-color: var(--color-border-strong);
+  border-color: var(--color-text-disabled);
+  background: var(--color-surface-hover);
 }
 
 .reserve-choice:has(input:checked) {
-  border-color: var(--color-photon-border);
-  background: var(--color-photon-faint);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-muted);
 }
 
 .reserve-choice:has(input:focus-visible) {
-  outline: 2px solid var(--color-photon);
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
 .reserve-choice input {
   grid-row: span 2;
   margin: 0;
-  accent-color: var(--color-photon);
+  accent-color: var(--color-accent);
 }
 
 .reserve-choice-name {
-  font-family: var(--font-display);
-  font-size: var(--font-size-body-lg);
-  letter-spacing: -0.02em;
+  font-family: var(--font-headline);
+  font-size: var(--font-size-h3);
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .reserve-choice-detail {
@@ -471,15 +483,6 @@ html[lang="ka"] .booking-hero h1 {
 
 .reserve-withheld {
   max-width: 40rem;
-}
-
-.reserve-withheld h2 {
-  margin: 0 0 var(--space-3);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-  font-weight: 650;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
 }
 
 .reserve-withheld ul {

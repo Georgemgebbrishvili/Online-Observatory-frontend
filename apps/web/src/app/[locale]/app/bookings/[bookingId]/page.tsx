@@ -8,6 +8,7 @@ import { readBooking } from "@/features/booking/bookings";
 import { isLocale } from "@/i18n/config";
 import { bookingsCopy } from "@/i18n/resources/bookings";
 import { requireUser } from "@/lib/platform/session";
+import "@/styles/pages.css";
 import "@/styles/booking.css";
 
 // Also where the sandbox checkout returns the customer (platform `bookingReturnUrl`).

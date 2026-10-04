@@ -70,10 +70,7 @@ export function BookingList({ locale, paged, result }: BookingListProps) {
 
   const hero = (
     <header className="booking-hero">
-      <p className="eyebrow">
-        <span aria-hidden="true" />
-        {copy.eyebrow}
-      </p>
+      <p className="kicker">{copy.eyebrow}</p>
       <h1>{copy.title}</h1>
       <p>{copy.introduction}</p>
     </header>
