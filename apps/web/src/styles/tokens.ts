@@ -20,4 +20,5 @@ export const palette = {
   success: "#4fd1a5",
   warning: "#e5b454",
   error: "#ff6b6b",
+  navy: "#0a1735",
 } as const;

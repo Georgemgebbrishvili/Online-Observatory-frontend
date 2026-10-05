@@ -465,3 +465,31 @@
   align-items: center;
   gap: var(--space-4);
 }
+
+/* ADR-041: the observatory scene's parts on its own ground. */
+.ds-observatory-specimen {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border-radius: var(--radius-large);
+}
+
+.ds-observatory-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.ds-observatory-specimen .site-clock {
+  position: static;
+  padding: 0;
+  text-align: left;
+}
+
+.ds-observatory-plate {
+  width: min(100%, 24rem);
+}
+
+.ds-observatory-specimen .observatory-dock {
+  margin: 0;
+}

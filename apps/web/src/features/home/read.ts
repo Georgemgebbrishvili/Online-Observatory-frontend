@@ -5,8 +5,10 @@ import type {
   Mission,
   PublicObservatoryStatus,
   Target,
+  ViewingConditions,
 } from "@darkview/contracts";
 import {
+  zGetObservatoryConditionsResponse,
   zGetObservatoryStatusResponse,
   zListMissionsResponse,
 } from "@darkview/contracts/zod";
@@ -42,6 +44,21 @@ export async function readObservatoryPanel(): Promise<ObservatoryPanelResult> {
     return { kind: "ok", observatory, status };
   } catch {
     return { kind: "unreachable" };
+  }
+}
+
+/** Tonight's advisory forecast; null when it cannot be read. Never a weather hold. */
+export async function readConditions(
+  observatoryId: string,
+): Promise<ViewingConditions | null> {
+  try {
+    return zGetObservatoryConditionsResponse.parse(
+      await platformRequest<unknown>(
+        `/observatories/${encodeURIComponent(observatoryId)}/conditions`,
+      ),
+    );
+  } catch {
+    return null;
   }
 }
 

@@ -2,6 +2,25 @@ import { brand } from "@/brand";
 
 type StateCopy = { title: string; description: string };
 type Rule = { title: string; description: string };
+type Way = { title: string; body: string; cta: string };
+
+type SceneCopy = {
+  states: Record<"online" | "observing" | "hold" | "degraded" | "offline", string>;
+  summary: (targets: number) => string;
+  cloud: (percent: number) => string;
+  cloudAbout: string;
+  noForecast: string;
+  firstHour: string;
+  noHours: string;
+  book: string;
+  watch: string;
+  siteTime: string;
+  plate: { aria: string; sensor: string; moon: string };
+  ways: { label: string; note: string; items: [Way, Way, Way] };
+  instrumentNote: string;
+  fieldOfView: string;
+  tonightAll: string;
+};
 
 type ObservatoryPageCopy = {
   metadataTitle: string;
@@ -16,10 +35,7 @@ type ObservatoryPageCopy = {
   noObservatory: StateCopy;
   tonight: string;
   tonightDescription: string;
-  seeTonight: string;
-  openLive: string;
-  liveNote: string;
-  instrument: string;
+  scene: SceneCopy;
   telescope: string;
   aperture: string;
   focalLength: string;
@@ -77,7 +93,7 @@ type ObservatoryPageCopy = {
 
 export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
   en: {
-    metadataTitle: `${brand.en.name} Tbilisi Observatory`,
+    metadataTitle: `Tbilisi Observatory · ${brand.en.name}`,
     metadataDescription: `${brand.en.name}'s live remote telescope in Tbilisi: its status right now, tonight's targets, the instrument, and the rules it keeps.`,
     eyebrow: "Live remote observatory · Tbilisi",
     statement: `One real telescope on a Tbilisi rooftop, run by the observatory's own software. You reserve the time; it does the moving.`,
@@ -95,10 +111,55 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     },
     tonight: "Tonight",
     tonightDescription: "Targets the telescope can reach tonight.",
-    seeTonight: "See tonight's targets",
-    openLive: "Open the live view",
-    liveNote: "Signed-in observers only.",
-    instrument: "The instrument",
+    scene: {
+      states: {
+        online: "Online",
+        observing: "Observing",
+        hold: "Weather hold",
+        degraded: "Degraded",
+        offline: "Offline",
+      },
+      summary: (targets) =>
+        `One telescope · ${targets === 1 ? "1 target" : `${targets} targets`} up tonight`,
+      cloud: (percent) => `${percent}% cloud`,
+      cloudAbout: "Forecast, first hour",
+      noForecast: "No forecast yet",
+      firstHour: "First bookable hour",
+      noHours: "No bookable hours tonight",
+      book: "Book a slot",
+      watch: "Watch live",
+      siteTime: "Site time · Tbilisi",
+      plate: {
+        aria: "The camera's frame drawn over the Moon, to scale",
+        sensor: "Camera frame",
+        moon: "Moon, mean size",
+      },
+      ways: {
+        label: "Ways in",
+        note: "Three ways in",
+        items: [
+          {
+            title: "Book a slot",
+            body: "Reserve time on the telescope, choose what it points at, and keep what you capture.",
+            cta: "Book",
+          },
+          {
+            title: "Watch a live session",
+            body: "Open the session that is running now, or the one you booked. Signed-in observers only.",
+            cta: "Watch",
+          },
+          {
+            title: "See tonight's targets",
+            body: "Everything the telescope can reach tonight, with how high it climbs and when.",
+            cta: "Browse",
+          },
+        ],
+      },
+      instrumentNote:
+        "Short exposures, stacked as you watch. Not long-exposure astrophotography.",
+      fieldOfView: "Field of view",
+      tonightAll: "All of tonight",
+    },
     telescope: "Telescope",
     aperture: "aperture",
     focalLength: "focal length",
@@ -186,7 +247,7 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
         "Not published. Public pages carry no coordinates precise enough to find the instrument.",
     },
     networkSection: {
-      kicker: "The network",
+      kicker: "04 · The network",
       title: "One site today.",
       lede: `${brand.en.name} is built so that more observatories could join later. Today there is exactly one, and it is this one.`,
       today: "Today",
@@ -199,11 +260,11 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     },
   },
   ka: {
-    metadataTitle: `${brand.ka.genitive} თბილისის ობსერვატორია`,
+    metadataTitle: `თბილისის ობსერვატორია · ${brand.ka.nominative}`,
     metadataDescription: `${brand.ka.genitive} დისტანციური ტელესკოპი თბილისში: მისი სტატუსი ახლა, დღევანდელი ობიექტები, ინსტრუმენტი და წესები, რომლებსაც იცავს.`,
     eyebrow: "დისტანციური ობსერვატორია · თბილისი",
     statement:
-      "ერთი ნამდვილი ტელესკოპი თბილისის სახურავზე, რომელსაც ობსერვატორიის საკუთარი პროგრამა მართავს. თქვენ დროს ჯავშნით, მოძრაობას კი ის ასრულებს.",
+      "ერთი ნამდვილი ტელესკოპი თბილისის სახურავზე, რომელსაც ობსერვატორიის საკუთარი პროგრამა მართავს. შენ დროს ჯავშნი, მოძრაობას კი ის ასრულებს.",
     liveStatus: "სტატუსი ახლა",
     fullStatus: "სრული სტატუსი",
     observingNow: (target) => `ახლა დაკვირვება მიმდინარეობს: ${target}`,
@@ -211,18 +272,62 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     statusUnavailable: {
       title: "ობსერვატორიის სტატუსი ახლა მიუწვდომელია.",
       description:
-        "ქვემოთ მოცემულ ინფორმაციაზე ეს გავლენას არ ახდენს. სცადეთ სრული სტატუსის გვერდი ცოტა ხანში.",
+        "ქვემოთ მოცემულ ინფორმაციაზე ეს გავლენას არ ახდენს. სცადე სრული სტატუსის გვერდი ცოტა ხანში.",
     },
     noObservatory: {
       title: "ობსერვატორია არ არის მითითებული.",
       description: "ჯერჯერობით საანგარიშო არაფერია.",
     },
-    tonight: "დღეს ღამით",
-    tonightDescription: "ობიექტები, რომლებსაც ტელესკოპი დღეს ღამით მისწვდება.",
-    seeTonight: "ამაღამ ხილული ობიექტები",
-    openLive: "პირდაპირი ხედის გახსნა",
-    liveNote: "მხოლოდ ავტორიზებული დამკვირვებლებისთვის.",
-    instrument: "ინსტრუმენტი",
+    tonight: "ამაღამ",
+    tonightDescription: "ობიექტები, რომლებსაც ტელესკოპი ამაღამ მისწვდება.",
+    scene: {
+      states: {
+        online: "ხაზზეა",
+        observing: "დაკვირვება მიმდინარეობს",
+        hold: "ამინდის გამო შეჩერებულია",
+        degraded: "კავშირი შეფერხებულია",
+        offline: "ხაზგარეშეა",
+      },
+      summary: (targets) => `ერთი ტელესკოპი · ამაღამ ხილულია ${targets} ობიექტი`,
+      cloud: (percent) => `${percent}% ღრუბელი`,
+      cloudAbout: "პროგნოზი, პირველი საათი",
+      noForecast: "პროგნოზი ჯერ არ არის",
+      firstHour: "პირველი ჯავშნადი საათი",
+      noHours: "ამაღამ ჯავშნადი საათი არ არის",
+      book: "დაჯავშნე დრო",
+      watch: "უყურე პირდაპირ",
+      siteTime: "ადგილობრივი დრო · თბილისი",
+      plate: {
+        aria: "კამერის კადრი მთვარეზე, მასშტაბით",
+        sensor: "კამერის კადრი",
+        moon: "მთვარე, საშუალო ზომა",
+      },
+      ways: {
+        label: "როგორ დაიწყო",
+        note: "სამი გზა",
+        items: [
+          {
+            title: "დაჯავშნე დრო",
+            body: "დაჯავშნე დრო ტელესკოპთან, აირჩიე, რას დააკვირდება, და შეინახე, რასაც გადაიღებ.",
+            cta: "დაჯავშნა",
+          },
+          {
+            title: "უყურე პირდაპირ სესიას",
+            body: "გახსენი ახლა მიმდინარე სესია ან ის, რომელიც დაჯავშნე. მხოლოდ ავტორიზებული დამკვირვებლებისთვის.",
+            cta: "ყურება",
+          },
+          {
+            title: "ნახე ამაღამ ხილული ობიექტები",
+            body: "ყველაფერი, რასაც ტელესკოპი ამაღამ მისწვდება: რა სიმაღლეზე ადის და როდის.",
+            cta: "დათვალიერება",
+          },
+        ],
+      },
+      instrumentNote:
+        "მოკლე ექსპოზიციები, რომლებიც შენს თვალწინ იკრიბება. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფია.",
+      fieldOfView: "ხედვის არე",
+      tonightAll: "ამაღამ ყველა",
+    },
     telescope: "ტელესკოპი",
     aperture: "აპერტურა",
     focalLength: "ფოკუსური მანძილი",
@@ -233,42 +338,42 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     instrumentSection: {
       kicker: "01 · ინსტრუმენტი",
       title: "ექვსდიუმიანი ტელესკოპი და ფერადი კამერა.",
-      lede: "პატარა, კარგად შესწავლილი და გულწრფელი იმაში, რისი ჩვენებაც შეუძლია: მთვარე, პლანეტები, ორმაგი ვარსკვლავები და უფრო კაშკაშა გროვები და ნისლეულები — პირდაპირ ეთერში.",
+      lede: "პატარა, კარგად შესწავლილი და გულწრფელი იმაში, რისი ჩვენებაც შეუძლია: მთვარე, პლანეტები, ორმაგი ვარსკვლავები და უფრო კაშკაშა გროვები და ნისლეულები — რეალურ დროში.",
       design: "კონსტრუქცია",
       designValue: "შმიდტ-კასეგრენი",
-      mount: "სამონტაჟო",
+      mount: "მონტირება",
       mountValue: "კომპიუტერული ალტ-აზიმუტური",
       focalRatio: "ფარდობითი ხვრელი",
       cameraNote:
         "გაგრილების გარეშე, ფერადი სენსორი. ყოველი კადრი ფერადი მოდის; ფილტრების ცალკე გადაღება არ არის.",
       mode: "რეჟიმი",
-      modeValue: "ცოცხალი ხედი",
+      modeValue: "პირდაპირი ხედი",
       modeNote:
-        "მოკლე ექსპოზიციები, რომლებიც თქვენს თვალწინ იკრიბება. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფია.",
+        "მოკლე ექსპოზიციები, რომლებიც შენს თვალწინ იკრიბება. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფია.",
       optics: "ოპტიკური კონფიგურაციები",
       opticsLede:
         "ყოველ ობიექტს სამიდან ერთ კონფიგურაციაში აკვირდებიან, რომელიც მისთვის კატალოგშია არჩეული.",
       configurations: [
         { name: "რედუქტორით", value: "945 mm · f/6.3" },
-        { name: "საკუთარი", value: "1500 mm · f/10" },
+        { name: "ძირითადი", value: "1500 mm · f/10" },
         { name: "ბარლოუთი", value: "3000 mm · f/20" },
       ],
-      millimetres: "მმ",
+      millimetres: "mm",
     },
     safetySection: {
       kicker: "02 · უსაფრთხოება",
       title: "არაფერი მოძრაობს, სანამ ნებადართული არ არის.",
-      lede: "ყოველი ბრძანება მოწმდება ღრუბელში და ხელახლა — ტელესკოპთან. ბრძანებას, რომელსაც ობსერვატორია სახიფათოდ მიიჩნევს, უარს ეუბნება, ვინც არ უნდა გაგზავნოს.",
+      lede: "ყოველი ბრძანება მოწმდება სერვერზე და ხელახლა — ტელესკოპთან. ბრძანებას, რომელსაც ობსერვატორია სახიფათოდ მიიჩნევს, უარს ეუბნება, ვინც არ უნდა გაგზავნოს.",
       rules: [
         {
           title: "ნაგულისხმევად — სიმულატორი",
           description:
-            "ობსერვატორიის პროგრამა სიმულირებული ტელესკოპითა და კამერით ირთვება. გვერდები, რომლებსაც სიმულატორი კვებავს, ამას პირდაპირ ამბობენ.",
+            "ობსერვატორიის პროგრამა სიმულირებული ტელესკოპითა და კამერით ირთვება. გვერდები, რომლებიც სიმულატორის მონაცემებს აჩვენებს, ამას მიუთითებს.",
         },
         {
           title: "ნამდვილი აპარატურა — მხოლოდ ოპერატორის თანდასწრებით",
           description:
-            "ნამდვილ ტელესკოპზე გადართვას სჭირდება ოპერატორის შეგნებული მოქმედება, რომელიც ფიზიკურად ადგილზეა.",
+            "ნამდვილ ტელესკოპზე გადართვას სჭირდება ადგილზე ფიზიკურად მყოფი ოპერატორის შეგნებული მოქმედება.",
         },
         {
           title: "მზისგან დაცვა",
@@ -307,10 +412,10 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       placementValue: "სახურავი, ქსელის კვება",
       precision: "ზუსტი მდებარეობა",
       precisionValue:
-        "არ ქვეყნდება. საჯარო გვერდებზე არ არის ისეთი ზუსტი კოორდინატები, რომლითაც ინსტრუმენტის პოვნა შეიძლება.",
+        "არ ქვეყნდება. საჯარო გვერდებზე არ არის ისეთი ზუსტი კოორდინატები, რომლებითაც ინსტრუმენტის პოვნა შეიძლება.",
     },
     networkSection: {
-      kicker: "ქსელი",
+      kicker: "04 · ქსელი",
       title: "დღეს — ერთი ადგილი.",
       lede: `${brand.ka.nominative} ისეა აგებული, რომ მომავალში სხვა ობსერვატორიებიც შეუერთდეს. დღეს მხოლოდ ერთია — ეს.`,
       today: "დღეს",

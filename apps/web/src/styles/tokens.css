@@ -25,6 +25,7 @@
   --st-success: #4fd1a5;
   --st-warning: #e5b454;
   --st-error: #ff6b6b;
+  --st-navy: #0a1735;
 
   /*
    * Ground. Night is the page; surface-base is a well (the feed, data, inputs).
@@ -107,6 +108,17 @@
   --color-backdrop: var(--color-scrim);
   --color-mask: var(--st-black);
   --color-shadow: color-mix(in srgb, var(--st-black) 38%, transparent);
+
+  /*
+   * The observatory scene (ADR-041): /observatory alone sits on a navy night with
+   * panels floating over a field of stars. Opaque enough to need no blur, which
+   * stays banned (§09 anti-pattern 04).
+   */
+  --color-scene-ground: var(--st-navy);
+  --color-scene-float: color-mix(in srgb, var(--st-navy) 88%, transparent);
+  --color-scene-inner: color-mix(in srgb, var(--st-cream) 4.5%, transparent);
+  --color-scene-border: color-mix(in srgb, var(--st-cream) 12%, transparent);
+  --color-scene-star: var(--st-ink);
 
   /*
    * ADR-039 type. Georgian has no glyphs in the Latin faces, so each stack falls through

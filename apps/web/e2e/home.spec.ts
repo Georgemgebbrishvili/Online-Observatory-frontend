@@ -152,7 +152,7 @@ test("provides the complete public navigation on desktop and mobile", async ({
   }
 
   await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
-  await expect(header.getByRole("link", { name: "Start Exploring" })).toBeVisible();
+  await expect(header.getByRole("link", { name: "Start exploring" })).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
@@ -302,7 +302,9 @@ test("keeps missions usable inside a mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/app/missions");
 
-  await expect(page.getByRole("heading", { name: "დღევანდელი ობიექტები" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "ამაღამინდელი ობიექტები" }),
+  ).toBeVisible();
   await page.getByRole("link", { name: "ობიექტის ნახვა" }).first().click();
   await expect(page.getByRole("link", { name: "დაჯავშნე დაკვირვება" })).toBeVisible();
 
@@ -343,7 +345,7 @@ test("the /app dashboard reads the platform, section by section", async ({ page 
   await page.goto("/en/app");
 
   await expect(
-    page.getByRole("heading", { name: "Good evening, Observer" }),
+    page.getByRole("heading", { name: "Welcome back, Observer." }),
   ).toBeVisible();
   // The highest observable target in the fake's fixed sky.
   await expect(
@@ -387,11 +389,9 @@ test("keeps the Georgian authenticated home within a mobile viewport", async ({
   await page.goto("/ka/app");
 
   await expect(
-    page.getByRole("heading", { name: "საღამო მშვიდობისა, Observer" }),
+    page.getByRole("heading", { name: "კეთილი იყოს შენი დაბრუნება, Observer." }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "ალბირეო დღეს ღამით ჩანს" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "ალბირეო ამაღამ ჩანს" })).toBeVisible();
 
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
@@ -400,7 +400,7 @@ test("keeps the Georgian authenticated home within a mobile viewport", async ({
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("the observatory's first screen carries status, tonight, the instrument and both actions", async ({
+test("the observatory scene carries the state, tonight's sky, the plate and the ways in", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -410,31 +410,41 @@ test("the observatory's first screen carries status, tonight, the instrument and
     page.getByRole("heading", { level: 1, name: "Stellar Tbilisi" }),
   ).toBeVisible();
 
-  const status = page.locator(".observatory-live");
-  await expect(status.getByText("SIMULATED OBSERVATORY")).toBeVisible();
-  await expect(status.getByText("Online", { exact: true })).toBeVisible();
-  await expect(status.getByText("Clear", { exact: true })).toBeVisible();
+  const scene = page.locator(".observatory-live");
+  await expect(scene.getByText("SIMULATED OBSERVATORY")).toBeVisible();
+  await expect(scene.getByText("Online", { exact: true })).toBeVisible();
+  await expect(scene.getByText("Celestron NexStar 6SE")).toBeVisible();
+  // The fake's first forecast hour: 12% cloud, at 20:00Z, read in Tbilisi.
+  await expect(scene.getByText("12% cloud")).toBeVisible();
+  await expect(scene.getByText("00:00", { exact: true })).toBeVisible();
+
+  const book = scene.getByRole("link", { name: "Book a slot" });
+  const watch = scene.getByRole("link", { name: "Watch live" });
+  await expect(book).toHaveAttribute("href", "/en/app/book");
+  await expect(watch).toHaveAttribute("href", "/en/app/live");
+
+  const plate = page.getByRole("figure", {
+    name: "The camera's frame drawn over the Moon, to scale",
+  });
+  await expect(plate.getByText("Illustration — not telescope output")).toBeVisible();
+
+  const dock = page.getByRole("navigation", { name: "Ways in" });
+  await expect(dock.getByRole("link")).toHaveCount(4);
+
+  // The scene is the first screen.
+  for (const locator of [scene, book, watch, plate, dock]) {
+    const box = await locator.boundingBox();
+    expect(box && box.y + box.height).toBeLessThanOrEqual(900);
+  }
 
   const tonight = page.locator(".observatory-tonight");
   await expect(tonight.getByRole("link", { name: /Albireo/ })).toHaveAttribute(
     "href",
     "/en/app/missions/albireo",
   );
-
   const instrument = page.locator(".observatory-instrument");
-  await expect(instrument.getByText("Celestron NexStar 6SE")).toBeVisible();
   await expect(instrument.getByText("ZWO ASI585MC")).toBeVisible();
-
-  const primary = page.getByRole("link", { name: "See tonight's targets" });
-  const live = page.getByRole("link", { name: "Open the live view" });
-  await expect(primary).toHaveAttribute("href", "/en/app/missions");
-  await expect(live).toHaveAttribute("href", "/en/app/live");
-
-  // All of it before any scrolling.
-  for (const locator of [status, tonight, instrument, primary, live]) {
-    const box = await locator.boundingBox();
-    expect(box && box.y + box.height).toBeLessThanOrEqual(900);
-  }
+  await expect(instrument.getByText("25.5′ × 14.4′")).toBeVisible();
 
   // Claims the platform does not back are gone.
   await expect(page.getByText(/41\.72/)).toHaveCount(0);
@@ -447,9 +457,6 @@ test("the observatory's first screen carries status, tonight, the instrument and
 
   await expect(
     page.getByRole("heading", { name: "Nothing moves until it is allowed to." }),
-  ).toBeVisible();
-  await expect(
-    page.getByText("Illustration — not telescope output", { exact: true }),
   ).toBeVisible();
 });
 
@@ -494,11 +501,12 @@ test("shows what exists today, without invented prices or concept tiers", async 
   await expect(
     page.getByRole("heading", { level: 1, name: "What it costs today." }),
   ).toBeVisible();
-  for (const offering of ["Watch", "An observation slot"]) {
+  for (const offering of ["Browse", "A seat in a live session", "An observation slot"]) {
     await expect(page.getByRole("heading", { name: offering })).toBeVisible();
   }
   await expect(page.getByText("Free", { exact: true })).toBeVisible();
   await expect(page.getByText("Priced per slot", { exact: true })).toBeVisible();
+  await expect(page.getByText("Priced per seat", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Book an observation" })).toHaveAttribute(
     "href",
     "/en/app/book",

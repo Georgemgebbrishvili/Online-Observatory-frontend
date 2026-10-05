@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ObservatoryPage } from "@/components/observatory/observatory-page";
 import { JsonLd } from "@/components/seo/json-ld";
-import { readObservatoryPanel } from "@/features/home/read";
+import { readConditions, readObservatoryPanel } from "@/features/home/read";
 import { observatories } from "@/features/observatory/observatories";
 import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
@@ -49,6 +49,8 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
     readObservatoryPanel(),
     readTonight(locale),
   ]);
+  const conditions =
+    panel.kind === "ok" ? await readConditions(panel.observatory.id) : null;
   const copy = observatoryPageCopy[locale];
   const observatory = observatories[0];
 
@@ -69,7 +71,12 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
         }}
       />
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
-      <ObservatoryPage locale={locale} panel={panel} tonight={tonight} />
+      <ObservatoryPage
+        locale={locale}
+        panel={panel}
+        tonight={tonight}
+        conditions={conditions}
+      />
       <SiteFooter footer={dictionary.footer} locale={locale} path="observatory" />
     </div>
   );
