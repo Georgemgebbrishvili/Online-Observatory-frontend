@@ -11,6 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         "/*/app/",
         "/*/design-system",
         "/*/register",
+        "/*/reset-password",
         "/*/sign-in",
         "/*/verify-email",
       ],

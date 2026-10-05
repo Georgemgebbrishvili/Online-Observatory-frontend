@@ -2,14 +2,15 @@ import type { Locale } from "@/i18n/config";
 import { brand } from "@/brand";
 
 const en = {
-  eyebrow: "SECURE ACCESS",
+  eyebrow: "Account",
   signIn: {
     metadataTitle: `Sign in · ${brand.en.name}`,
-    title: "Return to your observatory.",
+    title: "Welcome back.",
     description: "Sign in to manage your missions and personal captures.",
     submit: "Sign in",
     alternate: `New to ${brand.en.name}?`,
     alternateAction: "Create an account",
+    forgot: "Forgot your password?",
   },
   register: {
     metadataTitle: `Create account · ${brand.en.name}`,
@@ -34,12 +35,32 @@ const en = {
     submit: "Confirm email",
     invalid: "This verification link is invalid or has expired.",
   },
+  resetRequest: {
+    metadataTitle: `Reset password · ${brand.en.name}`,
+    title: "Reset your password.",
+    description:
+      "Enter the email you registered with. We'll send a link to set a new one.",
+    submit: "Send link",
+    sentTitle: "Check your email.",
+    sentDescription:
+      "If an account uses that address, a link is on its way. It expires in 30 minutes and works once.",
+    back: "Return to sign in",
+  },
+  resetConfirm: {
+    metadataTitle: `Choose a new password · ${brand.en.name}`,
+    title: "Choose a new password.",
+    description: "You'll be signed in, and signed out everywhere else.",
+    submit: "Set password",
+    deadLink: "This link is invalid, used or expired.",
+    newLink: "Send a new link",
+  },
   fields: {
     name: "Name",
     namePlaceholder: "Your name",
     email: "Email",
     emailPlaceholder: "you@example.com",
     password: "Password",
+    newPassword: "New password",
     passwordHint: "Use at least 12 characters.",
   },
   errors: {
@@ -59,14 +80,15 @@ const en = {
 export const authCopy = {
   en,
   ka: {
-    eyebrow: "დაცული წვდომა",
+    eyebrow: "ანგარიში",
     signIn: {
       metadataTitle: `შესვლა · ${brand.ka.nominative}`,
-      title: "დაუბრუნდი შენს ობსერვატორიას.",
-      description: "შედი ანგარიშში მისიებისა და პირადი გადაღებების სამართავად.",
+      title: "კეთილი იყოს შენი დაბრუნება.",
+      description: "შედი ანგარიშში მისიებისა და პირადი კადრების სამართავად.",
       submit: "შესვლა",
       alternate: `ჯერ არ გაქვს ${brand.ka.genitive} ანგარიში?`,
       alternateAction: "ანგარიშის შექმნა",
+      forgot: "დაგავიწყდა პაროლი?",
     },
     register: {
       metadataTitle: `ანგარიშის შექმნა · ${brand.ka.nominative}`,
@@ -91,12 +113,32 @@ export const authCopy = {
       submit: "ელფოსტის დადასტურება",
       invalid: "ეს დამადასტურებელი ბმული არასწორია ან ვადა გაუვიდა.",
     },
+    resetRequest: {
+      metadataTitle: `პაროლის აღდგენა · ${brand.ka.nominative}`,
+      title: "აღადგინე პაროლი.",
+      description:
+        "შეიყვანე რეგისტრაციის ელფოსტა. გამოგიგზავნით ბმულს ახალი პაროლის დასაყენებლად.",
+      submit: "ბმულის გაგზავნა",
+      sentTitle: "შეამოწმე ელფოსტა.",
+      sentDescription:
+        "თუ ამ მისამართით ანგარიში არსებობს, ბმული უკვე გზაშია. ის 30 წუთში გაუქმდება და მხოლოდ ერთხელ იმუშავებს.",
+      back: "შესვლაზე დაბრუნება",
+    },
+    resetConfirm: {
+      metadataTitle: `ახალი პაროლი · ${brand.ka.nominative}`,
+      title: "აირჩიე ახალი პაროლი.",
+      description: "შეხვალ ანგარიშში, ყველა სხვა მოწყობილობაზე კი სესია დასრულდება.",
+      submit: "პაროლის დაყენება",
+      deadLink: "ეს ბმული არასწორია, გამოყენებულია ან ვადა გაუვიდა.",
+      newLink: "ახალი ბმულის გაგზავნა",
+    },
     fields: {
       name: "სახელი",
       namePlaceholder: "შენი სახელი",
       email: "ელფოსტა",
       emailPlaceholder: "you@example.com",
       password: "პაროლი",
+      newPassword: "ახალი პაროლი",
       passwordHint: "გამოიყენე მინიმუმ 12 სიმბოლო.",
     },
     errors: {
@@ -109,7 +151,7 @@ export const authCopy = {
       unavailable: "ავტორიზაცია დროებით მიუწვდომელია. მოგვიანებით სცადე.",
     },
     securityNote:
-      "შენი სესია სერვერზე მოწმდება. ობსერვატორიის მონაცემები ბრაუზერამდე არასოდეს აღწევს.",
+      "შენი სესია სერვერზე მოწმდება. ობსერვატორიის წვდომის მონაცემები ბრაუზერამდე არასოდეს აღწევს.",
     logout: "გასვლა",
   },
 } as const satisfies Record<Locale, typeof en>;

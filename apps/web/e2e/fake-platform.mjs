@@ -38,6 +38,8 @@ import {
   zOperatorObservatoryState,
   zOperatorOverrideRequest,
   zPurchaseObserverPackResponse,
+  zPasswordResetConfirmRequest,
+  zPasswordResetRequest,
   zRegisterRequest,
   zRescheduleBookingBody,
   zRescheduleBookingResponse,
@@ -88,6 +90,12 @@ const fakeAccounts = {
     role: "OPERATOR",
     displayName: "Failing operator",
   },
+  // Account slice 1: resets its password in e2e, so no other test's sign-in depends on it.
+  "forgetful@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000006",
+    role: "USER",
+    displayName: "Forgetful",
+  },
 };
 const fakePassword = "correct horse battery";
 
@@ -110,6 +118,12 @@ const sessions = new Map();
 // prints it on the full stack.
 const passwords = new Map();
 const pendingVerifications = new Map();
+// ADR-040's reset links, token -> email. The token is derived from the address,
+// sha256("reset:<email>") in base64url, so a test can open the link it asked for
+// without reading this process's output. Used once, it is gone until asked for again.
+const pendingResets = new Map();
+const resetToken = (email) =>
+  createHash("sha256").update(`reset:${email}`).digest("base64url");
 
 // One simulated first-party observatory with one live mission, as the simulator
 // agent would report it. PARK takes a moment to land, like a real mount.
@@ -1336,6 +1350,53 @@ const routes = {
     const csrf = randomUUID();
     sessions.set(token, { user: pending.user, csrf });
     send(response, 200, zUser.parse(pending.user), {
+      "set-cookie": [
+        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
+        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+      ],
+    });
+  },
+  // ADR-040: 202 whatever the address; a link only for an account.
+  "POST /auth/password-reset": async (request, response) => {
+    const body = zPasswordResetRequest.safeParse(await json(request));
+    if (!body.success) return error(response, 422, "VALIDATION_FAILED", "An email.");
+    const { email, locale } = body.data;
+    if (users.has(email)) {
+      const token = resetToken(email);
+      pendingResets.set(token, email);
+      console.log(
+        `[fake-platform] reset ${email}: ${appOrigin}/${locale}/reset-password/${token}`,
+      );
+    }
+    send(response, 202, undefined);
+  },
+  "POST /auth/password-reset/confirm": async (request, response) => {
+    const body = zPasswordResetConfirmRequest.safeParse(await json(request));
+    // As the platform does: the refused fields by path, never their values.
+    if (!body.success) {
+      return error(response, 422, "VALIDATION_FAILED", "A token and a password.", {
+        fields: [...new Set(body.error.issues.map((issue) => issue.path.join(".")))],
+      });
+    }
+    const email = pendingResets.get(body.data.token);
+    if (!email) {
+      return error(
+        response,
+        404,
+        "NOT_FOUND",
+        "The reset link is invalid, used or expired.",
+      );
+    }
+    pendingResets.delete(body.data.token);
+    passwords.set(email, body.data.password);
+    const user = users.get(email);
+    for (const [token, session] of sessions) {
+      if (session.user.id === user.id) sessions.delete(token);
+    }
+    const token = randomUUID();
+    const csrf = randomUUID();
+    sessions.set(token, { user, csrf });
+    send(response, 200, zUser.parse(user), {
       "set-cookie": [
         `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
         `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,

@@ -5,7 +5,9 @@ import { useActionState, useEffect, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
+  confirmPasswordResetAction,
   registerAction,
+  requestPasswordResetAction,
   signInAction,
   verifyEmail,
   type AuthActionState,
@@ -76,6 +78,9 @@ export function SignInForm({ copy, locale }: { copy: AuthResource; locale: Local
       </Field>
       <SubmitButton label={copy.signIn.submit} />
       <p className="auth-alternate">
+        <Link href={`/${locale}/reset-password`}>{copy.signIn.forgot}</Link>
+      </p>
+      <p className="auth-alternate">
         {copy.signIn.alternate}{" "}
         <Link href={`/${locale}/register`}>{copy.signIn.alternateAction}</Link>
       </p>
@@ -136,6 +141,95 @@ export function RegistrationForm({
         {copy.register.alternate}{" "}
         <Link href={`/${locale}/sign-in`}>{copy.register.alternateAction}</Link>
       </p>
+    </form>
+  );
+}
+
+export function PasswordResetRequestForm({
+  copy,
+  locale,
+}: {
+  copy: AuthResource;
+  locale: Locale;
+}) {
+  const [state, action] = useActionState(
+    requestPasswordResetAction.bind(null, locale),
+    {},
+  );
+  useRedirect(state);
+
+  return (
+    <form action={action} className="auth-form">
+      <FormMessage state={state} />
+      <Field htmlFor="email" label={copy.fields.email} error={state.errors?.email}>
+        <TextInput
+          autoComplete="email"
+          id="email"
+          name="email"
+          placeholder={copy.fields.emailPlaceholder}
+          required
+          type="email"
+        />
+      </Field>
+      <SubmitButton label={copy.resetRequest.submit} />
+      <p className="auth-alternate">
+        <Link href={`/${locale}/sign-in`}>{copy.resetRequest.back}</Link>
+      </p>
+    </form>
+  );
+}
+
+export function PasswordResetConfirmForm({
+  copy,
+  locale,
+  token,
+}: {
+  copy: AuthResource;
+  locale: Locale;
+  token: string;
+}) {
+  const [state, action] = useActionState(
+    confirmPasswordResetAction.bind(null, locale, token),
+    {},
+  );
+  useRedirect(state);
+
+  if (state.deadLink) {
+    return (
+      <div className="auth-form">
+        <p className="auth-form-error" role="alert">
+          {copy.resetConfirm.deadLink}
+        </p>
+        <Link
+          className="button button-primary button-large"
+          href={`/${locale}/reset-password`}
+        >
+          <span>{copy.resetConfirm.newLink}</span>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <form action={action} className="auth-form">
+      <FormMessage state={state} />
+      <Field
+        htmlFor="password"
+        label={copy.fields.newPassword}
+        hint={copy.fields.passwordHint}
+        error={state.errors?.password}
+      >
+        <TextInput
+          autoComplete="new-password"
+          id="password"
+          maxLength={128}
+          minLength={12}
+          name="password"
+          required
+          type="password"
+        />
+      </Field>
+      <SubmitButton label={copy.resetConfirm.submit} />
     </form>
   );
 }

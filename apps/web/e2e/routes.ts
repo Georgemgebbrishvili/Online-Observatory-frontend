@@ -50,7 +50,7 @@ export const parameterisedRoutes = [
 ] as const;
 
 /** Only reachable with no session; an authenticated visitor is redirected away. */
-export const signedOutRoutes = ["sign-in", "register"] as const;
+export const signedOutRoutes = ["sign-in", "register", "reset-password"] as const;
 
 export const operatorRoutes = [
   "admin",

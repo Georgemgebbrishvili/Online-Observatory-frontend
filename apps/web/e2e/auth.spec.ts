@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import { expect, test } from "@playwright/test";
 import { appSidebar } from "./selectors";
 
@@ -84,5 +86,85 @@ test("creates an account, and asks for the email before any session", async ({
   await signIn(page, email, secret);
   await expect(page.getByRole("main").getByRole("alert")).toHaveText(
     "Verify your email before signing in.",
+  );
+});
+
+// ADR-040. The fake platform derives a reset token from the address, as
+// e2e/fake-platform.mjs explains, so the test can open the link it asked for.
+const resetLink = (locale: string, email: string) =>
+  `/${locale}/reset-password/${createHash("sha256").update(`reset:${email}`).digest("base64url")}`;
+
+test("resets a forgotten password from the sign-in page, and signs in with the new one", async ({
+  page,
+  context,
+}) => {
+  const email = "forgetful@darkview.test";
+  const secret = `a new password ${Date.now()}`;
+
+  await page.goto("/en/sign-in");
+  await page.getByRole("link", { name: "Forgot your password?" }).click();
+  await expect(page).toHaveURL(/\/en\/reset-password$/, { timeout: firstCompile });
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("button", { name: "Send link" }).click();
+  await expect(page).toHaveURL(/\/en\/reset-password\?sent=1$/, {
+    timeout: firstCompile,
+  });
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Check your email.");
+
+  await page.goto(resetLink("en", email));
+  await page.getByLabel("New password").fill(secret);
+  await page.getByRole("button", { name: "Set password" }).click();
+  await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
+
+  // The link worked once.
+  await context.clearCookies();
+  await page.goto(resetLink("en", email));
+  await page.getByLabel("New password").fill("yet another long password");
+  await page.getByRole("button", { name: "Set password" }).click();
+  await expect(page.getByRole("main").getByRole("alert")).toHaveText(
+    "This link is invalid, used or expired.",
+  );
+  await expect(page.getByRole("link", { name: "Send a new link" })).toHaveAttribute(
+    "href",
+    "/en/reset-password",
+  );
+
+  await signIn(page, email, secret);
+  await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
+});
+
+test("answers an unknown address exactly as a known one, in Georgian", async ({
+  page,
+}) => {
+  await page.goto("/ka/reset-password");
+  await page.getByLabel("ელფოსტა").fill(`nobody-${Date.now()}@example.com`);
+  await page.getByRole("button", { name: "ბმულის გაგზავნა" }).click();
+  await expect(page).toHaveURL(/\/ka\/reset-password\?sent=1$/, {
+    timeout: firstCompile,
+  });
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("შეამოწმე ელფოსტა.");
+});
+
+test("refuses a short new password before asking the platform", async ({ page }) => {
+  await page.goto(resetLink("en", "observer@darkview.test"));
+  const field = page.getByLabel("New password");
+  // The browser's own minLength check would stop the form; this is the page's.
+  await field.evaluate((input: HTMLInputElement) => input.removeAttribute("minlength"));
+  await field.fill("too short");
+  await page.getByRole("button", { name: "Set password" }).click();
+  await expect(
+    page.getByText("Use a password between 12 and 128 characters."),
+  ).toBeVisible();
+});
+
+test("offers a new link when the reset link was mangled on its way out of the email", async ({
+  page,
+}) => {
+  // Shorter than the contract's sixteen characters: the platform refuses the token itself.
+  await page.goto("/en/reset-password/cut-short");
+  await page.getByLabel("New password").fill("a long enough new password");
+  await page.getByRole("button", { name: "Set password" }).click();
+  await expect(page.getByRole("main").getByRole("alert")).toHaveText(
+    "This link is invalid, used or expired.",
   );
 });

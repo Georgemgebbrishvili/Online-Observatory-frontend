@@ -102,11 +102,14 @@ for (const { name: width, viewport } of widths) {
     test.use({ viewport, storageState: { cookies: [], origins: [] } });
 
     for (const locale of locales) {
-      // verify-email: where registering lands. not-found: any address that matches no route.
+      // verify-email: where registering lands. not-found: any address that matches no
+      // route. reset-password: its "sent" answer, and a reset link (ADR-040).
       for (const route of [
         ...publicRoutes,
         ...signedOutRoutes,
         "verify-email",
+        "reset-password?sent=1",
+        "reset-password/a-reset-link-token-for-the-visual-gate",
         "not-found",
       ]) {
         test(`${locale} /${route}`, async ({ page }) => {

@@ -1,9 +1,15 @@
 import type {
+  PasswordResetConfirmRequest,
+  PasswordResetRequest,
   RegisterRequest,
   SignInRequest,
   VerifyEmailRequest,
 } from "@darkview/contracts";
-import { zSignInResponse, zVerifyEmailResponse } from "@darkview/contracts/zod";
+import {
+  zConfirmPasswordResetResponse,
+  zSignInResponse,
+  zVerifyEmailResponse,
+} from "@darkview/contracts/zod";
 
 import type { Locale } from "@/i18n/config";
 import { authCopy } from "@/i18n/resources/auth";
@@ -16,6 +22,8 @@ export type AuthActionState = {
   message?: string;
   errors?: { name?: string; email?: string; password?: string };
   redirectTo?: string;
+  /** A reset link that is unknown, used or expired (ADR-040's 404). */
+  deadLink?: boolean;
 };
 
 function text(formData: FormData, field: string) {
@@ -29,8 +37,10 @@ function failure(locale: Locale, error: unknown): AuthActionState {
   switch (error.status) {
     case 401:
       return { message: copy.invalidCredentials };
+    // Only sign-in answers 403 for an unverified address. Anywhere else it is the
+    // Origin refusal, which the visitor cannot fix.
     case 403:
-      return { message: copy.unverified };
+      return { message: copy.unavailable };
     case 422:
       return { errors: { email: copy.invalidEmail } };
     case 429:
@@ -53,6 +63,9 @@ export async function signInAction(
     await apiRequest("/auth/sign-in", { method: "POST", body, schema: zSignInResponse });
     return { redirectTo: `/${locale}/app` };
   } catch (error) {
+    if (error instanceof ApiRequestError && error.status === 403) {
+      return { message: authCopy[locale].errors.unverified };
+    }
     return failure(locale, error);
   }
 }
@@ -77,6 +90,55 @@ export async function registerAction(
     await apiRequest("/auth/register", { method: "POST", body });
     return { redirectTo: `/${locale}/verify-email` };
   } catch (error) {
+    return failure(locale, error);
+  }
+}
+
+export async function requestPasswordResetAction(
+  locale: Locale,
+  _state: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const body: PasswordResetRequest = { email: text(formData, "email"), locale };
+  try {
+    await apiRequest("/auth/password-reset", { method: "POST", body });
+    return { redirectTo: `/${locale}/reset-password?sent=1` };
+  } catch (error) {
+    return failure(locale, error);
+  }
+}
+
+export async function confirmPasswordResetAction(
+  locale: Locale,
+  token: string,
+  _state: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const copy = authCopy[locale].errors;
+  const body: PasswordResetConfirmRequest = {
+    token,
+    password: formData.get("password")?.toString() ?? "",
+  };
+  if (body.password.length < 12 || body.password.length > 128) {
+    return { errors: { password: copy.weakPassword } };
+  }
+  try {
+    await apiRequest("/auth/password-reset/confirm", {
+      method: "POST",
+      body,
+      schema: zConfirmPasswordResetResponse,
+    });
+    return { redirectTo: `/${locale}/app` };
+  } catch (error) {
+    if (error instanceof ApiRequestError && error.status === 404)
+      return { deadLink: true };
+    // A 422 names the fields it refused. A token mangled on its way out of an email
+    // fails the contract's pattern: that is a dead link, not a weak password.
+    if (error instanceof ApiRequestError && error.status === 422) {
+      const fields = error.error?.details?.fields;
+      if (Array.isArray(fields) && fields.includes("token")) return { deadLink: true };
+      return { errors: { password: copy.weakPassword } };
+    }
     return failure(locale, error);
   }
 }
