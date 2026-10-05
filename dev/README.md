@@ -20,7 +20,7 @@ the Playwright suite uses. It never looks at a clock or the Sun: its one observa
 `SIMULATED` and `ONLINE`, with a mission `OBSERVING`, at 2 pm or 2 am.
 
 ```bash
-cd /Users/nika/Desktop/Darkview/part-2-clients
+cd "/Users/nika/Desktop/Stellar Observatory/part-2-clients"
 npm ci                 # once
 npm run dev:fake
 ```
@@ -88,15 +88,15 @@ A platform checkout somewhere else? Set `PLATFORM_DIR` in step 3. `darkview.code
 opens `../part-1-platform` and does not read `PLATFORM_DIR`.
 
 ```bash
-cd /Users/nika/Desktop/Darkview/part-2-clients
+cd "/Users/nika/Desktop/Stellar Observatory/part-2-clients"
 npm ci
 ```
 
 ## 3. `dev/.env.local`
 
 ```bash
-cp /Users/nika/Desktop/Darkview/part-2-clients/dev/.env.local.example \
-   /Users/nika/Desktop/Darkview/part-2-clients/dev/.env.local
+cp "/Users/nika/Desktop/Stellar Observatory/part-2-clients/dev/.env.local.example" \
+   "/Users/nika/Desktop/Stellar Observatory/part-2-clients/dev/.env.local"
 ```
 
 It holds `PLATFORM_DIR` and the simulated agent's site coordinates. It is gitignored.
@@ -112,15 +112,15 @@ any lines you still need. The copy on this machine carries unrelated keys (Teleg
 Codex), and it has no `S3_*` keys, without which the API and realtime service refuse to start:
 
 ```bash
-mv /Users/nika/Desktop/Darkview/part-1-platform/.env \
-   /Users/nika/Desktop/Darkview/part-1-platform/.env.before-dev-stack
+mv "/Users/nika/Desktop/Stellar Observatory/part-1-platform/.env" \
+   "/Users/nika/Desktop/Stellar Observatory/part-1-platform/.env.before-dev-stack"
 ```
 
 Then write the file. It is one command; every secret is generated fresh, and `set -C`
 refuses to clobber an existing file:
 
 ```bash
-( set -C; s() { openssl rand -hex 32; }; cat > /Users/nika/Desktop/Darkview/part-1-platform/.env <<EOF
+( set -C; s() { openssl rand -hex 32; }; cat > "/Users/nika/Desktop/Stellar Observatory/part-1-platform/.env" <<EOF
 NODE_ENV=development
 DATABASE_URL=postgresql://darkview:darkview@localhost:5433/darkview?schema=public
 DATABASE_TEST_URL=postgresql://darkview:darkview@localhost:5433/darkview_test
@@ -161,7 +161,7 @@ Notes on the values:
 ## 5. First-time setup
 
 ```bash
-cd /Users/nika/Desktop/Darkview/part-2-clients
+cd "/Users/nika/Desktop/Stellar Observatory/part-2-clients"
 npm run dev:stack:setup
 ```
 
@@ -180,7 +180,7 @@ It is safe to rerun.
 ## 6. Run it
 
 ```bash
-cd /Users/nika/Desktop/Darkview/part-2-clients
+cd "/Users/nika/Desktop/Stellar Observatory/part-2-clients"
 npm run dev:stack
 ```
 
