@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { brand } from "../src/brand";
-import { appSidebar, bottomNavigation, liveViewport } from "./selectors";
+import { appSidebar, bottomNavigation } from "./selectors";
 
 test("communicates real telescope access in the English poster hero", async ({
   page,
@@ -313,42 +313,30 @@ test("keeps missions usable inside a mobile viewport", async ({ page }) => {
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("operates the live capture instrument without mount controls", async ({ page }) => {
+// ADR-037: /app/live is the caller's live or imminent mission's room, or booking.
+test("/app/live opens the observer's live mission room", async ({ page }) => {
   await page.goto("/en/app/live");
-
-  await expect(page.getByText(`${brand.en.name.toUpperCase()} LIVE`)).toBeVisible();
-  await expect(liveViewport(page).getByText("Tbilisi Observatory")).toBeVisible();
-  await expect(page.getByText("Observer · Public mission")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Enter fullscreen" })).toBeVisible();
-
-  const brightPreset = page
-    .getByRole("group", { name: "Image processing preset" })
-    .getByRole("button", { name: /Bright/ });
-  await brightPreset.click();
-  await expect(brightPreset).toHaveAttribute("aria-pressed", "true");
-
-  await page.getByRole("button", { name: /Capture/ }).click();
-  await expect(page.getByText("Collecting light").first()).toBeVisible();
-  await expect(page.getByRole("button", { name: /Capture/ })).toBeDisabled();
-
-  await expect(page.getByText("Safe Nudge")).toHaveCount(0);
-  await expect(page.getByText(/mount/i)).toHaveCount(0);
+  // Client-side: the shared loading state streams before the page can redirect.
+  await expect(page).toHaveURL(
+    "/en/app/missions/20000000-0000-4000-8000-000000000001/session",
+    { timeout: 15_000 },
+  );
+  await expect(page.locator(".live-feed")).toBeVisible();
 });
 
-test("prioritizes the live viewport on mobile", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/ka/app/live");
+test.describe("with no live or imminent mission", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
 
-  const viewport = liveViewport(page);
-  await expect(viewport).toBeVisible();
-  await expect(page.getByText(`${brand.en.name.toUpperCase()} LIVE`)).toBeVisible();
-  expect((await viewport.boundingBox())?.height).toBeGreaterThanOrEqual(540);
+  test("/app/live goes to booking, in the caller's language", async ({ page }) => {
+    await page.goto("/ka/sign-in");
+    await page.locator('input[type="email"]').fill("watcher@darkview.test");
+    await page.locator('input[type="password"]').fill("correct horse battery");
+    await page.locator('button[type="submit"]').click();
+    await expect(page).toHaveURL(/\/ka\/app$/);
 
-  const dimensions = await page.evaluate(() => ({
-    clientWidth: document.documentElement.clientWidth,
-    scrollWidth: document.documentElement.scrollWidth,
-  }));
-  expect(dimensions.scrollWidth).toBe(dimensions.clientWidth);
+    await page.goto("/ka/app/live");
+    await expect(page).toHaveURL("/ka/app/book", { timeout: 15_000 });
+  });
 });
 
 test("the /app dashboard reads the platform, section by section", async ({ page }) => {

@@ -56,7 +56,7 @@ const appOrigin = process.env.FAKE_PLATFORM_APP_URL ?? "http://localhost:3000";
 const sessionCookie = "darkview_session";
 const csrfCookie = "darkview_csrf";
 
-// The observer owns the simulated live mission in src/features/live/live-data.ts.
+// The observer owns the simulated live mission (OBSERVING), which /app/live opens.
 const fakeAccounts = {
   "observer@darkview.test": {
     id: "00000000-0000-4000-8000-000000000001",

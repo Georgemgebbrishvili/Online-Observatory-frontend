@@ -1,44 +1,29 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
-import { LiveObservationView } from "@/components/live/live-observation";
-import { currentLiveObservation } from "@/features/live/live-data";
+import { readMyMissions } from "@/features/home/read";
+import { activeMission } from "@/features/missions/active";
 import { isLocale } from "@/i18n/config";
-import { liveObservationCopy } from "@/i18n/resources/live";
 import { requireUser } from "@/lib/platform/session";
-import "@/styles/live.css";
 
 type LivePageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata({ params }: LivePageProps): Promise<Metadata> {
-  const { locale } = await params;
-  if (!isLocale(locale)) return {};
-  return {
-    title: liveObservationCopy[locale].metadataTitle,
-    robots: { index: false, follow: false },
-  };
-}
-
+/**
+ * ADR-037: one room, built once. "Live" is the caller's live or imminent mission's
+ * session; with none, it is booking one.
+ */
 export default async function LivePage({ params }: LivePageProps) {
   const { locale } = await params;
-
   if (!isLocale(locale)) notFound();
 
-  const user = await requireUser(locale);
+  await requireUser(locale);
+  const mine = await readMyMissions();
+  const mission = mine.kind === "ok" ? activeMission(mine.missions, Date.now()) : null;
 
-  const safeNudgeEnabled = process.env.NEXT_PUBLIC_ENABLE_SAFE_NUDGE === "true";
-
-  return (
-    <LiveObservationView
-      locale={locale}
-      observation={currentLiveObservation}
-      safeNudgeEnabled={safeNudgeEnabled}
-      canControl={
-        user.id === currentLiveObservation.missionOwnerId || user.role === "OPERATOR"
-      }
-      sharedMissionUrl={`/${locale}/app/missions/${currentLiveObservation.missionId}/watch`}
-    />
+  redirect(
+    mission
+      ? `/${locale}/app/missions/${encodeURIComponent(mission.id)}/session`
+      : `/${locale}/app/book`,
   );
 }

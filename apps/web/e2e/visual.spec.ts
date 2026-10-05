@@ -8,7 +8,6 @@ import {
   publicRoutes,
   signedOutRoutes,
 } from "./routes";
-import { liveViewport } from "./selectors";
 
 /**
  * The visual gate. Every public and every /app route, both languages, phone and
@@ -32,7 +31,6 @@ const widths = [
 
 function masks(page: Page) {
   return [
-    liveViewport(page),
     page.locator("time"),
     page.locator(".live-time"),
     // /status: the fake platform's hours and ages are relative to the server's clock.

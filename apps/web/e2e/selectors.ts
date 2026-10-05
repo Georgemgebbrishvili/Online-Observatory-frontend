@@ -24,9 +24,6 @@ export function bottomNavigation(page: Page) {
 }
 
 /** The live view. `data-capture-state` is behaviour the component already exposes. */
-export function liveViewport(page: Page) {
-  return page.locator("[data-capture-state]");
-}
 
 /** One row of a dt/dd panel, named by its `data-field`. */
 export function field(page: Page, name: string) {

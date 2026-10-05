@@ -45,12 +45,15 @@ export async function readObservatoryPanel(): Promise<ObservatoryPanelResult> {
   }
 }
 
+export type MissionsResult =
+  { kind: "ok"; missions: Mission[] } | { kind: "signed-out" } | { kind: "unreachable" };
+
 /**
- * The caller's scheduled missions still ahead, soonest first. `GET /missions` is
- * ordered by requestedAt (features/missions/mine.ts), not by start, so every page is
- * read and filtered here -- bounded, as the catalogue is.
+ * Every mission the caller owns. `GET /missions` is ordered by requestedAt
+ * (features/missions/mine.ts), not by start, so every page is read -- bounded, as the
+ * catalogue is.
  */
-export async function readUpcoming(now = Date.now(), count = 3): Promise<UpcomingResult> {
+export async function readMyMissions(): Promise<MissionsResult> {
   const missions: Mission[] = [];
   let cursor: string | null = null;
   try {
@@ -68,8 +71,15 @@ export async function readUpcoming(now = Date.now(), count = 3): Promise<Upcomin
       ? { kind: "signed-out" }
       : { kind: "unreachable" };
   }
+  return { kind: "ok", missions };
+}
 
-  const upcoming = missions
+/** The caller's scheduled missions still ahead, soonest first. */
+export async function readUpcoming(now = Date.now(), count = 3): Promise<UpcomingResult> {
+  const mine = await readMyMissions();
+  if (mine.kind !== "ok") return mine;
+
+  const upcoming = mine.missions
     .filter(
       (mission) =>
         mission.state === "SCHEDULED" &&

@@ -16,7 +16,6 @@ export const publicRoutes = [
 export const appRoutes = [
   "app",
   "app/missions",
-  "app/live",
   "app/collection",
   "app/profile",
   "app/bookings",

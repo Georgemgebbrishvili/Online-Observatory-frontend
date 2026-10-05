@@ -6,7 +6,6 @@ import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
 import { bookingCopy } from "@/i18n/resources/booking";
 import { roomCopy } from "@/i18n/resources/room";
 import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/collection";
-import { liveObservationCopy, safeNudgeCopy } from "@/i18n/resources/live";
 import { missionBrowserCopy, missionDetailCopy } from "@/i18n/resources/missions";
 import { legalCopy } from "@/i18n/resources/legal";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
@@ -35,7 +34,6 @@ describe("Georgian localization", () => {
     expect(ka.navigation.app.collection).toBe("კოლექცია");
     expect(ka.navigation.public.observatory).toBe("ობსერვატორია");
     expect(ka.home.tonight.eyebrow).toBe("დღევანდელი ცა");
-    expect(liveObservationCopy.ka.capture).toBe("გადაიღე");
     expect(roomCopy.ka.states.CENTERING.title).toBe("ობიექტი ცენტრდება");
   });
 
@@ -46,8 +44,6 @@ describe("Georgian localization", () => {
       [bookingCopy.en, bookingCopy.ka],
       [collectionGalleryCopy.en, collectionGalleryCopy.ka],
       [captureDetailCopy.en, captureDetailCopy.ka],
-      [liveObservationCopy.en, liveObservationCopy.ka],
-      [safeNudgeCopy.en, safeNudgeCopy.ka],
       [missionBrowserCopy.en, missionBrowserCopy.ka],
       [missionDetailCopy.en, missionDetailCopy.ka],
       [roomCopy.en, roomCopy.ka],
