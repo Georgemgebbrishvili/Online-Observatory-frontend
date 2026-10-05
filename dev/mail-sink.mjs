@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Development stand-in for the email-verification webhook. The platform POSTs
-// {recipient, verificationUrl, locale} here, signed with EMAIL_VERIFICATION_WEBHOOK_SECRET
-// in x-darkview-signature (base64url HMAC-SHA256 of the body). This prints the link
-// instead of emailing it. Started by scripts/dev-stack.mjs; binds 127.0.0.1 only.
+// {recipient, verificationUrl, locale} here, or {kind: "PASSWORD_RESET", recipient,
+// resetUrl, locale} for a password reset (platform ADR-040), signed with
+// EMAIL_VERIFICATION_WEBHOOK_SECRET in x-darkview-signature (base64url HMAC-SHA256 of
+// the body). This prints the link instead of emailing it. Started by scripts/dev-stack.mjs; binds 127.0.0.1 only.
 import { createHmac, timingSafeEqual } from "node:crypto";
 import http from "node:http";
 
@@ -37,8 +38,12 @@ http
         response.writeHead(401).end();
         return;
       }
-      const { recipient, verificationUrl } = JSON.parse(body);
-      console.log(`verification for ${recipient}:\n    ${verificationUrl}`);
+      const { kind, recipient, verificationUrl, resetUrl } = JSON.parse(body);
+      if (kind === "PASSWORD_RESET") {
+        console.log(`password reset for ${recipient}:\n    ${resetUrl}`);
+      } else {
+        console.log(`verification for ${recipient}:\n    ${verificationUrl}`);
+      }
       response.writeHead(204).end();
     });
   })
