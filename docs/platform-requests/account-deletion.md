@@ -3,6 +3,7 @@
 Raised 2026-10-05 for roadmap slice C1. C4 (account and profile, DV-079) waits on it.
 ADR-016 leaves account deletion undecided. The privacy page's "Your rights over your
 data" section is marked pending until it exists.
+Filed as [#173](https://github.com/Bekatsertsvadzee/Online-Observatory/issues/173).
 
 ## What blocks
 

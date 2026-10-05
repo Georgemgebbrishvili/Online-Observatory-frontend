@@ -3,6 +3,7 @@
 Raised 2026-10-05 for roadmap slice C1. C4 (account and profile, DV-079) waits on it.
 ADR-016 leaves email change undecided. The name and the language are covered here too,
 because the profile page needs all three and nothing in the contract writes any of them.
+Filed as [#172](https://github.com/Bekatsertsvadzee/Online-Observatory/issues/172).
 
 ## What blocks
 

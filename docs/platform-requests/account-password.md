@@ -4,6 +4,7 @@ Raised 2026-10-05 for roadmap slice C1, which C4 (account and profile, DV-079) w
 ADR-016 lists password reset under "what this record deliberately does not decide". It
 should be decided before launch, because a customer who forgets their password has no
 way back into their bookings and their Collection.
+Filed as [#171](https://github.com/Bekatsertsvadzee/Online-Observatory/issues/171).
 
 ## What blocks
 
