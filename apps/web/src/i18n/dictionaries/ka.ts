@@ -170,6 +170,8 @@ const dictionary = {
   },
   notFound: {
     title: "დაკვირვება ვერ მოიძებნა",
+    description:
+      "ამ მისამართზე არაფერია. შესაძლოა, გადატანილია, ან ბმული შეცდომით აიკრიფა.",
     action: `${brand.ka.on} დაბრუნება`,
   },
 } satisfies Dictionary;

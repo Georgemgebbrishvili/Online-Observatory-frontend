@@ -178,7 +178,7 @@ export function TelemetryOverview({ copy }: { copy: OperatorCopy }) {
             </span>
           </Row>
           <Row label={labels.heartbeat}>
-            <span className="data">
+            <span className="data" data-age>
               {state.lastHeartbeatAt
                 ? formatAge(now - Date.parse(state.lastHeartbeatAt))
                 : labels.unknown}

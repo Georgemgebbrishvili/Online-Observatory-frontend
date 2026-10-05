@@ -8,6 +8,7 @@ import { brand } from "@/brand";
 export const feedbackCopy = {
   en: {
     loading: "Loading",
+    errorKicker: "Error",
     errorTitle: "This did not load",
     errorDescription:
       "Something failed on our side. Nothing you did caused it, and nothing was lost.",
@@ -17,6 +18,7 @@ export const feedbackCopy = {
   },
   ka: {
     loading: "იტვირთება",
+    errorKicker: "შეცდომა",
     errorTitle: "ვერ ჩაიტვირთა",
     errorDescription:
       "შეცდომა ჩვენს მხარესაა. თქვენ არაფერი დაგიშავებიათ და არაფერი დაკარგულა.",

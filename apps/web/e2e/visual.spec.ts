@@ -1,6 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { appRoutes, locales, parameterisedRoutes, publicRoutes } from "./routes";
+import {
+  appRoutes,
+  locales,
+  operatorRoutes,
+  parameterisedRoutes,
+  publicRoutes,
+  signedOutRoutes,
+} from "./routes";
 import { liveViewport } from "./selectors";
 
 /**
@@ -37,10 +44,22 @@ function masks(page: Page) {
     page.locator(".room-reading-live"),
     // The live stream: a frame has arrived or not yet, and it is not waited on (below).
     page.locator(".live-feed [data-live-stream]"),
+    // The operator overview's ages are the server's clock against the fake's readings.
+    page.locator(".operator-freshness"),
+    page.locator("[data-age]"),
+    // A hash of the server's error, whose length changes with the code that threw it:
+    // the whole line, so the mask's box does not.
+    page.locator(".route-error-digest"),
   ];
 }
 
-async function capture(page: Page, route: string, locale: string, width: string) {
+async function capture(
+  page: Page,
+  route: string,
+  locale: string,
+  width: string,
+  label = route,
+) {
   await page.clock.setFixedTime(fixedTime);
   await page.goto(`/${locale}${route ? `/${route}` : ""}`);
   await expect(page.locator("h1").first()).toBeAttached();
@@ -72,7 +91,7 @@ async function capture(page: Page, route: string, locale: string, width: string)
   expect(bodyLoaded, `${bodyFace} must be loaded before capture`).toBe(true);
 
   // A query string is part of some routes; a file name keeps letters, digits and dashes.
-  const name = `${locale}-${(route || "home").replace(/[^a-z0-9-]+/gi, "-")}-${width}.png`;
+  const name = `${locale}-${(label || "home").replace(/[^a-z0-9-]+/gi, "-")}-${width}.png`;
   await expect(page).toHaveScreenshot(name, {
     fullPage: true,
     mask: masks(page),
@@ -85,7 +104,13 @@ for (const { name: width, viewport } of widths) {
     test.use({ viewport, storageState: { cookies: [], origins: [] } });
 
     for (const locale of locales) {
-      for (const route of publicRoutes) {
+      // verify-email: where registering lands. not-found: any address that matches no route.
+      for (const route of [
+        ...publicRoutes,
+        ...signedOutRoutes,
+        "verify-email",
+        "not-found",
+      ]) {
         test(`${locale} /${route}`, async ({ page }) => {
           await capture(page, route, locale, width);
         });
@@ -102,6 +127,35 @@ for (const { name: width, viewport } of widths) {
           await capture(page, route, locale, width);
         });
       }
+    }
+  });
+
+  test.describe(`operator at ${width}`, () => {
+    test.use({ viewport, storageState: "e2e/.auth/operator.json" });
+
+    for (const locale of locales) {
+      for (const route of operatorRoutes) {
+        test(`${locale} /${route}`, async ({ page }) => {
+          await capture(page, route, locale, width);
+        });
+      }
+    }
+  });
+
+  // The route error screen. The fake platform fails every catalogue read for this one
+  // operator, and the targets page does not catch it.
+  test.describe(`error at ${width}`, () => {
+    test.use({ viewport, storageState: { cookies: [], origins: [] } });
+
+    for (const locale of locales) {
+      test(`${locale} route error`, async ({ page }) => {
+        await page.goto(`/${locale}/sign-in`);
+        await page.locator('input[type="email"]').fill("failing@darkview.test");
+        await page.locator('input[type="password"]').fill("correct horse battery");
+        await page.locator('button[type="submit"]').click();
+        await expect(page).toHaveURL(new RegExp(`/${locale}/app$`));
+        await capture(page, "admin/targets", locale, width, "error");
+      });
     }
   });
 }

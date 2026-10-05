@@ -104,14 +104,14 @@ actions, yellow for live, and the console's panels in the live room. No glow, no
 reticle. ADR-038's direction was superseded before it was built. Every slice regenerates
 its baselines in both languages.
 
-| #   | Slice                                                                                                                                                                                       |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #   | Slice                                                                                                                                                                                                                 |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | B1  | **Foundations:** tokens, fonts (Georgian included), buttons, panels, chips, kickers, stats, form controls. The app shell's header, sidebar and footer. `/design-system` shows them all. Stale stylelint exemptions go |
-| B2  | **Homepage:** a poster hero in place of the planet hero, then the sections below it (how a session works as a step row, the targets, the observatory, the call to book)                      |
-| B3  | **Live room and watch page:** the console's panels, step tracker, dial and controls, with one orange action under a clean picture                                                           |
-| B4  | **Public pages:** observatory (with `/network` folded in), status, pricing, and the legal pages                                                                                            |
-| B5  | **App pages:** home (no empty halves), targets and a target, booking and its night, bookings, collection, and the coming-soon placeholders                                                  |
-| B6  | **Visual gate coverage:** auth, 404, error and the operator console get baselines                                                                                                          |
+| B2  | **Homepage:** a poster hero in place of the planet hero, then the sections below it (how a session works as a step row, the targets, the observatory, the call to book)                                               |
+| B3  | **Live room and watch page:** the console's panels, step tracker, dial and controls, with one orange action under a clean picture                                                                                     |
+| B4  | **Public pages:** observatory (with `/network` folded in), status, pricing, and the legal pages                                                                                                                       |
+| B5  | **App pages:** home (no empty halves), targets and a target, booking and its night, bookings, collection, and the coming-soon placeholders                                                                            |
+| B6  | **Visual gate coverage:** auth, 404, error and the operator console get baselines                                                                                                                                     |
 
 Track A slices that come after B1 are built in the new language, so nothing is styled
 twice.

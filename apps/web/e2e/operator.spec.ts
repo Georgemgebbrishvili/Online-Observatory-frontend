@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { locales, operatorRoutes } from "./routes";
 import { field } from "./selectors";
 
 // Against e2e/fake-platform.mjs: one simulated first-party observatory with a live
@@ -25,6 +26,21 @@ test.describe("operator", () => {
     await expect(page.getByText("RA 16h 41m 42.0s · DEC +36° 27′ 36″")).toBeVisible();
     await expect(page.getByText("UNMEASURED — every slew is refused")).toBeVisible();
     await expect(page.getByText(/Reported \d+ s ago/)).toBeVisible();
+  });
+
+  test("fits a 320px screen on every route, in both languages", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 900 });
+    for (const locale of locales) {
+      for (const route of operatorRoutes) {
+        await page.goto(`/${locale}/${route}`);
+        await expect(page.locator("h1")).toBeVisible({ timeout: firstCompile });
+        const overflow = await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        );
+        expect(overflow, `/${locale}/${route}`).toBeLessThanOrEqual(0);
+      }
+    }
   });
 
   test("offers GoTo only for targets with fixed coordinates", async ({ page }) => {

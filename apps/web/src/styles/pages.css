@@ -325,3 +325,12 @@
     grid-column: 2 / -1;
   }
 }
+
+/* The 404: an opening and one way home. */
+.not-found .page-hero {
+  border-bottom: 0;
+}
+
+.not-found-action {
+  margin-top: var(--space-8);
+}

@@ -103,9 +103,10 @@ anywhere else in `apps/web/src`.
 
 ## Visual gate
 
-Every public and every `/app` route, in English and Georgian, at 390 and 1440, is
-compared against a committed baseline by the Playwright project `visual`
-(`apps/web/e2e/visual.spec.ts`).
+Every public, signed-out, `/app` and `/admin` route, the 404 and the route error screen,
+in English and Georgian, at 390 and 1440, is compared against a committed baseline by
+the Playwright project `visual` (`apps/web/e2e/visual.spec.ts`). The error screen comes
+from `failing@darkview.test`, a fake operator whose catalogue reads fail.
 
 - Baselines are generated **only** inside `mcr.microsoft.com/playwright:v<version>-noble`,
   by `npm run visual:update`. Never from the host: macOS rasterises fonts differently,

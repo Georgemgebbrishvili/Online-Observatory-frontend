@@ -23,6 +23,7 @@ export type Dictionary = {
   footer: FooterDictionary;
   notFound: {
     title: string;
+    description: string;
     action: string;
   };
 };

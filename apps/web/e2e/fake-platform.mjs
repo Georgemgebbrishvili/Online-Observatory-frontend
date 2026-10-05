@@ -81,6 +81,13 @@ const fakeAccounts = {
     displayName: "Watcher",
     locale: "ka",
   },
+  // Design slice B6: an operator whose every read of the catalogue fails, so the visual
+  // gate can capture the route error screen. Nothing else differs from the operator.
+  "failing@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000005",
+    role: "OPERATOR",
+    displayName: "Failing operator",
+  },
 };
 const fakePassword = "correct horse battery";
 
@@ -1060,15 +1067,17 @@ async function json(request) {
 const routes = {
   "GET /observatories": (_request, response) => send(response, 200, observatories),
   // Enabled only, as the platform answers (features/targets/catalogue.ts).
-  "GET /targets": (_request, response) =>
-    send(
-      response,
-      200,
-      zListTargetsResponse.parse({
-        ...targets,
-        items: targets.items.filter((row) => row.enabled),
-      }),
-    ),
+  "GET /targets": (request, response) =>
+    sessionUser(request)?.id === fakeAccounts["failing@darkview.test"].id
+      ? error(response, 500, "INTERNAL", "Simulated failure.")
+      : send(
+          response,
+          200,
+          zListTargetsResponse.parse({
+            ...targets,
+            items: targets.items.filter((row) => row.enabled),
+          }),
+        ),
   // GET /slots. Fixed, so every run and every baseline sees the same night: nine
   // 30-minute slots from 18:00 Tbilisi (UTC+4, no DST) on the platform's 40-minute
   // stride, the second one booked. Public, like the platform's.

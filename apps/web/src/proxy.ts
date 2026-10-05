@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { defaultLocale, locales } from "@/i18n/config";
+import { defaultLocale, localeHeader, locales } from "@/i18n/config";
 import { sessionCookieName } from "@/lib/platform/config";
 
 function preferredLocale(request: NextRequest) {
@@ -25,7 +25,10 @@ export function proxy(request: NextRequest) {
     if (isProtectedRoute && !request.cookies.has(sessionCookieName)) {
       return NextResponse.redirect(new URL(`/${locale}/sign-in`, request.url));
     }
-    return NextResponse.next();
+    // not-found.tsx receives no params, so this is how it learns the language.
+    const headers = new Headers(request.headers);
+    headers.set(localeHeader, locale);
+    return NextResponse.next({ request: { headers } });
   }
 
   const url = request.nextUrl.clone();

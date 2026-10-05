@@ -438,6 +438,9 @@
 
 /* ADR-039: the homepage's pieces, as the homepage shows them. */
 .ds-home-specimen {
+  /* As on the homepage's hero: the fan's outer plates, mid-transition when the viewport
+     crosses a breakpoint, must never widen the page. */
+  overflow-x: clip;
   display: grid;
   gap: var(--space-8);
   padding-block: var(--space-8);

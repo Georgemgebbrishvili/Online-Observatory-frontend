@@ -794,25 +794,19 @@
 }
 
 .route-loading,
-.route-error {
-  min-height: 60vh;
-  padding: var(--space-page);
+.route-error .page-hero {
+  border-bottom: 0;
 }
 
-.route-error .state-panel {
-  max-width: 34rem;
-  margin: 0 auto;
-}
-
-.route-error .state-action {
+.route-error-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
-  justify-content: center;
+  margin-top: var(--space-8);
 }
 
 .route-error-digest {
-  margin: var(--space-4) 0 0;
+  margin: var(--space-6) 0 0;
   color: var(--color-text-tertiary);
   font-size: var(--font-size-caption);
 }

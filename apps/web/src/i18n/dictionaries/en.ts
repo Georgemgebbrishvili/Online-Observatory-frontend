@@ -170,6 +170,8 @@ const dictionary = {
   },
   notFound: {
     title: "Observation not found",
+    description:
+      "Nothing is at this address. It may have moved, or the link was mistyped.",
     action: `Return to ${brand.en.name}`,
   },
 } satisfies Dictionary;
