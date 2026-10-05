@@ -62,7 +62,7 @@ test("renders in Georgian", async ({ page }) => {
     timeout: firstCompile,
   });
   await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible();
-  await expect(page.getByText("ამაღამის პირობები")).toBeVisible();
+  await expect(page.getByText("ამაღამინდელი პირობები")).toBeVisible();
   await shoot(page, `${evidence}/02-status-georgian.png`);
 });
 

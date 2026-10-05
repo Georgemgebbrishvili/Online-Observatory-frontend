@@ -123,7 +123,7 @@ test.describe("a watcher", () => {
 
     await payAtCheckout(page, "ka", "ადგილის ყიდვა");
     await expect(
-      page.getByText("თქვენ უყურებთ. ტელესკოპის მართვა და კადრების შენახვა შეუძლებელია."),
+      page.getByText("შენ უყურებ. ტელესკოპის მართვა და კადრების შენახვა შეუძლებელია."),
     ).toBeVisible();
     await expect(page.locator(".live-feed-badge")).toHaveText("სიმულირებული");
 
@@ -156,7 +156,9 @@ test("the owner is sent to the live room", async ({ page }) => {
 test("the Georgian owner is sent to the live room", async ({ page }) => {
   await page.goto(`/ka/app/missions/${observing}/watch`);
   await expect(
-    page.getByRole("heading", { level: 1, name: "ეს თქვენი სესიაა." }),
+    page.getByRole("heading", { level: 1, name: "ეს შენი სესიაა." }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "ცოცხალ ოთახში გადასვლა" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "პირდაპირი დაკვირვების ოთახში გადასვლა" }),
+  ).toBeVisible();
 });

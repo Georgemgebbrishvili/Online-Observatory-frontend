@@ -38,6 +38,33 @@ suite("usePagedList", () => {
     expect(result.current.hasMore).toBe(false);
   });
 
+  it("drops a next page that lands after the filter changed", async () => {
+    let releaseSecondPage: (value: ReturnType<typeof page>) => void = () => {};
+    const first = vi.fn((cursor?: string) =>
+      cursor
+        ? new Promise<ReturnType<typeof page>>((resolve) => {
+            releaseSecondPage = resolve;
+          })
+        : Promise.resolve(page(["a"], "2")),
+    );
+    const second = vi.fn(() => Promise.resolve(page(["z"], null)));
+
+    const { result, rerender } = renderHook(({ load }) => usePagedList(load), {
+      initialProps: {
+        load: first as (cursor?: string) => Promise<ReturnType<typeof page>>,
+      },
+    });
+    await waitFor(() => expect(result.current.items).toEqual(["a"]));
+
+    act(() => result.current.loadMore());
+    rerender({ load: second });
+    await waitFor(() => expect(result.current.items).toEqual(["z"]));
+
+    await act(async () => releaseSecondPage(page(["b"], "3")));
+    expect(result.current.items).toEqual(["z"]);
+    expect(result.current.hasMore).toBe(false);
+  });
+
   it("surfaces a failure instead of showing an empty list as though it were empty", async () => {
     const load = vi.fn(() => Promise.reject(new Error("platform down")));
 

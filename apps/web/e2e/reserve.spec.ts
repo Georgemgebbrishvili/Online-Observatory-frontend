@@ -107,7 +107,7 @@ test("the Georgian reserve page fits a phone", async ({ page }) => {
   await page.goto("/ka/app/book");
   await page.locator(".slot-row").first().getByRole("link").click();
   await expect(
-    page.getByRole("heading", { level: 1, name: "რას დააკვირდებით?" }),
+    page.getByRole("heading", { level: 1, name: "რას დააკვირდები?" }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "დაჯავშნა და გადახდა" })).toBeVisible();
   expect(

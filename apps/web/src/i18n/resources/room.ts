@@ -20,6 +20,8 @@ type StateCopy = { title: string; description: string };
 type LiveCopy = {
   status: Record<Exclude<LiveStatus, "not-started" | "refused">, StateCopy>;
   notStarted: { title: string; before: string; open: string };
+  /** The booked slot is over and was never started: the platform refuses a start. */
+  slotEnded: { title: string; description: string };
   refused: { title: string; reasons: Partial<Record<ErrorCode, string>>; other: string };
   liveReal: string;
   actions: {
@@ -138,7 +140,7 @@ const en: RoomCopy = {
     title: "Mission history",
     empty: "Nothing has happened on this mission yet.",
     unreadable: "The history could not be loaded.",
-    sources: { CLOUD: "Platform", AGENT: "Observatory", OPERATOR: "Operator" },
+    sources: { CLOUD: brand.en.name, AGENT: "Observatory", OPERATOR: "Operator" },
   },
   captures: {
     title: "Captures from this mission",
@@ -189,13 +191,17 @@ const en: RoomCopy = {
       },
       error: {
         title: "Something went wrong",
-        description: "The platform did not answer. Try again in a moment.",
+        description: "Our servers did not answer. Try again in a moment.",
       },
     },
     notStarted: {
       title: "Not started",
       before: "Your slot opens at {time}. You can start the observation from then.",
       open: "Your slot is open. Starting turns the telescope to {target}.",
+    },
+    slotEnded: {
+      title: "This slot has ended",
+      description: "The observation was not started before its slot closed.",
     },
     refused: {
       title: "The live view could not open",
@@ -211,7 +217,7 @@ const en: RoomCopy = {
         FORBIDDEN: "This observation is open in another window or tab.",
         NOT_FOUND: "This mission is no longer available.",
       },
-      other: "The platform refused to open the live view.",
+      other: "Our servers refused to open the live view.",
     },
     liveReal: "The camera's picture, as it arrives.",
     actions: {
@@ -240,7 +246,7 @@ const en: RoomCopy = {
   states: {
     REQUESTED: {
       title: "Mission requested",
-      description: "Your observation request has entered the mission queue.",
+      description: "Your observation has been requested.",
       event: "Mission request created",
     },
     SCHEDULED: {
@@ -275,17 +281,17 @@ const en: RoomCopy = {
     },
     CAPTURING: {
       title: "Capturing your observation",
-      description: "The camera is collecting the planned exposure sequence.",
+      description: "The camera is saving the current live stack.",
       event: "Image capture started",
     },
     PROCESSING: {
       title: "Processing your image",
-      description: "Captured frames are being calibrated and assembled.",
+      description: "Your capture is being saved.",
       event: "Image processing started",
     },
     COMPLETE: {
       title: "Observation complete",
-      description: "Your finished observation is ready for the collection.",
+      description: "Your finished observation is ready for your Collection.",
       event: "Mission completed",
     },
     WEATHER_HOLD: {
@@ -337,7 +343,7 @@ const en: RoomCopy = {
   },
   unreachable: {
     title: "This mission could not be loaded.",
-    description: "The platform did not answer. Try again shortly.",
+    description: "Our servers did not answer. Try again shortly.",
   },
 };
 
@@ -390,18 +396,18 @@ const ka: RoomCopy = {
     title: "მისიის ისტორია",
     empty: "ამ მისიაზე ჯერ არაფერი მომხდარა.",
     unreadable: "ისტორიის ჩატვირთვა ვერ მოხერხდა.",
-    sources: { CLOUD: "პლატფორმა", AGENT: "ობსერვატორია", OPERATOR: "ოპერატორი" },
+    sources: { CLOUD: brand.ka.nominative, AGENT: "ობსერვატორია", OPERATOR: "ოპერატორი" },
   },
   captures: {
     title: "ამ მისიის კადრები",
     empty: "კადრები ჯერ არ არის.",
-    all: "თქვენი კოლექცია",
+    all: "შენი კოლექცია",
   },
   live: {
     status: {
       starting: {
         title: "იწყება",
-        description: "ობსერვატორიასთან თქვენი სესია იხსნება.",
+        description: "ობსერვატორიასთან შენი სესია იხსნება.",
       },
       connecting: {
         title: "კავშირი მყარდება",
@@ -416,7 +422,7 @@ const ka: RoomCopy = {
         description: "ობსერვატორიასთან კავშირი გაწყდა. ვცდილობთ თავიდან.",
       },
       offline: {
-        title: "ობსერვატორია ოფლაინშია",
+        title: "ობსერვატორია კავშირგარეშეა",
         description:
           "ობსერვატორია არ არის დაკავშირებული. პირდაპირი ხედი კავშირის აღდგენისთანავე დაბრუნდება.",
       },
@@ -426,8 +432,7 @@ const ka: RoomCopy = {
       },
       expired: {
         title: "დრო ამოიწურა",
-        description:
-          "თქვენი დაკვირვების სესია დასრულდა. კადრები თქვენს კოლექციაში რჩება.",
+        description: "შენი დაკვირვების სესია დასრულდა. კადრები შენს კოლექციაში რჩება.",
       },
       ended: {
         title: "პირდაპირი ხედი დაიხურა",
@@ -439,13 +444,17 @@ const ka: RoomCopy = {
       },
       error: {
         title: "რაღაც შეფერხდა",
-        description: "პლატფორმამ არ უპასუხა. სცადეთ ცოტა ხანში.",
+        description: "ჩვენმა სერვერებმა არ უპასუხეს. სცადე ცოტა ხანში.",
       },
     },
     notStarted: {
       title: "ჯერ არ დაწყებულა",
-      before: "თქვენი დრო {time}-ზე იწყება. დაკვირვებას მაშინ დაიწყებთ.",
-      open: "თქვენი დრო დაიწყო. დაწყებისას ტელესკოპი ობიექტისკენ შებრუნდება: {target}.",
+      before: "შენი დრო {time}-ზე იწყება. დაკვირვებას მაშინ დაიწყებ.",
+      open: "შენი დრო დაიწყო. დაწყებისას ტელესკოპი ობიექტისკენ შებრუნდება: {target}.",
+    },
+    slotEnded: {
+      title: "ეს დრო დასრულდა",
+      description: "დაკვირვება მისი დროის დასრულებამდე არ დაწყებულა.",
     },
     refused: {
       title: "პირდაპირი ხედი ვერ გაიხსნა",
@@ -453,7 +462,7 @@ const ka: RoomCopy = {
         MISSION_NOT_ACTIVE:
           "ამ მისიის ახლა დაწყება შეუძლებელია: მისი დრო ჯერ არ დაწყებულა ან უკვე დასრულდა.",
         SAFETY_REFUSED:
-          "ობსერვატორიის უსაფრთხოების შემოწმებამ ობიექტი ამ წუთას უარყო. სცადეთ რამდენიმე წუთში.",
+          "ობსერვატორიის უსაფრთხოების შემოწმებამ ობიექტი ამ წუთას უარყო. სცადე რამდენიმე წუთში.",
         SAFETY_NOT_CONFIGURED:
           "ტელესკოპის უსაფრთხო ზღვრები ჯერ არ არის გაზომილი, ამიტომ ის ვერ იმოძრავებს.",
         CONFLICT: "ამ ობსერვატორიაში სხვა დაკვირვება მიმდინარეობს.",
@@ -461,7 +470,7 @@ const ka: RoomCopy = {
         FORBIDDEN: "ეს დაკვირვება სხვა ფანჯარაში ან ჩანართშია გახსნილი.",
         NOT_FOUND: "ეს მისია აღარ არის ხელმისაწვდომი.",
       },
-      other: "პლატფორმამ პირდაპირი ხედის გახსნაზე უარი თქვა.",
+      other: "ჩვენმა სერვერებმა პირდაპირი ხედის გახსნაზე უარი თქვეს.",
     },
     liveReal: "კამერის გამოსახულება, როგორც მოდის.",
     actions: {
@@ -476,8 +485,7 @@ const ka: RoomCopy = {
         "უსაფრთხო ფანჯრის გარეთ ტელესკოპი ობიექტისკენ არ შებრუნდება: {target}. დაჯავშნე ღამე, როცა ის უფრო მაღლა იქნება.",
       HARDWARE_ERROR:
         "ტელესკოპი შემდგომ მოძრაობამდე გაჩერდა. დაკვირვებას მაშინ განაახლებს, როცა ოპერატორი შეცდომას გამოასწორებს.",
-      CANCELLED:
-        "ტელესკოპს მეტი ბრძანება აღარ ეგზავნება. კადრები თქვენს კოლექციაში რჩება.",
+      CANCELLED: "ტელესკოპს მეტი ბრძანება აღარ ეგზავნება. კადრები შენს კოლექციაში რჩება.",
       FAILED:
         "ტელესკოპი უსაფრთხო მდგომარეობაშია. აქამდე გადაღებული კადრები კოლექციაში რჩება.",
     },
@@ -490,7 +498,7 @@ const ka: RoomCopy = {
   states: {
     REQUESTED: {
       title: "მისია მოთხოვნილია",
-      description: "თქვენი დაკვირვების მოთხოვნა მისიების რიგში დაემატა.",
+      description: "შენი დაკვირვების მოთხოვნა მიღებულია.",
       event: "მისიის მოთხოვნა შეიქმნა",
     },
     SCHEDULED: {
@@ -499,7 +507,7 @@ const ka: RoomCopy = {
       event: "დაკვირვების დრო დაჯავშნილია",
     },
     PREPARING: {
-      title: "თქვენი დაკვირვება მზადდება",
+      title: "შენი დაკვირვება მზადდება",
       description: "ობსერვატორია ამოწმებს ცას, აპარატურასა და უსაფრთხოების პირობებს.",
       event: "დაკვირვებამდე შემოწმება დაიწყო",
     },
@@ -525,17 +533,17 @@ const ka: RoomCopy = {
     },
     CAPTURING: {
       title: "მიმდინარეობს გადაღება",
-      description: "კამერა დაგეგმილი ექსპოზიციების სერიას იღებს.",
+      description: "კამერა მიმდინარე დასტეკილ გამოსახულებას ინახავს.",
       event: "გამოსახულების გადაღება დაიწყო",
     },
     PROCESSING: {
       title: "გამოსახულება მუშავდება",
-      description: "გადაღებული კადრები კალიბრირდება და ერთიანდება.",
+      description: "შენი კადრი ინახება.",
       event: "გამოსახულების დამუშავება დაიწყო",
     },
     COMPLETE: {
       title: "დაკვირვება დასრულებულია",
-      description: "დასრულებული დაკვირვება მზადაა კოლექციაში დასამატებლად.",
+      description: "დასრულებული დაკვირვება მზადაა შენს კოლექციაში დასამატებლად.",
       event: "მისია დასრულდა",
     },
     WEATHER_HOLD: {
@@ -581,12 +589,12 @@ const ka: RoomCopy = {
     WEATHER_UNSAFE: "ამინდი დაკვირვებისთვის უსაფრთხო არ არის.",
     SESSION_EXPIRED: "დაკვირვების დრო ამოიწურა.",
     OPERATOR_ABORT: "ობსერვატორიის ოპერატორმა მისია შეაჩერა.",
-    CUSTOMER_CANCELLED: "თქვენ გააუქმეთ მისია.",
+    CUSTOMER_CANCELLED: "შენ გააუქმე მისია.",
     PAYMENT_FAILED: "გადახდა ვერ შესრულდა.",
   },
   unreachable: {
     title: "ამ მისიის ჩატვირთვა ვერ მოხერხდა.",
-    description: "პლატფორმამ არ უპასუხა. სცადეთ ცოტა ხანში.",
+    description: "ჩვენმა სერვერებმა არ უპასუხეს. სცადე ცოტა ხანში.",
   },
 };
 

@@ -54,9 +54,9 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     back: `Return to ${brand.en.name}`,
     documents: {
       terms: {
-        metadataTitle: `${brand.en.name} · Terms of service`,
+        metadataTitle: `Terms of service · ${brand.en.name}`,
         metadataDescription: `Draft terms of service for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
-        eyebrow: "LEGAL · DRAFT",
+        eyebrow: "Legal · Draft",
         title: "Terms of service",
         introduction: `What ${brand.en.name} offers, and what it does not. This draft is published early so that the parts already settled can be read and challenged.`,
         sections: [
@@ -77,7 +77,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             ],
           },
           { heading: "Your account", status: "pending" },
-          { heading: "Weather, visibility and a slot we cannot fly", status: "pending" },
+          { heading: "Weather, visibility and a slot we cannot run", status: "pending" },
           { heading: "Acceptable use", status: "pending" },
           { heading: "Availability, liability and limits", status: "pending" },
           { heading: "Changes to these terms", status: "pending" },
@@ -85,9 +85,9 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       privacy: {
-        metadataTitle: `${brand.en.name} · Privacy policy`,
+        metadataTitle: `Privacy policy · ${brand.en.name}`,
         metadataDescription: `Draft privacy policy for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
-        eyebrow: "LEGAL · DRAFT",
+        eyebrow: "Legal · Draft",
         title: "Privacy policy",
         introduction: `What ${brand.en.name} records about you and why. This document needs a data inventory and legal review before it can be published properly.`,
         sections: [
@@ -99,7 +99,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             ],
           },
           { heading: `What ${brand.en.name} collects`, status: "pending" },
-          { heading: "Your captures and your collection", status: "pending" },
+          { heading: "Your captures and your Collection", status: "pending" },
           { heading: "Payment information", status: "pending" },
           { heading: "Who else processes your data", status: "pending" },
           { heading: "How long data is kept", status: "pending" },
@@ -108,26 +108,26 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       refunds: {
-        metadataTitle: `${brand.en.name} · Refund policy`,
+        metadataTitle: `Refund policy · ${brand.en.name}`,
         metadataDescription: `Draft refund and cancellation policy for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
-        eyebrow: "LEGAL · DRAFT",
+        eyebrow: "Legal · Draft",
         title: "Refund policy",
         introduction:
           "When money comes back, when telescope time comes back instead, and when neither does. Weather makes this document matter more than it would for most services.",
         sections: [
           {
-            heading: "Bookings paid with credits or a voucher",
+            heading: "Bookings paid with minutes or a voucher",
             status: "decided",
             body: [
               "Where a booking is released — because it was cancelled, because a payment failed, or because it was refunded — whatever paid for it comes back in the form it was paid.",
-              "A booking paid with subscription credits returns the credits. A booking paid with a voucher restores the voucher. Neither returns money.",
+              "A booking paid with subscription minutes returns the minutes. A booking paid with a voucher restores the voucher. Neither returns money.",
             ],
           },
           {
             heading: "Cancelling a subscription",
             status: "decided",
             body: [
-              "Cancelling a subscription part-way through a month refunds nothing. The month is already paid for and its credits have already been granted, so they remain yours until the period ends.",
+              "Cancelling a subscription part-way through a month refunds nothing. The month is already paid for and its minutes have already been granted, so they remain yours until the period ends.",
               "Unspent minutes expire at the end of the period they were granted for. They do not roll over.",
             ],
           },
@@ -139,7 +139,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             ],
           },
           { heading: "Cancelling a single observation", status: "pending" },
-          { heading: "Clouds, and a slot that cannot be flown", status: "pending" },
+          { heading: "Clouds, and a slot that cannot be run", status: "pending" },
           { heading: "Equipment failure during your slot", status: "pending" },
           { heading: "How to ask for a refund", status: "pending" },
         ],
@@ -158,29 +158,29 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     back: `${brand.ka.on} დაბრუნება`,
     documents: {
       terms: {
-        metadataTitle: `${brand.ka.nominative} · მომსახურების პირობები`,
+        metadataTitle: `მომსახურების პირობები · ${brand.ka.nominative}`,
         metadataDescription: `${brand.ka.genitive} მომსახურების პირობების მონახაზი. ჯერ არ მოქმედებს.`,
         eyebrow: "იურიდიული · მონახაზი",
         title: "მომსახურების პირობები",
-        introduction: `რას გთავაზობთ ${brand.ka.nominative} და რას არა. მონახაზი ადრე ქვეყნდება, რომ უკვე გადაწყვეტილი ნაწილი წაკითხვადი და სადავო იყოს.`,
+        introduction: `რას გთავაზობს ${brand.ka.nominative} და რას არა. მონახაზი ადრე ქვეყნდება, რომ უკვე გადაწყვეტილი ნაწილის წაკითხვა და გასაჩივრება შესაძლებელი იყოს.`,
         sections: [
           {
             heading: `რა არის ${brand.ka.nominative}`,
             status: "decided",
             body: [
-              `${brand.ka.nominative} არის ცოცხალი დისტანციური ობსერვატორია თბილისში. თქვენ ჯავშნით სადამკვირვებლო სლოტს, ირჩევთ ობიექტს ოპერატორის დამტკიცებული სიიდან, და ნამდვილი Celestron NexStar 6SE ფიზიკურად ბრუნდება ამ ობიექტისკენ, სანამ თქვენ კამერის გამოსახულებას უყურებთ.`,
-              `${brand.ka.nominative} ცოცხალი ხედვის სერვისია. ის იყენებს მოკლე ექსპოზიციებს და ცოცხალ დასტეკვას — მეთოდს, რომელსაც ელექტრონულად დახმარებულ ასტრონომიას უწოდებენ. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფიის სერვისი და არ იძლევა სამეცნიერო ობსერვატორიის ან კოსმოსური ტელესკოპის დონის შედეგს.`,
+              `${brand.ka.nominative} არის დისტანციური ობსერვატორია თბილისში პირდაპირი დაკვირვებისთვის. შენ ჯავშნი დაკვირვების სლოტს, ირჩევ ობიექტს ოპერატორის დამტკიცებული სიიდან, და ნამდვილი Celestron NexStar 6SE ფიზიკურად ობიექტისკენ შებრუნდება, სანამ შენ კამერის გამოსახულებას უყურებ.`,
+              `${brand.ka.nominative} პირდაპირი ხედის სერვისია. ის იყენებს მოკლე ექსპოზიციებს და რეალურ დროში დასტეკვას — მეთოდს, რომელსაც ელექტრონულად დახმარებულ ასტრონომიას უწოდებენ. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფიის სერვისი და არ იძლევა სამეცნიერო ობსერვატორიის ან კოსმოსური ტელესკოპის დონის შედეგს.`,
             ],
           },
           {
-            heading: "სადამკვირვებლო სლოტი",
+            heading: "დაკვირვების სლოტი",
             status: "decided",
             body: [
               "სლოტი არის ტელესკოპის დაჯავშნილი დრო ოპერატორის დამტკიცებულ ობიექტზე. ერთდროულად მიმდინარეობს ერთი დაკვირვება და ტელესკოპს ერთი ადამიანი მართავს საკუთარი სლოტის განმავლობაში.",
-              "ხილვადობას ცა წყვეტს. ობიექტი, რომელიც ჩავიდა, ჯერ არ ამოსულა ან ტელესკოპის უსაფრთხო სიმაღლის ქვემოთაა, ვერ დაიკვირვება — ჯავშანი რასაც არ უნდა ამბობდეს.",
+              "ხილვადობას ცა წყვეტს. ობიექტზე, რომელიც ჩავიდა, ჯერ არ ამოსულა ან ტელესკოპის უსაფრთხო სიმაღლის ქვემოთაა, დაკვირვება შეუძლებელია — ჯავშანი რასაც არ უნდა ამბობდეს.",
             ],
           },
-          { heading: "თქვენი ანგარიში", status: "pending" },
+          { heading: "შენი ანგარიში", status: "pending" },
           { heading: "ამინდი, ხილვადობა და შეუსრულებელი სლოტი", status: "pending" },
           { heading: "გამოყენების წესები", status: "pending" },
           { heading: "ხელმისაწვდომობა და პასუხისმგებლობის ზღვარი", status: "pending" },
@@ -189,30 +189,30 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         ],
       },
       privacy: {
-        metadataTitle: `${brand.ka.nominative} · კონფიდენციალურობის პოლიტიკა`,
+        metadataTitle: `კონფიდენციალურობის პოლიტიკა · ${brand.ka.nominative}`,
         metadataDescription: `${brand.ka.genitive} კონფიდენციალურობის პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.`,
         eyebrow: "იურიდიული · მონახაზი",
         title: "კონფიდენციალურობის პოლიტიკა",
-        introduction: `რას ინახავს ${brand.ka.nominative} თქვენ შესახებ და რატომ. დოკუმენტს სჭირდება მონაცემთა აღწერა და იურიდიული განხილვა, სანამ სათანადოდ გამოქვეყნდება.`,
+        introduction: `რას ინახავს ${brand.ka.nominative} შენს შესახებ და რატომ. დოკუმენტს სჭირდება მონაცემთა აღწერა და იურიდიული განხილვა, სანამ სათანადოდ გამოქვეყნდება.`,
         sections: [
           {
             heading: "სისტემაში დარჩენა",
             status: "decided",
             body: [
-              "შესვლისას ბრაუზერში იწერება სესიის ქუქი-ფაილები. ისინი საჭიროა იმისთვის, რომ სისტემაში დარჩეთ და თქვენი გაგზავნილი ფორმები დაცული იყოს. ეს არ არის სარეკლამო ქუქი-ფაილები და ისინი სხვა საიტებზე არ მიგყვებათ.",
+              "შესვლისას ბრაუზერში იწერება სესიის ქუქი-ფაილები. ისინი საჭიროა იმისთვის, რომ სისტემაში დარჩე და შენ მიერ გაგზავნილი ფორმები დაცული იყოს. ეს არ არის სარეკლამო ქუქი-ფაილები და ისინი სხვა საიტებზე არ მოგყვება.",
             ],
           },
           { heading: `რა მონაცემებს აგროვებს ${brand.ka.nominative}`, status: "pending" },
-          { heading: "თქვენი კადრები და კოლექცია", status: "pending" },
+          { heading: "შენი კადრები და კოლექცია", status: "pending" },
           { heading: "გადახდის მონაცემები", status: "pending" },
-          { heading: "ვინ ამუშავებს თქვენს მონაცემებს", status: "pending" },
+          { heading: "ვინ ამუშავებს შენს მონაცემებს", status: "pending" },
           { heading: "რამდენ ხანს ინახება მონაცემები", status: "pending" },
-          { heading: "თქვენი უფლებები მონაცემებზე", status: "pending" },
-          { heading: "როგორ დაგვიკავშირდეთ", status: "pending" },
+          { heading: "შენი უფლებები მონაცემებზე", status: "pending" },
+          { heading: "როგორ დაგვიკავშირდე", status: "pending" },
         ],
       },
       refunds: {
-        metadataTitle: `${brand.ka.nominative} · თანხის დაბრუნების პოლიტიკა`,
+        metadataTitle: `თანხის დაბრუნების პოლიტიკა · ${brand.ka.nominative}`,
         metadataDescription: `${brand.ka.genitive} თანხის დაბრუნებისა და გაუქმების პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.`,
         eyebrow: "იურიდიული · მონახაზი",
         title: "თანხის დაბრუნების პოლიტიკა",
@@ -220,18 +220,18 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           "როდის ბრუნდება თანხა, როდის ბრუნდება მის ნაცვლად ტელესკოპის დრო და როდის არცერთი. ამინდის გამო ეს დოკუმენტი აქ უფრო მნიშვნელოვანია, ვიდრე სხვა სერვისებში.",
         sections: [
           {
-            heading: "კრედიტით ან ვაუჩერით გადახდილი ჯავშანი",
+            heading: "წუთებით ან ვაუჩერით გადახდილი ჯავშანი",
             status: "decided",
             body: [
-              "როცა ჯავშანი თავისუფლდება — გაუქმების, გადახდის წარუმატებლობის ან თანხის დაბრუნების გამო — ის, რითაც გადაიხადეთ, იმავე ფორმით გიბრუნდებათ.",
-              "გამოწერის კრედიტით გადახდილი ჯავშანი კრედიტს აბრუნებს. ვაუჩერით გადახდილი ჯავშანი ვაუჩერს აღადგენს. არცერთი არ აბრუნებს ფულს.",
+              "როცა ჯავშანი თავისუფლდება — გაუქმების, გადახდის წარუმატებლობის ან თანხის დაბრუნების გამო — ის, რითაც გადაიხადე, იმავე ფორმით გიბრუნდება.",
+              "გამოწერის წუთებით გადახდილი ჯავშანი წუთებს აბრუნებს. ვაუჩერით გადახდილი ჯავშანი ვაუჩერს აღადგენს. არცერთი არ აბრუნებს ფულს.",
             ],
           },
           {
             heading: "გამოწერის გაუქმება",
             status: "decided",
             body: [
-              "გამოწერის თვის შუაში გაუქმებისას თანხა არ ბრუნდება. თვე უკვე გადახდილია და მისი კრედიტები უკვე დარიცხულია, ამიტომ ისინი პერიოდის ბოლომდე თქვენი რჩება.",
+              "გამოწერის თვის შუაში გაუქმებისას თანხა არ ბრუნდება. თვე უკვე გადახდილია და მისი წუთები უკვე დარიცხულია, ამიტომ ისინი პერიოდის ბოლომდე შენი რჩება.",
               "დაუხარჯავი წუთები პერიოდის ბოლოს ქრება და შემდეგ თვეზე არ გადადის.",
             ],
           },
@@ -239,13 +239,13 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             heading: "როცა გამოწერის გადახდა ვერ ხერხდება",
             status: "decided",
             body: [
-              "წარუმატებელი განახლება მეორდება სამჯერ, შვიდი დღის განმავლობაში. თუ ვერცერთი გამოვა, გამოწერა ვადას კარგავს და გადაუხდელად არ გრძელდება.",
+              "წარუმატებელი განახლება მეორდება მაქსიმუმ სამჯერ, შვიდი დღის განმავლობაში. თუ ვერცერთი გამოვა, გამოწერა ვადას კარგავს და გადაუხდელად არ გრძელდება.",
             ],
           },
           { heading: "ერთჯერადი დაკვირვების გაუქმება", status: "pending" },
           { heading: "ღრუბლები და შეუსრულებელი სლოტი", status: "pending" },
-          { heading: "აპარატურის ხარვეზი თქვენი სლოტის დროს", status: "pending" },
-          { heading: "როგორ მოითხოვოთ თანხის დაბრუნება", status: "pending" },
+          { heading: "აპარატურის ხარვეზი შენი სლოტის დროს", status: "pending" },
+          { heading: "როგორ მოითხოვო თანხის დაბრუნება", status: "pending" },
         ],
       },
     },

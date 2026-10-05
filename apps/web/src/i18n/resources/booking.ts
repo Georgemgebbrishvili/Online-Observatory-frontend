@@ -66,8 +66,8 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
     title: "დრო ტელესკოპთან.",
     introduction:
       "ყოველი სლოტი ობსერვატორიის ასტრონომიული სიბნელიდან იჭრება, მისივე დროის სარტყელში.",
-    yourBookings: "თქვენი ჯავშნები",
-    nights: "აირჩიეთ ღამე",
+    yourBookings: "შენი ჯავშნები",
+    nights: "აირჩიე ღამე",
     slots: "დაკვირვების დრო",
     minutes: (count) => `${count} წთ`,
     available: "თავისუფალია",
@@ -75,19 +75,19 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
     unavailable: "მიუწვდომელია",
     reasons: {
       ALREADY_BOOKED: "დაჯავშნილია",
-      OUTSIDE_ASTRONOMICAL_DARKNESS: "საკმარისად ბნელა არ არის",
+      OUTSIDE_ASTRONOMICAL_DARKNESS: "ცა საკმარისად ბნელი არ არის",
       WEATHER_HOLD: "ამინდის გამო შეჩერება",
-      OBSERVATORY_OFFLINE: "ობსერვატორია ოფლაინია",
+      OBSERVATORY_OFFLINE: "ობსერვატორია კავშირგარეშეა",
       MAINTENANCE: "ტექნიკური სამუშაოები",
       IN_THE_PAST: "უკვე დაიწყო",
     },
     noSlots: {
       title: "ამ ღამეს დაკვირვების დრო არ არის.",
-      description: "სცადეთ სხვა ღამე.",
+      description: "სცადე სხვა ღამე.",
     },
     unreachable: {
       title: "დაკვირვების დროის ჩატვირთვა ვერ მოხერხდა.",
-      description: "სცადეთ ცოტა ხანში.",
+      description: "სცადე ცოტა ხანში.",
     },
     noObservatory: {
       title: "ობსერვატორია არ არის მითითებული.",

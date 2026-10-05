@@ -74,7 +74,7 @@ test("the Georgian bookings fit a phone", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/app/bookings");
   await expect(
-    page.getByRole("heading", { level: 1, name: "თქვენი ჯავშნები." }),
+    page.getByRole("heading", { level: 1, name: "შენი ჯავშნები." }),
   ).toBeVisible();
   await expect(page.locator(".booking-row").first()).toContainText("გადახდას ელოდება");
   const width = await page.evaluate(() => document.documentElement.scrollWidth);

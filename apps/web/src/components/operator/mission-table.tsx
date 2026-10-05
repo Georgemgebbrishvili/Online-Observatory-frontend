@@ -47,9 +47,11 @@ function shortId(id: string) {
 
 function moment(value: string | null | undefined, locale: Locale, fallback: string) {
   if (!value) return fallback;
+  // The operator's own zone, named: missions come from more than one observatory, so
+  // no single observatory's zone is right for the whole list.
   return new Date(value).toLocaleString(locale === "ka" ? "ka-GE" : "en-GB", {
     dateStyle: "short",
-    timeStyle: "medium",
+    timeStyle: "long",
   });
 }
 

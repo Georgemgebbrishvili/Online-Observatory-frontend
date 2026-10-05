@@ -15,6 +15,10 @@ function Offering({
 }) {
   const copy = pricingPageCopy[locale];
   const free = offering.price.kind === "FREE";
+  const priced =
+    offering.price.kind === "PER_SEAT"
+      ? { label: copy.perSeat, note: copy.perSeatNote }
+      : { label: copy.perSlot, note: copy.perSlotNote };
 
   return (
     <li className="pricing-row" data-offering={offering.id}>
@@ -25,9 +29,9 @@ function Offering({
       </div>
       <div className="pricing-price">
         <strong className={free ? "pricing-free" : undefined}>
-          {free ? copy.free : copy.perSlot}
+          {free ? copy.free : priced.label}
         </strong>
-        {!free && <small>{copy.perSlotNote}</small>}
+        {!free && <small>{priced.note}</small>}
       </div>
       <div className="pricing-features">
         <span className="plate-title">{copy.included}</span>
@@ -37,13 +41,15 @@ function Offering({
           ))}
         </ul>
       </div>
-      <ButtonLink
-        className="pricing-action"
-        href={`/${locale}/${offering.action.href}`}
-        variant={free ? "secondary" : "primary"}
-      >
-        {offering.action.label[locale]}
-      </ButtonLink>
+      {offering.action && (
+        <ButtonLink
+          className="pricing-action"
+          href={`/${locale}/${offering.action.href}`}
+          variant={free ? "secondary" : "primary"}
+        >
+          {offering.action.label[locale]}
+        </ButtonLink>
+      )}
     </li>
   );
 }

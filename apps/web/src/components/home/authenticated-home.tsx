@@ -145,8 +145,14 @@ export function AuthenticatedHome({
     <div className="authenticated-home">
       <header className="page-hero home-dashboard-header">
         <p className="kicker">
-          {brand.en.name}
-          {panel.kind === "ok" ? ` · ${panel.observatory.city}` : ""}
+          {/* The contract localises the observatory's name, not its city. */}
+          {panel.kind === "ok"
+            ? locale === "ka"
+              ? panel.observatory.nameKa
+              : panel.observatory.nameEn
+            : locale === "ka"
+              ? brand.ka.nominative
+              : brand.en.name}
         </p>
         <h1>{copy.greeting(displayName)}</h1>
         <p className="page-lede">{copy.introduction}</p>

@@ -5,7 +5,7 @@ const dictionary = {
   metadata: {
     title: brand.en.siteName,
     description:
-      "Connect to real observatories, launch astronomical missions, and capture your own images of the night sky.",
+      "Reserve time on a real telescope in Tbilisi, watch it live, and keep what you capture.",
   },
   navigation: {
     ariaLabel: "Primary navigation",
@@ -24,7 +24,7 @@ const dictionary = {
       pricing: "Pricing",
       about: "About",
       signIn: "Sign in",
-      startExploring: "Start Exploring",
+      startExploring: "Start exploring",
     },
     app: {
       ariaLabel: "Application navigation",
@@ -103,7 +103,7 @@ const dictionary = {
         },
         {
           title: "Keep",
-          description: "Capture the stacked frame and keep it in your collection.",
+          description: "Capture the stacked frame and keep it in your Collection.",
         },
       ],
       status: { simulated: "Simulated today", real: "Live" },

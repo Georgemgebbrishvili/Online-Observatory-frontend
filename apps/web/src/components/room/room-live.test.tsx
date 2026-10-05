@@ -16,6 +16,14 @@ function opensAt({ scheduledStartAt }: Mission, locale: "en" | "ka") {
 const refresh = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh }) }));
 
+const { navigateWithFreshSession } = vi.hoisted(() => ({
+  navigateWithFreshSession: vi.fn(),
+}));
+vi.mock("@/lib/platform/browser", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/platform/browser")>()),
+  navigateWithFreshSession,
+}));
+
 const missionId = "20000000-0000-4000-8000-000000000001";
 const userId = "00000000-0000-4000-8000-000000000001";
 
@@ -308,6 +316,48 @@ describe("RoomLive", () => {
     // Never retried by itself: the start moves the telescope.
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("button", { name: "Start observation" })).toBeEnabled();
+  });
+
+  it("says a slot that was never started has ended, and offers another night", async () => {
+    const fetch = answer(409, {
+      code: "MISSION_NOT_ACTIVE",
+      message: "The booked slot for this mission has already ended.",
+    });
+    vi.stubGlobal("fetch", fetch);
+    renderRoom({ state: "SCHEDULED", scheduledStartAt: "2020-01-15T18:00:00.000Z" });
+    const start = await screen.findByRole("button", { name: "Start observation" });
+    await waitFor(() => expect(start).toBeEnabled());
+    fireEvent.click(start);
+
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent("This slot has ended"),
+    );
+    expect(screen.queryByRole("button", { name: "Start observation" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Book another night" })).toBeVisible();
+  });
+
+  it("asks whether a weather hold has lifted, and reloads when it has", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const fetch = vi.fn(
+        async () =>
+          new Response(JSON.stringify({ ...mission, state: "SCHEDULED" }), {
+            status: 200,
+          }),
+      );
+      vi.stubGlobal("fetch", fetch);
+      renderRoom({ state: "WEATHER_HOLD" });
+      expect(fetch).not.toHaveBeenCalled();
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(60_000);
+      });
+      expect(fetch).toHaveBeenCalledWith(`/api/missions/${missionId}`, expect.anything());
+      await waitFor(() => expect(navigateWithFreshSession).toHaveBeenCalledTimes(1));
+    } finally {
+      vi.useRealTimers();
+      navigateWithFreshSession.mockClear();
+    }
   });
 
   it("does not reopen a session the customer has just opened when the room is re-read", async () => {

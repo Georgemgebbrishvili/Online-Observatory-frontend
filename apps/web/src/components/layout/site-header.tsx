@@ -23,7 +23,7 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
   const publicNavigation = navigation.public;
   const links = [
     { label: publicNavigation.explore, href: `/${locale}#tonight` },
-    { label: publicNavigation.live, href: `/${locale}#live` },
+    { label: publicNavigation.live, href: `/${locale}/app/live` },
     { label: publicNavigation.observatory, href: `/${locale}/observatory` },
     { label: publicNavigation.pricing, href: `/${locale}/pricing` },
     { label: publicNavigation.about, href: `/${locale}#about` },

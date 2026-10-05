@@ -111,7 +111,7 @@ test("the Georgian reschedule fits a phone", async ({ page }) => {
   await signIn(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/ka/app/bookings/${lostId}`);
-  await page.getByRole("link", { name: "აირჩიეთ უფასო დრო" }).click();
+  await page.getByRole("link", { name: "აირჩიე უფასო დრო" }).click();
   await page.locator(".slot-row").first().getByRole("link").click();
   await expect(
     page.getByRole("button", { name: "ამ დროის უფასოდ დაჯავშნა" }),

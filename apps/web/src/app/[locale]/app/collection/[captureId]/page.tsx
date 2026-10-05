@@ -26,7 +26,10 @@ export async function generateMetadata({
   const robots = { index: false, follow: false };
   if (result.kind !== "ok") return { robots };
 
-  return { title: `${captureTitle(result.entry, locale)} · ${brand.en.name}`, robots };
+  return {
+    title: `${captureTitle(result.entry, locale)} · ${locale === "ka" ? brand.ka.nominative : brand.en.name}`,
+    robots,
+  };
 }
 
 export default async function CaptureDetailPage({ params }: CaptureDetailPageProps) {

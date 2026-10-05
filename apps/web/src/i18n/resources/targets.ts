@@ -64,7 +64,7 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
     unreachable: {
       title: "Tonight's sky could not be read",
       description:
-        "The platform did not answer. Nothing is shown rather than an old or invented list.",
+        "Our servers did not answer. Nothing is shown rather than an old or invented list.",
     },
     noObservatory: {
       title: "No observatory is taking missions",
@@ -120,16 +120,16 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
       detail: "ხილვადობა სიმულატორისთვის ითვლება. ნამდვილი ტელესკოპი არ მოძრაობს.",
     },
     unreachable: {
-      title: "დღევანდელი ცის მონაცემები ვერ მივიღეთ",
-      description: "პლატფორმამ არ უპასუხა. ძველ ან გამოგონილ სიას არ ვაჩვენებთ.",
+      title: "ამაღამინდელი ცის მონაცემები ვერ მივიღეთ",
+      description: "ჩვენმა სერვერებმა არ უპასუხეს. ძველ ან გამოგონილ სიას არ ვაჩვენებთ.",
     },
     noObservatory: {
-      title: "ამჟამად არც ერთი ობსერვატორია არ იღებს მისიებს",
+      title: "ამჟამად არცერთი ობსერვატორია არ იღებს მისიებს",
       description:
-        "როცა ობსერვატორია მისიებისთვის გაიხსნება, დღევანდელი ობიექტები აქ გამოჩნდება.",
+        "როცა ობსერვატორია მისიებისთვის გაიხსნება, ამაღამინდელი ობიექტები აქ გამოჩნდება.",
     },
     noneObservable: {
-      title: "ამჟამად ვერც ერთ ობიექტს ვერ დავაკვირდებით",
+      title: "ამჟამად ვერცერთ ობიექტს ვერ დავაკვირდებით",
       reason: "მიზეზი: {reason}.",
     },
   },

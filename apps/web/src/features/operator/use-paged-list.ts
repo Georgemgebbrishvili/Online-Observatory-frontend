@@ -1,7 +1,7 @@
 "use client";
 
 import type { PageMeta } from "@darkview/contracts";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiRequestError } from "@/lib/platform/browser";
 
@@ -62,17 +62,31 @@ export function usePagedList<T>(
     };
   }, [load]);
 
+  // The list a page was asked for. A filter changed while it was loading makes it
+  // another list's page, and it is dropped rather than appended.
+  const listRef = useRef(load);
+  useEffect(() => {
+    listRef.current = load;
+  }, [load]);
+
   const loadMore = useCallback(() => {
     if (!cursor) return;
     setLoading(true);
+    const forList = load;
+    const stale = () => listRef.current !== forList;
     load(cursor)
       .then((page) => {
+        if (stale()) return;
         setItems((previous) => [...previous, ...page.items]);
         setCursor(page.page.nextCursor ?? null);
         setHasMore(page.page.hasMore);
       })
-      .catch((cause: unknown) => setError(describe(cause)))
-      .finally(() => setLoading(false));
+      .catch((cause: unknown) => {
+        if (!stale()) setError(describe(cause));
+      })
+      .finally(() => {
+        if (!stale()) setLoading(false);
+      });
   }, [cursor, load]);
 
   const replace = useCallback((item: T, matches: (candidate: T) => boolean) => {

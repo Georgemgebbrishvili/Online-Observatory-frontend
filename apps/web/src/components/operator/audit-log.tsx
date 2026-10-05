@@ -89,7 +89,8 @@ export function AuditLog({
                 <time className="data" dateTime={event.at}>
                   {new Date(event.at).toLocaleString(
                     locale === "ka" ? "ka-GE" : "en-GB",
-                    { dateStyle: "short", timeStyle: "medium" },
+                    // Named, as the mission table's: the operator's own zone.
+                    { dateStyle: "short", timeStyle: "long" },
                   )}
                 </time>
                 <span className="operator-event-category">

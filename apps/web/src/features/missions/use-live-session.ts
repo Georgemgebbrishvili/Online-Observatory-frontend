@@ -1,5 +1,6 @@
 import type { MissionFailureReason, MissionState } from "@darkview/contracts";
 import {
+  zGetMissionResponse,
   zMissionClientPing,
   zMissionClientSubscribe,
   zStartMissionSessionResponse,
@@ -32,6 +33,9 @@ import {
 
 /** The channel is swept after 120 s of silence; a ping well inside that keeps it. */
 const pingEveryMs = 30_000;
+
+/** How often a room that arrived in a weather hold asks whether the hold has lifted. */
+const holdCheckEveryMs = 60_000;
 
 function header() {
   return { messageId: crypto.randomUUID(), sentAt: new Date().toISOString() };
@@ -107,6 +111,24 @@ export function useLiveSession({
     reopened.current = true;
     void start();
   }, [arrivedIn, start]);
+
+  // A hold opens no session, so no channel tells the room when it lifts. It asks, and
+  // reloads on any change: the page it arrived on was rendered for the hold.
+  useEffect(() => {
+    if (arrivedIn !== "WEATHER_HOLD" || live.session) return;
+    const id = window.setInterval(async () => {
+      try {
+        const mission = await apiRequest(`/missions/${encodeURIComponent(missionId)}`, {
+          schema: zGetMissionResponse,
+        });
+        if (mission.state !== "WEATHER_HOLD")
+          navigateWithFreshSession(window.location.pathname);
+      } catch {
+        // The next check tries again; a failed read is not a change.
+      }
+    }, holdCheckEveryMs);
+    return () => window.clearInterval(id);
+  }, [arrivedIn, live.session, missionId]);
 
   const sessionId = live.session?.sessionId ?? null;
   const channelPath = live.session?.missionChannelUrl ?? null;

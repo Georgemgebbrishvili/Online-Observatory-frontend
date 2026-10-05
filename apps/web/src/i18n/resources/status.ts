@@ -2,12 +2,12 @@ import type { Locale } from "@/i18n/config";
 import { brand } from "@/brand";
 
 const en = {
-  metadataTitle: `${brand.en.name} · Observatory status`,
+  metadataTitle: `Observatory status · ${brand.en.name}`,
   metadataDescription: `Live status of the ${brand.en.name} observatory in Tbilisi, and tonight's viewing conditions.`,
-  eyebrow: "OBSERVATORY STATUS",
+  eyebrow: "Observatory status",
   title: "What the telescope is doing now.",
   introduction:
-    "Read straight from the observatory. Nothing on this page is estimated, and nothing is shown that the platform did not report.",
+    "Read straight from the observatory. Nothing on this page is estimated, and nothing is shown that the observatory did not report.",
   updated: "Reported {age} ago",
   age: { seconds: "{value} s", minutes: "{value} min", hours: "{value} h" },
   mode: {
@@ -74,11 +74,11 @@ const en = {
   },
   unavailable: {
     title: "Status is unavailable",
-    detail: `The ${brand.en.name} platform did not answer, so this page has nothing current to show. It shows no older reading rather than presenting a stale one as live.`,
+    detail: `${brand.en.name}'s servers did not answer, so this page has nothing current to show. It shows no older reading rather than presenting a stale one as live.`,
   },
   noObservatory: {
     title: "No observatory is listed",
-    detail: "The platform lists no bookable observatory to report on.",
+    detail: `${brand.en.name} lists no bookable observatory to report on.`,
   },
   back: `Return to ${brand.en.name}`,
 };
@@ -86,12 +86,12 @@ const en = {
 export const statusCopy = {
   en,
   ka: {
-    metadataTitle: `${brand.ka.nominative} · ობსერვატორიის სტატუსი`,
-    metadataDescription: `${brand.ka.genitive} თბილისის ობსერვატორიის მიმდინარე სტატუსი და ამაღამის დაკვირვების პირობები.`,
+    metadataTitle: `ობსერვატორიის სტატუსი · ${brand.ka.nominative}`,
+    metadataDescription: `${brand.ka.genitive} თბილისის ობსერვატორიის მიმდინარე სტატუსი და ამაღამინდელი დაკვირვების პირობები.`,
     eyebrow: "ობსერვატორიის სტატუსი",
     title: "რას აკეთებს ტელესკოპი ახლა.",
     introduction:
-      "წაკითხულია პირდაპირ ობსერვატორიიდან. ამ გვერდზე არაფერია ნავარაუდევი და არაფერი ჩანს ისეთი, რაც პლატფორმას არ მოუწოდებია.",
+      "წაკითხულია პირდაპირ ობსერვატორიიდან. ამ გვერდზე არაფერია ნავარაუდევი და არაფერი ჩანს ისეთი, რაც ობსერვატორიას არ მოუწოდებია.",
     updated: "მიღებულია {age} წინ",
     age: { seconds: "{value} წმ", minutes: "{value} წთ", hours: "{value} სთ" },
     mode: {
@@ -124,7 +124,7 @@ export const statusCopy = {
     link: {
       ONLINE: "ონლაინ",
       DEGRADED: "არასტაბილური",
-      OFFLINE: "ოფლაინ",
+      OFFLINE: "კავშირგარეშეა",
     },
     linkDetail: {
       ONLINE: "ობსერვატორია დაკავშირებულია და მონაცემებს აგზავნის.",
@@ -133,15 +133,15 @@ export const statusCopy = {
     },
     weather: {
       CLEAR: "მოწმენდილი",
-      CLOUDY: "ღრუბლიანი",
+      CLOUDY: "მოღრუბლული",
       UNSAFE: "სახიფათო",
       UNKNOWN: "უცნობია",
     },
     weatherSource: { OPERATOR: "ოპერატორი", SENSOR: "ობსერვატორიის სენსორი" },
     conditions: {
-      title: "ამაღამის პირობები",
+      title: "ამაღამინდელი პირობები",
       detail:
-        "საათობრივი პროგნოზი ამაღამის სამუშაო საათებისთვის. მხოლოდ საინფორმაციოა: პროგნოზი ამინდის შეჩერებას არც იწყებს და არც ხსნის — ამას ზემოთ მითითებული ოპერატორის შეჩერება წყვეტს.",
+        "საათობრივი პროგნოზი ამაღამინდელი სამუშაო საათებისთვის. მხოლოდ საინფორმაციოა: პროგნოზი ამინდის შეჩერებას არც იწყებს და არც ხსნის — ამას ზემოთ მითითებული ოპერატორის შეჩერება წყვეტს.",
       empty: "ამაღამ სამუშაო საათები არ არის.",
       hour: "საათი",
       cloud: "ღრუბლიანობა",
@@ -149,7 +149,7 @@ export const statusCopy = {
       precipitation: "ნალექი",
       humidity: "ტენიანობა",
       wind: "ქარი",
-      seeing: "სიმშვიდე",
+      seeing: "ატმოსფეროს სიმშვიდე",
       chartCaption: "ღრუბლიანობა საათების მიხედვით",
       unknown: "უცნობია",
       unknownHour: "ამ საათისთვის პროგნოზი შენახული არ არის.",
@@ -158,11 +158,11 @@ export const statusCopy = {
     },
     unavailable: {
       title: "სტატუსი მიუწვდომელია",
-      detail: `${brand.ka.genitive} პლატფორმამ არ უპასუხა, ამიტომ ამ გვერდს მიმდინარე მონაცემი არ აქვს. ძველ მონაცემს მიმდინარედ არ აჩვენებს — სჯობს არაფერი აჩვენოს.`,
+      detail: `${brand.ka.genitive} სერვერებმა არ უპასუხა, ამიტომ ამ გვერდს მიმდინარე მონაცემი არ აქვს. ძველ მონაცემს მიმდინარედ არ აჩვენებს — სჯობს არაფერი აჩვენოს.`,
     },
     noObservatory: {
       title: "ობსერვატორია არ არის",
-      detail: "პლატფორმა არცერთ ხელმისაწვდომ ობსერვატორიას არ აბრუნებს.",
+      detail: `${brand.ka.nominative} არცერთ დასაჯავშნი ობსერვატორიას არ აჩვენებს.`,
     },
     back: `${brand.ka.on} დაბრუნება`,
   },

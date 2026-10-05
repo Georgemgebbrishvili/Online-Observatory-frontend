@@ -42,7 +42,7 @@ test("the Georgian sharing panel fits a phone", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/ka/app/missions/${observing}/session`);
   const sharing = page.getByRole("region", { name: "გაზიარება" });
-  await sharing.getByRole("button", { name: "ნება დართეთ სხვებს უყურონ" }).click();
+  await sharing.getByRole("button", { name: "ნება დართე სხვებს, უყურონ" }).click();
   await expect(sharing).toContainText("დაკავებულია 0 ადგილი 5-დან.");
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),

@@ -36,7 +36,7 @@ export async function generateMetadata({
   if (result.kind !== "ok") return {};
 
   return {
-    title: `${targetName(result.target, locale)} · ${brand.en.name}`,
+    title: `${targetName(result.target, locale)} · ${locale === "ka" ? brand.ka.nominative : brand.en.name}`,
     description: targetDescription(result.target, locale) ?? undefined,
   };
 }

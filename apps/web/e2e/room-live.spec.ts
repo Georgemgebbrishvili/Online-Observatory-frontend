@@ -75,7 +75,7 @@ test("starting is stated while the platform opens the session", async ({ page })
 
 for (const [locale, opens, button] of [
   ["en", "Your slot opens at", "Start observation"],
-  ["ka", "თქვენი დრო", "დაიწყე დაკვირვება"],
+  ["ka", "შენი დრო", "დაიწყე დაკვირვება"],
 ] as const) {
   test(`${locale}: a scheduled mission waits for its slot, with the plate as an illustration`, async ({
     page,
@@ -140,7 +140,7 @@ for (const [locale, text] of [
 
 for (const [locale, text, noPosition] of [
   ["en", "Observatory offline", "The telescope has not reported a position."],
-  ["ka", "ობსერვატორია ოფლაინშია", "ტელესკოპს მდებარეობა ჯერ არ გადმოუცია."],
+  ["ka", "ობსერვატორია კავშირგარეშეა", "ტელესკოპს მდებარეობა ჯერ არ გადმოუცია."],
 ] as const) {
   test(`${locale}: an offline agent is stated, with no telescope position`, async ({
     page,

@@ -38,10 +38,10 @@ export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
             <Link href={`/${locale}#tonight`} prefetch={false}>
               {footer.missions}
             </Link>
-            <Link href={`/${locale}#live`} prefetch={false}>
+            <Link href={`/${locale}/app/live`} prefetch={false}>
               {footer.live}
             </Link>
-            <Link href={`/${locale}#collection`} prefetch={false}>
+            <Link href={`/${locale}/app/collection`} prefetch={false}>
               {footer.collection}
             </Link>
             <Link href={`/${locale}/observatory`}>{footer.observatory}</Link>

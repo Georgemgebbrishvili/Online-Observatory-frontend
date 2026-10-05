@@ -66,6 +66,9 @@ type RoomLiveProps = {
 
 type Copy = (typeof roomCopy)["en"];
 
+/** Clock skew between this browser and the platform, at most. */
+const slotEndedMarginMs = 5 * 60_000;
+
 function describe(copy: Copy, live: LiveState, named: (text: string) => string) {
   const status = liveStatus(live);
   if (status === "refused") {
@@ -135,10 +138,18 @@ export function RoomLive({
   const feedStatus = liveStatus(live);
   const opensAt = mission.scheduledStartAt ?? null;
   const slotOpen = now !== null && (opensAt === null || now >= Date.parse(opensAt));
-  const action = liveAction(live);
+  // The platform refuses a start with MISSION_NOT_ACTIVE both before a slot opens and
+  // after it ends. Well past the opening it can only be the end, and pressing Start
+  // again can never succeed.
+  const slotEnded =
+    live.startError === "MISSION_NOT_ACTIVE" &&
+    opensAt !== null &&
+    now !== null &&
+    now > Date.parse(opensAt) + slotEndedMarginMs;
+  const action = slotEnded ? null : liveAction(live);
   const pending = live.start === "pending";
 
-  const text = describe(copy, live, named) ?? {
+  const text = (slotEnded ? copy.live.slotEnded : describe(copy, live, named)) ?? {
     title: copy.live.notStarted.title,
     description:
       opensAtText && !slotOpen
@@ -163,7 +174,7 @@ export function RoomLive({
   // One primary action at a time: Start before the session, Capture during it, and
   // another night once the observation has stopped short.
   const button =
-    feedStatus === "stopped" ? (
+    feedStatus === "stopped" || slotEnded ? (
       <>
         {mission.bookingId && (
           <ButtonLink

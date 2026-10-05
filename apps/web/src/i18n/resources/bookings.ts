@@ -76,7 +76,7 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
       title: "Your bookings could not be loaded.",
       description: "Try again shortly.",
     },
-    retiredTarget: "A target no longer offered",
+    retiredTarget: "A target no longer in the catalogue",
     unknownObservatory: "Observatory",
     status: {
       PENDING_PAYMENT: "Awaiting payment",
@@ -126,28 +126,28 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     failed: "Something went wrong. Try again.",
   },
   ka: {
-    metadataTitle: `თქვენი ჯავშნები · ${brand.ka.nominative}`,
-    metadataDescription: "თქვენი დრო ტელესკოპთან.",
+    metadataTitle: `შენი ჯავშნები · ${brand.ka.nominative}`,
+    metadataDescription: "შენი დრო ტელესკოპთან.",
     eyebrow: "ჯავშნები",
-    title: "თქვენი ჯავშნები.",
+    title: "შენი ჯავშნები.",
     introduction:
       "ყველა დაკავებული ან გადახდილი დრო, ბოლოდან დაწყებული, ობსერვატორიის დროით.",
-    bookSlot: "დაჯავშნეთ დრო",
+    bookSlot: "დაჯავშნე დრო",
     newest: "ბოლო ჯავშნები",
     older: "უფრო ძველი ჯავშნები",
     empty: {
-      title: "ჯავშნები ჯერ არ გაქვთ.",
-      description: "აირჩიეთ ღამე და დრო, რომ ტელესკოპთან დრო დაჯავშნოთ.",
+      title: "ჯავშნები ჯერ არ გაქვს.",
+      description: "აირჩიე ღამე და დრო, რომ ტელესკოპთან დრო დაჯავშნო.",
     },
     noMore: {
       title: "უფრო ძველი ჯავშნები არ არის.",
-      description: "ეს თქვენი ანგარიშის ყველა ჯავშანია.",
+      description: "ეს შენი ანგარიშის ყველა ჯავშანია.",
     },
     unreachable: {
       title: "ჯავშნების ჩატვირთვა ვერ მოხერხდა.",
-      description: "სცადეთ ცოტა ხანში.",
+      description: "სცადე ცოტა ხანში.",
     },
-    retiredTarget: "ობიექტი, რომელიც აღარ არის შეთავაზებული",
+    retiredTarget: "ობიექტი, რომელიც კატალოგში აღარ არის",
     unknownObservatory: "ობსერვატორია",
     status: {
       PENDING_PAYMENT: "გადახდას ელოდება",
@@ -159,7 +159,7 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     statement: {
       PENDING_PAYMENT:
         "დრო დაკავებულია, სანამ გადახდა არ დასრულდება ან ვადა არ ამოიწურება.",
-      CONFIRMED: "დრო თქვენია. დაკვირვება მისი დაწყებისას გაიხსნება.",
+      CONFIRMED: "დრო შენია. დაკვირვება მისი დაწყებისას გაიხსნება.",
       CANCELLED: "დრო გათავისუფლდა.",
       EXPIRED: "გადახდამდე ვადა ამოიწურა. დრო გათავისუფლდა.",
       REFUNDED: "გადახდილი თანხა დაბრუნებულია.",
@@ -182,21 +182,21 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
       "გადახდილი ჯავშნის გაუქმება შეუძლებელია, სანამ თანხის დაბრუნება არ ამოქმედდება.",
     cause: { WEATHER: "ამინდის", OBSERVATORY_FAULT: "ობსერვატორიის ხარვეზის" },
     lostSlot: (minutes, cause, until) =>
-      `ამ დროიდან ${minutes} წუთი ${cause} გამო დაიკარგა. ${until}-მდე შეგიძლიათ დაიბრუნოთ თანხა ან აირჩიოთ უფასო დრო.`,
+      `ამ დროიდან ${minutes} წუთი ${cause} გამო დაიკარგა. შეგიძლია დაიბრუნო თანხა ან აირჩიო უფასო დრო. ვადა: ${until}.`,
     refunded: "ეს დრო ჩვენი მხრიდან დაიკარგა და გადახდილი თანხა დაბრუნებულია.",
     rescheduled: "ეს დრო ჩვენი მხრიდან დაიკარგა და უფასო დროით შეიცვალა.",
     rescheduledTo: "ახალი ჯავშნის ნახვა",
     cancel: "ჯავშნის გაუქმება",
     cancelQuestion: "გავაუქმოთ ეს ჯავშანი და გავათავისუფლოთ დრო?",
-    cancelConfirm: "დიახ, გააუქმეთ",
+    cancelConfirm: "დიახ, გაუქმება",
     cancelKeep: "დატოვება",
     cancelling: "უქმდება",
     refund: "თანხის დაბრუნება",
     refunding: "ბრუნდება",
-    changed: "ეს ჯავშანი შეიცვალა. განაახლეთ გვერდი, რომ ნახოთ მისი მდგომარეობა.",
+    changed: "ეს ჯავშანი შეიცვალა. განაახლე გვერდი, რომ ნახო მისი მდგომარეობა.",
     refundUnavailable:
-      "ამ გადახდისთვის თანხის დაბრუნება ჯერ შეუძლებელია. თქვენი უფლება ძალაში რჩება.",
-    failed: "რაღაც შეფერხდა. სცადეთ თავიდან.",
+      "ამ გადახდისთვის თანხის დაბრუნება ჯერ შეუძლებელია. შენი უფლება ძალაში რჩება.",
+    failed: "რაღაც შეფერხდა. სცადე თავიდან.",
   },
 };
 
