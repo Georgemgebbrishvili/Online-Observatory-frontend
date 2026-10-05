@@ -10,8 +10,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { ModeNotice } from "@/components/observatory/mode-notice";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import {
+  isStopped,
   liveAction,
   liveStatus,
   timeLeft,
@@ -75,6 +76,12 @@ function describe(copy: Copy, live: LiveState, named: (text: string) => string) 
     };
   }
   if (status === "not-started") return null;
+  if (status === "stopped" && isStopped(live.missionState)) {
+    return {
+      title: copy.states[live.missionState].title,
+      description: named(copy.live.stopped[live.missionState]),
+    };
+  }
   if (status === "live" && live.stream?.mode === "REAL") {
     return { title: copy.live.status.live.title, description: copy.live.liveReal };
   }
@@ -153,9 +160,22 @@ export function RoomLive({
     signInPath: `/${locale}/sign-in`,
   });
 
-  // One primary action at a time: Start before the session, Capture during it.
+  // One primary action at a time: Start before the session, Capture during it, and
+  // another night once the observation has stopped short.
   const button =
-    action === "start" || (pending && state === "SCHEDULED") ? (
+    feedStatus === "stopped" ? (
+      <>
+        {mission.bookingId && (
+          <ButtonLink
+            variant="secondary"
+            href={`/${locale}/app/bookings/${encodeURIComponent(mission.bookingId)}`}
+          >
+            {copy.live.actions.booking}
+          </ButtonLink>
+        )}
+        <ButtonLink href={`/${locale}/app/book`}>{copy.live.actions.book}</ButtonLink>
+      </>
+    ) : action === "start" || (pending && state === "SCHEDULED") ? (
       <Button
         size="large"
         onClick={() => void start()}
@@ -173,7 +193,11 @@ export function RoomLive({
     );
 
   const left =
-    live.session && !live.expired && feedStatus !== "ended" && now !== null
+    live.session &&
+    !live.expired &&
+    feedStatus !== "ended" &&
+    feedStatus !== "stopped" &&
+    now !== null
       ? timeLeft(live.session.expiresAt, now)
       : null;
 

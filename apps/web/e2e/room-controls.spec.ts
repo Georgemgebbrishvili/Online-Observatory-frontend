@@ -96,7 +96,11 @@ test("stopping asks first, then ends the observation", async ({ page }) => {
   await expect(confirm).toContainText("your remaining time is not returned");
   await confirm.getByRole("button", { name: "Stop" }).click();
 
-  await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "ended");
+  // The customer's own stop is CANCELLED: an observation stopped short (A4).
+  await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "stopped");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Mission cancelled" }),
+  ).toBeVisible();
   await expect(page.getByRole("region", { name: "Controls" })).toHaveCount(0);
   await expect(page.getByRole("region", { name: "Session" })).toHaveCount(0);
 });

@@ -1385,7 +1385,8 @@ async function cancelMission(request, response, id) {
 // /stream/mission/{id}) answer them. The web app proxies both realtime paths here.
 //
 // A test picks a scenario with the `fake_live` cookie, per browser context, so parallel
-// tests never share one: slow, error, offline, hold, drop, expire, forbidden, open. The
+// tests never share one: slow, error, offline, hold, drop, expire, forbidden, open, and
+// the observation stopped short: not-visible, hardware, cancelled, failed, heartbeat. The
 // fake does not rotate a session on a second start as the platform does, because every
 // parallel test signs in as the same observer and would revoke the others'.
 const liveSessions = new Map();
@@ -1486,7 +1487,26 @@ function subscribed(socket, mission, session) {
     });
   const at = (altitudeDegrees, azimuthDegrees) => ({ altitudeDegrees, azimuthDegrees });
 
+  // A4: an observation stopped short, as the channel reports it after the session opened.
+  const stopped = {
+    "not-visible": ["NOT_VISIBLE", "TARGET_SET_BELOW_LIMIT"],
+    hardware: ["HARDWARE_ERROR", "MOUNT_FAULT"],
+    cancelled: ["CANCELLED", "OPERATOR_ABORT"],
+    failed: ["FAILED", "CENTERING_ITERATIONS_EXHAUSTED"],
+  }[session.scenario];
+  if (stopped) {
+    state(mission.state);
+    telemetry("ONLINE", at(18, 290));
+    return setTimeout(() => state(...stopped), 300);
+  }
+
   switch (session.scenario) {
+    // Heartbeat loss: the link goes, then the cloud closes the mission out, as the
+    // platform's realtime service does (link/prisma-store.ts, AGENT_LINK_LOST).
+    case "heartbeat":
+      state(mission.state);
+      telemetry("OFFLINE");
+      return setTimeout(() => state("FAILED", "AGENT_LINK_LOST"), 300);
     case "hold":
       state("WEATHER_HOLD", "WEATHER_UNSAFE");
       return telemetry("ONLINE", at(18, 290));

@@ -33,8 +33,10 @@ export type LiveStatus =
   | "hold"
   /** The session's `expiresAt` has passed. */
   | "expired"
-  /** The mission is past its live view: processing, complete, stopped. */
+  /** The mission is past its live view: processing, complete. */
   | "ended"
+  /** The observation stopped short: not visible, a hardware fault, cancelled, failed. */
+  | "stopped"
   /** The platform refused the start, or the channel refused the session. */
   | "refused"
   | "error";
@@ -230,6 +232,7 @@ function onMessage(state: LiveState, message: MissionChannelMessage): LiveState 
 export function liveStatus(state: LiveState): LiveStatus {
   const mission = state.missionState;
   if (mission === "WEATHER_HOLD") return "hold";
+  if (isStopped(mission)) return "stopped";
   if (mission !== "SCHEDULED" && !reopensSession(mission)) return "ended";
   if (state.expired) return "expired";
   if (state.start === "pending") return "starting";
@@ -245,6 +248,20 @@ export function liveStatus(state: LiveState): LiveStatus {
   if (state.socket === "lost") return "reconnecting";
   if (state.stream) return "live";
   return "connecting";
+}
+
+/** The states that end an observation short, each a designed screen in the room (A4). */
+export const stoppedStates = [
+  "NOT_VISIBLE",
+  "HARDWARE_ERROR",
+  "CANCELLED",
+  "FAILED",
+] as const satisfies readonly MissionState[];
+
+export type StoppedState = (typeof stoppedStates)[number];
+
+export function isStopped(state: MissionState): state is StoppedState {
+  return (stoppedStates as readonly MissionState[]).includes(state);
 }
 
 /** Whether the feed offers to start again, and what that button means. */

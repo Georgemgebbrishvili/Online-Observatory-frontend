@@ -2,6 +2,7 @@ import type {
   ErrorCode,
   MissionChannelMessage,
   MissionSession,
+  MissionState,
 } from "@darkview/contracts";
 import { describe, expect, it } from "vitest";
 
@@ -133,9 +134,30 @@ describe("the live feed's status", () => {
         remainingSeconds: null,
       }),
     );
-    expect(liveStatus(failed)).toBe("ended");
+    expect(liveStatus(failed)).toBe("stopped");
+    expect(liveAction(failed)).toBeNull();
     expect(failed.stream).toBeNull();
     expect(failed.seen).toEqual(["HARDWARE_ERROR"]);
+  });
+
+  it("states every short stop as stopped, and a finished mission as ended", () => {
+    const live = run(observing, { type: "started", session }, streamOffer);
+    const after = (state: MissionState) =>
+      liveStatus(
+        run(
+          live,
+          message({
+            type: "MISSION_STATE",
+            state,
+            failureReason: null,
+            remainingSeconds: null,
+          }),
+        ),
+      );
+    for (const state of ["NOT_VISIBLE", "HARDWARE_ERROR", "CANCELLED", "FAILED"] as const)
+      expect(after(state)).toBe("stopped");
+    expect(after("PROCESSING")).toBe("ended");
+    expect(after("COMPLETE")).toBe("ended");
   });
 
   it("ends the session at its expiresAt", () => {

@@ -44,7 +44,7 @@ import {
   ObservatoryStatus,
   observatoryStatuses,
 } from "@/components/observatory/observatory-status";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, SurfacePanel } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Modal, Sheet } from "@/components/ui/dialog";
@@ -187,6 +187,7 @@ const liveSpecimens: readonly LiveStatus[] = [
   "hold",
   "expired",
   "ended",
+  "stopped",
   "refused",
   "error",
 ];
@@ -922,6 +923,15 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                       </Button>
                     ) : status === "refused" || status === "error" ? (
                       <Button variant="secondary">{room.live.actions.retry}</Button>
+                    ) : status === "stopped" ? (
+                      <>
+                        <ButtonLink variant="secondary" href={`/${locale}/app/bookings`}>
+                          {room.live.actions.booking}
+                        </ButtonLink>
+                        <ButtonLink href={`/${locale}/app/book`}>
+                          {room.live.actions.book}
+                        </ButtonLink>
+                      </>
                     ) : undefined
                   }
                 />

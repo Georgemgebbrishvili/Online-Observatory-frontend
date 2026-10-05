@@ -25,7 +25,7 @@ which stays the record of Phases 0–4. The decisions behind it:
 | 4.4 Sharing control                           | Done here   | [`phase-4/04-sharing.md`](phase-4/04-sharing.md); the watch link is on since 4.5                  |
 | 4.5–4.6 Watch page, observer seat             | Done here   | [`05-watch.md`](phase-4/05-watch.md); paying needs platform request `observer-pack-checkout`      |
 | 4.7 `/app/live` redirect                      | Done here   | A3: the live or imminent mission's room, else booking (`features/missions/active.ts`)             |
-| 4.8 Failure screens                           | Not started | Track A below                                                                                     |
+| 4.8 Failure screens                           | Done here   | A4: NOT_VISIBLE, HARDWARE_ERROR, CANCELLED, FAILED, heartbeat loss; hold and offline were built   |
 | 5 Commerce and account                        | Not started | Split by ADR-037: account before launch, the rest after                                           |
 | 6 Mobile                                      | Not started | After launch (ADR-037); no `apps/mobile`                                                          |
 | Hosted demo                                   | Paused      | Platform PR #166 unmerged; production Vercel has no env vars                                      |

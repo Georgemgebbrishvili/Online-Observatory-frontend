@@ -7,7 +7,7 @@ import type {
 } from "@darkview/contracts";
 
 import { brand } from "@/brand";
-import type { LiveStatus } from "@/features/missions/live";
+import type { LiveStatus, StoppedState } from "@/features/missions/live";
 
 type StatePresentation = {
   title: string;
@@ -22,7 +22,15 @@ type LiveCopy = {
   notStarted: { title: string; before: string; open: string };
   refused: { title: string; reasons: Partial<Record<ErrorCode, string>>; other: string };
   liveReal: string;
-  actions: { start: string; retry: string; reopen: string };
+  actions: {
+    start: string;
+    retry: string;
+    reopen: string;
+    book: string;
+    booking: string;
+  };
+  /** What happens next, under the state's title, when the observation stopped short. */
+  stopped: Record<StoppedState, string>;
   simulated: string;
   live: string;
   timeLeft: string;
@@ -174,6 +182,11 @@ const en: RoomCopy = {
         title: "Live view closed",
         description: "This mission's live view has closed.",
       },
+      stopped: {
+        title: "Observation stopped",
+        description:
+          "The telescope is safe. Your captures so far stay in your Collection.",
+      },
       error: {
         title: "Something went wrong",
         description: "The platform did not answer. Try again in a moment.",
@@ -201,7 +214,23 @@ const en: RoomCopy = {
       other: "The platform refused to open the live view.",
     },
     liveReal: "The camera's picture, as it arrives.",
-    actions: { start: "Start observation", retry: "Try again", reopen: "Watch here" },
+    actions: {
+      start: "Start observation",
+      retry: "Try again",
+      reopen: "Watch here",
+      book: "Book another night",
+      booking: "See your booking",
+    },
+    stopped: {
+      NOT_VISIBLE:
+        "The telescope does not point at {target} outside its safe window. Book a night when it stands higher.",
+      HARDWARE_ERROR:
+        "The telescope stopped before moving further. It observes again once an operator clears the fault.",
+      CANCELLED:
+        "Nothing more is sent to the telescope. Your captures stay in your Collection.",
+      FAILED:
+        "The telescope is in a safe state. Your captures so far stay in your Collection.",
+    },
     simulated: "Simulated",
     live: "Live",
     timeLeft: "Time left",
@@ -404,6 +433,10 @@ const ka: RoomCopy = {
         title: "პირდაპირი ხედი დაიხურა",
         description: "ამ მისიის პირდაპირი ხედი დაიხურა.",
       },
+      stopped: {
+        title: "დაკვირვება შეწყდა",
+        description: "ტელესკოპი უსაფრთხოდაა. აქამდე გადაღებული კადრები კოლექციაში რჩება.",
+      },
       error: {
         title: "რაღაც შეფერხდა",
         description: "პლატფორმამ არ უპასუხა. სცადეთ ცოტა ხანში.",
@@ -431,7 +464,23 @@ const ka: RoomCopy = {
       other: "პლატფორმამ პირდაპირი ხედის გახსნაზე უარი თქვა.",
     },
     liveReal: "კამერის გამოსახულება, როგორც მოდის.",
-    actions: { start: "დაიწყე დაკვირვება", retry: "სცადე თავიდან", reopen: "აქ ნახვა" },
+    actions: {
+      start: "დაიწყე დაკვირვება",
+      retry: "სცადე თავიდან",
+      reopen: "აქ ნახვა",
+      book: "დაჯავშნე სხვა ღამე",
+      booking: "ჯავშნის ნახვა",
+    },
+    stopped: {
+      NOT_VISIBLE:
+        "უსაფრთხო ფანჯრის გარეთ ტელესკოპი ობიექტისკენ არ შებრუნდება: {target}. დაჯავშნე ღამე, როცა ის უფრო მაღლა იქნება.",
+      HARDWARE_ERROR:
+        "ტელესკოპი შემდგომ მოძრაობამდე გაჩერდა. დაკვირვებას მაშინ განაახლებს, როცა ოპერატორი შეცდომას გამოასწორებს.",
+      CANCELLED:
+        "ტელესკოპს მეტი ბრძანება აღარ ეგზავნება. კადრები თქვენს კოლექციაში რჩება.",
+      FAILED:
+        "ტელესკოპი უსაფრთხო მდგომარეობაშია. აქამდე გადაღებული კადრები კოლექციაში რჩება.",
+    },
     simulated: "სიმულირებული",
     live: "პირდაპირი",
     timeLeft: "დარჩენილი დრო",

@@ -434,8 +434,10 @@
   }
 }
 
-/* A hold is amber, as the room marks a stopped mission (ADR-027 §7); nothing else is. */
-.live-feed[data-live-status="hold"] .live-feed-status > [role] {
+/* A hold and an observation stopped short are amber, as the step tracker marks a stopped
+   mission (ADR-027 §7); nothing else is. */
+.live-feed[data-live-status="hold"] .live-feed-status > [role],
+.live-feed[data-live-status="stopped"] .live-feed-status > [role] {
   padding-left: var(--space-3);
   border-left: 2px solid var(--color-warning);
 }

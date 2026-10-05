@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { roomCopy } from "../src/i18n/resources/room";
+
 // Phase 4 slice 2, against e2e/fake-platform.mjs: the session start, the mission channel
 // over the web app's /ws proxy, and the MJPEG stream. The `fake_live` cookie picks the
 // fake's scenario for this browser context only, so parallel tests never share one.
@@ -192,6 +194,73 @@ for (const [locale, text, retry] of [
     await expect(feedStatus(page)).toContainText(text);
     await expect(page.getByRole("button", { name: retry })).toBeVisible();
   });
+}
+
+// A4: an observation stopped short is a designed screen: the state, the reason, what
+// happens next, and the way forward. Each arrives on the channel after the session opened.
+const stops = [
+  {
+    scenario: "not-visible",
+    reason: "TARGET_SET_BELOW_LIMIT",
+    heading: { en: "Target not visible", ka: "ობიექტი არ ჩანს" },
+  },
+  {
+    scenario: "hardware",
+    reason: "MOUNT_FAULT",
+    heading: { en: "Observatory hardware error", ka: "ობსერვატორიის აპარატურის შეცდომა" },
+  },
+  {
+    scenario: "cancelled",
+    reason: "OPERATOR_ABORT",
+    heading: { en: "Mission cancelled", ka: "მისია გაუქმებულია" },
+  },
+  {
+    scenario: "failed",
+    reason: "CENTERING_ITERATIONS_EXHAUSTED",
+    heading: { en: "Mission failed", ka: "მისია ვერ შესრულდა" },
+  },
+  {
+    // Heartbeat loss: the link goes, and the cloud closes the mission out.
+    scenario: "heartbeat",
+    reason: "AGENT_LINK_LOST",
+    heading: { en: "Mission failed", ka: "მისია ვერ შესრულდა" },
+  },
+] as const;
+
+for (const stop of stops) {
+  for (const locale of ["en", "ka"] as const) {
+    test(`${locale}: ${stop.scenario} stops the observation, with a way forward`, async ({
+      page,
+    }) => {
+      const heading = stop.heading[locale];
+      const actions =
+        locale === "en"
+          ? { book: "Book another night", booking: "See your booking" }
+          : { book: "დაჯავშნე სხვა ღამე", booking: "ჯავშნის ნახვა" };
+      await scenario(page, stop.scenario);
+      await page.goto(`/${locale}/app/missions/${observing}/session`);
+
+      await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible({
+        timeout: 15_000,
+      });
+      await expect(page.locator(".live-feed")).toHaveAttribute(
+        "data-live-status",
+        "stopped",
+      );
+      await expect(page.locator(".room-reason")).toHaveText(
+        roomCopy[locale].reasons[stop.reason],
+      );
+      await expect(page.locator(".live-feed [data-live-stream]")).toHaveCount(0);
+      await expect(page.getByRole("link", { name: actions.book })).toHaveAttribute(
+        "href",
+        `/${locale}/app/book`,
+      );
+      await expect(page.getByRole("link", { name: actions.booking })).toHaveAttribute(
+        "href",
+        `/${locale}/app/bookings/50000000-0000-4000-8000-000000000001`,
+      );
+    });
+  }
 }
 
 test("a session another tab holds offers to watch here", async ({ page }) => {
