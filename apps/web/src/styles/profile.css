@@ -1,0 +1,82 @@
+/*
+ * The profile page (account slice 2, DV-079) in the poster language (ADR-039): the app
+ * pages' opening, then one plate per form, so a refusal in one never touches another.
+ */
+.profile-page {
+  display: grid;
+  gap: var(--space-6);
+  width: min(100%, 44rem);
+  padding: var(--space-8) var(--space-page) var(--space-16);
+}
+
+.profile-page > * {
+  min-width: 0;
+}
+
+.profile-hero {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.profile-hero .kicker,
+.profile-hero h1 {
+  margin: 0;
+}
+
+.profile-hero h1 {
+  font-size: min(var(--font-size-hero), 10.6vw);
+}
+
+html[lang="ka"] .profile-hero h1 {
+  max-width: none;
+}
+
+.profile-hero > p:not(.kicker) {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.profile-panel {
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* Panel titles are voice, not posters, as the cards' are. */
+.profile-panel h2 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.profile-form {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+}
+
+.profile-form > .field,
+.profile-form > label {
+  width: 100%;
+}
+
+.profile-current {
+  margin: 0;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.profile-outcome {
+  margin: 0;
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.profile-outcome-error {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-medium);
+  background: var(--color-error-muted);
+}

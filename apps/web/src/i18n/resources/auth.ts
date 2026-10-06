@@ -30,10 +30,9 @@ const en = {
   verify: {
     metadataTitle: `Confirm email · ${brand.en.name}`,
     title: "Confirm your email address.",
-    description:
-      "This final check activates your account and creates a new secure session.",
+    description: "Confirming signs you in here, and signs you out everywhere else.",
     submit: "Confirm email",
-    invalid: "This verification link is invalid or has expired.",
+    invalid: "This link is invalid, used or expired.",
   },
   resetRequest: {
     metadataTitle: `Reset password · ${brand.en.name}`,
@@ -109,9 +108,9 @@ export const authCopy = {
       metadataTitle: `ელფოსტის დადასტურება · ${brand.ka.nominative}`,
       title: "დაადასტურე ელფოსტის მისამართი.",
       description:
-        "ეს ბოლო შემოწმება გაააქტიურებს ანგარიშს და შექმნის ახალ დაცულ სესიას.",
+        "დადასტურების შემდეგ აქ შეხვალ, ყველა სხვა მოწყობილობაზე კი გამოხვალ.",
       submit: "ელფოსტის დადასტურება",
-      invalid: "ეს დამადასტურებელი ბმული არასწორია ან ვადა გაუვიდა.",
+      invalid: "ეს ბმული არასწორია, გამოყენებულია ან ვადა გაუვიდა.",
     },
     resetRequest: {
       metadataTitle: `პაროლის აღდგენა · ${brand.ka.nominative}`,

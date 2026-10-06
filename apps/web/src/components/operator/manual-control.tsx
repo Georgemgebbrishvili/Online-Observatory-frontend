@@ -134,10 +134,12 @@ export function ManualControl({
     <section
       className="surface-panel operator-manual"
       aria-labelledby="operator-manual-title"
+      aria-busy={reading.kind === "waiting" || undefined}
     >
       <h2 id="operator-manual-title">{copy.title}</h2>
       <p>{copy.detail}</p>
-      {!missionId && (
+      {/* Not before the first reading: until then nobody knows whether one is active. */}
+      {!missionId && reading.kind !== "waiting" && (
         <p className="operator-tone-info" role="status">
           {copy.needsMission}
         </p>

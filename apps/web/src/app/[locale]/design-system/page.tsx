@@ -6,6 +6,7 @@ import "@/styles/design-system.css";
 import "@/styles/pages.css";
 import "@/styles/homepage.css";
 import "@/styles/observatory.css";
+import "@/styles/profile.css";
 import { notFound } from "next/navigation";
 
 import { TargetAvailability } from "@/components/astronomy/target-availability";
@@ -65,6 +66,7 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/collection";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
+import { profileCopy } from "@/i18n/resources/profile";
 import { roomCopy } from "@/i18n/resources/room";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
@@ -1073,6 +1075,17 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <Checkbox label={copy.form.consent} defaultChecked />
               <Button type="submit">{copy.form.submit}</Button>
             </form>
+          </SurfacePanel>
+          {/* Account slice 2: a profile form's answer, accepted and refused. */}
+          <SurfacePanel className="profile-panel">
+            <h3>{profileCopy[locale].password.title}</h3>
+            <p className="profile-outcome" role="status">
+              {profileCopy[locale].password.changed}
+            </p>
+            <p className="profile-outcome profile-outcome-error" role="alert">
+              {profileCopy[locale].errors.unavailable}
+            </p>
+            <Button loading>{profileCopy[locale].password.submit}</Button>
           </SurfacePanel>
         </section>
 

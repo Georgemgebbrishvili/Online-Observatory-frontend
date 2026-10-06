@@ -12,6 +12,8 @@ import {
   zAdminUpdateTargetRequest,
   zAdminUpdateTargetResponse,
   zApiError,
+  zChangeEmailRequest,
+  zChangePasswordRequest,
   zCreateBookingBody,
   zCreateBookingResponse,
   zGetBookingResponse,
@@ -19,9 +21,10 @@ import {
   zGetCaptureResponse,
   zGetMissionResponse,
   zGetMissionWatchViewResponse,
-  zJoinMissionAsObserverResponse,
   zGetObservatoryConditionsResponse,
   zGetObservatoryStatusResponse,
+  zGetTargetResponse,
+  zJoinMissionAsObserverResponse,
   zListBookableObservatoriesResponse,
   zListBookingsResponse,
   zListCapturesResponse,
@@ -29,7 +32,6 @@ import {
   zListMissionsResponse,
   zListSlotTargetsResponse,
   zListSlotsResponse,
-  zGetTargetResponse,
   zListTargetsResponse,
   zListTonightTargetsResponse,
   zMissionChannelMessage,
@@ -37,18 +39,19 @@ import {
   zMissionCommandAccepted,
   zOperatorObservatoryState,
   zOperatorOverrideRequest,
-  zPurchaseObserverPackResponse,
   zPasswordResetConfirmRequest,
   zPasswordResetRequest,
+  zPurchaseObserverPackResponse,
   zRegisterRequest,
   zRescheduleBookingBody,
   zRescheduleBookingResponse,
-  zSetObservatoryModeRequest,
-  zStartMissionSessionResponse,
   zSetMissionObservationBody,
   zSetMissionObservationResponse,
+  zSetObservatoryModeRequest,
+  zStartMissionSessionResponse,
   zSubmitMissionCommandBody,
   zSubmitMissionCommandResponse,
+  zUpdateProfileRequest,
   zUser,
   zVerifyEmailRequest,
 } from "@darkview/contracts/zod";
@@ -90,6 +93,12 @@ const fakeAccounts = {
     role: "OPERATOR",
     displayName: "Failing operator",
   },
+  // Account slice 2: edits its profile, address and password in e2e, for the same reason.
+  "profiled@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000007",
+    role: "USER",
+    displayName: "Profiled",
+  },
   // Account slice 1: resets its password in e2e, so no other test's sign-in depends on it.
   "forgetful@darkview.test": {
     id: "00000000-0000-4000-8000-000000000006",
@@ -124,6 +133,11 @@ const pendingVerifications = new Map();
 const pendingResets = new Map();
 const resetToken = (email) =>
   createHash("sha256").update(`reset:${email}`).digest("base64url");
+// ADR-042's change links, token -> { userId, email }, derived from the new address the
+// same way, and consumed by POST /auth/verify-email like a registration link.
+const pendingEmailChanges = new Map();
+const emailChangeToken = (email) =>
+  createHash("sha256").update(`email-change:${email}`).digest("base64url");
 
 // One simulated first-party observatory with one live mission, as the simulator
 // agent would report it. PARK takes a moment to land, like a real mount.
@@ -1341,6 +1355,30 @@ const routes = {
   "POST /auth/verify-email": async (request, response) => {
     const body = zVerifyEmailRequest.safeParse(await json(request));
     if (!body.success) return error(response, 422, "VALIDATION_FAILED", "A token.");
+    const change = pendingEmailChanges.get(body.data.token);
+    if (change) {
+      // ADR-042: the account moves, every session ends, and the opener is signed in.
+      pendingEmailChanges.delete(body.data.token);
+      const user = [...users.values()].find((row) => row.id === change.userId);
+      const password = passwords.get(user.email) ?? fakePassword;
+      users.delete(user.email);
+      passwords.delete(user.email);
+      user.email = change.email;
+      users.set(user.email, user);
+      passwords.set(user.email, password);
+      for (const [token, session] of sessions) {
+        if (session.user.id === user.id) sessions.delete(token);
+      }
+      const token = randomUUID();
+      const csrf = randomUUID();
+      sessions.set(token, { user, csrf });
+      return send(response, 200, zUser.parse(user), {
+        "set-cookie": [
+          `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
+          `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+        ],
+      });
+    }
     const pending = pendingVerifications.get(body.data.token);
     if (!pending) return error(response, 403, "FORBIDDEN", "This link is not valid.");
     pendingVerifications.delete(body.data.token);
@@ -1402,6 +1440,83 @@ const routes = {
         `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
       ],
     });
+  },
+  // ADR-042: the name and the language the platform writes in.
+  "PATCH /me": async (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const body = zUpdateProfileRequest.safeParse(await json(request));
+    if (!body.success) {
+      return error(response, 422, "VALIDATION_FAILED", "UpdateProfileRequest.", {
+        fields: [...new Set(body.error.issues.map((issue) => issue.path.join(".")))],
+      });
+    }
+    const { displayName, locale } = body.data;
+    if (displayName === undefined && locale === undefined) {
+      return error(response, 422, "VALIDATION_FAILED", "Name a field.");
+    }
+    if (displayName !== undefined) {
+      if (displayName.trim().length < 2) {
+        return error(response, 422, "VALIDATION_FAILED", "Too short.", {
+          fields: ["displayName"],
+        });
+      }
+      user.displayName = displayName.trim();
+    }
+    if (locale !== undefined) user.locale = locale;
+    send(response, 200, zUser.parse(user));
+  },
+  // ADR-042: 202 whether or not the address is free; a link only when it is.
+  "POST /me/email": async (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const body = zChangeEmailRequest.safeParse(await json(request));
+    if (!body.success) {
+      return error(response, 422, "VALIDATION_FAILED", "ChangeEmailRequest.", {
+        fields: [...new Set(body.error.issues.map((issue) => issue.path.join(".")))],
+      });
+    }
+    if (body.data.currentPassword !== (passwords.get(user.email) ?? fakePassword)) {
+      return error(response, 422, "VALIDATION_FAILED", "Wrong current password.", {
+        fields: ["currentPassword"],
+      });
+    }
+    const email = body.data.email.trim().toLowerCase();
+    if (email === user.email) {
+      return error(response, 422, "VALIDATION_FAILED", "Already the address.", {
+        fields: ["email"],
+      });
+    }
+    if (!users.has(email)) {
+      const token = emailChangeToken(email);
+      pendingEmailChanges.set(token, { userId: user.id, email });
+      console.log(
+        `[fake-platform] change ${user.email} -> ${email}: ${appOrigin}/${user.locale}/verify-email/${token}`,
+      );
+    }
+    send(response, 202, undefined);
+  },
+  // ADR-040: this session stays, every other ends.
+  "POST /me/password": async (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const body = zChangePasswordRequest.safeParse(await json(request));
+    if (!body.success) {
+      return error(response, 422, "VALIDATION_FAILED", "ChangePasswordRequest.", {
+        fields: [...new Set(body.error.issues.map((issue) => issue.path.join(".")))],
+      });
+    }
+    if (body.data.currentPassword !== (passwords.get(user.email) ?? fakePassword)) {
+      return error(response, 422, "VALIDATION_FAILED", "Wrong current password.", {
+        fields: ["currentPassword"],
+      });
+    }
+    passwords.set(user.email, body.data.password);
+    const current = cookiesOf(request)[sessionCookie];
+    for (const [token, session] of sessions) {
+      if (session.user.id === user.id && token !== current) sessions.delete(token);
+    }
+    send(response, 204, undefined);
   },
   "POST /auth/sign-out": (request, response) => {
     if (!sessionUser(request))

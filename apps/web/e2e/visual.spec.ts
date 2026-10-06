@@ -71,9 +71,12 @@ async function capture(
   // The live room settles first: a feed still starting or connecting is a moment, not a
   // state. Its MJPEG stream never "completes" -- it replaces itself -- so it is not waited on.
   await page.waitForFunction(() => !document.querySelector(".room [data-live-busy]"));
-  // The operator's lists are fetched by the browser: loaded, not mid-way.
+  // The operator's lists and console are fetched by the browser: loaded, not mid-way.
   await page.waitForFunction(
-    () => !document.querySelector('.operator-list[aria-busy="true"]'),
+    () =>
+      !document.querySelector(
+        ':is(.operator-list, .operator-manual)[aria-busy="true"]',
+      ),
   );
   await page.waitForFunction(() =>
     [...document.images].every(

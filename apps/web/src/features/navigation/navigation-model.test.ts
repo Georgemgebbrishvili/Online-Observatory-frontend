@@ -55,11 +55,11 @@ describe("app navigation model", () => {
   });
 
   it("separates segments with their own route from those the preview renders", () => {
-    // These five have real pages; the preview must not claim them.
-    for (const segment of ["", "missions", "live", "collection", "book"]) {
+    // These have real pages; the preview must not claim them.
+    for (const segment of ["", "missions", "live", "collection", "book", "profile"]) {
       expect(isPreviewSegment(segment), segment).toBe(false);
     }
-    for (const segment of ["profile", "subscription", "loyalty", "passes"]) {
+    for (const segment of ["subscription", "loyalty", "passes"]) {
       expect(isPreviewSegment(segment), segment).toBe(true);
     }
   });
@@ -69,7 +69,6 @@ describe("app navigation model", () => {
       .map((destination) => destination.segment)
       .filter((segment) => isPlannedSegment(segment));
     expect(planned).toEqual(["subscription", "loyalty", "passes"]);
-    // profile is a preview, but it is not advertised as unbuilt.
     expect(isPlannedSegment("profile")).toBe(false);
   });
 });

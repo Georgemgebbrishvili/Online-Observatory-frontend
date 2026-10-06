@@ -24,3 +24,13 @@ nextjs-portal {
   white-space: nowrap;
   vertical-align: bottom;
 }
+
+/*
+ * The wordmark's reveal animates opacity, so the text sits on a layer of its own while it
+ * runs and is antialiased one of two ways depending on when the capture lands. Shown as it
+ * ends, with no layer.
+ */
+.brand-wordmark,
+.brand-endorsement {
+  animation: none !important;
+}
