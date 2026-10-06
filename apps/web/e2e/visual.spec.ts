@@ -48,6 +48,11 @@ function masks(page: Page) {
     // A hash of the server's error, whose length changes with the code that threw it:
     // the whole line, so the mask's box does not.
     page.locator(".route-error-digest"),
+    // The legal contents: Georgian rows of fractional height, whose text lands a pixel
+    // apart from one run to the next.
+    page.locator(".legal-toc ol"),
+    // The observatory's clock is blank until it mounts, then the browser's time.
+    page.locator(".site-clock"),
   ];
 }
 
@@ -66,6 +71,10 @@ async function capture(
   // The live room settles first: a feed still starting or connecting is a moment, not a
   // state. Its MJPEG stream never "completes" -- it replaces itself -- so it is not waited on.
   await page.waitForFunction(() => !document.querySelector(".room [data-live-busy]"));
+  // The operator's lists are fetched by the browser: loaded, not mid-way.
+  await page.waitForFunction(
+    () => !document.querySelector('.operator-list[aria-busy="true"]'),
+  );
   await page.waitForFunction(() =>
     [...document.images].every(
       (image) => image.complete || "liveStream" in image.dataset,

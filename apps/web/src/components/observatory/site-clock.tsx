@@ -44,7 +44,8 @@ export function SiteClock({ locale, timezone, zoneLabel }: SiteClockProps) {
 
   return (
     <div className="site-clock">
-      <span className="site-clock-date">{date || " "}</span>
+      {/* A no-break space holds the line, so the clock does not grow when it mounts. */}
+      <span className="site-clock-date">{date || "\u00a0"}</span>
       <time className="site-clock-time" dateTime={now?.toISOString()}>
         {time}
       </time>

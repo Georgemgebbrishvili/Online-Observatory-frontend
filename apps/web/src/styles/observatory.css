@@ -1,5 +1,5 @@
 /*
- * /observatory as the Stellar app's observatory scene (ADR-041). A navy night under a
+ * /observatory as the reference app's observatory scene (ADR-041). A navy night under a
  * field of stars, panels that float over it, the camera's frame on the Moon, the site's
  * clock and a dock of ways in. The panels are opaque enough to need no blur, and
  * nothing glows (ADR-039).

@@ -1619,6 +1619,9 @@ function subscribed(socket, mission, session) {
 // agent's one verdict on the channel. The `fake_command` cookie picks the outcome for this
 // browser context: unset, the agent accepts; `refuse`, it refuses a nudge past its limit;
 // `cloud`, the cloud refuses it first (409); `silent`, no verdict ever comes.
+// Every parallel test is the same user on the same mission, and the platform relays a
+// verdict to the newest session, which may be another test's. A test that sets the
+// `fake_room` cookie hears only the verdicts on the commands it sent itself.
 const COMMAND_TTL_SECONDS = 15;
 
 async function submitCommand(request, response, id) {
@@ -1667,8 +1670,15 @@ async function submitCommand(request, response, id) {
   send(response, 202, accepted);
   if (outcome === "silent") return;
 
+  const room = cookiesOf(request).fake_room ?? null;
+  const sockets = room
+    ? [...liveSessions.values()]
+        .filter((candidate) => candidate.missionId === id)
+        .flatMap((candidate) => [...(candidate.sockets ?? [])])
+        .filter((socket) => socket.room === room)
+    : [...(session.sockets ?? [])].filter((socket) => !socket.room);
   const say = (body) => {
-    for (const socket of session.sockets ?? [])
+    for (const socket of sockets)
       socket.sendJson(channelMessage({ missionId: id, ...body }));
   };
   const refused = outcome === "refuse" && type === "NUDGE";
@@ -2029,6 +2039,8 @@ function onChannelMessage(socket, missionId, user, raw, request) {
   ) {
     return refuse("FORBIDDEN", "No live session for this mission is yours.");
   }
+  // Which test's room this is, when the test names one (see submitCommand).
+  socket.room = cookiesOf(request).fake_room ?? null;
   subscribed(socket, mission, session);
 }
 

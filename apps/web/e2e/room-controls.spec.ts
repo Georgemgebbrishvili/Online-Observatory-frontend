@@ -12,6 +12,10 @@ async function outcome(page: Page, value: string) {
 }
 
 async function openRoom(page: Page, locale = "en") {
+  // Its own room: the verdicts on other tests' commands, a stop among them, stay there.
+  await page.context().addCookies([
+    { name: "fake_room", value: crypto.randomUUID(), url: "http://localhost:3100" },
+  ]);
   await page.goto(`/${locale}/app/missions/${observing}/session`);
   await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "live");
 }

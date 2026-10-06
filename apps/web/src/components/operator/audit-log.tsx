@@ -44,7 +44,11 @@ export function AuditLog({
   const events = usePagedList<AuditEvent>(load);
 
   return (
-    <section className="surface-panel operator-list" aria-labelledby="operator-logs">
+    <section
+      className="surface-panel operator-list"
+      aria-labelledby="operator-logs"
+      aria-busy={events.loading || undefined}
+    >
       <header>
         <h2 id="operator-logs">{text.title}</h2>
         <p>{text.detail}</p>

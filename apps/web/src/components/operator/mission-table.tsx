@@ -72,7 +72,11 @@ export function MissionTable({ copy, locale }: { copy: OperatorCopy; locale: Loc
   const { missions: text, table } = copy;
 
   return (
-    <section className="surface-panel operator-list" aria-labelledby="operator-missions">
+    <section
+      className="surface-panel operator-list"
+      aria-labelledby="operator-missions"
+      aria-busy={missions.loading || undefined}
+    >
       <header>
         <h2 id="operator-missions">{text.title}</h2>
         <p>{text.detail}</p>

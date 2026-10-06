@@ -412,7 +412,9 @@ test("the observatory scene carries the state, tonight's sky, the plate and the 
 
   const scene = page.locator(".observatory-live");
   await expect(scene.getByText("SIMULATED OBSERVATORY")).toBeVisible();
-  await expect(scene.getByText("Online", { exact: true })).toBeVisible();
+  // The fake starts with a mission observing, and the operator's cancel test ends it;
+  // which one this test sees depends on the order the workers run in.
+  await expect(scene.locator(".observatory-pill")).toHaveText(/^(Online|Observing)$/);
   await expect(scene.getByText("Celestron NexStar 6SE")).toBeVisible();
   // The fake's first forecast hour: 12% cloud, at 20:00Z, read in Tbilisi.
   await expect(scene.getByText("12% cloud")).toBeVisible();

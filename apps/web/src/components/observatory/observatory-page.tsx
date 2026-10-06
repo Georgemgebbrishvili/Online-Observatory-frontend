@@ -581,7 +581,7 @@ function Site({ locale }: { locale: Locale }) {
 }
 
 /**
- * /observatory as the Stellar app's observatory scene (ADR-041): a star field, a
+ * /observatory as the reference app's observatory scene (ADR-041): a star field, a
  * floating instrument card, the camera's frame on the Moon, the site's clock and a dock
  * of ways in, then the instrument, tonight, the ways, the safety rules and the site.
  * Every value is the platform's or the product's own; nothing links to a page that does
