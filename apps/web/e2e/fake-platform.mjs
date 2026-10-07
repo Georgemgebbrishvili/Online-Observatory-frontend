@@ -14,6 +14,7 @@ import {
   zApiError,
   zChangeEmailRequest,
   zChangePasswordRequest,
+  zDeleteAccountRequest,
   zCreateBookingBody,
   zCreateBookingResponse,
   zGetBookingResponse,
@@ -98,6 +99,12 @@ const fakeAccounts = {
     id: "00000000-0000-4000-8000-000000000007",
     role: "USER",
     displayName: "Profiled",
+  },
+  // C4 (ADR-044): deletes itself in e2e. Nothing else signs in as it.
+  "leaving@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000008",
+    role: "USER",
+    displayName: "Leaving",
   },
   // Account slice 1: resets its password in e2e, so no other test's sign-in depends on it.
   "forgetful@darkview.test": {
@@ -1527,6 +1534,68 @@ const routes = {
       if (session.user.id === user.id && token !== current) sessions.delete(token);
     }
     send(response, 204, undefined);
+  },
+  // ADR-044: 409 with the blockers the platform would name, else the account is gone.
+  // The fake knows the bookings and the live mission, so it names those three.
+  "DELETE /me": async (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const body = zDeleteAccountRequest.safeParse(await json(request));
+    if (!body.success) {
+      return error(response, 422, "VALIDATION_FAILED", "DeleteAccountRequest.", {
+        fields: [...new Set(body.error.issues.map((issue) => issue.path.join(".")))],
+      });
+    }
+    if (body.data.currentPassword !== (passwords.get(user.email) ?? fakePassword)) {
+      return error(response, 422, "VALIDATION_FAILED", "Wrong current password.", {
+        fields: ["currentPassword"],
+      });
+    }
+    const now = Date.now();
+    const mine = bookingsOf(request, user);
+    const blockers = [];
+    if (user.role === "OPERATOR") blockers.push("OPERATOR");
+    if (user.id === userId) blockers.push("LIVE_MISSION");
+    if (
+      mine.some(
+        (row) =>
+          row.status === "CONFIRMED" &&
+          Date.parse(row.slotStartAt) + row.durationMinutes * 60_000 > now,
+      )
+    )
+      blockers.push("UPCOMING_BOOKING");
+    if (
+      mine.some(
+        (row) =>
+          row.status === "PENDING_PAYMENT" &&
+          row.paymentIntent?.expiresAt &&
+          Date.parse(row.paymentIntent.expiresAt) > now,
+      )
+    )
+      blockers.push("HELD_BOOKING");
+    if (mine.some((row) => row.entitlement?.status === "OPEN"))
+      blockers.push("OPEN_ENTITLEMENT");
+    if (blockers.length > 0) {
+      return error(
+        response,
+        409,
+        "CONFLICT",
+        "The account has something to settle first.",
+        {
+          blockers,
+        },
+      );
+    }
+    users.delete(user.email);
+    for (const [token, session] of sessions) {
+      if (session.user.id === user.id) sessions.delete(token);
+    }
+    send(response, 204, undefined, {
+      "set-cookie": [
+        `${sessionCookie}=; Path=/; Max-Age=0`,
+        `${csrfCookie}=; Path=/; Max-Age=0`,
+      ],
+    });
   },
   "POST /auth/sign-out": (request, response) => {
     if (!sessionUser(request))

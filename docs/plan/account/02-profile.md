@@ -1,7 +1,8 @@
 # Account, slice 2 — the profile page
 
-2026-10-06. Roadmap C4 (DV-079), less account deletion, which waits on platform request
-[`account-deletion`](../../platform-requests/account-deletion.md) (#173). Built on
+2026-10-06. Roadmap C4 (DV-079). Account deletion followed on 2026-10-07 on platform
+ADR-044 ([`account-deletion`](../../platform-requests/account-deletion.md), #173), as a
+fourth panel. Built on
 platform ADR-042 (PR #175, issue #172, request
 [`account-profile`](../../platform-requests/account-profile.md)) and ADR-040's
 `changePassword`.
@@ -24,6 +25,8 @@ form, so a refusal in one never clears another.
 | Wrong current password      | 422 `VALIDATION_FAILED`, `details.fields: ["currentPassword"]`, on both                                |
 | Same address                | 422, `details.fields: ["email"]`                                                                       |
 | Refusals                    | 401 (session ended), 403 (Origin), 429 `RATE_LIMITED`, 503 (email delivery)                            |
+| Delete account              | `deleteAccount` `DELETE /me` `{ currentPassword }` → 204, every session ended and the cookies cleared  |
+| What to settle first        | 409 `CONFLICT`, `details.blockers`: `AccountDeletionBlocker[]`, one sentence each                      |
 
 Handlers traced in `darkview-platform` at the PR head: `apps/api/src/features/auth/profile.ts`
 and `password.ts`.
@@ -32,25 +35,29 @@ and `password.ts`.
 
 Informal Georgian, as the rest of the product.
 
-| State             | Where it comes from      | en                                                                                                     | ka                                                                                                    |
-| ----------------- | ------------------------ | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| Page              | `GET /me`                | Account · Your profile. · Your name, your email and your password.                                     | ანგარიში · შენი პროფილი. · შენი სახელი, ელფოსტა და პაროლი.                                            |
-| Details           | panel 1                  | Name · Language for emails · Save                                                                      | სახელი · წერილების ენა · შენახვა                                                                      |
-| Saved             | 200                      | Saved.                                                                                                 | შენახულია.                                                                                            |
-| Short name        | client check, 422        | Use at least two characters.                                                                           | გამოიყენე მინიმუმ ორი სიმბოლო.                                                                        |
-| Email             | panel 2                  | Your address is {email}. · New email · Current password · Send link                                    | შენი მისამართია {email}. · ახალი ელფოსტა · მიმდინარე პაროლი · ბმულის გაგზავნა                         |
-| Email sent        | 202                      | Check {email}. Your address changes when you open the link we sent there. It works for 30 minutes.     | შეამოწმე {email}. მისამართი შეიცვლება, როცა იქ გაგზავნილ ბმულს გახსნი. ის 30 წუთი მოქმედებს.          |
-| Same address      | 422 `email`              | That is already your address.                                                                          | ეს უკვე შენი მისამართია.                                                                              |
-| Bad email         | client check, 422        | Enter a valid email address.                                                                           | შეიყვანე სწორი ელფოსტის მისამართი.                                                                    |
-| Wrong password    | 422 `currentPassword`    | That is not your current password.                                                                     | ეს შენი მიმდინარე პაროლი არ არის.                                                                     |
-| Password          | panel 3                  | Current password · New password · Change password                                                      | მიმდინარე პაროლი · ახალი პაროლი · პაროლის შეცვლა                                                      |
-| Password changed  | 204                      | Password changed. You're signed out everywhere else.                                                   | პაროლი შეიცვალა. ყველა სხვა მოწყობილობაზე სესია დასრულდა.                                             |
-| Weak password     | client check, 422        | Use a password between 12 and 128 characters.                                                          | გამოიყენე 12-დან 128-მდე სიმბოლოს პაროლი.                                                             |
-| Rate limited      | 429                      | Too many attempts. Try again later.                                                                    | ცდების ლიმიტი ამოიწურა. მოგვიანებით სცადე.                                                            |
-| Unavailable       | 503, no answer           | Account changes are unavailable right now. Try again later.                                            | ანგარიშის ცვლილება ახლა მიუწვდომელია. მოგვიანებით სცადე.                                              |
-| Session ended     | 401                      | a full navigation to `/sign-in`                                                                        | სრული გადასვლა `/sign-in`-ზე                                                                          |
-| Sending           | a request in flight      | the button's loading state                                                                             | ღილაკის ჩატვირთვის მდგომარეობა                                                                        |
-| Confirm (link)    | `/verify-email/{token}`  | Confirm your email address. · Confirming signs you in here, and signs you out everywhere else.         | დაადასტურე ელფოსტის მისამართი. · დადასტურების შემდეგ აქ შეხვალ, ყველა სხვა მოწყობილობაზე კი გამოხვალ. |
+| State            | Where it comes from     | en                                                                                                                   | ka                                                                                                          |
+| ---------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Page             | `GET /me`               | Account · Your profile. · Your name, your email and your password.                                                   | ანგარიში · შენი პროფილი. · შენი სახელი, ელფოსტა და პაროლი.                                                  |
+| Details          | panel 1                 | Name · Language for emails · Save                                                                                    | სახელი · წერილების ენა · შენახვა                                                                            |
+| Saved            | 200                     | Saved.                                                                                                               | შენახულია.                                                                                                  |
+| Short name       | client check, 422       | Use at least two characters.                                                                                         | გამოიყენე მინიმუმ ორი სიმბოლო.                                                                              |
+| Email            | panel 2                 | Your address is {email}. · New email · Current password · Send link                                                  | შენი მისამართია {email}. · ახალი ელფოსტა · მიმდინარე პაროლი · ბმულის გაგზავნა                               |
+| Email sent       | 202                     | Check {email}. Your address changes when you open the link we sent there. It works for 30 minutes.                   | შეამოწმე {email}. მისამართი შეიცვლება, როცა იქ გაგზავნილ ბმულს გახსნი. ის 30 წუთი მოქმედებს.                |
+| Same address     | 422 `email`             | That is already your address.                                                                                        | ეს უკვე შენი მისამართია.                                                                                    |
+| Bad email        | client check, 422       | Enter a valid email address.                                                                                         | შეიყვანე სწორი ელფოსტის მისამართი.                                                                          |
+| Wrong password   | 422 `currentPassword`   | That is not your current password.                                                                                   | ეს შენი მიმდინარე პაროლი არ არის.                                                                           |
+| Password         | panel 3                 | Current password · New password · Change password                                                                    | მიმდინარე პაროლი · ახალი პაროლი · პაროლის შეცვლა                                                            |
+| Password changed | 204                     | Password changed. You're signed out everywhere else.                                                                 | პაროლი შეიცვალა. ყველა სხვა მოწყობილობაზე სესია დასრულდა.                                                   |
+| Weak password    | client check, 422       | Use a password between 12 and 128 characters.                                                                        | გამოიყენე 12-დან 128-მდე სიმბოლოს პაროლი.                                                                   |
+| Rate limited     | 429                     | Too many attempts. Try again later.                                                                                  | ცდების ლიმიტი ამოიწურა. მოგვიანებით სცადე.                                                                  |
+| Unavailable      | 503, no answer          | Account changes are unavailable right now. Try again later.                                                          | ანგარიშის ცვლილება ახლა მიუწვდომელია. მოგვიანებით სცადე.                                                    |
+| Session ended    | 401                     | a full navigation to `/sign-in`                                                                                      | სრული გადასვლა `/sign-in`-ზე                                                                                |
+| Sending          | a request in flight     | the button's loading state                                                                                           | ღილაკის ჩატვირთვის მდგომარეობა                                                                              |
+| Delete           | panel 4                 | Delete your account · what is lost · Current password · I understand that this cannot be undone. · Delete my account | ანგარიშის წაშლა · რა იკარგება · მიმდინარე პაროლი · მესმის, რომ ამის გაუქმება შეუძლებელია. · ანგარიშის წაშლა |
+| Deleted          | 204                     | Your account has been deleted. + Go to the home page                                                                 | შენი ანგარიში წაიშალა. + მთავარ გვერდზე გადასვლა                                                            |
+| Blocked          | 409 with blockers       | Your account cannot be deleted yet: + one sentence per blocker                                                       | ანგარიშის წაშლა ჯერ შეუძლებელია: + თითო წინადადება                                                          |
+| Lost race        | 409 without blockers    | Your account changed while it was being deleted. Try again.                                                          | ანგარიში წაშლისას შეიცვალა. სცადე თავიდან.                                                                  |
+| Confirm (link)   | `/verify-email/{token}` | Confirm your email address. · Confirming signs you in here, and signs you out everywhere else.                       | დაადასტურე ელფოსტის მისამართი. · დადასტურების შემდეგ აქ შეხვალ, ყველა სხვა მოწყობილობაზე კი გამოხვალ.       |
 
 The confirm page serves a registration link and a change link alike (ADR-042), so its
 copy no longer says it activates the account.

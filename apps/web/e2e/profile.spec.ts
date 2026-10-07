@@ -104,3 +104,65 @@ test("moves the address only when the link sent to the new one is opened", async
 
   await signIn(page, moved);
 });
+
+// C4 (ADR-044): deleting the account. The observer has a paid slot ahead, a held one, a
+// refund owed and a live mission, so the platform names what to settle first; the
+// leaving account has nothing, and goes.
+async function signInAs(page: Page, email: string) {
+  await page.context().clearCookies();
+  await page.goto("/en/sign-in");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill("correct horse battery");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
+}
+
+test("says what to settle before an account can be deleted, and keeps it", async ({ page }) => {
+  await signInAs(page, "observer@darkview.test");
+  await page.goto("/en/app/profile");
+
+  const deletion = panel(page, "Delete your account");
+  await deletion.getByLabel("Current password").fill("correct horse battery");
+  await deletion.getByLabel("I understand that this cannot be undone.").check();
+  await deletion.getByRole("button", { name: "Delete my account" }).click();
+
+  const alert = deletion.getByRole("alert");
+  await expect(alert).toContainText("Your account cannot be deleted yet:");
+  await expect(alert).toContainText("An observation of yours is not over yet.");
+  await expect(alert).toContainText("A paid slot of yours is still ahead.");
+  await expect(alert).toContainText("A slot is held for you awaiting payment.");
+  await expect(alert).toContainText("A refund or a free slot is owed to you.");
+
+  await page.goto("/en/app/profile");
+  await expect(page).toHaveURL(/\/en\/app\/profile$/);
+});
+
+test("deletes the account after the password, and it cannot sign in again", async ({
+  page,
+}) => {
+  await signInAs(page, "leaving@darkview.test");
+  await page.goto("/en/app/profile");
+
+  const deletion = panel(page, "Delete your account");
+  await expect(deletion).toContainText("Your loyalty points are lost.");
+  await deletion.getByLabel("Current password").fill("not my password at all");
+  await deletion.getByLabel("I understand that this cannot be undone.").check();
+  await deletion.getByRole("button", { name: "Delete my account" }).click();
+  await expect(deletion.getByText("That is not your current password.")).toBeVisible();
+
+  // The form resets after every answer, as React's form actions do: the box is asked
+  // for again, each time.
+  await deletion.getByLabel("Current password").fill("correct horse battery");
+  await deletion.getByLabel("I understand that this cannot be undone.").check();
+  await deletion.getByRole("button", { name: "Delete my account" }).click();
+  await expect(deletion.getByRole("status")).toHaveText("Your account has been deleted.");
+
+  await deletion.getByRole("link", { name: "Go to the home page" }).click();
+  await expect(page).toHaveURL(/\/en$/);
+
+  await page.goto("/en/sign-in");
+  await page.getByLabel("Email").fill("leaving@darkview.test");
+  await page.getByLabel("Password").fill("correct horse battery");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByText("Email or password is incorrect.")).toBeVisible();
+});

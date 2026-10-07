@@ -53,3 +53,11 @@ The profile page offers no deletion. The privacy page keeps the section marked p
    append-only.
 4. **Deletion happens at once**, behind a confirmation and the current password. There
    is no grace period and no undo link.
+
+## Built
+
+Platform ADR-044 on branch `account-deletion`, as `DELETE /me` with `{ currentPassword }`.
+It departs from the proposal in three places: a wrong password is 422 naming the field,
+as for the other password-gated operations; the `User` row is anonymised rather than
+deleted, because the bookings and payments it keeps cannot exist without it; and the 409
+names six more blockers, listed in the record.

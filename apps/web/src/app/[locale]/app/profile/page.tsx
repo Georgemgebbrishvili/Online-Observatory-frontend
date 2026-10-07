@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { DetailsForm, EmailForm, PasswordForm } from "@/components/account/profile-forms";
+import {
+  DeleteAccountForm,
+  DetailsForm,
+  EmailForm,
+  PasswordForm,
+} from "@/components/account/profile-forms";
 import { isLocale } from "@/i18n/config";
 import { profileCopy } from "@/i18n/resources/profile";
 import { requireUser } from "@/lib/platform/session";
@@ -40,6 +45,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       <section className="surface-panel profile-panel" aria-labelledby="profile-password-title">
         <h2 id="profile-password-title">{copy.password.title}</h2>
         <PasswordForm locale={locale} />
+      </section>
+      <section className="surface-panel profile-panel" aria-labelledby="profile-delete-title">
+        <h2 id="profile-delete-title">{copy.deletion.title}</h2>
+        <DeleteAccountForm locale={locale} />
       </section>
     </div>
   );

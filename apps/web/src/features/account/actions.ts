@@ -1,10 +1,12 @@
 import type {
+  AccountDeletionBlocker,
   ChangeEmailRequest,
   ChangePasswordRequest,
+  DeleteAccountRequest,
   UpdateProfileRequest,
   User,
 } from "@darkview/contracts";
-import { zUpdateProfileResponse } from "@darkview/contracts/zod";
+import { zAccountDeletionBlocker, zUpdateProfileResponse } from "@darkview/contracts/zod";
 
 import type { Locale } from "@/i18n/config";
 import { profileCopy } from "@/i18n/resources/profile";
@@ -20,6 +22,10 @@ export type ProfileActionState = {
   /** The session ended: the page sends the visitor to sign in. */
   signedOut?: boolean;
   user?: User;
+  /** ADR-044: the account is gone, and so is the session. */
+  deleted?: boolean;
+  /** ADR-044: what has to be settled before the account can go. */
+  blockers?: AccountDeletionBlocker[];
 };
 
 function text(formData: FormData, field: string) {
@@ -111,6 +117,37 @@ export async function changePasswordAction(
     await apiRequest("/me/password", { method: "POST", body });
     return { done: copy.password.changed };
   } catch (error) {
+    return failure(locale, error);
+  }
+}
+
+/** The 409's blockers the contract names; anything else is dropped, not shown raw. */
+function blockersOf(error: ApiRequestError): AccountDeletionBlocker[] {
+  const listed = (error.error?.details as { blockers?: unknown } | undefined)?.blockers;
+  return Array.isArray(listed)
+    ? listed.flatMap((value) => {
+        const parsed = zAccountDeletionBlocker.safeParse(value);
+        return parsed.success ? [parsed.data] : [];
+      })
+    : [];
+}
+
+export async function deleteAccountAction(
+  locale: Locale,
+  _state: ProfileActionState,
+  formData: FormData,
+): Promise<ProfileActionState> {
+  const copy = profileCopy[locale];
+  const body: DeleteAccountRequest = { currentPassword: secret(formData, "currentPassword") };
+  try {
+    await apiRequest("/me", { method: "DELETE", body });
+    return { deleted: true };
+  } catch (error) {
+    if (error instanceof ApiRequestError && error.status === 409) {
+      const blockers = blockersOf(error);
+      // A 409 without blockers is the transaction losing a race (ADR-044 §6).
+      return blockers.length > 0 ? { blockers } : { message: copy.deletion.changed };
+    }
     return failure(locale, error);
   }
 }

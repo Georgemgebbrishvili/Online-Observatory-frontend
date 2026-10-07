@@ -80,3 +80,16 @@ html[lang="ka"] .profile-hero h1 {
   border-radius: var(--radius-medium);
   background: var(--color-error-muted);
 }
+
+.profile-consequences,
+.profile-outcome-error ul {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--color-text-secondary);
+}
+
+.profile-outcome-error p {
+  margin: 0 0 var(--space-2);
+}

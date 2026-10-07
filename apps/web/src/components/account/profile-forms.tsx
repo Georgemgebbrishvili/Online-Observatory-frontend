@@ -6,10 +6,11 @@ import { useFormStatus } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 import { Dropdown } from "@/components/ui/dropdown";
-import { Field, TextInput } from "@/components/ui/form";
+import { Checkbox, Field, TextInput } from "@/components/ui/form";
 import {
   changeEmailAction,
   changePasswordAction,
+  deleteAccountAction,
   updateProfileAction,
   type ProfileActionState,
 } from "@/features/account/actions";
@@ -19,10 +20,10 @@ import { navigateWithFreshSession } from "@/lib/platform/browser";
 
 type ProfileCopy = (typeof profileCopy)[Locale];
 
-function SubmitButton({ label }: { label: string }) {
+function SubmitButton({ label, variant }: { label: string; variant?: "danger" }) {
   const { pending } = useFormStatus();
   return (
-    <Button loading={pending} type="submit">
+    <Button loading={pending} type="submit" variant={variant}>
       {label}
     </Button>
   );
@@ -159,6 +160,64 @@ export function PasswordForm({ locale }: { locale: Locale }) {
       </Field>
       <Outcome state={state} />
       <SubmitButton label={copy.password.submit} />
+    </form>
+  );
+}
+
+/** ADR-044. Deleted at once; the password and the box are the confirmation. */
+export function DeleteAccountForm({ locale }: { locale: Locale }) {
+  const copy: ProfileCopy = profileCopy[locale];
+  const [state, action] = useActionState(deleteAccountAction.bind(null, locale), {});
+  useSignedOut(locale, state);
+
+  if (state.deleted) {
+    return (
+      <div className="profile-form">
+        <p className="profile-outcome" role="status">
+          {copy.deletion.deleted}
+        </p>
+        {/* A full navigation: the session is gone, and the shell must forget it. */}
+        <a className="button button-secondary" href={`/${locale}`}>
+          <span>{copy.deletion.home}</span>
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <form action={action} className="profile-form">
+      <p className="profile-current">{copy.deletion.warning}</p>
+      <ul className="profile-consequences">
+        {copy.deletion.consequences.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+      <Field
+        htmlFor="profile-delete-password"
+        label={copy.deletion.currentPassword}
+        error={state.errors?.currentPassword}
+      >
+        <TextInput
+          autoComplete="current-password"
+          id="profile-delete-password"
+          name="currentPassword"
+          required
+          type="password"
+        />
+      </Field>
+      <Checkbox label={copy.deletion.understand} name="understand" required />
+      {state.blockers && (
+        <div className="profile-outcome profile-outcome-error" role="alert">
+          <p>{copy.deletion.blocked}</p>
+          <ul>
+            {state.blockers.map((blocker) => (
+              <li key={blocker}>{copy.deletion.blockers[blocker]}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <Outcome state={state} />
+      <SubmitButton label={copy.deletion.submit} variant="danger" />
     </form>
   );
 }
