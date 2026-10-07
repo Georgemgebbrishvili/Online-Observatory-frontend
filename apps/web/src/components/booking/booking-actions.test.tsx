@@ -19,6 +19,7 @@ const booking = {
   slotStartAt: "2030-01-16T15:20:00.000Z",
   durationMinutes: 30,
   status: "CANCELLED",
+  paymentIntent: null,
   priceMinor: 4500,
   currency: "GEL",
   createdAt: "2026-09-29T09:00:00.000Z",

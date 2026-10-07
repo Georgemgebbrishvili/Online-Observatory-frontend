@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { bookingReference, formatDay, formatSlot } from "@/features/booking/present";
+import {
+  bookingReference,
+  formatDay,
+  formatDeadline,
+  formatSlot,
+} from "@/features/booking/present";
 
 describe("formatSlot", () => {
   it("reads the slot in the observatory's zone, with the zone named", () => {
@@ -26,6 +31,17 @@ describe("formatDay", () => {
   it("is the day in the observatory's zone", () => {
     expect(formatDay("2026-10-30T21:00:00.000Z", "Asia/Tbilisi", "en")).toBe(
       "31 October 2026",
+    );
+  });
+});
+
+describe("formatDeadline", () => {
+  it("is the instant in the observatory's zone, with the zone named", () => {
+    expect(formatDeadline("2030-01-16T14:35:00.000Z", "Asia/Tbilisi", "en")).toBe(
+      "Wed, 16 Jan 2030, 18:35 GMT+4",
+    );
+    expect(formatDeadline("2030-01-16T14:35:00.000Z", "Asia/Tbilisi", "ka")).toContain(
+      "18:35",
     );
   });
 });

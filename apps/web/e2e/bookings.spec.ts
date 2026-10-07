@@ -60,6 +60,19 @@ test("a confirmed booking opens its observation and says why it cannot be cancel
   );
 });
 
+test("a booking awaiting payment says how long it is held and offers the checkout", async ({
+  page,
+}) => {
+  await page.goto(`/en/app/bookings/${pending}`);
+
+  await expect(page.getByText("Awaiting payment", { exact: true })).toBeVisible();
+  await expect(page.getByText("Held for you until Wed, 16 Jan 2030, 18:35 GMT+4.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Continue to payment" })).toHaveAttribute(
+    "href",
+    /\/api\/payments\/62000000-0000-4000-8000-000000000003\/sandbox-checkout$/,
+  );
+});
+
 test("an unknown booking and a malformed id are both not found", async ({ page }) => {
   for (const id of ["59000000-0000-4000-8000-000000000009", "not-a-booking"]) {
     await page.goto(`/en/app/bookings/${id}`);

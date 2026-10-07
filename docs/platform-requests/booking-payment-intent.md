@@ -2,6 +2,8 @@
 
 Raised 2026-09-30 while tracing Phase 3 slice 3 (`/app/bookings/[id]`). Against
 `darkview-platform` at `f2f51db` (contract synced at `14ac895`).
+Filed as [#176](https://github.com/Bekatsertsvadzee/Online-Observatory/issues/176) on
+2026-10-07; built as platform ADR-043 (`Booking.paymentIntent`, the first shape below).
 
 ## What blocks
 

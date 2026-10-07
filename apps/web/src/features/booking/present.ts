@@ -48,6 +48,21 @@ export function formatDay(at: string, timezone: string, locale: Locale) {
   }).format(new Date(at));
 }
 
+/** An instant in the observatory's zone, with the zone named: a hold's deadline. */
+export function formatDeadline(at: string, timezone: string, locale: Locale) {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZone: timezone,
+    timeZoneName: "short",
+  }).format(new Date(at));
+}
+
 /** The booking's id, shortened, as a reference the customer can quote. */
 export function bookingReference(id: string) {
   return id.slice(0, 8).toUpperCase();

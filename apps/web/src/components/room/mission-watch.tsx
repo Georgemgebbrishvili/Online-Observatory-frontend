@@ -8,7 +8,7 @@ import {
 } from "@darkview/contracts/zod";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
-import { checkoutTarget } from "@/components/booking/reserve-form";
+import { checkoutTarget } from "@/features/booking/checkout";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { LoadingState } from "@/components/ui/loading-state";

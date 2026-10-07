@@ -20,7 +20,7 @@ which stays the record of Phases 0–4. The decisions behind it:
 | 2 Targets, collection, dashboard              | Done        | `d059f31`, `da33bd2`, `e77e36c`                                                                   |
 | 2 `/v1/*` shared-observation debt (#1)        | Done here   | Deleted by 4.5 ([`phase-4/05-watch.md`](phase-4/05-watch.md)), on `getMissionWatchView`           |
 | 3 Slots, reserve, checkout, bookings, refunds | Done        | `43b45f6`, `820207f`, `78f6961`, `d9c20df`                                                        |
-| 3 Resume a pending payment                    | Blocked     | [booking-payment-intent](../platform-requests/booking-payment-intent.md), unanswered              |
+| 3 Resume a pending payment                    | Done here   | C3 on platform ADR-043 (#176): `Booking.paymentIntent`; the page pays from the hold              |
 | 4.1–4.3 Room: read, live, controls            | Done        | `992e476`, `c10d979`, `1ce8b84`, `5c6528e`                                                        |
 | 4.4 Sharing control                           | Done here   | [`phase-4/04-sharing.md`](phase-4/04-sharing.md); the watch link is on since 4.5                  |
 | 4.5–4.6 Watch page, observer seat             | Done here   | [`05-watch.md`](phase-4/05-watch.md); paying needs platform request `observer-pack-checkout`      |
@@ -123,7 +123,7 @@ twice.
 | --- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | C1  | Platform requests: password reset, email change, account deletion. File them, then build them in the platform | Nothing                                          |
 | C2  | Merge platform #163 (capture ids), #166 (hosted demo) and #168 (observers, refund; #169 follows)              | Green CI and the maintainer's approval per merge |
-| C3  | **3.6 Resume a pending payment** from booking detail                                                          | booking-payment-intent                           |
+| C3  | **3.6 Resume a pending payment** from booking detail. Done here on platform ADR-043 (#176)                     | The platform merge, then `contracts:sync`        |
 | C4  | **5a Account and profile** (DV-079): name, email, password, delete account                                    | C1                                               |
 
 ### Track D — The hosted demo

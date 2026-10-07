@@ -44,7 +44,7 @@ with 409 until refunds exist (`features/booking/manage.ts:77`, maintainer decisi
 
 **Done when** (from the plan): a customer books, sees it, changes it and cancels it, in
 both languages, on a phone. Both requests were answered (platform #154, #157) and slices
-2 and 4 shipped in `820207f`; the reschedule followed in `d9c20df`. What remains is
-resuming a pending payment, blocked on
-[`booking-payment-intent.md`](../../platform-requests/booking-payment-intent.md)
-(roadmap slice C3).
+2 and 4 shipped in `820207f`; the reschedule followed in `d9c20df`. Resuming a pending
+payment (roadmap slice C3) followed on 2026-10-07, once
+[`booking-payment-intent.md`](../../platform-requests/booking-payment-intent.md) was
+answered by platform ADR-043 (#176): `Booking.paymentIntent`.

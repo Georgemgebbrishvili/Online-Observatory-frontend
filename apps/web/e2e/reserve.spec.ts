@@ -62,6 +62,33 @@ test("a slot is reserved, paid at the sandbox checkout, and confirmed", async ({
   await expect(page.locator(".booking-row", { hasText: "Saturn" }).first()).toBeVisible();
 });
 
+test("a customer who left the checkout pays from the booking's own page", async ({
+  page,
+}) => {
+  await signIn(page);
+  await openSlot(page, 3);
+  await page.getByRole("radio", { name: /Saturn/ }).check();
+  const reserved = page.waitForResponse(
+    (received) => received.url().endsWith("/api/bookings") && received.status() === 201,
+  );
+  await page.getByRole("button", { name: "Reserve and pay" }).click();
+  const { booking } = (await (await reserved).json()) as { booking: { id: string } };
+  await expect(page).toHaveURL(/\/api\/payments\/[0-9a-f-]+\/sandbox-checkout$/);
+
+  // Leaves without answering, and comes back to the booking.
+  await page.goto(`/en/app/bookings/${booking.id}`);
+  await expect(page.getByText("Awaiting payment", { exact: true })).toBeVisible();
+  await expect(page.getByText(/^Held for you until /)).toBeVisible();
+
+  await page.getByRole("link", { name: "Continue to payment" }).click();
+  await expect(page).toHaveURL(/\/api\/payments\/[0-9a-f-]+\/sandbox-checkout$/);
+  await page.getByRole("button", { name: "Pay" }).click();
+
+  await expect(page).toHaveURL(/\/en\/app\/bookings\/[0-9a-f-]+$/);
+  await expect(page.getByText("Confirmed", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Continue to payment" })).toHaveCount(0);
+});
+
 test("declining at the checkout cancels the booking", async ({ page }) => {
   await signIn(page);
   await openSlot(page, 2);

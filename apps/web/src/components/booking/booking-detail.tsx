@@ -7,11 +7,18 @@ import { formatPrice } from "@/components/booking/booking-night";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import type { BookingEntry } from "@/features/booking/bookings";
-import { bookingReference, formatDay, formatSlot } from "@/features/booking/present";
+import { describeHold } from "@/features/booking/hold";
+import {
+  bookingReference,
+  formatDay,
+  formatDeadline,
+  formatSlot,
+} from "@/features/booking/present";
 import type { Locale } from "@/i18n/config";
 import { bookingActionsCopy, bookingsCopy } from "@/i18n/resources/bookings";
 import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { statusCopy } from "@/i18n/resources/status";
+import { siteUrl } from "@/lib/seo";
 
 type BookingDetailProps = {
   entry: BookingEntry;
@@ -25,6 +32,7 @@ export function BookingDetail({ entry, locale, mode }: BookingDetailProps) {
   const entitlement = booking.entitlement ?? null;
   const open = entitlement?.status === "OPEN";
   const base = `/${locale}/app/bookings`;
+  const hold = describeHold(booking, siteUrl.origin);
 
   return (
     <div className="booking-page booking-detail">
@@ -45,7 +53,10 @@ export function BookingDetail({ entry, locale, mode }: BookingDetailProps) {
           label={copy.status[booking.status]}
           tone={statusTone[booking.status]}
         />
-        <p>{copy.statement[booking.status]}</p>
+        <p>{hold.lapsed ? copy.holdLapsed : copy.statement[booking.status]}</p>
+        {hold.deadline && !hold.lapsed && (
+          <p>{copy.heldUntil(formatDeadline(hold.deadline, timezone, locale))}</p>
+        )}
       </header>
 
       {mode === "SIMULATED" && (
@@ -117,6 +128,14 @@ export function BookingDetail({ entry, locale, mode }: BookingDetailProps) {
             </>
           )}
         </p>
+      )}
+
+      {hold.checkout && (
+        // A full navigation, as the reserve step makes it: the checkout is not a page of
+        // this app, and it sets cookies of its own on the way back.
+        <a className="button button-primary button-large booking-observe" href={hold.checkout}>
+          <span>{copy.continuePayment}</span>
+        </a>
       )}
 
       {booking.status === "CONFIRMED" && booking.missionId && (

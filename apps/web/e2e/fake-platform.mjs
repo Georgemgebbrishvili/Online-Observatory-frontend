@@ -423,16 +423,25 @@ const booking = (row) => ({
   tierDiscountMinor: 0,
   loyaltyPointsRedeemed: 0,
   subscriptionMinutesSpent: 0,
+  paymentIntent: null,
   entitlement: null,
   ...row,
 });
 const bookings = [
+  // Held, with the intent `createBooking` answered (ADR-043): the page can pay from it.
   booking({
     id: "52000000-0000-4000-8000-000000000003",
     targetId: "30000000-0000-4000-8000-000000000021",
     slotStartAt: "2030-01-16T15:20:00.000Z",
     status: "PENDING_PAYMENT",
     paymentId: "62000000-0000-4000-8000-000000000003",
+    paymentIntent: {
+      paymentId: "62000000-0000-4000-8000-000000000003",
+      provider: "SANDBOX",
+      status: "PENDING",
+      redirectUrl: `${appOrigin}/api/payments/62000000-0000-4000-8000-000000000003/sandbox-checkout`,
+      expiresAt: "2030-01-16T14:35:00.000Z",
+    },
     createdAt: "2026-09-29T09:00:00.000Z",
   }),
   booking({
@@ -536,7 +545,7 @@ async function changeBooking(request, response, id, action) {
   }
   const changed = zGetBookingResponse.parse(
     action === "cancel"
-      ? { ...row, status: "CANCELLED" }
+      ? { ...row, status: "CANCELLED", paymentIntent: null }
       : {
           ...row,
           status: "REFUNDED",
@@ -622,6 +631,14 @@ async function createBooking(request, response) {
     );
 
   const paymentId = randomUUID();
+  const paymentIntent = {
+    paymentId,
+    provider: "SANDBOX",
+    status: "PENDING",
+    // As the platform: its checkout page, on the web client's origin under /api.
+    redirectUrl: `${appOrigin}/api/payments/${paymentId}/sandbox-checkout`,
+    expiresAt: new Date(Date.now() + 15 * 60_000).toISOString(),
+  };
   const booking = zGetBookingResponse.parse({
     id: randomUUID(),
     userId: user.id,
@@ -633,6 +650,7 @@ async function createBooking(request, response) {
     priceMinor: 4500,
     currency: "GEL",
     paymentId,
+    paymentIntent,
     missionId: null,
     tierDiscountMinor: 0,
     loyaltyPointsRedeemed: 0,
@@ -640,17 +658,7 @@ async function createBooking(request, response) {
     entitlement: null,
     createdAt: new Date().toISOString(),
   });
-  const answer = zCreateBookingResponse.parse({
-    booking,
-    paymentIntent: {
-      paymentId,
-      provider: "SANDBOX",
-      status: "PENDING",
-      // As the platform: its checkout page, on the web client's origin under /api.
-      redirectUrl: `${appOrigin}/api/payments/${paymentId}/sandbox-checkout`,
-      expiresAt: new Date(Date.now() + 15 * 60_000).toISOString(),
-    },
-  });
+  const answer = zCreateBookingResponse.parse({ booking, paymentIntent });
   if (!createdBookings.has(session)) createdBookings.set(session, []);
   createdBookings.get(session).push(booking);
   payments.set(paymentId, { session, bookingId: booking.id, locale: locale ?? "en" });
@@ -712,6 +720,7 @@ async function rescheduleBooking(request, response, id) {
     status: "CONFIRMED",
     priceMinor: 0,
     paymentId: null,
+    paymentIntent: null,
     missionId: null,
     tierDiscountMinor: 0,
     loyaltyPointsRedeemed: 0,
@@ -770,6 +779,7 @@ async function sandboxCheckout(request, response, paymentId) {
   rows[index] = zGetBookingResponse.parse({
     ...rows[index],
     status: result === "PAID" ? "CONFIRMED" : "CANCELLED",
+    paymentIntent: null,
   });
   response.writeHead(303, {
     location: `${appOrigin}/${payment.locale}/app/bookings/${payment.bookingId}`,

@@ -22,6 +22,7 @@ reserve step sends anyone there.
 | Price paid                       | `priceMinor` in `currency`; `tierDiscountMinor`, `loyaltyPointsRedeemed`, `subscriptionMinutesSpent` when non-zero |
 | The observation                  | `Booking.missionId` → `/app/missions/{missionId}/session` (the room, ADR-018)                              |
 | One booking                      | `getBooking` `GET /bookings/{id}`; 404 for one that is not the caller's                                   |
+| Continue to payment, held until  | `Booking.paymentIntent` (ADR-043): `redirectUrl` followed as the reserve step follows it; `expiresAt` the hold's deadline. A past deadline offers nothing |
 | Cancel                           | `cancelBooking` `POST /bookings/{id}/cancel`; only `PENDING_PAYMENT` — 409 otherwise                      |
 | Paid, cannot cancel              | `CONFIRMED`: a stated rule (`manage.ts`, maintainer decision of 2026-09-14), not a control                |
 | Lost slot                        | `entitlement` `OPEN`: `cause`, `minutesLost`, `expiresAt`                                                 |
@@ -38,7 +39,8 @@ reserve step sends anyone there.
 | No more                  | `items: []` with a cursor                   | No older bookings.                                                   | უფრო ძველი ჯავშნები არ არის.                                           |
 | Unreachable              | any failure, or a body the schema refuses   | Your bookings could not be loaded. Try again shortly.                | ჯავშნების ჩატვირთვა ვერ მოხერხდა. სცადეთ ცოტა ხანში.                    |
 | Not found                | 404                                         | the app's not-found page                                             | the app's not-found page                                                |
-| Awaiting payment         | `PENDING_PAYMENT`                           | Awaiting payment. The slot is held until the payment completes or the hold lapses. | გადახდას ელოდება. დრო დაკავებულია, სანამ გადახდა არ დასრულდება ან ვადა არ ამოიწურება. |
+| Awaiting payment         | `PENDING_PAYMENT`, `paymentIntent` present  | Awaiting payment. Held for you until {time}. + Continue to payment                 | გადახდას ელოდება. დრო შენთვის დაკავებულია {time}-მდე. + გადახდის გაგრძელება            |
+| Hold lapsed, not yet swept | `PENDING_PAYMENT`, `expiresAt` past       | The hold has ended, and the slot is no longer held for you.                        | ვადა ამოიწურა და დრო შენთვის აღარ არის დაკავებული.                                     |
 | Confirmed                | `CONFIRMED`                                 | Confirmed. + Open the observation                                    | დადასტურებულია. + დაკვირვების გახსნა                                    |
 | Cannot cancel a paid one | `CONFIRMED`                                 | A paid booking cannot be cancelled until refunds are available.      | გადახდილი ჯავშნის გაუქმება შეუძლებელია, სანამ თანხის დაბრუნება არ ამოქმედდება. |
 | Cancelled                | `CANCELLED`                                 | Cancelled. The slot has been released.                               | გაუქმებულია. დრო გათავისუფლდა.                                          |
@@ -52,10 +54,10 @@ reserve step sends anyone there.
 
 ## Found while tracing
 
-**A held booking cannot be paid from its page.** `Booking` carries `paymentId`, not the
-intent: `redirectUrl` and the hold's `expiresAt` arrive only in `createBooking`'s answer.
-A customer who leaves the checkout and comes back later can only cancel or wait for the
-hold to lapse. Raised as
-[`booking-payment-intent.md`](../../platform-requests/booking-payment-intent.md). The page
-does not build a checkout URL from the payment id: that would hard-code the sandbox
+**A held booking could not be paid from its page.** `Booking` carried `paymentId`, not
+the intent: `redirectUrl` and the hold's `expiresAt` arrived only in `createBooking`'s
+answer. Raised as
+[`booking-payment-intent.md`](../../platform-requests/booking-payment-intent.md), answered
+by platform ADR-043 (#176) with `Booking.paymentIntent`, and built on 2026-10-07. The
+page never builds a checkout URL from the payment id: that would hard-code the sandbox
 provider's path in the client.

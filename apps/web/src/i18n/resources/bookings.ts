@@ -34,6 +34,10 @@ type BookingsCopy = {
   };
   minutes: (count: number) => string;
   points: (count: number) => string;
+  /** A held slot: how long the hold lasts, and the way to pay (ADR-043). */
+  heldUntil: (until: string) => string;
+  holdLapsed: string;
+  continuePayment: string;
   openObservation: string;
   paidCannotCancel: string;
   cause: Record<BookingLossCause, string>;
@@ -105,6 +109,9 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     },
     minutes: (count) => `${count} min`,
     points: (count) => `${count} points`,
+    heldUntil: (until) => `Held for you until ${until}.`,
+    holdLapsed: "The hold has ended, and the slot is no longer held for you.",
+    continuePayment: "Continue to payment",
     openObservation: "Open the observation",
     paidCannotCancel: "A paid booking cannot be cancelled until refunds are available.",
     cause: { WEATHER: "the weather", OBSERVATORY_FAULT: "an observatory fault" },
@@ -177,6 +184,9 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     },
     minutes: (count) => `${count} წთ`,
     points: (count) => `${count} ქულა`,
+    heldUntil: (until) => `დრო შენთვის დაკავებულია ${until}-მდე.`,
+    holdLapsed: "ვადა ამოიწურა და დრო შენთვის აღარ არის დაკავებული.",
+    continuePayment: "გადახდის გაგრძელება",
     openObservation: "დაკვირვების გახსნა",
     paidCannotCancel:
       "გადახდილი ჯავშნის გაუქმება შეუძლებელია, სანამ თანხის დაბრუნება არ ამოქმედდება.",

@@ -3,7 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { reserveCopy } from "@/i18n/resources/reserve";
 
-import { checkoutTarget, ReserveForm } from "./reserve-form";
+import { checkoutTarget } from "@/features/booking/checkout";
+
+import { ReserveForm } from "./reserve-form";
 
 const copy = reserveCopy.en.form;
 const observatoryId = "10000000-0000-4000-8000-000000000001";
@@ -17,6 +19,9 @@ const choices = [
 ];
 
 function created(redirectUrl: string | null) {
+  const paymentIntent = redirectUrl
+    ? { paymentId, provider: "SANDBOX", status: "PENDING", redirectUrl, expiresAt: null }
+    : null;
   return {
     booking: {
       id: bookingId,
@@ -29,17 +34,10 @@ function created(redirectUrl: string | null) {
       priceMinor: 4500,
       currency: "GEL",
       paymentId,
+      paymentIntent,
       createdAt: "2026-09-30T10:00:00.000Z",
     },
-    paymentIntent: redirectUrl
-      ? {
-          paymentId,
-          provider: "SANDBOX",
-          status: "PENDING",
-          redirectUrl,
-          expiresAt: null,
-        }
-      : null,
+    paymentIntent,
   };
 }
 
@@ -218,6 +216,7 @@ describe("ReserveForm replacing a lost slot", () => {
         status: "CONFIRMED",
         priceMinor: 0,
         paymentId: null,
+        paymentIntent: null,
       }),
     );
     renderReplacing();

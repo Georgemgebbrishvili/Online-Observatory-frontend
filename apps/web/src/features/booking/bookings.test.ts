@@ -74,6 +74,7 @@ function booking(overrides: Record<string, unknown> = {}) {
     priceMinor: 4500,
     currency: "GEL",
     paymentId: null,
+    paymentIntent: null,
     missionId: null,
     createdAt: "2026-09-29T10:00:00.000Z",
     ...overrides,
