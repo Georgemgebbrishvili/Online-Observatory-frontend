@@ -247,11 +247,12 @@ export function StatusPage({
                 hours={hours}
                 unknown={copy.conditions.unknown}
               />
-              {/* Focusable, so a keyboard can scroll it where it overflows a phone. */}
+              {/* Focusable, so a keyboard can scroll it where it overflows a phone. Its
+                  own name: the section around it already carries the heading's. */}
               <div
                 className="status-table-scroll"
                 role="region"
-                aria-labelledby="status-conditions"
+                aria-label={copy.conditions.tableLabel}
                 tabIndex={0}
               >
                 <table className="status-table">
