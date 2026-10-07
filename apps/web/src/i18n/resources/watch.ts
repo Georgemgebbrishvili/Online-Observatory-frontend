@@ -23,6 +23,10 @@ export type WatchCopy = {
   offline: string;
   simulated: string;
   closed: string;
+  /** ADR-045: "{amount} was refunded …", once the money is back. */
+  refunded: string;
+  /** ADR-045: "{amount} will be refunded …", decided but not yet issued. Never "was". */
+  refundOwed: string;
   over: string;
   owner: string;
   ownerAction: string;
@@ -54,6 +58,8 @@ export const watchCopy: Record<"en" | "ka", WatchCopy> = {
     offline: "The observatory is offline.",
     simulated: "Simulated observatory",
     closed: "The owner closed this session to watchers.",
+    refunded: "{amount} was refunded to you for the time the close took.",
+    refundOwed: "{amount} will be refunded to you for the time the close took.",
     over: "This session has ended.",
     owner: "This is your session.",
     ownerAction: "Go to the live room",
@@ -82,6 +88,8 @@ export const watchCopy: Record<"en" | "ka", WatchCopy> = {
     offline: "ობსერვატორია კავშირგარეშეა.",
     simulated: "სიმულირებული ობსერვატორია",
     closed: "მფლობელმა სესია მაყურებლებისთვის დახურა.",
+    refunded: "დახურვის გამო დაკარგული დროისთვის {amount} დაგიბრუნდა.",
+    refundOwed: "დახურვის გამო დაკარგული დროისთვის {amount} დაგიბრუნდება.",
     over: "ეს სესია დასრულდა.",
     owner: "ეს შენი სესიაა.",
     ownerAction: "პირდაპირი დაკვირვების ოთახში გადასვლა",

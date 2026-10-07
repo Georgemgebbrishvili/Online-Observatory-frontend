@@ -1,6 +1,6 @@
 "use client";
 
-import type { MissionWatchView } from "@darkview/contracts";
+import type { MissionWatchView, ObserverPack } from "@darkview/contracts";
 import {
   zGetMissionWatchViewResponse,
   zJoinMissionAsObserverResponse,
@@ -9,6 +9,7 @@ import {
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { checkoutTarget } from "@/features/booking/checkout";
+import { formatPrice } from "@/components/booking/booking-night";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -17,6 +18,8 @@ import { useWatchChannel } from "@/features/missions/use-watch-channel";
 import {
   clearCheckout,
   markCheckout,
+  openingPhase,
+  packRefund,
   returnedFromCheckout,
   sessionOver,
   watchStatus,
@@ -73,6 +76,8 @@ type WatchViewProps = {
   pending?: WatchPending;
   /** A refusal the caller can act on: try again, or no checkout to pay at. */
   notice?: string | null;
+  /** ADR-045: what a close refunded, or owes, for the caller's seat; filled. */
+  refund?: string | null;
   /** The live room, for the owner. */
   roomPath?: string;
   /** The feed, with its steps, while watching. */
@@ -107,6 +112,7 @@ export function WatchView({
   onLeave,
   pending = null,
   phase,
+  refund = null,
   roomPath,
   seats,
   simulated,
@@ -213,7 +219,7 @@ export function WatchView({
         data-watching={phase === "watching" && feed ? "true" : undefined}
       >
         {phase === "watching" && feed}
-        {(body || notice) && (
+        {(body || notice || refund) && (
           <div className="room-panel watch-panel">
             <PanelHead
               level={headingLevel === 2 ? 3 : 2}
@@ -222,6 +228,7 @@ export function WatchView({
               meta={observatory ?? undefined}
             />
             {body}
+            {refund && <p className="watch-refund">{refund}</p>}
             {notice && (
               <p className="watch-notice" role="alert">
                 {notice}
@@ -260,15 +267,9 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
   const capacity = mission.observerCapacity ?? 5;
 
   const [count, setCount] = useState(view.observerCount);
-  const [phase, setPhase] = useState<WatchPhase>(() =>
-    view.myObserverSeat
-      ? "watching"
-      : sessionOver(mission.state)
-        ? "over"
-        : view.observerCount >= capacity
-          ? "full"
-          : "sale",
-  );
+  const [phase, setPhase] = useState<WatchPhase>(() => openingPhase(view, capacity));
+  // The caller's own pack (ADR-045): re-read after a close, for what it gave back.
+  const [pack, setPack] = useState<ObserverPack | null>(view.myObserverPack);
   const [pending, setPending] = useState<WatchPending>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -339,9 +340,14 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
 
   // Back from the checkout, which says nothing in the address: the page noted the
   // mission before it left. A timer, so React's development double-mount joins once.
+  // A seat already settled opens on "left" (ADR-045), so that joins too.
   const [arrivedIn] = useState(phase);
   useEffect(() => {
-    if (arrivedIn !== "sale" || !returnedFromCheckout(mission.id)) return;
+    if (
+      (arrivedIn !== "sale" && arrivedIn !== "left") ||
+      !returnedFromCheckout(mission.id)
+    )
+      return;
     const id = window.setTimeout(() => void join(true), 0);
     return () => window.clearTimeout(id);
   }, [arrivedIn, join, mission.id]);
@@ -405,6 +411,7 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
       apiRequest(`${path}/watch`, { schema: zGetMissionWatchViewResponse })
         .then((next) => {
           if (!mounted.current) return;
+          setPack(next.myObserverPack);
           if (sessionOver(next.mission.state)) setPhase("over");
           else if (!next.myObserverSeat) setPhase("closed");
           else reconnect();
@@ -419,6 +426,13 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
         });
     };
   }, [path, reconnect, signInPath]);
+
+  const refunded = packRefund(pack);
+  const refund = refunded
+    ? fill(refunded.kind === "refunded" ? copy.refunded : copy.refundOwed, {
+        amount: formatPrice(refunded.minor, refunded.currency, locale),
+      })
+    : null;
 
   const targetName = locale === "ka" ? target.nameKa : target.nameEn;
   const named = (template: string) => fill(template, { target: targetName });
@@ -462,6 +476,7 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
       }
       pending={pending}
       notice={notice}
+      refund={refund}
       onBuy={() => void buy()}
       onJoin={() => void join(phase === "paying")}
       onLeave={() => void leave()}

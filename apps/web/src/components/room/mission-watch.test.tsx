@@ -59,7 +59,25 @@ function view(overrides: Partial<MissionWatchView> = {}): MissionWatchView {
     ownerDisplayName: "Nino",
     observerCount: 2,
     myObserverSeat: null,
+    myObserverPack: null,
     ...overrides,
+  };
+}
+
+/** The caller's own pack, paid, with what a close gave back (ADR-045). */
+function paidPack(refund: { refundedMinor?: number; refundOwedMinor?: number } = {}) {
+  return {
+    id: "81000000-0000-4000-8000-000000000001",
+    missionId,
+    userId: "00000000-0000-4000-8000-000000000004",
+    status: "PAID" as const,
+    priceMinor: 1500,
+    currency: "GEL" as const,
+    paymentId: "82000000-0000-4000-8000-000000000001",
+    holdExpiresAt: null,
+    refundedMinor: refund.refundedMinor ?? null,
+    refundOwedMinor: refund.refundOwedMinor ?? null,
+    createdAt: "2026-10-02T12:00:00.000Z",
   };
 }
 
@@ -267,6 +285,16 @@ describe("MissionWatch", () => {
     expect(window.sessionStorage.getItem(checkoutKey)).toBeNull();
   });
 
+  it("back from the checkout with the seat already paid, takes it at once (ADR-045)", async () => {
+    window.sessionStorage.setItem(checkoutKey, missionId);
+    fetchMock.mockResolvedValueOnce(answer(201, seat));
+    render(<MissionWatch view={view({ myObserverPack: paidPack() })} locale="en" />);
+
+    expect(await screen.findByText(copy.watching)).toBeVisible();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(window.sessionStorage.getItem(checkoutKey)).toBeNull();
+  });
+
   it("stops asking after a bounded number of 402s and offers to check again", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     window.sessionStorage.setItem(checkoutKey, missionId);
@@ -434,5 +462,50 @@ describe("WatchView", () => {
       "Nino is observing Saturn.",
     );
     expect(screen.getByRole("region", { name: "WatchView 1" })).toBeVisible();
+  });
+});
+
+describe("a buyer whose seat a close ended (ADR-045)", () => {
+  it("is told the owner closed it, and what was refunded, with no seat for sale", () => {
+    render(
+      <MissionWatch
+        locale="en"
+        view={view({
+          mission: { ...view().mission, observable: false },
+          myObserverPack: paidPack({ refundedMinor: 750 }),
+        })}
+      />,
+    );
+
+    expect(screen.getByRole("heading", { name: copy.closed })).toBeVisible();
+    expect(
+      screen.getByText("GEL 7.50 was refunded to you for the time the close took."),
+    ).toBeVisible();
+    expect(screen.queryByRole("button", { name: copy.buy })).toBeNull();
+  });
+
+  it("says a refund the provider cannot issue yet will be refunded, never that it was", () => {
+    render(
+      <MissionWatch
+        locale="en"
+        view={view({
+          mission: { ...view().mission, state: "COMPLETE" },
+          myObserverPack: paidPack({ refundOwedMinor: 750 }),
+        })}
+      />,
+    );
+
+    expect(screen.getByRole("heading", { name: copy.over })).toBeVisible();
+    expect(
+      screen.getByText("GEL 7.50 will be refunded to you for the time the close took."),
+    ).toBeVisible();
+    expect(screen.queryByText(/was refunded/)).toBeNull();
+  });
+
+  it("offers a paid seat back, not for sale, while the session is open", () => {
+    render(<MissionWatch locale="en" view={view({ myObserverPack: paidPack() })} />);
+
+    expect(screen.getByRole("button", { name: copy.watchAgain })).toBeVisible();
+    expect(screen.queryByRole("button", { name: copy.buy })).toBeNull();
   });
 });

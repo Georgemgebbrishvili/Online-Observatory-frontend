@@ -989,6 +989,11 @@
   color: var(--color-text-secondary);
 }
 
+/* ADR-045: what a close gave back reads as a fact, not as a footnote. */
+.watch-panel > .watch-refund {
+  color: var(--color-text-primary);
+}
+
 .watch-panel > .watch-notice {
   padding-left: var(--space-3);
   border-left: 2px solid var(--color-error);

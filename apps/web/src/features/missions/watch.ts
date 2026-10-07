@@ -1,4 +1,4 @@
-import type { MissionState } from "@darkview/contracts";
+import type { MissionState, MissionWatchView, ObserverPack } from "@darkview/contracts";
 
 import { reopensSession, type LiveState, type LiveStatus } from "./live";
 
@@ -8,6 +8,43 @@ import { reopensSession, type LiveState, type LiveStatus } from "./live";
  */
 export function sessionOver(state: MissionState) {
   return state !== "SCHEDULED" && state !== "WEATHER_HOLD" && !reopensSession(state);
+}
+
+/**
+ * ADR-045: what a close gave back for the caller's seat. Issued and owed are never both
+ * set; owed is said as owed, never as refunded. Null when there is nothing to say.
+ */
+export function packRefund(
+  pack: ObserverPack | null | undefined,
+): {
+  kind: "refunded" | "owed";
+  minor: number;
+  currency: ObserverPack["currency"];
+} | null {
+  if (!pack) return null;
+  if (pack.refundedMinor) {
+    return { kind: "refunded", minor: pack.refundedMinor, currency: pack.currency };
+  }
+  if (pack.refundOwedMinor) {
+    return { kind: "owed", minor: pack.refundOwedMinor, currency: pack.currency };
+  }
+  return null;
+}
+
+/**
+ * Where the watch page opens. A buyer who paid keeps their place (ADR-045): told the
+ * owner closed it while it still runs, offered their seat again while it is open, and
+ * never offered a seat for sale that they already own.
+ */
+export type OpeningPhase = "watching" | "over" | "closed" | "left" | "full" | "sale";
+
+export function openingPhase(view: MissionWatchView, capacity: number): OpeningPhase {
+  if (view.myObserverSeat) return "watching";
+  if (sessionOver(view.mission.state)) return "over";
+  if (view.myObserverPack?.status === "PAID") {
+    return view.mission.observable === true ? "left" : "closed";
+  }
+  return view.observerCount >= capacity ? "full" : "sale";
 }
 
 export type WatchStatus = Extract<

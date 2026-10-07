@@ -47,3 +47,10 @@ a checkout it asks `joinMissionAsObserver` a bounded number of times while the a
 
 The fake platform (`apps/web/e2e/fake-platform.mjs`) behaves as proposed here, so the
 end-to-end tests exercise the flow the platform is asked to provide.
+
+## Built
+
+Platform PR #179, merged as `971a547`. `purchaseObserverPack` answers a `redirectUrl` to
+the sandbox checkout, which accepts an `OBSERVER_PACK` payment while its hold is open (the
+pack awaiting payment, the hold unexpired, the mission not over) and returns the buyer to
+the watch page. The watch page's checkout (4.6) runs against it unchanged.

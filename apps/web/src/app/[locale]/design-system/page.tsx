@@ -603,25 +603,28 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
           <div className="ds-room-specimens">
             {(
               [
-                ["sale", null, false],
-                ["sale", "buy", false],
-                ["loading", null, false],
-                ["error", null, false],
-                ["sale", null, true],
-                ["full", null, true],
-                ["paying", "join", true],
-                ["watching", null, true],
-                ["left", null, true],
-                ["closed", null, false],
-                ["over", null, false],
-                ["owner", null, false],
-                ["not-open", null, false],
+                ["sale", null, false, null],
+                ["sale", "buy", false, null],
+                ["loading", null, false, null],
+                ["error", null, false, null],
+                ["sale", null, true, null],
+                ["full", null, true, null],
+                ["paying", "join", true, null],
+                ["watching", null, true, null],
+                ["left", null, true, null],
+                ["closed", null, false, null],
+                ["closed", null, false, "refunded"],
+                ["over", null, false, "owed"],
+                ["over", null, false, null],
+                ["owner", null, false, null],
+                ["not-open", null, false, null],
               ] as const satisfies readonly (readonly [
                 WatchPhase,
                 "buy" | "join" | null,
                 boolean,
+                "refunded" | "owed" | null,
               ])[]
-            ).map(([phase, pending, simulated], index) => {
+            ).map(([phase, pending, simulated, refund], index) => {
               const watch = watchCopy[locale];
               const seen =
                 phase !== "loading" && phase !== "error" && phase !== "not-open";
@@ -648,6 +651,13 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                       : null
                   }
                   pending={pending}
+                  refund={
+                    refund
+                      ? fill(refund === "refunded" ? watch.refunded : watch.refundOwed, {
+                          amount: formatPrice(750, "GEL", locale),
+                        })
+                      : null
+                  }
                   roomPath={`/${locale}/design-system`}
                   feed={
                     <LiveFeed

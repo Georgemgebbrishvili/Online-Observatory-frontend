@@ -210,7 +210,7 @@ export const designSystemCopy = {
       roomSharing:
         "RoomSharing — private, opening, open with two watching, asking to stop, link copied, session ended",
       watch:
-        "WatchView — a seat for sale, buying, loading, error, simulated, full, paying, watching, left, closed by the owner, ended, the owner, not open",
+        "WatchView — a seat for sale, buying, loading, error, simulated, full, paying, watching, left, closed by the owner, closed with a refund, ended with a refund owed, ended, the owner, not open",
       roomControls:
         "RoomControls — hand control observing, waiting for the telescope, capture started, refused, no answer, before centring, while capturing, no capture; then Capture, and the session panel's Stop, asking to stop and stopping",
       pointingDial:
@@ -474,7 +474,7 @@ export const designSystemCopy = {
       roomSharing:
         "RoomSharing — პირადი, იხსნება, ღიაა ორი მაყურებლით, შეწყვეტის კითხვა, ბმული დაკოპირდა, სესია დასრულდა",
       watch:
-        "WatchView — ადგილი იყიდება, იყიდება, იტვირთება, შეცდომა, სიმულირებული, სავსეა, გადახდის მოლოდინი, ყურება, გასული, მფლობელმა დახურა, დასრულდა, მფლობელი, არ არის ღია",
+        "WatchView — ადგილი იყიდება, იყიდება, იტვირთება, შეცდომა, სიმულირებული, სავსეა, გადახდის მოლოდინი, ყურება, გასული, მფლობელმა დახურა, დახურულია თანხის დაბრუნებით, დასრულდა დასაბრუნებელი თანხით, დასრულდა, მფლობელი, არ არის ღია",
       roomControls:
         "RoomControls — მართვა დაკვირვებისას, ტელესკოპის მოლოდინი, გადაღება დაიწყო, უარი, პასუხი არ არის, ცენტრირებამდე, გადაღებისას, გადაღების გარეშე; შემდეგ გადაღება და სესიის პანელის დასრულება, დასრულების კითხვა და დასრულება",
       pointingDial:

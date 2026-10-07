@@ -40,3 +40,12 @@ The client needs the same three values either way: price, refunded, owed.
 ## Until then
 
 The watch page says the session was closed and promises no amount.
+
+## Built
+
+Platform ADR-045, PR #180, merged as `8cd3ae4`, in the request's first shape: a paid pack
+is a ground to read the watch view in any mission state, `MissionWatchView.myObserverPack`
+carries the caller's own pack, and `ObserverPack.refundOwedMinor` sits beside
+`refundedMinor`. The watch page says "was refunded to you" for the first and "will be
+refunded to you" for the second, and a paid buyer returning after a close reads it with no
+seat offered for sale.

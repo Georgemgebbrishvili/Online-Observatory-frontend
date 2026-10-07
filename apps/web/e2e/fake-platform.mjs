@@ -2021,10 +2021,12 @@ function getWatchView(request, response, id) {
   if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
   const mission = watchable(id);
   const seat = mission && seatOf(request, id);
-  // The owner, a seat attached, or anybody while it is open: everyone else, the same 404.
+  // The owner, a seat attached, a paid pack in any state (ADR-045), or anybody while it
+  // is open: everyone else, the same 404.
+  const paid = seat?.pack?.observerPack.status === "PAID";
   if (
     !mission ||
-    (mission.userId !== user.id && !seat.seat && !openToWatchers(mission, seat))
+    (mission.userId !== user.id && !seat.seat && !paid && !openToWatchers(mission, seat))
   )
     return error(response, 404, "NOT_FOUND", "No such mission.");
   const owner = [...users.values()].find((row) => row.id === mission.userId);
@@ -2039,6 +2041,8 @@ function getWatchView(request, response, id) {
       ownerDisplayName: owner?.displayName ?? null,
       observerCount: shown.observerCount,
       myObserverSeat: seat.seat,
+      myObserverPack:
+        mission.userId === user.id ? null : (seat.pack?.observerPack ?? null),
     }),
   );
 }
@@ -2092,6 +2096,8 @@ function purchasePack(request, response, id) {
       currency: "GEL",
       paymentId,
       holdExpiresAt,
+      refundedMinor: null,
+      refundOwedMinor: null,
       createdAt: new Date().toISOString(),
     },
     paymentIntent: {
@@ -2182,10 +2188,20 @@ function subscribedObserver(socket, mission, user, request) {
     expiresAt: new Date(Date.now() + SESSION_MINUTES * 60_000).toISOString(),
   });
   if (scenario !== "closed") return;
-  // Nino closes the session: every seat detached, and the channel hung up.
+  // Nino closes the session: every seat detached, and the channel hung up. A paid seat
+  // is refunded for the time it loses, as ADR-036 does on the sandbox: half, here.
   const timer = setTimeout(() => {
     seat.seat = null;
     seat.closed = true;
+    if (seat.pack?.observerPack.status === "PAID") {
+      seat.pack = zPurchaseObserverPackResponse.parse({
+        ...seat.pack,
+        observerPack: {
+          ...seat.pack.observerPack,
+          refundedMinor: OBSERVER_PACK_PRICE_MINOR / 2,
+        },
+      });
+    }
     socket.close();
   }, 1500);
   socket.on("close", () => clearTimeout(timer));

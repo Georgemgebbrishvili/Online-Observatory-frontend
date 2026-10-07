@@ -92,6 +92,19 @@ test.describe("a watcher", () => {
       }),
     ).toBeVisible();
     await expect(page.locator(".live-feed")).toHaveCount(0);
+    // ADR-045: the close refunded the paid seat for the time it lost, and the buyer
+    // still reads it on a later visit, with no seat offered for sale.
+    const refund = "GEL 7.50 was refunded to you for the time the close took.";
+    await expect(page.getByText(refund)).toBeVisible();
+    await page.reload();
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "The owner closed this session to watchers.",
+      }),
+    ).toBeVisible();
+    await expect(page.getByText(refund)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Buy a seat" })).toHaveCount(0);
   });
 
   test("finds every seat taken", async ({ page }) => {

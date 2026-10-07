@@ -23,9 +23,10 @@ which stays the record of Phases 0–4. The decisions behind it:
 | 3 Resume a pending payment                    | Done here   | C3 on platform ADR-043 (#176): `Booking.paymentIntent`; the page pays from the hold               |
 | 4.1–4.3 Room: read, live, controls            | Done        | `992e476`, `c10d979`, `1ce8b84`, `5c6528e`                                                        |
 | 4.4 Sharing control                           | Done here   | [`phase-4/04-sharing.md`](phase-4/04-sharing.md); the watch link is on since 4.5                  |
-| 4.5–4.6 Watch page, observer seat             | Done here   | [`05-watch.md`](phase-4/05-watch.md); paying needs platform request `observer-pack-checkout`      |
+| 4.5–4.6 Watch page, observer seat             | Done here   | [`05-watch.md`](phase-4/05-watch.md); paying on platform #170 (PR #179)                           |
 | 4.7 `/app/live` redirect                      | Done here   | A3: the live or imminent mission's room, else booking (`features/missions/active.ts`)             |
 | 4.8 Failure screens                           | Done here   | A4: NOT_VISIBLE, HARDWARE_ERROR, CANCELLED, FAILED, heartbeat loss; hold and offline were built   |
+| 4.9 Close refund copy                         | Done here   | A5 on platform ADR-045 (#180): the watch view's `myObserverPack`                                  |
 | 5 Commerce and account                        | Not started | Split by ADR-037: account before launch, the rest after                                           |
 | 6 Mobile                                      | Not started | After launch (ADR-037); no `apps/mobile`                                                          |
 | Hosted demo                                   | Paused      | Platform PR #166 unmerged; production Vercel has no env vars                                      |
@@ -89,13 +90,13 @@ Every slice follows the surface loop in `CLAUDE.md`:
 
 ### Track A — Finish the live room (Phase 4)
 
-| #   | Slice                                                                                                                                                                                 | Done when                                                                         |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| A1  | **4.5 Watch page** on `getMissionWatchView`, join and leave. Delete `features/shared-observations` and every `/v1` call (closes #1). Turn the sharing panel's watch link on.          | `grep -r "/v1/" apps/web/src` is empty; an observer watches the simulated session |
-| A2  | **4.6 Observer seat** purchase (DV-106) through `purchaseObserverPack` and the sandbox checkout                                                                                       | A second account pays and joins, and the owner's count rises on reload            |
-| A3  | **4.7 `/app/live` redirects** to the active session, or to booking (ADR-037). Delete `features/live/`                                                                                 | No fixture behind `/app/live`                                                     |
-| A4  | **4.8 Failure screens**: `WEATHER_HOLD`, `NOT_VISIBLE`, `HARDWARE_ERROR`, `CANCELLED`, `FAILED`, heartbeat loss, agent offline. One `fake-platform.mjs` scenario each                 | Each state has a designed screen and an e2e test in both languages                |
-| A5  | **4.9 Close refund copy**: the close confirmation and the watch page say what an observer gets back. Blocked on platform #168 merging and #169 (the read path), then `contracts:sync` | The copy matches `ObserverPack.refundedMinor`                                     |
+| #   | Slice                                                                                                                                                                         | Done when                                                                         |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| A1  | **4.5 Watch page** on `getMissionWatchView`, join and leave. Delete `features/shared-observations` and every `/v1` call (closes #1). Turn the sharing panel's watch link on.  | `grep -r "/v1/" apps/web/src` is empty; an observer watches the simulated session |
+| A2  | **4.6 Observer seat** purchase (DV-106) through `purchaseObserverPack` and the sandbox checkout. Done here on platform #170 (PR #179)                                         | A second account pays and joins, and the owner's count rises on reload            |
+| A3  | **4.7 `/app/live` redirects** to the active session, or to booking (ADR-037). Delete `features/live/`                                                                         | No fixture behind `/app/live`                                                     |
+| A4  | **4.8 Failure screens**: `WEATHER_HOLD`, `NOT_VISIBLE`, `HARDWARE_ERROR`, `CANCELLED`, `FAILED`, heartbeat loss, agent offline. One `fake-platform.mjs` scenario each         | Each state has a designed screen and an e2e test in both languages                |
+| A5  | **4.9 Close refund copy**: the close confirmation and the watch page say what an observer gets back. Done here on platform ADR-045 (#180), which reads it from the watch view | The copy matches `ObserverPack.refundedMinor` and `refundOwedMinor`               |
 
 ### Track B — The design pass ([ADR-039](../decisions/ADR-039-every-surface-takes-the-stellar-poster-language.md))
 

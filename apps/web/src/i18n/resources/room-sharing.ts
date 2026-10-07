@@ -28,7 +28,8 @@ export const roomSharingCopy: Record<"en" | "ka", RoomSharingCopy> = {
     copied: "Link copied",
     closeAction: "Stop sharing",
     closeQuestion: "Stop sharing?",
-    closeDetail: "Anyone watching is removed.",
+    closeDetail:
+      "Anyone watching is removed. Paid watchers are refunded for the time they lose.",
     closeConfirm: "Stop sharing",
     closeKeep: "Keep sharing",
     saving: "Saving",
@@ -45,7 +46,8 @@ export const roomSharingCopy: Record<"en" | "ka", RoomSharingCopy> = {
     copied: "ბმული დაკოპირდა",
     closeAction: "გაზიარების შეწყვეტა",
     closeQuestion: "შევწყვიტოთ გაზიარება?",
-    closeDetail: "ყველა მაყურებელი გაითიშება.",
+    closeDetail:
+      "ყველა მაყურებელი გაითიშება. გადახდილ მაყურებლებს დაკარგული დროის თანხა დაუბრუნდებათ.",
     closeConfirm: "შეწყვეტა",
     closeKeep: "გაგრძელება",
     saving: "ინახება",
