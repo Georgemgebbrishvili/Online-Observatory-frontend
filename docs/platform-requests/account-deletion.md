@@ -43,3 +43,13 @@ them:
 ## Until then
 
 The profile page offers no deletion. The privacy page keeps the section marked pending.
+
+## The maintainer's answers (2026-10-07)
+
+1. **Captures** are deleted with the account, at once. Shared and watch links stop working.
+2. **Payment and booking records** are kept with the name and email replaced; everything
+   else is deleted. How long they are kept is the lawyer's answer (roadmap F3).
+3. **The audit log** keeps the user id and nothing that names the person. It stays
+   append-only.
+4. **Deletion happens at once**, behind a confirmation and the current password. There
+   is no grace period and no undo link.
