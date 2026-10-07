@@ -131,30 +131,30 @@ function Facts({
           : "";
 
   return (
-    <dl className="observatory-facts">
+    <div className="observatory-facts">
       <div className="observatory-fact">
         <span className={`observatory-fact-icon${tone}`}>
           <CloudIcon />
         </span>
-        <div className="observatory-fact-text">
+        <dl className="observatory-fact-text">
           <dt>{scene.cloudAbout}</dt>
           <dd>
             {cloud === undefined || cloud === null
               ? scene.noForecast
               : scene.cloud(Math.round(cloud))}
           </dd>
-        </div>
+        </dl>
       </div>
       <div className="observatory-fact">
         <span className="observatory-fact-icon">
           <MoonIcon />
         </span>
-        <div className="observatory-fact-text">
+        <dl className="observatory-fact-text">
           <dt>{scene.firstHour}</dt>
           <dd>{first ? siteHour(first.at, timezone, locale) : scene.noHours}</dd>
-        </div>
+        </dl>
       </div>
-    </dl>
+    </div>
   );
 }
 

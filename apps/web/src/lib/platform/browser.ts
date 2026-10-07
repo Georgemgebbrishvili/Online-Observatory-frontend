@@ -18,6 +18,12 @@ export class ApiRequestError extends Error {
   }
 }
 
+/**
+ * How long a request waits for an answer before it fails as unreachable would. Not for
+ * the live channels, which are long-lived by design and never go through here.
+ */
+export const apiTimeoutMs = 15_000;
+
 type Schema<T> = { parse: (value: unknown) => T };
 
 export async function apiRequest<T = void>(
@@ -38,6 +44,7 @@ export async function apiRequest<T = void>(
     },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
     cache: "no-store",
+    signal: AbortSignal.timeout(apiTimeoutMs),
   });
 
   if (!response.ok) {

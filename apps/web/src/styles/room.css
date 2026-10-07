@@ -594,6 +594,12 @@
     background: var(--color-accent-border);
   }
 
+  /* The bar is decorative: as specific as the rules above, so no state paints the
+     step number back on it. */
+  [data-status] .mission-step-dot {
+    color: transparent;
+  }
+
   [data-status="current"] .mission-step-dot {
     border: 0;
     background: var(--color-accent);

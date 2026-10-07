@@ -191,6 +191,11 @@
   overflow-x: auto;
 }
 
+.status-table-scroll:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
 .status-table {
   width: 100%;
   border-collapse: collapse;

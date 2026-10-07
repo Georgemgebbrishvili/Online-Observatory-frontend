@@ -51,7 +51,7 @@ export function MissionSteps({
                 status === "current" || status === "stopped" ? "step" : undefined
               }
             >
-              <span className="mission-step-dot">
+              <span className="mission-step-dot" aria-hidden="true">
                 {status === "done" ? <CheckIcon /> : `0${index + 1}`}
               </span>
               <span className="mission-step-name">{name}</span>

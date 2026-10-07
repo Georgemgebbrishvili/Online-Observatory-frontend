@@ -247,7 +247,13 @@ export function StatusPage({
                 hours={hours}
                 unknown={copy.conditions.unknown}
               />
-              <div className="status-table-scroll">
+              {/* Focusable, so a keyboard can scroll it where it overflows a phone. */}
+              <div
+                className="status-table-scroll"
+                role="region"
+                aria-labelledby="status-conditions"
+                tabIndex={0}
+              >
                 <table className="status-table">
                   <thead>
                     <tr>

@@ -26,6 +26,9 @@ async function forwardedCookies() {
     .join("; ");
 }
 
+/** A page waits this long for an answer, then renders its unavailable state. */
+export const platformTimeoutMs = 10_000;
+
 /**
  * Server-side reads from the platform API, on the visitor's session. Mutations go
  * from the browser to /api directly (see ./browser.ts): the API refuses any
@@ -45,6 +48,7 @@ export async function platformRequest<T>(
     },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
     cache: "no-store",
+    signal: AbortSignal.timeout(platformTimeoutMs),
   });
 
   if (!response.ok) {
