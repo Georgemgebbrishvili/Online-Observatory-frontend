@@ -45,6 +45,19 @@ function describeAxe(routes: readonly string[]) {
           await expect(
             page.locator(':is(.operator-list, .operator-manual)[aria-busy="true"]'),
           ).toHaveCount(0);
+          // Contrast is judged on the settled page. The wordmark's endorsement fades in
+          // on first paint, and a scan that lands mid-fade measures a half-opaque colour.
+          await page.evaluate(() =>
+            Promise.all(
+              document
+                .getAnimations()
+                .filter(
+                  (animation) =>
+                    animation.effect?.getComputedTiming().iterations !== Infinity,
+                )
+                .map((animation) => animation.finished.catch(() => undefined)),
+            ),
+          );
           expect(await violations(page), `${path} at ${width}px`).toEqual([]);
         }
       });
