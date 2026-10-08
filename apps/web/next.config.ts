@@ -42,6 +42,14 @@ const contentSecurityPolicy = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // Hosted, this app is reached through the reverse proxy that puts it, /api and
+  // realtime on one host, so the host it sees is its own deployment's, not the one in
+  // the browser's Origin. Server Actions accept APP_URL's host as well as their own.
+  experimental: {
+    serverActions: {
+      allowedOrigins: process.env.APP_URL ? [new URL(process.env.APP_URL).host] : [],
+    },
+  },
   async headers() {
     return [
       {
