@@ -68,15 +68,22 @@ test("a customer who left the checkout pays from the booking's own page", async 
   await signIn(page);
   await openSlot(page, 3);
   await page.getByRole("radio", { name: /Saturn/ }).check();
-  const reserved = page.waitForResponse(
-    (received) => received.url().endsWith("/api/bookings") && received.status() === 201,
-  );
+  // The page navigates to the checkout as soon as the reservation answers, and Chrome
+  // drops a response body once its page has navigated away, so the body is read here,
+  // before the page sees it.
+  let bookingId = "";
+  await page.route("**/api/bookings", async (route) => {
+    const response = await route.fetch();
+    if (response.status() === 201)
+      bookingId = ((await response.json()) as { booking: { id: string } }).booking.id;
+    await route.fulfill({ response });
+  });
   await page.getByRole("button", { name: "Reserve and pay" }).click();
-  const { booking } = (await (await reserved).json()) as { booking: { id: string } };
   await expect(page).toHaveURL(/\/api\/payments\/[0-9a-f-]+\/sandbox-checkout$/);
+  expect(bookingId).toMatch(/^[0-9a-f-]{36}$/);
 
   // Leaves without answering, and comes back to the booking.
-  await page.goto(`/en/app/bookings/${booking.id}`);
+  await page.goto(`/en/app/bookings/${bookingId}`);
   await expect(page.getByText("Awaiting payment", { exact: true })).toBeVisible();
   await expect(page.getByText(/^Held for you until /)).toBeVisible();
 
