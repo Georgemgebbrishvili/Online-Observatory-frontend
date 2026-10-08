@@ -1020,7 +1020,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="feedback-title">
           <SectionHeader id="feedback-title" section={copy.sections.feedback} />
           <div className="ds-feedback-grid">
-            <SurfacePanel aria-label={copy.feedback.loading}>
+            <SurfacePanel role="status" aria-label={copy.feedback.loading}>
               <div className="ds-skeleton-preview">
                 <Skeleton width="3rem" height="3rem" rounded />
                 <div>
