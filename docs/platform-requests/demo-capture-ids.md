@@ -4,7 +4,8 @@ Raised 2026-09-28 while building Phase 4 slice 2 (the live room). Against
 `darkview-platform` at `73233a5` (contract synced at `471f05a`); still open at `14ac895`,
 whose seed keeps the ids and whose contract keeps `format: uuid`.
 
-**Fixed on a branch** in platform `e7fc614` (#163, PR #164), not merged.
+**Merged** 2026-10-08 as platform `f00bd59` (#163, PR #164). No contract change. A dev
+stack seeded from it opens the live demo mission in the room.
 
 ## What blocks
 

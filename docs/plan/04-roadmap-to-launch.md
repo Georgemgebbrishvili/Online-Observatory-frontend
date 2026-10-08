@@ -123,7 +123,7 @@ twice.
 | #   | Slice                                                                                                                      | Blocked on                                       |
 | --- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | C1  | Platform requests: password reset, email change, account deletion. File them, then build them in the platform              | Nothing                                          |
-| C2  | Merge platform #163 (capture ids), #166 (hosted demo) and #168 (observers, refund; #169 follows)                           | Green CI and the maintainer's approval per merge |
+| C2  | Merge platform #163 (capture ids; merged `f00bd59`), #166 (hosted demo) and #168 (observers, refund; merged)               | Green CI and the maintainer's approval per merge |
 | C3  | **3.6 Resume a pending payment** from booking detail. Done here on platform ADR-043 (#176)                                 | The platform merge, then `contracts:sync`        |
 | C4  | **5a Account and profile** (DV-079): name, email, password, delete account. Deletion built here on platform ADR-044 (#173) | The platform merge, then `contracts:sync`        |
 
