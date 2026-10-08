@@ -146,9 +146,12 @@ Done when hosting.md step 6's smoke test passes on the live host.
 
 - E1 **DV-080 Georgian QA** with a native reader, every page.
 - E2 **DV-081 accessibility and performance:** WCAG 2.1 AA verified with tools and by
-  hand, keyboard, screen reader, Core Web Vitals on a phone.
-- E3 The two `home.spec.ts` load-only failures: e2e serves a production build, or caps
-  workers.
+  hand, keyboard, screen reader, Core Web Vitals on a phone. The tool half is a gate:
+  `e2e/a11y.spec.ts` runs axe (WCAG 2.0/2.1 A and AA) on every route in both languages
+  at 390 and 1440 on each CI run. The hand half and Core Web Vitals remain.
+- E3 ~~The two `home.spec.ts` load-only failures~~: gone since the `warm` project
+  compiles every route before the parallel run. The flake that replaced them,
+  `reserve.spec.ts`'s resume-payment test reading a body after navigation, is fixed.
 
 ### Track F — Launch readiness (maintainer and outside parties)
 
