@@ -1,7 +1,7 @@
 /*
- * The live room as the Stellar console (ADR-050). Loaded after room.css on the room,
+ * The live room as the cards site's console (ADR-050). Loaded after room.css on the room,
  * the watch page and the design system; everything here reads --room-* tokens and
- * nothing outside the room does. The source is the Stellar app's observatory console
+ * nothing outside the room does. The source is the cards site's observatory console
  * (console.css at 1052314b^): its ground and atmosphere, glass panels with gradient
  * borders, the view frame with its orbiting ring and HUD corners, the flow bar, the
  * pointing dial and readouts, the hand-control pad. Its content is ours (ADR-027).
@@ -9,7 +9,7 @@
 
 /* ── ground and atmosphere ───────────────────────────────────── */
 
-.room.room-console {
+.room-console {
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -994,4 +994,26 @@
   .room-console .live-feed-plate-subject {
     display: none;
   }
+}
+
+/* The watch page on the same ground (ADR-050 §5): the view across, the seat beside it. */
+.watch.room-console .watch-grid {
+  gap: var(--space-4);
+}
+
+.watch.room-console .room-head h1,
+.watch.room-console .room-head h2 {
+  font: 600 var(--font-size-h3) / 1.2 var(--room-font-cond);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.watch.room-console .watch-panel > p {
+  color: var(--room-ink-2);
+}
+
+.watch.room-console .watch-notice {
+  border-color: color-mix(in srgb, var(--room-gold) 45%, transparent);
+  background: color-mix(in srgb, var(--room-gold) 8%, transparent);
+  color: var(--room-ink);
 }

@@ -121,7 +121,7 @@
   --color-scene-star: var(--st-ink);
 
   /*
-   * The live room's console (ADR-050): the Stellar app's observatory console, copper
+   * The live room's console (ADR-050): the cards site's observatory console, copper
    * and amber on near-black, read by room-console.css and nothing else.
    */
   --room-ground: #060606;

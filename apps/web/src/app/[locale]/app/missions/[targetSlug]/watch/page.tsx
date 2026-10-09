@@ -8,6 +8,7 @@ import { isLocale } from "@/i18n/config";
 import { watchCopy } from "@/i18n/resources/watch";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/room.css";
+import "@/styles/room-console.css";
 
 // The segment is named for the target page it shares a level with; here its value is
 // the mission's id, as for the live room beside it (ADR-027 §1).

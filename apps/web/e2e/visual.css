@@ -34,3 +34,14 @@ nextjs-portal {
 .brand-endorsement {
   animation: none !important;
 }
+
+/*
+ * The console room (ADR-050) drifts its aurora, orbits a ring round the view and pulses
+ * the current step. Each is a different frame at each capture; none is the product's
+ * state. Held still.
+ */
+.room-atmo-aurora,
+.room-console .live-feed-well::after,
+.room-console .mission-step-dot {
+  animation: none !important;
+}

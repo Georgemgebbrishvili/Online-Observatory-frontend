@@ -194,11 +194,20 @@ export function WatchView({
 
   return (
     <section
-      className="watch"
+      className="watch room-console"
       data-watch-phase={phase}
       aria-label={label}
       aria-busy={phase === "loading" || undefined}
     >
+      <div className="room-atmo" aria-hidden="true">
+        <div className="room-atmo-glow" />
+        <div className="room-atmo-aurora room-atmo-aurora-a" />
+        <div className="room-atmo-aurora room-atmo-aurora-b" />
+        <div className="room-atmo-aurora room-atmo-aurora-c" />
+        <div className="room-atmo-dots" />
+        <div className="room-atmo-ring" />
+        <div className="room-atmo-ring room-atmo-ring-b" />
+      </div>
       <header className="room-head">
         {target && (
           <p className="eyebrow">
