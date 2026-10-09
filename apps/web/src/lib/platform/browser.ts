@@ -52,11 +52,14 @@ export async function apiRequest<T = void>(
     throw new ApiRequestError(response.status, parsed.success ? parsed.data : null);
   }
 
-  // 202 is "accepted, nothing to show" (registration awaiting the email); 204 is nothing.
-  if (!init.schema || response.status === 204 || response.status === 202) {
+  if (!init.schema || response.status === 204) {
     return undefined as T;
   }
-  return init.schema.parse(await response.json());
+  // By the body, not the status: a 202 carries a command record from the room and
+  // nothing from registration awaiting its email.
+  const text = await response.text();
+  if (!text) return undefined as T;
+  return init.schema.parse(JSON.parse(text));
 }
 
 /**
