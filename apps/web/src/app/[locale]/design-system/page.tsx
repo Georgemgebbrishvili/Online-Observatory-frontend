@@ -49,6 +49,7 @@ import {
 } from "@/components/observatory/observatory-status";
 import { SiteClock } from "@/components/observatory/site-clock";
 import { StarField } from "@/components/observatory/star-field";
+import { GoogleSignInButton } from "@/components/auth/google-sign-in";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, SurfacePanel } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
@@ -349,6 +350,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <Button variant="secondary" loading>
                 {copy.buttons.loading}
               </Button>
+              <GoogleSignInButton href="#google" label={copy.buttons.google} />
             </div>
             <div className="ds-component-row">
               <IconButton label={copy.buttons.search}>

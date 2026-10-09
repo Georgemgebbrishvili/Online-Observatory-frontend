@@ -33,6 +33,34 @@ test("signs in through /api and reaches the app on the session the API set", asy
   expect(names).toEqual(["darkview_csrf", "darkview_session"]);
 });
 
+// Platform ADR-048. The button is a link; the fake stands in for Google and the
+// platform both, and the session arrives as cookies exactly as a password's does.
+test("signs in with Google through the platform's redirect and lands in the app", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/en/sign-in");
+  await page.getByRole("link", { name: "Continue with Google" }).click();
+  await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
+  const names = (await context.cookies()).map((cookie) => cookie.name).sort();
+  expect(names).toEqual(["darkview_csrf", "darkview_session"]);
+});
+
+test("says so, on the sign-in page, when Google sign-in did not complete", async ({
+  page,
+}) => {
+  await page.goto("/ka/register");
+  await expect(page.getByRole("link", { name: "Google-ით გაგრძელება" })).toHaveAttribute(
+    "href",
+    "/api/auth/google/start?locale=ka",
+  );
+  await page.goto("/api/auth/google/start?locale=ka&outcome=refused");
+  await expect(page).toHaveURL(/\/ka\/sign-in\?error=google$/, { timeout: firstCompile });
+  await expect(page.getByRole("main").getByRole("alert")).toHaveText(
+    "Google-ით შესვლა ვერ დასრულდა. სცადე ხელახლა, ან შედი ელფოსტითა და პაროლით.",
+  );
+});
+
 test("refuses a wrong password without leaving the sign-in page", async ({ page }) => {
   await signIn(page, "observer@darkview.test", "not the password");
   await expect(page.getByRole("main").getByRole("alert")).toHaveText(

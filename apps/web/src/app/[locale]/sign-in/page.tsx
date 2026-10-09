@@ -12,7 +12,10 @@ import { getCurrentUser } from "@/lib/platform/session";
 import { privatePageMetadata } from "@/lib/seo";
 import "@/styles/auth.css";
 
-type SignInPageProps = { params: Promise<{ locale: string }> };
+type SignInPageProps = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ error?: string }>;
+};
 
 export async function generateMetadata({ params }: SignInPageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -21,13 +24,16 @@ export async function generateMetadata({ params }: SignInPageProps): Promise<Met
     : {};
 }
 
-export default async function SignInPage({ params }: SignInPageProps) {
+export default async function SignInPage({ params, searchParams }: SignInPageProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   if (await getCurrentUser()) redirect(`/${locale}/app`);
 
   const dictionary = await getDictionary(locale);
   const copy = authCopy[locale];
+  // Platform ADR-048: every Google failure lands here as `error=google`.
+  const { error } = await searchParams;
+  const message = error === "google" ? copy.errors.google : undefined;
   return (
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
@@ -37,7 +43,7 @@ export default async function SignInPage({ params }: SignInPageProps) {
         description={copy.signIn.description}
         securityNote={copy.securityNote}
       >
-        <SignInForm copy={copy} locale={locale} />
+        <SignInForm copy={copy} locale={locale} message={message} />
       </AuthPage>
       <SiteFooter footer={dictionary.footer} locale={locale} path="sign-in" />
     </div>

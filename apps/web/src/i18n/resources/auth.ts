@@ -11,6 +11,8 @@ const en = {
     alternate: `New to ${brand.en.name}?`,
     alternateAction: "Create an account",
     forgot: "Forgot your password?",
+    google: "Continue with Google",
+    or: "or",
   },
   register: {
     metadataTitle: `Create account · ${brand.en.name}`,
@@ -70,6 +72,7 @@ const en = {
     unverified: "Verify your email before signing in.",
     rateLimited: "Too many attempts. Try again in 15 minutes.",
     unavailable: "Authentication is temporarily unavailable. Please try again later.",
+    google: "Google sign-in did not complete. Try again, or use your email and password.",
   },
   securityNote:
     "Your session is verified on the server. Observatory credentials never reach this browser.",
@@ -88,6 +91,8 @@ export const authCopy = {
       alternate: `ჯერ არ გაქვს ${brand.ka.genitive} ანგარიში?`,
       alternateAction: "ანგარიშის შექმნა",
       forgot: "დაგავიწყდა პაროლი?",
+      google: "Google-ით გაგრძელება",
+      or: "ან",
     },
     register: {
       metadataTitle: `ანგარიშის შექმნა · ${brand.ka.nominative}`,
@@ -148,6 +153,7 @@ export const authCopy = {
       unverified: "შესვლამდე დაადასტურე ელფოსტა.",
       rateLimited: "ცდების ლიმიტი ამოიწურა. სცადე 15 წუთში.",
       unavailable: "ავტორიზაცია დროებით მიუწვდომელია. მოგვიანებით სცადე.",
+      google: "Google-ით შესვლა ვერ დასრულდა. სცადე ხელახლა, ან შედი ელფოსტითა და პაროლით.",
     },
     securityNote:
       "შენი სესია სერვერზე მოწმდება. ობსერვატორიის წვდომის მონაცემები ბრაუზერამდე არასოდეს აღწევს.",

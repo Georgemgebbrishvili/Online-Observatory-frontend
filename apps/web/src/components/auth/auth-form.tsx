@@ -14,6 +14,7 @@ import {
 } from "@/features/auth/actions";
 import type { Locale } from "@/i18n/config";
 import type { authCopy } from "@/i18n/resources/auth";
+import { GoogleSignInButton, googleSignInHref } from "@/components/auth/google-sign-in";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/form";
 import { navigateWithFreshSession } from "@/lib/platform/browser";
@@ -46,13 +47,36 @@ function FormMessage({ state }: { state: AuthActionState }) {
   );
 }
 
-export function SignInForm({ copy, locale }: { copy: AuthResource; locale: Locale }) {
-  const [state, action] = useActionState(signInAction.bind(null, locale), {});
+// Google first, then the divider, then the fields: the button is the shorter path and
+// the form stays the one every test and screen reader already knows.
+function GoogleOrEmail({ copy, locale }: { copy: AuthResource; locale: Locale }) {
+  return (
+    <>
+      <GoogleSignInButton href={googleSignInHref(locale)} label={copy.signIn.google} />
+      <p className="auth-divider" aria-hidden="true">
+        <span>{copy.signIn.or}</span>
+      </p>
+    </>
+  );
+}
+
+export function SignInForm({
+  copy,
+  locale,
+  message,
+}: {
+  copy: AuthResource;
+  locale: Locale;
+  /** A message the page arrived with, such as Google's sign-in not completing. */
+  message?: string;
+}) {
+  const [state, action] = useActionState(signInAction.bind(null, locale), { message });
   useRedirect(state);
 
   return (
     <form action={action} className="auth-form">
       <FormMessage state={state} />
+      <GoogleOrEmail copy={copy} locale={locale} />
       <Field htmlFor="email" label={copy.fields.email} error={state.errors?.email}>
         <TextInput
           autoComplete="email"
@@ -101,6 +125,7 @@ export function RegistrationForm({
   return (
     <form action={action} className="auth-form">
       <FormMessage state={state} />
+      <GoogleOrEmail copy={copy} locale={locale} />
       <Field htmlFor="name" label={copy.fields.name} error={state.errors?.name}>
         <TextInput
           autoComplete="name"

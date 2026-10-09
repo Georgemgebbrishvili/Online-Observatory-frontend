@@ -1322,6 +1322,38 @@ const routes = {
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
     send(response, 200, zUser.parse(user));
   },
+  // Platform ADR-048, as the browser sees it: the start sends it on (here, straight
+  // to the callback, through the website's /api path as Google would), and the
+  // callback signs the observer in or lands on sign-in with error=google.
+  "GET /auth/google/start": (request, response) => {
+    const query = new URL(request.url, "http://fake").searchParams;
+    const locale = query.get("locale") === "ka" ? "ka" : "en";
+    const outcome = query.get("outcome") === "refused" ? "refused" : "ok";
+    response.writeHead(303, {
+      location: `/api/auth/google/callback?code=fake&state=${outcome}&locale=${locale}`,
+      "cache-control": "no-store",
+    });
+    response.end();
+  },
+  "GET /auth/google/callback": (request, response) => {
+    const query = new URL(request.url, "http://fake").searchParams;
+    const locale = query.get("locale") === "ka" ? "ka" : "en";
+    if (query.get("state") !== "ok") {
+      response.writeHead(303, { location: `/${locale}/sign-in?error=google` });
+      return response.end();
+    }
+    const token = randomUUID();
+    const csrf = randomUUID();
+    sessions.set(token, { user: users.get("observer@darkview.test"), csrf });
+    response.writeHead(303, {
+      location: `/${locale}/app`,
+      "set-cookie": [
+        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
+        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+      ],
+    });
+    response.end();
+  },
   "POST /auth/sign-in": async (request, response) => {
     const body = await json(request);
     const user = users.get(body?.email);
