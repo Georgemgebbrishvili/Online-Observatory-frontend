@@ -1329,7 +1329,7 @@ const routes = {
       const pending = [...pendingVerifications.values()].find(
         (entry) => entry.user.email === body?.email && entry.password === body?.password,
       );
-      if (pending) return error(response, 403, "FORBIDDEN", "Verify your email first.");
+      if (pending) return error(response, 403, "EMAIL_UNVERIFIED", "Verify your email first.");
       return error(response, 401, "UNAUTHENTICATED", "Email or password is incorrect.");
     }
     const token = randomUUID();

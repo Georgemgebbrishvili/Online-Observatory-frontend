@@ -61,7 +61,7 @@ test("renders in Georgian", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible({
     timeout: firstCompile,
   });
-  await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible();
+  await expect(page.getByText("სიმულირებული ობსერვატორია")).toBeVisible();
   await expect(page.getByText("ამაღამინდელი პირობები")).toBeVisible();
   await shoot(page, `${evidence}/02-status-georgian.png`);
 });

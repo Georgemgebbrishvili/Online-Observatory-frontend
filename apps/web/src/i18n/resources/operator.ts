@@ -278,7 +278,7 @@ export const operatorCopy = {
     },
     mode: {
       SIMULATED: {
-        banner: "SIMULATED OBSERVATORY",
+        banner: "სიმულირებული ობსერვატორია",
         detail: "პასუხობს სიმულატორი. აქედან ნამდვილი ტელესკოპი არ მოძრაობს.",
       },
       REAL: {

@@ -37,8 +37,8 @@ function failure(locale: Locale, error: unknown): AuthActionState {
   switch (error.status) {
     case 401:
       return { message: copy.invalidCredentials };
-    // Only sign-in answers 403 for an unverified address. Anywhere else it is the
-    // Origin refusal, which the visitor cannot fix.
+    // The Origin refusal, which the visitor cannot fix. Sign-in's unverified-address
+    // refusal is a 403 too, told apart by its code before this is reached.
     case 403:
       return { message: copy.unavailable };
     case 422:
@@ -63,7 +63,10 @@ export async function signInAction(
     await apiRequest("/auth/sign-in", { method: "POST", body, schema: zSignInResponse });
     return { redirectTo: `/${locale}/app` };
   } catch (error) {
-    if (error instanceof ApiRequestError && error.status === 403) {
+    // By code, not status: a 403 is also what the cross-origin refusal answers, and
+    // reading the status alone sent every visitor behind a misrouted proxy to verify
+    // an address that was verified (the hosted demo, 2026-10-08).
+    if (error instanceof ApiRequestError && error.error?.code === "EMAIL_UNVERIFIED") {
       return { message: authCopy[locale].errors.unverified };
     }
     return failure(locale, error);

@@ -97,7 +97,7 @@ export const statusCopy = {
     age: { seconds: "{value} წმ", minutes: "{value} წთ", hours: "{value} სთ" },
     mode: {
       SIMULATED: {
-        banner: "SIMULATED OBSERVATORY",
+        banner: "სიმულირებული ობსერვატორია",
         detail: "პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.",
       },
       REAL: {

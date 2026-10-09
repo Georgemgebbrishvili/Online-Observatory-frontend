@@ -1,4 +1,3 @@
-import type { ObservatoryStatusValue } from "@/components/observatory/observatory-status";
 import type { Locale } from "@/i18n/config";
 import { brand } from "@/brand";
 
@@ -20,8 +19,6 @@ export type ObservatorySite = {
   id: string;
   name: LocalizedText;
   location: LocalizedText;
-  status: ObservatoryStatusValue;
-  statusMode: "DEMONSTRATION" | "TELEMETRY";
   telescope: TelescopeConfiguration;
   capabilities: string[];
 };
@@ -34,8 +31,6 @@ export const observatories: ObservatorySite[] = [
       ka: `${brand.ka.genitive} თბილისის ობსერვატორია`,
     },
     location: { en: "Tbilisi, Georgia", ka: "თბილისი, საქართველო" },
-    status: "ONLINE",
-    statusMode: "DEMONSTRATION",
     telescope: {
       manufacturer: "Celestron",
       model: "NexStar 6SE",

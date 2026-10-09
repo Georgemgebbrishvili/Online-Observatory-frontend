@@ -52,7 +52,7 @@ test("the REAL switch demands an attended operator", async ({ page }) => {
 
 test("the console in Georgian", async ({ page }) => {
   await page.goto("/ka/admin");
-  await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible({
+  await expect(page.getByText("სიმულირებული ობსერვატორია")).toBeVisible({
     timeout: firstCompile,
   });
   await page.screenshot({ path: `${evidence}/05-overview-georgian.png`, fullPage: true });
