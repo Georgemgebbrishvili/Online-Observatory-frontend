@@ -1382,6 +1382,29 @@ const routes = {
       return error(response, 422, "VALIDATION_FAILED", "Name, email and password.");
     }
     const { displayName, email, locale, password } = body.data;
+    // Platform ADR-049, as the demo answers it: an address on demo.test is verified at
+    // once and signed in, 200 with the user and the session cookies.
+    if (!users.has(email) && email.endsWith("@demo.test")) {
+      const user = zUser.parse({
+        id: randomUUID(),
+        email,
+        displayName,
+        role: "USER",
+        locale,
+        createdAt: new Date().toISOString(),
+      });
+      users.set(email, user);
+      passwords.set(email, password);
+      const token = randomUUID();
+      const csrf = randomUUID();
+      sessions.set(token, { user, csrf });
+      return send(response, 200, user, {
+        "set-cookie": [
+          `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
+          `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+        ],
+      });
+    }
     if (!users.has(email)) {
       const token = randomUUID();
       pendingVerifications.set(token, {

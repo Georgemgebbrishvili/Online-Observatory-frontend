@@ -52,7 +52,8 @@ export async function apiRequest<T = void>(
     throw new ApiRequestError(response.status, parsed.success ? parsed.data : null);
   }
 
-  if (!init.schema || response.status === 204) {
+  // 202 is "accepted, nothing to show" (registration awaiting the email); 204 is nothing.
+  if (!init.schema || response.status === 204 || response.status === 202) {
     return undefined as T;
   }
   return init.schema.parse(await response.json());

@@ -8,6 +8,7 @@ import type {
 import {
   zConfirmPasswordResetResponse,
   zSignInResponse,
+  zUser,
   zVerifyEmailResponse,
 } from "@darkview/contracts/zod";
 
@@ -90,8 +91,10 @@ export async function registerAction(
     return { errors: { password: copy.weakPassword } };
   }
   try {
-    await apiRequest("/auth/register", { method: "POST", body });
-    return { redirectTo: `/${locale}/verify-email` };
+    // 200 with the user: the demo verified the address at once and signed it in
+    // (platform ADR-049). 202 with nothing: a link is on its way.
+    const user = await apiRequest("/auth/register", { method: "POST", body, schema: zUser });
+    return { redirectTo: user ? `/${locale}/app` : `/${locale}/verify-email` };
   } catch (error) {
     return failure(locale, error);
   }

@@ -93,6 +93,21 @@ test("signs out and ends the session", async ({ page }) => {
   await expect(page).toHaveURL(/\/en\/sign-in$/, { timeout: firstCompile });
 });
 
+// Platform ADR-049: the demo, with no email to send, verifies at once and signs in.
+test("lands in the app when the platform verified the address at once", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/en/register");
+  await page.getByLabel("Name").fill("Demo Observer");
+  await page.getByLabel("Email").fill(`new-${Date.now()}@demo.test`);
+  await page.getByLabel("Password").fill("a long enough password");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
+  const names = (await context.cookies()).map((cookie) => cookie.name).sort();
+  expect(names).toEqual(["darkview_csrf", "darkview_session"]);
+});
+
 test("creates an account, and asks for the email before any session", async ({
   page,
   context,
