@@ -45,3 +45,20 @@ nextjs-portal {
 .room-console .mission-step-dot {
   animation: none !important;
 }
+
+/*
+ * The console's blurs (ADR-050) cost the capture seconds on a tall page, and the ka
+ * design system timed out on them. Flat under the gate; the product keeps them.
+ */
+.room-atmo-aurora {
+  filter: none !important;
+}
+
+.room-console .room-panel,
+.room-console .live-feed-flow,
+.room-console .mission-steps,
+.room-console .live-feed-plate,
+.room-console .live-feed-badge,
+.room-console .live-feed-well .target-preview figcaption {
+  backdrop-filter: none !important;
+}

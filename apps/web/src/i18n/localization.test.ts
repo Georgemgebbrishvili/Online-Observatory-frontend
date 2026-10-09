@@ -29,7 +29,7 @@ function resourceShape(value: unknown): unknown {
 describe("Georgian localization", () => {
   it("uses the approved core product language", () => {
     expect(ka.navigation.app.home).toBe("მთავარი");
-    expect(ka.navigation.app.missions).toBe("მისიები");
+    expect(ka.navigation.app.book).toBe("დაჯავშნა");
     expect(ka.navigation.app.live).toBe("პირდაპირი დაკვირვება");
     expect(ka.navigation.app.collection).toBe("კოლექცია");
     expect(ka.navigation.public.observatory).toBe("ობსერვატორია");

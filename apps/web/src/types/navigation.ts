@@ -17,13 +17,12 @@ export type AppNavigationDictionary = {
   brandAriaLabel: string;
   brandEndorsement: string;
   home: string;
-  missions: string;
+  book: string;
   live: string;
   collection: string;
   profile: string;
   // Reachable and navigable, and honest that they are not built. The phase that
   // fills each one is in features/navigation/navigation-model.ts.
-  book: string;
   subscription: string;
   loyalty: string;
   passes: string;
@@ -31,7 +30,7 @@ export type AppNavigationDictionary = {
   // The bottom bar carries the five primary destinations only.
   mobile: {
     home: string;
-    missions: string;
+    book: string;
     live: string;
     collection: string;
     profile: string;

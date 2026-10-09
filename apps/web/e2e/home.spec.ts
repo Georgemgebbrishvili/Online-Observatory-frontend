@@ -175,7 +175,7 @@ test("uses a desktop sidebar and native-style mobile app navigation", async ({
   await expect(sidebar.getByText("Tbilisi Observatory")).toBeVisible();
   await expect(sidebar.getByText("Simulated status")).toBeVisible();
 
-  for (const item of ["Home", "Missions", "Live", "Collection", "Profile"]) {
+  for (const item of ["Home", "Book", "Live", "Collection", "Profile"]) {
     await expect(sidebar.getByRole("link", { name: item })).toBeVisible();
   }
 
@@ -191,13 +191,10 @@ test("uses a desktop sidebar and native-style mobile app navigation", async ({
   await expect(sidebar).toBeHidden();
   await expect(bottomNav).toBeVisible();
   await expect(page.getByRole("banner").getByText("Online")).toBeVisible();
-  const mobileMissionsLink = bottomNav.getByRole("link", { name: "Missions" });
-  await expect(mobileMissionsLink).toBeVisible();
-  await Promise.all([
-    page.waitForURL(/\/en\/app\/missions$/),
-    mobileMissionsLink.click(),
-  ]);
-  await expect(bottomNav.getByRole("link", { name: "Missions" })).toHaveAttribute(
+  const mobileBookLink = bottomNav.getByRole("link", { name: "Book" });
+  await expect(mobileBookLink).toBeVisible();
+  await Promise.all([page.waitForURL(/\/en\/app\/book$/), mobileBookLink.click()]);
+  await expect(bottomNav.getByRole("link", { name: "Book" })).toHaveAttribute(
     "aria-current",
     "page",
   );

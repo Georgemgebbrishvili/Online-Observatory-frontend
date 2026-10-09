@@ -16,7 +16,7 @@ describe("app navigation model", () => {
     // destinations to appDestinations; the primary five are unchanged.
     expect(primaryDestinations.map((destination) => destination.key)).toEqual([
       "home",
-      "missions",
+      "book",
       "live",
       "collection",
       "profile",
@@ -26,7 +26,6 @@ describe("app navigation model", () => {
   it("lists booking with the working destinations in the sidebar, not as planned", () => {
     expect(sidebarDestinations.map((destination) => destination.key)).toEqual([
       "home",
-      "missions",
       "book",
       "live",
       "collection",
@@ -49,14 +48,16 @@ describe("app navigation model", () => {
   });
 
   it("accepts only routed destination segments", () => {
-    expect(isAppDestinationSegment("missions")).toBe(true);
+    expect(isAppDestinationSegment("book")).toBe(true);
+    // ADR-051: the catalogue has a route of its own, not a place in the bar.
+    expect(isAppDestinationSegment("missions")).toBe(false);
     expect(isAppDestinationSegment("settings")).toBe(false);
     expect(isAppDestinationSegment("")).toBe(false);
   });
 
   it("separates segments with their own route from those the preview renders", () => {
     // These have real pages; the preview must not claim them.
-    for (const segment of ["", "missions", "live", "collection", "book", "profile"]) {
+    for (const segment of ["", "live", "collection", "book", "profile"]) {
       expect(isPreviewSegment(segment), segment).toBe(false);
     }
     for (const segment of ["subscription", "loyalty", "passes"]) {

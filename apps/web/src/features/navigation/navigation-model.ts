@@ -9,10 +9,10 @@
  */
 
 export const appDestinations = [
+  // ADR-051: three verbs. Book, Live and Collection, with Home and Profile; the target
+  // catalogue at /app/missions is reached from them, not from the bar.
   { key: "home", segment: "", icon: "home", group: "primary" },
-  { key: "missions", segment: "missions", icon: "missions", group: "primary" },
-  // Built in Phase 3. In the sidebar beside the five; the bottom bar holds five only.
-  { key: "book", segment: "book", icon: "book", group: "sidebar" },
+  { key: "book", segment: "book", icon: "book", group: "primary" },
   { key: "live", segment: "live", icon: "live", group: "primary" },
   { key: "collection", segment: "collection", icon: "collection", group: "primary" },
   { key: "profile", segment: "profile", icon: "profile", group: "primary" },
@@ -37,7 +37,7 @@ export const primaryDestinations = appDestinations.filter(
   (destination) => destination.group === "primary",
 );
 
-/** The sidebar's working destinations: the five, and booking. */
+/** The sidebar's working destinations: the five. */
 export const sidebarDestinations = appDestinations.filter(
   (destination) => destination.group !== "planned",
 );
@@ -48,7 +48,7 @@ export const plannedDestinations = appDestinations.filter(
 );
 
 /** Segments `/app/[destination]` renders itself, rather than a route of its own. */
-const ownRoute = new Set(["", "missions", "live", "collection", "book", "profile"]);
+const ownRoute = new Set(["", "live", "collection", "book", "profile"]);
 
 export function isAppDestinationSegment(
   segment: string,
