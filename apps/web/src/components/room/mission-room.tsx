@@ -60,7 +60,7 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
   const hour = currentHour(conditions, room.readAt);
 
   return (
-    <div className="room">
+    <div className="room room-console">
       <RoomLive
         locale={locale}
         mission={mission}
@@ -78,7 +78,10 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
         visibility={visibility ?? null}
         plates={feedPlates(observatory, target, locale, copy.feed)}
         readings={
-          <section className="room-panel" aria-labelledby="room-readings-title">
+          <section
+            className="room-panel room-observatory"
+            aria-labelledby="room-readings-title"
+          >
             <PanelHead
               id="room-readings-title"
               icon="observatory"
@@ -126,43 +129,44 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
             </dl>
           </section>
         }
+        captures={
+          <section
+            className="room-panel room-captures"
+            aria-labelledby="room-captures-title"
+          >
+            <PanelHead
+              id="room-captures-title"
+              icon="captures"
+              title={copy.captures.title}
+              meta={<Link href={`/${locale}/app/collection`}>{copy.captures.all}</Link>}
+            />
+            {captures.length === 0 ? (
+              <p className="room-muted">{copy.captures.empty}</p>
+            ) : (
+              <div className="room-capture-grid">
+                {captures.map((entry) => (
+                  <CaptureCard
+                    key={entry.capture.id}
+                    captureId={entry.capture.id}
+                    href={`/${locale}/app/collection/${entry.capture.id}`}
+                    title={captureTitle(entry, locale)}
+                    reference={captureReference(entry)}
+                    capturedAt={formatCapturedAt(
+                      entry.capture.capturedAt,
+                      timezone,
+                      locale,
+                    )}
+                    thumbnail={entry.thumbnail}
+                    simulated={entry.capture.mode === "SIMULATED"}
+                    visibility={entry.capture.visibility}
+                    copy={captureCopy}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        }
       >
-        <section
-          className="room-panel room-captures"
-          aria-labelledby="room-captures-title"
-        >
-          <PanelHead
-            id="room-captures-title"
-            icon="captures"
-            title={copy.captures.title}
-            meta={<Link href={`/${locale}/app/collection`}>{copy.captures.all}</Link>}
-          />
-          {captures.length === 0 ? (
-            <p className="room-muted">{copy.captures.empty}</p>
-          ) : (
-            <div className="room-capture-grid">
-              {captures.map((entry) => (
-                <CaptureCard
-                  key={entry.capture.id}
-                  captureId={entry.capture.id}
-                  href={`/${locale}/app/collection/${entry.capture.id}`}
-                  title={captureTitle(entry, locale)}
-                  reference={captureReference(entry)}
-                  capturedAt={formatCapturedAt(
-                    entry.capture.capturedAt,
-                    timezone,
-                    locale,
-                  )}
-                  thumbnail={entry.thumbnail}
-                  simulated={entry.capture.mode === "SIMULATED"}
-                  visibility={entry.capture.visibility}
-                  copy={captureCopy}
-                />
-              ))}
-            </div>
-          )}
-        </section>
-
         <section className="room-panel room-history" aria-labelledby="room-history-title">
           <PanelHead id="room-history-title" icon="history" title={copy.history.title} />
           {!events || events.length === 0 ? (

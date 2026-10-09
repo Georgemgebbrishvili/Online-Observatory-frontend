@@ -55,6 +55,12 @@ const config = {
   },
   overrides: [
     {
+      // ADR-050: the live room is the Stellar console, glass panels included. The ban
+      // on blur stands everywhere else.
+      files: ["apps/web/src/styles/room-console.css"],
+      rules: { "property-disallowed-list": ["text-shadow"] },
+    },
+    {
       files: ["apps/web/src/styles/tokens.css"],
       rules: {
         "color-no-hex": null,

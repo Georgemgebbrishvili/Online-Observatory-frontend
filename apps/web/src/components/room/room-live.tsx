@@ -60,6 +60,8 @@ type RoomLiveProps = {
   plates?: FeedPlates | null;
   /** The observatory's readings, rendered on the server, beside the pointing dial. */
   readings: ReactNode;
+  /** The captures panel, in the right column of the desk (ADR-050). */
+  captures?: ReactNode;
   /** The captures and history, rendered on the server. */
   children: ReactNode;
 };
@@ -107,6 +109,7 @@ export function RoomLive({
   plate,
   plates,
   readings,
+  captures,
   targetName,
   targetSlug,
   timezone,
@@ -214,79 +217,105 @@ export function RoomLive({
 
   return (
     <>
-      <header className="room-head">
-        {targetSlug && (
-          <Link className="room-back" href={`/${locale}/app/missions/${targetSlug}`}>
-            <span aria-hidden="true">←</span> {named(copy.back)}
-          </Link>
-        )}
-        <p className="eyebrow">
-          <span aria-hidden="true" />
-          {named(copy.eyebrow)}
-        </p>
-        <h1>{named(copy.states[state].title)}</h1>
-        <p>{named(copy.states[state].description)}</p>
-        {failureReason && <p className="room-reason">{copy.reasons[failureReason]}</p>}
-      </header>
-
-      {mission.mode === "SIMULATED" && (
-        <ModeNotice
-          mode="SIMULATED"
-          label={status.mode.SIMULATED.banner}
-          detail={status.mode.SIMULATED.detail}
-        />
-      )}
+      <div className="room-atmo" aria-hidden="true">
+        <div className="room-atmo-glow" />
+        <div className="room-atmo-aurora room-atmo-aurora-a" />
+        <div className="room-atmo-aurora room-atmo-aurora-b" />
+        <div className="room-atmo-aurora room-atmo-aurora-c" />
+        <div className="room-atmo-dots" />
+        <div className="room-atmo-ring" />
+        <div className="room-atmo-ring room-atmo-ring-b" />
+      </div>
 
       <div className="room-grid">
-        <section className="room-feed" aria-labelledby="room-feed-title">
-          <h2 id="room-feed-title" className="visually-hidden">
-            {copy.feed.label}
-          </h2>
-          <LiveFeed
-            status={feedStatus}
-            stream={
-              live.stream && {
-                url: live.stream.url,
-                simulated: live.stream.mode === "SIMULATED",
-                alt: named(
-                  live.stream.mode === "SIMULATED"
-                    ? copy.live.streamAltSimulated
-                    : copy.live.streamAlt,
-                ),
-              }
-            }
-            preview={
-              <TargetPreview
-                plate={plate}
-                name={targetName}
-                caption={copy.feed.illustration}
-              />
-            }
-            plates={plates}
-            title={text.title}
-            description={text.description}
-            labels={{
-              simulated: copy.live.simulated,
-              live: copy.live.live,
-              timeLeft: copy.live.timeLeft,
-            }}
-            timeLeft={left && left.seconds > 0 ? left : null}
-            steps={
-              <MissionSteps
-                title={copy.steps.title}
-                names={copy.steps.names}
-                statuses={statuses}
-                position={fill(copy.steps.stepOf, { step: String(reached + 1) })}
-                now={copy.steps.now}
-                stopped={copy.steps.stopped}
-              />
-            }
-            action={button}
-            onStreamError={onStreamError}
-          />
-        </section>
+        <div className="room-col room-col-left">
+          <section
+            className="room-panel room-tonight"
+            aria-labelledby="room-tonight-title"
+          >
+            <header className="room-head">
+              {targetSlug && (
+                <Link
+                  className="room-back"
+                  href={`/${locale}/app/missions/${targetSlug}`}
+                >
+                  <span aria-hidden="true">←</span> {named(copy.back)}
+                </Link>
+              )}
+              <p className="eyebrow">
+                <span aria-hidden="true" />
+                {named(copy.eyebrow)}
+              </p>
+              <h1 id="room-tonight-title">{named(copy.states[state].title)}</h1>
+              <p>{named(copy.states[state].description)}</p>
+              {failureReason && (
+                <p className="room-reason">{copy.reasons[failureReason]}</p>
+              )}
+            </header>
 
-        <div className="room-side">
+            {mission.mode === "SIMULATED" && (
+              <ModeNotice
+                mode="SIMULATED"
+                label={status.mode.SIMULATED.banner}
+                detail={status.mode.SIMULATED.detail}
+              />
+            )}
+          </section>
+          {readings}
+          <RoomSessionView {...controls} copy={controlsCopy} />
+        </div>
+
+        <div className="room-col room-col-centre">
+          <section className="room-feed" aria-labelledby="room-feed-title">
+            <h2 id="room-feed-title" className="visually-hidden">
+              {copy.feed.label}
+            </h2>
+            <LiveFeed
+              status={feedStatus}
+              stream={
+                live.stream && {
+                  url: live.stream.url,
+                  simulated: live.stream.mode === "SIMULATED",
+                  alt: named(
+                    live.stream.mode === "SIMULATED"
+                      ? copy.live.streamAltSimulated
+                      : copy.live.streamAlt,
+                  ),
+                }
+              }
+              preview={
+                <TargetPreview
+                  plate={plate}
+                  name={targetName}
+                  caption={copy.feed.illustration}
+                />
+              }
+              plates={plates}
+              title={text.title}
+              description={text.description}
+              labels={{
+                simulated: copy.live.simulated,
+                live: copy.live.live,
+                timeLeft: copy.live.timeLeft,
+              }}
+              timeLeft={left && left.seconds > 0 ? left : null}
+              steps={
+                <MissionSteps
+                  title={copy.steps.title}
+                  names={copy.steps.names}
+                  statuses={statuses}
+                  position={fill(copy.steps.stepOf, { step: String(reached + 1) })}
+                  now={copy.steps.now}
+                  stopped={copy.steps.stopped}
+                />
+              }
+              action={button}
+              onStreamError={onStreamError}
+            />
+          </section>
+        </div>
+
+        <div className="room-col room-col-right room-side">
           <RoomPointing
             locale={locale}
             targetName={targetName}
@@ -295,7 +324,6 @@ export function RoomLive({
             telescope={live.pointing}
           />
           <RoomControlsView {...controls} copy={controlsCopy} />
-          <RoomSessionView {...controls} copy={controlsCopy} />
           <RoomSharing
             missionId={mission.id}
             missionState={state}
@@ -306,7 +334,7 @@ export function RoomLive({
             signInPath={`/${locale}/sign-in`}
             copy={roomSharingCopy[locale]}
           />
-          {readings}
+          {captures}
         </div>
 
         {children}

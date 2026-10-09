@@ -1,0 +1,997 @@
+/*
+ * The live room as the Stellar console (ADR-050). Loaded after room.css on the room,
+ * the watch page and the design system; everything here reads --room-* tokens and
+ * nothing outside the room does. The source is the Stellar app's observatory console
+ * (console.css at 1052314b^): its ground and atmosphere, glass panels with gradient
+ * borders, the view frame with its orbiting ring and HUD corners, the flow bar, the
+ * pointing dial and readouts, the hand-control pad. Its content is ours (ADR-027).
+ */
+
+/* ── ground and atmosphere ───────────────────────────────────── */
+
+.room.room-console {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: min(100%, 100rem);
+  padding: var(--space-6) var(--space-5) var(--space-8);
+  border: 1px solid color-mix(in srgb, var(--room-warm) 10%, transparent);
+  border-radius: 18px;
+  background: var(--room-ground);
+  color: var(--room-ink);
+}
+
+.room-atmo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.room-atmo-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      60% 50% at 12% 0%,
+      color-mix(in srgb, var(--room-copper) 34%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50% 45% at 100% 30%,
+      color-mix(in srgb, var(--room-gold) 18%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--room-glow-top), var(--room-ground) 55%);
+}
+
+.room-atmo-aurora {
+  position: absolute;
+  width: 1100px;
+  height: 1100px;
+  border-radius: 50%;
+  filter: blur(20px);
+  mix-blend-mode: screen;
+  animation: room-drift 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.room-atmo-aurora-a {
+  top: -360px;
+  left: -320px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--room-copper) 95%, transparent),
+    transparent 70%
+  );
+}
+
+.room-atmo-aurora-b {
+  top: 30%;
+  right: -380px;
+  width: 1000px;
+  height: 1000px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--room-aurora-gold) 75%, transparent),
+    transparent 70%
+  );
+  animation-duration: 34s;
+  animation-delay: -12s;
+}
+
+.room-atmo-aurora-c {
+  bottom: -520px;
+  left: 32%;
+  width: 1100px;
+  height: 800px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--room-aurora-pink) 55%, transparent),
+    transparent 70%
+  );
+  animation-duration: 40s;
+  animation-delay: -20s;
+}
+
+.room-atmo-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--room-warm) 13%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 26px 26px;
+  mask-image: radial-gradient(70% 60% at 50% 30%, var(--room-black), transparent);
+}
+
+.room-atmo-ring {
+  position: absolute;
+  top: 380px;
+  left: -380px;
+  width: 1400px;
+  height: 1400px;
+  border: 1px solid color-mix(in srgb, var(--room-copper) 8%, transparent);
+  border-radius: 50%;
+}
+
+.room-atmo-ring-b {
+  top: -560px;
+  right: -460px;
+  left: auto;
+  width: 1200px;
+  height: 1200px;
+  border: 1px dashed color-mix(in srgb, var(--room-gold) 7%, transparent);
+}
+
+@keyframes room-drift {
+  to {
+    transform: translate(60px, 40px) scale(1.06);
+  }
+}
+
+/* ── type ────────────────────────────────────────────────────── */
+
+.room-console,
+.room-console .room-head p:not(.eyebrow),
+.room-console .room-muted,
+.room-console .room-note {
+  font-family: var(--font-body);
+}
+
+.room-console .room-head h1 {
+  font: 600 1.5rem/1.2 var(--room-font-cond);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.room-console .room-head > p:not(.eyebrow) {
+  color: var(--room-ink-2);
+  font-size: var(--font-size-label);
+}
+
+.room-console .room-head .eyebrow,
+.room-console .room-back {
+  color: var(--room-ink-3);
+}
+
+.room-console .room-back:hover {
+  color: var(--room-ink);
+}
+
+/* ── the desk ────────────────────────────────────────────────── */
+
+.room-console .room-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: none;
+}
+
+.room-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.room-col-centre {
+  gap: var(--space-3);
+}
+
+/* room.css names grid areas for its two-column desk; here every child is auto-placed. */
+.room-console .room-grid > .room-feed,
+.room-console .room-grid > .room-side,
+.room-console .room-grid > .room-captures {
+  grid-area: auto;
+}
+
+.room-console .room-grid > .room-history {
+  grid-area: auto;
+  grid-column: 1 / -1;
+}
+
+/*
+ * Below the desk the columns dissolve and the panels take the reading order: the
+ * night, the view, the pointing, the hand, the session, sharing, the observatory,
+ * the captures, the history.
+ */
+@media (--below-xl) {
+  .room-console .room-col {
+    display: contents;
+  }
+
+  .room-console .room-tonight {
+    order: 1;
+  }
+
+  .room-console .room-feed {
+    order: 2;
+  }
+
+  .room-console .room-pointing {
+    order: 3;
+  }
+
+  .room-console .room-controls {
+    order: 4;
+  }
+
+  .room-console .room-session {
+    order: 5;
+  }
+
+  .room-console .room-sharing {
+    order: 6;
+  }
+
+  .room-console .room-observatory {
+    order: 7;
+  }
+
+  .room-console .room-captures {
+    order: 8;
+  }
+
+  .room-console .room-grid > .room-history {
+    order: 9;
+  }
+}
+
+@media (--lg) {
+  .room-console .room-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .room-console .room-feed {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (--xl) {
+  .room-console .room-grid {
+    grid-template-columns: 17rem minmax(0, 1fr) 19rem;
+    align-items: start;
+  }
+
+  .room-console .room-feed {
+    grid-column: auto;
+  }
+}
+
+/* ── panels ──────────────────────────────────────────────────── */
+
+.room-console .room-panel,
+.room-console .live-feed-flow,
+.room-console .mission-steps {
+  position: relative;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--room-panel-top) 72%, transparent),
+        color-mix(in srgb, var(--room-panel-bottom) 86%, transparent)
+      )
+      padding-box,
+    linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--room-warm) 26%, transparent),
+        color-mix(in srgb, var(--room-warm) 6%, transparent) 45%,
+        color-mix(in srgb, var(--room-copper) 30%, transparent)
+      )
+      border-box;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 30px 60px -40px color-mix(in srgb, var(--room-black) 90%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--room-white) 5%, transparent);
+  transition: box-shadow 140ms ease-out;
+}
+
+@media (hover: hover) {
+  .room-console .room-panel:hover {
+    box-shadow:
+      0 30px 60px -30px color-mix(in srgb, var(--room-black) 90%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--room-copper) 28%, transparent),
+      0 0 40px -18px color-mix(in srgb, var(--room-copper) 70%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--room-white) 7%, transparent);
+  }
+}
+
+.room-console .room-panel > *:not(.panel-head),
+.room-console .live-feed-flow > *:not(.panel-head) {
+  margin-inline: var(--space-4);
+}
+
+.room-console .room-panel > *:last-child,
+.room-console .live-feed-flow > *:last-child {
+  margin-bottom: var(--space-4);
+}
+
+.room-console .panel-head {
+  margin: 0;
+  padding: 12px 16px 10px;
+  border-bottom: 0;
+}
+
+.room-console .panel-head {
+  position: relative;
+  margin-bottom: var(--space-3);
+}
+
+.room-console .panel-head::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--room-warm) 22%, transparent),
+    color-mix(in srgb, var(--room-warm) 4%, transparent)
+  );
+}
+
+.room-console .panel-title {
+  color: var(--room-ink);
+  font: 600 13px/1 var(--room-font-cond);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.room-console .panel-title svg {
+  color: var(--room-copper-ink);
+}
+
+.room-console .panel-meta,
+.room-console .panel-meta a {
+  color: color-mix(in srgb, var(--room-gold) 65%, transparent);
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.room-console .panel-meta a:hover {
+  color: var(--room-gold);
+}
+
+.room-console .room-muted,
+.room-console .room-note {
+  color: var(--room-ink-2);
+  font-size: var(--font-size-caption);
+}
+
+.room-console .room-note {
+  color: color-mix(in srgb, var(--room-ink-3) 75%, transparent);
+  font: 400 11px/1.5 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The tonight panel: the mission's head, in the left column. */
+.room-tonight {
+  overflow: hidden;
+}
+
+.room-tonight .room-head {
+  padding: var(--space-4) var(--space-4) 0;
+  margin: 0;
+}
+
+.room-tonight .room-head h1 {
+  font-size: var(--font-size-h3);
+}
+
+.room-tonight .mode-notice {
+  margin: var(--space-3) var(--space-4) var(--space-4);
+}
+
+/* ── the view ────────────────────────────────────────────────── */
+
+.room-console .live-feed {
+  gap: var(--space-3);
+}
+
+.room-console .live-feed-well {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background:
+    var(--room-stage) padding-box,
+    linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--room-copper) 60%, transparent),
+        color-mix(in srgb, var(--room-warm) 8%, transparent) 40%,
+        color-mix(in srgb, var(--room-gold) 45%, transparent)
+      )
+      border-box;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--room-copper) 35%, transparent),
+    0 0 70px -20px color-mix(in srgb, var(--room-copper) 70%, transparent),
+    0 40px 90px -40px color-mix(in srgb, var(--room-black) 95%, transparent);
+  transition: box-shadow 400ms ease-out;
+}
+
+.room-console .live-feed[data-live-status="live"] .live-feed-well {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--room-gold) 60%, transparent),
+    0 0 90px -10px color-mix(in srgb, var(--room-gold) 60%, transparent),
+    0 40px 90px -40px color-mix(in srgb, var(--room-black) 95%, transparent);
+}
+
+/* The orbiting ring on the frame. */
+.room-console .live-feed-well::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--room-orbit, 0deg),
+    transparent 0 55%,
+    color-mix(in srgb, var(--room-copper-ink) 90%, transparent) 70%,
+    color-mix(in srgb, var(--room-gold) 90%, transparent) 82%,
+    transparent 95%
+  );
+  mask:
+    linear-gradient(var(--room-black) 0 0) content-box,
+    linear-gradient(var(--room-black) 0 0);
+  mask-composite: exclude;
+  animation: room-orbit 8s linear infinite;
+  pointer-events: none;
+}
+
+@property --room-orbit {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes room-orbit {
+  to {
+    --room-orbit: 360deg;
+  }
+}
+
+.room-console .live-feed-view {
+  position: relative;
+}
+
+.room-console .live-feed-stage,
+.room-console .live-feed-well .target-preview-stage {
+  aspect-ratio: 16 / 10;
+  background: var(--room-stage);
+}
+
+/* Over the illustration only, never over the stream (ADR-039): scan lines, a vignette. */
+.room-console .live-feed-well .target-preview-stage::before,
+.room-console .live-feed-well .target-preview-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.room-console .live-feed-well .target-preview-stage::before {
+  background: repeating-linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--room-white) 1.8%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+  mix-blend-mode: screen;
+}
+
+.room-console .live-feed-well .target-preview-stage::after {
+  background: radial-gradient(
+    closest-side,
+    transparent 70%,
+    color-mix(in srgb, var(--room-stage) 80%, transparent) 100%
+  );
+}
+
+.room-console .live-feed-well .target-preview {
+  position: relative;
+}
+
+.room-console .live-feed-well .target-preview figcaption {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2;
+  padding: 8px 12px;
+  border: 1px solid var(--room-border);
+  border-radius: 10px;
+  background: var(--room-glass);
+  backdrop-filter: blur(10px);
+  color: color-mix(in srgb, var(--room-ink-warm) 86%, transparent);
+  font: 400 11px/1.7 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+/* The HUD corners: the instrument top-left, the target bottom-left, time bottom-right. */
+.room-console .live-feed-plates {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 0;
+  pointer-events: none;
+}
+
+.room-console .live-feed-plate {
+  position: absolute;
+  gap: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--room-border);
+  border-radius: 10px;
+  background: var(--room-glass);
+  backdrop-filter: blur(10px);
+  color: color-mix(in srgb, var(--room-ink-warm) 86%, transparent);
+  font: 400 11px/1.7 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.room-console .live-feed-plate-instrument {
+  top: 16px;
+  left: 16px;
+}
+
+.room-console .live-feed-plate-instrument > span:first-child {
+  color: var(--room-copper-ink);
+}
+
+.room-console .live-feed-plate-subject {
+  bottom: 16px;
+  left: 16px;
+}
+
+.room-console .live-feed-plate-subject > span:first-child {
+  color: var(--room-amber);
+}
+
+.room-console .live-feed-time {
+  right: 16px;
+  bottom: 16px;
+  text-align: right;
+}
+
+.room-console
+  .live-feed-well
+  .target-preview[data-plate="true"]
+  ~ .live-feed-plates
+  .live-feed-time,
+.room-console
+  .live-feed-well
+  .target-preview[data-plate="true"]
+  + .live-feed-plates
+  .live-feed-time {
+  bottom: 60px;
+}
+
+.room-console .live-feed-plate-data,
+.room-console .live-feed-time time {
+  color: var(--room-gold);
+}
+
+/* The status pill, top right. */
+.room-console .live-feed-badge {
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--room-gold) 45%, transparent);
+  border-radius: 30px;
+  background: var(--room-glass);
+  backdrop-filter: blur(10px);
+  color: var(--room-gold);
+  font: 600 12px/1 var(--room-font-cond);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.room-console .live-feed-badge .capture-simulated {
+  color: inherit;
+  font: inherit;
+}
+
+/* ── the flow bar ────────────────────────────────────────────── */
+
+.room-console .live-feed-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 0 14px;
+}
+
+.room-console .live-feed-flow > .mission-steps {
+  margin: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.room-console .mission-steps ol {
+  position: relative;
+  margin: 0 18px;
+  gap: 0;
+}
+
+.room-console .mission-steps ol::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: 10%;
+  left: 10%;
+  height: 2px;
+  background: color-mix(in srgb, var(--room-warm) 14%, transparent);
+}
+
+.room-console .mission-steps li {
+  position: relative;
+  gap: 8px;
+  color: color-mix(in srgb, var(--room-ink-3) 85%, transparent);
+}
+
+.room-console .mission-steps li::after {
+  display: none;
+}
+
+.room-console .mission-step-dot {
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid color-mix(in srgb, var(--room-warm) 25%, transparent);
+  background: var(--room-dot);
+  color: inherit;
+  font: 500 11px var(--font-mono);
+  transition:
+    background 140ms,
+    border-color 140ms,
+    color 140ms,
+    transform 140ms;
+}
+
+.room-console .mission-step-name {
+  font: 600 12px/1 var(--room-font-cond);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.room-console .mission-step-note {
+  color: inherit;
+  font: 400 11px/1 var(--font-mono);
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.room-console .mission-steps li[data-status="done"] {
+  color: var(--room-gold);
+}
+
+.room-console .mission-steps li[data-status="done"] .mission-step-dot {
+  border-color: var(--room-gold);
+  background: var(--room-dot-done);
+  color: var(--room-gold);
+  transform: scale(1.04);
+}
+
+.room-console .mission-steps li[data-status="current"] {
+  color: var(--room-copper-ink);
+}
+
+.room-console .mission-steps li[data-status="current"] .mission-step-dot {
+  border-color: var(--room-copper-ink);
+  color: var(--room-copper-ink);
+  animation: room-pulse 2.2s ease-in-out infinite;
+}
+
+.room-console .mission-steps li[data-status="stopped"] {
+  color: var(--color-warning);
+}
+
+@keyframes room-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 5px color-mix(in srgb, var(--room-copper) 14%, transparent),
+      0 0 22px color-mix(in srgb, var(--room-copper) 50%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 9px color-mix(in srgb, var(--room-copper) 6%, transparent),
+      0 0 30px color-mix(in srgb, var(--room-copper) 70%, transparent);
+  }
+}
+
+.room-console .live-feed-flow > .mission-steps + .live-feed-status {
+  margin: 0 18px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--room-warm) 12%, transparent);
+}
+
+.room-console .live-feed-status strong {
+  color: color-mix(in srgb, var(--room-ink) 86%, transparent);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
+}
+
+.room-console .live-feed-status span {
+  color: var(--room-ink-2);
+  font-size: var(--font-size-caption);
+}
+
+.room-console .live-feed[data-live-status="hold"] .live-feed-status > [role],
+.room-console .live-feed[data-live-status="stopped"] .live-feed-status > [role] {
+  border-left-color: var(--room-gold);
+}
+
+/* ── buttons in the room ─────────────────────────────────────── */
+
+.room-console .button-primary {
+  color: var(--room-white);
+  background:
+    linear-gradient(180deg, var(--room-copper), var(--room-amber)) padding-box,
+    linear-gradient(180deg, var(--room-copper), var(--room-amber)) border-box;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--room-copper) 40%, transparent),
+    0 0 40px -14px color-mix(in srgb, var(--room-copper) 90%, transparent);
+  font: 600 14px/1 var(--room-font-cond);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.room-console .button-primary:hover:not(:disabled) {
+  background:
+    linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--room-copper) 85%, var(--room-white)),
+        var(--room-copper)
+      )
+      padding-box,
+    linear-gradient(180deg, var(--room-copper), var(--room-amber)) border-box;
+}
+
+.room-console .button-secondary,
+.room-console .button-ghost,
+.room-console .button-danger {
+  border-color: transparent;
+  background:
+    color-mix(in srgb, var(--room-raise) 40%, transparent) padding-box,
+    linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--room-warm) 28%, transparent),
+        color-mix(in srgb, var(--room-warm) 8%, transparent)
+      )
+      border-box;
+  color: var(--room-ink);
+  font: 600 13px/1 var(--room-font-cond);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.room-console .button-danger {
+  background:
+    color-mix(in srgb, var(--room-raise) 40%, transparent) padding-box,
+    linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--room-red) 50%, transparent),
+        color-mix(in srgb, var(--room-red) 12%, transparent)
+      )
+      border-box;
+  color: var(--room-red-ink);
+}
+
+.room-console .button-large {
+  font-size: var(--font-size-label);
+}
+
+/* ── pointing ────────────────────────────────────────────────── */
+
+.room-console .room-pointing-body {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.room-console .pointing-dial {
+  width: 140px;
+  height: 140px;
+}
+
+.room-console .pointing-dial-rim {
+  fill: var(--room-dial);
+  stroke: color-mix(in srgb, var(--room-warm) 25%, transparent);
+}
+
+.room-console .pointing-dial-ring,
+.room-console .pointing-dial-tick {
+  stroke: color-mix(in srgb, var(--room-warm) 20%, transparent);
+}
+
+.room-console .pointing-dial-cardinal,
+.room-console .pointing-dial-north {
+  fill: var(--room-ink-3);
+  font-family: var(--font-mono);
+}
+
+.room-console .pointing-dial-north {
+  fill: var(--room-copper-ink);
+}
+
+.room-console .pointing-dial-telescope circle,
+.room-console .pointing-dial-target circle {
+  stroke: var(--room-gold);
+}
+
+.room-console .pointing-dial-target-dot,
+.room-console .pointing-dial-reference {
+  fill: var(--room-gold);
+}
+
+.room-console .room-values,
+.room-console .room-readings {
+  gap: 12px;
+}
+
+.room-console .room-values dt,
+.room-console .room-readings dt {
+  color: var(--room-ink-3);
+  font: 600 11px/1 var(--room-font-cond);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.room-console .room-values dd,
+.room-console .room-readings dd {
+  color: var(--room-ink);
+  font: 500 14px/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.room-console .room-values .room-value-main dd {
+  font-size: var(--font-size-h3);
+}
+
+.room-console .room-readings .room-reading-live {
+  color: var(--room-gold);
+}
+
+/* ── the hand control ────────────────────────────────────────── */
+
+.room-console .room-controls-pad {
+  gap: 5px;
+  margin-bottom: var(--space-3);
+}
+
+.room-console .room-controls-arrow,
+.room-console .room-controls-centre {
+  border: 1px solid color-mix(in srgb, var(--room-warm) 22%, transparent);
+  border-radius: 12px;
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--room-warm) 10%, transparent),
+    color-mix(in srgb, var(--room-pad) 90%, transparent)
+  );
+  color: var(--room-ink);
+  box-shadow: none;
+  transition:
+    transform 70ms ease-out,
+    border-color 120ms,
+    color 120ms,
+    box-shadow 120ms;
+}
+
+.room-console .room-controls-arrow:hover:not(:disabled),
+.room-console .room-controls-centre:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--room-gold) 60%, transparent);
+  color: var(--room-gold);
+}
+
+.room-console .room-controls-arrow:active:not(:disabled),
+.room-console .room-controls-centre:active:not(:disabled) {
+  transform: scale(0.93);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--room-gold) 22%, transparent),
+    0 0 18px color-mix(in srgb, var(--room-gold) 35%, transparent);
+}
+
+.room-console .room-controls-centre {
+  border-color: color-mix(in srgb, var(--room-gold) 50%, transparent);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--room-gold) 28%, transparent),
+    color-mix(in srgb, var(--room-pad) 90%, transparent)
+  );
+  color: var(--room-gold);
+  font: 600 11px/1 var(--room-font-cond);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.room-console .room-controls-status,
+.room-console .room-sharing-status {
+  color: var(--room-ink-2);
+  font-size: var(--font-size-caption);
+}
+
+.room-console .room-controls-confirm {
+  border-color: var(--room-border);
+  background: var(--room-well);
+}
+
+/* ── captures and history ────────────────────────────────────── */
+
+.room-console .room-capture-grid {
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: 6px;
+}
+
+.room-console .room-history ol {
+  gap: 0;
+}
+
+.room-console .room-history li {
+  border-left-color: color-mix(in srgb, var(--room-warm) 16%, transparent);
+}
+
+.room-console .room-history li:first-child {
+  border-left-color: var(--room-copper-ink);
+}
+
+.room-console .room-history time {
+  color: var(--room-ink-3);
+  font: 400 11px/1.5 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.room-console .room-history strong {
+  color: var(--room-ink);
+  font-size: var(--font-size-label);
+}
+
+.room-console .room-history span {
+  color: var(--room-ink-2);
+  font-size: var(--font-size-caption);
+}
+
+/* ── the mode notice and sharing in the room ─────────────────── */
+
+.room-console .mode-notice {
+  border-color: color-mix(in srgb, var(--room-gold) 35%, transparent);
+  background: color-mix(in srgb, var(--room-gold) 8%, transparent);
+}
+
+.room-console .room-sharing > p {
+  color: var(--room-ink-2);
+  font-size: var(--font-size-caption);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-atmo-aurora,
+  .room-console .live-feed-well::after,
+  .room-console .mission-steps li[data-status="current"] .mission-step-dot {
+    animation: none;
+  }
+}
+
+/* A small stage keeps the pill and the clock; the instrument and target plates go. */
+@media (--below-md) {
+  .room-console .live-feed-plate-instrument,
+  .room-console .live-feed-plate-subject {
+    display: none;
+  }
+}

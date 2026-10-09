@@ -9,6 +9,7 @@ import { roomCopy } from "@/i18n/resources/room";
 import { requireUser } from "@/lib/platform/session";
 import "@/styles/collection.css";
 import "@/styles/room.css";
+import "@/styles/room-console.css";
 
 // The segment is named for the target page it shares a level with; here its value is
 // the mission's id (ADR-027 §1).

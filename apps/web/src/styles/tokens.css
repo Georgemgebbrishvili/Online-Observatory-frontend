@@ -121,6 +121,42 @@
   --color-scene-star: var(--st-ink);
 
   /*
+   * The live room's console (ADR-050): the Stellar app's observatory console, copper
+   * and amber on near-black, read by room-console.css and nothing else.
+   */
+  --room-ground: #060606;
+  --room-ink: #eef1fa;
+  --room-ink-2: color-mix(in srgb, #fae0d6 66%, transparent);
+  --room-ink-3: color-mix(in srgb, #f0ccbe 60%, transparent);
+  --room-copper: #b5652d;
+  --room-copper-ink: #d6aa8b;
+  --room-amber: #a45528;
+  --room-gold: #f4b113;
+  --room-red: #ff7a6b;
+  --room-warm: #ffb68f;
+  --room-panel: color-mix(in srgb, #141414 72%, transparent);
+  --room-glass: color-mix(in srgb, #0c0c0c 62%, transparent);
+  --room-well: color-mix(in srgb, #0b0b0b 60%, transparent);
+  --room-border: color-mix(in srgb, var(--room-warm) 18%, transparent);
+  --room-border-faint: color-mix(in srgb, var(--room-warm) 10%, transparent);
+  --room-black: #000000;
+  --room-white: #ffffff;
+  --room-stage: #040404;
+  --room-glow-top: #0b0806;
+  --room-panel-top: #1b1b1b;
+  --room-panel-bottom: #0d0d0d;
+  --room-raise: #1f1f1f;
+  --room-pad: #181818;
+  --room-dot: #121212;
+  --room-dot-done: #212121;
+  --room-dial: #120d0a;
+  --room-ink-warm: #fae0d6;
+  --room-red-ink: #ffb4aa;
+  --room-aurora-gold: #d2c814;
+  --room-aurora-pink: #ff6ebe;
+  --room-font-cond: var(--font-barlow), var(--font-oswald), var(--font-noto-sans-georgian), sans-serif;
+
+  /*
    * ADR-039 type. Georgian has no glyphs in the Latin faces, so each stack falls through
    * to a face that has Mkhedruli: Noto Sans Georgian for headline and label,
    * FiraGO for body and for the words in a data line. Families load in

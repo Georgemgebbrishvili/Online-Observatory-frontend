@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/booking.css";
 import "@/styles/room.css";
+import "@/styles/room-console.css";
 import "@/styles/collection.css";
 import "@/styles/design-system.css";
 import "@/styles/pages.css";
