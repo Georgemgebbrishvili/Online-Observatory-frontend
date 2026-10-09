@@ -128,7 +128,7 @@ export function BookingNight({ locale, reschedule, result }: BookingNightProps) 
         </p>
         <h1>{copy.title}</h1>
         <p>{reschedule ? rescheduleCopy[locale].replacing : copy.introduction}</p>
-        <Link className="page-link booking-bookings" href={`/${locale}/app/bookings`}>
+        <Link className="page-link booking-bookings" href="#booking-nights">
           {copy.yourBookings}
         </Link>
       </header>

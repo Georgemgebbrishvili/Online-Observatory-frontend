@@ -9,6 +9,8 @@ type BookingsCopy = {
   metadataDescription: string;
   eyebrow: string;
   title: string;
+  /** The nights section on /app/book (ADR-051). */
+  section: string;
   introduction: string;
   bookSlot: string;
   newest: string;
@@ -63,6 +65,7 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     metadataDescription: "Your observing time on the telescope.",
     eyebrow: "Bookings",
     title: "Your bookings.",
+    section: "Your nights",
     introduction:
       "Every slot you have held or paid for, latest first, in the observatory's time.",
     bookSlot: "Book a slot",
@@ -137,6 +140,7 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     metadataDescription: "შენი დრო ტელესკოპთან.",
     eyebrow: "ჯავშნები",
     title: "შენი ჯავშნები.",
+    section: "შენი ღამეები",
     introduction:
       "ყველა დაკავებული ან გადახდილი დრო, ბოლოდან დაწყებული, ობსერვატორიის დროით.",
     bookSlot: "დაჯავშნე დრო",

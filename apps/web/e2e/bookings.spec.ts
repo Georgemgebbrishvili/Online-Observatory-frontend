@@ -7,13 +7,11 @@ const pending = "52000000-0000-4000-8000-000000000003";
 const upcoming = "51000000-0000-4000-8000-000000000002";
 const lost = "53000000-0000-4000-8000-000000000004";
 
-test("/app/bookings lists the bookings latest slot first, four to a page", async ({
-  page,
-}) => {
-  await page.goto("/en/app/bookings");
+test("/app/book lists the nights latest slot first, four to a page", async ({ page }) => {
+  await page.goto("/en/app/book");
 
   await expect(
-    page.getByRole("heading", { level: 1, name: "Your bookings." }),
+    page.getByRole("heading", { level: 2, name: "Your nights" }),
   ).toBeVisible();
   const rows = page.locator(".booking-row");
   await expect(rows).toHaveCount(4);
@@ -35,10 +33,15 @@ test("/app/bookings lists the bookings latest slot first, four to a page", async
   await expect(rows).toHaveCount(4);
 });
 
-test("/app/book reaches the bookings", async ({ page }) => {
+test("/app/bookings still lands, on the nights under /app/book", async ({ page }) => {
+  await page.goto("/en/app/bookings");
+  await expect(page).toHaveURL(/\/en\/app\/book#booking-nights$/);
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Your nights" }),
+  ).toBeVisible();
   await page.goto("/en/app/book");
   await page.getByRole("link", { name: "Your bookings" }).click();
-  await expect(page).toHaveURL(/\/en\/app\/bookings$/);
+  await expect(page).toHaveURL(/\/en\/app\/book#booking-nights$/);
 });
 
 test("a confirmed booking opens its observation and says why it cannot be cancelled", async ({
@@ -66,7 +69,9 @@ test("a booking awaiting payment says how long it is held and offers the checkou
   await page.goto(`/en/app/bookings/${pending}`);
 
   await expect(page.getByText("Awaiting payment", { exact: true })).toBeVisible();
-  await expect(page.getByText("Held for you until Wed, 16 Jan 2030, 18:35 GMT+4.")).toBeVisible();
+  await expect(
+    page.getByText("Held for you until Wed, 16 Jan 2030, 18:35 GMT+4."),
+  ).toBeVisible();
   await expect(page.getByRole("link", { name: "Continue to payment" })).toHaveAttribute(
     "href",
     /\/api\/payments\/62000000-0000-4000-8000-000000000003\/sandbox-checkout$/,
@@ -85,9 +90,9 @@ test("an unknown booking and a malformed id are both not found", async ({ page }
 
 test("the Georgian bookings fit a phone", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/ka/app/bookings");
+  await page.goto("/ka/app/book");
   await expect(
-    page.getByRole("heading", { level: 1, name: "შენი ჯავშნები." }),
+    page.getByRole("heading", { level: 2, name: "შენი ღამეები" }),
   ).toBeVisible();
   await expect(page.locator(".booking-row").first()).toContainText("გადახდას ელოდება");
   const width = await page.evaluate(() => document.documentElement.scrollWidth);

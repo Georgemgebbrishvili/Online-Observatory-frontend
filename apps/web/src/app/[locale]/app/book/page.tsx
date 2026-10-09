@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { BookingList } from "@/components/booking/booking-list";
 import { BookingNight } from "@/components/booking/booking-night";
 import { RescheduleClosed } from "@/components/booking/reschedule-closed";
+import { bookingCursorOf, readBookings } from "@/features/booking/bookings";
 import { readNight } from "@/features/booking/read";
 import { readReschedule } from "@/features/booking/reschedule";
 import { isLocale } from "@/i18n/config";
@@ -13,7 +15,11 @@ import "@/styles/booking.css";
 
 type BookPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ date?: string | string[]; reschedule?: string | string[] }>;
+  searchParams: Promise<{
+    date?: string | string[];
+    reschedule?: string | string[];
+    cursor?: string | string[];
+  }>;
 };
 
 export async function generateMetadata({ params }: BookPageProps): Promise<Metadata> {
@@ -29,7 +35,7 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
 
   await requireUser(locale);
 
-  const { date, reschedule: rescheduleParam } = await searchParams;
+  const { date, reschedule: rescheduleParam, cursor: cursorParam } = await searchParams;
   const reschedule = await readReschedule(rescheduleParam);
   if (reschedule.kind === "closed") {
     return <RescheduleClosed bookingId={reschedule.bookingId} locale={locale} />;
@@ -45,5 +51,18 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
           booking?.observatoryId,
         );
 
-  return <BookingNight locale={locale} result={result} reschedule={booking} />;
+  const night = <BookingNight locale={locale} result={result} reschedule={booking} />;
+  // A reschedule is one night's business; the list waits.
+  if (booking) return night;
+
+  // ADR-051: the customer's nights live under the night they are booking.
+  const cursor = bookingCursorOf(cursorParam);
+  const nights = await readBookings(cursor);
+  if (nights.kind === "signed-out") redirect(`/${locale}/sign-in`);
+  return (
+    <>
+      {night}
+      <BookingList embedded locale={locale} paged={cursor !== null} result={nights} />
+    </>
+  );
 }

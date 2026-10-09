@@ -1,5 +1,6 @@
 import type { BookingStatus } from "@darkview/contracts";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { formatPrice } from "@/components/booking/booking-night";
 import { StatePanel } from "@/components/ui/state-panel";
@@ -62,36 +63,63 @@ type BookingListProps = {
   /** True past the first page: a way back to the latest. */
   paged: boolean;
   locale: Locale;
+  /**
+   * ADR-051: the list is a section of /app/book, "Your nights", under a heading of its
+   * own; its pages run on that URL. Without it, the list is a page of its own.
+   */
+  embedded?: boolean;
 };
 
-export function BookingList({ locale, paged, result }: BookingListProps) {
+export function BookingList({
+  embedded = false,
+  locale,
+  paged,
+  result,
+}: BookingListProps) {
   const copy = bookingsCopy[locale];
-  const base = `/${locale}/app/bookings`;
-
-  const hero = (
+  const base = embedded ? `/${locale}/app/book` : `/${locale}/app/bookings`;
+  const detail = `/${locale}/app/bookings`;
+  const hero = embedded ? (
+    <header className="booking-nights-head">
+      <h2 id="booking-nights-title">{copy.section}</h2>
+    </header>
+  ) : (
     <header className="booking-hero">
       <p className="kicker">{copy.eyebrow}</p>
       <h1>{copy.title}</h1>
       <p>{copy.introduction}</p>
     </header>
   );
+  const stateHeading = embedded ? 3 : 2;
+  const frame = (children: ReactNode) =>
+    embedded ? (
+      <section
+        id="booking-nights"
+        className="booking-page booking-nights-section"
+        aria-labelledby="booking-nights-title"
+      >
+        {children}
+      </section>
+    ) : (
+      <div className="booking-page">{children}</div>
+    );
 
   if (result.kind === "unreachable") {
-    return (
-      <div className="booking-page">
+    return frame(
+      <>
         {hero}
-        <StatePanel variant="error" headingLevel={2} {...copy.unreachable} />
-      </div>
+        <StatePanel variant="error" headingLevel={stateHeading} {...copy.unreachable} />
+      </>,
     );
   }
 
   if (result.entries.length === 0) {
     const state = paged ? copy.noMore : copy.empty;
-    return (
-      <div className="booking-page">
+    return frame(
+      <>
         {hero}
         <StatePanel
-          headingLevel={2}
+          headingLevel={stateHeading}
           {...state}
           action={
             <Link
@@ -102,18 +130,18 @@ export function BookingList({ locale, paged, result }: BookingListProps) {
             </Link>
           }
         />
-      </div>
+      </>,
     );
   }
 
-  return (
-    <div className="booking-page">
+  return frame(
+    <>
       {hero}
       <ol className="booking-list">
         {result.entries.map((entry) => (
           <BookingRow
             key={entry.booking.id}
-            href={`${base}/${entry.booking.id}`}
+            href={`${detail}/${entry.booking.id}`}
             title={bookingTitle(entry, locale)}
             slot={formatSlot(
               entry.booking.slotStartAt,
@@ -127,7 +155,6 @@ export function BookingList({ locale, paged, result }: BookingListProps) {
           />
         ))}
       </ol>
-
       {(paged || result.nextCursor) && (
         <nav className="booking-pages" aria-label={copy.eyebrow}>
           {paged && (
@@ -145,6 +172,6 @@ export function BookingList({ locale, paged, result }: BookingListProps) {
           )}
         </nav>
       )}
-    </div>
+    </>,
   );
 }
