@@ -1,3 +1,4 @@
+import type { Mission } from "@darkview/contracts";
 import Link from "next/link";
 
 import { StatePanel } from "@/components/ui/state-panel";
@@ -10,14 +11,25 @@ import type { CollectionEntry, CollectionResult } from "@/features/collection/re
 import { targetDescription } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
+import { roomCopy } from "@/i18n/resources/room";
 
 import { CaptureBadges, CaptureCard, CaptureImage } from "./capture-card";
+
+export type PastNight = {
+  mission: Mission;
+  /** The target's name in the locale, or null when it is no longer offered. */
+  target: string | null;
+  /** The observatory's time zone, for the night's date. */
+  timezone: string;
+};
 
 type CollectionGalleryProps = {
   result: Exclude<CollectionResult, { kind: "signed-out" }>;
   /** True past the first page: no featured capture, and a way back to the newest. */
   paged: boolean;
   locale: Locale;
+  /** ADR-051: the past nights under the captures, on the first page. */
+  nights?: PastNight[] | null;
 };
 
 function Featured({
@@ -74,7 +86,12 @@ function Featured({
   );
 }
 
-export function CollectionGallery({ locale, paged, result }: CollectionGalleryProps) {
+export function CollectionGallery({
+  locale,
+  nights = null,
+  paged,
+  result,
+}: CollectionGalleryProps) {
   const copy = collectionGalleryCopy[locale];
   const base = `/${locale}/app/collection`;
 
@@ -159,6 +176,52 @@ export function CollectionGallery({ locale, paged, result }: CollectionGalleryPr
               />
             ))}
           </div>
+        </section>
+      )}
+
+      {!paged && nights && (
+        <section className="collection-nights" aria-labelledby="collection-nights-title">
+          <div className="section-heading">
+            <h2 id="collection-nights-title">{copy.nights}</h2>
+            <p className="page-lede">{copy.nightsDescription}</p>
+          </div>
+          {nights.length === 0 ? (
+            <p className="collection-nights-empty">{copy.noNights}</p>
+          ) : (
+            <ol className="collection-nights-list">
+              {nights.map(({ mission, target, timezone }) => (
+                <li key={mission.id} data-state={mission.state}>
+                  <Link
+                    href={`/${locale}/app/missions/${mission.id}/session`}
+                    aria-label={`${copy.openNight}: ${target ?? copy.retiredTarget}`}
+                  >
+                    <time
+                      className="data"
+                      dateTime={
+                        mission.endedAt ?? mission.startedAt ?? mission.requestedAt
+                      }
+                    >
+                      {formatCapturedAt(
+                        mission.endedAt ?? mission.startedAt ?? mission.requestedAt,
+                        timezone,
+                        locale,
+                      )}
+                    </time>
+                    <strong>{target ?? copy.retiredTarget}</strong>
+                    <span>
+                      {roomCopy[locale].states[mission.state].title.replace(
+                        "{target}",
+                        target ?? copy.retiredTarget,
+                      )}
+                    </span>
+                    <span className="data">
+                      {copy.nightCaptures(mission.captureIds?.length ?? 0)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          )}
         </section>
       )}
 

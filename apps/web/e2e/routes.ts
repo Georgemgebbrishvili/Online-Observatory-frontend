@@ -18,7 +18,6 @@ export const appRoutes = [
   "app/missions",
   "app/collection",
   "app/profile",
-  "app/bookings",
   // Reachable and honest about not being built yet. Phase 1's Done-when.
   "app/book",
   "app/subscription",

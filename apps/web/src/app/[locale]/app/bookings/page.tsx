@@ -23,5 +23,5 @@ export default async function BookingsPage({ params, searchParams }: BookingsPag
   if (!isLocale(locale)) notFound();
   const cursor = bookingCursorOf((await searchParams).cursor);
   const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
-  redirect(`/${locale}/app/book${query}#booking-nights`);
+  redirect(`/${locale}/app/book${query}`);
 }

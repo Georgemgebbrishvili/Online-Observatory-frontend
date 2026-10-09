@@ -326,7 +326,9 @@ test("/app/live opens the observer's live mission room", async ({ page }) => {
 test.describe("with no live or imminent mission", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test("/app/live goes to booking, in the caller's language", async ({ page }) => {
+  test("/app/live shows the next night and the way to book, in the caller's language", async ({
+    page,
+  }) => {
     await page.goto("/ka/sign-in");
     await page.locator('input[type="email"]').fill("watcher@darkview.test");
     await page.locator('input[type="password"]').fill("correct horse battery");
@@ -334,7 +336,16 @@ test.describe("with no live or imminent mission", () => {
     await expect(page).toHaveURL(/\/ka\/app$/);
 
     await page.goto("/ka/app/live");
-    await expect(page).toHaveURL("/ka/app/book", { timeout: 15_000 });
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "ახლა პირდაპირი დაკვირვება არ მიმდინარეობს.",
+      }),
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("link", { name: "ღამის დაჯავშნა" })).toHaveAttribute(
+      "href",
+      "/ka/app/book",
+    );
   });
 });
 

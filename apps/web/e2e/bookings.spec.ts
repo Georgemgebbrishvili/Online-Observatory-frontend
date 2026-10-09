@@ -35,7 +35,7 @@ test("/app/book lists the nights latest slot first, four to a page", async ({ pa
 
 test("/app/bookings still lands, on the nights under /app/book", async ({ page }) => {
   await page.goto("/en/app/bookings");
-  await expect(page).toHaveURL(/\/en\/app\/book#booking-nights$/);
+  await expect(page).toHaveURL(/\/en\/app\/book$/);
   await expect(
     page.getByRole("heading", { level: 2, name: "Your nights" }),
   ).toBeVisible();

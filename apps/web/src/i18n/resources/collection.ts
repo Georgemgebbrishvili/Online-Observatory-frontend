@@ -23,6 +23,12 @@ type CollectionCopy = {
   allDescription: string;
   olderCaptures: string;
   newestCaptures: string;
+  /** ADR-051: the past nights, each a mission with what it kept. */
+  nights: string;
+  nightsDescription: string;
+  noNights: string;
+  openNight: string;
+  nightCaptures: (count: number) => string;
   view: string;
   imageAlt: (target: string) => string;
   simulated: string;
@@ -79,6 +85,12 @@ export const collectionGalleryCopy: Record<"en" | "ka", CollectionCopy> = {
     allDescription: "Newest first, by the time the shutter closed.",
     olderCaptures: "Older captures",
     newestCaptures: "Back to the newest",
+    nights: "Past nights",
+    nightsDescription:
+      "Every observation you have made, latest first, with what it kept.",
+    noNights: "No nights yet. Your first observation will appear here once it ends.",
+    openNight: "Open the night",
+    nightCaptures: (count: number) => (count === 1 ? "1 capture" : `${count} captures`),
     view: "Open capture",
     imageAlt: (target) => `${target}, as captured`,
     simulated: "Simulated capture",
@@ -121,6 +133,11 @@ export const collectionGalleryCopy: Record<"en" | "ka", CollectionCopy> = {
     allDescription: "ჯერ უახლესი, ჩამკეტის დახურვის დროის მიხედვით.",
     olderCaptures: "ძველი კადრები",
     newestCaptures: "უახლესებზე დაბრუნება",
+    nights: "წარსული ღამეები",
+    nightsDescription: "ყველა შენი დაკვირვება, ბოლოდან, იმით, რაც შეინახა.",
+    noNights: "ღამეები ჯერ არ არის. პირველი დაკვირვება აქ გამოჩნდება, როცა დასრულდება.",
+    openNight: "ღამის გახსნა",
+    nightCaptures: (count: number) => `${count} კადრი`,
     view: "კადრის გახსნა",
     imageAlt: (target) => `${target} — გადაღებული კადრი`,
     simulated: "სიმულირებული კადრი",

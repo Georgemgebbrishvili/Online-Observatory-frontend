@@ -43,7 +43,7 @@ function Illustration({ label, src }: { label: string; src: string }) {
   );
 }
 
-function ObservatoryPanel({
+export function ObservatoryPanel({
   locale,
   panel,
 }: {
