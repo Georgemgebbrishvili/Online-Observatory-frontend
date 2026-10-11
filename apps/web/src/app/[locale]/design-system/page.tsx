@@ -21,7 +21,9 @@ import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { reserveCopy } from "@/i18n/resources/reserve";
 import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
+import { PanelHead } from "@/components/room/panel-head";
 import { PointingDial } from "@/components/room/pointing-dial";
+import { RoomPointing } from "@/components/room/room-pointing";
 import {
   RoomCaptureAction,
   RoomControlsView,
@@ -60,6 +62,7 @@ import { Checkbox, Field, TextArea, TextInput } from "@/components/ui/form";
 import { IconButton } from "@/components/ui/icon-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatePanel } from "@/components/ui/state-panel";
+import { StatusIndicator } from "@/components/ui/status-indicator";
 import { Tabs } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Container } from "@/components/ui/container";
@@ -577,8 +580,80 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               </SurfacePanel>
             ))}
           </div>
+          <h3 className="ds-subheading">{copy.cards.console}</h3>
+          <div className="room-console ds-console-specimens">
+            {(
+              [
+                ["ONLINE", "success", "CLEAR", "12%"],
+                ["DEGRADED", "warning", "CLOUDY", "64%"],
+                ["OFFLINE", "danger", null, null],
+              ] as const
+            ).map(([link, tone, weather, cloud]) => (
+              <section
+                key={link}
+                className="room-panel room-observatory"
+                aria-labelledby={`ds-console-readings-${link}`}
+              >
+                <PanelHead
+                  id={`ds-console-readings-${link}`}
+                  icon="observatory"
+                  level={3}
+                  title={`${room.readings.title} — ${statusCopy[locale].link[link]}`}
+                  meta={specimenPlates.instrument?.[0]}
+                />
+                <dl className="room-readings">
+                  <div>
+                    <dt>{statusCopy[locale].now.link}</dt>
+                    <dd>
+                      <StatusIndicator
+                        label={statusCopy[locale].link[link]}
+                        tone={tone}
+                      />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{statusCopy[locale].now.weather}</dt>
+                    <dd>
+                      {weather
+                        ? statusCopy[locale].weather[weather]
+                        : statusCopy[locale].now.unknown}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{room.readings.cloud}</dt>
+                    <dd className="data room-reading-live">
+                      {cloud ?? room.readings.cloudUnknown}
+                    </dd>
+                  </div>
+                </dl>
+              </section>
+            ))}
+            <RoomPointing
+              locale={locale}
+              targetName={specimenPlates.subject?.name ?? "Saturn"}
+              timezone="Asia/Tbilisi"
+              visibility={{
+                observable: true,
+                evaluatedAt: "2026-10-01T18:00:00.000Z",
+                horizontal: { altitudeDegrees: 42.7, azimuthDegrees: 168.3 },
+                sunAltitudeDegrees: -24,
+                moonSeparationDegrees: 61,
+                risesAt: "2026-10-01T13:12:00.000Z",
+                setsAt: "2026-10-01T23:48:00.000Z",
+                blockReasons: [],
+              }}
+              telescope={undefined}
+            />
+            <div className="ds-console-buttons">
+              <Button>{copy.buttons.primary}</Button>
+              <Button size="large">{copy.buttons.large}</Button>
+              <Button loading>{copy.buttons.loading}</Button>
+              <Button disabled>{copy.buttons.disabled}</Button>
+              <Button variant="danger">{copy.buttons.danger}</Button>
+            </div>
+          </div>
           <h3 className="ds-subheading">{copy.cards.roomSharing}</h3>
-          <div className="ds-room-specimens">
+          <div className="room-console ds-room-specimens">
             {(
               [
                 [false, 0, false, false, null],
@@ -701,7 +776,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             })}
           </div>
           <h3 className="ds-subheading">{copy.cards.roomControls}</h3>
-          <div className="ds-room-specimens">
+          <div className="room-console ds-room-specimens">
             {(
               [
                 [
@@ -774,7 +849,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               />
             ))}
           </div>
-          <div className="ds-room-specimens ds-session-specimens">
+          <div className="room-console ds-room-specimens ds-session-specimens">
             <div className="ds-capture-specimens">
               <RoomCaptureAction
                 offered={{ move: true, capture: true, stop: true, waiting: null }}
@@ -806,7 +881,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             ))}
           </div>
           <h3 className="ds-subheading">{copy.cards.missionSteps}</h3>
-          <div className="ds-room-specimens">
+          <div className="room-console ds-room-specimens">
             {(
               [
                 ["VERIFYING", null],
@@ -834,7 +909,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             })}
           </div>
           <h3 className="ds-subheading">{copy.cards.pointingDial}</h3>
-          <div className="ds-dial-specimens">
+          <div className="room-console ds-dial-specimens">
             {dialSpecimens.map((position) => (
               <PointingDial
                 key={position.azimuthDegrees}
@@ -857,7 +932,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             />
           </div>
           <h3 className="ds-subheading">{copy.cards.targetPreview}</h3>
-          <div className="ds-room-specimens ds-preview-specimens">
+          <div className="room-console ds-room-specimens ds-preview-specimens">
             <TargetPreview
               plate={plateFor("saturn")}
               name="Saturn"
@@ -872,7 +947,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             />
           </div>
           <h3 className="ds-subheading">{copy.cards.liveFeed}</h3>
-          <div className="ds-room-specimens ds-preview-specimens">
+          <div className="room-console ds-room-specimens ds-preview-specimens">
             {liveSpecimens.map((status) => {
               const text =
                 status === "not-started"

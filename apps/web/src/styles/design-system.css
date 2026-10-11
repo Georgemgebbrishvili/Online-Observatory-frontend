@@ -436,6 +436,37 @@
   gap: var(--space-4);
 }
 
+/* ADR-050: the console's panel, stat and buttons on the room's own ground. */
+.ds-console-specimens {
+  display: grid;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* The room's phone ordering (room-console.css) is for its desk, not for this grid. */
+.room-console.ds-console-specimens > * {
+  order: 0;
+}
+
+@media (--lg) {
+  .ds-console-specimens {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (--xl) {
+  .ds-console-specimens {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ds-console-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  grid-column: 1 / -1;
+}
+
 /* ADR-039: the homepage's pieces, as the homepage shows them. */
 .ds-home-specimen {
   /* As on the homepage's hero: the fan's outer plates, mid-transition when the viewport

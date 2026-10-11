@@ -208,6 +208,8 @@ export const designSystemCopy = {
         "ReserveForm — nothing chosen, a target chosen, reserving, opening the payment page, the slot taken",
       missionSteps:
         "MissionSteps — the tracker at a step, complete, and stopped by a failure",
+      console:
+        "Console — the observatory panel online, degraded and offline; the pointing panel's readouts; the room's buttons",
       roomSharing:
         "RoomSharing — private, opening, open with two watching, asking to stop, link copied, session ended",
       watch:
@@ -473,6 +475,8 @@ export const designSystemCopy = {
       reserveForm:
         "ReserveForm — არაფერია არჩეული, ობიექტი არჩეულია, იჯავშნება, იხსნება გადახდის გვერდი, დრო დაკავებულია",
       missionSteps: "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული",
+      console:
+        "Console — ობსერვატორიის პანელი ონლაინ, არასტაბილური და კავშირგარეშე; მიმართულების პანელის მაჩვენებლები; ოთახის ღილაკები",
       roomSharing:
         "RoomSharing — პირადი, იხსნება, ღიაა ორი მაყურებლით, შეწყვეტის კითხვა, ბმული დაკოპირდა, სესია დასრულდა",
       watch:
