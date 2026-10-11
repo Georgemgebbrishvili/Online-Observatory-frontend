@@ -10,6 +10,13 @@
 /* ── ground and atmosphere ───────────────────────────────────── */
 
 .room-console {
+  /*
+   * A var() resolves where it is declared, and :root has no --font-barlow: only the
+   * mission layout loads it. Declared again here, the room's labels get Barlow.
+   */
+  --room-font-cond:
+    var(--font-barlow, var(--font-oswald)), var(--font-noto-sans-georgian), sans-serif;
+
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -993,6 +1000,239 @@
   .room-console .live-feed-plate-instrument,
   .room-console .live-feed-plate-subject {
     display: none;
+  }
+}
+
+/* ── the phone (ADR-050 §1) ──────────────────────────────────── */
+
+/*
+ * The console's phone, in our content: the night, the observatory as one strip, the
+ * view, the steps as a progress strip, three stats, the captures as a strip, then the
+ * session, sharing and pointing; hand control lives in a sheet and the one primary
+ * action in a dock above the app's bottom bar.
+ */
+.room-console .room-stats,
+.room-console .room-dock {
+  display: none;
+}
+
+@media (--below-md) {
+  .room.room-console {
+    padding-bottom: calc(var(--space-8) + 4.5rem);
+  }
+
+  .room.room-console .room-observatory {
+    order: 2;
+  }
+
+  .room.room-console .room-feed {
+    order: 3;
+  }
+
+  .room.room-console .room-stats {
+    order: 4;
+  }
+
+  .room.room-console .room-captures {
+    order: 5;
+  }
+
+  .room.room-console .room-session {
+    order: 6;
+  }
+
+  .room.room-console .room-sharing {
+    order: 7;
+  }
+
+  .room.room-console .room-pointing {
+    order: 8;
+  }
+
+  /* In the sheet instead. */
+  .room.room-console .room-side > .room-controls {
+    display: none;
+  }
+
+  /* The observatory strip. */
+  .room.room-console .room-observatory .panel-head {
+    margin-bottom: var(--space-2);
+    padding: 10px 14px 8px;
+  }
+
+  .room.room-console .room-observatory .room-readings {
+    gap: 8px;
+    margin-inline: 14px;
+  }
+
+  .room.room-console .room-observatory .room-readings > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .room.room-console .room-observatory .room-readings dt {
+    font: 600 10px/1.2 var(--room-font-cond);
+    letter-spacing: 0.12em;
+  }
+
+  .room.room-console .room-observatory .room-readings dd {
+    margin: 0;
+    font: 500 12px/1.2 var(--font-mono);
+    text-align: right;
+  }
+
+  /* The progress strip: one bar a step, its words kept for a screen reader. */
+  .room.room-console .live-feed-flow > .mission-steps ol {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    margin: 0 16px;
+  }
+
+  .room.room-console .live-feed-flow > .mission-steps ol::before {
+    display: none;
+  }
+
+  .room.room-console .live-feed-flow > .mission-steps li {
+    height: 4px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--room-warm) 16%, transparent);
+  }
+
+  .room.room-console .live-feed-flow > .mission-steps li > * {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .room.room-console .live-feed-flow > .mission-steps li[data-status="done"] {
+    background: var(--room-gold);
+  }
+
+  .room.room-console .live-feed-flow > .mission-steps li[data-status="current"] {
+    background: var(--room-copper-ink);
+  }
+
+  .room.room-console .live-feed-flow > .mission-steps li[data-status="stopped"] {
+    background: var(--color-warning);
+  }
+
+  /* Three stats. */
+  .room.room-console .room-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+  }
+
+  .room.room-console .room-stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid color-mix(in srgb, var(--room-warm) 8%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--room-black) 50%, transparent);
+  }
+
+  .room.room-console .room-stats dt {
+    color: var(--room-ink-3);
+    font: 600 10px/1.2 var(--room-font-cond);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .room.room-console .room-stats dd {
+    margin: 0;
+    color: var(--room-ink);
+    font: 500 14px/1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The captures strip. */
+  .room.room-console .room-capture-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* The dock. */
+  .room.room-console .room-dock {
+    position: fixed;
+    right: 0;
+    bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
+    left: 0;
+    z-index: 30;
+    display: flex;
+    gap: 8px;
+    padding: 18px 16px 14px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--room-black) 0%, transparent),
+      color-mix(in srgb, var(--room-black) 96%, transparent) 32%
+    );
+  }
+
+  .room.room-console .room-dock-hand {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid color-mix(in srgb, var(--room-warm) 22%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--room-panel-top) 86%, transparent);
+    color: var(--room-copper-ink);
+    cursor: pointer;
+  }
+
+  .room.room-console .room-dock-hand svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.4;
+  }
+
+  .room.room-console .room-dock-hand:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /*
+   * The flow's primary action, fixed in the dock beside hand control: one button in the
+   * page, not a copy. The flow's blur would hold a fixed child, so it goes here.
+   */
+  .room.room-console .live-feed-flow {
+    backdrop-filter: none;
+  }
+
+  .room.room-console .live-feed-action {
+    position: fixed;
+    right: 16px;
+    bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom) + 14px);
+    left: 16px;
+    z-index: 31;
+    flex-wrap: nowrap;
+    gap: 8px;
+    width: auto;
+    margin: 0;
+  }
+
+  .room.room-console:has(.room-dock-hand) .live-feed-action {
+    left: calc(16px + 56px + 8px);
+  }
+
+  .room.room-console .live-feed-action .button {
+    flex: 1;
+    min-width: 0;
+    height: 56px;
+    border-radius: 14px;
   }
 }
 

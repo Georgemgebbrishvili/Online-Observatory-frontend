@@ -13,14 +13,18 @@ async function outcome(page: Page, value: string) {
 
 async function openRoom(page: Page, locale = "en") {
   // Its own room: the verdicts on other tests' commands, a stop among them, stay there.
-  await page.context().addCookies([
-    { name: "fake_room", value: crypto.randomUUID(), url: "http://localhost:3100" },
-  ]);
+  await page
+    .context()
+    .addCookies([
+      { name: "fake_room", value: crypto.randomUUID(), url: "http://localhost:3100" },
+    ]);
   await page.goto(`/${locale}/app/missions/${observing}/session`);
   await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "live");
 }
 
-const status = (page: Page) => page.locator(".room-controls-status");
+// The desk's panel: the phone's sheet holds a second, closed copy.
+const status = (page: Page) =>
+  page.getByRole("region", { name: "Controls" }).locator(".room-controls-status");
 
 test("a nudge is relayed, answered by the telescope, and the controls unlock", async ({
   page,
@@ -112,9 +116,44 @@ test("stopping asks first, then ends the observation", async ({ page }) => {
 test("the Georgian controls fit a phone", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openRoom(page, "ka");
-  await expect(page.getByRole("region", { name: "მართვა" })).toBeVisible();
+  // On a phone the pad waits in a sheet, and Capture sits in the dock (ADR-050 §1).
+  await expect(page.getByRole("region", { name: "მართვა" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "გადაღება" })).toBeVisible();
+  await page.getByRole("button", { name: "ხელით მართვა" }).click();
+  await expect(
+    page
+      .getByRole("dialog", { name: "ხელით მართვა" })
+      .getByRole("region", { name: "მართვა" }),
+  ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(390);
+});
+
+test("on a phone, the dock's hand control nudges from a sheet", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openRoom(page);
+
+  const stats = page.locator(".room-stats");
+  await expect(stats).toBeVisible();
+  await expect(stats).toContainText("Time left");
+  // Capture is the flow's own button, fixed in the dock above the bottom bar.
+  const capture = page.getByRole("button", { name: "Capture" });
+  await expect(capture).toHaveCount(1);
+  await expect(capture).toBeVisible();
+  const box = await capture.boundingBox();
+  expect((box?.y ?? 0) + (box?.height ?? 0)).toBeGreaterThan(844 - 200);
+
+  const dock = page.locator(".room-dock");
+  await dock.getByRole("button", { name: "Hand control" }).click();
+  const sheet = page.getByRole("dialog", { name: "Hand control" });
+  const request = page.waitForRequest((sent) =>
+    sent.url().endsWith(`/api/missions/${observing}/command`),
+  );
+  await sheet.getByRole("button", { name: "Higher, 2 arcminutes" }).click();
+  expect((await request).postDataJSON()).toMatchObject({ type: "NUDGE" });
+  await expect(sheet.locator(".room-controls-status")).toHaveText("Moved higher.");
+
+  await sheet.getByRole("button", { name: "Close" }).last().click();
+  await expect(sheet).toBeHidden();
 });

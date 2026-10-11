@@ -154,7 +154,8 @@
   --room-red-ink: #ffb4aa;
   --room-aurora-gold: #d2c814;
   --room-aurora-pink: #ff6ebe;
-  --room-font-cond: var(--font-barlow), var(--font-oswald), var(--font-noto-sans-georgian), sans-serif;
+  /* Re-read on .room-console (room-console.css), where the mission layout loads Barlow. */
+  --room-font-cond: var(--font-barlow, var(--font-oswald)), var(--font-noto-sans-georgian), sans-serif;
 
   /*
    * ADR-039 type. Georgian has no glyphs in the Latin faces, so each stack falls through

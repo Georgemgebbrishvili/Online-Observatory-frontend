@@ -129,6 +129,7 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
             </dl>
           </section>
         }
+        captureCount={captures.length}
         captures={
           <section
             className="room-panel room-captures"

@@ -54,7 +54,7 @@ test("the Georgian live room fits a phone", async ({ page }) => {
     page.getByRole("img", { name: "სიმულირებული პირდაპირი ხედი: ჰერკულესის გროვა" }),
   ).toBeVisible();
   await expect(page.locator(".live-feed").getByText("სიმულირებული")).toBeVisible();
-  await expect(page.getByText(/დარჩენილი დრო/)).toBeVisible();
+  await expect(page.locator(".live-feed").getByText(/დარჩენილი დრო/)).toBeVisible();
 
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,

@@ -1,5 +1,5 @@
 import type { Mission, TargetVisibility } from "@darkview/contracts";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { formatCapturedAt } from "@/features/collection/present";
@@ -185,10 +185,18 @@ describe("RoomLive", () => {
       "Simulator output, not telescope output.",
     );
     // Time left comes from the session's expiresAt.
-    await waitFor(() => expect(screen.getByText(/Time left/)).toBeVisible());
+    await waitFor(() =>
+      expect(
+        within(document.querySelector<HTMLElement>(".live-feed")!).getByText(/Time left/),
+      ).toBeVisible(),
+    );
     expect(
       document.querySelector(".live-feed-time time")?.getAttribute("dateTime"),
     ).toMatch(/^PT1[78]\d\dS$/);
+    // The phone's stats read the same clock.
+    expect(document.querySelector(".room-stats time")?.getAttribute("dateTime")).toMatch(
+      /^PT1[78]\d\dS$/,
+    );
   });
 
   it("says it is reconnecting when the channel drops, and reopens it", async () => {

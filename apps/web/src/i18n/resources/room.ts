@@ -78,6 +78,8 @@ type RoomCopy = {
     telescopeNote: string;
   };
   readings: { title: string; cloud: string; cloudUnknown: string };
+  /** The phone's stats and dock (ADR-050 §1). */
+  phone: { stats: string; captures: string; hand: string; close: string };
   history: {
     title: string;
     empty: string;
@@ -130,6 +132,12 @@ const en: RoomCopy = {
     noPosition: "The telescope has not reported a position.",
     telescopeNote:
       "The telescope's position as the observatory reports it, to a tenth of a degree. The dashed ring is {target}.",
+  },
+  phone: {
+    stats: "Right now",
+    captures: "Captures",
+    hand: "Hand control",
+    close: "Close",
   },
   readings: {
     title: "Observatory",
@@ -386,6 +394,12 @@ const ka: RoomCopy = {
     noPosition: "ტელესკოპს მდებარეობა ჯერ არ გადმოუცია.",
     telescopeNote:
       "ტელესკოპის მდებარეობა, როგორც ობსერვატორია აცნობებს, გრადუსის მეათედამდე. წყვეტილი რგოლი ობიექტია: {target}.",
+  },
+  phone: {
+    stats: "ახლა",
+    captures: "კადრები",
+    hand: "ხელით მართვა",
+    close: "დახურვა",
   },
   readings: {
     title: "ობსერვატორია",

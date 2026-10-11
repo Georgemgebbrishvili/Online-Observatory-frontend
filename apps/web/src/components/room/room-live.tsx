@@ -7,10 +7,11 @@ import type {
   TargetVisibility,
 } from "@darkview/contracts";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
   isStopped,
   liveAction,
@@ -62,6 +63,8 @@ type RoomLiveProps = {
   readings: ReactNode;
   /** The captures panel, in the right column of the desk (ADR-050). */
   captures?: ReactNode;
+  /** How many captures the mission has, for the phone's stats. */
+  captureCount?: number;
   /** The captures and history, rendered on the server. */
   children: ReactNode;
 };
@@ -110,6 +113,7 @@ export function RoomLive({
   plates,
   readings,
   captures,
+  captureCount = 0,
   targetName,
   targetSlug,
   timezone,
@@ -205,6 +209,9 @@ export function RoomLive({
     ) : (
       <RoomCaptureAction {...controls} copy={controlsCopy} />
     );
+
+  const [handOpen, setHandOpen] = useState(false);
+  const altitude = live.pointing !== undefined ? live.pointing : visibility?.horizontal;
 
   const left =
     live.session &&
@@ -313,6 +320,32 @@ export function RoomLive({
               onStreamError={onStreamError}
             />
           </section>
+
+          {/* The phone's three stats (ADR-050 §1); the desk reads these in its panels. */}
+          <dl className="room-stats" aria-label={copy.phone.stats}>
+            <div>
+              <dt>{copy.pointing.altitude}</dt>
+              <dd className="data">
+                {altitude
+                  ? `${altitude.altitudeDegrees.toFixed(1)}°`
+                  : copy.pointing.none}
+              </dd>
+            </div>
+            <div>
+              <dt>{copy.live.timeLeft}</dt>
+              <dd className="data">
+                {left && left.seconds > 0 ? (
+                  <time dateTime={left.iso}>{left.text}</time>
+                ) : (
+                  copy.pointing.none
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>{copy.phone.captures}</dt>
+              <dd className="data">{captureCount}</dd>
+            </div>
+          </dl>
         </div>
 
         <div className="room-col room-col-right room-side">
@@ -339,6 +372,37 @@ export function RoomLive({
 
         {children}
       </div>
+
+      {/*
+       * The phone's dock: hand control, which opens its sheet, and the ground under the
+       * flow's own primary action, which the phone fixes beside it (room-console.css).
+       */}
+      <div className="room-dock">
+        {controls.offered.stop && (
+          <button
+            type="button"
+            className="room-dock-hand"
+            aria-haspopup="dialog"
+            onClick={() => setHandOpen(true)}
+          >
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 2.5l2 2H6zM8 13.5l-2-2h4zM2.5 8l2-2v4zM13.5 8l-2 2V6z" />
+            </svg>
+            <span className="visually-hidden">{copy.phone.hand}</span>
+          </button>
+        )}
+      </div>
+      {controls.offered.stop && (
+        <Dialog
+          variant="sheet"
+          title={copy.phone.hand}
+          closeLabel={copy.phone.close}
+          open={handOpen}
+          onClose={() => setHandOpen(false)}
+        >
+          <RoomControlsView {...controls} copy={controlsCopy} />
+        </Dialog>
+      )}
     </>
   );
 }
