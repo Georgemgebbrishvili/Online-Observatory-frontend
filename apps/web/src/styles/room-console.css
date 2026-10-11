@@ -1178,6 +1178,11 @@
     );
   }
 
+  /* Nothing to dock once the room has stopped: no hand control, no action. */
+  .room.room-console:not(:has(.live-feed-action:not(:empty))) .room-dock:empty {
+    display: none;
+  }
+
   .room.room-console .room-dock-hand {
     display: grid;
     flex-shrink: 0;
