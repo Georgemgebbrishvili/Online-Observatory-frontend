@@ -16,6 +16,9 @@ Collection). Built in slices, each with baselines in both languages and a commit
 | N2 | **Book carries your nights**; the target step inside booking                                                             | Booking e2e green                                                              |
 | N3 | **Live without a session** shows the next night; **Collection carries past nights**                                      | Collection e2e green                                                           |
 
+State 2026-10-11: every slice built and on `main` — R1 `a8112e2` (specimens `dd36bb7`), R2
+`a8112e2`, R3 `ac2a9a6`, R4 `d065da3`, N1 `6c8b6c2`, N2 `f3af124`, N3 `c14ae1e`.
+
 Source for R1–R4: the Stellar app's `src/components/stellar/observatory/` at `1052314b^`
 (see ADR-050). Screenshots of it at 1440 and 390 are in the session's scratchpad, not in
 this repository.

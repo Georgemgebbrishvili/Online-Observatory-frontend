@@ -27,9 +27,10 @@ which stays the record of Phases 0–4. The decisions behind it:
 | 4.7 `/app/live` redirect                      | Done here   | A3: the live or imminent mission's room, else booking (`features/missions/active.ts`)             |
 | 4.8 Failure screens                           | Done here   | A4: NOT_VISIBLE, HARDWARE_ERROR, CANCELLED, FAILED, heartbeat loss; hold and offline were built   |
 | 4.9 Close refund copy                         | Done here   | A5 on platform ADR-045 (#180): the watch view's `myObserverPack`                                  |
-| 5 Commerce and account                        | Not started | Split by ADR-037: account before launch, the rest after                                           |
+| Console room, three verbs                     | Done        | [`phase-5/`](phase-5/README.md): R1–R4 and N1–N3, last `ac2a9a6` (2026-10-11)                     |
+| 5 Commerce and account                        | Account     | Account done (C4, ADR-044); commerce after launch (ADR-037)                                       |
 | 6 Mobile                                      | Not started | After launch (ADR-037); no `apps/mobile`                                                          |
-| Hosted demo                                   | Paused      | Platform PR #166 unmerged; production Vercel has no env vars                                      |
+| Hosted demo                                   | Live        | stellar.astroman.ge since 2026-10-08, on the simulator                                            |
 | Hardware                                      | None        | No mount, camera or focuser on site. `MAX_ALT_SAFE` is unmeasured; the camera binding is unpinned |
 
 ## What was wrong with the plan
