@@ -28,8 +28,8 @@ When documents conflict, this order decides:
 
 1. This file (CLAUDE.md)
 2. Approved decision records in `docs/decisions/`
-3. Darkview Brand Identity System **v2.0** — everything except the name and the
-   mark, which ADR-025 overrides, and colour and type, which ADR-039 overrides
+3. Darkview Brand Identity System **v2.0** — everything except the name, which ADR-025
+   overrides, and the mark, colour, type and glow, which ADR-052 overrides
 4. Darkview Phase 1 Final Master Plan
 5. Darkview Build Plan — engineering detail only where it does not contradict 1–4
 6. The current GitHub issue and its acceptance criteria
@@ -217,36 +217,32 @@ rejected after `expiresAt`, and rejected if the session is not the current owner
 
 ## Design and brand
 
-Source: Darkview Brand Identity System v2.0, as amended by ADR-025 for the name and
-the mark and by ADR-039 for colour and type (the Stellar poster language).
-Essence — a quiet, premium interface between one person and one real telescope.
+Source: ADR-052 — every surface takes the maintainer's Skychaser visuals
+(`https://stellarr.club`, code in `~/Desktop/Stellar/app`); the name stays Stellar
+(ADR-025). Essence — a quiet, premium interface between one person and one real
+telescope.
 
 Tagline: *The real sky, live.*
 Georgian: *შენი დრო ნამდვილ ცასთან.*
 
-Core colors (ADR-039): night `#000000` · cream ink `#F6ECD8` and its opacity ramp ·
-orange `#E8742F` for actions · yellow `#FFD36B` for live and simulated · Photon Blue
-`#5CC8FF` for data and focus. Type: Anton, Bowlby One, Oswald, Geist, JetBrains Mono;
-Georgian in Noto Sans Georgian and FiraGO.
+Core colors (ADR-052): canvas `#0d0d0d`, bars and console `#050507` · ink `#F4F4F2`,
+`#B8B8B4`, `#969692` · accent red `#E3482C` for highlights and glows · action fill
+`#C8392A` under white text · gold `#E2B85A` for simulated and done · green `#2ECC71`
+for LIVE · focus ring `#F0785A`. Type: Anton, Oswald, Geist, JetBrains Mono; Georgian in
+Noto Sans Georgian and FiraGO, never uppercased or tracked.
+
+The glow is Skychaser's (ADR-052 §4): filled buttons, the LIVE pill, the camera badge,
+the console's current step and the active tab glow; the header and phone tab bar are
+glass. White text on `#E3482C` fails WCAG AA and is never used.
 
 Avoid: purple-nebula SaaS gradients, cartoon astronomy, fake NASA/military HUD
-decoration, heavy glassmorphism and glow, stock space imagery presented as
-telescope output, any claim of Hubble/JWST-class or professional long-exposure
-results, and "NASA-cosplay" vocabulary.
+decoration, stock space imagery presented as telescope output, any claim of
+Hubble/JWST-class or professional long-exposure results, and "NASA-cosplay" vocabulary.
+Skychaser's cards, capsules, rarities and wallet are its content, not ours.
 
-The real feed and real instrument status are the visual focus.
-
-**One exception to the glow rule (ADR-025 §3).** The comet mark carries its blue glow
-wherever it appears *as a logo* — header lockup, favicon, app icon, splash, social
-card. Everywhere else the rule is unchanged and binding: no glow on panels, cards,
-buttons, inputs, focus rings, status indicators or live badges. Depth comes from the
-surface ramp and borders. `--shadow-*` tokens are shadows, not glows, and the mark's
-glow token is not reachable from component CSS.
-
-**The poster language (ADR-039)** applies to every surface, the homepage included. It
-takes the Stellar project's colour, type and panels, and none of its glow: buttons are
-filled without a halo, and the live picture carries no reticle or brackets. Every
-rendered or drawn object is captioned "Illustration — not telescope output".
+The real feed and real instrument status are the visual focus. Every rendered or drawn
+object is captioned "Illustration — not telescope output", and a simulated stream is
+always badged "Simulated".
 
 ## Building a surface
 
