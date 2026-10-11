@@ -220,6 +220,7 @@
   --size-touch: 2.75rem;
   --size-app-sidebar: 16rem;
   --size-app-bottom-nav: 4.75rem;
+  --size-app-header: 4.5rem;
 
   /* ADR-039: panels 14px, small panels and buttons 10px. */
   --radius-small: 0.5rem;

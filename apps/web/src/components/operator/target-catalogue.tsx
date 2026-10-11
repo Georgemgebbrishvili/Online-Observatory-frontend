@@ -109,7 +109,11 @@ export function TargetCatalogue({
                   />
                 </td>
                 <td>
+                  {/* Named for its row: a list of buttons all called "Disable" says nothing. */}
                   <Button
+                    aria-label={`${target.enabled ? text.disable : text.enable}: ${
+                      locale === "ka" ? target.nameKa : target.nameEn
+                    }`}
                     disabled={pendingId === target.id}
                     loading={pendingId === target.id}
                     onClick={() => toggle(target)}

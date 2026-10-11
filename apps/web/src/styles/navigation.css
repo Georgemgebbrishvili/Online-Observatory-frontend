@@ -106,6 +106,12 @@
   outline-offset: 3px;
 }
 
+/* A control focused from the keyboard scrolls clear of the phone's header and bottom bar. */
+html:has(.app-shell) {
+  scroll-padding-block: var(--size-app-header)
+    calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
+}
+
 .app-shell {
   min-height: 100vh;
   padding-bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
@@ -122,7 +128,7 @@
   z-index: 15;
   top: 0;
   display: flex;
-  min-height: 4.5rem;
+  min-height: var(--size-app-header);
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
@@ -437,6 +443,10 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
+  }
+
+  html:has(.app-shell) {
+    scroll-padding-block: 0;
   }
 
   .app-shell {

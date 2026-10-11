@@ -14,16 +14,17 @@ test("the owner opens the session, copies the watch link, and closes it again", 
   const request = page.waitForRequest((sent) =>
     sent.url().endsWith(`/api/missions/${observing}/observation`),
   );
-  await sharing.getByRole("button", { name: "Let others watch" }).click();
+  // From the keyboard: each answer puts focus on the control that replaced the last.
+  await sharing.getByRole("button", { name: "Let others watch" }).focus();
+  await page.keyboard.press("Enter");
   expect((await request).postDataJSON()).toEqual({ observable: true });
   await expect(sharing).toContainText("Others can watch. 0 of 5 seats taken.");
+  await expect(sharing.getByRole("button", { name: "Copy watch link" })).toBeFocused();
 
   // The link to slice 5's watch page, absolute, on the clipboard.
-  await page
-    .context()
-    .grantPermissions(["clipboard-read", "clipboard-write"], {
-      origin: "http://localhost:3100",
-    });
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"], {
+    origin: "http://localhost:3100",
+  });
   await sharing.getByRole("button", { name: "Copy watch link" }).click();
   await expect(sharing).toContainText("Link copied");
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
@@ -31,11 +32,11 @@ test("the owner opens the session, copies the watch link, and closes it again", 
   );
 
   await sharing.getByRole("button", { name: "Stop sharing" }).click();
-  await sharing
-    .getByRole("group", { name: "Stop sharing?" })
-    .getByRole("button", { name: "Stop sharing" })
-    .click();
+  const question = sharing.getByRole("group", { name: "Stop sharing?" });
+  await expect(question).toBeFocused();
+  await question.getByRole("button", { name: "Stop sharing" }).click();
   await expect(sharing).toContainText("Only you can see this session.");
+  await expect(sharing.getByRole("button", { name: "Let others watch" })).toBeFocused();
 });
 
 test("the Georgian sharing panel fits a phone", async ({ page }) => {

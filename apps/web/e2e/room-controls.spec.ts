@@ -94,6 +94,30 @@ test("a command with no answer gives up at its deadline", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Left, 2 arcminutes" })).toBeEnabled();
 });
 
+test("the keyboard keeps its place through a nudge and the stop question", async ({
+  page,
+}) => {
+  await openRoom(page);
+  const higher = page
+    .getByRole("region", { name: "Controls" })
+    .getByRole("button", { name: "Higher, 2 arcminutes" });
+  await higher.focus();
+  await page.keyboard.press("Enter");
+  await expect(status(page)).toHaveText("Moved higher.");
+  // Locked while it waited, never disabled: focus did not fall to the page.
+  await expect(higher).toBeFocused();
+
+  const session = page.getByRole("region", { name: "Session" });
+  await session.getByRole("button", { name: "Stop" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    session.getByRole("group", { name: "Stop the observation?" }),
+  ).toBeFocused();
+  await session.getByRole("button", { name: "Keep observing" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(session.getByRole("button", { name: "Stop" })).toBeFocused();
+});
+
 test("stopping asks first, then ends the observation", async ({ page }) => {
   await openRoom(page);
   // Stop lives in the session panel, beside the hand control.

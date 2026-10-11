@@ -868,14 +868,14 @@
   text-transform: uppercase;
 }
 
-.room-controls-arrow:hover:not(:disabled),
-.room-controls-centre:hover:not(:disabled) {
+.room-controls-arrow:hover:not(:disabled, [aria-disabled="true"]),
+.room-controls-centre:hover:not(:disabled, [aria-disabled="true"]) {
   border-color: var(--color-accent);
   color: var(--color-accent-hover);
 }
 
-.room-controls-arrow:active:not(:disabled),
-.room-controls-centre:active:not(:disabled) {
+.room-controls-arrow:active:not(:disabled, [aria-disabled="true"]),
+.room-controls-centre:active:not(:disabled, [aria-disabled="true"]) {
   transform: scale(0.96);
 }
 
@@ -885,8 +885,8 @@
   outline-offset: 2px;
 }
 
-.room-controls-arrow:disabled,
-.room-controls-centre:disabled {
+.room-controls-arrow:is(:disabled, [aria-disabled="true"]),
+.room-controls-centre:is(:disabled, [aria-disabled="true"]) {
   border-color: var(--color-border-subtle);
   color: var(--color-text-disabled);
   cursor: not-allowed;
@@ -923,6 +923,12 @@
 
 .room-controls-confirm p {
   margin: 0;
+}
+
+/* Focus is moved here when the question appears; a keyboard sees where it went. */
+.room-controls-confirm:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .room-controls-confirm div {

@@ -9,7 +9,7 @@ import {
   zCommandRejectionReason,
   zSubmitMissionCommandResponse,
 } from "@darkview/contracts/zod";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +32,7 @@ import {
 } from "@/lib/platform/browser";
 
 import { PanelHead } from "./panel-head";
+import { refocus } from "./refocus";
 
 const arrows = [
   ["up", "↑"],
@@ -120,9 +121,9 @@ export function RoomControlsView({
               type="button"
               className={`room-controls-arrow room-controls-${control}`}
               aria-label={`${copy.labels[control]}, ${step}`}
-              disabled={busy}
+              aria-disabled={busy || undefined}
               aria-busy={pending?.control === control}
-              onClick={() => onPress?.(control)}
+              onClick={() => !busy && onPress?.(control)}
             >
               <span aria-hidden="true">{glyph}</span>
             </button>
@@ -130,9 +131,9 @@ export function RoomControlsView({
           <button
             type="button"
             className="room-controls-centre"
-            disabled={busy}
+            aria-disabled={busy || undefined}
             aria-busy={pending?.control === "recenter"}
-            onClick={() => onPress?.("recenter")}
+            onClick={() => !busy && onPress?.("recenter")}
           >
             {copy.labels.recenter}
           </button>
@@ -179,10 +180,21 @@ export function RoomSessionView({
   pending,
 }: ViewProps) {
   const titleId = useId();
+  const panel = useRef<HTMLElement>(null);
+  const question = useRef<HTMLDivElement>(null);
+  const stop = useRef<HTMLButtonElement>(null);
+  const asked = useRef(confirmingStop);
+  // The question replaces Stop, and Stop the question: the keyboard follows.
+  useEffect(() => {
+    if (asked.current === confirmingStop) return;
+    asked.current = confirmingStop;
+    refocus(panel.current, confirmingStop ? question.current : stop.current);
+  }, [confirmingStop]);
   if (!offered.stop) return null;
   const busy = pending !== null;
   return (
     <section
+      ref={panel}
       className="room-panel room-session"
       aria-labelledby={label ? undefined : titleId}
       aria-label={label}
@@ -190,9 +202,11 @@ export function RoomSessionView({
       <PanelHead id={titleId} icon="session" title={copy.sessionTitle} />
       {confirmingStop ? (
         <div
+          ref={question}
           className="room-controls-confirm"
           role="group"
           aria-label={copy.stopQuestion}
+          tabIndex={-1}
         >
           <p>
             <strong>{copy.stopQuestion}</strong> {copy.stopDetail}
@@ -217,6 +231,7 @@ export function RoomSessionView({
         </div>
       ) : (
         <Button
+          ref={stop}
           variant="secondary"
           className="room-session-stop"
           disabled={busy}

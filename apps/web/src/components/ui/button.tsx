@@ -1,9 +1,10 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, Ref } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "small" | "medium" | "large";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  ref?: Ref<HTMLButtonElement>;
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;

@@ -85,9 +85,15 @@ describe("RoomControls", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /^Higher/ }));
     expect(await screen.findByText(copy.waiting)).toBeVisible();
-    for (const name of [/^Lower/, /^Left/, /^Re-centre/, /^Capture/]) {
-      expect(screen.getByRole("button", { name })).toBeDisabled();
+    // The pad stays focusable while it is locked, so a keyboard keeps its place.
+    for (const name of [/^Higher/, /^Lower/, /^Left/, /^Re-centre/]) {
+      expect(screen.getByRole("button", { name })).toHaveAttribute(
+        "aria-disabled",
+        "true",
+      );
     }
+    expect(screen.getByRole("button", { name: /^Capture/ })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: /^Lower/ }));
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe(`/api/missions/${missionId}/command`);
     expect(JSON.parse(init.body)).toMatchObject({
@@ -99,7 +105,9 @@ describe("RoomControls", () => {
       controls({ [commandId]: { status: "ACCEPTED", rejectionReason: null } }),
     );
     expect(status()).toHaveTextContent(copy.done.up);
-    expect(screen.getByRole("button", { name: /^Lower/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /^Lower/ })).not.toHaveAttribute(
+      "aria-disabled",
+    );
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 

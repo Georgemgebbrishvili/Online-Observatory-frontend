@@ -2,7 +2,7 @@
 
 import type { MissionState } from "@darkview/contracts";
 import { zSetMissionObservationResponse } from "@darkview/contracts/zod";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { reopensSession } from "@/features/missions/live";
@@ -15,6 +15,7 @@ import {
 } from "@/lib/platform/browser";
 
 import { PanelHead } from "./panel-head";
+import { refocus } from "./refocus";
 
 export type SharingNotice = "copied" | "ended" | "failed" | null;
 
@@ -48,6 +49,22 @@ export function RoomSharingView({
   saving,
 }: RoomSharingViewProps) {
   const titleId = useId();
+  const panel = useRef<HTMLElement>(null);
+  const open = useRef<HTMLButtonElement>(null);
+  const copyLink = useRef<HTMLButtonElement>(null);
+  const close = useRef<HTMLButtonElement>(null);
+  const question = useRef<HTMLDivElement>(null);
+  const was = useRef({ observable, confirming });
+  // Opening, closing and the question each replace the button the keyboard was on.
+  useEffect(() => {
+    const before = was.current;
+    was.current = { observable, confirming };
+    if (before.observable !== observable) {
+      refocus(panel.current, observable ? copyLink.current : open.current);
+    } else if (before.confirming !== confirming) {
+      refocus(panel.current, confirming ? question.current : close.current);
+    }
+  }, [observable, confirming]);
   const people = { count: String(count), capacity: String(capacity) };
   const message =
     notice === "copied"
@@ -60,6 +77,7 @@ export function RoomSharingView({
 
   return (
     <section
+      ref={panel}
       className="room-panel room-sharing"
       aria-labelledby={label ? undefined : titleId}
       aria-label={label}
@@ -76,11 +94,17 @@ export function RoomSharingView({
             {copy.open} {fill(copy.seats, people)}
           </p>
           <div className="room-sharing-actions">
-            <Button variant="secondary" disabled={saving} onClick={() => onCopy?.()}>
+            <Button
+              ref={copyLink}
+              variant="secondary"
+              disabled={saving}
+              onClick={() => onCopy?.()}
+            >
               {copy.copyLink}
             </Button>
             {!confirming && (
               <Button
+                ref={close}
                 variant="ghost"
                 disabled={saving}
                 loading={saving}
@@ -92,9 +116,11 @@ export function RoomSharingView({
           </div>
           {confirming && (
             <div
+              ref={question}
               className="room-controls-confirm"
               role="group"
               aria-label={copy.closeQuestion}
+              tabIndex={-1}
             >
               <p>
                 <strong>{copy.closeQuestion}</strong> {copy.closeDetail}
@@ -124,6 +150,7 @@ export function RoomSharingView({
           <p>{copy.private}</p>
           <div className="room-sharing-actions">
             <Button
+              ref={open}
               variant="secondary"
               disabled={saving}
               loading={saving}
