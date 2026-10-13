@@ -63,6 +63,11 @@ nextjs-portal {
   backdrop-filter: none !important;
 }
 
+/* ADR-052's observatory monoliths blur too: on the tall design system, flat as well. */
+.design-system-page :is(.observatory-float, .observatory-dock) {
+  backdrop-filter: none !important;
+}
+
 /*
  * ADR-052: what moves on its own. The homepage sky's light layer is drawn by script each
  * frame (its seeded stars stay); the hero's glow breathes and its words arrive; the LIVE
@@ -70,6 +75,20 @@ nextjs-portal {
  */
 .sky-live {
   visibility: hidden !important;
+}
+
+/*
+ * On the design system the hero is a specimen far down a 32,000px page: when the capture
+ * stretches the viewport over it, its script wakes and repaints the whole page. Its words
+ * stay; its sky goes, so nothing runs.
+ */
+.design-system-page .sky {
+  display: none !important;
+}
+
+/* The sky still counts what its hidden light finds: 0 or 1 by the time of the capture. */
+.sky-hint b:first-of-type {
+  color: transparent !important;
 }
 
 .sky-hero::after,

@@ -1180,7 +1180,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
           <div className="ds-home-specimen">
-            <SkyHero content={dictionary.home.hero} locale={locale} />
+            <SkyHero content={dictionary.home.hero} headingLevel={2} locale={locale} />
           </div>
         </section>
 
