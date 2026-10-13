@@ -107,8 +107,8 @@ function measure(
 
 const pairs: Pair[] = [
   ...textTokens.flatMap((fg) => surfaces.map((bg) => measure(fg, bg, "text", 4.5))),
-  measure("on-accent", "accent", "primary button label", 4.5),
-  measure("on-accent", "accent-hover", "primary button label, hover", 4.5),
+  // ADR-052: white on the accent red is 4.0:1, so filled buttons sit on action instead.
+  measure("on-action", "action", "primary button label", 4.5),
   measure("on-photon", "photon", "checked control, data fill", 4.5),
   ...["border-control", "accent", "photon", "error"].flatMap((fg) =>
     surfaces.map((bg) => measure(fg, bg, "control boundary / focus ring (1.4.11)", 3)),
@@ -143,29 +143,29 @@ function table() {
 }
 
 describe("design tokens", () => {
-  it("uses the ADR-039 ground, ink and colour roles, exactly", () => {
-    expect(token("night")).toEqual(parseHex("#000000"));
-    expect(token("surface-base")).toEqual(parseHex("#050505"));
-    expect(token("text-primary")).toEqual(parseHex("#f6ecd8"));
-    expect(token("accent")).toEqual(parseHex("#e8742f"));
-    expect(token("accent-hover")).toEqual(parseHex("#f6a63f"));
-    expect(token("accent-ink")).toEqual(parseHex("#f6b062"));
-    expect(token("on-accent")).toEqual(parseHex("#1a0f08"));
-    expect(token("live")).toEqual(parseHex("#ffd36b"));
-    expect(token("simulated")).toEqual(parseHex("#ffd36b"));
-    expect(token("photon")).toEqual(parseHex("#5cc8ff"));
+  it("uses the ADR-052 ground, ink and colour roles, exactly", () => {
+    expect(token("night")).toEqual(parseHex("#0d0d0d"));
+    expect(token("surface-base")).toEqual(parseHex("#131313"));
+    expect(token("text-primary")).toEqual(parseHex("#f4f4f2"));
+    expect(token("text-secondary")).toEqual(parseHex("#b8b8b4"));
+    expect(token("text-tertiary")).toEqual(parseHex("#969692"));
+    expect(token("accent")).toEqual(parseHex("#e3482c"));
+    expect(token("accent-hover")).toEqual(parseHex("#f06a45"));
+    expect(token("accent-ink")).toEqual(parseHex("#f0785a"));
+    expect(token("action")).toEqual(parseHex("#c8392a"));
+    expect(token("on-action")).toEqual(parseHex("#ffffff"));
+    expect(token("live")).toEqual(parseHex("#2ecc71"));
+    expect(token("simulated")).toEqual(parseHex("#e2b85a"));
     expect(declarations.get("--color-surface-raised")).toBe(
-      "color-mix(in srgb, var(--st-cream) 4.5%, var(--st-black))",
-    );
-    expect(declarations.get("--color-text-secondary")).toBe(
-      "color-mix(in srgb, var(--st-cream) 76%, transparent)",
+      "color-mix(in srgb, var(--st-cream) 6%, var(--st-canvas))",
     );
     expect(declarations.get("--color-border-subtle")).toBe(
-      "color-mix(in srgb, var(--st-cream) 11%, transparent)",
+      "color-mix(in srgb, var(--st-rule) 12%, transparent)",
     );
     expect(declarations.get("--color-border-strong")).toBe(
-      "color-mix(in srgb, var(--st-cream) 20%, transparent)",
+      "color-mix(in srgb, var(--st-rule) 22%, transparent)",
     );
+    expect(declarations.get("--focus-ring")).toBe("2px solid var(--color-accent-ink)");
   });
 
   it("keeps tokens.ts identical to the palette in tokens.css", () => {

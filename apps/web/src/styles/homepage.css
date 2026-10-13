@@ -1,62 +1,168 @@
 /*
- * The public homepage in the poster language (ADR-039): a poster hero, then the
- * sections under it on the night ground — a kicker and an Anton headline to open each,
- * hairlines between rows, and generous black space. Tokens only.
+ * The public homepage (ADR-052): the Skychaser sky as its hero, then the sections under
+ * it — a kicker and an Anton headline to open each, hairlines between rows. Tokens only.
  */
 
 .public-home {
   display: grid;
 }
 
-/* HERO — headline, one sunset line, one action, the stats, and the fan. */
-.poster-hero {
-  /* The fan's tilted outer plates must never widen the page. */
-  overflow-x: clip;
-  padding-block: var(--space-12) var(--space-16);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.poster-hero-grid {
+/*
+ * THE SKY — the words centred in the black; our drawn plates hidden round them, revealed
+ * by the pointer (SkyReveal). A phone has no sky: only the words and the button.
+ */
+.sky-hero {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  gap: var(--space-12);
+  min-height: clamp(35rem, calc(100svh - var(--size-bar)), 56.25rem);
+  overflow: clip;
+  place-items: center;
+  background: var(--color-night);
+}
+
+/* A red glow behind the words, breathing. */
+.sky-hero::after {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 42vmin;
+  height: 42vmin;
+  border-radius: 50%;
+  background: var(--glow-sky);
+  content: "";
+  pointer-events: none;
+  translate: -50% -50%;
+}
+
+.sky {
+  position: absolute;
+  z-index: 0;
+  contain: strict;
+  inset: 0;
+}
+
+.sky canvas {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+
+.sky-live {
+  will-change: transform;
+}
+
+.sky-vignette,
+.sky-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sky-vignette {
+  background: var(--gradient-sky-vignette);
+}
+
+.sky-grain {
+  background-image: var(--texture-sky-grain);
+  opacity: 0.07;
+}
+
+.sky-hint {
+  position: absolute;
+  z-index: 2;
+  right: clamp(1rem, 4vw, 3rem);
+  bottom: 1.625rem;
+  display: grid;
+  justify-items: end;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.sky-hint p {
+  display: inline-flex;
   align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  color: var(--color-gold);
+  font-family: var(--font-label);
+  font-size: var(--font-size-hint);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0.22em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
-.poster-hero-copy {
-  min-width: 0;
+.sky-hint p:first-child::before {
+  width: 1.75rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold));
+  content: "";
 }
 
-.poster-hero-title {
+.sky-hint b {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.sky-hint .sky-caption {
+  color: var(--color-text-small);
+  letter-spacing: 0.08em;
+}
+
+.sky-hero-copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 100%;
+  justify-items: center;
+  padding: var(--space-12) var(--space-page);
+  pointer-events: none;
+  text-align: center;
+}
+
+.sky-hero-copy a {
+  pointer-events: auto;
+}
+
+.sky-hero-title {
   max-width: none;
   margin: 0;
-  font-size: var(--font-size-display);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sky-title);
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-shadow: var(--shadow-sky-title);
+  white-space: nowrap;
 }
 
-.poster-hero-title > span {
-  display: block;
+/* Mkhedruli runs wider than Anton: the Georgian headline may wrap. */
+.sky-hero-title:lang(ka) {
+  white-space: normal;
 }
 
-/* Mkhedruli runs wider than Anton: the Georgian headline steps down a size. */
-.poster-hero-title:lang(ka) {
-  font-size: var(--font-size-hero);
+.sky-hero-title em {
+  color: var(--color-accent);
+  font-style: normal;
 }
 
-.poster-hero-lede {
-  max-width: 46ch;
-  margin: var(--space-6) 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
+.sky-hero-lede {
+  max-width: 44ch;
+  margin: var(--space-6) auto 0;
+  color: var(--color-text-cream);
+  font-size: var(--font-size-sky-lede);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
 }
 
-.poster-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-4) var(--space-8);
-  margin-top: var(--space-8);
+.sky-hero-copy .button {
+  margin-top: 2.125rem;
 }
 
-.poster-hero-link,
 .home-status > header a {
   border-radius: var(--radius-small);
   color: var(--color-accent-ink);
@@ -67,131 +173,58 @@
   text-transform: uppercase;
 }
 
-.poster-hero-link:hover,
 .home-status > header a:hover {
   color: var(--color-accent-hover);
 }
 
-.poster-hero-stats {
-  margin-top: var(--space-12);
-}
+@media (prefers-reduced-motion: no-preference) {
+  .sky-hero::after {
+    animation: sky-breathe 5s ease-in-out infinite;
+  }
 
-/* THE FAN — three plates in cream poster frames, Saturn in front. */
-.plate-fan {
-  --cw: clamp(6.5rem, 30vw, 11rem);
+  .sky-hero-copy > * {
+    animation: sky-arrive 700ms var(--ease-sky) both;
+  }
 
-  display: grid;
-  justify-items: center;
-  gap: var(--space-6);
-  margin: 0;
-  padding-block: var(--space-4);
-}
+  .sky-hero-copy > :nth-child(2) {
+    animation-delay: 90ms;
+  }
 
-.plate-fan-deck {
-  position: relative;
-  width: var(--cw);
-  aspect-ratio: 5 / 7;
-  margin-block: calc(var(--cw) * 0.12);
-}
-
-.plate-fan-plate {
-  --place: translate(
-      calc(var(--side) * var(--cw) * 0.66),
-      calc(var(--off) * var(--cw) * 0.08)
-    )
-    rotate(calc(var(--side) * 9deg)) scale(calc(1 - var(--off) * 0.06));
-
-  position: absolute;
-  z-index: calc(2 - var(--off));
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto auto;
-  padding: 6%;
-  border-radius: var(--radius-small);
-  background: var(--color-text-primary);
-  /* A drop shadow under the stock, not a halo: no colour, nothing glows. */
-  box-shadow: var(--shadow-small);
-  color: var(--color-on-accent);
-  inset: 0;
-  transform: var(--place);
-  transition: transform var(--duration-state) var(--ease-standard);
-}
-
-.plate-fan-art {
-  min-height: 0;
-  overflow: hidden;
-  border-radius: calc(var(--radius-small) * 0.5);
-  background: var(--color-surface-base);
-}
-
-.plate-fan-art img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.plate-fan-type {
-  margin-top: 7%;
-  font-family: var(--font-label);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
-  line-height: 1.2;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.plate-fan-name {
-  font-family: var(--font-headline);
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-headline);
-  letter-spacing: var(--tracking-headline);
-  line-height: 1.1;
-  text-align: center;
-  text-transform: uppercase;
-  font-synthesis: none;
-}
-
-.plate-fan-caption {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-  text-align: center;
-}
-
-@media (hover: hover) {
-  .plate-fan-plate:hover {
-    transform: var(--place) translateY(-0.75rem);
+  .sky-hero-copy > :nth-child(3) {
+    animation-delay: 180ms;
   }
 }
 
+@keyframes sky-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes sky-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* Below --sm, not the source's 560px: the app keeps its five breakpoints (v3 §3). */
 @media (--below-sm) {
-  .plate-fan-type {
+  .sky-hero {
+    min-height: clamp(28.75rem, calc(100svh - var(--size-app-header)), 47.5rem);
+  }
+
+  .sky {
     display: none;
   }
-}
 
-@media (--md) {
-  .plate-fan {
-    --cw: clamp(10rem, 22vw, 14rem);
-  }
-
-  .plate-fan-name {
-    font-size: var(--font-size-h3);
-  }
-}
-
-@media (--lg) {
-  .poster-hero {
-    padding-block: var(--space-20);
-  }
-
-  .poster-hero-grid {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    gap: var(--space-16);
-  }
-
-  .plate-fan {
-    --cw: clamp(11rem, 16vw, 15.5rem);
+  .sky-hero-copy .button {
+    min-width: 13.75rem;
   }
 }
 

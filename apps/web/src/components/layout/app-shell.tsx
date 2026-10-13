@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { BrandLockup } from "@/components/brand/brand-lockup";
-import { AppNavigation } from "@/components/navigation/app-navigation";
+import { AppNavigation, PlannedNavigation } from "@/components/navigation/app-navigation";
 import { ObservatoryStatus } from "@/components/observatory/observatory-status";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import type { Locale } from "@/i18n/config";
@@ -16,63 +16,54 @@ type AppShellProps = {
 
 function ObservatoryState({ navigation }: Pick<AppShellProps, "navigation">) {
   return (
-    <div className="app-observatory-state">
-      <div>
-        <span>{navigation.observatory}</span>
-        <strong>{navigation.observatoryName}</strong>
-      </div>
-      <div>
-        <ObservatoryStatus status="ONLINE" label={navigation.statusOnline} />
-        <small>{navigation.simulated}</small>
-      </div>
+    <div
+      className="app-observatory-state"
+      role="group"
+      aria-label={navigation.observatory}
+    >
+      <strong>{navigation.observatoryName}</strong>
+      <ObservatoryStatus status="ONLINE" label={navigation.statusOnline} />
+      <small>{navigation.simulated}</small>
     </div>
   );
 }
 
+/**
+ * The signed-in shell as the Skychaser site draws its own (ADR-052 §6): one glass bar
+ * with the lockup, the destinations, the observatory and the account; the tab bar on a
+ * phone; a footer that signs off and holds the pages not built yet.
+ */
 export function AppShell({ children, locale, logoutLabel, navigation }: AppShellProps) {
   return (
     <div className="app-shell">
-      {/*
-       * The aside fills the whole column, however long the page; its contents stick to
-       * the viewport. A sticky aside of 100vh painted only the first screen's height.
-       */}
-      <aside className="app-sidebar" aria-label={navigation.sidebarAriaLabel}>
-        <div className="app-sidebar-inner">
+      <header className="app-bar">
+        <div className="app-bar-inner">
           <a className="app-brand" href={`/${locale}`}>
-            <BrandLockup
-              ariaLabel={navigation.brandAriaLabel}
-              endorsement={navigation.brandEndorsement}
-            />
+            <BrandLockup ariaLabel={navigation.brandAriaLabel} />
           </a>
-          <AppNavigation locale={locale} navigation={navigation} placement="sidebar" />
-          <SignOutButton
-            className="app-logout-form"
-            label={logoutLabel}
-            locale={locale}
-          />
-          <ObservatoryState navigation={navigation} />
+          <AppNavigation locale={locale} navigation={navigation} placement="bar" />
+          <div className="app-bar-end">
+            <ObservatoryState navigation={navigation} />
+            <SignOutButton
+              className="app-logout-form"
+              label={logoutLabel}
+              locale={locale}
+            />
+          </div>
         </div>
-      </aside>
-
-      <header className="app-mobile-header">
-        <a className="app-brand" href={`/${locale}`}>
-          <BrandLockup
-            ariaLabel={navigation.brandAriaLabel}
-            compact
-            endorsement={navigation.brandEndorsement}
-          />
-        </a>
-        <ObservatoryState navigation={navigation} />
-        <SignOutButton
-          className="app-mobile-logout"
-          label={logoutLabel}
-          locale={locale}
-        />
       </header>
 
       <main id="main-content" className="app-content">
         {children}
       </main>
+
+      <footer className="app-footer">
+        <BrandLockup
+          ariaLabel={navigation.brandAriaLabel}
+          endorsement={navigation.brandEndorsement}
+        />
+        <PlannedNavigation locale={locale} navigation={navigation} />
+      </footer>
 
       <AppNavigation locale={locale} navigation={navigation} placement="bottom" />
     </div>

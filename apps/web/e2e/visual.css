@@ -62,3 +62,19 @@ nextjs-portal {
 .room-console .live-feed-well .target-preview figcaption {
   backdrop-filter: none !important;
 }
+
+/*
+ * ADR-052: what moves on its own. The homepage sky's light layer is drawn by script each
+ * frame (its seeded stars stay); the hero's glow breathes and its words arrive; the LIVE
+ * LED blinks; a loading button's sheen loops. Captured at rest.
+ */
+.sky-live {
+  visibility: hidden !important;
+}
+
+.sky-hero::after,
+.sky-hero-copy > *,
+.status-dot,
+.button-primary::after {
+  animation: none !important;
+}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
   Anton,
-  Bowlby_One,
+  Archivo,
   Geist,
   JetBrains_Mono,
   Noto_Sans_Georgian,
@@ -27,8 +27,8 @@ const firaGO = localFont({
   display: "swap",
 });
 
-// ADR-039 type. Anton for headlines, Bowlby One for the one sunset title, Oswald for
-// spaced labels, Geist for body, JetBrains Mono for data.
+// ADR-052 type, as the Skychaser site sets it: Anton for headlines,
+// Oswald for labels, buttons and navigation, Geist for body, JetBrains Mono for data.
 const anton = Anton({
   subsets: ["latin"],
   weight: "400",
@@ -36,12 +36,12 @@ const anton = Anton({
   display: "swap",
 });
 
-const bowlbyOne = Bowlby_One({
+// The wordmark only: Archivo Expanded Black, as the Skychaser kit sets its own (ADR-052 §3).
+const archivo = Archivo({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-bowlby-one",
+  axes: ["wdth"],
+  variable: "--font-archivo",
   display: "swap",
-  preload: false,
 });
 
 const oswald = Oswald({
@@ -75,7 +75,7 @@ const notoSansGeorgian = Noto_Sans_Georgian({
 const fontVariables = [
   firaGO,
   anton,
-  bowlbyOne,
+  archivo,
   oswald,
   geist,
   jetBrainsMono,

@@ -1,4 +1,4 @@
-import type { FanPlate } from "@/features/targets/homepage-data";
+import type { SkyPlate } from "@/features/targets/homepage-data";
 
 type HomepageSectionHeading = {
   eyebrow: string;
@@ -8,22 +8,20 @@ type HomepageSectionHeading = {
 
 export type HomepageDictionary = {
   hero: {
-    kicker: string;
-    /** The headline's first line, then the one sunset line. */
+    /** The headline, then its last words in red. */
     headline: string;
     sunset: string;
     lede: string;
     cta: string;
-    secondary: string;
-    illustration: string;
-    fanLabel: string;
-    plates: Record<FanPlate, string>;
-    plateType: string;
-    stats: {
-      observableNow: string;
-      aperture: string;
-      focalLength: string;
-      telescope: string;
+    plates: Record<SkyPlate, string>;
+    sky: {
+      label: string;
+      explore: string;
+      tap: string;
+      /** Around the count: "0/4 found" in English, "ნაპოვნია 0/4" in Georgian. */
+      foundBefore: string;
+      foundAfter: string;
+      illustration: string;
     };
   };
   common: {

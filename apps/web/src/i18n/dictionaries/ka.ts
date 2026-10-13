@@ -13,7 +13,6 @@ const dictionary = {
     language: "ენა",
     languageName: "English",
     brandAriaLabel: `${brand.ka.nominative} — ${brand.ka.maker}`,
-    brandEndorsement: brand.ka.endorsement,
     public: {
       ariaLabel: "საჯარო ნავიგაცია",
       menu: "ნავიგაციის გახსნა",
@@ -28,7 +27,6 @@ const dictionary = {
     },
     app: {
       ariaLabel: "აპლიკაციის ნავიგაცია",
-      sidebarAriaLabel: "ანგარიში და ობსერვატორია",
       brandAriaLabel: `${brand.ka.nominative} — ${brand.ka.maker}`,
       brandEndorsement: brand.ka.endorsement,
       home: "მთავარი",
@@ -60,21 +58,19 @@ const dictionary = {
   },
   home: {
     hero: {
-      kicker: "პირდაპირი დაკვირვება · თბილისი",
       headline: "შენი დრო",
       sunset: "ნამდვილ ცასთან.",
       lede: "ნამდვილი ტელესკოპი თბილისში ცას პირდაპირ გაჩვენებს. დაჯავშნე დაკვირვების დრო და ნახე კამერის ნამდვილი კადრი.",
       cta: "დაჯავშნე დრო",
-      secondary: "დღევანდელი ცა",
-      illustration: "ილუსტრაცია — არა ტელესკოპის კადრი",
-      fanLabel: "სამი პლანეტა, რომელსაც ტელესკოპი აკვირდება, დახატული ფირფიტებად",
-      plates: { jupiter: "იუპიტერი", saturn: "სატურნი", mars: "მარსი" },
-      plateType: "პლანეტა",
-      stats: {
-        observableNow: "ახლა დაკვირვებადი",
-        aperture: "აპერტურა · mm",
-        focalLength: "ფოკუსური მანძილი · mm",
-        telescope: "ტელესკოპი · თბილისი",
+      plates: { saturn: "სატურნი", jupiter: "იუპიტერი", mars: "მარსი", venus: "ვენერა" },
+      sky: {
+        label:
+          "ღამის ცა. გადაატარე კურსორი ან შეეხე, რომ იპოვო მასში დახატული პლანეტები. თითოეული ილუსტრაციაა და არა ტელესკოპის კადრი.",
+        explore: "გამოიკვლიე ცა",
+        tap: "შეეხე ცას",
+        foundBefore: "ნაპოვნია",
+        foundAfter: "",
+        illustration: "ილუსტრაცია — არა ტელესკოპის კადრი",
       },
     },
     common: {

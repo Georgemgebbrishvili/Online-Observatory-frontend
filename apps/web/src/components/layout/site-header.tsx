@@ -41,10 +41,7 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
     >
       <Container className="header-inner">
         <Link className="brand-link" href={`/${locale}`} prefetch={false}>
-          <BrandLockup
-            ariaLabel={navigation.brandAriaLabel}
-            endorsement={navigation.brandEndorsement}
-          />
+          <BrandLockup ariaLabel={navigation.brandAriaLabel} />
         </Link>
         <nav className="public-navigation" aria-label={publicNavigation.ariaLabel}>
           {links.map((link) => (

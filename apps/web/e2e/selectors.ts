@@ -7,15 +7,13 @@ import type { Page } from "@playwright/test";
  */
 
 /**
- * The application sidebar. The page carries two `complementary` landmarks -- this
- * one and the observatory panel -- and both are now named, so either would resolve
- * by name. It stays keyed to the navigation it contains because that works in both
- * languages, where a name would have to be looked up per locale.
+ * The application bar (ADR-052 §6): the one banner on an /app page, keyed to the
+ * navigation it carries so it works in both languages without a looked-up name.
  */
-export function appSidebar(page: Page) {
+export function appBar(page: Page) {
   return page
-    .getByRole("complementary")
-    .filter({ has: page.locator("nav[data-placement='sidebar']") });
+    .getByRole("banner")
+    .filter({ has: page.locator("nav[data-placement='bar']") });
 }
 
 /** The mobile bottom navigation. Both placements share one accessible name. */

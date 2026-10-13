@@ -7,7 +7,6 @@ import { NavigationIcon } from "@/components/navigation/navigation-icon";
 import {
   plannedDestinations,
   primaryDestinations,
-  sidebarDestinations,
   type AppDestination,
 } from "@/features/navigation/navigation-model";
 import type { Locale } from "@/i18n/config";
@@ -16,21 +15,19 @@ import type { Dictionary } from "@/i18n/types";
 type AppNavigationProps = {
   locale: Locale;
   navigation: Dictionary["navigation"]["app"];
-  placement: "sidebar" | "bottom";
+  placement: "bar" | "bottom";
 };
 
-export function AppNavigation({ locale, navigation, placement }: AppNavigationProps) {
+function useDestinationLink(
+  locale: Locale,
+  label: (destination: AppDestination) => string,
+) {
   const pathname = usePathname();
-
-  function link(destination: AppDestination) {
+  return function link(destination: AppDestination) {
     const href = `/${locale}/app${destination.segment ? `/${destination.segment}` : ""}`;
     const isActive =
       pathname === href ||
       (destination.segment !== "" && pathname.startsWith(`${href}/`));
-    const label =
-      placement === "bottom"
-        ? navigation.mobile[destination.key as keyof typeof navigation.mobile]
-        : navigation[destination.key];
 
     return (
       <Link
@@ -41,39 +38,52 @@ export function AppNavigation({ locale, navigation, placement }: AppNavigationPr
         <span className="app-nav-icon">
           <NavigationIcon name={destination.icon} />
         </span>
-        <span>{label}</span>
+        <span>{label(destination)}</span>
       </Link>
     );
-  }
+  };
+}
+
+/**
+ * The five destinations (ADR-051): along the top bar on a desk, in the bottom tab bar on
+ * a phone (ADR-052 §6). Both carry the same accessible name; only one is ever displayed.
+ */
+export function AppNavigation({ locale, navigation, placement }: AppNavigationProps) {
+  const link = useDestinationLink(locale, (destination) =>
+    placement === "bottom"
+      ? navigation.mobile[destination.key as keyof typeof navigation.mobile]
+      : navigation[destination.key],
+  );
 
   return (
-    <>
-      <nav
-        className={`app-navigation app-navigation-${placement}`}
-        aria-label={navigation.ariaLabel}
-        // Both placements carry the same accessible name, so this is what tells them
-        // apart without depending on a class name that a restyle may rename. Only one
-        // of the two is ever displayed, so they are never both in the a11y tree.
-        data-placement={placement}
-      >
-        {(placement === "sidebar" ? sidebarDestinations : primaryDestinations).map(link)}
-      </nav>
+    <nav
+      className={`app-navigation app-navigation-${placement}`}
+      aria-label={navigation.ariaLabel}
+      data-placement={placement}
+    >
+      {primaryDestinations.map(link)}
+    </nav>
+  );
+}
 
-      {/*
-       * The bottom bar holds five and no more. The planned surfaces are reachable from
-       * the sidebar, as a second landmark with a name of its own so the two never
-       * collide, grouped under a heading that says what they are.
-       */}
-      {placement === "sidebar" && (
-        <nav
-          className="app-navigation app-navigation-planned"
-          aria-label={navigation.plannedGroup}
-          data-placement="planned"
-        >
-          <p className="app-nav-group">{navigation.plannedGroup}</p>
-          {plannedDestinations.map(link)}
-        </nav>
-      )}
-    </>
+/**
+ * The pages not built yet: reachable, under a name that says what they are, in the app's
+ * footer (ADR-052 §6).
+ */
+export function PlannedNavigation({
+  locale,
+  navigation,
+}: Omit<AppNavigationProps, "placement">) {
+  const link = useDestinationLink(locale, (destination) => navigation[destination.key]);
+
+  return (
+    <nav
+      className="app-navigation app-navigation-planned"
+      aria-label={navigation.plannedGroup}
+      data-placement="planned"
+    >
+      <p className="app-nav-group">{navigation.plannedGroup}</p>
+      {plannedDestinations.map(link)}
+    </nav>
   );
 }

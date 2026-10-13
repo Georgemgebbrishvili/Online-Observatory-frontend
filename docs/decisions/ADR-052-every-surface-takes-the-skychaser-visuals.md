@@ -13,10 +13,11 @@
 - **Keeps:** `ADR-025`'s name (Stellar / სტელარი) and its two-stage rename;
   `ADR-027`/`ADR-050`'s content rules for the room; `ADR-051`'s five destinations; every
   honesty rule (below).
-- **Source:** the maintainer's Skychaser site, `https://stellarr.club`, code in
-  `~/Desktop/Stellar/app` (branch `stellar-cards`, `0f3270c7`): `src/styles/skychaser-*.css`,
-  `src/components/skychaser/**`, the console at `src/components/skychaser/observatory/console.css`.
-  Screenshots of `/` and `/node` at 1440 and 390 were taken on 2026-10-11.
+- **Source:** the maintainer's Skychaser site, `https://skychaser.io` (formerly
+  `stellarr.club`), code in `~/Desktop/Skychaser/app` (formerly `~/Desktop/Stellar/app`):
+  `src/styles/skychaser-*.css`, `src/components/skychaser/**`, the console at
+  `src/components/skychaser/observatory/console.css`, the logo kit in `public/brand/`.
+  Taken at `0f3270c7` on 2026-10-11, then brought up to `7e798b05` on 2026-10-13 (below).
 
 ## Context
 
@@ -31,19 +32,19 @@ to look like it, and the product to keep its name.
 
 1. **Palette** (all values in `tokens.css`, nowhere else):
 
-   | Role | Value |
-   | --- | --- |
-   | Canvas (page ground) | `#0d0d0d`; deep `#131313`; console and bars `#050507` |
-   | Plate (raised surface) / hover | cream `rgba(244,232,204,.06)` / `.11` |
-   | Ink ramp | `#f4f4f2` · `#b8b8b4` · `#969692` · disabled `#73736f`; small text `#adada8` |
-   | Rules | cream `rgba(241,230,207,.12)` / `.22`; on glass, white `.09` / `.22` |
-   | Accent (highlights, active tab, red words, glows) | `#e3482c`; hover `#f06a45`; text `#f0785a` |
-   | Action fill (filled buttons, white text, 5.1:1) | `#c8392a` |
-   | Gold (simulated, done, "go") | `#e2b85a` |
-   | Live | green `#2ecc71` pill |
-   | Error | `#ff7a6b` |
-   | Focus ring | `2px solid #f0785a`, offset 3px |
-   | Sunset ramp | `#fff4d8 → #f0c75e → #e8893a → #d9442a → #8f1f16` |
+   | Role                                              | Value                                                                        |
+   | ------------------------------------------------- | ---------------------------------------------------------------------------- |
+   | Canvas (page ground)                              | `#0d0d0d`; deep `#131313`; console and bars `#050507`                        |
+   | Plate (raised surface) / hover                    | cream `rgba(244,232,204,.06)` / `.11`                                        |
+   | Ink ramp                                          | `#f4f4f2` · `#b8b8b4` · `#969692` · disabled `#73736f`; small text `#adada8` |
+   | Rules                                             | cream `rgba(241,230,207,.12)` / `.22`; on glass, white `.09` / `.22`         |
+   | Accent (highlights, active tab, red words, glows) | `#e3482c`; hover `#f06a45`; text `#f0785a`                                   |
+   | Action fill (filled buttons, white text, 5.1:1)   | `#c8392a`                                                                    |
+   | Gold (simulated, done, "go")                      | `#e2b85a`                                                                    |
+   | Live                                              | green `#2ecc71` pill                                                         |
+   | Error                                             | `#ff7a6b`                                                                    |
+   | Focus ring                                        | `2px solid #f0785a`, offset 3px                                              |
+   | Sunset ramp                                       | `#fff4d8 → #f0c75e → #e8893a → #d9442a → #8f1f16`                            |
 
    Photon Blue (`#5cc8ff`) and the orange `#e8742f` leave the palette. Readouts are ink in
    JetBrains Mono.
@@ -54,9 +55,12 @@ to look like it, and the product to keep its name.
    Bowlby One and Barlow Condensed leave. **Georgian keeps Noto Sans Georgian and FiraGO**,
    never uppercased or tracked — the source loads no Georgian face.
 
-3. **The mark and lockup.** The comet mark (`public/brand/logo-mark.svg`, the same path
-   as our favicon) beside **STELLAR** in Anton, `.02em`, as Skychaser's lockup sets its
-   own name. The favicon is the white mark on black. "by Astroman" moves to the footer.
+3. **The mark and lockup.** The Skychaser kit's comet mark (`public/brand/logo-mark.svg`:
+   the comet in cream `#f6f1e7` round a sunset core `#ff8146 → #c8102e`), 22px, beside
+   **STELLAR** set in Archivo Expanded Black in the mark's cream, at the size that fills
+   the kit's 28px wordmark box — the kit's own wordmark spells its name, so ours is set,
+   not copied. The favicon, `favicon.ico` and the app icon are the kit's mark. "by
+   Astroman" moves to the footer.
 
 4. **Glow, copied.** Filled buttons carry `0 10px 26px -14px #e3482c`; the LIVE pill and
    its LED glow green; the camera badge, the console's current step and the active tab
@@ -99,3 +103,12 @@ to look like it, and the product to keep its name.
 - CLAUDE.md's Design section and `docs/design-system.md` are rewritten to this record.
 - Built in slices — tokens, type and shell; the homepage sky; the console and
   `/observatory`; then every remaining surface — each with its baselines.
+
+## Amendment — 2026-10-13: the source moved, and its logo changed
+
+Between the snapshot of 2026-10-11 and 2026-10-13 the maintainer moved the source to
+`~/Desktop/Skychaser/app`, the site to `skychaser.io`, and gave Skychaser a new logo from
+its logo kit (`9038617d`): the comet with a sunset core, and an outlined wordmark in
+Archivo Expanded Black. §3 above is written to the new logo. The other changes in those
+commits are Skychaser's own content — wallets, credits, rarities, voting — and change
+nothing copied here.

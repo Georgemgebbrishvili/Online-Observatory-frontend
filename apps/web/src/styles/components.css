@@ -16,10 +16,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ADR-039: one hot primary, everything else quiet. Oswald label, 10px radius, no glow. */
+/*
+ * ADR-052: Skychaser's buttons. Oswald 600, 6px, 50px tall; the filled one in the action
+ * red with its halo, a lift on hover, a sheen across it, a press to .97.
+ */
 .button {
+  position: relative;
   display: inline-flex;
-  min-height: 3rem;
+  min-height: 3.125rem;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
@@ -30,20 +34,26 @@
   cursor: pointer;
   font-family: var(--font-label);
   font-size: var(--font-size-label);
-  font-weight: var(--font-weight-label);
+  font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-label);
   line-height: 1.2;
   text-align: center;
   text-transform: uppercase;
   transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+    background-color var(--duration-state) var(--ease-sky),
+    border-color var(--duration-state) var(--ease-sky),
+    box-shadow var(--duration-state) var(--ease-sky),
+    color var(--duration-state) var(--ease-sky),
+    translate var(--duration-state) var(--ease-sky),
+    scale 70ms var(--ease-sky);
+}
+
+.button:hover:not(:disabled) {
+  translate: 0 -1px;
 }
 
 .button:active:not(:disabled) {
-  transform: translateY(1px);
+  scale: 0.97;
 }
 
 .button[aria-busy] {
@@ -53,6 +63,7 @@
 .button:disabled:not([aria-busy]) {
   border-color: var(--color-border-subtle);
   background: transparent;
+  box-shadow: none;
   color: var(--color-text-disabled);
   cursor: not-allowed;
 }
@@ -73,12 +84,40 @@
 }
 
 .button-primary {
-  background: var(--gradient-accent);
-  color: var(--color-on-accent);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--color-action);
+  box-shadow: var(--glow-action);
+  color: var(--color-on-action);
 }
 
-.button-primary:hover:not(:disabled) {
-  background: var(--color-accent-hover);
+.button-primary::after {
+  position: absolute;
+  z-index: -1;
+  background: var(--gradient-sheen);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  translate: -110% 0;
+}
+
+.button-primary:hover:not(:disabled)::after {
+  transition: translate 800ms cubic-bezier(0.3, 0.6, 0.2, 1);
+  translate: 110% 0;
+}
+
+.button-primary[aria-busy]::after {
+  animation: button-sheen 1.2s cubic-bezier(0.3, 0.6, 0.2, 1) infinite;
+}
+
+@keyframes button-sheen {
+  from {
+    translate: -110% 0;
+  }
+
+  to {
+    translate: 110% 0;
+  }
 }
 
 .button-primary:disabled:not([aria-busy]) {
@@ -86,14 +125,14 @@
 }
 
 .button-secondary {
-  border-color: var(--color-border-strong);
-  background: var(--color-surface-raised);
+  border-color: var(--color-line-strong);
+  background: var(--color-outline-fill);
   color: var(--color-text-primary);
 }
 
 .button-secondary:hover:not(:disabled) {
-  border-color: var(--color-text-disabled);
-  background: var(--color-surface-hover);
+  border-color: var(--color-outline-hover);
+  background: var(--color-outline-fill-hover);
 }
 
 .button-ghost {
@@ -215,7 +254,7 @@
 
 .status-indicator {
   display: inline-flex;
-  min-height: 1.75rem;
+  min-height: 1.875rem;
   align-items: center;
   gap: var(--space-2);
   padding-inline: var(--space-3);
@@ -225,8 +264,8 @@
   color: var(--color-text-secondary);
   font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.18em;
   line-height: 1.3;
   text-transform: uppercase;
   /* A Georgian status label runs to ~293px. nowrap made the pill push the page
@@ -242,15 +281,31 @@
   background: currentColor;
 }
 
-/* Live or current: yellow, ADR-039. */
-.status-active {
+/*
+ * Live, current or online: Skychaser's green LIVE pill, its LED glowing and blinking
+ * (ADR-052 §4). White letters on a green wash.
+ */
+.status-active,
+.status-success {
   border-color: var(--color-live-border);
-  color: var(--color-live);
+  background: var(--color-live-muted);
+  box-shadow: var(--glow-live);
+  color: var(--color-text-primary);
 }
 
-.status-success {
-  border-color: var(--color-success-border);
-  color: var(--color-success);
+.status-active .status-dot,
+.status-success .status-dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  background: var(--color-live);
+  box-shadow: var(--glow-live-led);
+  animation: status-blink 1.1s steps(2) infinite;
+}
+
+@keyframes status-blink {
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .status-warning {
@@ -274,7 +329,7 @@
   align-items: center;
   gap: var(--space-2);
   padding-inline: var(--space-3);
-  border: 1px solid var(--color-live-border);
+  border: 1px solid var(--color-simulated-border);
   border-radius: var(--radius-full);
   background: var(--color-scrim-strong);
   color: var(--color-simulated);
@@ -967,6 +1022,7 @@
 
 .live-indicator-active > span {
   background: var(--color-live);
+  box-shadow: var(--glow-live-led);
 }
 
 .button:focus-visible,
@@ -1034,7 +1090,7 @@
 }
 
 .mode-notice-simulated > strong {
-  border-color: var(--color-live-border);
+  border-color: var(--color-simulated-border);
   color: var(--color-simulated);
 }
 

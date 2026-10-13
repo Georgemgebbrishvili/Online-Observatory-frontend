@@ -1,14 +1,16 @@
 /*
- * The app shell in the poster language (ADR-039): a night bar with the mark,
- * spaced links with an underline for the current page, and one orange action on the
- * right. The signed-in sidebar is night under a hairline; the current item is a plate
- * with an orange rule. Nothing is blurred and nothing glows.
+ * The shell as the Skychaser site draws it (ADR-052 §6): a glass bar — the lockup,
+ * spaced Oswald links with a drawn underline and a soft glow on the current page, the
+ * account on the right — and on a phone a glass tab bar whose current tab is red.
  */
-.site-header {
-  position: relative;
-  z-index: 20;
-  border-bottom: 1px solid var(--color-border-subtle);
-  background: var(--color-night);
+.site-header,
+.app-bar {
+  position: sticky;
+  z-index: 40;
+  top: 0;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-bar);
+  backdrop-filter: blur(14px) saturate(140%);
 }
 
 .public-navigation,
@@ -24,9 +26,9 @@
   flex: none;
   place-content: center;
   gap: var(--space-1);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-line-strong);
   border-radius: var(--radius-control);
-  background: var(--color-surface-raised);
+  background: var(--color-outline-fill);
   color: var(--color-text-primary);
   cursor: pointer;
 }
@@ -53,8 +55,9 @@
   left: 0;
   display: none;
   padding: var(--space-3) var(--space-page) var(--space-5);
-  border-bottom: 1px solid var(--color-border-strong);
-  background: var(--color-night);
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-glass);
+  backdrop-filter: blur(14px) saturate(140%);
 }
 
 .public-mobile-menu[data-open] {
@@ -69,10 +72,13 @@
   display: flex;
   min-height: 3.25rem;
   align-items: center;
-  border-bottom: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-line);
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body);
+  font-family: var(--font-label);
+  font-size: var(--font-size-nav);
   font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-nav);
+  text-transform: uppercase;
 }
 
 .public-mobile-menu > div {
@@ -106,145 +112,101 @@
   outline-offset: 3px;
 }
 
-/* A control focused from the keyboard scrolls clear of the phone's header and bottom bar. */
+/* A control focused from the keyboard scrolls clear of the bar and the tab bar. */
 html:has(.app-shell) {
   scroll-padding-block: var(--size-app-header)
     calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
 }
 
 .app-shell {
-  min-height: 100vh;
-  padding-bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
-  background: var(--color-night);
-}
-
-.app-sidebar,
-.app-navigation-planned {
-  display: none;
-}
-
-.app-mobile-header {
-  position: sticky;
-  z-index: 15;
-  top: 0;
   display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  padding-bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
+}
+
+.app-bar-inner {
+  display: flex;
+  width: min(100%, 92.5rem);
   min-height: var(--size-app-header);
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-5);
-  border-bottom: 1px solid var(--color-border-subtle);
-  background: var(--color-night);
+  gap: var(--space-3);
+  margin-inline: auto;
+  padding-inline: max(var(--space-4), env(safe-area-inset-left));
 }
 
-.app-logout-form {
-  margin-top: auto;
-  padding-top: var(--space-6);
-}
-
-.app-logout-form button,
-.app-mobile-logout button {
-  min-height: 2.75rem;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-control);
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font-family: var(--font-label);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  transition:
-    border-color var(--duration-standard),
-    color var(--duration-standard);
-}
-
-.app-logout-form button {
-  width: 100%;
-}
-
-.app-logout-form button:hover,
-.app-mobile-logout button:hover {
-  border-color: var(--color-text-disabled);
-  color: var(--color-text-primary);
-}
-
-.app-logout-form button:focus-visible,
-.app-mobile-logout button:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 3px;
-}
-
-.app-mobile-logout {
-  display: block;
-}
-
-.app-mobile-logout button {
-  padding-inline: var(--space-4);
+.app-bar-end {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .app-brand {
   display: inline-flex;
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   align-items: center;
   border-radius: var(--radius-small);
 }
 
 .app-observatory-state {
-  display: grid;
+  display: flex;
+  min-width: 0;
+  align-items: center;
   gap: var(--space-3);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-medium);
-  background: var(--color-surface-raised);
-}
-
-.app-observatory-state > div {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.app-observatory-state > div:first-child > span {
-  color: var(--color-text-tertiary);
-  font-family: var(--font-label);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
 }
 
 .app-observatory-state strong {
-  font-family: var(--font-body);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-semibold);
+  display: none;
+  color: var(--color-text-secondary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .app-observatory-state small {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-}
-
-.app-mobile-header .app-observatory-state {
-  display: flex;
-  gap: var(--space-3);
-  align-items: center;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  text-align: right;
-}
-
-.app-mobile-header .app-observatory-state > div:first-child > span {
   display: none;
+  color: var(--color-simulated);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.app-mobile-header .app-observatory-state strong {
+/* Sign out: Skychaser's outlined chip. */
+.app-logout-form button {
+  min-height: 2.5rem;
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-outline-fill);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-family: var(--font-label);
   font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-nav);
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    border-color var(--duration-state) var(--ease-sky),
+    background-color var(--duration-state) var(--ease-sky);
 }
 
-.app-mobile-header .app-observatory-state > div:last-child {
-  justify-items: end;
+.app-logout-form button:hover {
+  border-color: var(--color-outline-hover);
+  background: var(--color-outline-fill-hover);
+}
+
+.app-logout-form button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
 }
 
 .app-navigation a {
@@ -266,45 +228,49 @@ html:has(.app-shell) {
 }
 
 .app-nav-icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.375rem;
+  height: 1.375rem;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: var(--icon-stroke);
+  stroke-width: 1.7;
 }
 
-/* Opaque night, not a frosted bar: ADR-039 forbids backdrop-filter. */
+.app-navigation-bar {
+  display: none;
+}
+
+/* The phone's tab bar: glass, Geist labels, the current tab red with its glow. */
 .app-navigation-bottom {
   position: fixed;
-  z-index: 25;
+  z-index: 40;
   right: 0;
   bottom: 0;
   left: 0;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   min-height: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
-  padding: var(--space-1) max(var(--space-2), env(safe-area-inset-left))
-    env(safe-area-inset-bottom) max(var(--space-2), env(safe-area-inset-right));
-  border-top: 1px solid var(--color-border-strong);
-  background: var(--color-night);
+  padding: 0 max(var(--space-1), env(safe-area-inset-left)) env(safe-area-inset-bottom)
+    max(var(--space-1), env(safe-area-inset-right));
+  border-top: 1px solid var(--color-line);
+  background: var(--color-bar);
+  backdrop-filter: blur(14px) saturate(140%);
 }
 
 .app-navigation-bottom a {
   position: relative;
   display: flex;
   min-width: 0;
-  min-height: 4rem;
+  min-height: var(--size-app-bottom-nav);
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  border-radius: var(--radius-small);
-  font-family: var(--font-label);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-label);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-size: var(--font-size-tab);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.01em;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -315,55 +281,85 @@ html:has(.app-shell) {
   white-space: nowrap;
 }
 
-@media (--below-md) {
-  .app-mobile-header {
-    min-height: 4rem;
-    gap: var(--space-2);
-    padding: var(--space-2) max(var(--space-3), env(safe-area-inset-right)) var(--space-2)
-      max(var(--space-3), env(safe-area-inset-left));
-  }
-
-  .app-mobile-header .app-observatory-state {
-    margin-left: auto;
-  }
-
-  .app-mobile-header .app-observatory-state > div:first-child,
-  .app-mobile-header .app-observatory-state small {
-    display: none;
-  }
-
-  .app-mobile-header .app-observatory-state > div:last-child {
-    display: block;
-  }
-
-  .app-mobile-header .status-indicator {
-    padding-inline: var(--space-2);
-    letter-spacing: 0.04em;
-  }
-
-  .app-mobile-logout button {
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-    padding-inline: var(--space-2);
-  }
+.app-navigation-bottom a[aria-current="page"] {
+  background: linear-gradient(180deg, var(--color-accent-muted), transparent 85%);
+  color: var(--color-text-primary);
 }
 
-.app-navigation-bottom a[aria-current="page"] {
-  color: var(--color-text-primary);
+.app-navigation-bottom a[aria-current="page"] .app-nav-icon {
+  color: var(--color-accent);
+  filter: var(--glow-tab-icon);
+}
+
+.app-navigation-bottom a[aria-current="page"] .app-nav-icon svg {
+  stroke-width: 2.2;
 }
 
 .app-navigation-bottom a[aria-current="page"]::before {
   position: absolute;
   top: 0;
-  width: 1.5rem;
+  right: 30%;
+  left: 30%;
   height: 2px;
-  border-radius: var(--radius-full);
+  border-radius: 0 0 2px 2px;
   background: var(--color-accent);
   content: "";
 }
 
 .app-content {
+  flex: 1;
   min-width: 0;
+}
+
+/* The app's footer: the lockup signed "by Astroman", and the pages not built yet. */
+.app-footer {
+  display: grid;
+  width: min(100%, 92.5rem);
+  gap: var(--space-5);
+  margin: var(--space-12) auto 0;
+  padding: var(--space-8) var(--space-page);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.app-footer .brand-wordmark {
+  font-size: var(--font-size-wordmark-small);
+}
+
+.app-navigation-planned {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+}
+
+.app-nav-group {
+  width: 100%;
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+}
+
+.app-navigation-planned a {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.app-navigation-planned a[aria-current="page"] {
+  color: var(--color-text-primary);
+}
+
+.app-navigation-planned .app-nav-icon svg {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.65;
 }
 
 /* A destination not built yet: the app's opening, and nothing pretending to be more. */
@@ -385,6 +381,27 @@ html:has(.app-shell) {
   font-size: var(--font-size-body-lg);
 }
 
+@media (--below-md) {
+  .app-logout-form button {
+    padding-inline: var(--space-3);
+  }
+
+  .app-observatory-state .status-indicator {
+    padding-inline: var(--space-2);
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (--md) {
+  .app-bar-inner {
+    padding-inline: var(--space-8);
+  }
+
+  .app-observatory-state small {
+    display: inline;
+  }
+}
+
 @media (--lg) {
   .public-menu-button,
   .public-mobile-menu {
@@ -394,19 +411,23 @@ html:has(.app-shell) {
   .public-navigation {
     display: flex;
     align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-5);
     min-width: 0;
   }
 
   .public-navigation a,
-  .public-sign-in {
+  .public-sign-in,
+  .app-navigation-bar a {
     position: relative;
     display: inline-flex;
     min-height: 2.75rem;
     align-items: center;
     color: var(--color-text-tertiary);
-    font-size: var(--font-size-label);
+    font-family: var(--font-label);
+    font-size: var(--font-size-nav);
     font-weight: var(--font-weight-medium);
+    letter-spacing: var(--tracking-nav);
+    text-transform: uppercase;
     white-space: nowrap;
     transition: color var(--duration-fast) var(--ease-standard);
   }
@@ -415,27 +436,42 @@ html:has(.app-shell) {
     padding-inline: var(--space-3);
   }
 
-  /* The reference's underline: drawn in on hover, held on the current page. */
-  .public-navigation a::after {
+  /* The underline: drawn in on hover, held at .55 on the current page. */
+  .public-navigation a::after,
+  .app-navigation-bar a::after {
     position: absolute;
     right: 0;
-    bottom: var(--space-2);
+    bottom: var(--space-1);
     left: 0;
     height: 1px;
     background: currentColor;
     content: "";
     transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform var(--duration-fast) var(--ease-standard);
+    transform-origin: center;
+    transition: transform 320ms var(--ease-sky);
   }
 
   .public-navigation a:hover,
   .public-navigation a[aria-current="page"],
-  .public-sign-in:hover {
+  .public-sign-in:hover,
+  .app-navigation-bar a:hover,
+  .app-navigation-bar a[aria-current="page"] {
     color: var(--color-text-primary);
   }
 
-  .public-navigation a:is(:hover, :focus-visible, [aria-current="page"])::after {
+  .public-navigation a[aria-current="page"],
+  .app-navigation-bar a[aria-current="page"] {
+    text-shadow: var(--glow-nav-current);
+  }
+
+  .public-navigation a:is(:hover, :focus-visible)::after,
+  .app-navigation-bar a:is(:hover, :focus-visible)::after {
+    transform: scaleX(1);
+  }
+
+  .public-navigation a[aria-current="page"]::after,
+  .app-navigation-bar a[aria-current="page"]::after {
+    opacity: 0.55;
     transform: scaleX(1);
   }
 
@@ -446,119 +482,42 @@ html:has(.app-shell) {
   }
 
   html:has(.app-shell) {
-    scroll-padding-block: 0;
+    scroll-padding-block: var(--size-bar) 0;
   }
 
   .app-shell {
-    display: grid;
-    grid-template-columns: var(--size-app-sidebar) minmax(0, 1fr);
     padding-bottom: 0;
   }
 
-  /* The column runs the page's full height; its contents stay in view. */
-  .app-sidebar {
-    display: block;
-    border-right: 1px solid var(--color-border-subtle);
-    background: var(--color-night);
+  .app-bar-inner {
+    min-height: var(--size-bar);
+    gap: var(--space-8);
   }
 
-  .app-sidebar-inner {
-    position: sticky;
-    top: 0;
+  .app-navigation-bar {
     display: flex;
-    max-height: 100vh;
-    min-height: 100vh;
-    flex-direction: column;
-    overflow-y: auto;
-    padding: var(--space-6) var(--space-4) var(--space-5);
-    scrollbar-width: thin;
-  }
-
-  .app-sidebar .app-brand {
-    margin: 0 var(--space-3) var(--space-10);
-  }
-
-  .app-navigation-sidebar {
-    display: grid;
-    gap: var(--space-1);
-  }
-
-  .app-navigation-sidebar a,
-  .app-navigation-planned a {
-    position: relative;
-    display: flex;
-    min-height: 2.75rem;
+    flex: 1;
     align-items: center;
-    gap: var(--space-3);
-    padding-inline: var(--space-3);
-    border: 1px solid transparent;
-    border-radius: var(--radius-medium);
-    font-size: var(--font-size-label);
-    font-weight: var(--font-weight-medium);
+    gap: var(--space-5);
+    min-width: 0;
   }
 
-  .app-navigation-sidebar a:hover {
-    background: var(--color-overlay-hover);
+  .app-navigation-bar .app-nav-icon {
+    display: none;
   }
 
-  .app-navigation-sidebar a[aria-current="page"] {
-    border-color: var(--color-border-subtle);
-    background: var(--color-surface-raised);
-    color: var(--color-text-primary);
-  }
-
-  .app-navigation-sidebar a[aria-current="page"]::before {
-    position: absolute;
-    left: -1px;
-    width: 2px;
-    height: 1.25rem;
-    border-radius: var(--radius-full);
-    background: var(--color-accent);
-    content: "";
-  }
-
-  /*
-   * The planned destinations: reachable, navigable, and visibly not the same thing
-   * as a surface that works. Dimmer, and under a heading that says so.
-   */
-  .app-navigation-planned {
-    display: grid;
-    margin-top: var(--space-6);
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--color-border-subtle);
-    gap: var(--space-1);
-  }
-
-  .app-nav-group {
-    margin: 0 var(--space-3) var(--space-2);
-    color: var(--color-text-tertiary);
-    font-family: var(--font-label);
-    font-size: var(--font-size-caption);
-    font-weight: var(--font-weight-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-  }
-
-  .app-navigation-planned a {
-    color: var(--color-text-tertiary);
-  }
-
-  .app-navigation-planned a[aria-current="page"] {
-    background: var(--color-overlay-hover);
-    color: var(--color-text-secondary);
-  }
-
-  .app-navigation-planned .app-nav-icon svg {
-    opacity: 0.65;
-  }
-
-  .app-sidebar .app-observatory-state {
-    margin-top: var(--space-4);
-  }
-
-  .app-mobile-header,
-  .app-mobile-logout,
   .app-navigation-bottom {
     display: none;
+  }
+}
+
+@media (--xl) {
+  .public-navigation,
+  .app-navigation-bar {
+    gap: var(--space-6);
+  }
+
+  .app-observatory-state strong {
+    display: inline;
   }
 }

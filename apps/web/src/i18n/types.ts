@@ -15,7 +15,6 @@ export type Dictionary = {
     language: string;
     languageName: string;
     brandAriaLabel: string;
-    brandEndorsement: string;
     public: PublicNavigationDictionary;
     app: AppNavigationDictionary;
   };

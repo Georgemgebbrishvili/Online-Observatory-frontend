@@ -1,18 +1,18 @@
 import { expect, test } from "@playwright/test";
 
 import { brand } from "../src/brand";
-import { appSidebar, bottomNavigation } from "./selectors";
+import { appBar, bottomNavigation } from "./selectors";
 
-test("communicates real telescope access in the English poster hero", async ({
-  page,
-}) => {
+test("communicates real telescope access in the English sky hero", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
 
-  const hero = page.locator(".poster-hero");
+  const hero = page.locator(".sky-hero");
   await expect(
     page.getByRole("heading", { level: 1, name: "The real sky, live." }),
   ).toBeVisible();
-  await expect(hero.locator(".title-sunset")).toHaveText("live.");
+  // ADR-052 §7: the last words in red, as the Skychaser headline sets its own.
+  await expect(hero.locator(".sky-hero-title em")).toHaveText("live.");
   await expect(hero.getByText(/A real telescope in Tbilisi, Georgia/)).toBeVisible();
   await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
   await expect(hero.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(
@@ -20,23 +20,13 @@ test("communicates real telescope access in the English poster hero", async ({
     "/en/app/book",
   );
 
-  // The stats are the platform's: tonight's observable count, then the telescope.
-  const stats = hero.locator(".stats-row > div");
-  await expect(stats).toHaveCount(3);
-  await expect(stats.nth(0)).toContainText("Observable now");
-  await expect(stats.nth(1)).toContainText("150");
-  await expect(stats.nth(2)).toContainText("1500");
-
-  // The fan's plates are drawings; the fan says so (CLAUDE.md, ADR-039).
-  const fan = hero.locator(".plate-fan");
-  await expect(fan.locator(".plate-fan-plate")).toHaveCount(3);
-  for (const name of ["Jupiter", "Saturn", "Mars"]) {
-    await expect(fan.getByText(name, { exact: true })).toBeVisible();
-  }
-  await expect(fan.getByText("Illustration — not telescope output")).toBeVisible();
+  // The sky hides drawings, and says so (CLAUDE.md, ADR-052 §7).
+  await expect(hero.getByRole("img", { name: /not telescope output/ })).toBeVisible();
+  await expect(hero.getByText("Illustration — not telescope output")).toBeVisible();
+  await expect(hero.getByText("Explore the sky")).toBeVisible();
 });
 
-test("renders the Georgian poster hero and switches locale", async ({ page }) => {
+test("renders the Georgian sky hero and switches locale", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/ka");
 
@@ -44,16 +34,13 @@ test("renders the Georgian poster hero and switches locale", async ({ page }) =>
     page.getByRole("heading", { level: 1, name: "შენი დრო ნამდვილ ცასთან." }),
   ).toBeVisible();
   await expect(
-    page.locator(".poster-hero").getByRole("link", { name: "დაჯავშნე დრო" }),
+    page.locator(".sky-hero").getByRole("link", { name: "დაჯავშნე დრო" }),
   ).toHaveAttribute("href", "/ka/app/book");
   await expect(
-    page.locator(".plate-fan").getByText("ილუსტრაცია — არა ტელესკოპის კადრი"),
+    page.locator(".sky-hero").getByText("ილუსტრაცია — არა ტელესკოპის კადრი"),
   ).toBeVisible();
   // Mkhedruli has no capitals: the headline is never uppercased.
-  await expect(page.locator(".poster-hero-title .title-sunset")).toHaveCSS(
-    "text-transform",
-    "none",
-  );
+  await expect(page.locator(".sky-hero-title em")).toHaveCSS("text-transform", "none");
   await page.getByRole("link", { name: "ენა: English" }).click();
   await expect(page).toHaveURL(/\/en$/);
 });
@@ -131,8 +118,9 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
         scrollWidth: document.documentElement.scrollWidth,
       }));
       expect(viewport.scrollWidth, `${locale} at ${width}px`).toBe(viewport.clientWidth);
-      await expect(page.locator(".poster-hero .button-primary")).toBeVisible();
-      await expect(page.locator(".plate-fan-caption")).toBeVisible();
+      await expect(page.locator(".sky-hero .button-primary")).toBeVisible();
+      // A phone has no sky, as on the Skychaser site: the words and the button only.
+      await expect(page.locator(".sky-hero .sky")).toBeHidden();
     }
   }
 });
@@ -164,31 +152,39 @@ test("provides the complete public navigation on desktop and mobile", async ({
   await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
 });
 
-test("uses a desktop sidebar and native-style mobile app navigation", async ({
+test("uses the desktop app bar and native-style mobile app navigation", async ({
   page,
 }) => {
   await page.goto("/en/app");
 
-  const sidebar = appSidebar(page);
-  await expect(sidebar).toBeVisible();
-  await expect(sidebar.getByLabel(brand.en.siteName)).toBeVisible();
-  await expect(sidebar.getByText("Tbilisi Observatory")).toBeVisible();
-  await expect(sidebar.getByText("Simulated status")).toBeVisible();
+  const bar = appBar(page);
+  const barNavigation = bar.getByRole("navigation", { name: "Application navigation" });
+  await expect(bar).toBeVisible();
+  await expect(bar.getByLabel(brand.en.siteName)).toBeVisible();
+  await expect(bar.getByText("Tbilisi Observatory")).toBeVisible();
+  await expect(bar.getByText("Simulated status")).toBeVisible();
 
   for (const item of ["Home", "Book", "Live", "Collection", "Profile"]) {
-    await expect(sidebar.getByRole("link", { name: item })).toBeVisible();
+    await expect(barNavigation.getByRole("link", { name: item })).toBeVisible();
   }
 
-  await expect(sidebar.getByRole("link", { name: "Home" })).toHaveAttribute(
+  await expect(barNavigation.getByRole("link", { name: "Home" })).toHaveAttribute(
     "aria-current",
     "page",
   );
+  // The pages not built yet, in the footer under their own name.
+  await expect(
+    page
+      .getByRole("contentinfo")
+      .getByRole("navigation", { name: "Not yet available" })
+      .getByRole("link", { name: "Subscription" }),
+  ).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
 
   const bottomNav = bottomNavigation(page);
-  await expect(sidebar).toBeHidden();
+  await expect(barNavigation).toBeHidden();
   await expect(bottomNav).toBeVisible();
   await expect(page.getByRole("banner").getByText("Online")).toBeVisible();
   const mobileBookLink = bottomNav.getByRole("link", { name: "Book" });

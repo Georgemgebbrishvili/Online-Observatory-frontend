@@ -46,20 +46,10 @@ const config = {
     // @media (--md), never @media (min-width: 48rem). breakpoints.css declares them
     // with @custom-media, which this rule does not reach.
     "media-feature-name-disallowed-list": ["min-width", "max-width"],
-    // §09 anti-pattern 04: no glassmorphism, no glowing text.
-    "property-disallowed-list": [
-      "backdrop-filter",
-      "-webkit-backdrop-filter",
-      "text-shadow",
-    ],
+    // ADR-052 §4 lifts §09 anti-pattern 04: the Skychaser visuals are glass bars and
+    // glowing text, copied. Neither property is banned any more.
   },
   overrides: [
-    {
-      // ADR-050: the live room is the Stellar console, glass panels included. The ban
-      // on blur stands everywhere else.
-      files: ["apps/web/src/styles/room-console.css"],
-      rules: { "property-disallowed-list": ["text-shadow"] },
-    },
     {
       files: ["apps/web/src/styles/tokens.css"],
       rules: {

@@ -11,22 +11,54 @@
 }
 
 html {
-  background: var(--color-night);
+  background: var(--color-console);
   color-scheme: dark;
 }
 
 body {
+  position: relative;
+  isolation: isolate;
   min-width: 20rem;
   min-height: 100vh;
   margin: 0;
-  background: var(--color-night);
+  background: transparent;
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: var(--font-size-body);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   line-height: var(--leading-body);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Deep space behind every page, fixed so scrolling never repaints it (ADR-052 §1): the
+ * star tile at three scales, blue and violet light above, red below, the grain and the
+ * vignette over it.
+ */
+body::before,
+body::after {
+  position: fixed;
+  z-index: -1;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+}
+
+body::before {
+  background:
+    var(--texture-grain) 0 0 / 220px 220px,
+    var(--gradient-stars) 0 0 / 340px 300px,
+    var(--gradient-stars) 170px 120px / 520px 460px,
+    var(--gradient-stars) 60px 40px / 820px 700px,
+    radial-gradient(70% 45% at 85% -5%, var(--color-sky-blue), transparent 70%),
+    radial-gradient(60% 40% at 5% 20%, var(--color-sky-violet), transparent 70%),
+    radial-gradient(120% 55% at 50% 112%, var(--color-sky-red), transparent 62%),
+    var(--color-console);
+}
+
+body::after {
+  background: var(--gradient-vignette);
 }
 
 ::selection {
@@ -55,11 +87,12 @@ html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow, .kicker) {
 }
 
 /*
- * ADR-039 headlines: Anton, uppercase, tight. :where keeps the specificity at zero, so a
- * page or component that sets its own heading face (a card title in Geist) still wins.
- * font-synthesis: none stops a page weight from faking a bold Anton.
+ * ADR-052 headlines: Anton for h1 and h2, uppercase, tight; Oswald for h3 and h4, as the
+ * Skychaser site sets them. :where keeps the specificity at zero, so a page or component
+ * that sets its own heading face still wins. font-synthesis: none stops a page weight
+ * from faking a bold Anton.
  */
-:where(h1, h2, h3, h4, .display, .headline) {
+:where(h1, h2, .display, .headline) {
   font-family: var(--font-headline);
   font-weight: var(--font-weight-headline);
   letter-spacing: var(--tracking-headline);
@@ -68,12 +101,20 @@ html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow, .kicker) {
   font-synthesis: none;
 }
 
+:where(h3, h4) {
+  font-family: var(--font-label);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.06em;
+  line-height: var(--leading-heading);
+  text-transform: uppercase;
+}
+
 .display {
   margin: 0;
   font-size: var(--font-size-display);
 }
 
-/* The one sunset line a page may carry: Bowlby One, the gradient as a text fill. */
+/* The one sunset line a page may carry: Anton, the sunset ramp as a text fill. */
 .title-sunset {
   display: inline-block;
   background: var(--gradient-sunset);
@@ -81,8 +122,8 @@ html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow, .kicker) {
   color: transparent;
   font-family: var(--font-title);
   font-weight: var(--font-weight-title);
-  letter-spacing: 0.02em;
-  line-height: 1.02;
+  letter-spacing: var(--tracking-headline);
+  line-height: var(--leading-display);
   text-transform: uppercase;
   font-synthesis: none;
 }
@@ -159,13 +200,9 @@ a {
   transform: translateY(0);
 }
 
-.site-header {
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
 .header-inner {
   display: flex;
-  min-height: 5rem;
+  min-height: var(--size-app-header);
   align-items: center;
   justify-content: space-between;
   gap: var(--space-8);
@@ -178,8 +215,14 @@ a {
 
 .brand-link {
   display: inline-flex;
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   align-items: center;
+}
+
+@media (--lg) {
+  .header-inner {
+    min-height: var(--size-bar);
+  }
 }
 
 .brand-link:focus-visible,
@@ -188,18 +231,35 @@ a {
   outline-offset: 4px;
 }
 
+/*
+ * ADR-052 §3: the Skychaser kit's lockup — the comet mark, then the name in Archivo
+ * Expanded Black in the mark's cream, 4px apart plus the word's own clear space.
+ */
 .brand-lockup {
   display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-2);
+  align-items: center;
+  gap: var(--space-3);
   white-space: nowrap;
 }
 
+.brand-mark {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex: none;
+  transition: rotate 600ms var(--ease-spring);
+}
+
+:is(a, button):hover > .brand-lockup .brand-mark {
+  rotate: -14deg;
+}
+
 .brand-wordmark {
-  font-family: var(--font-title);
-  font-size: var(--font-size-body-lg);
-  font-weight: var(--font-weight-regular);
-  letter-spacing: 0.1em;
+  color: var(--color-mark);
+  font-family: var(--font-archivo), sans-serif;
+  font-size: var(--font-size-wordmark);
+  font-stretch: 125%;
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0;
   line-height: 1;
   text-transform: uppercase;
 }

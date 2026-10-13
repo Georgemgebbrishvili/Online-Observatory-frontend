@@ -1,9 +1,9 @@
-/* The site footer, used by every public route. ADR-039: night under a hairline, Oswald
-   column heads, quiet links that come up to full ink on hover. */
+/* The site footer, used by every public route, as the Skychaser site signs off (ADR-052):
+   a cream hairline, Oswald heads in cream, 13px links that come up to full ink. */
 
 .site-footer {
+  margin-top: var(--space-16);
   border-top: 1px solid var(--color-border-subtle);
-  background: var(--color-night);
 }
 
 .footer-grid {
@@ -12,11 +12,15 @@
   padding-block: var(--space-10) var(--space-12);
 }
 
+.footer-brand .brand-wordmark {
+  font-size: var(--font-size-wordmark-small);
+}
+
 .footer-brand p {
   max-width: 26rem;
   margin: var(--space-3) 0 0;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-label);
+  color: var(--color-text-small);
+  font-size: var(--font-size-caption);
   line-height: 1.65;
 }
 
@@ -34,11 +38,11 @@
 
 .footer-nav h2 {
   margin: 0 0 var(--space-2);
-  color: var(--color-text-secondary);
+  color: var(--color-text-quiet);
   font-family: var(--font-label);
   font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-label);
-  letter-spacing: 0.28em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.16em;
   line-height: 1.4;
   text-transform: uppercase;
 }
@@ -46,13 +50,13 @@
 .footer-nav a,
 .footer-nav span {
   width: fit-content;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-label);
+  color: var(--color-text-small);
+  font-size: var(--font-size-caption);
 }
 
 .footer-nav a {
-  min-width: 2.75rem;
-  min-height: 2.75rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
   display: inline-flex;
   align-items: center;
   border-radius: var(--radius-small);
@@ -66,9 +70,9 @@
 
 .footer-nav span {
   display: inline-flex;
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   align-items: center;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-small);
 }
 
 .footer-nav a:focus-visible {

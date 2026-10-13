@@ -35,7 +35,7 @@ import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { TargetPreview } from "@/components/room/target-preview";
 import { FlightPlan } from "@/components/home/flight-plan";
-import { PlateFan } from "@/components/home/plate-fan";
+import { SkyHero } from "@/components/home/sky-hero";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -91,25 +91,25 @@ type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-// ADR-039 roles. The value column is the palette entry, or the opacity of cream.
+// ADR-052 roles. The value column is the palette entry, or the cream or rule share.
 const swatches = [
-  ["night", palette.black],
+  ["night", palette.canvas],
   ["surface-base", palette.deep],
-  ["surface-raised", "cream 4.5%"],
-  ["surface-hover", "cream 8.5%"],
-  ["border-subtle", "cream 11%"],
-  ["border-strong", "cream 20%"],
+  ["surface-raised", "cream 6%"],
+  ["surface-hover", "cream 11%"],
+  ["border-subtle", "rule 12%"],
+  ["border-strong", "rule 22%"],
   ["text-primary", palette.ink],
-  ["text-secondary", "cream 76%"],
-  ["text-tertiary", "cream 56%"],
-  ["text-disabled", "cream 34%"],
-  ["accent", palette.orange],
-  ["accent-hover", palette.orangeHi],
-  ["accent-ink", palette.orangeInk],
-  ["live", palette.yellow],
-  ["photon", palette.photon],
-  ["success", palette.success],
-  ["warning", palette.warning],
+  ["text-secondary", palette.ink2],
+  ["text-tertiary", palette.ink3],
+  ["text-disabled", palette.ink4],
+  ["accent", palette.red],
+  ["action", palette.redFill],
+  ["accent-ink", palette.redInk],
+  ["live", palette.green],
+  ["simulated", palette.gold],
+  ["success", palette.green],
+  ["warning", palette.gold],
   ["error", palette.error],
 ] as const;
 
@@ -1180,7 +1180,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
           <div className="ds-home-specimen">
-            <PlateFan content={dictionary.home.hero} />
+            <SkyHero content={dictionary.home.hero} locale={locale} />
           </div>
         </section>
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { TonightNotices } from "@/components/astronomy/tonight-notices";
 import { FlightPlan } from "@/components/home/flight-plan";
-import { PosterHero, type HeroStat } from "@/components/home/poster-hero";
+import { SkyHero } from "@/components/home/sky-hero";
 import { TonightList } from "@/components/home/tonight-list";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { linkTone, weatherTone } from "@/components/status/status-page";
@@ -59,22 +59,6 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
         ? tonight.observatory.mode
         : null;
 
-  const stats: HeroStat[] = [];
-  if (tonight.kind === "ok") {
-    stats.push({
-      value: String(tonight.items.filter((item) => item.visibility.observable).length),
-      label: content.hero.stats.observableNow,
-    });
-  }
-  if (telescope) {
-    stats.push(
-      { value: String(telescope.apertureMm), label: content.hero.stats.aperture },
-      { value: String(telescope.focalLengthMm), label: content.hero.stats.focalLength },
-    );
-  } else {
-    stats.push({ value: "1", label: content.hero.stats.telescope });
-  }
-
   const steps = content.howItWorks.steps.map((step) => ({
     ...step,
     status: mode
@@ -86,7 +70,7 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
 
   return (
     <main id="main-content" className="public-home">
-      <PosterHero content={content.hero} locale={locale} stats={stats} />
+      <SkyHero content={content.hero} locale={locale} />
 
       <section className="home-band" id="about" aria-labelledby="steps-title">
         <Container>

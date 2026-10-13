@@ -16,10 +16,6 @@
   animation: brand-detail-reveal var(--duration-state) 110ms var(--ease-standard) both;
 }
 
-.observatory-status-online .status-dot {
-  animation: observatory-online-pulse 2.8s ease-in-out infinite;
-}
-
 .optical-ring-active .optical-ring-accent {
   transform-box: fill-box;
   transform-origin: center;
@@ -59,17 +55,6 @@
   from {
     opacity: 0;
     transform: translateX(-0.35rem);
-  }
-}
-
-/* The dot breathes; it never throws a halo (ADR-039: no glow on status indicators). */
-@keyframes observatory-online-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
   }
 }
 

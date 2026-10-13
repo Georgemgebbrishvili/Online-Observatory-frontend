@@ -13,7 +13,6 @@ const dictionary = {
     language: "Language",
     languageName: "ქართული",
     brandAriaLabel: brand.en.siteName,
-    brandEndorsement: brand.en.endorsement,
     public: {
       ariaLabel: "Public navigation",
       menu: "Open navigation",
@@ -28,7 +27,6 @@ const dictionary = {
     },
     app: {
       ariaLabel: "Application navigation",
-      sidebarAriaLabel: "Account and observatory",
       brandAriaLabel: brand.en.siteName,
       brandEndorsement: brand.en.endorsement,
       home: "Home",
@@ -60,21 +58,19 @@ const dictionary = {
   },
   home: {
     hero: {
-      kicker: "Live telescope · Tbilisi",
       headline: "The real sky,",
       sunset: "live.",
       lede: "A real telescope in Tbilisi, Georgia, shows you the sky live. Reserve an observation slot and watch the real camera feed.",
       cta: "Reserve a slot",
-      secondary: "Tonight's sky",
-      illustration: "Illustration — not telescope output",
-      fanLabel: "Three planets the telescope observes, drawn as plates",
-      plates: { jupiter: "Jupiter", saturn: "Saturn", mars: "Mars" },
-      plateType: "Planet",
-      stats: {
-        observableNow: "Observable now",
-        aperture: "Aperture · mm",
-        focalLength: "Focal length · mm",
-        telescope: "Telescope · Tbilisi",
+      plates: { saturn: "Saturn", jupiter: "Jupiter", mars: "Mars", venus: "Venus" },
+      sky: {
+        label:
+          "A night sky. Move the pointer, or tap, to find the planets drawn in it. Every one is an illustration, not telescope output.",
+        explore: "Explore the sky",
+        tap: "Tap the sky",
+        foundBefore: "",
+        foundAfter: "found",
+        illustration: "Illustration — not telescope output",
       },
     },
     common: {

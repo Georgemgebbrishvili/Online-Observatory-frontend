@@ -218,7 +218,7 @@ rejected after `expiresAt`, and rejected if the session is not the current owner
 ## Design and brand
 
 Source: ADR-052 — every surface takes the maintainer's Skychaser visuals
-(`https://stellarr.club`, code in `~/Desktop/Stellar/app`); the name stays Stellar
+(`https://skychaser.io`, code in `~/Desktop/Skychaser/app`); the name stays Stellar
 (ADR-025). Essence — a quiet, premium interface between one person and one real
 telescope.
 
@@ -228,7 +228,8 @@ Georgian: *შენი დრო ნამდვილ ცასთან.*
 Core colors (ADR-052): canvas `#0d0d0d`, bars and console `#050507` · ink `#F4F4F2`,
 `#B8B8B4`, `#969692` · accent red `#E3482C` for highlights and glows · action fill
 `#C8392A` under white text · gold `#E2B85A` for simulated and done · green `#2ECC71`
-for LIVE · focus ring `#F0785A`. Type: Anton, Oswald, Geist, JetBrains Mono; Georgian in
+for LIVE · focus ring `#F0785A`. The lockup is the Skychaser kit's comet mark beside
+STELLAR in Archivo Expanded Black. Type: Anton, Oswald, Geist, JetBrains Mono; Georgian in
 Noto Sans Georgian and FiraGO, never uppercased or tracked.
 
 The glow is Skychaser's (ADR-052 §4): filled buttons, the LIVE pill, the camera badge,
