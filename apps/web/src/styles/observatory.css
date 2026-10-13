@@ -1,15 +1,14 @@
 /*
- * /observatory as the reference app's observatory scene (ADR-041). A navy night under a
- * field of stars, panels that float over it, the camera's frame on the Moon, the site's
- * clock and a dock of ways in. The panels are opaque enough to need no blur, and
- * nothing glows (ADR-039).
+ * /observatory on the Skychaser console's ground (ADR-052 §8, first laid out by ADR-041):
+ * the site's deep space with a field of stars over it, the console's monoliths with their
+ * corner ticks floating on it, the camera's frame on the Moon, the site's clock and a dock
+ * of ways in.
  */
 
 .observatory-page {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: var(--color-scene-ground);
 }
 
 .observatory-stars {
@@ -76,8 +75,10 @@
   position: relative;
   padding: var(--space-6);
   border: 1px solid var(--color-scene-border);
-  border-radius: var(--radius-large);
-  background: var(--color-scene-float);
+  border-radius: var(--radius-console);
+  background: var(--gradient-ticks), var(--gradient-monolith);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-monolith);
 }
 
 @media (--sm) {
@@ -169,35 +170,41 @@
 /* The state, as a pill: yellow while live, the status colours otherwise. */
 .observatory-pill {
   display: inline-flex;
+  min-height: 1.875rem;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
+  padding: 0 var(--space-3);
   border: 1px solid var(--color-scene-border);
   border-radius: var(--radius-full);
   color: var(--color-text-secondary);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-kicker);
-  letter-spacing: 0.12em;
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 .observatory-pill-led {
-  width: 0.375rem;
-  height: 0.375rem;
+  width: 0.4375rem;
+  height: 0.4375rem;
   border-radius: var(--radius-full);
   background: currentcolor;
 }
 
-.observatory-pill-online {
-  border-color: var(--color-success-border);
-  background: var(--color-success-muted);
-  color: var(--color-success);
-}
-
+/* Online and observing: Skychaser's green LIVE pill, its LED glowing (ADR-052 §4). */
+.observatory-pill-online,
 .observatory-pill-observing {
   border-color: var(--color-live-border);
-  color: var(--color-live);
+  background: var(--color-live-muted);
+  box-shadow: var(--glow-live);
+  color: var(--color-text-primary);
+}
+
+.observatory-pill-online .observatory-pill-led,
+.observatory-pill-observing .observatory-pill-led {
+  background: var(--color-live);
+  box-shadow: var(--glow-live-led);
 }
 
 .observatory-pill-hold,
@@ -417,8 +424,10 @@
   margin: var(--space-2) var(--space-4) var(--space-4);
   padding: var(--space-4) var(--space-3);
   border: 1px solid var(--color-scene-border);
-  border-radius: var(--radius-large);
-  background: var(--color-scene-float);
+  border-radius: var(--radius-console);
+  background: var(--gradient-ticks), var(--gradient-monolith);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-monolith);
 }
 
 .observatory-dock-way {

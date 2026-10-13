@@ -1,28 +1,21 @@
 /*
- * The live room as the cards site's console (ADR-050). Loaded after room.css on the room,
- * the watch page and the design system; everything here reads --room-* tokens and
- * nothing outside the room does. The source is the cards site's observatory console
- * (console.css at 1052314b^): its ground and atmosphere, glass panels with gradient
- * borders, the view frame with its orbiting ring and HUD corners, the flow bar, the
- * pointing dial and readouts, the hand-control pad. Its content is ours (ADR-027).
+ * The live room as the Skychaser site's /node console (ADR-052 §8; first taken by
+ * ADR-050). Loaded after room.css on the room, the watch page and the design system;
+ * everything here reads --room-* tokens and nothing outside the room does. Its ground of
+ * stars and three lights, black monoliths with corner ticks, the view frame with its ticks
+ * and HUD corners, the flow bar with a red current step, the pointing dial and readouts,
+ * the neutral pad with its red centre. Its content is ours (ADR-027).
  */
 
 /* ── ground and atmosphere ───────────────────────────────────── */
 
 .room-console {
-  /*
-   * A var() resolves where it is declared, and :root has no --font-barlow: only the
-   * mission layout loads it. Declared again here, the room's labels get Barlow.
-   */
-  --room-font-cond:
-    var(--font-barlow, var(--font-oswald)), var(--font-noto-sans-georgian), sans-serif;
-
   position: relative;
   isolation: isolate;
   overflow: hidden;
   width: min(100%, 100rem);
   padding: var(--space-6) var(--space-5) var(--space-8);
-  border: 1px solid color-mix(in srgb, var(--room-warm) 10%, transparent);
+  border: 1px solid var(--room-border);
   border-radius: 18px;
   background: var(--room-ground);
   color: var(--room-ink);
@@ -39,17 +32,24 @@
   position: absolute;
   inset: 0;
   background:
+    var(--gradient-stars) 0 0 / 340px 300px,
+    var(--gradient-stars) 170px 120px / 520px 460px,
     radial-gradient(
-      60% 50% at 12% 0%,
-      color-mix(in srgb, var(--room-copper) 34%, transparent),
+      70% 45% at 85% -5%,
+      color-mix(in srgb, var(--room-blue) 12%, transparent),
       transparent 70%
     ),
     radial-gradient(
-      50% 45% at 100% 30%,
-      color-mix(in srgb, var(--room-gold) 18%, transparent),
+      60% 40% at 5% 20%,
+      color-mix(in srgb, var(--room-violet) 8%, transparent),
       transparent 70%
     ),
-    linear-gradient(180deg, var(--room-glow-top), var(--room-ground) 55%);
+    radial-gradient(
+      120% 55% at 50% 112%,
+      color-mix(in srgb, var(--room-copper) 22%, transparent),
+      transparent 62%
+    ),
+    var(--room-ground);
 }
 
 .room-atmo-aurora {
@@ -68,9 +68,10 @@
   left: -320px;
   background: radial-gradient(
     closest-side,
-    color-mix(in srgb, var(--room-copper) 95%, transparent),
+    color-mix(in srgb, var(--room-blue) 35%, transparent),
     transparent 70%
   );
+  opacity: 0.5;
 }
 
 .room-atmo-aurora-b {
@@ -80,9 +81,10 @@
   height: 1000px;
   background: radial-gradient(
     closest-side,
-    color-mix(in srgb, var(--room-aurora-gold) 75%, transparent),
+    color-mix(in srgb, var(--room-violet) 30%, transparent),
     transparent 70%
   );
+  opacity: 0.5;
   animation-duration: 34s;
   animation-delay: -12s;
 }
@@ -94,9 +96,10 @@
   height: 800px;
   background: radial-gradient(
     closest-side,
-    color-mix(in srgb, var(--room-aurora-pink) 55%, transparent),
+    color-mix(in srgb, var(--room-copper) 45%, transparent),
     transparent 70%
   );
+  opacity: 0.6;
   animation-duration: 40s;
   animation-delay: -20s;
 }
@@ -105,7 +108,7 @@
   position: absolute;
   inset: 0;
   background-image: radial-gradient(
-    color-mix(in srgb, var(--room-warm) 13%, transparent) 1px,
+    color-mix(in srgb, var(--room-warm) 6%, transparent) 1px,
     transparent 1px
   );
   background-size: 26px 26px;
@@ -118,7 +121,7 @@
   left: -380px;
   width: 1400px;
   height: 1400px;
-  border: 1px solid color-mix(in srgb, var(--room-copper) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--room-warm) 5%, transparent);
   border-radius: 50%;
 }
 
@@ -128,12 +131,12 @@
   left: auto;
   width: 1200px;
   height: 1200px;
-  border: 1px dashed color-mix(in srgb, var(--room-gold) 7%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--room-copper) 10%, transparent);
 }
 
 @keyframes room-drift {
   to {
-    transform: translate(60px, 40px) scale(1.06);
+    transform: translate3d(90px, 60px, 0) scale(1.12);
   }
 }
 
@@ -273,36 +276,30 @@
 .room-console .mission-steps {
   position: relative;
   padding: 0;
-  border: 1px solid transparent;
-  border-radius: 14px;
+  border: 1px solid var(--room-border);
+  border-radius: 12px;
   background:
+    var(--room-ticks),
     linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--room-panel-top) 72%, transparent),
-        color-mix(in srgb, var(--room-panel-bottom) 86%, transparent)
-      )
-      padding-box,
-    linear-gradient(
-        160deg,
-        color-mix(in srgb, var(--room-warm) 26%, transparent),
-        color-mix(in srgb, var(--room-warm) 6%, transparent) 45%,
-        color-mix(in srgb, var(--room-copper) 30%, transparent)
-      )
-      border-box;
-  backdrop-filter: blur(10px);
+      180deg,
+      color-mix(in srgb, var(--room-panel-top) 90%, transparent),
+      color-mix(in srgb, var(--room-panel-bottom) 94%, transparent)
+    );
+  backdrop-filter: blur(14px);
   box-shadow:
-    0 30px 60px -40px color-mix(in srgb, var(--room-black) 90%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--room-white) 5%, transparent);
-  transition: box-shadow 140ms ease-out;
+    0 30px 60px -34px color-mix(in srgb, var(--room-black) 90%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--room-white) 4%, transparent);
+  transition:
+    box-shadow 240ms var(--ease-sky),
+    border-color 240ms;
 }
 
 @media (hover: hover) {
   .room-console .room-panel:hover {
+    border-color: color-mix(in srgb, var(--room-warm) 14%, transparent);
     box-shadow:
       0 30px 60px -30px color-mix(in srgb, var(--room-black) 90%, transparent),
-      0 0 0 1px color-mix(in srgb, var(--room-copper) 28%, transparent),
-      0 0 40px -18px color-mix(in srgb, var(--room-copper) 70%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--room-white) 7%, transparent);
+      inset 0 1px 0 color-mix(in srgb, var(--room-white) 6%, transparent);
   }
 }
 
@@ -336,32 +333,36 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--room-warm) 22%, transparent),
-    color-mix(in srgb, var(--room-warm) 4%, transparent)
+    color-mix(in srgb, var(--room-warm) 16%, transparent),
+    color-mix(in srgb, var(--room-warm) 3%, transparent)
   );
 }
 
 .room-console .panel-title {
   color: var(--room-ink);
-  font: 600 13px/1 var(--room-font-cond);
-  letter-spacing: 0.22em;
+  font: 500 13px/1 var(--room-font-cond);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
 .room-console .panel-title svg {
-  color: var(--room-copper-ink);
+  color: var(--room-copper);
 }
 
 .room-console .panel-meta,
 .room-console .panel-meta a {
-  color: color-mix(in srgb, var(--room-gold) 65%, transparent);
+  color: var(--room-ink-3);
   font: 500 11px/1 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
+.room-console .panel-meta a {
+  color: var(--room-copper-ink);
+}
+
 .room-console .panel-meta a:hover {
-  color: var(--room-gold);
+  color: var(--room-ink);
 }
 
 .room-console .room-muted,
@@ -403,32 +404,22 @@
 
 .room-console .live-feed-well {
   position: relative;
-  border: 1px solid transparent;
-  border-radius: 16px;
-  background:
-    var(--room-stage) padding-box,
-    linear-gradient(
-        160deg,
-        color-mix(in srgb, var(--room-copper) 60%, transparent),
-        color-mix(in srgb, var(--room-warm) 8%, transparent) 40%,
-        color-mix(in srgb, var(--room-gold) 45%, transparent)
-      )
-      border-box;
+  border: 1px solid color-mix(in srgb, var(--room-warm) 22%, transparent);
+  border-radius: 12px;
+  background: var(--room-stage);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--room-copper) 35%, transparent),
-    0 0 70px -20px color-mix(in srgb, var(--room-copper) 70%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--room-black) 70%, transparent),
     0 40px 90px -40px color-mix(in srgb, var(--room-black) 95%, transparent);
   transition: box-shadow 400ms ease-out;
 }
 
 .room-console .live-feed[data-live-status="live"] .live-feed-well {
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--room-gold) 60%, transparent),
-    0 0 90px -10px color-mix(in srgb, var(--room-gold) 60%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--room-gold) 35%, transparent),
     0 40px 90px -40px color-mix(in srgb, var(--room-black) 95%, transparent);
 }
 
-/* The orbiting ring on the frame. */
+/* The frame's corner ticks, drawn inside its edge. */
 .room-console .live-feed-well::after {
   content: "";
   position: absolute;
@@ -436,31 +427,12 @@
   z-index: 3;
   padding: 1.5px;
   border-radius: inherit;
-  background: conic-gradient(
-    from var(--room-orbit, 0deg),
-    transparent 0 55%,
-    color-mix(in srgb, var(--room-copper-ink) 90%, transparent) 70%,
-    color-mix(in srgb, var(--room-gold) 90%, transparent) 82%,
-    transparent 95%
-  );
+  background: var(--room-ticks);
   mask:
     linear-gradient(var(--room-black) 0 0) content-box,
     linear-gradient(var(--room-black) 0 0);
   mask-composite: exclude;
-  animation: room-orbit 8s linear infinite;
   pointer-events: none;
-}
-
-@property --room-orbit {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes room-orbit {
-  to {
-    --room-orbit: 360deg;
-  }
 }
 
 .room-console .live-feed-view {
@@ -510,7 +482,7 @@
   z-index: 2;
   padding: 8px 12px;
   border: 1px solid var(--room-border);
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--room-glass);
   backdrop-filter: blur(10px);
   color: color-mix(in srgb, var(--room-ink-warm) 86%, transparent);
@@ -534,7 +506,7 @@
   gap: 0;
   padding: 8px 12px;
   border: 1px solid var(--room-border);
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--room-glass);
   backdrop-filter: blur(10px);
   color: color-mix(in srgb, var(--room-ink-warm) 86%, transparent);
@@ -558,7 +530,7 @@
 }
 
 .room-console .live-feed-plate-subject > span:first-child {
-  color: var(--room-amber);
+  color: var(--room-copper-ink);
 }
 
 .room-console .live-feed-time {
@@ -646,7 +618,7 @@
 .room-console .mission-steps li {
   position: relative;
   gap: 8px;
-  color: color-mix(in srgb, var(--room-ink-3) 85%, transparent);
+  color: color-mix(in srgb, var(--room-ink) 50%, transparent);
 }
 
 .room-console .mission-steps li::after {
@@ -669,8 +641,8 @@
 }
 
 .room-console .mission-step-name {
-  font: 600 12px/1 var(--room-font-cond);
-  letter-spacing: 0.1em;
+  font: 500 13px/1 var(--room-font-cond);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
@@ -693,12 +665,19 @@
 }
 
 .room-console .mission-steps li[data-status="current"] {
-  color: var(--room-copper-ink);
+  color: var(--room-white);
 }
 
+/* The current step: the red core, pulsing (ADR-052 §4). */
 .room-console .mission-steps li[data-status="current"] .mission-step-dot {
-  border-color: var(--room-copper-ink);
-  color: var(--room-copper-ink);
+  border-color: color-mix(in srgb, var(--room-red-ink) 70%, transparent);
+  background: radial-gradient(
+    circle at 50% 38%,
+    var(--room-core-hi),
+    var(--room-copper) 50%,
+    var(--room-core-deep) 100%
+  );
+  color: var(--room-white);
   animation: room-pulse 2.2s ease-in-out infinite;
 }
 
@@ -717,7 +696,7 @@
   50% {
     box-shadow:
       0 0 0 9px color-mix(in srgb, var(--room-copper) 6%, transparent),
-      0 0 30px color-mix(in srgb, var(--room-copper) 70%, transparent);
+      0 0 34px color-mix(in srgb, var(--room-copper) 75%, transparent);
   }
 }
 
@@ -745,57 +724,10 @@
 
 /* ── buttons in the room ─────────────────────────────────────── */
 
-.room-console .button-primary {
-  color: var(--room-white);
-  background:
-    linear-gradient(180deg, var(--room-copper), var(--room-amber)) padding-box,
-    linear-gradient(180deg, var(--room-copper), var(--room-amber)) border-box;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--room-copper) 40%, transparent),
-    0 0 40px -14px color-mix(in srgb, var(--room-copper) 90%, transparent);
-  font: 600 14px/1 var(--room-font-cond);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.room-console .button-primary:hover:not(:disabled) {
-  background:
-    linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--room-copper) 85%, var(--room-white)),
-        var(--room-copper)
-      )
-      padding-box,
-    linear-gradient(180deg, var(--room-copper), var(--room-amber)) border-box;
-}
-
-.room-console .button-secondary,
-.room-console .button-ghost,
+/* The site's buttons are Skychaser's already; only the console's danger differs. */
 .room-console .button-danger {
-  border-color: transparent;
-  background:
-    color-mix(in srgb, var(--room-raise) 40%, transparent) padding-box,
-    linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--room-warm) 28%, transparent),
-        color-mix(in srgb, var(--room-warm) 8%, transparent)
-      )
-      border-box;
-  color: var(--room-ink);
-  font: 600 13px/1 var(--room-font-cond);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.room-console .button-danger {
-  background:
-    color-mix(in srgb, var(--room-raise) 40%, transparent) padding-box,
-    linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--room-red) 50%, transparent),
-        color-mix(in srgb, var(--room-red) 12%, transparent)
-      )
-      border-box;
+  border-color: color-mix(in srgb, var(--room-red) 45%, transparent);
+  background: color-mix(in srgb, var(--room-raise) 40%, transparent);
   color: var(--room-red-ink);
 }
 
@@ -819,7 +751,7 @@
 
 .room-console .pointing-dial-rim {
   fill: var(--room-dial);
-  stroke: color-mix(in srgb, var(--room-warm) 25%, transparent);
+  stroke: color-mix(in srgb, var(--room-warm) 22%, transparent);
 }
 
 .room-console .pointing-dial-ring,
@@ -834,7 +766,7 @@
 }
 
 .room-console .pointing-dial-north {
-  fill: var(--room-copper-ink);
+  fill: var(--room-copper);
 }
 
 .room-console .pointing-dial-telescope circle,
@@ -887,8 +819,8 @@
   border: 1px solid color-mix(in srgb, var(--room-warm) 22%, transparent);
   border-radius: 12px;
   background: radial-gradient(
-    circle at 50% 35%,
-    color-mix(in srgb, var(--room-warm) 10%, transparent),
+    circle at 50% 30%,
+    color-mix(in srgb, var(--room-pad-hi) 80%, transparent),
     color-mix(in srgb, var(--room-pad) 90%, transparent)
   );
   color: var(--room-ink);
@@ -915,17 +847,23 @@
 }
 
 .room-console .room-controls-centre {
-  border-color: color-mix(in srgb, var(--room-gold) 50%, transparent);
+  border-color: color-mix(in srgb, var(--room-red-ink) 50%, transparent);
   border-radius: 50%;
   background: radial-gradient(
     circle at 50% 35%,
-    color-mix(in srgb, var(--room-gold) 28%, transparent),
+    color-mix(in srgb, var(--room-copper) 40%, transparent),
     color-mix(in srgb, var(--room-pad) 90%, transparent)
   );
-  color: var(--room-gold);
+  color: var(--room-white);
   font: 600 11px/1 var(--room-font-cond);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+/* Stop fills its panel between the panel's own margins, not past them. */
+.room-console .room-panel > .room-session-stop {
+  display: flex;
+  width: auto;
 }
 
 .room-console .room-controls-status,
@@ -955,7 +893,7 @@
 }
 
 .room-console .room-history li:first-child {
-  border-left-color: var(--room-copper-ink);
+  border-left-color: var(--room-copper);
 }
 
 .room-console .room-history time {

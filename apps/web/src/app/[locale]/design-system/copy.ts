@@ -87,8 +87,8 @@ export const designSystemCopy = {
       observatory: [
         "13",
         "Observatory scene",
-        "The observatory page's parts on its navy night: the state as a pill in each of its five values, the site's clock, the camera's frame drawn on the Moon to scale and captioned, and the dock of ways in. Panels float without blur; nothing glows.",
-        "as amended by ADR-041 — the observatory page",
+        "The observatory page's parts on the Skychaser console's ground: the state as a pill in each of its five values (online and observing glow green), the site's clock, the camera's frame drawn on the Moon to scale and captioned, and the dock of ways in — monoliths with corner ticks.",
+        "as amended by ADR-052 — the observatory page",
       ],
     },
     palette: "Core palette",
@@ -355,8 +355,8 @@ export const designSystemCopy = {
       observatory: [
         "13",
         "ობსერვატორიის სცენა",
-        "ობსერვატორიის გვერდის ნაწილები მის მუქ ლურჯ ღამეზე: მდგომარეობა აბრად ხუთივე მნიშვნელობით, ადგილობრივი საათი, კამერის კადრი მთვარეზე მასშტაბით და წარწერით, და გზების პანელი. პანელები ბუნდოვნების გარეშე ცურავს; არაფერი ანათებს.",
-        "as amended by ADR-041 — the observatory page",
+        "ობსერვატორიის გვერდის ნაწილები Skychaser-ის კონსოლის ფონზე: მდგომარეობა აბრად ხუთივე მნიშვნელობით (ონლაინ და მიმდინარე დაკვირვება მწვანედ ანათებს), ადგილობრივი საათი, კამერის კადრი მთვარეზე მასშტაბით და წარწერით, და გზების პანელი — მუქი მონოლითები კუთხის ნიშნებით.",
+        "as amended by ADR-052 — the observatory page",
       ],
     },
     palette: "ძირითადი პალიტრა",

@@ -170,11 +170,19 @@
    * The observatory scene: /observatory sits on the console's ground (ADR-052 §8), its
    * panels the console's monolith.
    */
-  --color-scene-ground: var(--st-bar);
-  --color-scene-float: color-mix(in srgb, var(--st-monolith-top) 90%, transparent);
   --color-scene-inner: color-mix(in srgb, var(--st-white) 4%, transparent);
   --color-scene-border: var(--color-line);
   --color-scene-star: var(--st-ink);
+  /* A monolith's four corner ticks (the Skychaser console's), for any panel to wear. */
+  --gradient-ticks:
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 14px 1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 1px 14px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 14px 1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 1px 14px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 14px 1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 1px 14px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 14px 1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 1px 14px no-repeat;
   --gradient-monolith: linear-gradient(
     180deg,
     color-mix(in srgb, var(--st-monolith-top) 90%, transparent),
@@ -219,41 +227,54 @@
   );
 
   /*
-   * The live room's console (ADR-050): the cards site's observatory console, copper
-   * and amber on near-black, read by room-console.css and nothing else.
+   * The live room's console (ADR-052 §8): the Skychaser site's /node console — near-black
+   * monoliths with corner ticks, red for the call to action and the current step, gold
+   * for anything done or live. Read by room-console.css and nothing else.
    */
-  --room-ground: #060606;
-  --room-ink: #eef1fa;
-  --room-ink-2: color-mix(in srgb, #fae0d6 66%, transparent);
-  --room-ink-3: color-mix(in srgb, #f0ccbe 60%, transparent);
-  --room-copper: #b5652d;
-  --room-copper-ink: #d6aa8b;
-  --room-amber: #a45528;
-  --room-gold: #f4b113;
+  --room-ground: #050507;
+  --room-ink: #f4f4f2;
+  --room-ink-2: #b8b8b4;
+  --room-ink-3: #adada8;
+  --room-copper: #e3482c;
+  --room-copper-ink: #f0785a;
+  --room-amber: #e3482c;
+  --room-gold: #e2b85a;
   --room-red: #ff7a6b;
-  --room-warm: #ffb68f;
-  --room-panel: color-mix(in srgb, #141414 72%, transparent);
-  --room-glass: color-mix(in srgb, #0c0c0c 62%, transparent);
+  --room-warm: #ffffff;
+  --room-blue: #4c8dff;
+  --room-violet: #a66bff;
+  --room-panel: color-mix(in srgb, #121218 90%, transparent);
+  --room-glass: color-mix(in srgb, #08080c 78%, transparent);
   --room-well: color-mix(in srgb, #0b0b0b 60%, transparent);
-  --room-border: color-mix(in srgb, var(--room-warm) 18%, transparent);
-  --room-border-faint: color-mix(in srgb, var(--room-warm) 10%, transparent);
+  --room-border: color-mix(in srgb, var(--room-warm) 9%, transparent);
+  --room-border-faint: color-mix(in srgb, var(--room-warm) 6%, transparent);
   --room-black: #000000;
   --room-white: #ffffff;
   --room-stage: #040404;
-  --room-glow-top: #0b0806;
-  --room-panel-top: #1b1b1b;
-  --room-panel-bottom: #0d0d0d;
+  --room-panel-top: #121218;
+  --room-panel-bottom: #060609;
   --room-raise: #1f1f1f;
-  --room-pad: #181818;
+  --room-pad: #161616;
+  --room-pad-hi: #2c2c34;
   --room-dot: #121212;
   --room-dot-done: #212121;
-  --room-dial: #120d0a;
-  --room-ink-warm: #fae0d6;
+  --room-dial: #0c0c10;
+  --room-ink-warm: #f4f4f2;
   --room-red-ink: #ffb4aa;
-  --room-aurora-gold: #d2c814;
-  --room-aurora-pink: #ff6ebe;
-  /* Re-read on .room-console (room-console.css), where the mission layout loads Barlow. */
-  --room-font-cond: var(--font-barlow, var(--font-oswald)), var(--font-noto-sans-georgian), sans-serif;
+  --room-core-hi: #ff8f73;
+  --room-core-deep: #7a160c;
+  --room-font-cond: var(--font-oswald), var(--font-noto-sans-georgian), sans-serif;
+  /* A monolith's four corner ticks, drawn as backgrounds so any panel can wear them. */
+  --room-ticks:
+    linear-gradient(var(--room-tick), var(--room-tick)) 0 0 / 14px 1px no-repeat,
+    linear-gradient(var(--room-tick), var(--room-tick)) 0 0 / 1px 14px no-repeat,
+    linear-gradient(var(--room-tick), var(--room-tick)) 100% 0 / 14px 1px no-repeat,
+    linear-gradient(var(--room-tick), var(--room-tick)) 100% 0 / 1px 14px no-repeat,
+    linear-gradient(var(--room-tick), var(--room-tick)) 0 100% / 14px 1px no-repeat,
+    linear-gradient(var(--room-tick), var(--room-tick)) 0 100% / 1px 14px no-repeat,
+    linear-gradient(var(--room-tick), var(--room-tick)) 100% 100% / 14px 1px no-repeat,
+    linear-gradient(var(--room-tick), var(--room-tick)) 100% 100% / 1px 14px no-repeat;
+  --room-tick: color-mix(in srgb, var(--room-warm) 22%, transparent);
 
   /*
    * ADR-052 type: Anton, Oswald, Geist, JetBrains Mono, as the Skychaser site sets them.
