@@ -35,7 +35,8 @@ function line(
   } satisfies TonightTarget;
 }
 
-const observatory = { name: "Tbilisi Observatory", timezone: "Asia/Tbilisi" };
+const observatory = {
+  id: "10000000-0000-4000-8000-000000000001", name: "Tbilisi Observatory", timezone: "Asia/Tbilisi" };
 
 describe("TonightNotices", () => {
   it("says why nothing can be observed, from the reason that decides", () => {

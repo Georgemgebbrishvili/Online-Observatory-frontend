@@ -20,6 +20,7 @@ import { PlatformError, platformRequest } from "@/lib/platform/client";
 import { sortTonight } from "./present";
 
 export type TonightObservatory = {
+  id: string;
   name: string;
   timezone: string;
   /** From the observatory's own status. Null when the status could not be read. */
@@ -73,6 +74,7 @@ export const readTonight = cache(async (locale: Locale): Promise<TonightResult> 
     return {
       kind: "ok",
       observatory: {
+        id: observatory.id,
         name: locale === "ka" ? observatory.nameKa : observatory.nameEn,
         timezone: observatory.timezone,
         mode,

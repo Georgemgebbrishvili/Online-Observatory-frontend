@@ -67,21 +67,24 @@ export function nightWindow(now: Date): NightWindow {
 }
 
 /**
- * The week's candidates: every target the platform judges observable tonight, with its
- * path through the night as the sky model draws it. Observability is the platform's
- * verdict; the model only draws where the object will be.
+ * The week's candidates, with their paths through tonight as the sky model draws them.
+ * Which targets are candidates is the platform's verdict: its ballot when it answered
+ * (`ballot`), else what it judges observable tonight. The model only draws where each
+ * object will be, and carries the platform's count for it.
  */
 export function voteCandidates(
   items: TonightTarget[],
   window: NightWindow,
   locale: Locale,
   samples = 40,
+  ballot: { targetId: string; votes: number }[] | null = null,
 ): VoteCandidate[] {
   const t0 = Date.parse(window.dusk);
   const t1 = Date.parse(window.dawn);
+  const counted = ballot ? new Map(ballot.map((c) => [c.targetId, c.votes])) : null;
   const out: VoteCandidate[] = [];
   for (const { target, visibility } of items) {
-    if (!visibility.observable) continue;
+    if (counted ? !counted.has(target.id) : !visibility.observable) continue;
     const track: TrackPoint[] = [];
     let best: TrackPoint | null = null;
     for (let i = 0; i <= samples; i += 1) {
@@ -99,10 +102,10 @@ export function voteCandidates(
       altitudeDeg: best.alt,
       at: best.at,
       track,
-      votes: 0,
+      votes: counted?.get(target.id) ?? 0,
     });
   }
-  return out.sort((a, b) => b.altitudeDeg - a.altitudeDeg);
+  return out.sort((a, b) => b.votes - a.votes || b.altitudeDeg - a.altitudeDeg);
 }
 
 /** The Monday of the week a night falls in, as YYYY-MM-DD, and the night itself. */

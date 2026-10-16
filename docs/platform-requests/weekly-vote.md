@@ -2,7 +2,8 @@
 
 Raised 2026-10-16 under
 [ADR-053](../decisions/ADR-053-the-observatory-booking-and-vote-take-the-skychaser-modules.md) §8.
-Not yet filed on the platform repository.
+Built on the platform as ADR-050, pull request
+[#191](https://github.com/Bekatsertsvadzee/Online-Observatory/pull/191) (2026-10-16).
 
 ## What blocks
 

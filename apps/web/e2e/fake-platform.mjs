@@ -35,6 +35,8 @@ import {
   zListSlotsResponse,
   zListTargetsResponse,
   zListTonightTargetsResponse,
+  zCastVoteBody,
+  zWeekVote,
   zMissionChannelMessage,
   zMissionClientMessage,
   zMissionCommandAccepted,
@@ -1109,7 +1111,47 @@ async function json(request) {
   }
 }
 
+// The week's vote (platform ADR-050): the candidates are tonight's observable targets,
+// one vote per customer, moved when cast again. In memory, so every run starts at zero.
+const votes = new Map();
+const VOTE_WEEK = "2026-09-21";
+function weekVote(user) {
+  const tally = new Map();
+  for (const targetId of votes.values()) tally.set(targetId, (tally.get(targetId) ?? 0) + 1);
+  const candidates = tonightTargets()
+    .items.filter((item) => item.visibility.observable)
+    .map((item) => ({ targetId: item.target.id, votes: tally.get(item.target.id) ?? 0 }))
+    .sort((a, b) => b.votes - a.votes);
+  return zWeekVote.parse({
+    observatoryId,
+    week: VOTE_WEEK,
+    // Far ahead, so the suite's clock never finds the ballot locked.
+    locksAt: "2099-09-27T13:00:00.000Z",
+    candidates,
+    mine: (user && votes.get(user.id)) ?? null,
+  });
+}
+
 const routes = {
+  "GET /votes": (request, response) => {
+    const query = new URL(request.url, "http://fake").searchParams;
+    if (query.get("observatoryId") !== observatoryId)
+      return error(response, 404, "NOT_FOUND", "No such observatory.");
+    send(response, 200, weekVote(sessionUser(request)));
+  },
+  "POST /votes": async (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const body = zCastVoteBody.safeParse(await json(request));
+    if (!body.success) return error(response, 422, "VALIDATION_FAILED", "Malformed vote.");
+    if (body.data.observatoryId !== observatoryId)
+      return error(response, 404, "NOT_FOUND", "No such observatory.");
+    const ballot = weekVote(user);
+    if (!ballot.candidates.some((c) => c.targetId === body.data.targetId))
+      return error(response, 422, "TARGET_NOT_A_CANDIDATE", "Not on the ballot.");
+    votes.set(user.id, body.data.targetId);
+    send(response, 201, weekVote(user));
+  },
   "GET /observatories": (_request, response) => send(response, 200, observatories),
   // Enabled only, as the platform answers (features/targets/catalogue.ts).
   "GET /targets": (request, response) =>

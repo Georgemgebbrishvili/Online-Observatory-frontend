@@ -77,9 +77,11 @@ says how each is resolved.
    candidates are the targets observable this week at the first-party observatory, their
    tracks drawn by the sky model. Casting a vote needs the platform (a weekly tally per
    signed-in customer), which this repository may not invent: it is filed as
-   `docs/platform-requests/weekly-vote.md` and built there; until the contract carries
-   it, the ballot shows the candidates with no counts and says the vote opens with first
-   light. Skychaser's holder weights are its wallet's and are not copied.
+   `docs/platform-requests/weekly-vote.md` and built there as the platform's ADR-050
+   (`GET /votes`, `POST /votes`, one vote per customer per week, locked Sunday 13:00 UTC).
+   The ballot reads the platform's week, candidates and counts, casts from the browser,
+   and shows the caller's own vote; when the ballot cannot be read it shows the sky with
+   nothing to cast. Skychaser's holder weights are its wallet's and are not copied.
 
 ## What stays binding
 

@@ -5,16 +5,19 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { StatePanel } from "@/components/ui/state-panel";
-import { Ballot, plateOf } from "@/components/vote/ballot";
+import { Ballot } from "@/components/vote/ballot";
 import { TonightSkyChart } from "@/components/vote/tonight-sky-chart";
 import { localDate } from "@/features/booking/read";
 import { readTonight } from "@/features/targets/read";
 import { targetVisual } from "@/features/targets/present";
+import { plateOf } from "@/features/vote/plate";
+import { readWeekVote } from "@/features/vote/read";
 import { addDays, nightWindow, voteCandidates, weekOf } from "@/features/vote/sky";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { targetCopy } from "@/i18n/resources/targets";
 import { voteCopy } from "@/i18n/resources/vote";
+import { getCurrentUser } from "@/lib/platform/session";
 import { localizedMetadata } from "@/lib/seo";
 import "@/styles/pages.css";
 import "@/styles/vote.css";
@@ -35,24 +38,35 @@ export async function generateMetadata({ params }: VoteRouteProps): Promise<Meta
   });
 }
 
-/** The clock, read once per request outside the render (react-hooks/purity). */
-function readClock() {
-  return new Date();
-}
-
 /**
  * /vote (ADR-053 §8): the week's ballot, the leading target, the night's sky chart, on
  * the platform's catalogue. The tally waits on the platform (docs/platform-requests/
  * weekly-vote.md): until then the ballot stands with no counts and says so.
  */
+/** The request's clock, read outside the render (react-hooks/purity). */
+function readClock() {
+  return new Date();
+}
+
+function judgedAt(tonight: Awaited<ReturnType<typeof readTonight>>): Date | null {
+  const at = tonight.kind === "ok" ? tonight.items[0]?.visibility.evaluatedAt : undefined;
+  return at ? new Date(at) : null;
+}
+
 export default async function VoteRoute({ params }: VoteRouteProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const [dictionary, tonight] = await Promise.all([getDictionary(locale), readTonight(locale)]);
+  const [dictionary, tonight, user] = await Promise.all([
+    getDictionary(locale),
+    readTonight(locale),
+    getCurrentUser(),
+  ]);
   const copy = voteCopy[locale];
   const words = targetCopy[locale];
-  const now = readClock();
+  // The night is drawn from the instant the platform judged the sky, so the page and the
+  // platform agree on what "tonight" is; with no judgement, the request's own clock.
+  const now = judgedAt(tonight) ?? readClock();
   const intl = locale === "ka" ? "ka-GE" : "en-GB";
 
   let body;
@@ -68,10 +82,13 @@ export default async function VoteRoute({ params }: VoteRouteProps) {
     );
   } else {
     const timezone = tonight.observatory.timezone;
+    // The platform's ballot (ADR-050): its week, its candidates, its counts. When it
+    // cannot be read the sky still shows what is observable, and nothing can be cast.
+    const ballot = await readWeekVote(tonight.observatory.id);
     const window = nightWindow(now);
-    const candidates = voteCandidates(tonight.items, window, locale);
+    const candidates = voteCandidates(tonight.items, window, locale, 40, ballot?.candidates ?? null);
     const night = localDate(Date.parse(window.dusk), timezone);
-    const week = weekOf(night);
+    const week = ballot?.week ?? weekOf(night);
     const dateOf = (date: string, options: Intl.DateTimeFormatOptions) =>
       new Intl.DateTimeFormat(intl, { timeZone: "UTC", ...options }).format(
         new Date(`${date}T00:00:00Z`),
@@ -113,8 +130,19 @@ export default async function VoteRoute({ params }: VoteRouteProps) {
               candidates={candidates}
               timezone={timezone}
               locale={locale}
-              copy={copy.ballot}
-              open={false}
+              ballot={
+                ballot
+                  ? {
+                      observatoryId: ballot.observatoryId,
+                      week: ballot.week,
+                      locksAt: ballot.locksAt,
+                      mine: ballot.mine,
+                    }
+                  : null
+              }
+              signedIn={user !== null}
+              signInPath={`/${locale}/sign-in`}
+              now={now.toISOString()}
             />
           )}
         </section>

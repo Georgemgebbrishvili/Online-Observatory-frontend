@@ -83,6 +83,19 @@
   border-color: var(--color-simulated-border);
 }
 
+.vote-card[data-mine] {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+.vote-card[data-mine] .vote-bar > span {
+  background: var(--color-accent);
+}
+
+.vote-card[aria-busy="true"] .vote-button {
+  cursor: progress;
+}
+
 .vote-photo {
   position: relative;
   display: block;

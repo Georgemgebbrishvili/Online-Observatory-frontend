@@ -26,6 +26,15 @@ export type VoteCopy = {
     voteFor: (name: string) => string;
     opensSoon: string;
     opensNote: string;
+    lockedButton: string;
+    lockedNote: string;
+    signIn: string;
+    signInFor: (name: string) => string;
+    yourVote: string;
+    cast: (name: string) => string;
+    locked: string;
+    notCandidate: string;
+    failed: string;
     targetPage: (name: string) => string;
   };
   chart: {
@@ -41,7 +50,7 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
   en: {
     metadataTitle: `Vote — the week's observation · ${brand.en.name}`,
     metadataDescription:
-      "One target a week, chosen by vote among what the telescope can observe. The vote opens with first light.",
+      "One target a week, chosen by vote among what the telescope can observe.",
     title: "The week's vote",
     chapter: (week) => `The week's vote · ${week}`,
     cast: (count) => `${count} ${count === 1 ? "vote" : "votes"}`,
@@ -51,7 +60,7 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
       leading: "Leading the vote",
       highest: "Highest that night",
       quiet: "A quiet sky.",
-      lockOn: (day) => `Votes lock the week's target on ${day} at 13:00 UTC. The vote opens with first light.`,
+      lockOn: (day) => `Votes lock the week's target on ${day} at 13:00 UTC.`,
       nothing: "Nothing in the catalogue clears the horizon for the telescope.",
       illustration: "Illustration — not telescope output",
     },
@@ -70,7 +79,16 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
       voteFor: (name) => `Vote for ${name}`,
       opensSoon: "Opens with first light",
       opensNote:
-        "Voting opens with first light, when there is a telescope to point. Until then the week's candidates are what the observatory can see.",
+        "The ballot could not be read right now. The week's candidates are what the observatory can see.",
+      lockedButton: "Locked",
+      lockedNote: "The week's vote has locked. The operator reads the winner.",
+      signIn: "Sign in to vote",
+      signInFor: (name) => `Sign in to vote for ${name}`,
+      yourVote: "Your vote",
+      cast: (name) => `Your vote is on ${name}.`,
+      locked: "The week's vote has locked.",
+      notCandidate: "That target is not on this week's ballot.",
+      failed: "The vote was not recorded. Try again in a moment.",
       targetPage: (name) => `${name}, target page`,
     },
     chart: {
@@ -86,7 +104,7 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
   ka: {
     metadataTitle: `კენჭისყრა — კვირის დაკვირვება · ${brand.ka.nominative}`,
     metadataDescription:
-      "კვირაში ერთი ობიექტი, რომელსაც კენჭისყრით ირჩევენ იმათგან, რასაც ტელესკოპი ხედავს. კენჭისყრა პირველი სინათლით იხსნება.",
+      "კვირაში ერთი ობიექტი, რომელსაც კენჭისყრით ირჩევენ იმათგან, რასაც ტელესკოპი ხედავს.",
     title: "კვირის კენჭისყრა",
     chapter: (week) => `კვირის კენჭისყრა · ${week}`,
     cast: (count) => `${count} ხმა`,
@@ -96,7 +114,7 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
       leading: "ლიდერობს კენჭისყრაში",
       highest: "ყველაზე მაღლა იმ ღამეს",
       quiet: "წყნარი ცა.",
-      lockOn: (day) => `ხმები კვირის ობიექტს ${day}, 13:00 UTC-ზე აფიქსირებს. კენჭისყრა პირველი სინათლით იხსნება.`,
+      lockOn: (day) => `ხმები კვირის ობიექტს ${day}, 13:00 UTC-ზე აფიქსირებს.`,
       nothing: "კატალოგიდან არცერთი ობიექტი არ ამოდის ჰორიზონტზე ტელესკოპისთვის.",
       illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
     },
@@ -115,7 +133,16 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
       voteFor: (name) => `ხმის მიცემა: ${name}`,
       opensSoon: "იხსნება პირველი სინათლით",
       opensNote:
-        "კენჭისყრა პირველი სინათლით იხსნება, როცა ტელესკოპი იქნება მისამართავი. მანამდე კვირის კანდიდატები ისაა, რასაც ობსერვატორია ხედავს.",
+        "ბიულეტენის წაკითხვა ამჟამად ვერ მოხერხდა. კვირის კანდიდატები ისაა, რასაც ობსერვატორია ხედავს.",
+      lockedButton: "დახურულია",
+      lockedNote: "კვირის კენჭისყრა დაიხურა. გამარჯვებულს ოპერატორი კითხულობს.",
+      signIn: "ხმის მისაცემად შედი",
+      signInFor: (name) => `შედი, რომ ხმა მისცე: ${name}`,
+      yourVote: "შენი ხმა",
+      cast: (name) => `შენი ხმა ${name}-ზეა.`,
+      locked: "კვირის კენჭისყრა დაიხურა.",
+      notCandidate: "ეს ობიექტი ამ კვირის ბიულეტენში არ არის.",
+      failed: "ხმა არ ჩაიწერა. სცადე ცოტა ხანში.",
       targetPage: (name) => `${name}, ობიექტის გვერდი`,
     },
     chart: {
