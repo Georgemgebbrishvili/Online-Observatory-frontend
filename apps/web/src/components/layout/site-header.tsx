@@ -25,6 +25,7 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
     { label: publicNavigation.explore, href: `/${locale}#tonight` },
     { label: publicNavigation.live, href: `/${locale}/app/live` },
     { label: publicNavigation.observatory, href: `/${locale}/observatory` },
+    { label: publicNavigation.vote, href: `/${locale}/vote` },
     { label: publicNavigation.pricing, href: `/${locale}/pricing` },
     { label: publicNavigation.about, href: `/${locale}#about` },
   ];

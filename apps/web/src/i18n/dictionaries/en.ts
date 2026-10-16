@@ -20,6 +20,7 @@ const dictionary = {
       explore: "Explore",
       live: "Live",
       observatory: "Observatory",
+      vote: "Vote",
       pricing: "Pricing",
       about: "About",
       signIn: "Sign in",

@@ -20,6 +20,7 @@ const dictionary = {
       explore: "აღმოჩენა",
       live: "პირდაპირი დაკვირვება",
       observatory: "ობსერვატორია",
+      vote: "კენჭისყრა",
       pricing: "ფასები",
       about: "ჩვენს შესახებ",
       signIn: "შესვლა",

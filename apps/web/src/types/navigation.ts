@@ -5,6 +5,7 @@ export type PublicNavigationDictionary = {
   explore: string;
   live: string;
   observatory: string;
+  vote: string;
   pricing: string;
   about: string;
   signIn: string;

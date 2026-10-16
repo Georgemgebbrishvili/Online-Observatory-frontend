@@ -6,6 +6,7 @@ import { siteUrl } from "@/lib/seo";
 const publicRoutes = [
   { path: "", changeFrequency: "weekly", priority: 1 },
   { path: "/observatory", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/vote", changeFrequency: "weekly", priority: 0.7 },
   { path: "/pricing", changeFrequency: "monthly", priority: 0.7 },
 ] as const;
 
