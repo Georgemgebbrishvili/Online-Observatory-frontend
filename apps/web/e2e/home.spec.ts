@@ -458,6 +458,9 @@ test("the observatory console stands by on the sky model, badged simulated, with
 test("the console connects, calibrates and points at the quick start's target", async ({
   page,
 }) => {
+  // The chain runs on the model's own clock: two seconds to connect, a park slew and its
+  // settle, six seconds to calibrate, then the GoTo. Well over the default thirty.
+  test.setTimeout(120_000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory");
   await page.getByRole("button", { name: /Start · Albireo/ }).click();
