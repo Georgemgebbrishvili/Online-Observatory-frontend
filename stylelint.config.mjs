@@ -51,6 +51,17 @@ const config = {
   },
   overrides: [
     {
+      // ADR-053: the Skychaser observatory console, ported as its source wrote it. Its
+      // dialogs portal to <body>, outside every token scope, so it carries its own values.
+      files: ["apps/web/src/styles/observatory-console.css"],
+      rules: {
+        "color-no-hex": null,
+        "function-disallowed-list": null,
+        "declaration-property-value-disallowed-list": null,
+        "declaration-property-value-allowed-list": null,
+      },
+    },
+    {
       files: ["apps/web/src/styles/tokens.css"],
       rules: {
         "color-no-hex": null,
@@ -61,7 +72,11 @@ const config = {
     {
       // v3 §4: every stylesheet takes its type from the scale, not just the library.
       files: ["apps/web/src/styles/*.css"],
-      ignoreFiles: [...awaitingV3Migration, "apps/web/src/styles/tokens.css"],
+      ignoreFiles: [
+        ...awaitingV3Migration,
+        "apps/web/src/styles/tokens.css",
+        "apps/web/src/styles/observatory-console.css",
+      ],
       rules: {
         "declaration-property-value-allowed-list": {
           "font-size": fontSizeFromScale,

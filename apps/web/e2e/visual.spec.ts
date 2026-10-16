@@ -51,8 +51,16 @@ function masks(page: Page) {
     // The legal contents: Georgian rows of fractional height, whose text lands a pixel
     // apart from one run to the next.
     page.locator(".legal-toc ol"),
-    // The observatory's clock is blank until it mounts, then the browser's time.
-    page.locator(".site-clock"),
+    // The observatory console's clocks and the stations' local times run on the browser's
+    // clock, which is held, and on the server's first render, which is not.
+    page.locator(".sdo-clocks"),
+    page.locator(".sdo-stn__meta"),
+    page.locator(".sdo-pstation small"),
+    // The booking board's nights are the server's next seven days; the session's rows
+    // and the phone's bar carry the chosen one.
+    page.locator(".board-nights"),
+    page.locator(".board-rows"),
+    page.locator(".board-bar"),
   ];
 }
 

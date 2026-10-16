@@ -6,7 +6,6 @@ import "@/styles/collection.css";
 import "@/styles/design-system.css";
 import "@/styles/pages.css";
 import "@/styles/homepage.css";
-import "@/styles/observatory.css";
 import "@/styles/profile.css";
 import { notFound } from "next/navigation";
 
@@ -44,14 +43,11 @@ import { CaptureCard } from "@/components/collection/capture-card";
 import { CaptureDownloads } from "@/components/collection/capture-downloads";
 import { MissionStatus, missionStatuses } from "@/components/missions/mission-status";
 import { LiveIndicator } from "@/components/observatory/live-indicator";
-import { FieldPlate } from "@/components/observatory/field-plate";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import {
   ObservatoryStatus,
   observatoryStatuses,
 } from "@/components/observatory/observatory-status";
-import { SiteClock } from "@/components/observatory/site-clock";
-import { StarField } from "@/components/observatory/star-field";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, SurfacePanel } from "@/components/ui/card";
@@ -70,7 +66,6 @@ import { formatCapturedAt } from "@/features/collection/present";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/collection";
-import { observatoryPageCopy } from "@/i18n/resources/observatory";
 import { profileCopy } from "@/i18n/resources/profile";
 import { roomCopy } from "@/i18n/resources/room";
 import { statusCopy } from "@/i18n/resources/status";
@@ -1199,64 +1194,6 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               locale={locale}
               common={dictionary.home.common}
             />
-          </div>
-        </section>
-
-        <section className="ds-section" aria-labelledby="observatory-scene-title">
-          <SectionHeader
-            id="observatory-scene-title"
-            section={copy.sections.observatory}
-          />
-          <div className="observatory-page ds-observatory-specimen">
-            <StarField />
-            <div className="ds-observatory-pills">
-              {(["online", "observing", "hold", "degraded", "offline"] as const).map(
-                (state) => (
-                  <span
-                    key={state}
-                    className={`observatory-pill observatory-pill-${state}`}
-                  >
-                    <span className="observatory-pill-led" aria-hidden="true" />
-                    {observatoryPageCopy[locale].scene.states[state]}
-                  </span>
-                ),
-              )}
-            </div>
-            <SiteClock
-              locale={locale}
-              timezone="Asia/Tbilisi"
-              zoneLabel={observatoryPageCopy[locale].scene.siteTime}
-            />
-            <div className="ds-observatory-plate">
-              <FieldPlate
-                focalLengthMm={1500}
-                locale={locale}
-                labels={{
-                  ...observatoryPageCopy[locale].scene.plate,
-                  caption: observatoryPageCopy[locale].illustration,
-                }}
-              />
-            </div>
-            <nav
-              className="observatory-dock"
-              aria-label={observatoryPageCopy[locale].scene.ways.label}
-            >
-              {observatoryPageCopy[locale].scene.ways.items.map((way, index) => (
-                <a
-                  key={way.title}
-                  href="#observatory-scene-title"
-                  className="observatory-dock-way"
-                >
-                  <span className="observatory-dock-number">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="observatory-dock-title">{way.title}</span>
-                  <span className="observatory-dock-line">
-                    {way.cta} <span aria-hidden="true">→</span>
-                  </span>
-                </a>
-              ))}
-            </nav>
           </div>
         </section>
       </Container>

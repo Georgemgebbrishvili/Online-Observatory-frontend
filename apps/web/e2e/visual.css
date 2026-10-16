@@ -14,18 +14,6 @@ nextjs-portal {
 }
 
 /*
- * /app/book: the nights are the server's next seven days, masked, but their names change
- * length with the weekday. One width for every date, so the chips hold still.
- */
-.booking-nights time {
-  display: inline-block;
-  width: 7em;
-  overflow: hidden;
-  white-space: nowrap;
-  vertical-align: bottom;
-}
-
-/*
  * The wordmark's reveal animates opacity, so the text sits on a layer of its own while it
  * runs and is antialiased one of two ways depending on when the capture lands. Shown as it
  * ends, with no layer.
@@ -96,4 +84,29 @@ nextjs-portal {
 .status-dot,
 .button-primary::after {
   animation: none !important;
+}
+
+/*
+ * ADR-053: the observatory console. Its aurora drifts, its LEDs blink, the current step
+ * pulses and the object in the eyepiece shimmers with the seeing; its panels and glass
+ * blur what is behind them, which costs the capture seconds. Held still and flat.
+ */
+.sdo-atmo__aurora,
+.sdo-blink,
+.sdo-fs.is-now .sdo-fs__dot,
+.sdo-art--photo img,
+.sdo-spin {
+  animation: none !important;
+}
+
+.sdo-atmo__aurora {
+  filter: none !important;
+}
+
+.sdo-panel,
+.sdo-glass,
+.sdo-head,
+.sdo-scrim {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }

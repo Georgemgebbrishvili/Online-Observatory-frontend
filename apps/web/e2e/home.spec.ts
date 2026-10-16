@@ -135,7 +135,7 @@ test("provides the complete public navigation on desktop and mobile", async ({
     name: "Public navigation",
   });
 
-  for (const item of ["Explore", "Live", "Observatory", "Pricing", "About"]) {
+  for (const item of ["Explore", "Live", "Observatory", "Vote", "Pricing", "About"]) {
     await expect(publicNavigation.getByRole("link", { name: item })).toBeVisible();
   }
 
@@ -404,66 +404,80 @@ test("keeps the Georgian authenticated home within a mobile viewport", async ({
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("the observatory scene carries the state, tonight's sky, the plate and the ways in", async ({
+test("the observatory console stands by on the sky model, badged simulated, with the platform's name and forecast", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory");
 
-  await expect(
-    page.getByRole("heading", { level: 1, name: "Stellar Tbilisi" }),
-  ).toBeVisible();
-
-  const scene = page.locator(".observatory-live");
-  await expect(scene.getByText("SIMULATED OBSERVATORY")).toBeVisible();
-  // The fake starts with a mission observing, and the operator's cancel test ends it;
-  // which one this test sees depends on the order the workers run in.
-  await expect(scene.locator(".observatory-pill")).toHaveText(/^(Online|Observing)$/);
-  await expect(scene.getByText("Celestron NexStar 6SE")).toBeVisible();
-  // The fake's first forecast hour: 12% cloud, at 20:00Z, read in Tbilisi.
-  await expect(scene.getByText("12% cloud")).toBeVisible();
-  await expect(scene.getByText("00:00", { exact: true })).toBeVisible();
-
-  const book = scene.getByRole("link", { name: "Book a slot" });
-  const watch = scene.getByRole("link", { name: "Watch live" });
-  await expect(book).toHaveAttribute("href", "/en/app/book");
-  await expect(watch).toHaveAttribute("href", "/en/app/live");
-
-  const plate = page.getByRole("figure", {
-    name: "The camera's frame drawn over the Moon, to scale",
-  });
-  await expect(plate.getByText("Illustration — not telescope output")).toBeVisible();
-
-  const dock = page.getByRole("navigation", { name: "Ways in" });
-  await expect(dock.getByRole("link")).toHaveCount(4);
-
-  // The scene is the first screen.
-  for (const locator of [scene, book, watch, plate, dock]) {
-    const box = await locator.boundingBox();
-    expect(box && box.y + box.height).toBeLessThanOrEqual(900);
-  }
-
-  const tonight = page.locator(".observatory-tonight");
-  await expect(tonight.getByRole("link", { name: /Albireo/ })).toHaveAttribute(
-    "href",
-    "/en/app/missions/albireo",
+  // The console's own header: the lockup, the public destinations, the clocks, the badge.
+  await expect(page.getByRole("link", { name: "Observatory", exact: true })).toHaveAttribute(
+    "aria-current",
+    "page",
   );
-  const instrument = page.locator(".observatory-instrument");
-  await expect(instrument.getByText("ZWO ASI585MC")).toBeVisible();
-  await expect(instrument.getByText("25.5′ × 14.4′")).toBeVisible();
+  await expect(page.locator(".sdo-head .sdo-pill--sim")).toHaveText(/Simulated/);
+  // The suite is signed in: the account link is the profile's.
+  await expect(page.locator(".sdo-head").getByRole("link", { name: "Profile" })).toHaveAttribute(
+    "href",
+    "/en/app/profile",
+  );
+
+  // The one open station is the platform's observatory; its forecast is the platform's.
+  const telescopes = page.getByRole("region", { name: "Telescopes" });
+  await expect(telescopes.getByRole("button", { name: /Stellar Tbilisi/ })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(telescopes.getByText("12%")).toBeVisible();
+  await expect(telescopes.getByText("Coming soon")).toHaveCount(4);
+
+  // The quick start points at tonight's highest observable target from the catalogue.
+  await expect(
+    page.getByRole("button", { name: /Start · Albireo/ }),
+  ).toBeEnabled();
+
+  // Nothing is drawn as the telescope's output: standby, captioned, step one of five.
+  const view = page.getByRole("region", { name: "Telescope view" });
+  await expect(view.getByText("Illustration — not telescope output")).toBeVisible();
+  await expect(view.getByRole("status")).toHaveText("Standby");
+  await expect(
+    page.getByRole("button", { name: /Connect to Stellar Tbilisi/ }),
+  ).toBeVisible();
+  const step = page.locator(".sdo-flow .is-now");
+  await expect(step).toContainText("Connect");
+  await expect(step).toHaveAttribute("aria-current", "step");
 
   // Claims the platform does not back are gone.
   await expect(page.getByText(/41\.72/)).toHaveCount(0);
-  await expect(page.getByText(/\b(cooled|cooling)\b/i)).toHaveCount(0);
-  await expect(page.getByText("Demonstration status")).toHaveCount(0);
   const jsonLd = await page
     .locator('script[type="application/ld+json"]')
     .allTextContents();
   expect(jsonLd.join("")).not.toContain("GeoCoordinates");
+});
 
-  await expect(
-    page.getByRole("heading", { name: "Nothing moves until it is allowed to." }),
-  ).toBeVisible();
+test("the console connects, calibrates and points at the quick start's target", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/en/observatory");
+  await page.getByRole("button", { name: /Start · Albireo/ }).click();
+
+  // Park, calibrate and point run as one chain; the feed is the sky model's.
+  await expect(page.locator(".sdo-flow .is-now")).toContainText("Calibrate", {
+    timeout: 15_000,
+  });
+  const view = page.getByRole("region", { name: "Telescope view" });
+  await expect(view.getByRole("img", { name: "Simulated telescope camera view" })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(view.getByText(/Simulated feed/)).toBeVisible();
+  await expect(view.getByRole("status")).toHaveText(/On target/, { timeout: 30_000 });
+  await expect(view.getByText(/^Albireo/)).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Capture \d+ × \d+ s/ })).toBeEnabled();
+
+  // Ending the session parks the mount and returns the console to standby.
+  await page.getByRole("button", { name: "Park & end" }).click();
+  await expect(view.getByRole("status")).toHaveText("Standby");
 });
 
 test("/network is folded into the observatory page", async ({ page }) => {
@@ -473,23 +487,23 @@ test("/network is folded into the observatory page", async ({ page }) => {
 
   await page.goto("/ka/network");
   await expect(page).toHaveURL(/\/ka\/observatory#network$/);
-  await expect(page.locator("#network")).toContainText("დღეს — ერთი ადგილი.");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("ობსერვატორია");
 });
 test("preserves observatory locale and mobile width", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/observatory");
 
-  await expect(
-    page.getByRole("heading", {
-      level: 1,
-      // The platform's name for the observatory (BookableObservatory.nameKa).
-      name: "სტელარი თბილისი",
-    }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "ნავიგაციის გახსნა" }).click();
-  await expect(page.getByRole("link", { name: "ენა: English" })).toHaveAttribute(
+  // The sr-only h1 carries the platform's name for the observatory (nameKa).
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    /ობსერვატორია — სტელარი თბილისი/,
+  );
+  // The phone's own header: the station, the badge, the way to the other language is on
+  // the desk header only, so the account link stands in for the chrome here.
+  await expect(page.locator(".sdo-pstation")).toContainText("სტელარი თბილისი");
+  await expect(page.locator(".sdo-phead .sdo-pill--sim")).toHaveText("სიმულირებული");
+  await expect(page.locator(".sdo-phead").getByRole("link", { name: "პროფილი" })).toHaveAttribute(
     "href",
-    "/en/observatory",
+    "/ka/app/profile",
   );
 
   const viewport = await page.evaluate(() => ({

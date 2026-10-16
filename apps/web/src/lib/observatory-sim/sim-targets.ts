@@ -1,0 +1,141 @@
+/**
+ * What a visitor can point the simulator at.
+ *
+ * Deliberately short. A first session should be a thing you can actually see
+ * in a 150 mm instrument, not a catalogue to get lost in. The Sun is absent on
+ * purpose — the safety envelope refuses it, and the list should not offer what
+ * the instrument will not do.
+ */
+
+import { Body, Equator, Horizon, Observer } from 'astronomy-engine';
+import { raDecToAzAlt } from './catalog';
+import { TARGET_PHOTOS, type TargetPhoto } from './target-photos';
+import { apparentDiameterArcsec } from './optics';
+import type { AltAz } from './safety';
+import type { ObservatoryNode } from './types';
+
+/**
+ * Bright targets are imaged in milliseconds and faint ones in seconds, and the
+ * gap is four orders of magnitude. It also decides whether any field star
+ * survives the exposure: on a 10 ms lunar sub, none do.
+ */
+export type TargetBrightness = 'bright' | 'faint';
+
+export type SimTarget = {
+  id: string;
+  name: string;
+  brightness: TargetBrightness;
+  /** Solar-system bodies move; their position and size are computed. */
+  kind: 'body' | 'fixed';
+  /** J2000 coordinates, for fixed targets only. */
+  ra?: number;
+  dec?: number;
+  /** Apparent size in arcminutes, for fixed targets only. */
+  sizeArcmin?: number;
+  /** One line about what you will actually see, not what Hubble saw. */
+  expect: string;
+  /**
+   * How many target diameters the reference photo spans. Saturn's photo is
+   * cropped to the rings, which run ~2.3 globe diameters; most others are a
+   * disc with a little margin.
+   */
+  frameSpan?: number;
+};
+
+const BODIES: Partial<Record<string, Body>> = {
+  moon: Body.Moon,
+  venus: Body.Venus,
+  mars: Body.Mars,
+  jupiter: Body.Jupiter,
+  saturn: Body.Saturn,
+};
+
+export const SIM_TARGETS: SimTarget[] = [
+  { frameSpan: 1.02, id: 'moon', brightness: 'bright', name: 'The Moon', kind: 'body',
+    expect: 'Overflows the frame. Crater shadows along the terminator are the show.' },
+  { id: 'jupiter', brightness: 'bright', name: 'Jupiter', kind: 'body',
+    expect: 'A small bright disc. Two cloud belts and the four Galilean moons.' },
+  { frameSpan: 2.35, id: 'saturn', brightness: 'bright', name: 'Saturn', kind: 'body',
+    expect: 'Smaller than you expect, and the rings are still unmistakable.' },
+  { id: 'mars', brightness: 'bright', name: 'Mars', kind: 'body',
+    expect: 'A tiny ochre disc. Surface detail only near opposition.' },
+  { id: 'venus', brightness: 'bright', name: 'Venus', kind: 'body',
+    expect: 'A brilliant featureless phase. Bright enough to hurt at low gain.' },
+  { frameSpan: 1.0, id: 'm42', brightness: 'faint', name: 'Orion Nebula', kind: 'fixed', ra: 5.591, dec: -5.391, sizeArcmin: 85,
+    expect: 'Overflows the frame. The Trapezium and the bright core fill it.' },
+  { frameSpan: 1.0, id: 'm31', brightness: 'faint', name: 'Andromeda Galaxy', kind: 'fixed', ra: 0.712, dec: 41.269, sizeArcmin: 178,
+    expect: 'Far larger than the field. You are looking at the core only.' },
+  { frameSpan: 2.0, id: 'm57', brightness: 'faint', name: 'Ring Nebula', kind: 'fixed', ra: 18.886, dec: 33.029, sizeArcmin: 1.4,
+    expect: 'A small grey smoke ring. Stacking is what brings it out.' },
+  { frameSpan: 1.3, id: 'm13', brightness: 'faint', name: 'Hercules Cluster', kind: 'fixed', ra: 16.695, dec: 36.46, sizeArcmin: 20,
+    expect: 'Fills most of the frame. The core stays a glow; the edges break into stars.' },
+  { frameSpan: 3.0, id: 'albireo', brightness: 'bright', name: 'Albireo', kind: 'fixed', ra: 19.512, dec: 27.96, sizeArcmin: 0.57,
+    expect: 'Two stars 34 arcseconds apart, one gold and one blue. Split cleanly.' },
+  { frameSpan: 3.0, id: 'mizar', brightness: 'bright', name: 'Mizar', kind: 'fixed', ra: 13.399, dec: 54.925, sizeArcmin: 0.24,
+    expect: 'Splits into two white stars 14 arcseconds apart. Alcor is 12 arcminutes off, at the edge of the field.' },
+  { frameSpan: 4.0, id: 'sirius', brightness: 'bright', name: 'Sirius', kind: 'fixed', ra: 6.752, dec: -16.716, sizeArcmin: 0.1,
+    expect: 'A blazing point low in the south. It twinkles in every colour through the thick air near the horizon.' },
+  { frameSpan: 4.0, id: 'polaris', brightness: 'bright', name: 'Polaris', kind: 'fixed', ra: 2.53, dec: 89.264, sizeArcmin: 0.1,
+    expect: 'One steady yellow-white star, with a faint companion 18 arcseconds away.' },
+  { frameSpan: 4.0, id: 'betelgeuse', brightness: 'bright', name: 'Betelgeuse', kind: 'fixed', ra: 5.919, dec: 7.407, sizeArcmin: 0.1,
+    expect: 'A point of deep orange. The colour is the whole picture.' },
+  { frameSpan: 1.0, id: 'm45', brightness: 'faint', name: 'Pleiades', kind: 'fixed', ra: 3.79, dec: 24.117, sizeArcmin: 110,
+    expect: 'Larger than the field: the brightest sisters and a haze of blue around them.' },
+  { frameSpan: 1.2, id: 'm16', brightness: 'faint', name: 'Eagle Nebula', kind: 'fixed', ra: 18.3133, dec: -13.8167, sizeArcmin: 7,
+    expect: 'A faint glow with a young cluster. The pillars need a long stack to show at all.' },
+];
+
+export const SIM_TARGET_BY_ID = new Map(SIM_TARGETS.map((t) => [t.id, t]));
+
+/** Sub-exposure choices, in seconds. Lucky imaging on the left, DSO on the right. */
+export const EXPOSURES: Record<TargetBrightness, number[]> = {
+  bright: [0.005, 0.01, 0.02, 0.05],
+  faint: [0.5, 2, 8, 30],
+};
+
+/**
+ * What an unattended capture takes: the middle sub length of the regime, and
+ * as many subs as a sensible operator stacks — hundreds of short frames for
+ * lucky imaging, sixty long ones (eight minutes) for a faint target.
+ */
+export function unattendedStack(brightness: TargetBrightness): { exposureSec: number; subs: number } {
+  const exposures = EXPOSURES[brightness];
+  return {
+    exposureSec: exposures[Math.floor(exposures.length / 2)],
+    subs: brightness === 'bright' ? 600 : 60,
+  };
+}
+
+/** Default when a target does not declare one: a disc with a little margin. */
+export function targetFrameSpan(target: SimTarget): number {
+  return target.frameSpan ?? 1.15;
+}
+
+export function targetPhoto(target: SimTarget): TargetPhoto | null {
+  return TARGET_PHOTOS[target.id] ?? null;
+}
+
+/** Right ascension in hours, for the hour-angle readout. */
+export function targetRaHours(target: SimTarget, date: Date): number {
+  if (target.kind === 'fixed') return target.ra!;
+  const observer = new Observer(0, 0, 0);
+  return Equator(BODIES[target.id]!, date, observer, true, true).ra;
+}
+
+export function targetAltAz(target: SimTarget, node: ObservatoryNode, date: Date): AltAz {
+  if (target.kind === 'fixed') {
+    const { altitude, azimuth } = raDecToAzAlt(target.ra!, target.dec!, node.lat, node.lon, date);
+    return { altitude, azimuth };
+  }
+
+  const observer = new Observer(node.lat, node.lon, 0);
+  const eq = Equator(BODIES[target.id]!, date, observer, true, true);
+  const horizon = Horizon(date, observer, eq.ra, eq.dec, 'normal');
+  return { altitude: horizon.altitude, azimuth: horizon.azimuth };
+}
+
+/** Apparent size in arcminutes — computed for bodies, catalogued for the rest. */
+export function targetSizeArcmin(target: SimTarget, date: Date): number {
+  if (target.kind === 'fixed') return target.sizeArcmin!;
+  return (apparentDiameterArcsec(target.id, date) ?? 60) / 60;
+}

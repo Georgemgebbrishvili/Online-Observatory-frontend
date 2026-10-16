@@ -13,7 +13,14 @@ export default defineConfig([
   {
     // DV-070 AC1: colour literals live in apps/web/src/styles/tokens.{css,ts} only.
     files: ["apps/web/**/*.{ts,tsx}"],
-    ignores: ["apps/web/src/styles/tokens.ts", "apps/web/src/styles/tokens.test.ts"],
+    ignores: [
+      "apps/web/src/styles/tokens.ts",
+      "apps/web/src/styles/tokens.test.ts",
+      // ADR-053: the observatory console and its sky model draw on a canvas and in SVG
+      // with the Skychaser source's own values, kept as written.
+      "apps/web/src/components/observatory-console/**",
+      "apps/web/src/lib/observatory-sim/**",
+    ],
     rules: {
       "no-restricted-syntax": [
         "error",
@@ -30,6 +37,17 @@ export default defineConfig([
           },
         ]),
       ],
+    },
+  },
+  {
+    // ADR-053: the observatory console drives a mount and a canvas from refs and timers,
+    // as its source wrote it; the React Compiler's rules read that as render-time work.
+    files: ["apps/web/src/components/observatory-console/**"],
+    rules: {
+      "react-hooks/refs": "off",
+      "react-hooks/purity": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/use-memo": "off",
     },
   },
   globalIgnores([
