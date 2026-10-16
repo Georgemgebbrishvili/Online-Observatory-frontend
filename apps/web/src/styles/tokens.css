@@ -154,6 +154,9 @@
   --color-shadow: color-mix(in srgb, var(--st-black) 38%, transparent);
   --color-on-paper: var(--st-paper-ink);
   --color-mark: var(--st-mark);
+  /* The booking board's Moon glyph (ADR-053 §7): its dark side and its lit side. */
+  --color-moon-dark: #2a2a30;
+  --color-moon-lit: #e6e3d6;
   /* The outlined button: white at 2.5% under a 22% edge, 6% under 50% on hover. */
   --color-outline-fill: color-mix(in srgb, var(--st-white) 2.5%, transparent);
   --color-outline-fill-hover: color-mix(in srgb, var(--st-white) 6%, transparent);

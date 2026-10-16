@@ -1,0 +1,616 @@
+/*
+ * The booking board (ADR-053 §7): the Skychaser site's /book — a night, a start, a
+ * target, the session beside them — on our tokens. Monolith panels and the red action
+ * from ADR-052; the night strip and the half-hours are the board's own.
+ */
+.board {
+  display: grid;
+  gap: var(--space-6);
+  width: min(100%, 72rem);
+  padding: var(--space-8) var(--space-page) var(--space-10);
+}
+
+.board > * {
+  min-width: 0;
+}
+
+/* ── The head: the title at text size, three facts beside it; the board begins at once ── */
+.board-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-8);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.board-head .kicker {
+  margin: 0 0 var(--space-2);
+}
+
+.board-title {
+  margin: 0;
+  font-family: var(--font-headline);
+  font-weight: var(--font-weight-headline);
+  font-size: min(var(--font-size-h1), 10.6vw);
+  line-height: 1;
+  letter-spacing: var(--tracking-headline);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+.board-lede {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+}
+
+.board-facts {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.board-facts li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 7rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-medium);
+  background: var(--gradient-ticks), var(--color-scrim-soft);
+}
+
+.board-facts b {
+  font: var(--font-weight-semibold) var(--font-size-hint) / 1 var(--font-label);
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+  color: var(--color-accent-ink);
+}
+
+.board-facts span {
+  font: var(--font-weight-semibold) var(--font-size-mono) / 1.3 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* ── The grid: the picks, the session beside them ── */
+.board-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22.5rem;
+  gap: var(--space-6) var(--space-10);
+  align-items: start;
+}
+
+.board-pick {
+  min-width: 0;
+}
+
+.board-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-8) 0 var(--space-3);
+}
+
+.board-step:first-child {
+  margin-top: 0;
+}
+
+.board-step h2 {
+  margin: 0;
+  font-family: var(--font-headline);
+  font-weight: var(--font-weight-headline);
+  font-size: var(--font-size-h3);
+  line-height: 1;
+  letter-spacing: var(--tracking-headline);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+.board-rule {
+  flex: 1 1 auto;
+  min-width: var(--space-4);
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-line-strong), transparent);
+}
+
+.board-aside {
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  text-align: right;
+}
+
+/* ── 01 The nights: a strip of tabs, each with its Moon ── */
+.board-nights {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 2px 2px var(--space-2);
+  scrollbar-width: thin;
+  mask-image: linear-gradient(90deg, var(--color-mask) 92%, transparent);
+}
+
+.board-night {
+  flex: 0 0 4.5rem;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-1);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-medium);
+  background: var(--color-outline-fill);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.board-night small {
+  font: var(--font-weight-semibold) var(--font-size-hint) / 1 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.board-night b {
+  font: var(--font-weight-headline) var(--font-size-h3) / 1 var(--font-headline);
+  color: var(--color-text-primary);
+}
+
+.board-night i {
+  margin-top: var(--space-1);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
+  font-style: normal;
+  color: var(--color-text-tertiary);
+}
+
+.board-night .board-moon {
+  margin-top: var(--space-1);
+}
+
+.board-night:hover {
+  border-color: var(--color-line-strong);
+  background: var(--color-overlay-hover);
+}
+
+.board-night[aria-checked="true"],
+.board-night[aria-checked="true"]:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent-muted);
+  box-shadow:
+    0 0 24px -8px var(--color-accent),
+    inset 0 0 0 1px var(--color-accent-border);
+}
+
+.board-night[aria-checked="true"] i {
+  color: var(--color-accent-ink);
+}
+
+.board-night.is-full {
+  opacity: 0.55;
+}
+
+.board-moon-dark {
+  fill: var(--color-moon-dark);
+  stroke: var(--color-line-strong);
+  stroke-width: 0.6;
+}
+
+.board-moon-lit {
+  fill: var(--color-moon-lit);
+}
+
+/* ── 02 The half-hours ── */
+.board-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: var(--space-2);
+}
+
+.board-slot {
+  min-height: var(--size-touch);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-small);
+  background: var(--color-outline-fill);
+  color: var(--color-text-primary);
+  font: var(--font-weight-semibold) var(--font-size-body) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.board-slot:hover:not(:disabled) {
+  border-color: var(--color-outline-hover);
+  background: var(--color-overlay-hover);
+}
+
+.board-slot[aria-checked="true"],
+.board-slot[aria-checked="true"]:hover:not(:disabled) {
+  color: var(--color-on-action);
+  border-color: var(--color-accent);
+  background: var(--color-action);
+  box-shadow: var(--glow-action);
+}
+
+.board-slot:disabled {
+  cursor: default;
+}
+
+.board-slot.is-taken {
+  border-color: transparent;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-overlay-hover) 0 6px,
+    transparent 6px 12px
+  );
+  color: var(--color-text-disabled);
+  text-decoration: line-through;
+}
+
+.board-slot.is-past {
+  border-color: transparent;
+  color: var(--color-text-disabled);
+}
+
+.board-slot.is-short {
+  border-style: dashed;
+  border-color: var(--color-line);
+  color: var(--color-text-tertiary);
+}
+
+/* ── 03 The targets: our plates, or a swatch; dimmed when the object is not up ── */
+.board-targets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.board-target {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 2px;
+  aspect-ratio: 4 / 3;
+  padding: var(--space-3);
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-console);
+  background: var(--color-mask);
+  color: var(--color-text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.board-target img {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    transform var(--duration-instrument) var(--ease-sky),
+    filter var(--duration-fast) var(--ease-standard);
+}
+
+.board-target::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, transparent 40%, var(--color-scrim-strong));
+}
+
+/* The swatches: a drawn hint of each class, never a photograph. */
+.board-target-moon::after,
+.board-target-planet::after,
+.board-target-star::after,
+.board-target-cluster::after,
+.board-target-ring::after,
+.board-target-nebula::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.board-target-moon::after {
+  background: radial-gradient(circle at 62% 40%, var(--color-text-primary) 0%, var(--color-text-tertiary) 30%, transparent 32%);
+}
+
+.board-target-planet::after {
+  background: radial-gradient(circle at 50% 42%, var(--color-star-warm) 0 12%, var(--color-text-tertiary) 24%, transparent 26%);
+}
+
+.board-target-star::after {
+  background:
+    radial-gradient(circle at 44% 46%, var(--color-gold) 0 4%, transparent 7%),
+    radial-gradient(circle at 56% 40%, var(--color-sky-blue) 0 3%, transparent 6%);
+}
+
+.board-target-cluster::after {
+  background:
+    radial-gradient(circle at 50% 46%, var(--color-text-primary) 0 2%, transparent 4%),
+    radial-gradient(circle at 36% 58%, var(--color-text-secondary) 0 2%, transparent 4%),
+    radial-gradient(circle at 64% 36%, var(--color-text-secondary) 0 2%, transparent 4%),
+    radial-gradient(circle at 50% 50%, var(--color-accent-muted), transparent 50%);
+}
+
+.board-target-ring::after {
+  background: radial-gradient(circle at 50% 44%, transparent 10%, var(--color-accent-border) 13%, transparent 17%);
+}
+
+.board-target-nebula::after {
+  background: radial-gradient(ellipse at 45% 50%, var(--color-accent-muted) 0 20%, transparent 55%);
+}
+
+.board-target:hover:not(:disabled) {
+  border-color: var(--color-line-strong);
+}
+
+.board-target:hover:not(:disabled) img {
+  transform: scale(1.05);
+}
+
+.board-target[aria-checked="true"],
+.board-target[aria-checked="true"]:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  box-shadow:
+    0 0 0 1px var(--color-accent),
+    0 16px 40px -18px var(--color-accent);
+}
+
+.board-target.is-down {
+  cursor: default;
+}
+
+.board-target.is-down img {
+  filter: grayscale(1) brightness(0.35);
+}
+
+.board-target.is-down .board-target-name {
+  color: var(--color-text-tertiary);
+}
+
+.board-target-name {
+  font: var(--font-weight-headline) var(--font-size-body-lg) / 1 var(--font-headline);
+  letter-spacing: var(--tracking-headline);
+  text-transform: uppercase;
+}
+
+.board-target-sub {
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-small);
+}
+
+.board-target[aria-checked="true"] .board-target-sub {
+  color: var(--color-accent-ink);
+}
+
+/* ── The session: a monolith that stays beside the picks ── */
+.board-sum {
+  position: sticky;
+  top: calc(var(--size-bar) + var(--space-4));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-panel);
+  background: var(--gradient-ticks), var(--gradient-monolith);
+  box-shadow: 0 30px 80px -40px var(--color-accent-border);
+}
+
+.board-sumhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.board-sumhead .kicker {
+  margin: 0;
+}
+
+.board-rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.board-rows > div {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.board-rows dt {
+  font: var(--font-weight-semibold) var(--font-size-hint) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.board-rows dd {
+  margin: 0;
+  font: var(--font-weight-semibold) var(--font-size-body) / 1.3 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+.board-total {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 2px var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-medium);
+  background: var(--color-scrim-soft);
+}
+
+.board-label {
+  font: var(--font-weight-semibold) var(--font-size-hint) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.board-total strong {
+  grid-row: span 2;
+  align-self: center;
+  font: var(--font-weight-bold) var(--font-size-h3) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+.board-total > span:last-child {
+  font: var(--font-weight-medium) var(--font-size-caption) / 1.3 var(--font-mono);
+  color: var(--color-text-tertiary);
+}
+
+.board-book {
+  width: 100%;
+}
+
+.board-caption {
+  margin: 0;
+  font-size: var(--font-size-caption);
+  line-height: 1.5;
+  color: var(--color-text-small);
+}
+
+.board-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--color-text-tertiary);
+}
+
+.board-bookings {
+  justify-self: start;
+}
+
+/* The phone's bottom bar: the chosen start, the cost, the way to the session. */
+.board-bar {
+  display: none;
+}
+
+@media (--below-lg) {
+  .board-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .board-sum {
+    position: static;
+  }
+}
+
+@media (--below-md) {
+  .board {
+    padding-top: var(--space-4);
+  }
+
+  .board-head {
+    padding-bottom: var(--space-3);
+  }
+
+  .board-facts {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .board-facts li {
+    flex: 1 1 7rem;
+    padding: var(--space-2);
+  }
+
+  .board-step {
+    flex-wrap: wrap;
+    margin-top: var(--space-6);
+  }
+
+  .board-aside {
+    text-align: left;
+  }
+
+  .board-nights {
+    padding-right: var(--space-6);
+  }
+
+  .board-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .board-targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .board-bar {
+    position: fixed;
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: calc(var(--size-app-bottom-nav) + var(--space-2));
+    z-index: 44;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-console);
+    background: var(--color-bar);
+    backdrop-filter: blur(14px);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font: var(--font-weight-medium) var(--font-size-caption) / 1 var(--font-mono);
+    box-shadow: var(--shadow-small);
+  }
+
+  .board-bar b {
+    margin-left: auto;
+    color: var(--color-text-primary);
+  }
+
+  .board-bar-go {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-control);
+    background: var(--color-action);
+    color: var(--color-on-action);
+    font: var(--font-weight-semibold) var(--font-size-tab) / 1 var(--font-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-target img,
+  .board-slot,
+  .board-night {
+    transition: none;
+  }
+}
