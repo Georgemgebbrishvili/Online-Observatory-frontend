@@ -1,0 +1,21 @@
+[WebServer] (node:47616) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:47646) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 1 worker
+
+(node:47651) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [setup] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.setup.ts:10:3 › sign in as the observer (26.1s)
+  ✓  2 [setup] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.setup.ts:10:3 › sign in as the operator (12.4s)
+(node:47757) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [operator] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator.spec.ts:14:3 › operator › shows live telemetry, SIMULATED, and Emergency Park on both routes (5.9s)
+  ✓  4 [operator] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator.spec.ts:31:3 › operator › fits a 320px screen on every route, in both languages (9.7s)
+  ✓  5 [operator] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator.spec.ts:46:3 › operator › offers GoTo only for targets with fixed coordinates (14.5s)
+  ✓  6 [operator] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator.spec.ts:53:3 › operator › switches to REAL only after presence is affirmed, then back (6.1s)
+  ✓  7 [operator] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator.spec.ts:87:3 › operator › Emergency Park parks the simulated mission in one click (9.4s)
+  ✓  8 [operator] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator.spec.ts:112:3 › non-operator › is sent back to the app, and the API refuses the console's data (6.4s)
+
+  8 passed (1.9m)

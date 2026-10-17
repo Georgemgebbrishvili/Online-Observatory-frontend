@@ -1,0 +1,490 @@
+{
+  "config": {
+    "argv": [
+      "/Users/nika/.nvm/versions/node/v24.14.1/bin/node",
+      "/Users/nika/Desktop/Stellar Observatory/part-2-clients/node_modules/.bin/playwright",
+      "test",
+      "--project=setup",
+      "--project=warm",
+      "--project=chromium",
+      "--workers=1",
+      "--reporter=list,json",
+      "e2e/reschedule.spec.ts:21",
+      "e2e/reserve.spec.ts:25",
+      "e2e/reserve.spec.ts:65",
+      "e2e/room-live.spec.ts:49"
+    ],
+    "configFile": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/playwright.config.ts",
+    "rootDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/auth\\.setup\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "warm",
+        "name": "warm",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/warm\\.setup\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [
+          "/auth\\.(setup|spec)\\.ts|warm\\.setup\\.ts|shell-signed-out\\.spec\\.ts|operator(-records)?\\.(evidence\\.)?spec\\.ts|visual\\.spec\\.ts/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "operator",
+        "name": "operator",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/operator\\.spec\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "operator-evidence",
+        "name": "operator-evidence",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/operator\\.evidence\\.spec\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "operator-records",
+        "name": "operator-records",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/operator-records\\.spec\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "signed-out",
+        "name": "signed-out",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/(auth|shell-signed-out)\\.spec\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "visual-setup",
+        "name": "visual-setup",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/auth\\.setup\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "visual",
+        "name": "visual",
+        "testDir": "/Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/visual\\.spec\\.ts/"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "auth.setup.ts",
+      "file": "auth.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "sign in as the observer",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8520,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T17:02:34.595Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "17e3fe6f4d9d8bd79c6b-31aaf0fa399329e5077e",
+          "file": "auth.setup.ts",
+          "line": 10,
+          "column": 3
+        },
+        {
+          "title": "sign in as the operator",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5591,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T17:02:44.380Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "17e3fe6f4d9d8bd79c6b-c15d579a768e701c523f",
+          "file": "auth.setup.ts",
+          "line": 10,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "title": "warm.setup.ts",
+      "file": "warm.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "warm every route so the parallel run is not racing the compiler",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "warm",
+              "projectName": "warm",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 107452,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T17:02:50.970Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dfe64be83b5c0df0fd9d-c7864cd20ce84f45c7ed",
+          "file": "warm.setup.ts",
+          "line": 22,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "reschedule.spec.ts",
+      "file": "reschedule.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "a lost slot is replaced with a free one, and the offer then closes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 14295,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T17:04:41.017Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b0a7a88cc87cdbe6411f-dc2163e9620c73b35f19",
+          "file": "reschedule.spec.ts",
+          "line": 21,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "reserve.spec.ts",
+      "file": "reserve.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "a slot is reserved, paid at the sandbox checkout, and confirmed",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13403,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T17:04:56.669Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a37e74bd9394cd542819-5f2ec619a26400edd09a",
+          "file": "reserve.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "a customer who left the checkout pays from the booking's own page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12355,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T17:05:10.117Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a37e74bd9394cd542819-4780d9d0f86b82ba636a",
+          "file": "reserve.spec.ts",
+          "line": 65,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "room-live.spec.ts",
+      "file": "room-live.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "the Georgian live room fits a phone",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4992,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T17:05:22.540Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d3adeb2d7565a0d4ca7a-a0380413abf424b9ccca",
+          "file": "room-live.spec.ts",
+          "line": 49,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-13T17:02:23.223Z",
+    "duration": 184722.594,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

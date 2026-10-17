@@ -1,0 +1,41 @@
+PASS [auth] register a new address — sent to verify-email (webhook sender configured, ADR-049 not taken)
+FAIL [auth] verification link from the mail sink signs the address in
+FAIL [auth] sign out from the app bar returns to sign-in
+PASS [auth] wrong password is refused with the localized alert
+PASS [auth] wrong password, Georgian
+PASS [auth] Continue with Google is present and routed on sign-in and register
+PASS [auth] Google start without a configured client fails closed — records what the platform does with no Google client; see platform env
+PASS [auth] demo observer signs in
+PASS [book] slots are offered on /en/app/book
+PASS [book] reserve the first bookable slot and reach the sandbox checkout
+PASS [book] sandbox payment confirms the booking
+FAIL [book] the booking appears in Book / bookings
+PASS [book] the booking page in Georgian
+PASS [room] the app home names the next mission or booking
+PASS [room] a booked mission can be started now (only if its slot is open) — slot not open yet; start not offered (expected for a future slot)
+FAIL [room] the seeded missions' rooms render with the simulated badge — no mission links on /en/app/missions
+PASS [room] the live room on a phone, Georgian
+FAIL [room] collection renders simulated captures
+PASS [room] a second session of the same account is refused ownership (watch page of the shared seeded mission) — seeded shared mission is COMPLETE; watch page states its outcome
+FAIL [operator] telemetry: both observatories SIMULATED and Emergency Park enabled
+FAIL [operator] the observer is denied the operator console
+PASS [operator] target disable then enable (restored)
+FAIL [operator] audit log filters by category
+FAIL [operator] missions list and cancellation of the QA booking's mission with a refund
+FAIL [operator] Emergency Park on the simulator
+PASS [operator] operator console on a phone, Georgian
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "load"
+============================================================
+    at /Users/nika/Desktop/Stellar Observatory/part-2-clients/docs/evidence/qa-2026-10-13/real-stack/run.mjs:325:108 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.14.1
+exit 1

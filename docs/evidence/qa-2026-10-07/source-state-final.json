@@ -1,0 +1,32 @@
+{
+  "part-2-clients": {
+    "head": "316536c7b4b716aaf9d65b50060b8f415a856598",
+    "status": [
+      "?? docs/evidence/qa-2026-10-07/",
+      "?? docs/test-audit-2026-10-07.md"
+    ],
+    "changedFileSha256": {
+      "docs/test-audit-2026-10-07.md": "116d1c7a791b87c6a10267ff66aa7f7561cbff01dd6c482357d9dcd013816c2c"
+    }
+  },
+  "part-1-platform": {
+    "head": "84101b1e09cb2c661563bcb2503ae8c8723f67b5",
+    "status": [
+      " M apps/api/src/app/payments/[paymentId]/sandbox-checkout/route.ts",
+      " M apps/api/src/features/missions/observer-pack.integration.test.ts",
+      " M apps/api/src/features/missions/observer-pack.ts",
+      " M apps/api/src/features/missions/observers.integration.test.ts",
+      " M apps/api/src/features/payments/sandbox-checkout.integration.test.ts",
+      " M apps/api/src/features/payments/sandbox-checkout.ts"
+    ],
+    "changedFileSha256": {
+      "apps/api/src/app/payments/[paymentId]/sandbox-checkout/route.ts": "6562671a4222e1a8943a35f0a3437324caac15f613c501a22476c85101d120d3",
+      "apps/api/src/features/missions/observer-pack.integration.test.ts": "3fd873e5c700ec1a546527e0ada1402ae838db43aba21fe7708c0433bd798480",
+      "apps/api/src/features/missions/observer-pack.ts": "f0563093d1fe41c47d51a449a8e0d7f80af91224db47ff42d25fa4c950c61f3e",
+      "apps/api/src/features/missions/observers.integration.test.ts": "82133decb150ebc8e7d53798d266093fb357ab6095152d42a31030dd190a39f5",
+      "apps/api/src/features/payments/sandbox-checkout.integration.test.ts": "02ecff5e7774376b02ad73c196a8354ee57513a9bda8b0e0254c8c5bfa0b766d",
+      "apps/api/src/features/payments/sandbox-checkout.ts": "ad0aff2444d37a43c930112e6ce1d264c7b548030864ec651d49465cc24561d1"
+    }
+  },
+  "capturedAt": "2026-10-07T16:08:13.534371+00:00"
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "workspace": "api",
+    "exit": 0,
+    "seconds": 189.16
+  },
+  {
+    "workspace": "realtime",
+    "exit": 0,
+    "seconds": 149.53
+  },
+  {
+    "workspace": "storage",
+    "exit": 1,
+    "seconds": 5.09
+  }
+]

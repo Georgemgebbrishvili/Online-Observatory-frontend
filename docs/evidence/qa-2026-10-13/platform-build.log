@@ -1,0 +1,96 @@
+
+> darkview-platform@0.1.0 build
+> npm run build --workspace @darkview/api
+
+
+> @darkview/api@0.1.0 build
+> next build
+
+▲ Next.js 16.4.0 (Turbopack)
+✓ Running next.config.ts took 4.3s
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 8.4s
+  Running TypeScript ...
+  Finished TypeScript in 28.8s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/4) ...
+  Generating static pages using 3 workers (1/4) 
+  Generating static pages using 3 workers (2/4) 
+  Generating static pages using 3 workers (3/4) 
+✓ Generating static pages using 3 workers (4/4) in 223ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /admin/logs
+├ ƒ /admin/loyalty/adjustments
+├ ƒ /admin/missions
+├ ƒ /admin/missions/[missionId]/cancel
+├ ƒ /admin/network/nodes
+├ ƒ /admin/network/nodes/[nodeId]
+├ ƒ /admin/network/nodes/[nodeId]/approve
+├ ƒ /admin/network/nodes/[nodeId]/device-token
+├ ƒ /admin/network/nodes/[nodeId]/device-token/revoke
+├ ƒ /admin/network/nodes/[nodeId]/device-token/rotate
+├ ƒ /admin/network/nodes/[nodeId]/suspend
+├ ƒ /admin/observatories/[observatoryId]/mode
+├ ƒ /admin/observatories/[observatoryId]/safety-envelope
+├ ƒ /admin/observatories/[observatoryId]/state
+├ ƒ /admin/observatories/[observatoryId]/weather-hold
+├ ƒ /admin/override
+├ ƒ /admin/targets/[targetId]
+├ ƒ /auth/google/callback
+├ ƒ /auth/google/start
+├ ƒ /auth/password-reset
+├ ƒ /auth/password-reset/confirm
+├ ƒ /auth/register
+├ ƒ /auth/sign-in
+├ ƒ /auth/sign-out
+├ ƒ /auth/verify-email
+├ ƒ /bookings
+├ ƒ /bookings/[bookingId]
+├ ƒ /bookings/[bookingId]/cancel
+├ ƒ /bookings/[bookingId]/refund
+├ ƒ /bookings/[bookingId]/reschedule
+├ ƒ /captures
+├ ƒ /captures/[captureId]
+├ ƒ /captures/[captureId]/download
+├ ƒ /health
+├ ƒ /loyalty
+├ ƒ /loyalty/scheme
+├ ƒ /me
+├ ƒ /me/email
+├ ƒ /me/password
+├ ƒ /missions
+├ ƒ /missions/[missionId]
+├ ƒ /missions/[missionId]/command
+├ ƒ /missions/[missionId]/events
+├ ƒ /missions/[missionId]/observation
+├ ƒ /missions/[missionId]/observer-pack
+├ ƒ /missions/[missionId]/observers
+├ ƒ /missions/[missionId]/start
+├ ƒ /missions/[missionId]/watch
+├ ƒ /network/nodes
+├ ƒ /network/nodes/[nodeId]/submit
+├ ƒ /observatories
+├ ƒ /observatories/[observatoryId]/conditions
+├ ƒ /observatories/[observatoryId]/state
+├ ƒ /payments/[paymentId]/sandbox-checkout
+├ ƒ /payments/webhook
+├ ƒ /slots
+├ ƒ /subscription
+├ ƒ /subscription/cancel
+├ ƒ /subscription/pause
+├ ƒ /subscription/plans
+├ ƒ /subscription/resume
+├ ƒ /targets
+├ ƒ /targets/[slug]
+├ ƒ /targets/tonight
+├ ƒ /targets/visibility
+└ ƒ /vouchers
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

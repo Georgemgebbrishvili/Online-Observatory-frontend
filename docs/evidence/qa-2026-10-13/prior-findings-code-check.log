@@ -1,0 +1,89 @@
+=== 10-07 P2 observatory facts dl (observatory-page.tsx)
+134:    <div className="observatory-facts">
+139:        <dl className="observatory-fact-text">
+140:          <dt>{scene.cloudAbout}</dt>
+141:          <dd>
+152:        <dl className="observatory-fact-text">
+153:          <dt>{scene.firstHour}</dt>
+154:          <dd>{first ? siteHour(first.at, timezone, locale) : scene.noHours}</dd>
+328:        <dl className="observatory-specs">
+332:                <dt>{copy.aperture}</dt>
+333:                <dd className="figure">{telescope.apertureMm} mm</dd>
+336:                <dt>{copy.focalLength}</dt>
+337:                <dd className="figure">{telescope.focalLengthMm} mm</dd>
+
+=== 10-07 P2 mission-step-dot (room.css)
+apps/web/src/styles/room.css:494:.mission-step-dot {
+apps/web/src/styles/room.css:507:.mission-step-dot svg {
+apps/web/src/styles/room.css:535:[data-status="done"] .mission-step-dot {
+apps/web/src/styles/room.css:544:[data-status="current"] .mission-step-dot {
+apps/web/src/styles/room.css:553:[data-status="stopped"] .mission-step-dot {
+apps/web/src/styles/room.css:579:  .mission-step-dot {
+apps/web/src/styles/room.css:589:  .mission-step-dot svg {
+apps/web/src/styles/room.css:593:  [data-status="done"] .mission-step-dot {
+apps/web/src/styles/room.css:599:  [data-status] .mission-step-dot {
+apps/web/src/styles/room.css:603:  [data-status="current"] .mission-step-dot {
+apps/web/src/styles/room.css:608:  [data-status="stopped"] .mission-step-dot {
+apps/web/src/components/room/mission-steps.tsx:20:    <svg viewBox="0 0 16 16" aria-hidden="true">
+
+=== 10-07 P2 status scroll region (status-page.tsx)
+253:                className="status-table-scroll"
+254-                role="region"
+255-                aria-label={copy.conditions.tableLabel}
+256-                tabIndex={0}
+257-              >
+
+=== 10-07 P2 request timeout (client.ts / browser.ts)
+apps/web/src/lib/platform/browser.ts:47:    signal: AbortSignal.timeout(apiTimeoutMs),
+apps/web/src/lib/platform/client.ts:51:    signal: AbortSignal.timeout(platformTimeoutMs),
+
+=== 10-07 P1 reconnect it.fails (realtime)
+106:  it("keeps an OBSERVING mission live when the agent reconnects holding it", async () => {
+
+=== 10-07 P1 versions
+../part-1-platform/apps/api/package.json:    "next": "16.4.0",
+apps/web/package.json:    "next": "16.4.0",
+package-lock.json-      "version": "16.4.0",
+package-lock.json-      "version": "0.35.5",
+../part-1-platform/package-lock.json-      "version": "16.4.0",
+../part-1-platform/package-lock.json-      "version": "0.35.5",
+
+=== 10-07 P2 python ranges
+../part-1-platform/agent/pyproject.toml:14:    "pillow>=11,<12",
+../part-1-platform/agent/pyproject.toml:19:    "pytest>=8.3,<9",
+../part-1-platform/agent/pyproject.toml:21:    "pytest-cov>=7.0,<8",
+../part-1-platform/agent/pyproject.toml:33:[tool.pytest.ini_options]
+../part-1-platform/agent/requirements-dev.txt:21:pillow==11.3.0
+../part-1-platform/agent/requirements-dev.txt:35:pytest==8.4.2
+../part-1-platform/agent/requirements-dev.txt:36:pytest-cov==7.0.0
+pillow                   11.3.0
+pytest                   8.4.2
+
+=== 10-07 fix commits
+52942c3 fix(web): accessibility and request-budget findings from the 2026-10-07 test audit
+commit 52942c308d67ed0621b5b5145d429facc6ea422f
+Author: George Mgebrishvili <332516663+Georgemgebbrishvili@users.noreply.github.com>
+Date:   Wed Oct 7 23:03:10 2026 +0400
+
+    fix(web): accessibility and request-budget findings from the 2026-10-07 test audit
+    
+    - Observatory facts: each fact is its own <dl> of one <dt> and one <dd>, beside its icon;
+      axe's definition-list and dlitem rules flagged the wrapper and icons inside the list.
+    - Mission progress on a phone: the bar's step number is transparent at every state's
+      specificity, so the current step no longer paints it at 1.62:1 on orange, and the dot
+      is hidden from assistive technology, which reads the step from the list.
+    - Status table: the overflowing wrapper is a labelled, focusable region with the focus
+      ring, so WebKit's keyboard reaches and scrolls it.
+    - platformRequest gives up after 10 s and apiRequest after 15 s, and each fails as an
+      unreachable platform already does. The live channels do not go through either.
+
+ .../components/observatory/observatory-page.tsx    | 12 ++---
+ apps/web/src/components/room/mission-steps.tsx     |  2 +-
+ apps/web/src/components/status/status-page.tsx     |  8 +++-
+ apps/web/src/lib/platform/browser.test.ts          | 52 ++++++++++++++++++++++
+ apps/web/src/lib/platform/browser.ts               |  7 +++
+ apps/web/src/lib/platform/client.ts                |  4 ++
+ apps/web/src/styles/observatory.css                |  2 +-
+ apps/web/src/styles/room.css                       |  6 +++
+ apps/web/src/styles/status.css                     |  5 +++
+ 9 files changed, 89 insertions(+), 9 deletions(-)

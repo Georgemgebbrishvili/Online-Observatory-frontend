@@ -1,0 +1,13 @@
+
+> darkview-platform@0.1.0 test:e2e
+> vitest run --config vitest.e2e.config.ts
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-1-platform
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  19:29:59
+   Duration  28.26s (transform 7.98s, setup 0ms, import 13.06s, tests 12.76s, environment 0ms)
+

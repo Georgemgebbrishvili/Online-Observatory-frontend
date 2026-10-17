@@ -1,0 +1,5009 @@
+[
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "",
+    "status": 200,
+    "url": "http://localhost:3100/en",
+    "seconds": 6.31,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "The real sky, live."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 2,
+      "violations": []
+    },
+    "screenshot": "audit-en-public-home-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "pricing",
+    "status": 200,
+    "url": "http://localhost:3100/en/pricing",
+    "seconds": 6.55,
+    "title": "Pricing · Stellar",
+    "lang": "en",
+    "h1": [
+      "What it costs today."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": []
+    },
+    "screenshot": "audit-en-public-pricing-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "observatory",
+    "status": 200,
+    "url": "http://localhost:3100/en/observatory",
+    "seconds": 15.2,
+    "title": "Tbilisi Observatory · Stellar",
+    "lang": "en",
+    "h1": [
+      "Stellar Tbilisi"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "definition-list",
+          "impact": "serious",
+          "description": "Ensure <dl> elements are structured correctly",
+          "help": "<dl> elements must only directly contain properly-ordered <dt> and <dd> groups, <script>, <template> or <div> elements",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-facts"
+              ],
+              "summary": "Fix all of the following:\n  dl element has direct children that are not allowed: div > span, div > div",
+              "html": "<dl class=\"observatory-facts\">"
+            }
+          ]
+        },
+        {
+          "id": "dlitem",
+          "impact": "serious",
+          "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
+          "help": "<dt> and <dd> elements must be contained by a <dl>",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>Forecast, first hour</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>12% cloud</dd>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>First bookable hour</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>00:00</dd>"
+            }
+          ]
+        }
+      ]
+    },
+    "screenshot": "audit-en-public-observatory-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "status",
+    "status": 200,
+    "url": "http://localhost:3100/en/status",
+    "seconds": 8.45,
+    "title": "Observatory status · Stellar",
+    "lang": "en",
+    "h1": [
+      "What the telescope is doing now."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": [
+            {
+              "target": [
+                ".status-table-scroll"
+              ],
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable",
+              "html": "<div class=\"status-table-scroll\">"
+            }
+          ]
+        }
+      ]
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "terms",
+    "status": 200,
+    "url": "http://localhost:3100/en/terms",
+    "seconds": 6.38,
+    "title": "Terms of service · Stellar",
+    "lang": "en",
+    "h1": [
+      "Terms of service"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "privacy",
+    "status": 200,
+    "url": "http://localhost:3100/en/privacy",
+    "seconds": 5.58,
+    "title": "Privacy policy · Stellar",
+    "lang": "en",
+    "h1": [
+      "Privacy policy"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "refunds",
+    "status": 200,
+    "url": "http://localhost:3100/en/refunds",
+    "seconds": 4.5,
+    "title": "Refund policy · Stellar",
+    "lang": "en",
+    "h1": [
+      "Refund policy"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "sign-in",
+    "status": 200,
+    "url": "http://localhost:3100/en/sign-in",
+    "seconds": 2.67,
+    "title": "Sign in · Stellar",
+    "lang": "en",
+    "h1": [
+      "Welcome back."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "register",
+    "status": 200,
+    "url": "http://localhost:3100/en/register",
+    "seconds": 13.15,
+    "title": "Create account · Stellar",
+    "lang": "en",
+    "h1": [
+      "Begin your observing journey."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "reset-password",
+    "status": 200,
+    "url": "http://localhost:3100/en/reset-password",
+    "seconds": 8.11,
+    "title": "Reset password · Stellar",
+    "lang": "en",
+    "h1": [
+      "Reset your password."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "verify-email",
+    "status": 200,
+    "url": "http://localhost:3100/en/verify-email",
+    "seconds": 6.31,
+    "title": "Verify email · Stellar",
+    "lang": "en",
+    "h1": [
+      "Check your email."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "not-found",
+    "status": 200,
+    "url": "http://localhost:3100/en/not-found",
+    "seconds": 6.75,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation not found"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "",
+    "status": 200,
+    "url": "http://localhost:3100/en",
+    "seconds": 4.49,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "The real sky, live."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "pricing",
+    "status": 200,
+    "url": "http://localhost:3100/en/pricing",
+    "seconds": 4.62,
+    "title": "Pricing · Stellar",
+    "lang": "en",
+    "h1": [
+      "What it costs today."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "observatory",
+    "status": 200,
+    "url": "http://localhost:3100/en/observatory",
+    "seconds": 6.92,
+    "title": "Tbilisi Observatory · Stellar",
+    "lang": "en",
+    "h1": [
+      "Stellar Tbilisi"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "definition-list",
+          "impact": "serious",
+          "description": "Ensure <dl> elements are structured correctly",
+          "help": "<dl> elements must only directly contain properly-ordered <dt> and <dd> groups, <script>, <template> or <div> elements",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-facts"
+              ],
+              "summary": "Fix all of the following:\n  dl element has direct children that are not allowed: div > span, div > div",
+              "html": "<dl class=\"observatory-facts\">"
+            }
+          ]
+        },
+        {
+          "id": "dlitem",
+          "impact": "serious",
+          "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
+          "help": "<dt> and <dd> elements must be contained by a <dl>",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>Forecast, first hour</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>12% cloud</dd>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>First bookable hour</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>00:00</dd>"
+            }
+          ]
+        }
+      ]
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "status",
+    "status": 200,
+    "url": "http://localhost:3100/en/status",
+    "seconds": 4.64,
+    "title": "Observatory status · Stellar",
+    "lang": "en",
+    "h1": [
+      "What the telescope is doing now."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": [
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": [
+            {
+              "target": [
+                ".status-table-scroll"
+              ],
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable",
+              "html": "<div class=\"status-table-scroll\">"
+            }
+          ]
+        }
+      ]
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "terms",
+    "status": 200,
+    "url": "http://localhost:3100/en/terms",
+    "seconds": 5.38,
+    "title": "Terms of service · Stellar",
+    "lang": "en",
+    "h1": [
+      "Terms of service"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "privacy",
+    "status": 200,
+    "url": "http://localhost:3100/en/privacy",
+    "seconds": 4.35,
+    "title": "Privacy policy · Stellar",
+    "lang": "en",
+    "h1": [
+      "Privacy policy"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "refunds",
+    "status": 200,
+    "url": "http://localhost:3100/en/refunds",
+    "seconds": 1.9,
+    "title": "Refund policy · Stellar",
+    "lang": "en",
+    "h1": [
+      "Refund policy"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "sign-in",
+    "status": 200,
+    "url": "http://localhost:3100/en/sign-in",
+    "seconds": 2.64,
+    "title": "Sign in · Stellar",
+    "lang": "en",
+    "h1": [
+      "Welcome back."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "register",
+    "status": 200,
+    "url": "http://localhost:3100/en/register",
+    "seconds": 5.1,
+    "title": "Create account · Stellar",
+    "lang": "en",
+    "h1": [
+      "Begin your observing journey."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "reset-password",
+    "status": 200,
+    "url": "http://localhost:3100/en/reset-password",
+    "seconds": 2.35,
+    "title": "Reset password · Stellar",
+    "lang": "en",
+    "h1": [
+      "Reset your password."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "verify-email",
+    "status": 200,
+    "url": "http://localhost:3100/en/verify-email",
+    "seconds": 3.78,
+    "title": "Verify email · Stellar",
+    "lang": "en",
+    "h1": [
+      "Check your email."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "not-found",
+    "status": 200,
+    "url": "http://localhost:3100/en/not-found",
+    "seconds": 7.76,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation not found"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "",
+    "status": 200,
+    "url": "http://localhost:3100/en",
+    "seconds": 8.27,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "The real sky, live."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "screenshot": "audit-en-public-home-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "pricing",
+    "status": 200,
+    "url": "http://localhost:3100/en/pricing",
+    "seconds": 9.07,
+    "title": "Pricing · Stellar",
+    "lang": "en",
+    "h1": [
+      "What it costs today."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 2,
+      "violations": []
+    },
+    "screenshot": "audit-en-public-pricing-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "observatory",
+    "status": 200,
+    "url": "http://localhost:3100/en/observatory",
+    "seconds": 14.44,
+    "title": "Tbilisi Observatory · Stellar",
+    "lang": "en",
+    "h1": [
+      "Stellar Tbilisi"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "definition-list",
+          "impact": "serious",
+          "description": "Ensure <dl> elements are structured correctly",
+          "help": "<dl> elements must only directly contain properly-ordered <dt> and <dd> groups, <script>, <template> or <div> elements",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-facts"
+              ],
+              "summary": "Fix all of the following:\n  dl element has direct children that are not allowed: div > span, div > div",
+              "html": "<dl class=\"observatory-facts\">"
+            }
+          ]
+        },
+        {
+          "id": "dlitem",
+          "impact": "serious",
+          "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
+          "help": "<dt> and <dd> elements must be contained by a <dl>",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>Forecast, first hour</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>12% cloud</dd>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>First bookable hour</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>00:00</dd>"
+            }
+          ]
+        }
+      ]
+    },
+    "screenshot": "audit-en-public-observatory-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "status",
+    "status": 200,
+    "url": "http://localhost:3100/en/status",
+    "seconds": 8.48,
+    "title": "Observatory status · Stellar",
+    "lang": "en",
+    "h1": [
+      "What the telescope is doing now."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "terms",
+    "status": 200,
+    "url": "http://localhost:3100/en/terms",
+    "seconds": 3.04,
+    "title": "Terms of service · Stellar",
+    "lang": "en",
+    "h1": [
+      "Terms of service"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "privacy",
+    "status": 200,
+    "url": "http://localhost:3100/en/privacy",
+    "seconds": 6.74,
+    "title": "Privacy policy · Stellar",
+    "lang": "en",
+    "h1": [
+      "Privacy policy"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "refunds",
+    "status": 200,
+    "url": "http://localhost:3100/en/refunds",
+    "seconds": 3.23,
+    "title": "Refund policy · Stellar",
+    "lang": "en",
+    "h1": [
+      "Refund policy"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "sign-in",
+    "status": 200,
+    "url": "http://localhost:3100/en/sign-in",
+    "seconds": 4.96,
+    "title": "Sign in · Stellar",
+    "lang": "en",
+    "h1": [
+      "Welcome back."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "register",
+    "status": 200,
+    "url": "http://localhost:3100/en/register",
+    "seconds": 4.04,
+    "title": "Create account · Stellar",
+    "lang": "en",
+    "h1": [
+      "Begin your observing journey."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "reset-password",
+    "status": 200,
+    "url": "http://localhost:3100/en/reset-password",
+    "seconds": 3.5,
+    "title": "Reset password · Stellar",
+    "lang": "en",
+    "h1": [
+      "Reset your password."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "verify-email",
+    "status": 200,
+    "url": "http://localhost:3100/en/verify-email",
+    "seconds": 7.14,
+    "title": "Verify email · Stellar",
+    "lang": "en",
+    "h1": [
+      "Check your email."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "not-found",
+    "status": 200,
+    "url": "http://localhost:3100/en/not-found",
+    "seconds": 3.49,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation not found"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "",
+    "status": 200,
+    "url": "http://localhost:3100/ka",
+    "seconds": 10.59,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "შენი დრო ნამდვილ ცასთან."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 2,
+      "violations": []
+    },
+    "screenshot": "audit-ka-public-home-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "pricing",
+    "status": 200,
+    "url": "http://localhost:3100/ka/pricing",
+    "seconds": 4.94,
+    "title": "ფასები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "რა ღირს დღეს."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": []
+    },
+    "screenshot": "audit-ka-public-pricing-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "observatory",
+    "status": 200,
+    "url": "http://localhost:3100/ka/observatory",
+    "seconds": 18.65,
+    "title": "თბილისის ობსერვატორია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "სტელარი თბილისი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "definition-list",
+          "impact": "serious",
+          "description": "Ensure <dl> elements are structured correctly",
+          "help": "<dl> elements must only directly contain properly-ordered <dt> and <dd> groups, <script>, <template> or <div> elements",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-facts"
+              ],
+              "summary": "Fix all of the following:\n  dl element has direct children that are not allowed: div > span, div > div",
+              "html": "<dl class=\"observatory-facts\">"
+            }
+          ]
+        },
+        {
+          "id": "dlitem",
+          "impact": "serious",
+          "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
+          "help": "<dt> and <dd> elements must be contained by a <dl>",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>პროგნოზი, პირველი საათი</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>12% ღრუბელი</dd>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>პირველი ჯავშნადი საათი</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>00:00</dd>"
+            }
+          ]
+        }
+      ]
+    },
+    "screenshot": "audit-ka-public-observatory-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "status",
+    "status": 200,
+    "url": "http://localhost:3100/ka/status",
+    "seconds": 10.96,
+    "title": "ობსერვატორიის სტატუსი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "რას აკეთებს ტელესკოპი ახლა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": [
+            {
+              "target": [
+                ".status-table-scroll"
+              ],
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable",
+              "html": "<div class=\"status-table-scroll\">"
+            }
+          ]
+        }
+      ]
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "terms",
+    "status": 200,
+    "url": "http://localhost:3100/ka/terms",
+    "seconds": 8.56,
+    "title": "მომსახურების პირობები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "მომსახურების პირობები"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "privacy",
+    "status": 200,
+    "url": "http://localhost:3100/ka/privacy",
+    "seconds": 11.7,
+    "title": "კონფიდენციალურობის პოლიტიკა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კონფიდენციალურობის პოლიტიკა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "refunds",
+    "status": 200,
+    "url": "http://localhost:3100/ka/refunds",
+    "seconds": 15.28,
+    "title": "თანხის დაბრუნების პოლიტიკა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "თანხის დაბრუნების პოლიტიკა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "sign-in",
+    "status": 200,
+    "url": "http://localhost:3100/ka/sign-in",
+    "seconds": 15.01,
+    "title": "შესვლა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კეთილი იყოს შენი დაბრუნება."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "register",
+    "status": 200,
+    "url": "http://localhost:3100/ka/register",
+    "seconds": 14.85,
+    "title": "ანგარიშის შექმნა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დაიწყე დაკვირვების გზა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "reset-password",
+    "status": 200,
+    "url": "http://localhost:3100/ka/reset-password",
+    "seconds": 12.75,
+    "title": "პაროლის აღდგენა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "აღადგინე პაროლი."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "verify-email",
+    "status": 200,
+    "url": "http://localhost:3100/ka/verify-email",
+    "seconds": 14.89,
+    "title": "ელფოსტის დადასტურება · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "შეამოწმე ელფოსტა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "not-found",
+    "status": 200,
+    "url": "http://localhost:3100/ka/not-found",
+    "seconds": 18.36,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება ვერ მოიძებნა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "",
+    "status": 200,
+    "url": "http://localhost:3100/ka",
+    "seconds": 15.78,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "შენი დრო ნამდვილ ცასთან."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "pricing",
+    "status": 200,
+    "url": "http://localhost:3100/ka/pricing",
+    "seconds": 13.69,
+    "title": "ფასები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "რა ღირს დღეს."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "observatory",
+    "status": 200,
+    "url": "http://localhost:3100/ka/observatory",
+    "seconds": 20.78,
+    "title": "თბილისის ობსერვატორია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "სტელარი თბილისი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "definition-list",
+          "impact": "serious",
+          "description": "Ensure <dl> elements are structured correctly",
+          "help": "<dl> elements must only directly contain properly-ordered <dt> and <dd> groups, <script>, <template> or <div> elements",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-facts"
+              ],
+              "summary": "Fix all of the following:\n  dl element has direct children that are not allowed: div > span, div > div",
+              "html": "<dl class=\"observatory-facts\">"
+            }
+          ]
+        },
+        {
+          "id": "dlitem",
+          "impact": "serious",
+          "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
+          "help": "<dt> and <dd> elements must be contained by a <dl>",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>პროგნოზი, პირველი საათი</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>12% ღრუბელი</dd>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>პირველი ჯავშნადი საათი</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>00:00</dd>"
+            }
+          ]
+        }
+      ]
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "status",
+    "status": 200,
+    "url": "http://localhost:3100/ka/status",
+    "seconds": 16.38,
+    "title": "ობსერვატორიის სტატუსი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "რას აკეთებს ტელესკოპი ახლა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": [
+            {
+              "target": [
+                ".status-table-scroll"
+              ],
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable",
+              "html": "<div class=\"status-table-scroll\">"
+            }
+          ]
+        }
+      ]
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "terms",
+    "status": 200,
+    "url": "http://localhost:3100/ka/terms",
+    "seconds": 8.4,
+    "title": "მომსახურების პირობები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "მომსახურების პირობები"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "privacy",
+    "status": 200,
+    "url": "http://localhost:3100/ka/privacy",
+    "seconds": 3.75,
+    "title": "კონფიდენციალურობის პოლიტიკა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კონფიდენციალურობის პოლიტიკა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "refunds",
+    "status": 200,
+    "url": "http://localhost:3100/ka/refunds",
+    "seconds": 3.81,
+    "title": "თანხის დაბრუნების პოლიტიკა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "თანხის დაბრუნების პოლიტიკა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "sign-in",
+    "status": 200,
+    "url": "http://localhost:3100/ka/sign-in",
+    "seconds": 3.51,
+    "title": "შესვლა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კეთილი იყოს შენი დაბრუნება."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "register",
+    "status": 200,
+    "url": "http://localhost:3100/ka/register",
+    "seconds": 3.84,
+    "title": "ანგარიშის შექმნა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დაიწყე დაკვირვების გზა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "reset-password",
+    "status": 200,
+    "url": "http://localhost:3100/ka/reset-password",
+    "seconds": 3.41,
+    "title": "პაროლის აღდგენა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "აღადგინე პაროლი."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "verify-email",
+    "status": 200,
+    "url": "http://localhost:3100/ka/verify-email",
+    "seconds": 3.56,
+    "title": "ელფოსტის დადასტურება · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "შეამოწმე ელფოსტა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "not-found",
+    "status": 200,
+    "url": "http://localhost:3100/ka/not-found",
+    "seconds": 3.54,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება ვერ მოიძებნა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "",
+    "status": 200,
+    "url": "http://localhost:3100/ka",
+    "seconds": 6.96,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "შენი დრო ნამდვილ ცასთან."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "screenshot": "audit-ka-public-home-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "pricing",
+    "status": 200,
+    "url": "http://localhost:3100/ka/pricing",
+    "seconds": 5.19,
+    "title": "ფასები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "რა ღირს დღეს."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 2,
+      "violations": []
+    },
+    "screenshot": "audit-ka-public-pricing-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "observatory",
+    "status": 200,
+    "url": "http://localhost:3100/ka/observatory",
+    "seconds": 18.67,
+    "title": "თბილისის ობსერვატორია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "სტელარი თბილისი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "definition-list",
+          "impact": "serious",
+          "description": "Ensure <dl> elements are structured correctly",
+          "help": "<dl> elements must only directly contain properly-ordered <dt> and <dd> groups, <script>, <template> or <div> elements",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-facts"
+              ],
+              "summary": "Fix all of the following:\n  dl element has direct children that are not allowed: div > span, div > div",
+              "html": "<dl class=\"observatory-facts\">"
+            }
+          ]
+        },
+        {
+          "id": "dlitem",
+          "impact": "serious",
+          "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
+          "help": "<dt> and <dd> elements must be contained by a <dl>",
+          "nodes": [
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>პროგნოზი, პირველი საათი</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(1) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>12% ღრუბელი</dd>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dt"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dt>პირველი ჯავშნადი საათი</dt>"
+            },
+            {
+              "target": [
+                ".observatory-fact:nth-child(2) > .observatory-fact-text > dd"
+              ],
+              "summary": "Fix any of the following:\n  Description list item does not have a <dl> parent element",
+              "html": "<dd>00:00</dd>"
+            }
+          ]
+        }
+      ]
+    },
+    "screenshot": "audit-ka-public-observatory-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "status",
+    "status": 200,
+    "url": "http://localhost:3100/ka/status",
+    "seconds": 10.02,
+    "title": "ობსერვატორიის სტატუსი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "რას აკეთებს ტელესკოპი ახლა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "terms",
+    "status": 200,
+    "url": "http://localhost:3100/ka/terms",
+    "seconds": 8.7,
+    "title": "მომსახურების პირობები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "მომსახურების პირობები"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "privacy",
+    "status": 200,
+    "url": "http://localhost:3100/ka/privacy",
+    "seconds": 6.71,
+    "title": "კონფიდენციალურობის პოლიტიკა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კონფიდენციალურობის პოლიტიკა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "refunds",
+    "status": 200,
+    "url": "http://localhost:3100/ka/refunds",
+    "seconds": 3.43,
+    "title": "თანხის დაბრუნების პოლიტიკა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "თანხის დაბრუნების პოლიტიკა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "sign-in",
+    "status": 200,
+    "url": "http://localhost:3100/ka/sign-in",
+    "seconds": 2.65,
+    "title": "შესვლა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კეთილი იყოს შენი დაბრუნება."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "register",
+    "status": 200,
+    "url": "http://localhost:3100/ka/register",
+    "seconds": 2.79,
+    "title": "ანგარიშის შექმნა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დაიწყე დაკვირვების გზა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "reset-password",
+    "status": 200,
+    "url": "http://localhost:3100/ka/reset-password",
+    "seconds": 3.15,
+    "title": "პაროლის აღდგენა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "აღადგინე პაროლი."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "verify-email",
+    "status": 200,
+    "url": "http://localhost:3100/ka/verify-email",
+    "seconds": 2.46,
+    "title": "ელფოსტის დადასტურება · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "შეამოწმე ელფოსტა."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "not-found",
+    "status": 200,
+    "url": "http://localhost:3100/ka/not-found",
+    "seconds": 2.12,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება ვერ მოიძებნა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app",
+    "status": 200,
+    "url": "http://localhost:3100/en/app",
+    "seconds": 6.82,
+    "title": "Home · Stellar",
+    "lang": "en",
+    "h1": [
+      "Welcome back, Observer."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-en-observer-app-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/missions",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions",
+    "seconds": 3.91,
+    "title": "Missions · Stellar",
+    "lang": "en",
+    "h1": [
+      "Tonight's targets"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "BUTTON",
+        "text": "Moon"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Globular clusters"
+      }
+    ],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/collection",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/collection",
+    "seconds": 14.59,
+    "title": "Collection · Stellar",
+    "lang": "en",
+    "h1": [
+      "A sky only you have seen."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/profile",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/profile",
+    "seconds": 10.65,
+    "title": "Your profile · Stellar",
+    "lang": "en",
+    "h1": [
+      "Your profile."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-en-observer-app-profile-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/bookings",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/bookings",
+    "seconds": 6.86,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation not found"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/book",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/book",
+    "seconds": 6.99,
+    "title": "Book an observation · Stellar",
+    "lang": "en",
+    "h1": [
+      "Time on the telescope."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "A",
+        "text": "Fri 9 Oct"
+      },
+      {
+        "tag": "A",
+        "text": "Sat 10 Oct"
+      },
+      {
+        "tag": "A",
+        "text": "Sun 11 Oct"
+      },
+      {
+        "tag": "A",
+        "text": "Mon 12 Oct"
+      },
+      {
+        "tag": "A",
+        "text": "Tue 13 Oct"
+      }
+    ],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-en-observer-app-book-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/subscription",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/subscription",
+    "seconds": 2.92,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Subscription"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/loyalty",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/loyalty",
+    "seconds": 3.0,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Loyalty"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/passes",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/passes",
+    "seconds": 3.81,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation Pass"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/missions/saturn",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions/saturn",
+    "seconds": 5.09,
+    "title": "Saturn · Stellar",
+    "lang": "en",
+    "h1": [
+      "Saturn"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session",
+    "seconds": 12.24,
+    "title": "Hercules Cluster · Mission · Stellar",
+    "lang": "en",
+    "h1": [
+      "Observing Hercules Cluster"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                "li[data-status=\"current\"] > .mission-step-dot"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.62 (foreground color: #f6b062, background color: #e8742f, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1",
+              "html": "<span class=\"mission-step-dot\">04</span>"
+            }
+          ]
+        }
+      ]
+    },
+    "screenshot": "audit-en-observer-app-missions-20000000-0000-4000-8000-000000000001-session-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001",
+    "seconds": 7.18,
+    "title": "Hercules Cluster · Stellar",
+    "lang": "en",
+    "h1": [
+      "Hercules Cluster"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app",
+    "status": 200,
+    "url": "http://localhost:3100/en/app",
+    "seconds": 11.16,
+    "title": "Home · Stellar",
+    "lang": "en",
+    "h1": [
+      "Welcome back, Observer."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/missions",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions",
+    "seconds": 4.6,
+    "title": "Missions · Stellar",
+    "lang": "en",
+    "h1": [
+      "Tonight's targets"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/collection",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/collection",
+    "seconds": 6.82,
+    "title": "Collection · Stellar",
+    "lang": "en",
+    "h1": [
+      "A sky only you have seen."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/profile",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/profile",
+    "seconds": 5.85,
+    "title": "Your profile · Stellar",
+    "lang": "en",
+    "h1": [
+      "Your profile."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/bookings",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/bookings",
+    "seconds": 4.82,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation not found"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/book",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/book",
+    "seconds": 10.94,
+    "title": "Book an observation · Stellar",
+    "lang": "en",
+    "h1": [
+      "Time on the telescope."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "A",
+        "text": "Mon 12 Oct"
+      },
+      {
+        "tag": "A",
+        "text": "Tue 13 Oct"
+      }
+    ],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/subscription",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/subscription",
+    "seconds": 4.67,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Subscription"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/loyalty",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/loyalty",
+    "seconds": 4.12,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Loyalty"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/passes",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/passes",
+    "seconds": 4.1,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation Pass"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/missions/saturn",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions/saturn",
+    "seconds": 6.68,
+    "title": "Saturn · Stellar",
+    "lang": "en",
+    "h1": [
+      "Saturn"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session",
+    "seconds": 10.1,
+    "title": "Hercules Cluster · Mission · Stellar",
+    "lang": "en",
+    "h1": [
+      "Observing Hercules Cluster"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001",
+    "seconds": 8.85,
+    "title": "Hercules Cluster · Stellar",
+    "lang": "en",
+    "h1": [
+      "Hercules Cluster"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app",
+    "status": 200,
+    "url": "http://localhost:3100/en/app",
+    "seconds": 10.14,
+    "title": "Home · Stellar",
+    "lang": "en",
+    "h1": [
+      "Welcome back, Observer."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-en-observer-app-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/missions",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions",
+    "seconds": 11.83,
+    "title": "Missions · Stellar",
+    "lang": "en",
+    "h1": [
+      "Tonight's targets"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/collection",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/collection",
+    "seconds": 10.53,
+    "title": "Collection · Stellar",
+    "lang": "en",
+    "h1": [
+      "A sky only you have seen."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/profile",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/profile",
+    "seconds": 6.6,
+    "title": "Your profile · Stellar",
+    "lang": "en",
+    "h1": [
+      "Your profile."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-en-observer-app-profile-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/bookings",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/bookings",
+    "seconds": 4.63,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation not found"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/book",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/book",
+    "seconds": 3.89,
+    "title": "Book an observation · Stellar",
+    "lang": "en",
+    "h1": [
+      "Time on the telescope."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 0,
+      "violations": []
+    },
+    "screenshot": "audit-en-observer-app-book-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/subscription",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/subscription",
+    "seconds": 2.34,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Subscription"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/loyalty",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/loyalty",
+    "seconds": 2.69,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Loyalty"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/passes",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/passes",
+    "seconds": 2.58,
+    "title": "Stellar by Astroman",
+    "lang": "en",
+    "h1": [
+      "Observation Pass"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/missions/saturn",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions/saturn",
+    "seconds": 3.99,
+    "title": "Saturn · Stellar",
+    "lang": "en",
+    "h1": [
+      "Saturn"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session",
+    "seconds": 4.29,
+    "title": "Hercules Cluster · Mission · Stellar",
+    "lang": "en",
+    "h1": [
+      "Observing Hercules Cluster"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-en-observer-app-missions-20000000-0000-4000-8000-000000000001-session-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "status": 200,
+    "url": "http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001",
+    "seconds": 4.85,
+    "title": "Hercules Cluster · Stellar",
+    "lang": "en",
+    "h1": [
+      "Hercules Cluster"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app",
+    "seconds": 6.82,
+    "title": "მთავარი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კეთილი იყოს შენი დაბრუნება, Observer."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-ka-observer-app-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/missions",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions",
+    "seconds": 9.12,
+    "title": "მისიები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ამაღამინდელი ობიექტები"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "BUTTON",
+        "text": "პლანეტები"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "მთვარე"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "სფერული გროვები"
+      }
+    ],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/collection",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/collection",
+    "seconds": 3.12,
+    "title": "კოლექცია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ცა, რომელიც მხოლოდ შენ ნახე."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/profile",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/profile",
+    "seconds": 2.07,
+    "title": "შენი პროფილი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "შენი პროფილი."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-ka-observer-app-profile-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/bookings",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/bookings",
+    "seconds": 2.96,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება ვერ მოიძებნა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/book",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/book",
+    "seconds": 3.81,
+    "title": "დაკვირვების დაჯავშნა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დრო ტელესკოპთან."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "A",
+        "text": "პარ, 9 ოქტ"
+      },
+      {
+        "tag": "A",
+        "text": "შაბ, 10 ოქტ"
+      },
+      {
+        "tag": "A",
+        "text": "კვი, 11 ოქტ"
+      },
+      {
+        "tag": "A",
+        "text": "ორშ, 12 ოქტ"
+      },
+      {
+        "tag": "A",
+        "text": "სამ, 13 ოქტ"
+      }
+    ],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-ka-observer-app-book-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/subscription",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/subscription",
+    "seconds": 2.96,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "გამოწერა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/loyalty",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/loyalty",
+    "seconds": 2.78,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "ლოიალობა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/passes",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/passes",
+    "seconds": 2.29,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვების პასი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/missions/saturn",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions/saturn",
+    "seconds": 4.06,
+    "title": "სატურნი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "სატურნი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session",
+    "seconds": 4.74,
+    "title": "ჰერკულესის გროვა · მისია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება მიმდინარეობს"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                "li[data-status=\"current\"] > .mission-step-dot"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.62 (foreground color: #f6b062, background color: #e8742f, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1",
+              "html": "<span class=\"mission-step-dot\">04</span>"
+            }
+          ]
+        }
+      ]
+    },
+    "screenshot": "audit-ka-observer-app-missions-20000000-0000-4000-8000-000000000001-session-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/collection/60000000-0000-4000-8000-000000000001",
+    "seconds": 8.06,
+    "title": "ჰერკულესის გროვა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ჰერკულესის გროვა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app",
+    "seconds": 7.41,
+    "title": "მთავარი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კეთილი იყოს შენი დაბრუნება, Observer."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/missions",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions",
+    "seconds": 4.4,
+    "title": "მისიები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ამაღამინდელი ობიექტები"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/collection",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/collection",
+    "seconds": 3.06,
+    "title": "კოლექცია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ცა, რომელიც მხოლოდ შენ ნახე."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/profile",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/profile",
+    "seconds": 3.37,
+    "title": "შენი პროფილი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "შენი პროფილი."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/bookings",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/bookings",
+    "seconds": 3.27,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება ვერ მოიძებნა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/book",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/book",
+    "seconds": 7.53,
+    "title": "დაკვირვების დაჯავშნა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დრო ტელესკოპთან."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "A",
+        "text": "ორშ, 12 ოქტ"
+      },
+      {
+        "tag": "A",
+        "text": "სამ, 13 ოქტ"
+      }
+    ],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/subscription",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/subscription",
+    "seconds": 7.32,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "გამოწერა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/loyalty",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/loyalty",
+    "seconds": 4.98,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "ლოიალობა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/passes",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/passes",
+    "seconds": 7.05,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვების პასი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/missions/saturn",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions/saturn",
+    "seconds": 4.86,
+    "title": "სატურნი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "სატურნი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session",
+    "seconds": 9.8,
+    "title": "ჰერკულესის გროვა · მისია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება მიმდინარეობს"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/collection/60000000-0000-4000-8000-000000000001",
+    "seconds": 7.49,
+    "title": "ჰერკულესის გროვა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ჰერკულესის გროვა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app",
+    "seconds": 5.04,
+    "title": "მთავარი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "კეთილი იყოს შენი დაბრუნება, Observer."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-ka-observer-app-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/missions",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions",
+    "seconds": 6.71,
+    "title": "მისიები · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ამაღამინდელი ობიექტები"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/collection",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/collection",
+    "seconds": 6.86,
+    "title": "კოლექცია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ცა, რომელიც მხოლოდ შენ ნახე."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 22,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/profile",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/profile",
+    "seconds": 8.39,
+    "title": "შენი პროფილი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "შენი პროფილი."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-ka-observer-app-profile-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/bookings",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/bookings",
+    "seconds": 7.15,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება ვერ მოიძებნა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/book",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/book",
+    "seconds": 10.1,
+    "title": "დაკვირვების დაჯავშნა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დრო ტელესკოპთან."
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 0,
+      "violations": []
+    },
+    "screenshot": "audit-ka-observer-app-book-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/subscription",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/subscription",
+    "seconds": 9.43,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "გამოწერა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/loyalty",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/loyalty",
+    "seconds": 11.61,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "ლოიალობა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/passes",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/passes",
+    "seconds": 5.79,
+    "title": "Stellar by Astroman",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვების პასი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 21,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/missions/saturn",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions/saturn",
+    "seconds": 17.43,
+    "title": "სატურნი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "სატურნი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session",
+    "seconds": 9.26,
+    "title": "ჰერკულესის გროვა · მისია · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "დაკვირვება მიმდინარეობს"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-ka-observer-app-missions-20000000-0000-4000-8000-000000000001-session-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "status": 200,
+    "url": "http://localhost:3100/ka/app/collection/60000000-0000-4000-8000-000000000001",
+    "seconds": 4.51,
+    "title": "ჰერკულესის გროვა · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ჰერკულესის გროვა"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin",
+    "seconds": 5.38,
+    "title": "Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 19,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin/control",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/control",
+    "seconds": 4.27,
+    "title": "Control · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-en-operator-admin-control-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin/missions",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/missions",
+    "seconds": 4.72,
+    "title": "Missions · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "A",
+        "text": "Logs"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel mission…"
+      },
+      {
+        "tag": "A",
+        "text": "Logs"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel mission…"
+      }
+    ],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin/targets",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/targets",
+    "seconds": 4.97,
+    "title": "Targets · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      }
+    ],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin/logs",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/logs",
+    "seconds": 5.91,
+    "title": "Logs · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin",
+    "seconds": 9.23,
+    "title": "Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 20,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin/control",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/control",
+    "seconds": 12.43,
+    "title": "Control · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin/missions",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/missions",
+    "seconds": 3.95,
+    "title": "Missions · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "A",
+        "text": "Logs"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel mission…"
+      },
+      {
+        "tag": "A",
+        "text": "Logs"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel mission…"
+      }
+    ],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin/targets",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/targets",
+    "seconds": 8.85,
+    "title": "Targets · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Disable"
+      }
+    ],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin/logs",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/logs",
+    "seconds": 8.59,
+    "title": "Logs · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin",
+    "seconds": 8.1,
+    "title": "Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin/control",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/control",
+    "seconds": 3.09,
+    "title": "Control · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-en-operator-admin-control-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin/missions",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/missions",
+    "seconds": 3.25,
+    "title": "Missions · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 25,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin/targets",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/targets",
+    "seconds": 3.71,
+    "title": "Targets · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin/logs",
+    "status": 200,
+    "url": "http://localhost:3100/en/admin/logs",
+    "seconds": 2.96,
+    "title": "Logs · Operator console · Stellar",
+    "lang": "en",
+    "h1": [
+      "Operator console"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin",
+    "seconds": 2.65,
+    "title": "ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin/control",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/control",
+    "seconds": 3.15,
+    "title": "მართვა · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-ka-operator-admin-control-390.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin/missions",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/missions",
+    "seconds": 2.16,
+    "title": "მისიები · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "A",
+        "text": "ჟურნალი"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "მისიის გაუქმება…"
+      },
+      {
+        "tag": "A",
+        "text": "ჟურნალი"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "მისიის გაუქმება…"
+      }
+    ],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin/targets",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/targets",
+    "seconds": 3.0,
+    "title": "ობიექტები · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      }
+    ],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin/logs",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/logs",
+    "seconds": 3.91,
+    "title": "ჟურნალი · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin",
+    "seconds": 4.63,
+    "title": "ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin/control",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/control",
+    "seconds": 9.38,
+    "title": "მართვა · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin/missions",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/missions",
+    "seconds": 7.82,
+    "title": "მისიები · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 2,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin/targets",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/targets",
+    "seconds": 6.9,
+    "title": "ობიექტები · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "გამორთვა"
+      }
+    ],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin/logs",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/logs",
+    "seconds": 2.68,
+    "title": "ჟურნალი · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin",
+    "seconds": 4.39,
+    "title": "ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin/control",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/control",
+    "seconds": 3.31,
+    "title": "მართვა · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 24,
+      "incomplete": 1,
+      "violations": []
+    },
+    "screenshot": "audit-ka-operator-admin-control-1440.png",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin/missions",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/missions",
+    "seconds": 2.77,
+    "title": "მისიები · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 26,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin/targets",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/targets",
+    "seconds": 2.79,
+    "title": "ობიექტები · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 23,
+      "incomplete": 0,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin/logs",
+    "status": 200,
+    "url": "http://localhost:3100/ka/admin/logs",
+    "seconds": 2.61,
+    "title": "ჟურნალი · ოპერატორის პანელი · სტელარი",
+    "lang": "ka",
+    "h1": [
+      "ოპერატორის პანელი"
+    ],
+    "overflow": false,
+    "brokenImages": [],
+    "offscreen": [],
+    "accessibility": {
+      "passes": 27,
+      "incomplete": 1,
+      "violations": []
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  }
+]

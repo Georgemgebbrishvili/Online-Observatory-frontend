@@ -1,0 +1,56 @@
+
+> darkview-clients@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+[warn] apps/web/e2e/bookings.spec.ts
+[warn] apps/web/e2e/profile.spec.ts
+[warn] apps/web/e2e/room-controls.spec.ts
+[warn] apps/web/e2e/room-sharing.spec.ts
+[warn] apps/web/e2e/visual.spec.ts
+[warn] apps/web/src/app/[locale]/app/profile/page.tsx
+[warn] apps/web/src/components/account/profile-forms.tsx
+[warn] apps/web/src/components/booking/booking-detail.tsx
+[warn] apps/web/src/features/account/actions.ts
+[warn] apps/web/src/features/booking/hold.test.ts
+[warn] apps/web/src/i18n/resources/auth.ts
+[warn] CLAUDE.md
+[warn] dev/s3.json
+[warn] docs/backlog.md
+[warn] docs/codex-website-build-prompts.md
+[warn] docs/decisions/ADR-002-controlling-planning-documents.md
+[warn] docs/decisions/ADR-003-phase-1-scope-boundary.md
+[warn] docs/decisions/ADR-006-controlling-brand-document.md
+[warn] docs/decisions/ADR-007-observer-pack.md
+[warn] docs/decisions/ADR-010-agent-local-state-store.md
+[warn] docs/decisions/ADR-013-partner-observatories.md
+[warn] docs/decisions/ADR-015-booking-model-and-the-two-flows.md
+[warn] docs/decisions/ADR-016-http-authentication-boundary.md
+[warn] docs/decisions/ADR-017-operator-telemetry-source.md
+[warn] docs/decisions/ADR-018-a-customer-starts-their-booked-mission.md
+[warn] docs/decisions/ADR-019-observatory-routes-name-their-observatory.md
+[warn] docs/decisions/ADR-021-colour-frames-from-a-one-shot-colour-camera.md
+[warn] docs/decisions/ADR-022-monthly-subscriptions.md
+[warn] docs/decisions/ADR-023-queued-capture.md
+[warn] docs/decisions/ADR-024-unattended-posture.md
+[warn] docs/decisions/ADR-025-the-product-is-renamed-stellar.md
+[warn] docs/decisions/ADR-027-the-live-room-takes-the-sidera-console-layout.md
+[warn] docs/decisions/ADR-039-every-surface-takes-the-stellar-poster-language.md
+[warn] docs/OWNERSHIP.md
+[warn] docs/plan/01-surface-inventory.md
+[warn] docs/plan/02-build-phases.md
+[warn] docs/plan/03-design-system.md
+[warn] docs/plan/phase-3/01-slots.md
+[warn] docs/plan/phase-3/02-reserve.md
+[warn] docs/plan/phase-3/03-bookings.md
+[warn] docs/plan/phase-3/04-reschedule.md
+[warn] docs/plan/phase-3/README.md
+[warn] docs/plan/phase-4/01-room.md
+[warn] docs/plan/phase-4/02-live.md
+[warn] docs/plan/phase-4/05-watch.md
+[warn] docs/plan/README.md
+[warn] docs/platform-requests/hosted-demo.md
+[warn] docs/research/competitive-slooh.md
+[warn] packages/contracts/openapi.yaml
+[warn] README.md
+[warn] Code style issues found in 50 files. Run Prettier with --write to fix.

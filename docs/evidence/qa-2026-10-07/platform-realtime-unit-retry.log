@@ -1,0 +1,13 @@
+
+> @darkview/realtime@0.1.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+
+
+ Test Files  31 passed (31)
+      Tests  349 passed | 1 expected fail (350)
+   Start at  19:07:38
+   Duration  143.25s (transform 4.22s, setup 0ms, import 54.60s, tests 14.11s, environment 22ms)
+

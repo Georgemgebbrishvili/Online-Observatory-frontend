@@ -1,0 +1,69 @@
+=== 1. Darkview in customer-visible strings (src incl. i18n resources)
+(count: 0)
+
+=== 3. #E3482C tokens (see above run) — ink-on-accent audit
+apps/web/src/styles/tokens.ts:18:  red: "#e3482c",
+apps/web/src/styles/tokens.test.ts:152:    expect(token("accent")).toEqual(parseHex("#e3482c"));
+apps/web/src/styles/tokens.css:23:  --st-red: #e3482c;
+apps/web/src/styles/tokens.css:24:  --st-red-hi: #f06a45;
+apps/web/src/styles/tokens.css:25:  --st-red-ink: #f0785a;
+apps/web/src/styles/tokens.css:26:  --st-red-fill: #c8392a;
+apps/web/src/styles/tokens.css:27:  --st-red-deep: #8f1f16;
+apps/web/src/styles/tokens.css:92:  --color-accent: var(--st-red);
+apps/web/src/styles/tokens.css:93:  --color-accent-hover: var(--st-red-hi);
+apps/web/src/styles/tokens.css:94:  --color-accent-ink: var(--st-red-ink);
+apps/web/src/styles/tokens.css:96:  --color-action: var(--st-red-fill);
+apps/web/src/styles/tokens.css:100:    var(--st-red-hi),
+apps/web/src/styles/tokens.css:101:    var(--st-red) 50%,
+apps/web/src/styles/tokens.css:102:    var(--st-red-deep)
+apps/web/src/styles/tokens.css:130:  --color-accent-muted: color-mix(in srgb, var(--st-red) 14%, transparent);
+apps/web/src/styles/tokens.css:131:  --color-accent-border: color-mix(in srgb, var(--st-red) 45%, transparent);
+apps/web/src/styles/tokens.css:194:  --color-sky-red: color-mix(in srgb, var(--st-red) 20%, transparent);
+apps/web/src/styles/tokens.css:238:  --room-copper: #e3482c;
+apps/web/src/styles/tokens.css:240:  --room-amber: #e3482c;
+apps/web/src/styles/tokens.css:379:  --glow-action: 0 10px 26px -14px var(--st-red);
+fill under white text should be --st-red-deep/C8392A:
+apps/web/src/styles/tokens.ts:21:  redFill: "#c8392a",
+apps/web/src/styles/tokens.test.ts:155:    expect(token("action")).toEqual(parseHex("#c8392a"));
+apps/web/src/styles/tokens.css:26:  --st-red-fill: #c8392a;
+
+=== 4. Illustration captions in i18n
+en captions:        8
+ka captions:        7
+apps/web/src/i18n/resources/authenticated-home.ts:49:    illustration: "Illustration — not telescope output",
+apps/web/src/i18n/resources/observatory.ts:169:    illustration: "Illustration — not telescope output",
+apps/web/src/i18n/resources/room.ts:102:    illustration: "Illustration — not telescope output",
+apps/web/src/i18n/resources/room.ts:170:        description: "Simulator output, not telescope output.",
+apps/web/src/i18n/resources/missions.ts:26:    illustration: "Illustration — not telescope output",
+apps/web/src/i18n/resources/missions.ts:73:    illustration: "Illustration — not telescope output",
+apps/web/src/i18n/dictionaries/en.ts:68:          "A night sky. Move the pointer, or tap, to find the planets drawn in it. Every one is an illustration, not telescope output.",
+apps/web/src/i18n/dictionaries/en.ts:73:        illustration: "Illustration — not telescope output",
+
+=== 5. claims in copy
+(none = clean)
+
+=== 6. Georgian guard
+html[lang="ka"] body {
+  line-height: var(--leading-body-georgian);
+}
+
+html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow, .kicker) {
+  overflow-wrap: anywhere;
+}
+
+/* Brand §05: Mkhedruli is not a case-based script — never uppercase or letter-space Georgian. */
+:lang(ka) {
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+:lang(ka) {
+  /* Georgian first, so a Latin word in a Georgian headline keeps the same voice and no
+     system fallback for Anton can catch a Mkhedruli letter. */
+  --font-headline: var(--font-noto-sans-georgian), sans-serif;
+  --font-title: var(--font-noto-sans-georgian), sans-serif;
+  --font-label: var(--font-noto-sans-georgian), sans-serif;
+  --font-weight-headline: var(--font-weight-heavy);
+  --font-weight-title: var(--font-weight-black);
+  --font-weight-label: var(--font-weight-semibold);
+}

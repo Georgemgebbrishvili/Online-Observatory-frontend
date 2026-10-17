@@ -1,0 +1,23 @@
+PASS [auth] register a new address — sent to verify-email (webhook sender configured, ADR-049 not taken)
+FAIL [auth] verification link from the mail sink signs the address in
+FAIL [auth] sign out from the app bar returns to sign-in
+FAIL [auth] wrong password is refused with the localized alert
+PASS [auth] wrong password, Georgian
+PASS [auth] Continue with Google is present and routed on sign-in and register
+PASS [auth] Google start without a configured client fails closed — records what the platform does with no Google client; see platform env
+FAIL [auth] demo observer signs in
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "load"
+============================================================
+    at /Users/nika/Desktop/Stellar Observatory/part-2-clients/docs/evidence/qa-2026-10-13/real-stack/run.mjs:134:14 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.14.1
+exit 1

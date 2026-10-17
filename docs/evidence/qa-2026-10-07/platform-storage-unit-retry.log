@@ -1,0 +1,7 @@
+npm error Lifecycle script `test` failed with error:
+npm error workspace @darkview/storage@0.1.0
+npm error location /Users/nika/Desktop/Stellar Observatory/part-1-platform/packages/storage
+npm error Missing script: "test"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run --workspace=@darkview/storage@0.1.0

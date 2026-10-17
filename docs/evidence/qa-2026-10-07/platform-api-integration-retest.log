@@ -1,0 +1,129 @@
+
+> @darkview/db@0.1.0 db:deploy
+> prisma migrate deploy
+
+◇ injected env (23) from ../../.env // tip: ⌘ enable debugging { debug: true }
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+Datasource "db": PostgreSQL database "stellar_qa_retest_20261007", schema "public" at "localhost:5432"
+
+31 migrations found in prisma/migrations
+
+Applying migration `20260825120000_authentication`
+Applying migration `20260826003000_domain_model`
+Applying migration `20260826020000_shared_observations`
+Applying migration `20260826030000_observatory_network`
+Applying migration `20260831120000_adr004_verifying_state`
+Applying migration `20260903090954_dv050_contract_alignment`
+Applying migration `20260903094635_dv051_user_locale`
+Applying migration `20260903100856_dv057_agent_link`
+Applying migration `20260903104004_dv052_target_catalogue`
+Applying migration `20260904075701_dv055_slot_reservation`
+Applying migration `20260904112240_dv058_mission_session`
+Applying migration `20260907120000_dv062_audit_event_log`
+Applying migration `20260907170000_dv100_observer_seats`
+Applying migration `20260908130000_dv061_capture_command`
+Applying migration `20260911090000_dv066_slot_exclusion_constraint`
+Applying migration `20260913120000_dv102_observer_pack_payment`
+Applying migration `20260915120000_dv064_email_notifications`
+Applying migration `20260915180000_dv111_refund_or_reschedule`
+Applying migration `20260916120000_dv110_viewing_conditions`
+Applying migration `20260916140000_dv112_gift_vouchers`
+Applying migration `20260916160000_dv090_096_loyalty`
+Applying migration `20260918120000_adr022_subscription_credits`
+Applying migration `20260919120000_adr022_booking_minutes`
+Applying migration `20260919160000_adr022_renewal_sweep`
+Applying migration `20260919180000_minutes_returned_email`
+Applying migration `20260922120000_adr024_agent_posture`
+Applying migration `20260922140000_capture_asset_storage_key_index`
+Applying migration `20261002120000_adr036_ten_observers_close_refund`
+Applying migration `20261005120000_adr040_password_reset`
+Applying migration `20261006120000_adr042_profile_and_email_change`
+Applying migration `20261007120000_adr044_account_deletion`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260825120000_authentication/
+    └─ migration.sql
+  └─ 20260826003000_domain_model/
+    └─ migration.sql
+  └─ 20260826020000_shared_observations/
+    └─ migration.sql
+  └─ 20260826030000_observatory_network/
+    └─ migration.sql
+  └─ 20260831120000_adr004_verifying_state/
+    └─ migration.sql
+  └─ 20260903090954_dv050_contract_alignment/
+    └─ migration.sql
+  └─ 20260903094635_dv051_user_locale/
+    └─ migration.sql
+  └─ 20260903100856_dv057_agent_link/
+    └─ migration.sql
+  └─ 20260903104004_dv052_target_catalogue/
+    └─ migration.sql
+  └─ 20260904075701_dv055_slot_reservation/
+    └─ migration.sql
+  └─ 20260904112240_dv058_mission_session/
+    └─ migration.sql
+  └─ 20260907120000_dv062_audit_event_log/
+    └─ migration.sql
+  └─ 20260907170000_dv100_observer_seats/
+    └─ migration.sql
+  └─ 20260908130000_dv061_capture_command/
+    └─ migration.sql
+  └─ 20260911090000_dv066_slot_exclusion_constraint/
+    └─ migration.sql
+  └─ 20260913120000_dv102_observer_pack_payment/
+    └─ migration.sql
+  └─ 20260915120000_dv064_email_notifications/
+    └─ migration.sql
+  └─ 20260915180000_dv111_refund_or_reschedule/
+    └─ migration.sql
+  └─ 20260916120000_dv110_viewing_conditions/
+    └─ migration.sql
+  └─ 20260916140000_dv112_gift_vouchers/
+    └─ migration.sql
+  └─ 20260916160000_dv090_096_loyalty/
+    └─ migration.sql
+  └─ 20260918120000_adr022_subscription_credits/
+    └─ migration.sql
+  └─ 20260919120000_adr022_booking_minutes/
+    └─ migration.sql
+  └─ 20260919160000_adr022_renewal_sweep/
+    └─ migration.sql
+  └─ 20260919180000_minutes_returned_email/
+    └─ migration.sql
+  └─ 20260922120000_adr024_agent_posture/
+    └─ migration.sql
+  └─ 20260922140000_capture_asset_storage_key_index/
+    └─ migration.sql
+  └─ 20261002120000_adr036_ten_observers_close_refund/
+    └─ migration.sql
+  └─ 20261005120000_adr040_password_reset/
+    └─ migration.sql
+  └─ 20261006120000_adr042_profile_and_email_change/
+    └─ migration.sql
+  └─ 20261007120000_adr044_account_deletion/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api
+
+NOTICE:  database "darkview_backup_guard" does not exist, skipping
+restore: --confirm says "some-other-database" and --to names "darkview_backup_guard". Refusing, because the two disagreeing is the shape of a restore aimed at the wrong database.
+backup: /var/folders/dj/vyjd0jbn3834krsk7npzn05r0000gn/T/darkview-empty-YqlbOp/darkview_backup_guard-2026-10-07T15-28-40-704Z.dump is readable but holds no data entry for: User, Mission, Booking, Capture, AuditLog, Observatory. That is not a dump of a migrated Darkview database.
+pg_restore: error: input file does not appear to be a valid archive (too short?)
+restore: /var/folders/dj/vyjd0jbn3834krsk7npzn05r0000gn/T/darkview-drill-fklltf/not-really-a-dump.dump is not a readable pg_dump archive. The target was not touched.
+(node:43105) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:43291) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  7 passed (7)
+      Tests  144 passed (144)
+   Start at  19:27:41
+   Duration  269.72s (transform 10.64s, setup 0ms, import 39.75s, tests 215.38s, environment 16ms)
+

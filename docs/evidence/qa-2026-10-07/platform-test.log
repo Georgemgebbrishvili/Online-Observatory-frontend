@@ -1,0 +1,135 @@
+
+> darkview-platform@0.1.0 test
+> npm run test --workspaces --if-present
+
+
+> @darkview/api@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api
+
+ ❯ src/lib/auth/password.test.ts (12 tests | 12 skipped) 10200ms
+ ❯ src/lib/db/development-seed.test.ts (6 tests | 1 failed) 6592ms
+     × is the plaintext of the hash the seed stores, by the API's own verifier 5488ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/auth/password.test.ts [ src/lib/auth/password.test.ts ]
+Error: Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
+ ❯ src/lib/auth/password.test.ts:9:1
+      7| let passwordHash: string;
+      8|
+      9| beforeAll(async () => {
+       | ^
+     10|   passwordHash = await hashPassword("a long observatory password");
+     11| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/db/development-seed.test.ts > the demo accounts' password (#145) > is the plaintext of the hash the seed stores, by the API's own verifier
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/db/development-seed.test.ts:36:3
+     34|
+     35| describe("the demo accounts' password (#145)", () => {
+     36|   it("is the plaintext of the hash the seed stores, by the API's own v…
+       |   ^
+     37|     expect(await verifyPassword(DEMO_ACCOUNT_PASSWORD, DEMO_ACCOUNT_PA…
+     38|       true,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Failed to start forks worker for test files /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api/src/lib/slots/no-float-currency.test.ts.
+ ❯ ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:94
+ ❯ runNextTicks node:internal/process/task_queues:65:5
+ ❯ processTimers node:internal/timers:538:9
+ ❯ Pool.schedule ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:5
+
+Caused by: Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+ ❯ Timeout.<anonymous> ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3108:58
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  2 failed | 58 passed (60)
+      Tests  1 failed | 567 passed | 12 skipped (580)
+     Errors  1 error
+   Start at  18:00:08
+   Duration  2632.11s (transform 2572.22s, setup 0ms, import 5195.68s, tests 36.93s, environment 54ms)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api
+npm error workspace @darkview/api@0.1.0
+npm error location /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api
+npm error command failed
+npm error command sh -c vitest run
+
+
+> @darkview/realtime@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Failed to start forks worker for test files /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime/src/link/agent-broadcast.test.ts.
+ ❯ ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:94
+ ❯ runNextTicks node:internal/process/task_queues:65:5
+ ❯ listOnTimeout node:internal/timers:567:9
+ ❯ processTimers node:internal/timers:541:7
+ ❯ Pool.schedule ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:5
+
+Caused by: Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+ ❯ Timeout.<anonymous> ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3108:58
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Failed to start forks worker for test files /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime/src/link/agent-relay.test.ts.
+ ❯ ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:94
+ ❯ runNextTicks node:internal/process/task_queues:65:5
+ ❯ processTimers node:internal/timers:538:9
+ ❯ Pool.schedule ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:5
+
+Caused by: Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+ ❯ Timeout.<anonymous> ../../../../Stellar%20Observatory/part-1-platform/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3108:58
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  29 passed (29)
+      Tests  302 passed | 1 expected fail (303)
+     Errors  2 errors
+   Start at  18:44:03
+   Duration  687.15s (transform 655.21s, setup 0ms, import 702.04s, tests 6.65s, environment 8ms)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+npm error workspace @darkview/realtime@0.1.0
+npm error location /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+npm error command failed
+npm error command sh -c vitest run
+

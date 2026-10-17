@@ -1,0 +1,13 @@
+{
+  "capturedAtUtc": "2026-10-07T16:35:43.912973+00:00",
+  "clientHead": "316536c7b4b716aaf9d65b50060b8f415a856598",
+  "image": "mcr.microsoft.com/playwright:v1.62.1-noble",
+  "source": "git archive HEAD, isolated /work directory",
+  "changesToHarness": [
+    "300-second web-server readiness allowance",
+    "QA-specific output directories",
+    "one worker; existing screenshot assertions and baselines unchanged"
+  ],
+  "snapshotFiles": 160,
+  "archiveSha256": "4805ea9e5d720c417febf8a823725e20f3cd2140a0c17fa0f138180815643e13"
+}

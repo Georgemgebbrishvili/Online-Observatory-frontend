@@ -1,0 +1,22 @@
+{"repo":"clients","name":"contracts-check","command":"npm run contracts:check","startedAt":"2026-10-13T14:12:37Z","seconds":4,"exitCode":0,"log":"clients-contracts-check.log"}
+{"repo":"platform","name":"contracts-check","command":"npm run contracts:check","startedAt":"2026-10-13T14:12:37Z","seconds":8,"exitCode":0,"log":"platform-contracts-check.log"}
+{"repo":"platform","name":"lint","command":"npm run lint","startedAt":"2026-10-13T14:12:45Z","seconds":32,"exitCode":0,"log":"platform-lint.log"}
+{"repo":"platform","name":"lint-agent","command":"npm run lint:agent","startedAt":"2026-10-13T14:13:17Z","seconds":0,"exitCode":0,"log":"platform-lint-agent.log"}
+{"repo":"clients","name":"lint","command":"npm run lint","startedAt":"2026-10-13T14:12:42Z","seconds":38,"exitCode":0,"log":"clients-lint.log"}
+{"repo":"clients","name":"typecheck","command":"npm run typecheck","startedAt":"2026-10-13T14:13:20Z","seconds":12,"exitCode":0,"log":"clients-typecheck.log"}
+{"repo":"platform","name":"typecheck","command":"npm run typecheck","startedAt":"2026-10-13T14:13:18Z","seconds":34,"exitCode":0,"log":"platform-typecheck.log"}
+{"repo":"clients","name":"format-check","command":"npm run format:check","startedAt":"2026-10-13T14:13:34Z","seconds":25,"exitCode":1,"log":"clients-format-check.log"}
+{"repo":"clients","name":"css-check","command":"npm run css:check","startedAt":"2026-10-13T14:13:59Z","seconds":1,"exitCode":0,"log":"clients-css-check.log"}
+{"repo":"platform","name":"format-check","command":"npm run format:check","startedAt":"2026-10-13T14:13:52Z","seconds":30,"exitCode":1,"log":"platform-format-check.log"}
+{"repo":"clients","name":"build","command":"npm run build","startedAt":"2026-10-13T14:14:00Z","seconds":57,"exitCode":0,"log":"clients-build.log"}
+{"repo":"clients","name":"npm-audit","command":"npm audit --omit=dev --json","startedAt":"2026-10-13T14:14:57Z","seconds":2,"exitCode":0,"log":"clients-npm-audit.log"}
+{"repo":"platform","name":"build","command":"npm run build","startedAt":"2026-10-13T14:14:22Z","seconds":52,"exitCode":0,"log":"platform-build.log"}
+{"repo":"platform","name":"npm-audit","command":"npm audit --omit=dev --json","startedAt":"2026-10-13T14:15:14Z","seconds":7,"exitCode":1,"log":"platform-npm-audit.log"}
+{"repo":"platform","name":"test-agent","command":"npm run test:agent","startedAt":"2026-10-13T14:14:40Z","seconds":209,"exitCode":0,"log":"platform-test-agent.log"}
+{"repo":"clients","name":"test","command":"npm test","startedAt":"2026-10-13T14:16:33Z","seconds":112,"exitCode":0,"log":"clients-test.log"}
+{"repo":"platform","name":"test","command":"npm test","startedAt":"2026-10-13T14:18:36Z","seconds":80,"exitCode":0,"log":"platform-test.log"}
+{"repo":"platform","name":"test-integration","command":"npm run test:integration","startedAt":"2026-10-13T14:19:57Z","seconds":432,"exitCode":0,"log":"platform-test-integration.log"}
+{"repo":"clients","name":"lint-71c0fdf","command":"npm run lint","startedAt":"2026-10-13T18:52:22Z","seconds":74,"exitCode":0,"log":"clients-lint-71c0fdf.log"}
+{"repo":"clients","name":"typecheck-71c0fdf","command":"npm run typecheck","startedAt":"2026-10-13T18:53:36Z","seconds":14,"exitCode":0,"log":"clients-typecheck-71c0fdf.log"}
+{"repo":"clients","name":"test-71c0fdf","command":"npm test","startedAt":"2026-10-13T18:53:50Z","seconds":141,"exitCode":0,"log":"clients-test-71c0fdf.log"}
+{"repo":"clients","name":"css-check-71c0fdf","command":"npm run css:check","startedAt":"2026-10-13T18:56:13Z","seconds":1,"exitCode":0,"log":"clients-css-check-71c0fdf.log"}

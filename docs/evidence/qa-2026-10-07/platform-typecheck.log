@@ -1,0 +1,20 @@
+
+> darkview-platform@0.1.0 typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> @darkview/api@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @darkview/realtime@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @darkview/contracts@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @darkview/storage@0.1.0 typecheck
+> tsc --noEmit
+

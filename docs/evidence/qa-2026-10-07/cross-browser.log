@@ -1,0 +1,294 @@
+
+Running 64 tests using 1 worker
+
+  ✓   1 [setup] › e2e/auth.setup.ts:10:3 › sign in as the observer (4.8s)
+  ✓   2 [setup] › e2e/auth.setup.ts:10:3 › sign in as the operator (3.3s)
+  ✓   3 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/ at 390 (5.2s)
+  ✓   4 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/observatory at 390 (4.1s)
+  ✓   5 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/status at 390 (3.1s)
+  ✓   6 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/ at 390 (3.1s)
+  ✓   7 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/observatory at 390 (3.2s)
+  ✓   8 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/status at 390 (2.7s)
+  ✓   9 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/collection at 390 (3.4s)
+  ✓  10 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/profile at 390 (3.1s)
+  ✓  11 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/book at 390 (3.2s)
+  ✓  12 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/collection at 390 (4.0s)
+  ✓  13 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/profile at 390 (2.8s)
+  ✓  14 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/book at 390 (2.8s)
+  ✓  15 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/bookings at 390 (3.0s)
+  ✓  16 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/bookings at 390 (2.4s)
+  ✓  17 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/ at 1440 (2.7s)
+  ✓  18 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/observatory at 1440 (2.9s)
+  ✓  19 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/status at 1440 (2.4s)
+  ✓  20 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/ at 1440 (3.0s)
+  ✓  21 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/observatory at 1440 (3.2s)
+  ✓  22 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/status at 1440 (4.0s)
+  ✓  23 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/collection at 1440 (3.0s)
+  ✓  24 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/profile at 1440 (2.5s)
+  ✓  25 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/book at 1440 (2.6s)
+  ✓  26 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/collection at 1440 (3.7s)
+  ✓  27 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/profile at 1440 (3.7s)
+  ✓  28 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/book at 1440 (3.5s)
+  ✓  29 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/bookings at 1440 (4.5s)
+  ✓  30 [firefox] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/bookings at 1440 (3.4s)
+  ✘  31 [firefox] › ../../qa-cross-browser/smoke.spec.ts:20:1 › sign in with the browser UI (1.5m)
+  ✓  32 [firefox] › ../../qa-cross-browser/smoke.spec.ts:25:1 › observer cannot open the operator console (8.1s)
+  ✓  33 [firefox] › ../../qa-cross-browser/smoke.spec.ts:28:1 › status table is keyboard reachable when it overflows (3.3s)
+  ✓  34 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/ at 390 (4.3s)
+  ✓  35 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/observatory at 390 (3.5s)
+  ✓  36 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/status at 390 (2.5s)
+  ✓  37 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/ at 390 (2.6s)
+  ✓  38 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/observatory at 390 (3.0s)
+  ✓  39 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/status at 390 (2.1s)
+  ✓  40 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/collection at 390 (2.1s)
+  ✓  41 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/profile at 390 (1.9s)
+  ✓  42 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/book at 390 (2.1s)
+  ✓  43 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/collection at 390 (2.2s)
+  ✓  44 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/profile at 390 (2.0s)
+  ✓  45 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/book at 390 (2.5s)
+  ✓  46 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/bookings at 390 (1.9s)
+  ✓  47 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/bookings at 390 (2.1s)
+  ✓  48 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/ at 1440 (2.5s)
+  ✓  49 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/observatory at 1440 (2.8s)
+  ✓  50 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/status at 1440 (2.3s)
+  ✓  51 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/ at 1440 (3.4s)
+  ✓  52 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/observatory at 1440 (2.9s)
+  ✓  53 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/status at 1440 (2.3s)
+  ✓  54 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/collection at 1440 (2.5s)
+  ✓  55 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/profile at 1440 (2.1s)
+  ✓  56 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/book at 1440 (2.2s)
+  ✓  57 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/collection at 1440 (2.6s)
+  ✓  58 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/profile at 1440 (2.3s)
+  ✓  59 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/book at 1440 (2.3s)
+  ✓  60 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › en/app/bookings at 1440 (2.0s)
+  ✓  61 [webkit] › ../../qa-cross-browser/smoke.spec.ts:6:2 › ka/app/bookings at 1440 (2.2s)
+  ✘  62 [webkit] › ../../qa-cross-browser/smoke.spec.ts:20:1 › sign in with the browser UI (1.5m)
+  ✓  63 [webkit] › ../../qa-cross-browser/smoke.spec.ts:25:1 › observer cannot open the operator console (3.3s)
+  ✘  64 [webkit] › ../../qa-cross-browser/smoke.spec.ts:28:1 › status table is keyboard reachable when it overflows (14.1s)
+
+
+  1) [firefox] › ../../qa-cross-browser/smoke.spec.ts:20:1 › sign in with the browser UI ───────────
+
+    Test timeout of 90000ms exceeded.
+
+    Error: locator.fill: Test ended.
+    Call log:
+      - waiting for getByLabel('Email')
+        - waiting for "http://localhost:3100/en/app" navigation to finish...
+        - navigated to "http://localhost:3100/en/app"
+
+
+      20 | test('sign in with the browser UI',async({browser})=>{
+      21 |  const context=await browser.newContext();const page=await context.newPage();
+    > 22 |  try{await page.goto('http://localhost:3100/en/sign-in');await page.getByLabel('Email').fill('observer@darkview.test');await page.getByLabel('Password').fill('correct horse battery');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page).toHaveURL(/\/en\/app$/,{timeout:30000});}
+         |                                                                                         ^
+      23 |  finally{await context.close();}
+      24 | });
+      25 | test('observer cannot open the operator console',async({page})=>{
+        at /work/qa-cross-browser/smoke.spec.ts:22:89
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../qa-cross-browser-results/qa-cross-browser-smoke-sign-in-with-the-browser-UI-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../qa-cross-browser-results/qa-cross-browser-smoke-sign-in-with-the-browser-UI-firefox/error-context.md
+
+  2) [webkit] › ../../qa-cross-browser/smoke.spec.ts:20:1 › sign in with the browser UI ────────────
+
+    Test timeout of 90000ms exceeded.
+
+    Error: browserContext.close: Test ended.
+    Browser logs:
+
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:38.851: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:41.342: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:44.197: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:46.498: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:49.961: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:52.909: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:55.238: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:57.642: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:55:59.769: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:56:02.017: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:56:04.595: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:56:06.904: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:56:09.217: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:56:11.275: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734][err] 
+    [pid=6734][err] ** (MiniBrowser:6740): CRITICAL **: 16:56:13.505: WebKitWebView is-controlled-by-automation set but automation is not allowed in the context, falling back to default session.
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: MESA-LOADER: failed to retrieve device information
+    [pid=6734][err] 
+    [pid=6734][err] libEGL warning: failed to get driver name for fd -1
+    [pid=6734][err] 
+    [pid=6734][err] MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
+    [pid=6734][err] libEGL warning: egl: failed to create dri2 screen
+    [pid=6734] <gracefully close start>
+
+      21 |  const context=await browser.newContext();const page=await context.newPage();
+      22 |  try{await page.goto('http://localhost:3100/en/sign-in');await page.getByLabel('Email').fill('observer@darkview.test');await page.getByLabel('Password').fill('correct horse battery');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page).toHaveURL(/\/en\/app$/,{timeout:30000});}
+    > 23 |  finally{await context.close();}
+         |          ^
+      24 | });
+      25 | test('observer cannot open the operator console',async({page})=>{
+      26 |  await page.goto('http://localhost:3100/en/admin/control');await expect(page).toHaveURL(/\/en\/app$/);
+        at /work/qa-cross-browser/smoke.spec.ts:23:10
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../qa-cross-browser-results/qa-cross-browser-smoke-sign-in-with-the-browser-UI-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../qa-cross-browser-results/qa-cross-browser-smoke-sign-in-with-the-browser-UI-webkit/error-context.md
+
+  3) [webkit] › ../../qa-cross-browser/smoke.spec.ts:28:1 › status table is keyboard reachable when it overflows 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      33 |  for(let i=0;i<70;i++){await page.keyboard.press('Tab');const focus=await page.evaluate(()=>({tag:document.activeElement?.tagName,className:document.activeElement?.className}));stops.push(focus);if(await region.evaluate(e=>e===document.activeElement)){reached=true;break;}}
+      34 |  await info.attach('keyboard-result',{body:JSON.stringify({dimensions,reached,stops},null,2),contentType:'application/json'});
+    > 35 |  if(dimensions.scrollWidth>dimensions.clientWidth){expect(reached).toBe(true);await page.keyboard.press('ArrowRight');await expect.poll(()=>region.evaluate(e=>e.scrollLeft)).toBeGreaterThan(0);}
+         |                                                                    ^
+      36 | });
+      37 |
+        at /work/qa-cross-browser/smoke.spec.ts:35:68
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../qa-cross-browser-results/qa-cross-browser-smoke-sta-bd5d9-reachable-when-it-overflows-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../qa-cross-browser-results/qa-cross-browser-smoke-sta-bd5d9-reachable-when-it-overflows-webkit/error-context.md
+
+  3 failed
+    [firefox] › ../../qa-cross-browser/smoke.spec.ts:20:1 › sign in with the browser UI ────────────
+    [webkit] › ../../qa-cross-browser/smoke.spec.ts:20:1 › sign in with the browser UI ─────────────
+    [webkit] › ../../qa-cross-browser/smoke.spec.ts:28:1 › status table is keyboard reachable when it overflows 
+  61 passed (6.7m)

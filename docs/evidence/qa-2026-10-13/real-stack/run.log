@@ -1,0 +1,65 @@
+start 23:15
+FAIL [auth] register a new address
+FAIL [auth] verification link from the mail sink signs the address in — no verify-email link in dev-stack.log
+FAIL [auth] sign out from the app bar returns to sign-in
+PASS [auth] Continue with Google is present and routed on sign-in and register
+PASS [auth] Google start without a configured client fails closed — records what the platform does with no Google client; see platform env
+PASS [auth] demo observer signs in
+FAIL [auth] wrong password is refused with the localized alert
+FAIL [auth] wrong password, Georgian
+FAIL [book] slots are offered on /en/app/book
+FAIL [book] reserve the first bookable slot and reach the sandbox checkout
+FAIL [book] sandbox payment confirms the booking
+FAIL [book] the booking appears in Book / bookings
+FAIL [book] the booking page in Georgian
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+browserContext.close: Target page, context or browser has been closed
+Browser logs:
+
+<launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/var/folders/dj/vyjd0jbn3834krsk7npzn05r0000gn/T/playwright_chromiumdev_profile-yXoLgE --remote-debugging-pipe --no-startup-window
+<launched> pid=98812
+[pid=98812][err] Trying to load the allocator multiple times. This is *not* supported.
+[pid=98812][err] [98828:740286:1013/231517.158075:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231517.158918:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231517.175600:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231517.176153:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231517.377958:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231517.378144:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231517.402344:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231517.402455:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231517.403077:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231517.403441:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231608.616903:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231608.617019:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98812:740271:1013/231616.995966:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[pid=98812][err] [98812:740271:1013/231617.061893:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[pid=98812][err] [98812:740271:1013/231617.138778:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[pid=98812][err] [98812:740271:1013/231617.139169:ERROR:google_apis/gcm/engine/mcs_client.cc:702]   Error code: 401  Error message: Authentication Failed: wrong_secret
+[pid=98812][err] [98812:740271:1013/231617.139185:ERROR:google_apis/gcm/engine/mcs_client.cc:704] Failed to log in to GCM, resetting connection.
+[pid=98812][err] [98812:740271:1013/231644.888745:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[pid=98812][err] [98828:740286:1013/231647.211946:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231647.212091:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231705.802406:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231705.802790:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231705.805662:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231705.805747:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231705.808746:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231705.809097:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231705.810659:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231705.810769:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740286:1013/231705.811173:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98828:740361:1013/231705.811260:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+[pid=98812][err] [98812:740271:1013/231726.734012:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[pid=98812][err] [98812:740176:1013/231811.231765:ERROR:mojo/public/cpp/bindings/lib/interface_endpoint_client.cc:652] Message 0 rejected by interface blink.mojom.Widget
+[pid=98812] <gracefully close start>
+[pid=98812] <forcefully close>
+[pid=98812] <kill>
+[pid=98812] <will force kill>
+    at async file:///Users/nika/Desktop/Stellar%20Observatory/part-2-clients/docs/evidence/qa-2026-10-13/real-stack/run.mjs:175:3 {
+  log: []
+}
+
+Node.js v24.14.1

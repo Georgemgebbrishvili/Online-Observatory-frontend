@@ -1,0 +1,71 @@
+
+> darkview-clients@0.1.0 build
+> npm run build --workspace @darkview/web
+
+
+> @darkview/web@0.1.0 build
+> next build
+
+▲ Next.js 16.4.0 (Turbopack)
+✓ Running next.config.ts took 193ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 14.7s
+  Running TypeScript ...
+  Finished TypeScript in 26.9s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/63) ...
+  Generating static pages using 3 workers (15/63) 
+  Generating static pages using 3 workers (31/63) 
+  Generating static pages using 3 workers (47/63) 
+✓ Generating static pages using 3 workers (63/63) in 5.2s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/[...missing]
+├ ƒ /[locale]/admin
+├ ƒ /[locale]/admin/control
+├ ƒ /[locale]/admin/logs
+├ ƒ /[locale]/admin/missions
+├ ƒ /[locale]/admin/targets
+├ ƒ /[locale]/app
+├ ƒ /[locale]/app/[destination]
+├ ƒ /[locale]/app/book
+├ ƒ /[locale]/app/book/reserve
+├ ƒ /[locale]/app/bookings
+├ ƒ /[locale]/app/bookings/[bookingId]
+├ ƒ /[locale]/app/collection
+├ ƒ /[locale]/app/collection/[captureId]
+├ ƒ /[locale]/app/live
+├ ƒ /[locale]/app/missions
+├ ƒ /[locale]/app/missions/[targetSlug]
+├ ƒ /[locale]/app/missions/[targetSlug]/session
+├ ƒ /[locale]/app/missions/[targetSlug]/watch
+├ ƒ /[locale]/app/profile
+├ ƒ /[locale]/design-system
+├ ƒ /[locale]/observatory
+├ ƒ /[locale]/opengraph-image
+├ ƒ /[locale]/pricing
+├ ƒ /[locale]/privacy
+├ ƒ /[locale]/refunds
+├ ƒ /[locale]/register
+├ ƒ /[locale]/reset-password
+├ ƒ /[locale]/reset-password/[token]
+├ ƒ /[locale]/sign-in
+├ ƒ /[locale]/status
+├ ƒ /[locale]/terms
+├ ƒ /[locale]/verify-email
+├ ƒ /[locale]/verify-email/[token]
+├ ○ /apple-icon.png
+├ ○ /icon.svg
+├ ○ /robots.txt
+└ ○ /sitemap.xml
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

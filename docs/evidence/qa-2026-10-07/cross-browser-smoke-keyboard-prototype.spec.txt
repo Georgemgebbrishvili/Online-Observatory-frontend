@@ -1,0 +1,51 @@
+import {test,expect} from '@playwright/test';
+import {writeFile} from 'node:fs/promises';
+test.setTimeout(90000);
+const cases=[{"locale": "en", "route": "", "heading": "The real sky, live."}, {"locale": "en", "route": "observatory", "heading": "Stellar Tbilisi"}, {"locale": "en", "route": "status", "heading": "What the telescope is doing now."}, {"locale": "ka", "route": "", "heading": "შენი დრო ნამდვილ ცასთან."}, {"locale": "ka", "route": "observatory", "heading": "სტელარი თბილისი"}, {"locale": "ka", "route": "status", "heading": "რას აკეთებს ტელესკოპი ახლა."}, {"locale": "en", "route": "app/collection", "heading": "A sky only you have seen."}, {"locale": "en", "route": "app/profile", "heading": "Your profile."}, {"locale": "en", "route": "app/book", "heading": "Time on the telescope."}, {"locale": "ka", "route": "app/collection", "heading": "ცა, რომელიც მხოლოდ შენ ნახე."}, {"locale": "ka", "route": "app/profile", "heading": "შენი პროფილი."}, {"locale": "ka", "route": "app/book", "heading": "დრო ტელესკოპთან."}];
+cases.push({locale:'en',route:'app/bookings',heading:'Your bookings.'},{locale:'ka',route:'app/bookings',heading:'შენი ჯავშნები.'});
+for(const width of [390,1440]) for(const row of cases){
+ test(`${row.locale}/${row.route} at ${width}`,async({page})=>{
+  await page.setViewportSize({width,height:900});
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const response=await page.goto(`http://localhost:3100/${row.locale}/${row.route}`);
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole('heading',{level:1})).toHaveText(row.heading);
+  await page.evaluate(()=>document.fonts.ready);
+  await page.waitForFunction(()=>[...document.images].every(image=>image.complete || 'liveStream' in image.dataset));
+  expect(await page.locator('html').getAttribute('lang')).toBe(row.locale);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1)).toBe(false);
+  expect(await page.evaluate(()=>[...document.images].filter(image=>image.complete && image.naturalWidth===0 && !('liveStream' in image.dataset)).map(image=>image.getAttribute('src')))).toEqual([]);
+  expect(errors).toEqual([]);
+ });
+}
+test.describe('signed-out',()=>{
+ test.use({storageState:{cookies:[],origins:[]}});
+ test('sign in with the browser UI',async({page})=>{
+  await test.step('open sign-in',()=>page.goto('http://localhost:3100/en/sign-in'));
+  await test.step('enter credentials',async()=>{await page.getByLabel('Email').fill('observer@darkview.test');await page.getByLabel('Password').fill('correct horse battery');});
+  await test.step('submit and reach the dashboard',async()=>{await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page).toHaveURL(/\/en\/app$/,{timeout:30000});});
+ });
+});
+test('observer cannot open the operator console',async({page})=>{
+ await page.goto('http://localhost:3100/en/admin/control');await expect(page).toHaveURL(/\/en\/app$/);
+});
+test('status table is keyboard reachable when it overflows',async({page},info)=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('http://localhost:3100/en/status');
+ const region=page.locator('.status-table-scroll');await expect(region).toBeVisible();
+ const dimensions=await region.evaluate(e=>({clientWidth:e.clientWidth,scrollWidth:e.scrollWidth}));
+ let reached=false;const stops=[];
+ for(let i=0;i<70;i++){await page.keyboard.press('Tab');const focus=await page.evaluate(()=>({tag:document.activeElement?.tagName,className:document.activeElement?.className}));stops.push(focus);if(await region.evaluate(e=>e===document.activeElement)){reached=true;break;}}
+ let prototype=null;
+ if(dimensions.scrollWidth>dimensions.clientWidth && !reached){
+  await region.evaluate(e=>{e.tabIndex=0;e.setAttribute('role','region');e.setAttribute('aria-labelledby','status-conditions');});
+  let prototypeReached=false;
+  for(let i=0;i<70;i++){await page.keyboard.press('Tab');if(await region.evaluate(e=>e===document.activeElement)){prototypeReached=true;break;}}
+  if(prototypeReached) await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(300);
+  prototype={reached:prototypeReached,scrollLeft:await region.evaluate(e=>e.scrollLeft)};
+ }
+ const resultPath=info.outputPath('keyboard-result.json');
+ await writeFile(resultPath,JSON.stringify({dimensions,reached,stops,prototype},null,2));
+ await info.attach('keyboard-result',{path:resultPath,contentType:'application/json'});
+ if(dimensions.scrollWidth>dimensions.clientWidth){expect(reached).toBe(true);await page.keyboard.press('ArrowRight');await expect.poll(()=>region.evaluate(e=>e.scrollLeft)).toBeGreaterThan(0);}
+});

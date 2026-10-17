@@ -1,0 +1,845 @@
+[WebServer] (node:44457) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:44481) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 247 tests using 4 workers
+
+(node:44492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44491) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    2 [setup] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.setup.ts:10:3 › sign in as the operator (13.4s)
+  ✓    1 [setup] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.setup.ts:10:3 › sign in as the observer (13.7s)
+(node:44549) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44551) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44550) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    3 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/booking.spec.ts:53:1 › the Georgian booking page fits a phone (14.7s)
+  ✓    4 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/booking.spec.ts:45:1 › a date outside the seven nights shows tonight instead (15.6s)
+  ✓    6 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/booking.spec.ts:6:1 › /app/book lists a night's slots from the platform, each open one a way to reserve it (19.3s)
+  ✓    8 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:44:1 › a confirmed booking opens its observation and says why it cannot be cancelled (10.7s)
+  ✓    7 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:38:1 › /app/book reaches the bookings (12.6s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓    9 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:63:1 › a booking awaiting payment says how long it is held and offers the checkout (11.3s)
+  ✓   11 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:86:1 › the Georgian bookings fit a phone (16.8s)
+  ✓   10 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:76:1 › an unknown booking and a malformed id are both not found (17.9s)
+  ✓   12 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:116:3 › changing a booking › a booking awaiting payment is cancelled after a confirmation (22.1s)
+  ✓   14 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/collection.spec.ts:28:1 › the Collection lists the platform's captures, newest first, and pages (17.0s)
+[WebServer] Failed to proxy http://127.0.0.1:4000/storage/60000000-0000-4000-8000-000000000001/thumbnail?X-Amz-Signature=fake Error: socket hang up
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+[WebServer] Error: socket hang up
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+  ✓   15 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/collection.spec.ts:61:1 › a cursor past the end says so, and a malformed one starts at the newest (15.6s)
+  ✘    5 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:10:1 › /app/bookings lists the bookings latest slot first, four to a page (43.5s)
+[WebServer] ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3100". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+  ✓   16 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/collection.spec.ts:71:1 › a capture shows its provenance and mints downloads on the click (12.1s)
+  ✓   17 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/collection.spec.ts:99:1 › a capture with no images and no FITS says so (7.6s)
+  ✓   18 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/collection.spec.ts:120:1 › the Georgian capture page fits a phone (8.4s)
+  ✓   19 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:6:1 › communicates real telescope access in the English poster hero (8.0s)
+(node:44746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   20 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:39:1 › renders the Georgian poster hero and switches locale (9.0s)
+  ✓   21 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:61:1 › renders the complete data-driven public homepage (7.8s)
+  ✘   13 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:137:3 › changing a booking › a slot lost to the weather is refunded (22.9s)
+  ✓   24 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:140:1 › provides the complete public navigation on desktop and mobile (14.3s)
+  ✓   23 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:123:1 › keeps the public homepage within a mobile viewport (16.8s)
+  ✓   22 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/collection.spec.ts:108:1 › an unknown capture and a malformed id are both not found (18.6s)
+(node:44803) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   27 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:244:1 › lists tonight's targets observable-first, with the platform's reasons (11.1s)
+  ✓   26 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:230:1 › keeps the visual system within a mobile viewport (16.2s)
+  ✓   29 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:267:1 › shows a target from the platform, and books rather than starting a fake mission (8.4s)
+  ✓   25 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:212:1 › shows and operates the internal visual system (26.8s)
+  ✓   30 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:284:1 › reads fixed-position coordinates in the technical details (10.3s)
+  ✓   31 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:292:1 › answers an unknown target with the not-found page (14.5s)
+  ✓   28 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:167:1 › uses a desktop sidebar and native-style mobile app navigation (29.7s)
+  ✓   32 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:301:1 › keeps missions usable inside a mobile viewport (16.1s)
+[WebServer] Failed to proxy http://127.0.0.1:4001/ws/mission/20000000-0000-4000-8000-000000000001 Error: connect ECONNREFUSED 127.0.0.1:4001
+[WebServer]     at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:4001) {
+[WebServer]   errno: -61,
+[WebServer]   code: 'ECONNREFUSED',
+[WebServer]   syscall: 'connect',
+[WebServer]   address: '127.0.0.1',
+[WebServer]   port: 4001
+[WebServer] }
+  ✓   33 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:319:1 › /app/live opens the observer's live mission room (15.2s)
+  ✓   34 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:332:3 › with no live or imminent mission › /app/live goes to booking, in the caller's language (20.7s)
+  ✓   35 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:344:1 › the /app dashboard reads the platform, section by section (20.1s)
+  ✓   36 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:385:1 › keeps the Georgian authenticated home within a mobile viewport (16.0s)
+  ✓   37 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:403:1 › the observatory scene carries the state, tonight's sky, the plate and the ways in (19.2s)
+  ✓   38 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:465:1 › /network is folded into the observatory page (13.4s)
+  ✓   39 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:498:1 › shows what exists today, without invented prices or concept tiers (12.8s)
+  ✓   40 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:474:1 › preserves observatory locale and mobile width (14.2s)
+  ✓   41 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/home.spec.ts:530:1 › keeps localized pricing inside the mobile viewport (13.8s)
+  ✓   42 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/legal.spec.ts:17:3 › /terms is published as a draft (13.7s)
+  ✓   43 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/legal.spec.ts:17:3 › /privacy is published as a draft (13.0s)
+  ✓   44 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/legal.spec.ts:17:3 › /refunds is published as a draft (16.1s)
+  ✓   45 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/legal.spec.ts:30:1 › the footer reaches all three documents, in both locales (15.0s)
+  ✓   46 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/legal.spec.ts:39:1 › the Georgian documents carry the same draft notice (16.3s)
+  ✓   47 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:31:1 › saves a name and the language emails come in (25.3s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓   50 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:91:1 › a booking that is not the customer's, or has nothing to claim, offers no slot (27.0s)
+  ✓   51 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:47:1 › names a wrong current password, and keeps it out of the page (21.6s)
+  ✘   48 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:21:1 › a lost slot is replaced with a free one, and the offer then closes (31.9s)
+  ✓   52 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:110:1 › the Georgian reschedule fits a phone (16.2s)
+(node:45075) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   53 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:58:1 › changes the password, and signs in with the new one (19.5s)
+[WebServer] Failed to proxy http://127.0.0.1:4000/auth/sign-in Error: socket hang up
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+[WebServer] Error: socket hang up
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+  ✘   49 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:75:1 › a slot taken a moment ago is refused, and the free slot stays open (34.3s)
+(node:45118) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   56 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:75:1 › moves the address only when the link sent to the new one is opened (32.5s)
+  ✘   54 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:65:1 › a customer who left the checkout pays from the booking's own page (14.7s)
+  ✓   57 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:92:1 › declining at the checkout cancels the booking (24.6s)
+  ✓   58 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:120:1 › says what to settle before an account can be deleted, and keeps it (16.4s)
+(node:45176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   55 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:25:1 › a slot is reserved, paid at the sandbox checkout, and confirmed (23.5s)
+  ✓   59 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:117:1 › a booked slot, or no slot at all, cannot be reserved (24.2s)
+[WebServer] Failed to proxy http://127.0.0.1:4000/auth/sign-in Error: read ECONNRESET
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -54,
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   syscall: 'read'
+[WebServer] }
+[WebServer] Error: read ECONNRESET
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -54,
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   syscall: 'read'
+[WebServer] }
+(node:45216) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   61 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:103:1 › a slot taken a moment ago is refused, and the customer is sent elsewhere (29.6s)
+  ✓   62 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:25:1 › a nudge is relayed, answered by the telescope, and the controls unlock (17.4s)
+  ✘   60 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:140:1 › deletes the account after the password, and it cannot sign in again (30.4s)
+  ✓   64 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:45:1 › a capture runs, and the controls return when it is done (21.4s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓   65 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:60:1 › the telescope's own refusal is named, though the cloud approved it (23.2s)
+  ✓   63 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:131:1 › the Georgian reserve page fits a phone (31.2s)
+  ✓   66 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:85:1 › a command with no answer gives up at its deadline (15.0s)
+(node:45308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   67 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:93:1 › stopping asks first, then ends the observation (16.6s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓   68 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:112:1 › the Georgian controls fit a phone (17.7s)
+  ✓   69 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:21:1 › an observing mission opens its session and shows the simulated stream (17.8s)
+  ✓   71 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:49:1 › the Georgian live room fits a phone (19.8s)
+  ✓   73 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:80:3 › en: a scheduled mission waits for its slot, with the plate as an illustration (15.3s)
+  ✓   74 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:80:3 › ka: a scheduled mission waits for its slot, with the plate as an illustration (8.4s)
+  ✓   76 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:134:3 › en: a dropped channel is stated as reconnecting (8.0s)
+  ✓   75 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:94:1 › the customer starts a scheduled mission once its slot is open (10.5s)
+  ✓   77 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:134:3 › ka: a dropped channel is stated as reconnecting (7.1s)
+  ✓   78 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:145:3 › en: an offline agent is stated, with no telescope position (6.5s)
+  ✓   79 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:145:3 › ka: an offline agent is stated, with no telescope position (5.6s)
+  ✓   80 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:162:3 › en: a weather hold from the channel stops the feed (6.1s)
+  ✘   70 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:71:1 › the cloud's safety refusal is named, and nothing is retried (20.5s)
+  ✓   81 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:162:3 › ka: a weather hold from the channel stops the feed (5.6s)
+  ✘   72 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:69:1 › starting is stated while the platform opens the session (24.7s)
+(node:45432) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   82 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:177:3 › en: the session ends at its expiresAt (9.3s)
+  ✓   83 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:189:3 › en: a start the platform fails is an error with a retry (5.4s)
+(node:45443) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   85 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › en: not-visible stops the observation, with a way forward (12.3s)
+  ✓   86 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › ka: not-visible stops the observation, with a way forward (15.0s)
+  ✓   84 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:177:3 › ka: the session ends at its expiresAt (20.9s)
+  ✓   88 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › en: hardware stops the observation, with a way forward (16.4s)
+  ✓   87 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:189:3 › ka: a start the platform fails is an error with a retry (19.8s)
+  ✓   89 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › ka: hardware stops the observation, with a way forward (21.5s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓   90 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › en: cancelled stops the observation, with a way forward (17.2s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓   91 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › ka: cancelled stops the observation, with a way forward (17.3s)
+  ✓   92 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › en: failed stops the observation, with a way forward (18.9s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓   93 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › ka: failed stops the observation, with a way forward (20.9s)
+  ✓   94 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › en: heartbeat stops the observation, with a way forward (20.1s)
+  ✓   95 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:232:5 › ka: heartbeat stops the observation, with a way forward (22.4s)
+  ✓   97 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-sharing.spec.ts:7:1 › the owner opens the session, copies the watch link, and closes it again (21.7s)
+  ✓   98 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-sharing.spec.ts:41:1 › the Georgian sharing panel fits a phone (19.7s)
+  ✓   99 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room.spec.ts:9:1 › the room reads an observing mission from the platform (14.7s)
+  ✓  100 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room.spec.ts:38:1 › a scheduled planet shows its plate, captioned as an illustration (10.9s)
+  ✓  102 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room.spec.ts:67:1 › the dashboard's upcoming mission opens its room (12.6s)
+  ✓  101 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room.spec.ts:57:1 › a complete mission shows its captures and every step done (14.2s)
+  ✓  103 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room.spec.ts:75:1 › a mission that is not the caller's, or not a mission, is not found (12.5s)
+  ✘   96 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:266:1 › a session another tab holds offers to watch here (23.1s)
+  ✓  104 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room.spec.ts:87:1 › the Georgian room fits a phone (10.9s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓  105 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en holds its shape at every width (12.0s)
+  ✓  106 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en exposes one unambiguous landmark set (11.9s)
+  ✓  107 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/pricing holds its shape at every width (9.5s)
+  ✓  108 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/pricing exposes one unambiguous landmark set (9.6s)
+(node:45685) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  109 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/pricing starts its heading outline at h1 (9.4s)
+  ✓  110 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/observatory holds its shape at every width (18.8s)
+  ✓  111 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/observatory exposes one unambiguous landmark set (18.6s)
+  ✓  113 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/observatory starts its heading outline at h1 (19.7s)
+  ✓  112 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en starts its heading outline at h1 (21.0s)
+  ✓  114 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/status holds its shape at every width (16.8s)
+  ✓  115 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/status exposes one unambiguous landmark set (16.3s)
+  ✓  116 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/status starts its heading outline at h1 (15.9s)
+  ✓  117 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/terms holds its shape at every width (15.2s)
+  ✓  118 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/terms exposes one unambiguous landmark set (14.4s)
+  ✓  119 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/terms starts its heading outline at h1 (14.4s)
+  ✓  120 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/privacy holds its shape at every width (18.3s)
+  ✓  122 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/privacy starts its heading outline at h1 (13.0s)
+  ✓  121 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/privacy exposes one unambiguous landmark set (14.5s)
+  ✓  123 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/refunds holds its shape at every width (20.4s)
+  ✓  124 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/refunds exposes one unambiguous landmark set (18.3s)
+  ✓  125 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/refunds starts its heading outline at h1 (16.3s)
+  ✓  129 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app holds its shape at every width (19.2s)
+  ✓  128 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/design-system starts its heading outline at h1 (21.5s)
+  ✓  127 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/design-system exposes one unambiguous landmark set (33.6s)
+  ✓  130 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app exposes one unambiguous landmark set (12.2s)
+  ✓  131 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app starts its heading outline at h1 (11.6s)
+  ✓  132 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app/missions holds its shape at every width (13.7s)
+  ✓  133 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app/missions exposes one unambiguous landmark set (13.0s)
+  ✓  134 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app/missions starts its heading outline at h1 (13.0s)
+  ✓  135 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app/collection holds its shape at every width (12.9s)
+[WebServer] Failed to proxy http://127.0.0.1:4000/storage/60000000-0000-4000-8000-000000000001/thumbnail?X-Amz-Signature=fake Error: read ECONNRESET
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -54,
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   syscall: 'read'
+[WebServer] }
+[WebServer] Error: read ECONNRESET
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -54,
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   syscall: 'read'
+[WebServer] }
+  ✘  126 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/design-system holds its shape at every width (38.7s)
+  ✓  137 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app/collection starts its heading outline at h1 (13.7s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2208840122'
+[WebServer] }
+  ✓  136 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app/collection exposes one unambiguous landmark set (14.9s)
+  ✓  138 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app/profile holds its shape at every width (14.0s)
+  ✓  139 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app/profile starts its heading outline at h1 (9.4s)
+(node:45944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  140 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app/bookings holds its shape at every width (11.3s)
+  ✓  141 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app/bookings exposes one unambiguous landmark set (13.9s)
+  ✓  142 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app/bookings starts its heading outline at h1 (12.4s)
+  ✓  144 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app/book holds its shape at every width (19.8s)
+  ✓  146 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app/book starts its heading outline at h1 (18.2s)
+  ✓  145 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app/book exposes one unambiguous landmark set (18.9s)
+  ✓  143 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app/profile exposes one unambiguous landmark set (20.1s)
+  ✓  147 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app/subscription holds its shape at every width (15.3s)
+  ✓  148 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app/subscription exposes one unambiguous landmark set (14.4s)
+  ✓  149 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app/subscription starts its heading outline at h1 (13.4s)
+  ✓  150 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app/loyalty holds its shape at every width (14.4s)
+  ✓  151 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app/loyalty exposes one unambiguous landmark set (15.2s)
+  ✓  152 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app/loyalty starts its heading outline at h1 (15.2s)
+  ✓  154 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/app/passes exposes one unambiguous landmark set (14.7s)
+  ✓  153 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/app/passes holds its shape at every width (16.6s)
+  ✓  155 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/app/passes starts its heading outline at h1 (12.8s)
+  ✓  158 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka starts its heading outline at h1 (14.2s)
+  ✓  156 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka holds its shape at every width (16.8s)
+  ✓  159 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/pricing holds its shape at every width (12.4s)
+  ✓  157 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka exposes one unambiguous landmark set (20.5s)
+  ✓  160 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/pricing exposes one unambiguous landmark set (11.1s)
+  ✓  161 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/pricing starts its heading outline at h1 (11.7s)
+  ✓  162 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/observatory holds its shape at every width (21.2s)
+  ✓  163 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/observatory exposes one unambiguous landmark set (18.2s)
+  ✓  164 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/observatory starts its heading outline at h1 (16.1s)
+  ✓  165 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/status holds its shape at every width (18.5s)
+  ✓  166 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/status exposes one unambiguous landmark set (13.0s)
+  ✓  167 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/status starts its heading outline at h1 (13.9s)
+  ✓  168 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/terms holds its shape at every width (16.7s)
+  ✓  169 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/terms exposes one unambiguous landmark set (13.5s)
+  ✓  170 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/terms starts its heading outline at h1 (13.3s)
+  ✓  171 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/privacy holds its shape at every width (14.1s)
+  ✓  173 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/privacy starts its heading outline at h1 (12.7s)
+  ✓  172 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/privacy exposes one unambiguous landmark set (15.8s)
+  ✓  174 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/refunds holds its shape at every width (16.3s)
+  ✓  175 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/refunds exposes one unambiguous landmark set (15.8s)
+  ✓  176 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/refunds starts its heading outline at h1 (16.0s)
+  ✓  179 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/design-system starts its heading outline at h1 (19.1s)
+  ✓  180 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app holds its shape at every width (16.5s)
+  ✓  178 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/design-system exposes one unambiguous landmark set (29.2s)
+  ✓  181 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app exposes one unambiguous landmark set (11.7s)
+  ✓  182 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app starts its heading outline at h1 (10.9s)
+  ✓  183 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app/missions holds its shape at every width (13.1s)
+  ✓  185 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app/missions starts its heading outline at h1 (9.9s)
+  ✓  184 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app/missions exposes one unambiguous landmark set (16.7s)
+  ✓  186 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app/collection holds its shape at every width (15.4s)
+  ✘  177 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/design-system holds its shape at every width (34.9s)
+  ✓  187 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app/collection exposes one unambiguous landmark set (14.1s)
+  ✓  188 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app/collection starts its heading outline at h1 (12.8s)
+  ✓  190 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app/profile starts its heading outline at h1 (10.5s)
+  ✓  189 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app/profile holds its shape at every width (12.3s)
+(node:46363) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  191 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app/bookings holds its shape at every width (15.1s)
+  ✓  193 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app/bookings starts its heading outline at h1 (15.8s)
+  ✓  192 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app/bookings exposes one unambiguous landmark set (16.5s)
+  ✓  195 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app/book holds its shape at every width (17.9s)
+  ✓  197 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app/book starts its heading outline at h1 (18.2s)
+  ✓  196 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app/book exposes one unambiguous landmark set (20.8s)
+  ✓  194 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app/profile exposes one unambiguous landmark set (23.4s)
+  ✓  198 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app/subscription holds its shape at every width (21.7s)
+  ✓  200 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app/subscription starts its heading outline at h1 (15.7s)
+  ✓  199 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app/subscription exposes one unambiguous landmark set (18.8s)
+  ✓  201 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app/loyalty holds its shape at every width (16.5s)
+  ✓  202 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app/loyalty exposes one unambiguous landmark set (14.7s)
+  ✓  203 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app/loyalty starts its heading outline at h1 (17.1s)
+  ✓  204 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/app/passes holds its shape at every width (17.7s)
+  ✓  205 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/app/passes exposes one unambiguous landmark set (16.0s)
+  ✓  206 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/app/passes starts its heading outline at h1 (16.4s)
+  ✓  208 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/status.spec.ts:35:1 › shows an hour with no forecast as unknown, never as clear (15.8s)
+  ✓  209 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/status.spec.ts:48:1 › calls the forecast advisory and keeps the operator's hold authoritative (15.2s)
+  ✓  207 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/status.spec.ts:17:1 › reports the observatory, and says the simulator is answering (18.9s)
+  ✓  211 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/status.spec.ts:69:1 › the footer reaches the status page in both locales (18.0s)
+  ✓  210 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/status.spec.ts:59:1 › renders in Georgian (34.1s)
+  ✓  215 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:97:3 › a watcher › finds every seat taken (18.0s)
+  ✓  214 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:82:3 › a watcher › is told when the owner closes the session (27.6s)
+  ✓  216 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:105:3 › a watcher › is told a session nobody opened is not open to watch (10.8s)
+  ✓  217 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:113:3 › a watcher › buys and watches in Georgian, returned to the Georgian page (15.2s)
+  ✘  212 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:35:3 › a watcher › buys a seat, watches the simulated session, and leaves (33.2s)
+  ✘  213 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:70:3 › a watcher › waits for a payment that settles late, then watches (32.3s)
+  ✓  218 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:134:3 › a watcher › the Georgian watch page fits a phone (10.0s)
+  ✓  219 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:145:1 › the owner is sent to the live room (6.8s)
+(node:46630) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46631) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  220 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:156:1 › the Georgian owner is sent to the live room (13.7s)
+(node:46675) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  221 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:25:1 › signs in through /api and reaches the app on the session the API set (15.5s)
+  ✓  222 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:68:1 › creates an account, and asks for the email before any session (10.5s)
+[WebServer] Failed to proxy http://127.0.0.1:4000/auth/sign-in Error: read ECONNRESET
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -54,
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   syscall: 'read'
+[WebServer] }
+[WebServer] Error: read ECONNRESET
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -54,
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   syscall: 'read'
+[WebServer] }
+(node:46716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  224 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:97:1 › resets a forgotten password from the sign-in page, and signs in with the new one (21.7s)
+(node:46742) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  226 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:136:1 › answers an unknown address exactly as a known one, in Georgian (9.1s)
+  ✓  225 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:44:1 › treats a session cookie without its CSRF cookie as signed out (17.7s)
+  ✓  228 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:148:1 › refuses a short new password before asking the platform (9.2s)
+  ✘  223 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:36:1 › refuses a wrong password without leaving the sign-in page (18.6s)
+  ✓  229 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:160:1 › offers a new link when the reset link was mangled on its way out of the email (9.4s)
+[WebServer] Failed to proxy http://127.0.0.1:4000/auth/sign-in Error: socket hang up
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+[WebServer] Error: socket hang up
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+  ✓  231 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/sign-in starts its heading outline at h1 (12.1s)
+  ✓  230 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/sign-in holds its shape at every width (14.6s)
+(node:46797) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  232 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/register holds its shape at every width (10.3s)
+  ✓  233 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/register exposes one unambiguous landmark set (10.3s)
+  ✓  235 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/register starts its heading outline at h1 (8.4s)
+  ✓  236 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/reset-password holds its shape at every width (9.3s)
+  ✓  237 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/reset-password exposes one unambiguous landmark set (9.6s)
+  ✓  238 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /en/reset-password starts its heading outline at h1 (10.5s)
+  ✓  234 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /en/sign-in exposes one unambiguous landmark set (19.9s)
+  ✓  239 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/sign-in holds its shape at every width (9.5s)
+  ✓  240 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/sign-in exposes one unambiguous landmark set (12.3s)
+  ✓  241 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/sign-in starts its heading outline at h1 (11.9s)
+  ✓  242 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/register holds its shape at every width (10.4s)
+  ✓  244 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/register starts its heading outline at h1 (9.2s)
+  ✓  243 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/register exposes one unambiguous landmark set (10.1s)
+  ✓  245 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/reset-password holds its shape at every width (11.7s)
+  ✓  247 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:102:7 › /ka/reset-password starts its heading outline at h1 (12.6s)
+  ✓  246 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:70:7 › /ka/reset-password exposes one unambiguous landmark set (13.3s)
+  ✘  227 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:56:1 › signs out and ends the session (1.7m)
+
+
+  1) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:10:1 › /app/bookings lists the bookings latest slot first, four to a page 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.booking-row').first()
+    Expected substring: "Expired"
+    Received string:    ""
+
+    Call log:
+      - Expect "toContainText" with timeout 5000ms
+      - waiting for locator('.booking-row').first()
+
+
+      27 |   await page.getByRole("link", { name: "Older bookings" }).click();
+      28 |   await expect(rows).toHaveCount(3);
+    > 29 |   await expect(rows.nth(0)).toContainText("Expired");
+         |                             ^
+      30 |   await expect(rows.nth(1)).toContainText("Refunded");
+      31 |   await expect(rows.nth(2)).toContainText("Cancelled");
+      32 |   await expect(page.getByRole("link", { name: "Older bookings" })).toHaveCount(0);
+        at /private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:29:29
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/bookings--app-bookings-lis-95b5d-t-slot-first-four-to-a-page-chromium/error-context.md
+
+  2) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:137:3 › changing a booking › a slot lost to the weather is refunded 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Refunded', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Refunded', { exact: true })
+
+
+      146 |     await page.getByRole("button", { name: "Take the refund" }).click();
+      147 |
+    > 148 |     await expect(page.getByText("Refunded", { exact: true })).toBeVisible();
+          |                                                               ^
+      149 |     await expect(
+      150 |       page.getByText(
+      151 |         "This slot was lost on our side, and the amount paid has been returned.",
+        at /private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:148:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/bookings-changing-a-bookin-0f1b9--to-the-weather-is-refunded-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/bookings-changing-a-bookin-0f1b9--to-the-weather-is-refunded-chromium/error-context.md
+
+  3) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:140:1 › deletes the account after the password, and it cannot sign in again 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Email or password is incorrect.')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Email or password is incorrect.')
+
+
+      165 |   await page.getByLabel("Password").fill("correct horse battery");
+      166 |   await page.getByRole("button", { name: "Sign in" }).click();
+    > 167 |   await expect(page.getByText("Email or password is incorrect.")).toBeVisible();
+          |                                                                   ^
+      168 | });
+      169 |
+        at /private/tmp/stellar-prod-tests/e2e/profile.spec.ts:167:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/profile-deletes-the-accoun-501da-and-it-cannot-sign-in-again-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/profile-deletes-the-accoun-501da-and-it-cannot-sign-in-again-chromium/error-context.md
+
+  4) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:21:1 › a lost slot is replaced with a free one, and the offer then closes 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/en\/app\/book\?reschedule=53000000-0000-4000-8000-000000000004$/
+    Received string:  ""
+
+
+      26 |   await page.getByRole("link", { name: "Choose a free slot" }).click();
+      27 |
+    > 28 |   await expect(page).toHaveURL(new RegExp(`/en/app/book\\?reschedule=${lostId}$`));
+         |                      ^
+      29 |   await expect(
+      30 |     page.getByText("Choosing a free slot to replace the one that was lost."),
+      31 |   ).toBeVisible();
+        at /private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:28:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/reschedule-a-lost-slot-is--443c2-e-and-the-offer-then-closes-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/reschedule-a-lost-slot-is--443c2-e-and-the-offer-then-closes-chromium/error-context.md
+
+  5) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:75:1 › a slot taken a moment ago is refused, and the free slot stays open 
+
+    Test timeout of 30000ms exceeded.
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/reschedule-a-slot-taken-a--08a42-nd-the-free-slot-stays-open-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/reschedule-a-slot-taken-a--08a42-nd-the-free-slot-stays-open-chromium/error-context.md
+
+  6) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:25:1 › a slot is reserved, paid at the sandbox checkout, and confirmed 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/en\/app\/book\/reserve\?startAt=/
+    Received string:  "http://localhost:3100/en/app/book"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        12 × locator resolved to <html lang="en" class="firago_5d16354f-module__IeozIa__variable anton_a8b17dcd-module__Xi7J6a__variable bowlby_one_ed1eb4f8-module__I1FHRq__variable oswald_f85f80dc-module__aMw1va__variable geist_e799d87a-module__u8MhCG__variable jetbrains_mono_c910bbf7-module__wROeXW__variable noto_sans_georgian_9880656b-module__biiUkq__variable">…</html>
+           - unexpected value "http://localhost:3100/en/app/book"
+
+
+      20 |   await page.goto("/en/app/book");
+      21 |   await page.locator(".slot-row").nth(index).getByRole("link").click();
+    > 22 |   await expect(page).toHaveURL(/\/en\/app\/book\/reserve\?startAt=/);
+         |                      ^
+      23 | }
+      24 |
+      25 | test("a slot is reserved, paid at the sandbox checkout, and confirmed", async ({
+        at openSlot (/private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:22:22)
+        at /private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:29:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/reserve-a-slot-is-reserved-58e55-dbox-checkout-and-confirmed-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/reserve-a-slot-is-reserved-58e55-dbox-checkout-and-confirmed-chromium/error-context.md
+
+  7) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:65:1 › a customer who left the checkout pays from the booking's own page 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/en\/app$/
+    Received string:  "http://localhost:3100/en/sign-in"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        13 × locator resolved to <html lang="en" class="firago_5d16354f-module__IeozIa__variable anton_a8b17dcd-module__Xi7J6a__variable bowlby_one_ed1eb4f8-module__I1FHRq__variable oswald_f85f80dc-module__aMw1va__variable geist_e799d87a-module__u8MhCG__variable jetbrains_mono_c910bbf7-module__wROeXW__variable noto_sans_georgian_9880656b-module__biiUkq__variable">…</html>
+           - unexpected value "http://localhost:3100/en/sign-in"
+
+
+      14 |   await page.getByLabel("Password").fill("correct horse battery");
+      15 |   await page.getByRole("button", { name: "Sign in" }).click();
+    > 16 |   await expect(page).toHaveURL(/\/en\/app$/);
+         |                      ^
+      17 | }
+      18 |
+      19 | async function openSlot(page: Page, index: number) {
+        at signIn (/private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:16:22)
+        at /private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:68:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/reserve-a-customer-who-lef-b565f-from-the-booking-s-own-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/reserve-a-customer-who-lef-b565f-from-the-booking-s-own-page-chromium/error-context.md
+
+  8) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:71:1 › the cloud's safety refusal is named, and nothing is retried 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('.live-feed')
+    Expected: "live"
+    Received: "connecting"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for locator('.live-feed')
+        8 × locator resolved to <div class="live-feed" data-live-busy="true" data-live-status="starting">…</div>
+          - unexpected value "starting"
+        - locator resolved to <div class="live-feed" data-live-busy="true" data-live-status="connecting">…</div>
+        - unexpected value "connecting"
+
+
+      18 |   ]);
+      19 |   await page.goto(`/${locale}/app/missions/${observing}/session`);
+    > 20 |   await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "live");
+         |                                            ^
+      21 | }
+      22 |
+      23 | const status = (page: Page) => page.locator(".room-controls-status");
+        at openRoom (/private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:20:44)
+        at /private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:73:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/room-controls-the-cloud-s--14931-amed-and-nothing-is-retried-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/room-controls-the-cloud-s--14931-amed-and-nothing-is-retried-chromium/error-context.md
+
+  9) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:69:1 › starting is stated while the platform opens the session 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('.live-feed')
+    Expected: "live"
+    Received: "connecting"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for locator('.live-feed')
+        6 × locator resolved to <div class="live-feed" data-live-busy="true" data-live-status="starting">…</div>
+          - unexpected value "starting"
+        5 × locator resolved to <div class="live-feed" data-live-busy="true" data-live-status="connecting">…</div>
+          - unexpected value "connecting"
+
+
+      71 |   await page.goto(`/en/app/missions/${observing}/session`);
+      72 |   await expect(feedStatus(page)).toContainText("Starting");
+    > 73 |   await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "live");
+         |                                            ^
+      74 | });
+      75 |
+      76 | for (const [locale, opens, button] of [
+        at /private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:73:44
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/room-live-starting-is-stat-43163--platform-opens-the-session-chromium/error-context.md
+
+  10) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:266:1 › a session another tab holds offers to watch here 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.live-feed-status [role]')
+    Expected substring: "This observation is open in another window or tab."
+    Received string:    "ConnectingWaiting for the first picture from the camera."
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 5000ms
+      - waiting for locator('.live-feed-status [role]')
+        5 × locator resolved to <div role="status">…</div>
+          - unexpected value "StartingOpening your session with the observatory."
+        5 × locator resolved to <div role="status">…</div>
+          - unexpected value "ConnectingWaiting for the first picture from the camera."
+
+
+      267 |   await scenario(page, "forbidden");
+      268 |   await page.goto(`/en/app/missions/${observing}/session`);
+    > 269 |   await expect(feedStatus(page)).toContainText(
+          |                                  ^
+      270 |     "This observation is open in another window or tab.",
+      271 |   );
+      272 |   await expect(page.getByRole("button", { name: "Watch here" })).toBeVisible();
+        at /private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:269:34
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/room-live-a-session-another-tab-holds-offers-to-watch-here-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/room-live-a-session-another-tab-holds-offers-to-watch-here-chromium/error-context.md
+
+  11) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/design-system holds its shape at every width 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/shell--en-design-system-holds-its-shape-at-every-width-chromium/error-context.md
+
+  12) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/design-system holds its shape at every width 
+
+    Test timeout of 30000ms exceeded.
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/shell--ka-design-system-holds-its-shape-at-every-width-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/shell--ka-design-system-holds-its-shape-at-every-width-chromium/error-context.md
+
+  13) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:35:3 › a watcher › buys a seat, watches the simulated session, and leaves 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('.live-feed')
+    Expected: "live"
+    Received: "connecting"
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for locator('.live-feed')
+        - locator resolved to <div class="live-feed" data-live-busy="true" data-live-status="connecting">…</div>
+        - unexpected value "connecting"
+      - Protocol error (Runtime.callFunctionOn): Internal server error, session closed.
+
+
+      50 |     ).toBeVisible();
+      51 |     await expect(page.getByText("3 of 5 seats taken.")).toBeVisible();
+    > 52 |     await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "live");
+         |                                              ^
+      53 |     await expect(page.locator(".live-feed-badge")).toHaveText("Simulated");
+      54 |     // View only: nothing that moves the telescope or keeps a capture.
+      55 |     await expect(
+        at /private/tmp/stellar-prod-tests/e2e/watch.spec.ts:52:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/watch-a-watcher-buys-a-sea-577ef-imulated-session-and-leaves-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/watch-a-watcher-buys-a-sea-577ef-imulated-session-and-leaves-chromium/error-context.md
+
+  14) [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:70:3 › a watcher › waits for a payment that settles late, then watches 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: locator('.live-feed')
+    Expected: "live"
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 10000ms
+      - waiting for locator('.live-feed')
+      - Test timeout of 30000ms exceeded.
+
+
+      75 |     await payAtCheckout(page, "en", "Buy a seat");
+      76 |     await expect(page.getByText("Waiting for your payment to settle")).toBeVisible();
+    > 77 |     await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "live", {
+         |                                              ^
+      78 |       timeout: 10_000,
+      79 |     });
+      80 |   });
+        at /private/tmp/stellar-prod-tests/e2e/watch.spec.ts:77:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/watch-a-watcher-waits-for--d852f-t-settles-late-then-watches-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/watch-a-watcher-waits-for--d852f-t-settles-late-then-watches-chromium/error-context.md
+
+  15) [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:36:1 › refuses a wrong password without leaving the sign-in page 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('main').getByRole('alert')
+    Expected: "Email or password is incorrect."
+    Received: "Authentication is temporarily unavailable. Please try again later."
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveText" with timeout 5000ms
+      - waiting for getByRole('main').getByRole('alert')
+        11 × locator resolved to <p role="alert" class="auth-form-error">Authentication is temporarily unavailable. Please…</p>
+           - unexpected value "Authentication is temporarily unavailable. Please try again later."
+
+
+      36 | test("refuses a wrong password without leaving the sign-in page", async ({ page }) => {
+      37 |   await signIn(page, "observer@darkview.test", "not the password");
+    > 38 |   await expect(page.getByRole("main").getByRole("alert")).toHaveText(
+         |                                                           ^
+      39 |     "Email or password is incorrect.",
+      40 |   );
+      41 |   await expect(page).toHaveURL(/\/en\/sign-in$/, { timeout: firstCompile });
+        at /private/tmp/stellar-prod-tests/e2e/auth.spec.ts:38:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/auth-refuses-a-wrong-passw-7d374-ut-leaving-the-sign-in-page-signed-out/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/auth-refuses-a-wrong-passw-7d374-ut-leaving-the-sign-in-page-signed-out/error-context.md
+
+  16) [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:56:1 › signs out and ends the session 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/en\/app$/
+    Received string:  "http://localhost:3100/en/sign-in"
+    Timeout: 90000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 90000ms
+        176 × locator resolved to <html lang="en" class="firago_5d16354f-module__IeozIa__variable anton_a8b17dcd-module__Xi7J6a__variable bowlby_one_ed1eb4f8-module__I1FHRq__variable oswald_f85f80dc-module__aMw1va__variable geist_e799d87a-module__u8MhCG__variable jetbrains_mono_c910bbf7-module__wROeXW__variable noto_sans_georgian_9880656b-module__biiUkq__variable">…</html>
+            - unexpected value "http://localhost:3100/en/sign-in"
+
+
+      56 | test("signs out and ends the session", async ({ page }) => {
+      57 |   await signIn(page, "observer@darkview.test");
+    > 58 |   await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
+         |                      ^
+      59 |
+      60 |   await page.waitForLoadState("networkidle");
+      61 |   await appSidebar(page).getByRole("button", { name: "Sign out" }).click();
+        at /private/tmp/stellar-prod-tests/e2e/auth.spec.ts:58:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../docs/evidence/qa-2026-10-07/production-e2e-results/auth-signs-out-and-ends-the-session-signed-out/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../docs/evidence/qa-2026-10-07/production-e2e-results/auth-signs-out-and-ends-the-session-signed-out/error-context.md
+
+  16 failed
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:10:1 › /app/bookings lists the bookings latest slot first, four to a page 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:137:3 › changing a booking › a slot lost to the weather is refunded 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:140:1 › deletes the account after the password, and it cannot sign in again 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:21:1 › a lost slot is replaced with a free one, and the offer then closes 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:75:1 › a slot taken a moment ago is refused, and the free slot stays open 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:25:1 › a slot is reserved, paid at the sandbox checkout, and confirmed 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:65:1 › a customer who left the checkout pays from the booking's own page 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:71:1 › the cloud's safety refusal is named, and nothing is retried 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:69:1 › starting is stated while the platform opens the session 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:266:1 › a session another tab holds offers to watch here 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/design-system holds its shape at every width 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/design-system holds its shape at every width 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:35:3 › a watcher › buys a seat, watches the simulated session, and leaves 
+    [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:70:3 › a watcher › waits for a payment that settles late, then watches 
+    [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:36:1 › refuses a wrong password without leaving the sign-in page 
+    [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:56:1 › signs out and ends the session 
+  231 passed (22.2m)

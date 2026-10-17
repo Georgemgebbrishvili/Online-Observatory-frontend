@@ -1,0 +1,14 @@
+21:02  up  7:10, 1 user, load averages: 50.89 95.62 110.58
+
+Running 7 tests using 1 worker
+
+  ✓  1 [setup] › e2e/auth.setup.ts:10:3 › sign in as the observer (8.5s)
+  ✓  2 [setup] › e2e/auth.setup.ts:10:3 › sign in as the operator (5.6s)
+  ✓  3 [warm] › e2e/warm.setup.ts:22:1 › warm every route so the parallel run is not racing the compiler (1.8m)
+  ✓  4 [chromium] › e2e/reschedule.spec.ts:21:1 › a lost slot is replaced with a free one, and the offer then closes (14.3s)
+  ✓  5 [chromium] › e2e/reserve.spec.ts:25:1 › a slot is reserved, paid at the sandbox checkout, and confirmed (13.4s)
+  ✓  6 [chromium] › e2e/reserve.spec.ts:65:1 › a customer who left the checkout pays from the booking's own page (12.4s)
+  ✓  7 [chromium] › e2e/room-live.spec.ts:49:1 › the Georgian live room fits a phone (5.0s)
+
+  7 passed (3.1m)
+exit 0

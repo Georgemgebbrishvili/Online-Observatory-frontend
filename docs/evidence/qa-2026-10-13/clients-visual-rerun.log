@@ -1,0 +1,901 @@
+22:34  up  8:42, 2 users, load averages: 12.32 20.87 46.87
+grep: app at 390 ka /app/missions/21000000-0000-4000-8000-000000000002/session$|app at 390 ka /app/book\?reschedule=53000000-0000-4000-8000-000000000004$|operator at 390 en /admin$|operator at 390 en /admin/control$|operator at 390 en /admin/missions$|operator at 390 en /admin/targets$|operator at 390 en /admin/logs$|operator at 390 ka /admin/targets$|error at 390 en route error$|error at 390 ka route error$|public at 1440 en /$|public at 1440 en /observatory$|public at 1440 en /terms$|public at 1440 en /privacy$|public at 1440 en /design-system$|public at 1440 ka /design-system$|app at 1440 en /app/collection$|app at 1440 en /app/profile$|app at 1440 en /app/missions/22000000-0000-4000-8000-000000000003/session$|app at 1440 ka /app/profile$|app at 1440 ka /app/book$|operator at 1440 ka /admin$
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+Running 24 tests using 1 worker
+
+  ✓   1 [visual-setup] › e2e/auth.setup.ts:10:3 › sign in as the observer (32.0s)
+  ✓   2 [visual-setup] › e2e/auth.setup.ts:10:3 › sign in as the operator (16.1s)
+  ✓   3 [visual] › e2e/visual.spec.ts:139:9 › app at 390 › ka /app/missions/21000000-0000-4000-8000-000000000002/session (17.2s)
+  ✓   4 [visual] › e2e/visual.spec.ts:139:9 › app at 390 › ka /app/book?reschedule=53000000-0000-4000-8000-000000000004 (5.8s)
+  ✓   5 [visual] › e2e/visual.spec.ts:151:9 › operator at 390 › en /admin (8.1s)
+  ✓   6 [visual] › e2e/visual.spec.ts:151:9 › operator at 390 › en /admin/control (6.1s)
+  ✓   7 [visual] › e2e/visual.spec.ts:151:9 › operator at 390 › en /admin/missions (8.9s)
+  ✓   8 [visual] › e2e/visual.spec.ts:151:9 › operator at 390 › en /admin/targets (8.0s)
+  ✓   9 [visual] › e2e/visual.spec.ts:151:9 › operator at 390 › en /admin/logs (6.8s)
+  ✓  10 [visual] › e2e/visual.spec.ts:151:9 › operator at 390 › ka /admin/targets (6.3s)
+[WebServer] ⨯ Error [PlatformError]: {"code":"INTERNAL","message":"Simulated failure."}
+[WebServer]     at platformRequest (src/lib/platform/client.ts:56:11)
+[WebServer]     at async OperatorTargetsPage (src/app/[locale]/admin/targets/page.tsx:29:5)
+[WebServer]   54 |   if (!response.ok) {
+[WebServer]   55 |     const detail = await response.text().catch(() => "");
+[WebServer] > 56 |     throw new PlatformError(detail || response.statusText, response.status);
+[WebServer]      |           ^
+[WebServer]   57 |   }
+[WebServer]   58 |
+[WebServer]   59 |   if (response.status === 204) return undefined as T; {
+[WebServer]   status: 500,
+[WebServer]   digest: '478282048'
+[WebServer] }
+[WebServer] [browser] PlatformError: {"code":"INTERNAL","message":"Simulated failure."}
+[WebServer]     at platformRequest (src/lib/platform/client.ts:56:11)
+[WebServer]     at OperatorTargetsPage (src/app/[locale]/admin/targets/page.tsx:29:5)
+[WebServer]   54 |   if (!response.ok) {
+[WebServer]   55 |     const detail = await response.text().catch(() => "");
+[WebServer] > 56 |     throw new PlatformError(detail || response.statusText, response.status);
+[WebServer]      |           ^
+[WebServer]   57 |   }
+[WebServer]   58 |
+[WebServer]   59 |   if (response.status === 204) return undefined as T; (src/app/[locale]/error.tsx:31:13)
+[WebServer] [browser] PlatformError: {"code":"INTERNAL","message":"Simulated failure."}
+[WebServer]     at platformRequest (src/lib/platform/client.ts:56:11)
+[WebServer]     at OperatorTargetsPage (src/app/[locale]/admin/targets/page.tsx:29:5)
+[WebServer]   54 |   if (!response.ok) {
+[WebServer]   55 |     const detail = await response.text().catch(() => "");
+[WebServer] > 56 |     throw new PlatformError(detail || response.statusText, response.status);
+[WebServer]      |           ^
+[WebServer]   57 |   }
+[WebServer]   58 |
+[WebServer]   59 |   if (response.status === 204) return undefined as T; (src/app/[locale]/error.tsx:31:13)
+  ✓  11 [visual] › e2e/visual.spec.ts:164:7 › error at 390 › en route error (10.4s)
+[WebServer] ⨯ Error [PlatformError]: {"code":"INTERNAL","message":"Simulated failure."}
+[WebServer]     at platformRequest (src/lib/platform/client.ts:56:11)
+[WebServer]     at async OperatorTargetsPage (src/app/[locale]/admin/targets/page.tsx:29:5)
+[WebServer]   54 |   if (!response.ok) {
+[WebServer]   55 |     const detail = await response.text().catch(() => "");
+[WebServer] > 56 |     throw new PlatformError(detail || response.statusText, response.status);
+[WebServer]      |           ^
+[WebServer]   57 |   }
+[WebServer]   58 |
+[WebServer]   59 |   if (response.status === 204) return undefined as T; {
+[WebServer]   status: 500,
+[WebServer]   digest: '478282048'
+[WebServer] }
+[WebServer] [browser] PlatformError: {"code":"INTERNAL","message":"Simulated failure."}
+[WebServer]     at platformRequest (src/lib/platform/client.ts:56:11)
+[WebServer]     at OperatorTargetsPage (src/app/[locale]/admin/targets/page.tsx:29:5)
+[WebServer]   54 |   if (!response.ok) {
+[WebServer]   55 |     const detail = await response.text().catch(() => "");
+[WebServer] > 56 |     throw new PlatformError(detail || response.statusText, response.status);
+[WebServer]      |           ^
+[WebServer]   57 |   }
+[WebServer]   58 |
+[WebServer]   59 |   if (response.status === 204) return undefined as T; (src/app/[locale]/error.tsx:31:13)
+[WebServer] [browser] PlatformError: {"code":"INTERNAL","message":"Simulated failure."}
+[WebServer]     at platformRequest (src/lib/platform/client.ts:56:11)
+[WebServer]     at OperatorTargetsPage (src/app/[locale]/admin/targets/page.tsx:29:5)
+[WebServer]   54 |   if (!response.ok) {
+[WebServer]   55 |     const detail = await response.text().catch(() => "");
+[WebServer] > 56 |     throw new PlatformError(detail || response.statusText, response.status);
+[WebServer]      |           ^
+[WebServer]   57 |   }
+[WebServer]   58 |
+[WebServer]   59 |   if (response.status === 204) return undefined as T; (src/app/[locale]/error.tsx:31:13)
+  ✓  12 [visual] › e2e/visual.spec.ts:164:7 › error at 390 › ka route error (8.4s)
+  ✓  13 [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › en / (7.9s)
+  ✓  14 [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › en /observatory (17.1s)
+  ✓  15 [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › en /terms (5.4s)
+  ✘  16 [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › en /privacy (9.0s)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+[WebServer]       <LoadingBoundary name="design-sys..." loading={null}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/en/design..." tree={[...]} params={{locale:"en"}} renderTree={{...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="[locale]/d...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <DesignSystemPage>
+[WebServer]                     <main id="main-content" className="design-sys...">
+[WebServer]                       <Container>
+[WebServer]                         <div className={"page-con..."}>
+[WebServer]                           <header>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section className="ds-section" aria-labelledby="surfaces-t...">
+[WebServer]                             <header>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <ol>
+[WebServer]                             <h3>
+[WebServer]                             <ol>
+[WebServer]                             <h3>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <div className="ds-room-sp...">
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                             ...
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section className="ds-section" aria-labelledby="form-title">
+[WebServer]                             <header>
+[WebServer]                             <SurfacePanel>
+[WebServer]                               <div className="surface-pa...">
+[WebServer]                                 <form className="ds-form" noValidate={true}>
+[WebServer]                                   <h3>
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextInput>
+[WebServer]                                           <input
+[WebServer]                                             className={"input "}
+[WebServer]                                             id="target-name"
+[WebServer]                                             name="target"
+[WebServer]                                             placeholder="Messier or common name"
+[WebServer]                                             aria-describedby="target-name-message"
+[WebServer]                                             aria-invalid={false}
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                       ...
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextArea>
+[WebServer]                                           <textarea
+[WebServer]                                             className={"textarea "}
+[WebServer]                                             id="mission-notes"
+[WebServer]                                             name="notes"
+[WebServer]                                             placeholder="Optional notes for this mission"
+[WebServer]                                             aria-invalid={false}
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextInput>
+[WebServer]                                           <input
+[WebServer]                                             className={"input "}
+[WebServer]                                             id="notification-email"
+[WebServer]                                             name="email"
+[WebServer]                                             type="email"
+[WebServer]                                             defaultValue="observer@"
+[WebServer]                                             aria-invalid="true"
+[WebServer]                                             aria-describedby="notification-email-message"
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                       ...
+[WebServer]                                   <Checkbox>
+[WebServer]                                     <label className={"checkbox "}>
+[WebServer]                                       <input
+[WebServer]                                         type="checkbox"
+[WebServer]                                         defaultChecked={true}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   ...
+[WebServer]                             ...
+[WebServer]                           ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]  
+  ✓  17 [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › en /design-system (25.3s)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+[WebServer]       <LoadingBoundary name="design-sys..." loading={null}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/ka/design..." tree={[...]} params={{locale:"ka"}} renderTree={{...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="[locale]/d...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <DesignSystemPage>
+[WebServer]                     <main id="main-content" className="design-sys...">
+[WebServer]                       <Container>
+[WebServer]                         <div className={"page-con..."}>
+[WebServer]                           <header>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section className="ds-section" aria-labelledby="surfaces-t...">
+[WebServer]                             <header>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <ol>
+[WebServer]                             <h3>
+[WebServer]                             <ol>
+[WebServer]                             <h3>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <div className="ds-room-sp...">
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                             ...
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section className="ds-section" aria-labelledby="form-title">
+[WebServer]                             <header>
+[WebServer]                             <SurfacePanel>
+[WebServer]                               <div className="surface-pa...">
+[WebServer]                                 <form className="ds-form" noValidate={true}>
+[WebServer]                                   <h3>
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextInput>
+[WebServer]                                           <input
+[WebServer]                                             className={"input "}
+[WebServer]                                             id="target-name"
+[WebServer]                                             name="target"
+[WebServer]                                             placeholder="მესიეს ან გავრცელებული სახელი"
+[WebServer]                                             aria-describedby="target-name-message"
+[WebServer]                                             aria-invalid={false}
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                       ...
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextArea>
+[WebServer]                                           <textarea
+[WebServer]                                             className={"textarea "}
+[WebServer]                                             id="mission-notes"
+[WebServer]                                             name="notes"
+[WebServer]                                             placeholder="ამ მისიის დამატებითი შენიშვნები"
+[WebServer]                                             aria-invalid={false}
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextInput>
+[WebServer]                                           <input
+[WebServer]                                             className={"input "}
+[WebServer]                                             id="notification-email"
+[WebServer]                                             name="email"
+[WebServer]                                             type="email"
+[WebServer]                                             defaultValue="observer@"
+[WebServer]                                             aria-invalid="true"
+[WebServer]                                             aria-describedby="notification-email-message"
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                       ...
+[WebServer]                                   <Checkbox>
+[WebServer]                                     <label className={"checkbox "}>
+[WebServer]                                       <input
+[WebServer]                                         type="checkbox"
+[WebServer]                                         defaultChecked={true}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   ...
+[WebServer]                             ...
+[WebServer]                           ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]  
+  ✓  18 [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › ka /design-system (23.2s)
+  ✓  19 [visual] › e2e/visual.spec.ts:139:9 › app at 1440 › en /app/collection (8.4s)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+[WebServer]       <LoadingBoundary name="profile/" loading={null}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/en/app/pr..." tree={[...]} params={{locale:"en"}} renderTree={{...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="[locale]/a...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <ProfilePage>
+[WebServer]                     <div className="profile-page">
+[WebServer]                       <header>
+[WebServer]                       <section>
+[WebServer]                       ...
+[WebServer]                         <form action={function bound dispatchActionState} className="profile-form">
+[WebServer]                           <p>
+[WebServer]                           <Field htmlFor="profile-email" label="New email" error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="email" id="profile-email" name="email" required={true} ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="email"
+[WebServer]                                     id="profile-email"
+[WebServer]                                     name="email"
+[WebServer]                                     required={true}
+[WebServer]                                     type="email"
+[WebServer]                                     aria-describedby={undefined}
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                           <Field htmlFor="profile-em..." label="Current pa..." error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="current-pa..." id="profile-em..." name="currentPas..." ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="current-password"
+[WebServer]                                     id="profile-email-password"
+[WebServer]                                     name="currentPassword"
+[WebServer]                                     required={true}
+[WebServer]                                     type="password"
+[WebServer]                                     aria-describedby={undefined}
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                         <form action={function bound dispatchActionState} className="profile-form">
+[WebServer]                           <Field htmlFor="profile-cu..." label="Current pa..." error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="current-pa..." id="profile-cu..." name="currentPas..." ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="current-password"
+[WebServer]                                     id="profile-current-password"
+[WebServer]                                     name="currentPassword"
+[WebServer]                                     required={true}
+[WebServer]                                     type="password"
+[WebServer]                                     aria-describedby={undefined}
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                           <Field htmlFor="profile-ne..." label="New password" hint="Between 12..." error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="new-password" id="profile-ne..." maxLength={128} minLength={12} ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="new-password"
+[WebServer]                                     id="profile-new-password"
+[WebServer]                                     maxLength={128}
+[WebServer]                                     minLength={12}
+[WebServer]                                     name="password"
+[WebServer]                                     required={true}
+[WebServer]                                     type="password"
+[WebServer]                                     aria-describedby="profile-new-password-message"
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                               ...
+[WebServer]                           ...
+[WebServer]                       <section className="surface-pa..." aria-labelledby="profile-de...">
+[WebServer]                         <h2>
+[WebServer]                         <DeleteAccountForm locale="en">
+[WebServer]                           <form action={function bound dispatchActionState} className="profile-form">
+[WebServer]                             <p>
+[WebServer]                             <ul>
+[WebServer]                             <Field htmlFor="profile-de..." label="Current pa..." error={undefined}>
+[WebServer]                               <div className="field">
+[WebServer]                                 <label>
+[WebServer]                                 <div>
+[WebServer]                                   <TextInput autoComplete="current-pa..." id="profile-de..." name="currentPas..." ...>
+[WebServer]                                     <input
+[WebServer]                                       className={"input "}
+[WebServer]                                       autoComplete="current-password"
+[WebServer]                                       id="profile-delete-password"
+[WebServer]                                       name="currentPassword"
+[WebServer]                                       required={true}
+[WebServer]                                       type="password"
+[WebServer]                                       aria-describedby={undefined}
+[WebServer]                                       aria-invalid={false}
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                             <Checkbox label="I understa..." name="understand" required={true}>
+[WebServer]                               <label className={"checkbox "}>
+[WebServer]                                 <input
+[WebServer]                                   type="checkbox"
+[WebServer]                                   name="understand"
+[WebServer]                                   required={true}
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 ...
+[WebServer]                             ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]  
+  ✓  20 [visual] › e2e/visual.spec.ts:139:9 › app at 1440 › en /app/profile (7.5s)
+  ✓  21 [visual] › e2e/visual.spec.ts:139:9 › app at 1440 › en /app/missions/22000000-0000-4000-8000-000000000003/session (9.2s)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+[WebServer]       <LoadingBoundary name="profile/" loading={null}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/ka/app/pr..." tree={[...]} params={{locale:"ka"}} renderTree={{...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="[locale]/a...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <ProfilePage>
+[WebServer]                     <div className="profile-page">
+[WebServer]                       <header>
+[WebServer]                       ...
+[WebServer]                         <form action={function bound dispatchActionState} className="profile-form">
+[WebServer]                           <Field htmlFor="profile-name" label="სახელი" error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="name" defaultValue="Observer" id="profile-name" maxLength={80} ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="name"
+[WebServer]                                     defaultValue="Observer"
+[WebServer]                                     id="profile-name"
+[WebServer]                                     maxLength={80}
+[WebServer]                                     name="name"
+[WebServer]                                     required={true}
+[WebServer]                                     aria-describedby={undefined}
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                         <form action={function bound dispatchActionState} className="profile-form">
+[WebServer]                           <p>
+[WebServer]                           <Field htmlFor="profile-email" label="ახალი ელფოსტა" error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="email" id="profile-email" name="email" required={true} ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="email"
+[WebServer]                                     id="profile-email"
+[WebServer]                                     name="email"
+[WebServer]                                     required={true}
+[WebServer]                                     type="email"
+[WebServer]                                     aria-describedby={undefined}
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                           <Field htmlFor="profile-em..." label="მიმდინარე ..." error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="current-pa..." id="profile-em..." name="currentPas..." ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="current-password"
+[WebServer]                                     id="profile-email-password"
+[WebServer]                                     name="currentPassword"
+[WebServer]                                     required={true}
+[WebServer]                                     type="password"
+[WebServer]                                     aria-describedby={undefined}
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                         <form action={function bound dispatchActionState} className="profile-form">
+[WebServer]                           <Field htmlFor="profile-cu..." label="მიმდინარე ..." error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="current-pa..." id="profile-cu..." name="currentPas..." ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="current-password"
+[WebServer]                                     id="profile-current-password"
+[WebServer]                                     name="currentPassword"
+[WebServer]                                     required={true}
+[WebServer]                                     type="password"
+[WebServer]                                     aria-describedby={undefined}
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                           <Field htmlFor="profile-ne..." label="ახალი პაროლი" hint="12-დან 128..." error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="new-password" id="profile-ne..." maxLength={128} minLength={12} ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="new-password"
+[WebServer]                                     id="profile-new-password"
+[WebServer]                                     maxLength={128}
+[WebServer]                                     minLength={12}
+[WebServer]                                     name="password"
+[WebServer]                                     required={true}
+[WebServer]                                     type="password"
+[WebServer]                                     aria-describedby="profile-new-password-message"
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                               ...
+[WebServer]                           ...
+[WebServer]                       <section className="surface-pa..." aria-labelledby="profile-de...">
+[WebServer]                         <h2>
+[WebServer]                         <DeleteAccountForm locale="ka">
+[WebServer]                           <form action={function bound dispatchActionState} className="profile-form">
+[WebServer]                             <p>
+[WebServer]                             <ul>
+[WebServer]                             <Field htmlFor="profile-de..." label="მიმდინარე ..." error={undefined}>
+[WebServer]                               <div className="field">
+[WebServer]                                 <label>
+[WebServer]                                 <div>
+[WebServer]                                   <TextInput autoComplete="current-pa..." id="profile-de..." name="currentPas..." ...>
+[WebServer]                                     <input
+[WebServer]                                       className={"input "}
+[WebServer]                                       autoComplete="current-password"
+[WebServer]                                       id="profile-delete-password"
+[WebServer]                                       name="currentPassword"
+[WebServer]                                       required={true}
+[WebServer]                                       type="password"
+[WebServer]                                       aria-describedby={undefined}
+[WebServer]                                       aria-invalid={false}
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                             <Checkbox label="მესმის, რო..." name="understand" required={true}>
+[WebServer]                               <label className={"checkbox "}>
+[WebServer]                                 <input
+[WebServer]                                   type="checkbox"
+[WebServer]                                   name="understand"
+[WebServer]                                   required={true}
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 ...
+[WebServer]                             ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]  
+  ✓  22 [visual] › e2e/visual.spec.ts:139:9 › app at 1440 › ka /app/profile (5.3s)
+  ✓  23 [visual] › e2e/visual.spec.ts:139:9 › app at 1440 › ka /app/book (6.8s)
+  ✓  24 [visual] › e2e/visual.spec.ts:151:9 › operator at 1440 › ka /admin (8.1s)
+
+
+  1) [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › en /privacy ────────────────────────────
+
+    Error: expect(page).toHaveScreenshot(expected) failed
+
+      111 pixels (ratio 0.01 of all image pixels) are different.
+
+      Snapshot: en-privacy-1440.png
+
+    Call log:
+      - Expect "toHaveScreenshot(en-privacy-1440.png)" with timeout 15000ms
+        - verifying given screenshot expectation
+      - taking page screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - 111 pixels (ratio 0.01 of all image pixels) are different.
+      - waiting 100ms before taking screenshot
+      - taking page screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - captured a stable screenshot
+      - 111 pixels (ratio 0.01 of all image pixels) are different.
+
+
+      103 |   // A query string is part of some routes; a file name keeps letters, digits and dashes.
+      104 |   const name = `${locale}-${(label || "home").replace(/[^a-z0-9-]+/gi, "-")}-${width}.png`;
+    > 105 |   await expect(page).toHaveScreenshot(name, {
+          |                      ^
+      106 |     fullPage: true,
+      107 |     mask: masks(page),
+      108 |     stylePath: "e2e/visual.css",
+        at capture (/work/apps/web/e2e/visual.spec.ts:105:22)
+        at /work/apps/web/e2e/visual.spec.ts:128:11
+
+    attachment #1: en-privacy-1440 (image/png) ─────────────────────────────────────────────────────
+    Expected: e2e/visual.spec.ts-snapshots/en-privacy-1440-visual-linux.png
+    Received: test-results/visual-public-at-1440-en-privacy-visual/en-privacy-1440-actual.png
+    Diff:     test-results/visual-public-at-1440-en-privacy-visual/en-privacy-1440-diff.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/visual-public-at-1440-en-privacy-visual/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/visual-public-at-1440-en-privacy-visual/error-context.md
+
+  1 failed
+    [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › en /privacy ─────────────────────────────
+  23 passed (5.2m)
+exit 1

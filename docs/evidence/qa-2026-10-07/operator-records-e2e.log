@@ -1,0 +1,21 @@
+[WebServer] (node:47959) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:47988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 1 worker
+
+(node:47996) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [setup] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.setup.ts:10:3 › sign in as the observer (7.7s)
+  ✓  2 [setup] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.setup.ts:10:3 › sign in as the operator (4.4s)
+(node:48060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [operator-records] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator-records.spec.ts:33:1 › missions list, filter by state, and page (8.8s)
+  ✓  4 [operator-records] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator-records.spec.ts:52:1 › a completed mission offers no cancel (3.5s)
+  ✓  5 [operator-records] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator-records.spec.ts:59:1 › targets enable and disable against the platform's answer (4.3s)
+  ✓  6 [operator-records] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator-records.spec.ts:81:1 › the audit log filters by category, and by mission from the missions table (5.8s)
+  ✓  7 [operator-records] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator-records.spec.ts:110:1 › cancelling a mission demands a settlement and a reason, and is audited (5.2s)
+  ✓  8 [operator-records] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/operator-records.spec.ts:150:1 › a non-operator reaches none of it (3.9s)
+
+  8 passed (1.4m)

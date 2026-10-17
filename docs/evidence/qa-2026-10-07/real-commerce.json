@@ -1,0 +1,22 @@
+[
+  {
+    "check": "real slots offered",
+    "count": 6
+  },
+  {
+    "check": "real reserve target choices",
+    "count": 5,
+    "title": [
+      "What will you observe?"
+    ]
+  },
+  {
+    "check": "real reservation reaches sandbox checkout",
+    "passed": true
+  },
+  {
+    "check": "real sandbox payment confirms booking",
+    "passed": true,
+    "url": "http://localhost:3200/en/app/bookings/8c508005-6121-4d68-a860-567f307fccd3"
+  }
+]

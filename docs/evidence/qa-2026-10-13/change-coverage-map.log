@@ -1,0 +1,152 @@
+=== ADR-048 Google sign-in: tests
+../part-1-platform/apps/api/src/features/auth/google.test.ts
+../part-1-platform/apps/api/src/features/auth/google.integration.test.ts
+../part-1-platform/apps/api/src/lib/auth/admin-routes-guarded.test.ts
+
+=== ADR-049 demo registration verifies at once: tests
+apps/web/src/features/auth/actions.ts
+apps/web/src/app/[locale]/design-system/copy.ts
+apps/web/src/app/[locale]/design-system/page.tsx
+apps/web/e2e/booking.spec.ts
+apps/web/e2e/routes.ts
+apps/web/e2e/fake-platform.mjs
+apps/web/e2e/a11y.spec.ts
+apps/web/e2e/auth.spec.ts
+apps/web/e2e/operator.spec.ts
+apps/web/e2e/bookings.spec.ts
+../part-1-platform/apps/api/src/app/auth/routes.test.ts
+../part-1-platform/apps/api/src/features/auth/demo-registration.integration.test.ts
+
+=== #182 reconnect: tests
+../part-1-platform/apps/realtime/src/link/inbound.integration.test.ts
+../part-1-platform/apps/realtime/src/link/inbound.test.ts
+../part-1-platform/apps/realtime/src/link/agent-relay.test.ts
+../part-1-platform/apps/realtime/src/link/mission-state.test.ts
+104-  }
+105-
+106:  it("keeps an OBSERVING mission live when the agent reconnects holding it", async () => {
+107-    const store = new FakeLinkStore();
+108-    store.addMission(MISSION, { observatoryId: OBS, state: "OBSERVING" });
+109-    await linkUp(store, BOOTED, null);
+
+=== #164 demo capture uuid ids: tests/seed
+../part-1-platform/packages/db/generated/prisma/internal/class.ts
+../part-1-platform/apps/api/src/lib/db/development-seed.test.ts
+
+=== #185/#186 Fly: config only
+../part-1-platform/deploy:
+fly
+(eval):6: no matches found: ../part-1-platform/apps/api/src/env*
+
+=== E2 keyboard fix 36564a6: tests
+    e2e covers the focus moves in the room and the sharing panel.
+ apps/web/e2e/room-controls.spec.ts                 | 24 +++++++++++++++++
+ apps/web/e2e/room-sharing.spec.ts                  | 21 ++++++++-------
+ .../web/src/components/room/room-controls.test.tsx | 14 +++++++---
+
+=== axe gate: e2e files
+a11y.spec.ts
+auth.setup.ts
+auth.spec.ts
+booking.spec.ts
+bookings.spec.ts
+collection.spec.ts
+fake-platform.mjs
+home.spec.ts
+legal.spec.ts
+operator-records.spec.ts
+operator.evidence.spec.ts
+operator.spec.ts
+profile.spec.ts
+reschedule.spec.ts
+reserve.spec.ts
+room-controls.spec.ts
+room-live.spec.ts
+room-sharing.spec.ts
+room.spec.ts
+routes.ts
+selectors.ts
+shell-contract.ts
+shell-signed-out.spec.ts
+shell.spec.ts
+status.spec.ts
+visual.css
+visual.spec.ts
+visual.spec.ts-snapshots
+warm.setup.ts
+watch.spec.ts
+apps/web/e2e/a11y.spec.ts
+
+=== ADR-050/051/052 tests touched
+fec347b: 0
+83a5913: 7
+34d7d03: 0
+b2ea0a1: 0
+ac2a9a6: 3
+a8112e2: 0
+6c8b6c2: 4
+f3af124: 1
+c14ae1e: 3
+
+=== visual baselines count
+     156
+en-admin-1440-visual
+en-admin-390-visual
+en-admin-control-1440-visual
+en-admin-control-390-visual
+en-admin-logs-1440-visual
+en-admin-logs-390-visual
+en-admin-missions-1440-visual
+en-admin-missions-390-visual
+en-admin-targets-1440-visual
+en-admin-targets-390-visual
+en-app-1440-visual
+en-app-390-visual
+en-app-book-1440-visual
+en-app-book-390-visual
+en-app-book-reschedule-53000000-0000-4000-8000-000000000004-1440-visual
+en-app-book-reschedule-53000000-0000-4000-8000-000000000004-390-visual
+en-app-book-reserve-startAt-2026-09-25T14-00-00-000Z-1440-visual
+en-app-book-reserve-startAt-2026-09-25T14-00-00-000Z-390-visual
+en-app-bookings-52000000-0000-4000-8000-000000000003-1440-visual
+en-app-bookings-52000000-0000-4000-8000-000000000003-390-visual
+en-app-bookings-53000000-0000-4000-8000-000000000004-1440-visual
+en-app-bookings-53000000-0000-4000-8000-000000000004-390-visual
+en-app-collection-1440-visual
+en-app-collection-390-visual
+en-app-collection-60000000-0000-4000-8000-000000000001-1440-visual
+en-app-collection-60000000-0000-4000-8000-000000000001-390-visual
+en-app-loyalty-1440-visual
+en-app-loyalty-390-visual
+en-app-missions-1440-visual
+en-app-missions-20000000-0000-4000-8000-000000000001-session-1440-visual
+en-app-missions-20000000-0000-4000-8000-000000000001-session-390-visual
+en-app-missions-20000000-0000-4000-8000-000000000001-watch-1440-visual
+en-app-missions-20000000-0000-4000-8000-000000000001-watch-390-visual
+en-app-missions-21000000-0000-4000-8000-000000000002-session-1440-visual
+en-app-missions-21000000-0000-4000-8000-000000000002-session-390-visual
+en-app-missions-22000000-0000-4000-8000-000000000003-session-1440-visual
+en-app-missions-22000000-0000-4000-8000-000000000003-session-390-visual
+en-app-missions-390-visual
+en-app-missions-saturn-1440-visual
+en-app-missions-saturn-390-visual
+en-app-passes-1440-visual
+en-app-passes-390-visual
+en-app-profile-1440-visual
+en-app-profile-390-visual
+en-app-subscription-1440-visual
+en-app-subscription-390-visual
+en-design-system-1440-visual
+en-design-system-390-visual
+en-error-1440-visual
+en-error-390-visual
+en-home-1440-visual
+en-home-390-visual
+en-not-found-1440-visual
+en-not-found-390-visual
+en-observatory-1440-visual
+en-observatory-390-visual
+en-pricing-1440-visual
+en-pricing-390-visual
+en-privacy-1440-visual
+en-privacy-390-visual

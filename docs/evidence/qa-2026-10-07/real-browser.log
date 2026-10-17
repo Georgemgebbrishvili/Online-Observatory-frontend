@@ -1,0 +1,50 @@
+{"check": "production client signs in against real platform", "passed": true, "cookies": [{"name": "__Host-darkview_session", "secure": true, "httpOnly": true}, {"name": "__Host-darkview_csrf", "secure": true, "httpOnly": false}]}
+{"check": "real page", "locale": "en", "route": "app", "status": 200, "url": "http://localhost:3200/en/app", "h1": ["Welcome back, [DEMO] Darkview Observer."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "en", "route": "app/missions", "status": 200, "url": "http://localhost:3200/en/app/missions", "h1": ["Tonight's targets"], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "en", "route": "app/collection", "status": 200, "url": "http://localhost:3200/en/app/collection", "h1": ["A sky only you have seen."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "en", "route": "app/bookings", "status": 200, "url": "http://localhost:3200/en/app/bookings", "h1": ["Your bookings."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "en", "route": "app/book", "status": 200, "url": "http://localhost:3200/en/app/book", "h1": ["Time on the telescope."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "en", "route": "app/profile", "status": 200, "url": "http://localhost:3200/en/app/profile", "h1": ["Your profile."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "en", "route": "status", "status": 200, "url": "http://localhost:3200/en/status", "h1": ["What the telescope is doing now."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "en", "route": "observatory", "status": 200, "url": "http://localhost:3200/en/observatory", "h1": ["[DEMO] Darkview Tbilisi Observatory"], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "ka", "route": "app", "status": 200, "url": "http://localhost:3200/ka/app", "h1": ["კეთილი იყოს შენი დაბრუნება, [DEMO] Darkview Observer."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "ka", "route": "app/missions", "status": 200, "url": "http://localhost:3200/ka/app/missions", "h1": ["ამაღამინდელი ობიექტები"], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "ka", "route": "app/collection", "status": 200, "url": "http://localhost:3200/ka/app/collection", "h1": ["ცა, რომელიც მხოლოდ შენ ნახე."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "ka", "route": "app/bookings", "status": 200, "url": "http://localhost:3200/ka/app/bookings", "h1": ["შენი ჯავშნები."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "ka", "route": "app/book", "status": 200, "url": "http://localhost:3200/ka/app/book", "h1": ["დრო ტელესკოპთან."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "ka", "route": "app/profile", "status": 200, "url": "http://localhost:3200/ka/app/profile", "h1": ["შენი პროფილი."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "ka", "route": "status", "status": 200, "url": "http://localhost:3200/ka/status", "h1": ["რას აკეთებს ტელესკოპი ახლა."], "overflow": false, "pageErrors": []}
+{"check": "real page", "locale": "ka", "route": "observatory", "status": 200, "url": "http://localhost:3200/ka/observatory", "h1": ["[დემო] Darkview თბილისის ობსერვატორია"], "overflow": false, "pageErrors": []}
+{"check": "observer cannot enter operator area", "passed": true}
+{"check": "profile saves through real API", "passed": true, "status": 200}
+{"check": "real booking screen choices", "buttons": ["Sign out"], "links": [{"text": "YOUR BOOKINGS", "href": "/en/app/bookings"}, {"text": "WED 7 OCT", "href": "/en/app/book?date=2026-10-07"}, {"text": "THU 8 OCT", "href": "/en/app/book?date=2026-10-08"}, {"text": "FRI 9 OCT", "href": "/en/app/book?date=2026-10-09"}, {"text": "SAT 10 OCT", "href": "/en/app/book?date=2026-10-10"}, {"text": "SUN 11 OCT", "href": "/en/app/book?date=2026-10-11"}, {"text": "MON 12 OCT", "href": "/en/app/book?date=2026-10-12"}, {"text": "TUE 13 OCT", "href": "/en/app/book?date=2026-10-13"}, {"text": "CHOOSE", "href": "/en/app/book/reserve?startAt=2026-10-07T16%3A05%3A00.000Z"}, {"text": "CHOOSE", "href": "/en/app/book/reserve?startAt=2026-10-07T16%3A45%3A00.000Z"}, {"text": "CHOOSE", "href": "/en/app/book/reserve?startAt=2026-10-07T17%3A25%3A00.000Z"}, {"text": "CHOOSE", "href": "/en/app/book/reserve?startAt=2026-10-07T18%3A05%3A00.000Z"}, {"text": "CHOOSE", "href": "/en/app/book/reserve?startAt=2026-10-07T18%3A45%3A00.000Z"}, {"text": "CHOOSE", "href": "/en/app/book/reserve?startAt=2026-10-07T19%3A25%3A00.000Z"}]}
+{"check": "real responsive page", "locale": "en", "route": "app", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "app/book", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "app/profile", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "observatory", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "status", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app/book", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app/profile", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "observatory", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "status", "width": 320, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "app", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "app/book", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "app/profile", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "observatory", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "status", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app/book", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app/profile", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "observatory", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "status", "width": 390, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "app", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "app/book", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "app/profile", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "observatory", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "en", "route": "status", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app/book", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "app/profile", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "observatory", "width": 768, "status": 200, "overflow": false}
+{"check": "real responsive page", "locale": "ka", "route": "status", "width": 768, "status": 200, "overflow": false}

@@ -1,0 +1,52 @@
+{
+  "scratchDatabases": "QA-only databases retained for reproduction; ordinary development databases were not modified by this audit.",
+  "applicationSource": "No application fixes; Next-generated next-env.d.ts changes and screenshots written to pre-existing evidence paths were restored.",
+  "temporaryServices": "Real QA stack, browser fixture servers, TCP relay, and owned sleep inhibitor stopped.",
+  "docker": [
+    {
+      "command": [
+        "docker",
+        "rm",
+        "stellar-qa-visual-20261007"
+      ],
+      "status": "cleanup command timed out"
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "competent_torvalds"
+      ],
+      "exitCode": 1,
+      "output": "Error response from daemon: No such container: competent_torvalds\n"
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "rm",
+        "stellar-qa-clients:20261007"
+      ],
+      "exitCode": 1,
+      "output": "Error response from daemon: No such image: stellar-qa-clients:20261007\n"
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-f",
+        "dev/docker-compose.yml",
+        "stop",
+        "storage"
+      ],
+      "status": "cleanup command timed out"
+    }
+  ],
+  "followUp": "Docker now responds: isolated visual container is absent, cached QA image is absent, and storage is stopped. Pre-existing PostgreSQL remains running.",
+  "continuation": {
+    "isolatedContainer": "stellar-qa-visual-continuation-20261007 removed after evidence export",
+    "ownedSleepInhibitor": "PID 54493 stopped",
+    "applicationSource": "Unchanged; only report/evidence added",
+    "dependencyUpdates": "None; audits used installed/pinned versions"
+  }
+}

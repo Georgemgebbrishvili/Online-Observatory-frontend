@@ -1,0 +1,319 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: home.spec.ts >> provides the complete public navigation on desktop and mobile
+- Location: e2e/home.spec.ts:140:1
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=f1e1]:
+  - link "Skip to content" [ref=f1e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=f1e3]:
+    - banner [ref=f1e4]:
+      - generic [ref=f1e5]:
+        - link [ref=f1e6] [cursor=pointer]:
+          - /url: /en
+          - generic "Stellar by Astroman" [ref=f1e7]:
+            - generic [ref=f1e8]: Stellar
+            - generic [ref=f1e9]: by Astroman
+        - button "Close navigation" [expanded] [active] [ref=f1e10] [cursor=pointer]
+      - generic [ref=f1e13]:
+        - navigation "Public navigation" [ref=f1e14]:
+          - link "Explore" [ref=f1e15] [cursor=pointer]:
+            - /url: /en#tonight
+          - link "Live" [ref=f1e16] [cursor=pointer]:
+            - /url: /en/app/live
+          - link "Observatory" [ref=f1e17] [cursor=pointer]:
+            - /url: /en/observatory
+          - link "Pricing" [ref=f1e18] [cursor=pointer]:
+            - /url: /en/pricing
+          - link "About" [ref=f1e19] [cursor=pointer]:
+            - /url: /en#about
+        - generic [ref=f1e20]:
+          - link "Sign in" [ref=f1e21] [cursor=pointer]:
+            - /url: /en/sign-in
+          - 'link "Language: ქართული" [ref=f1e22] [cursor=pointer]':
+            - /url: /ka
+            - text: ქართული
+          - link "Start exploring" [ref=f1e23] [cursor=pointer]:
+            - /url: /en#tonight
+    - main [ref=f1e25]:
+      - region [ref=f1e26]:
+        - generic [ref=f1e27]:
+          - generic [ref=f1e28]:
+            - paragraph [ref=f1e29]: Live telescope · Tbilisi
+            - heading "The real sky, live." [level=1] [ref=f1e30]:
+              - generic [ref=f1e31]: The real sky,
+              - generic [ref=f1e32]: live.
+            - paragraph [ref=f1e33]: A real telescope in Tbilisi, Georgia, shows you the sky live. Reserve an observation slot and watch the real camera feed.
+            - generic [ref=f1e34]:
+              - link "Reserve a slot" [ref=f1e35] [cursor=pointer]:
+                - /url: /en/app/book
+              - link "Tonight's sky" [ref=f1e37] [cursor=pointer]:
+                - /url: "#tonight"
+                - text: Tonight's sky →
+            - generic [ref=f1e38]:
+              - generic [ref=f1e39]:
+                - paragraph [ref=f1e40]: "2"
+                - paragraph [ref=f1e41]: Observable now
+              - generic [ref=f1e42]:
+                - paragraph [ref=f1e43]: "150"
+                - paragraph [ref=f1e44]: Aperture · mm
+              - generic [ref=f1e45]:
+                - paragraph [ref=f1e46]: "1500"
+                - paragraph [ref=f1e47]: Focal length · mm
+          - figure "Three planets the telescope observes, drawn as plates" [ref=f1e48]:
+            - generic [ref=f1e49]:
+              - generic [ref=f1e50]: Jupiter
+              - generic [ref=f1e53]: Saturn
+              - generic [ref=f1e56]: Mars
+            - generic [ref=f1e59]: Illustration — not telescope output
+      - region [ref=f1e60]:
+        - generic [ref=f1e61]:
+          - generic [ref=f1e62]:
+            - paragraph [ref=f1e63]: How Stellar works
+            - heading "Four steps. One real observation." [level=2] [ref=f1e64]
+            - paragraph [ref=f1e65]: Stellar turns time on a real telescope into one clear mission, from reserving a slot to keeping what you captured.
+          - list [ref=f1e66]:
+            - listitem [ref=f1e67]:
+              - heading "Reserve" [level=3] [ref=f1e73]
+              - paragraph [ref=f1e74]: Pick a target from tonight's observable sky and reserve a slot.
+              - generic [ref=f1e75]: Simulated today
+            - listitem [ref=f1e76]:
+              - heading "Slew" [level=3] [ref=f1e82]
+              - paragraph [ref=f1e83]: At your slot the telescope in Tbilisi turns to your target.
+              - generic [ref=f1e84]: Simulated today
+            - listitem [ref=f1e85]:
+              - heading "Watch" [level=3] [ref=f1e91]
+              - paragraph [ref=f1e92]: You watch its camera live as short exposures stack into a clearer view.
+              - generic [ref=f1e93]: Simulated today
+            - listitem [ref=f1e94]:
+              - heading "Keep" [level=3] [ref=f1e99]
+              - paragraph [ref=f1e100]: Capture the stacked frame and keep it in your Collection.
+              - generic [ref=f1e101]: Simulated today
+      - region [ref=f1e102]:
+        - generic [ref=f1e103]:
+          - generic [ref=f1e104]:
+            - generic [ref=f1e105]:
+              - paragraph [ref=f1e106]: Tonight's sky
+              - heading "Choose what the telescope sees next." [level=2] [ref=f1e107]
+              - paragraph [ref=f1e108]: What the observatory can see tonight, and why it cannot see the rest.
+            - paragraph [ref=f1e109]: Visibility computed live by the observatory
+          - generic [ref=f1e110]:
+            - note [ref=f1e112]:
+              - strong [ref=f1e113]: SIMULATED OBSERVATORY
+              - generic [ref=f1e114]: Visibility is computed for the simulator. No real telescope is moving.
+            - list [ref=f1e115]:
+              - listitem [ref=f1e116]:
+                - generic [ref=f1e117]: "01"
+                - generic [ref=f1e118]:
+                  - paragraph [ref=f1e119]: Double star · Beta Cygni
+                  - heading [level=3] [ref=f1e120]:
+                    - link "Albireo" [ref=f1e121] [cursor=pointer]:
+                      - /url: /en/app/missions/albireo
+                - generic [ref=f1e122]: Observable now
+                - generic [ref=f1e124]:
+                  - generic [ref=f1e125]:
+                    - term [ref=f1e126]: Altitude now
+                    - definition [ref=f1e127]: 61°
+                  - generic [ref=f1e128]:
+                    - term [ref=f1e129]: Window
+                    - definition [ref=f1e130]: Until 03:50
+                - generic [ref=f1e131]: →
+              - listitem [ref=f1e132]:
+                - generic [ref=f1e133]: "02"
+                - generic [ref=f1e134]:
+                  - paragraph [ref=f1e135]: Planet
+                  - heading [level=3] [ref=f1e136]:
+                    - link "Saturn" [ref=f1e137] [cursor=pointer]:
+                      - /url: /en/app/missions/saturn
+                - generic [ref=f1e138]: Observable now
+                - generic [ref=f1e140]:
+                  - generic [ref=f1e141]:
+                    - term [ref=f1e142]: Altitude now
+                    - definition [ref=f1e143]: 38°
+                  - generic [ref=f1e144]:
+                    - term [ref=f1e145]: Window
+                    - definition [ref=f1e146]: 18:30 – 05:40
+                - generic [ref=f1e147]: →
+              - listitem [ref=f1e148]:
+                - generic [ref=f1e149]: "03"
+                - generic [ref=f1e150]:
+                  - paragraph [ref=f1e151]: Moon
+                  - heading [level=3] [ref=f1e152]:
+                    - link "Moon" [ref=f1e153] [cursor=pointer]:
+                      - /url: /en/app/missions/moon-terminator
+                - generic [ref=f1e154]: Larger than the telescope's field of view
+                - generic [ref=f1e156]:
+                  - generic [ref=f1e157]:
+                    - term [ref=f1e158]: Altitude now
+                    - definition [ref=f1e159]: 44°
+                  - generic [ref=f1e160]:
+                    - term [ref=f1e161]: Window
+                    - definition [ref=f1e162]: 17:10 – 02:20
+                - generic [ref=f1e163]: →
+              - listitem [ref=f1e164]:
+                - generic [ref=f1e165]: "04"
+                - generic [ref=f1e166]:
+                  - paragraph [ref=f1e167]: Globular cluster · M13
+                  - heading [level=3] [ref=f1e168]:
+                    - link "Hercules Cluster" [ref=f1e169] [cursor=pointer]:
+                      - /url: /en/app/missions/m13-hercules-cluster
+                - generic [ref=f1e170]: Too low in the sky
+                - generic [ref=f1e172]:
+                  - generic [ref=f1e173]:
+                    - term [ref=f1e174]: Altitude now
+                    - definition [ref=f1e175]: 18°
+                  - generic [ref=f1e176]:
+                    - term [ref=f1e177]: Window
+                    - definition [ref=f1e178]: Until 01:05
+                - generic [ref=f1e179]: →
+              - listitem [ref=f1e180]:
+                - generic [ref=f1e181]: "05"
+                - generic [ref=f1e182]:
+                  - paragraph [ref=f1e183]: Planet
+                  - heading [level=3] [ref=f1e184]:
+                    - link "Venus" [ref=f1e185] [cursor=pointer]:
+                      - /url: /en/app/missions/venus
+                - generic [ref=f1e186]: Below the horizon
+                - generic [ref=f1e188]:
+                  - generic [ref=f1e189]:
+                    - term [ref=f1e190]: Altitude now
+                    - definition [ref=f1e191]: "-12°"
+                  - generic [ref=f1e192]:
+                    - term [ref=f1e193]: Window
+                    - definition [ref=f1e194]: From 06:15
+                - generic [ref=f1e195]: →
+            - link "All of tonight's targets" [ref=f1e196] [cursor=pointer]:
+              - /url: /en/app/missions
+      - region [ref=f1e198]:
+        - generic [ref=f1e199]:
+          - generic [ref=f1e200]:
+            - generic [ref=f1e201]:
+              - paragraph [ref=f1e202]: The instrument
+              - heading "One real telescope, in Tbilisi." [level=2] [ref=f1e203]
+              - paragraph [ref=f1e204]: Commanded only by the observatory's own software, never directly from a browser. What you see is what its camera sees.
+            - generic [ref=f1e205]:
+              - generic [ref=f1e206]:
+                - term [ref=f1e207]: Telescope
+                - definition [ref=f1e208]: Celestron NexStar 6SE
+              - generic [ref=f1e209]:
+                - term [ref=f1e210]: Aperture
+                - definition [ref=f1e211]:
+                  - generic [ref=f1e212]: "150"
+                  - generic [ref=f1e213]: mm
+              - generic [ref=f1e214]:
+                - term [ref=f1e215]: Focal length
+                - definition [ref=f1e216]:
+                  - generic [ref=f1e217]: "1500"
+                  - generic [ref=f1e218]: mm
+              - generic [ref=f1e219]:
+                - term [ref=f1e220]: Focal ratio
+                - definition [ref=f1e221]: f/10
+              - generic [ref=f1e222]:
+                - term [ref=f1e223]: Camera
+                - definition [ref=f1e224]:
+                  - text: ZWO ASI585MC
+                  - generic [ref=f1e225]: Uncooled, one-shot colour
+              - generic [ref=f1e226]:
+                - term [ref=f1e227]: Mode
+                - definition [ref=f1e228]:
+                  - text: Live view
+                  - generic [ref=f1e229]: Short exposures, stacked as you watch. Not long-exposure astrophotography.
+              - generic [ref=f1e230]:
+                - term [ref=f1e231]: Location
+                - definition [ref=f1e232]: Tbilisi, Georgia
+          - complementary [ref=f1e233]:
+            - generic [ref=f1e234]:
+              - heading "Live status" [level=3] [ref=f1e235]
+              - link "Full status" [ref=f1e236] [cursor=pointer]:
+                - /url: /en/status
+                - text: Full status →
+            - note [ref=f1e237]:
+              - strong [ref=f1e238]: SIMULATED OBSERVATORY
+              - generic [ref=f1e239]: The simulator is answering. No real telescope is moving.
+            - generic [ref=f1e240]:
+              - generic [ref=f1e241]:
+                - term [ref=f1e242]: Observatory link
+                - definition [ref=f1e243]:
+                  - generic [ref=f1e244]: Online
+              - generic [ref=f1e246]:
+                - term [ref=f1e247]: Weather
+                - definition [ref=f1e248]:
+                  - generic [ref=f1e249]: Clear
+              - generic [ref=f1e251]:
+                - term [ref=f1e252]: Weather hold
+                - definition [ref=f1e253]:
+                  - generic [ref=f1e254]: No hold
+            - paragraph [ref=f1e256]: An observation is in progress
+      - region [ref=f1e257]:
+        - generic [ref=f1e258]:
+          - paragraph [ref=f1e259]: Begin with tonight
+          - heading "Your next observation starts here." [level=2] [ref=f1e260]
+          - paragraph [ref=f1e261]: Choose an observable target and shape your first Stellar mission.
+          - generic [ref=f1e262]:
+            - link "Reserve a slot" [ref=f1e263] [cursor=pointer]:
+              - /url: /en/app/book
+            - link "Explore tonight's sky" [ref=f1e265] [cursor=pointer]:
+              - /url: "#tonight"
+          - generic [ref=f1e267]:
+            - heading "Private sessions" [level=3] [ref=f1e268]
+            - list [ref=f1e269]:
+              - listitem [ref=f1e270]: 30 min
+              - listitem [ref=f1e271]: 60 min
+              - listitem [ref=f1e272]: 120 min
+            - paragraph [ref=f1e273]: Longer, dedicated telescope windows are coming later.
+    - contentinfo [ref=f1e274]:
+      - generic [ref=f1e275]:
+        - generic [ref=f1e276]:
+          - generic "Stellar by Astroman" [ref=f1e277]:
+            - generic [ref=f1e278]: Stellar
+            - generic [ref=f1e279]: by Astroman
+          - paragraph [ref=f1e280]: One real telescope in Tbilisi. The real sky, live.
+        - navigation "Product · Company" [ref=f1e281]:
+          - generic [ref=f1e282]:
+            - heading "Product" [level=2] [ref=f1e283]
+            - link "Missions" [ref=f1e284] [cursor=pointer]:
+              - /url: /en#tonight
+            - link "Live" [ref=f1e285] [cursor=pointer]:
+              - /url: /en/app/live
+            - link "Collection" [ref=f1e286] [cursor=pointer]:
+              - /url: /en/app/collection
+            - link "Observatory" [ref=f1e287] [cursor=pointer]:
+              - /url: /en/observatory
+            - link "Status" [ref=f1e288] [cursor=pointer]:
+              - /url: /en/status
+          - generic [ref=f1e289]:
+            - heading "Company" [level=2] [ref=f1e290]
+            - generic "Coming soon" [ref=f1e291]: About
+            - generic "Coming soon" [ref=f1e292]: Contact
+          - generic [ref=f1e293]:
+            - heading "Legal" [level=2] [ref=f1e294]
+            - link "Terms" [ref=f1e295] [cursor=pointer]:
+              - /url: /en/terms
+            - link "Privacy" [ref=f1e296] [cursor=pointer]:
+              - /url: /en/privacy
+            - link "Refunds" [ref=f1e297] [cursor=pointer]:
+              - /url: /en/refunds
+          - generic [ref=f1e298]:
+            - heading "Language" [level=2] [ref=f1e299]
+            - link "ქართული" [ref=f1e300] [cursor=pointer]:
+              - /url: /ka
+            - link "English" [ref=f1e301] [cursor=pointer]:
+              - /url: /en
+  - button "Open Next.js Dev Tools" [ref=f1e307] [cursor=pointer]
+  - alert [ref=f1e311]
+```

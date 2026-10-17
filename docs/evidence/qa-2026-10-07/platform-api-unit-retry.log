@@ -1,0 +1,13 @@
+
+> @darkview/api@0.1.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api
+
+
+ Test Files  61 passed (61)
+      Tests  585 passed (585)
+   Start at  19:04:29
+   Duration  183.17s (transform 6.00s, setup 0ms, import 71.77s, tests 21.32s, environment 15ms)
+

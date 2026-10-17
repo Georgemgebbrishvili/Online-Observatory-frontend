@@ -1,0 +1,18 @@
+
+> darkview-platform@0.1.0 db:seed
+> npm run db:seed --workspace @darkview/db
+
+
+> @darkview/db@0.1.0 db:seed
+> prisma db seed
+
+◇ injected env (8) from ../../.env // tip: ⌘ suppress logs { quiet: true }
+Loaded Prisma config from prisma.config.ts.
+
+Running seed command `tsx prisma/seed.ts` ...
+Development seed complete: 12 catalogue targets, all observations marked demo and simulated.
+Agent device token for the demo observatory: DEMO-DEVICE-TOKEN-NOT-FOR-ANY-REAL-OBSERVATORY
+Agent device token for the night-side demo observatory (00000000-0000-4000-8000-000000000040, 19.8207, -155.4681): DEMO-NIGHT-DEVICE-TOKEN-NOT-FOR-ANY-REAL-OBSERVATORY
+Demo accounts (password "darkview demo password", development only): demo.observer@darkview.invalid, demo.operator@darkview.invalid, demo.viewer@darkview.invalid
+
+🌱  The seed command has been executed.

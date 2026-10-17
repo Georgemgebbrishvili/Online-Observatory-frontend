@@ -1,0 +1,1342 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: shell.spec.ts >> /en/design-system holds its shape at every width
+- Location: ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - paragraph [ref=e7]: Internal reference · 01
+        - heading "Visual system" [level=1] [ref=e9]
+        - paragraph [ref=e10]: "The Stellar poster language, ADR-039: a pitch-black ground, cream ink, warm plates, Anton headlines. Orange for actions, yellow for anything live, Photon Blue for data. Nothing glows."
+        - generic [ref=e11]: Development route · noindex
+      - region [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: "01"
+          - generic [ref=e15]:
+            - heading "Foundations" [level=2] [ref=e16]
+            - paragraph [ref=e17]: Colour roles and the five faces, Georgian included.
+            - paragraph [ref=e18]: Brand Identity System v2.0 · as amended by ADR-039 — ground and ink, colour roles, type
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - heading "Core palette" [level=3] [ref=e21]
+            - generic [ref=e22]:
+              - generic [ref=e23]:
+                - generic [ref=e25]: Night
+                - code [ref=e26]: "--color-night"
+                - code [ref=e27]: "#000000"
+              - generic [ref=e28]:
+                - generic [ref=e30]: Deep · wells
+                - code [ref=e31]: "--color-surface-base"
+                - code [ref=e32]: "#050505"
+              - generic [ref=e33]:
+                - generic [ref=e35]: Plate
+                - code [ref=e36]: "--color-surface-raised"
+                - code [ref=e37]: cream 4.5%
+              - generic [ref=e38]:
+                - generic [ref=e40]: Plate · hover
+                - code [ref=e41]: "--color-surface-hover"
+                - code [ref=e42]: cream 8.5%
+              - generic [ref=e43]:
+                - generic [ref=e45]: Rule
+                - code [ref=e46]: "--color-border-subtle"
+                - code [ref=e47]: cream 11%
+              - generic [ref=e48]:
+                - generic [ref=e50]: Rule · strong
+                - code [ref=e51]: "--color-border-strong"
+                - code [ref=e52]: cream 20%
+              - generic [ref=e53]:
+                - generic [ref=e55]: Ink
+                - code [ref=e56]: "--color-text-primary"
+                - code [ref=e57]: "#f6ecd8"
+              - generic [ref=e58]:
+                - generic [ref=e60]: Ink 2 · secondary
+                - code [ref=e61]: "--color-text-secondary"
+                - code [ref=e62]: cream 76%
+              - generic [ref=e63]:
+                - generic [ref=e65]: Ink 3 · tertiary
+                - code [ref=e66]: "--color-text-tertiary"
+                - code [ref=e67]: cream 56%
+              - generic [ref=e68]:
+                - generic [ref=e70]: Ink 4 · disabled
+                - code [ref=e71]: "--color-text-disabled"
+                - code [ref=e72]: cream 34%
+              - generic [ref=e73]:
+                - generic [ref=e75]: Orange · action
+                - code [ref=e76]: "--color-accent"
+                - code [ref=e77]: "#e8742f"
+              - generic [ref=e78]:
+                - generic [ref=e80]: Orange · hover
+                - code [ref=e81]: "--color-accent-hover"
+                - code [ref=e82]: "#f6a63f"
+              - generic [ref=e83]:
+                - generic [ref=e85]: Orange ink · text
+                - code [ref=e86]: "--color-accent-ink"
+                - code [ref=e87]: "#f6b062"
+              - generic [ref=e88]:
+                - generic [ref=e90]: Yellow · live
+                - code [ref=e91]: "--color-live"
+                - code [ref=e92]: "#ffd36b"
+              - generic [ref=e93]:
+                - generic [ref=e95]: Photon Blue · data
+                - code [ref=e96]: "--color-photon"
+                - code [ref=e97]: "#5cc8ff"
+              - generic [ref=e98]:
+                - generic [ref=e100]: Success
+                - code [ref=e101]: "--color-success"
+                - code [ref=e102]: "#4fd1a5"
+              - generic [ref=e103]:
+                - generic [ref=e105]: Warning
+                - code [ref=e106]: "--color-warning"
+                - code [ref=e107]: "#e5b454"
+              - generic [ref=e108]:
+                - generic [ref=e110]: Error
+                - code [ref=e111]: "--color-error"
+                - code [ref=e112]: "#ff6b6b"
+          - generic [ref=e113]:
+            - heading "Typography" [level=3] [ref=e114]
+            - generic [ref=e115]:
+              - generic [ref=e116]:
+                - text: Anton · Headline — Noto Sans Georgian 800
+                - paragraph [ref=e117]: The real sky, live.
+                - paragraph [ref=e118]: შენი დრო ნამდვილ ცასთან.
+              - generic [ref=e119]:
+                - text: Bowlby One · Sunset title — one line per page
+                - paragraph [ref=e120]:
+                  - generic [ref=e121]: The real sky
+              - generic [ref=e122]:
+                - text: Oswald · Spaced label — Noto Sans Georgian 600
+                - paragraph [ref=e123]: Tonight · Tbilisi
+                - paragraph [ref=e124]: ამაღამ · თბილისი
+              - generic [ref=e125]:
+                - text: Geist · Body — FiraGO
+                - paragraph [ref=e126]: Instrument-grade interfaces should remain legible, measured, and quiet under low-light conditions.
+                - paragraph [ref=e127]: ტელესკოპი ნამდვილად მიბრუნდება შენ მიერ არჩეული ობიექტისკენ.
+              - generic [ref=e128]:
+                - text: JetBrains Mono · Data
+                - paragraph [ref=e129]: RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15
+              - generic [ref=e130]:
+                - code [ref=e131]: "04"
+                - code [ref=e132]: "08"
+                - code [ref=e133]: "12"
+                - code [ref=e134]: "16"
+                - code [ref=e135]: "24"
+                - code [ref=e136]: "32"
+      - region [ref=e137]:
+        - generic [ref=e138]:
+          - generic [ref=e139]: "02"
+          - generic [ref=e140]:
+            - heading "Type scale" [level=2] [ref=e141]
+            - paragraph [ref=e142]: Every size in the product comes from this scale.
+            - paragraph [ref=e143]: Brand Identity System v2.0 · as amended by ADR-039 — type
+        - generic [ref=e145]:
+          - generic [ref=e146]:
+            - term [ref=e147]:
+              - code [ref=e148]: "--font-size-display"
+            - definition [ref=e149]: The real sky
+          - generic [ref=e150]:
+            - term [ref=e151]:
+              - code [ref=e152]: "--font-size-hero"
+            - definition [ref=e153]: The real sky, live.
+          - generic [ref=e154]:
+            - term [ref=e155]:
+              - code [ref=e156]: "--font-size-h1"
+            - definition [ref=e157]: Tonight above the horizon
+          - generic [ref=e158]:
+            - term [ref=e159]:
+              - code [ref=e160]: "--font-size-h2"
+            - definition [ref=e161]: The instrument is ready
+          - generic [ref=e162]:
+            - term [ref=e163]:
+              - code [ref=e164]: "--font-size-h3"
+            - definition [ref=e165]: Reserve an observation
+          - generic [ref=e166]:
+            - term [ref=e167]:
+              - code [ref=e168]: "--font-size-stat"
+            - definition [ref=e169]: 14 · 42.7° · 08:12
+          - generic [ref=e170]:
+            - term [ref=e171]:
+              - code [ref=e172]: "--font-size-kicker"
+            - definition [ref=e173]: Live telescope · Tbilisi
+          - generic [ref=e174]:
+            - term [ref=e175]:
+              - code [ref=e176]: "--font-size-body-lg"
+            - definition [ref=e177]: Lead paragraphs and intros
+          - generic [ref=e178]:
+            - term [ref=e179]:
+              - code [ref=e180]: "--font-size-body"
+            - definition [ref=e181]: Body copy across the product
+          - generic [ref=e182]:
+            - term [ref=e183]:
+              - code [ref=e184]: "--font-size-label"
+            - definition [ref=e185]: Labels · metadata
+          - generic [ref=e186]:
+            - term [ref=e187]:
+              - code [ref=e188]: "--font-size-caption"
+            - definition [ref=e189]: Captions and micro-copy
+          - generic [ref=e190]:
+            - term [ref=e191]:
+              - code [ref=e192]: "--font-size-mono"
+            - definition [ref=e193]: RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15
+      - region [ref=e194]:
+        - generic [ref=e195]:
+          - generic [ref=e196]: "03"
+          - generic [ref=e197]:
+            - heading "Kicker and stats" [level=2] [ref=e198]
+            - paragraph [ref=e199]: An orange kicker above an Anton headline; Anton numbers over Oswald labels, under a hairline.
+            - paragraph [ref=e200]: Brand Identity System v2.0 · as amended by ADR-039 — components
+        - generic [ref=e201]:
+          - paragraph [ref=e202]: Live telescope · Tbilisi
+          - paragraph [ref=e203]: One telescope. Your sky.
+          - generic [ref=e204]:
+            - generic [ref=e205]:
+              - paragraph [ref=e206]: 6″
+              - paragraph [ref=e207]: Aperture
+            - generic [ref=e208]:
+              - paragraph [ref=e209]: "1"
+              - paragraph [ref=e210]: Observer at the controls
+            - generic [ref=e211]:
+              - paragraph [ref=e212]: "10"
+              - paragraph [ref=e213]: Watching seats
+      - region [ref=e214]:
+        - generic [ref=e215]:
+          - generic [ref=e216]: "04"
+          - generic [ref=e217]:
+            - heading "Actions & selection" [level=2] [ref=e218]
+            - paragraph [ref=e219]: One filled orange primary; outline, ghost and danger; chips and the simulated badge. Focus is a Photon Blue ring.
+            - paragraph [ref=e220]: Brand Identity System v2.0 · as amended by ADR-039 — components
+        - generic [ref=e221]:
+          - generic [ref=e222]:
+            - button "Reserve observation" [ref=e223] [cursor=pointer]
+            - button "View details" [ref=e225] [cursor=pointer]
+            - button "Cancel" [ref=e227] [cursor=pointer]
+            - button "End observation" [ref=e229] [cursor=pointer]
+            - button "Checking sky" [disabled] [ref=e231]
+            - button "Unavailable" [disabled] [ref=e234]
+          - generic [ref=e236]:
+            - button "Small" [ref=e237] [cursor=pointer]
+            - button "Medium" [ref=e239] [cursor=pointer]
+            - button "Large" [ref=e241] [cursor=pointer]
+            - button "Unavailable" [disabled] [ref=e243]
+            - button "Checking sky" [disabled] [ref=e245]
+          - generic [ref=e248]:
+            - button "Search targets" [ref=e249] [cursor=pointer]
+            - button "Locate telescope" [ref=e253] [cursor=pointer]
+            - generic [ref=e258]: Available tonight
+            - generic [ref=e259]: Bright nebula
+            - generic [ref=e260]: Selected
+            - generic [ref=e261]: Simulated
+      - region [ref=e262]:
+        - generic [ref=e263]:
+          - generic [ref=e264]: "05"
+          - generic [ref=e265]:
+            - heading "Operational status" [level=2] [ref=e266]
+            - paragraph [ref=e267]: Observable state with text, shape, and restrained color.
+            - paragraph [ref=e268]: Brand Identity System v2.0 · §04 Semantic colors · §08 Live observation page, rule 04
+        - generic [ref=e269]:
+          - generic [ref=e270]:
+            - heading "ObservatoryStatus" [level=3] [ref=e271]
+            - generic [ref=e272]:
+              - generic [ref=e273]: Online
+              - generic [ref=e275]: Preparing
+              - generic [ref=e277]: Observing
+              - generic [ref=e279]: Parked
+              - generic [ref=e281]: Offline
+              - generic [ref=e283]: Weather hold
+              - generic [ref=e285]: Maintenance
+          - generic [ref=e287]:
+            - heading "LiveIndicator" [level=3] [ref=e288]
+            - generic [ref=e289]:
+              - generic [ref=e290]: Live
+              - generic [ref=e292]: Idle
+            - heading "TargetAvailability" [level=3] [ref=e294]
+            - generic [ref=e295]:
+              - generic [ref=e296]: Observable now
+              - generic [ref=e298]: The telescope's safety limits are not measured yet
+              - generic [ref=e300]: Not offered right now
+              - generic [ref=e302]: The observatory is offline
+              - generic [ref=e304]: Paused for the weather
+              - generic [ref=e306]: Below the horizon
+              - generic [ref=e308]: Too low in the sky
+              - generic [ref=e310]: Too high for the telescope
+              - generic [ref=e312]: Hidden behind the local horizon
+              - generic [ref=e314]: In a direction the telescope does not point
+              - generic [ref=e316]: The sky is not dark enough yet
+              - generic [ref=e318]: Too close to the Sun
+              - generic [ref=e320]: Too close to the Moon
+              - generic [ref=e322]: Larger than the telescope's field of view
+          - generic [ref=e324]:
+            - heading "ModeNotice" [level=3] [ref=e325]
+            - generic [ref=e326]:
+              - note [ref=e327]:
+                - strong [ref=e328]: SIMULATED OBSERVATORY
+                - generic [ref=e329]: The simulator is answering. No real telescope is moving.
+              - note [ref=e330]:
+                - strong [ref=e331]: REAL HARDWARE
+                - generic [ref=e332]: The physical telescope is answering.
+          - generic [ref=e333]:
+            - heading "MissionStatus" [level=3] [ref=e334]
+            - generic [ref=e335]:
+              - generic [ref=e336]: Mission requested
+              - generic [ref=e338]: Observation scheduled
+              - generic [ref=e340]: Preparing your observation
+              - generic [ref=e342]: Moving telescope to M42
+              - generic [ref=e344]: Verifying position
+              - generic [ref=e346]: Centring the target
+              - generic [ref=e348]: Observing M42
+              - generic [ref=e350]: Capturing your observation
+              - generic [ref=e352]: Processing your image
+              - generic [ref=e354]: Observation complete
+              - generic [ref=e356]: Weather hold
+              - generic [ref=e358]: Target not visible
+              - generic [ref=e360]: Observatory hardware error
+              - generic [ref=e362]: Mission cancelled
+              - generic [ref=e364]: Mission failed
+      - region [ref=e366]:
+        - generic [ref=e367]:
+          - generic [ref=e368]: "06"
+          - generic [ref=e369]:
+            - heading "Surfaces" [level=2] [ref=e370]
+            - paragraph [ref=e371]: Cards and panels for calm information hierarchy.
+            - paragraph [ref=e372]: Brand Identity System v2.0 · §08 Surface mapping · §07 Iconography (card radius)
+        - generic [ref=e373]:
+          - article [ref=e374]:
+            - generic [ref=e375]:
+              - paragraph [ref=e376]: Tonight · 22:40
+              - heading "M42 · Orion Nebula" [level=3] [ref=e377]
+            - paragraph [ref=e379]: Emission nebula in Orion with an excellent observation window from Tbilisi.
+            - generic [ref=e381]:
+              - generic [ref=e382]: Available for a 12-minute mission
+              - button "View details" [ref=e383] [cursor=pointer]
+          - generic [ref=e385]:
+            - heading "Surface panel" [level=3] [ref=e386]
+            - paragraph [ref=e387]: A quiet container for grouped controls, metadata, and observatory information.
+          - generic [ref=e388]:
+            - heading "Elevated panel" [level=3] [ref=e389]
+            - paragraph [ref=e390]: Reserved for focused layers and content that needs stronger separation.
+        - heading "CaptureCard — a simulated capture with a drawn frame, one with no preview, and the download states" [level=3] [ref=e391]
+        - generic [ref=e392]:
+          - article [ref=e393]:
+            - 'link "Open capture: Hercules Cluster" [ref=e394] [cursor=pointer]':
+              - /url: /en/design-system#surfaces-title
+              - img "Hercules Cluster, as captured" [ref=e395]
+              - generic [ref=e396]:
+                - generic [ref=e397]: Simulated capture
+                - generic [ref=e398]: Private
+            - generic [ref=e399]:
+              - generic [ref=e400]: M13 · 60000000
+              - heading [level=3] [ref=e401]:
+                - link "Hercules Cluster" [ref=e402] [cursor=pointer]:
+                  - /url: /en/design-system#surfaces-title
+              - paragraph [ref=e403]: 23 September 2026 at 00:10 GMT+4
+          - article [ref=e404]:
+            - 'link "Open capture: Hercules Cluster" [ref=e405] [cursor=pointer]':
+              - /url: /en/design-system#surfaces-title
+              - generic [ref=e406]:
+                - generic [ref=e407]: ○
+                - text: No preview for this capture
+              - generic [ref=e408]: In the gallery
+            - generic [ref=e410]:
+              - generic [ref=e411]: M13 · 60000000
+              - heading [level=3] [ref=e412]:
+                - link "Hercules Cluster" [ref=e413] [cursor=pointer]:
+                  - /url: /en/design-system#surfaces-title
+              - paragraph [ref=e414]: 23 September 2026 at 00:02 GMT+4
+          - generic [ref=e415]:
+            - generic [ref=e416]:
+              - generic [ref=e417]:
+                - button "Download image" [ref=e418]
+                - paragraph [ref=e420]: FITS was not recorded for this capture
+              - paragraph [ref=e421]: Each download link is made when you ask for it, and expires soon after.
+            - note [ref=e422]: The download link could not be created. Try again.
+        - heading "SlotRow — available, booked, and held for weather" [level=3] [ref=e423]
+        - list [ref=e424]:
+          - listitem [ref=e425]:
+            - generic [ref=e426]:
+              - time [ref=e427]: 18:00
+              - text: –
+              - time [ref=e428]: 18:30
+              - text: GMT+4
+            - generic [ref=e429]: 30 min
+            - generic [ref=e430]: GEL 45.00
+            - link "Choose 18:00–18:30" [ref=e432] [cursor=pointer]:
+              - /url: "#"
+              - text: Choose
+          - listitem [ref=e433]:
+            - generic [ref=e434]:
+              - time [ref=e435]: 18:40
+              - text: –
+              - time [ref=e436]: 19:10
+              - text: GMT+4
+            - generic [ref=e437]: 30 min
+            - generic [ref=e438]: GEL 45.00
+            - generic [ref=e439]: Booked
+          - listitem [ref=e440]:
+            - generic [ref=e441]:
+              - time [ref=e442]: 19:20
+              - text: –
+              - time [ref=e443]: 19:50
+              - text: GMT+4
+            - generic [ref=e444]: 30 min
+            - generic [ref=e445]: GEL 45.00
+            - generic [ref=e446]: Weather hold
+          - listitem [ref=e447]:
+            - generic [ref=e448]:
+              - time [ref=e449]: 18:00
+              - text: –
+              - time [ref=e450]: 18:30
+              - text: GMT+4
+            - generic [ref=e451]: 30 min
+            - generic [ref=e452]: Free
+            - link "Choose 18:00–18:30" [ref=e454] [cursor=pointer]:
+              - /url: "#"
+              - text: Choose
+        - heading "BookingRow — awaiting payment, confirmed, cancelled, expired, refunded" [level=3] [ref=e455]
+        - list [ref=e456]:
+          - listitem [ref=e457]:
+            - link "Saturn Thu, 1 Oct 2026, 18:00–18:30 GMT+4 GEL 45.00 Awaiting payment" [ref=e458] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e459]: Saturn
+              - generic [ref=e460]: Thu, 1 Oct 2026, 18:00–18:30 GMT+4
+              - generic [ref=e461]: GEL 45.00
+              - generic [ref=e462]: Awaiting payment
+          - listitem [ref=e464]:
+            - link "Albireo Fri, 2 Oct 2026, 18:00–18:30 GMT+4 GEL 45.00 Confirmed" [ref=e465] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e466]: Albireo
+              - generic [ref=e467]: Fri, 2 Oct 2026, 18:00–18:30 GMT+4
+              - generic [ref=e468]: GEL 45.00
+              - generic [ref=e469]: Confirmed
+          - listitem [ref=e471]:
+            - link "M13 Sat, 3 Oct 2026, 18:00–18:30 GMT+4 GEL 45.00 Cancelled" [ref=e472] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e473]: M13
+              - generic [ref=e474]: Sat, 3 Oct 2026, 18:00–18:30 GMT+4
+              - generic [ref=e475]: GEL 45.00
+              - generic [ref=e476]: Cancelled
+          - listitem [ref=e478]:
+            - link "Venus Sun, 4 Oct 2026, 18:00–18:30 GMT+4 GEL 45.00 Expired" [ref=e479] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e480]: Venus
+              - generic [ref=e481]: Sun, 4 Oct 2026, 18:00–18:30 GMT+4
+              - generic [ref=e482]: GEL 45.00
+              - generic [ref=e483]: Expired
+          - listitem [ref=e485]:
+            - link "Moon Mon, 5 Oct 2026, 18:00–18:30 GMT+4 GEL 45.00 Refunded" [ref=e486] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e487]: Moon
+              - generic [ref=e488]: Mon, 5 Oct 2026, 18:00–18:30 GMT+4
+              - generic [ref=e489]: GEL 45.00
+              - generic [ref=e490]: Refunded
+        - heading "BookingActions — cancel, asking to confirm, cancelling, refund, refunding, refund refused" [level=3] [ref=e492]
+        - generic [ref=e493]:
+          - button "Cancel booking" [ref=e496] [cursor=pointer]
+          - group "Cancel this booking and release the slot?" [ref=e500]:
+            - paragraph [ref=e501]: Cancel this booking and release the slot?
+            - generic [ref=e502]:
+              - button "Yes, cancel it" [ref=e503] [cursor=pointer]
+              - button "Keep it" [ref=e505] [cursor=pointer]
+          - group "Cancel this booking and release the slot?" [ref=e509]:
+            - paragraph [ref=e510]: Cancel this booking and release the slot?
+            - generic [ref=e511]:
+              - button "Cancelling" [disabled] [ref=e512]
+              - button "Keep it" [disabled] [ref=e515]
+          - button "Take the refund" [ref=e519] [cursor=pointer]
+          - button "Refunding" [disabled] [ref=e523]
+          - generic [ref=e527]:
+            - button "Take the refund" [ref=e528] [cursor=pointer]
+            - alert [ref=e530]: Refunds cannot be issued for this payment yet. Your entitlement stays open.
+        - heading "ReserveForm — nothing chosen, a target chosen, reserving, opening the payment page, the slot taken" [level=3] [ref=e531]
+        - generic [ref=e532]:
+          - generic [ref=e534]:
+            - group "Choose what to observe" [ref=e535]:
+              - list [ref=e537]:
+                - listitem [ref=e538]:
+                  - generic [ref=e539] [cursor=pointer]:
+                    - radio "Albireo β Cyg" [ref=e540]
+                    - generic [ref=e541]: Albireo
+                    - generic [ref=e542]: β Cyg
+                - listitem [ref=e543]:
+                  - generic [ref=e544] [cursor=pointer]:
+                    - radio "Saturn" [ref=e545]
+                    - generic [ref=e546]: Saturn
+            - button "Reserve and pay" [disabled] [ref=e547]
+          - generic [ref=e550]:
+            - group "Choose what to observe" [ref=e551]:
+              - list [ref=e553]:
+                - listitem [ref=e554]:
+                  - generic [ref=e555] [cursor=pointer]:
+                    - radio "Albireo β Cyg" [ref=e556]
+                    - generic [ref=e557]: Albireo
+                    - generic [ref=e558]: β Cyg
+                - listitem [ref=e559]:
+                  - generic [ref=e560] [cursor=pointer]:
+                    - radio "Saturn" [checked] [ref=e561]
+                    - generic [ref=e562]: Saturn
+            - button "Reserve and pay" [ref=e563] [cursor=pointer]
+          - generic [ref=e566]:
+            - group "Choose what to observe" [ref=e567]:
+              - list [ref=e569]:
+                - listitem [ref=e570]:
+                  - generic [ref=e571]:
+                    - radio "Albireo β Cyg" [disabled] [ref=e572]
+                    - generic [ref=e573]: Albireo
+                    - generic [ref=e574]: β Cyg
+                - listitem [ref=e575]:
+                  - generic [ref=e576]:
+                    - radio "Saturn" [checked] [disabled] [ref=e577]
+                    - generic [ref=e578]: Saturn
+            - button "Reserving" [disabled] [ref=e579]
+          - generic [ref=e583]:
+            - group "Choose what to observe" [ref=e584]:
+              - list [ref=e586]:
+                - listitem [ref=e587]:
+                  - generic [ref=e588]:
+                    - radio "Albireo β Cyg" [disabled] [ref=e589]
+                    - generic [ref=e590]: Albireo
+                    - generic [ref=e591]: β Cyg
+                - listitem [ref=e592]:
+                  - generic [ref=e593]:
+                    - radio "Saturn" [checked] [disabled] [ref=e594]
+                    - generic [ref=e595]: Saturn
+            - button "Opening the payment page" [disabled] [ref=e596]
+          - generic [ref=e600]:
+            - group "Choose what to observe" [ref=e601]:
+              - list [ref=e603]:
+                - listitem [ref=e604]:
+                  - generic [ref=e605] [cursor=pointer]:
+                    - radio "Albireo β Cyg" [ref=e606]
+                    - generic [ref=e607]: Albireo
+                    - generic [ref=e608]: β Cyg
+                - listitem [ref=e609]:
+                  - generic [ref=e610] [cursor=pointer]:
+                    - radio "Saturn" [checked] [ref=e611]
+                    - generic [ref=e612]: Saturn
+            - button "Reserve and pay" [ref=e613] [cursor=pointer]
+            - alert [ref=e615]: Somebody booked this slot a moment ago. Choose another.
+        - heading "RoomSharing — private, opening, open with two watching, asking to stop, link copied, session ended" [level=3] [ref=e616]
+        - generic [ref=e617]:
+          - region "Sharing 1" [ref=e618]:
+            - heading "Sharing" [level=2] [ref=e620]
+            - paragraph [ref=e623]: Only you can see this session.
+            - button "Let others watch" [ref=e625] [cursor=pointer]
+            - paragraph [ref=e627]
+          - region "Sharing 2" [ref=e628]:
+            - heading "Sharing" [level=2] [ref=e630]
+            - paragraph [ref=e633]: Only you can see this session.
+            - button "Saving" [disabled] [ref=e635]
+            - paragraph [ref=e638]
+          - region "Sharing 3" [ref=e639]:
+            - generic [ref=e640]:
+              - heading "Sharing" [level=2] [ref=e641]
+              - generic [ref=e644]: 2 / 5
+            - paragraph [ref=e645]: Others can watch. 2 of 5 seats taken.
+            - generic [ref=e646]:
+              - button "Copy watch link" [ref=e647] [cursor=pointer]
+              - button "Stop sharing" [ref=e649] [cursor=pointer]
+            - paragraph [ref=e651]
+          - region "Sharing 4" [ref=e652]:
+            - generic [ref=e653]:
+              - heading "Sharing" [level=2] [ref=e654]
+              - generic [ref=e657]: 2 / 5
+            - paragraph [ref=e658]: Others can watch. 2 of 5 seats taken.
+            - button "Copy watch link" [ref=e660] [cursor=pointer]
+            - group "Stop sharing?" [ref=e662]:
+              - paragraph [ref=e663]:
+                - strong [ref=e664]: Stop sharing?
+                - text: Anyone watching is removed.
+              - generic [ref=e665]:
+                - button "Stop sharing" [ref=e666] [cursor=pointer]
+                - button "Keep sharing" [ref=e668] [cursor=pointer]
+            - paragraph [ref=e670]
+          - region "Sharing 5" [ref=e671]:
+            - generic [ref=e672]:
+              - heading "Sharing" [level=2] [ref=e673]
+              - generic [ref=e676]: 2 / 5
+            - paragraph [ref=e677]: Others can watch. 2 of 5 seats taken.
+            - generic [ref=e678]:
+              - button "Copy watch link" [ref=e679] [cursor=pointer]
+              - button "Stop sharing" [ref=e681] [cursor=pointer]
+            - paragraph [ref=e683]: Link copied
+          - region "Sharing 6" [ref=e684]:
+            - heading "Sharing" [level=2] [ref=e686]
+            - paragraph [ref=e689]: This session has ended.
+        - heading "WatchView — a seat for sale, buying, loading, error, simulated, full, paying, watching, left, closed by the owner, ended, the owner, not open" [level=3] [ref=e690]
+        - generic [ref=e691]:
+          - region "WatchView 1" [ref=e692]:
+            - generic [ref=e693]:
+              - paragraph [ref=e694]: Watching · Saturn
+              - heading "Nino is observing Saturn." [level=2] [ref=e696]
+              - paragraph [ref=e697]: 2 of 5 seats taken.
+            - generic [ref=e699]:
+              - generic [ref=e700]:
+                - heading "Your seat" [level=3] [ref=e701]
+                - generic [ref=e704]: Tbilisi Observatory
+              - button "Buy a seat" [ref=e706] [cursor=pointer]
+          - region "WatchView 2" [ref=e708]:
+            - generic [ref=e709]:
+              - paragraph [ref=e710]: Watching · Saturn
+              - heading "Nino is observing Saturn." [level=2] [ref=e712]
+              - paragraph [ref=e713]: 2 of 5 seats taken.
+            - generic [ref=e715]:
+              - generic [ref=e716]:
+                - heading "Your seat" [level=3] [ref=e717]
+                - generic [ref=e720]: Tbilisi Observatory
+              - button "Buy a seat" [disabled] [ref=e722]
+          - region "WatchView 3" [ref=e725]:
+            - heading "Opening the session" [level=2] [ref=e727]
+            - generic [ref=e729]:
+              - heading "Your seat" [level=3] [ref=e731]
+              - status [ref=e734]:
+                - generic [ref=e735]: Opening the session
+          - region "WatchView 4" [ref=e740]:
+            - heading "Something went wrong. Try again." [level=2] [ref=e742]
+          - region "WatchView 5" [ref=e743]:
+            - generic [ref=e744]:
+              - paragraph [ref=e745]: Watching · Saturn
+              - heading "Nino is observing Saturn." [level=2] [ref=e747]
+              - paragraph [ref=e748]: 2 of 5 seats taken.
+            - note [ref=e749]:
+              - strong [ref=e750]: Simulated observatory
+              - generic [ref=e751]: The simulator is answering. No real telescope is moving.
+            - generic [ref=e753]:
+              - generic [ref=e754]:
+                - heading "Your seat" [level=3] [ref=e755]
+                - generic [ref=e758]: Tbilisi Observatory
+              - button "Buy a seat" [ref=e760] [cursor=pointer]
+          - region "WatchView 6" [ref=e762]:
+            - generic [ref=e763]:
+              - paragraph [ref=e764]: Watching · Saturn
+              - heading "Nino is observing Saturn." [level=2] [ref=e766]
+              - paragraph [ref=e767]: 5 of 5 seats taken.
+            - note [ref=e768]:
+              - strong [ref=e769]: Simulated observatory
+              - generic [ref=e770]: The simulator is answering. No real telescope is moving.
+            - generic [ref=e772]:
+              - generic [ref=e773]:
+                - heading "Your seat" [level=3] [ref=e774]
+                - generic [ref=e777]: Tbilisi Observatory
+              - paragraph [ref=e778]: Every seat is taken.
+          - region "WatchView 7" [ref=e779]:
+            - generic [ref=e780]:
+              - paragraph [ref=e781]: Watching · Saturn
+              - heading "Nino is observing Saturn." [level=2] [ref=e783]
+              - paragraph [ref=e784]: 2 of 5 seats taken.
+            - note [ref=e785]:
+              - strong [ref=e786]: Simulated observatory
+              - generic [ref=e787]: The simulator is answering. No real telescope is moving.
+            - generic [ref=e789]:
+              - generic [ref=e790]:
+                - heading "Your seat" [level=3] [ref=e791]
+                - generic [ref=e794]: Tbilisi Observatory
+              - status [ref=e795]: Waiting for your payment to settle
+              - button "Check again" [disabled] [ref=e797]
+          - region "WatchView 8" [ref=e800]:
+            - generic [ref=e801]:
+              - paragraph [ref=e802]: Watching · Saturn
+              - heading "Nino is observing Saturn." [level=2] [ref=e804]
+              - paragraph [ref=e805]: 2 of 5 seats taken.
+            - note [ref=e806]:
+              - strong [ref=e807]: Simulated observatory
+              - generic [ref=e808]: The simulator is answering. No real telescope is moving.
+            - generic [ref=e809]:
+              - generic [ref=e810]:
+                - generic [ref=e812]:
+                  - generic [ref=e813]:
+                    - img "Simulated live view of Saturn" [ref=e814]
+                    - generic [ref=e815]: Simulated
+                  - generic:
+                    - paragraph:
+                      - generic: Tbilisi Observatory
+                      - generic: ZWO ASI585MC · 1500 mm · f/10
+                    - paragraph:
+                      - generic: Saturn
+                - generic [ref=e817]:
+                  - region [ref=e818]:
+                    - generic [ref=e819]:
+                      - heading "Progress" [level=2] [ref=e820]
+                      - generic [ref=e823]: Step 4 of 5
+                    - list [ref=e824]:
+                      - listitem [ref=e825]:
+                        - generic [ref=e829]: Prepare
+                      - listitem [ref=e830]:
+                        - generic [ref=e834]: Slew
+                      - listitem [ref=e835]:
+                        - generic [ref=e839]: Centre
+                      - listitem [ref=e840]:
+                        - generic [ref=e841]: "04"
+                        - generic [ref=e842]: Observe
+                        - generic [ref=e843]: Now
+                      - listitem [ref=e844]:
+                        - generic [ref=e845]: "05"
+                        - generic [ref=e846]: Capture
+                  - status [ref=e848]:
+                    - strong [ref=e849]: Live
+                    - generic [ref=e850]: Simulator output, not telescope output.
+              - generic [ref=e851]:
+                - generic [ref=e852]:
+                  - heading "Your seat" [level=3] [ref=e853]
+                  - generic [ref=e856]: Tbilisi Observatory
+                - paragraph [ref=e857]: You are watching. You cannot move the telescope or keep captures.
+                - button "Stop watching" [ref=e859] [cursor=pointer]
+          - region "WatchView 9" [ref=e861]:
+            - generic [ref=e862]:
+              - paragraph [ref=e863]: Watching · Saturn
+              - heading "Nino is observing Saturn." [level=2] [ref=e865]
+              - paragraph [ref=e866]: 2 of 5 seats taken.
+            - note [ref=e867]:
+              - strong [ref=e868]: Simulated observatory
+              - generic [ref=e869]: The simulator is answering. No real telescope is moving.
+            - generic [ref=e871]:
+              - generic [ref=e872]:
+                - heading "Your seat" [level=3] [ref=e873]
+                - generic [ref=e876]: Tbilisi Observatory
+              - paragraph [ref=e877]: You left. Your seat stays yours until the session ends.
+              - button "Watch again" [ref=e879] [cursor=pointer]
+          - region "WatchView 10" [ref=e881]:
+            - generic [ref=e882]:
+              - paragraph [ref=e883]: Watching · Saturn
+              - heading "The owner closed this session to watchers." [level=2] [ref=e885]
+          - region "WatchView 11" [ref=e886]:
+            - generic [ref=e887]:
+              - paragraph [ref=e888]: Watching · Saturn
+              - heading "This session has ended." [level=2] [ref=e890]
+          - region "WatchView 12" [ref=e891]:
+            - generic [ref=e892]:
+              - paragraph [ref=e893]: Watching · Saturn
+              - heading "This is your session." [level=2] [ref=e895]
+            - generic [ref=e897]:
+              - generic [ref=e898]:
+                - heading "Saturn" [level=3] [ref=e899]
+                - generic [ref=e902]: Tbilisi Observatory
+              - paragraph [ref=e903]: You control it from the live room. Watching is for the people you share it with.
+              - link "Go to the live room" [ref=e905] [cursor=pointer]:
+                - /url: /en/design-system
+          - region "WatchView 13" [ref=e907]:
+            - heading "This session is not open to watch." [level=2] [ref=e909]
+        - heading "RoomControls — hand control observing, waiting for the telescope, capture started, refused, no answer, before centring, while capturing, no capture; then Capture, and the session panel's Stop, asking to stop and stopping" [level=3] [ref=e910]
+        - generic [ref=e911]:
+          - region "Controls 1" [ref=e912]:
+            - generic [ref=e913]:
+              - heading "Controls" [level=2] [ref=e914]
+              - generic [ref=e917]: 2′
+            - generic [ref=e918]:
+              - button "Higher, 2 arcminutes" [ref=e919] [cursor=pointer]:
+                - generic [ref=e920]: ↑
+              - button "Left, 2 arcminutes" [ref=e921] [cursor=pointer]:
+                - generic [ref=e922]: ←
+              - button "Right, 2 arcminutes" [ref=e923] [cursor=pointer]:
+                - generic [ref=e924]: →
+              - button "Lower, 2 arcminutes" [ref=e925] [cursor=pointer]:
+                - generic [ref=e926]: ↓
+              - button "Re-centre" [ref=e927] [cursor=pointer]
+            - paragraph [ref=e928]
+          - region "Controls 2" [ref=e929]:
+            - generic [ref=e930]:
+              - heading "Controls" [level=2] [ref=e931]
+              - generic [ref=e934]: 2′
+            - generic [ref=e935]:
+              - button "Higher, 2 arcminutes" [disabled] [ref=e936]:
+                - generic [ref=e937]: ↑
+              - button "Left, 2 arcminutes" [disabled] [ref=e938]:
+                - generic [ref=e939]: ←
+              - button "Right, 2 arcminutes" [disabled] [ref=e940]:
+                - generic [ref=e941]: →
+              - button "Lower, 2 arcminutes" [disabled] [ref=e942]:
+                - generic [ref=e943]: ↓
+              - button "Re-centre" [disabled] [ref=e944]
+            - paragraph [ref=e945]: Waiting for the telescope
+          - region "Controls 3" [ref=e946]:
+            - generic [ref=e947]:
+              - heading "Controls" [level=2] [ref=e948]
+              - generic [ref=e951]: 2′
+            - generic [ref=e952]:
+              - button "Higher, 2 arcminutes" [ref=e953] [cursor=pointer]:
+                - generic [ref=e954]: ↑
+              - button "Left, 2 arcminutes" [ref=e955] [cursor=pointer]:
+                - generic [ref=e956]: ←
+              - button "Right, 2 arcminutes" [ref=e957] [cursor=pointer]:
+                - generic [ref=e958]: →
+              - button "Lower, 2 arcminutes" [ref=e959] [cursor=pointer]:
+                - generic [ref=e960]: ↓
+              - button "Re-centre" [ref=e961] [cursor=pointer]
+            - paragraph [ref=e962]: Capture started.
+          - region "Controls 4" [ref=e963]:
+            - generic [ref=e964]:
+              - heading "Controls" [level=2] [ref=e965]
+              - generic [ref=e968]: 2′
+            - generic [ref=e969]:
+              - button "Higher, 2 arcminutes" [ref=e970] [cursor=pointer]:
+                - generic [ref=e971]: ↑
+              - button "Left, 2 arcminutes" [ref=e972] [cursor=pointer]:
+                - generic [ref=e973]: ←
+              - button "Right, 2 arcminutes" [ref=e974] [cursor=pointer]:
+                - generic [ref=e975]: →
+              - button "Lower, 2 arcminutes" [ref=e976] [cursor=pointer]:
+                - generic [ref=e977]: ↓
+              - button "Re-centre" [ref=e978] [cursor=pointer]
+            - paragraph [ref=e979]: That would go past how far you can move from the target. Re-centre to continue.
+          - region "Controls 5" [ref=e980]:
+            - generic [ref=e981]:
+              - heading "Controls" [level=2] [ref=e982]
+              - generic [ref=e985]: 2′
+            - generic [ref=e986]:
+              - button "Higher, 2 arcminutes" [ref=e987] [cursor=pointer]:
+                - generic [ref=e988]: ↑
+              - button "Left, 2 arcminutes" [ref=e989] [cursor=pointer]:
+                - generic [ref=e990]: ←
+              - button "Right, 2 arcminutes" [ref=e991] [cursor=pointer]:
+                - generic [ref=e992]: →
+              - button "Lower, 2 arcminutes" [ref=e993] [cursor=pointer]:
+                - generic [ref=e994]: ↓
+              - button "Re-centre" [ref=e995] [cursor=pointer]
+            - paragraph [ref=e996]: No answer from the telescope. Try again.
+          - region "Controls 6" [ref=e997]:
+            - generic [ref=e998]:
+              - heading "Controls" [level=2] [ref=e999]
+              - generic [ref=e1002]: 2′
+            - generic [ref=e1003]:
+              - button "Higher, 2 arcminutes" [ref=e1004] [cursor=pointer]:
+                - generic [ref=e1005]: ↑
+              - button "Left, 2 arcminutes" [ref=e1006] [cursor=pointer]:
+                - generic [ref=e1007]: ←
+              - button "Right, 2 arcminutes" [ref=e1008] [cursor=pointer]:
+                - generic [ref=e1009]: →
+              - button "Lower, 2 arcminutes" [ref=e1010] [cursor=pointer]:
+                - generic [ref=e1011]: ↓
+              - button "Re-centre" [ref=e1012] [cursor=pointer]
+            - paragraph [ref=e1013]
+          - region "Controls 7" [ref=e1014]:
+            - heading "Controls" [level=2] [ref=e1016]
+            - paragraph [ref=e1019]: The controls open once the target is centred.
+            - paragraph [ref=e1020]
+          - region "Controls 8" [ref=e1021]:
+            - heading "Controls" [level=2] [ref=e1023]
+            - paragraph [ref=e1026]: Capturing. The controls return when it is done.
+            - paragraph [ref=e1027]
+          - region "Controls 9" [ref=e1028]:
+            - generic [ref=e1029]:
+              - heading "Controls" [level=2] [ref=e1030]
+              - generic [ref=e1033]: 2′
+            - generic [ref=e1034]:
+              - button "Higher, 2 arcminutes" [ref=e1035] [cursor=pointer]:
+                - generic [ref=e1036]: ↑
+              - button "Left, 2 arcminutes" [ref=e1037] [cursor=pointer]:
+                - generic [ref=e1038]: ←
+              - button "Right, 2 arcminutes" [ref=e1039] [cursor=pointer]:
+                - generic [ref=e1040]: →
+              - button "Lower, 2 arcminutes" [ref=e1041] [cursor=pointer]:
+                - generic [ref=e1042]: ↓
+              - button "Re-centre" [ref=e1043] [cursor=pointer]
+            - paragraph [ref=e1044]: "Capturing is unavailable: this target is no longer in the catalogue."
+            - paragraph [ref=e1045]
+        - generic [ref=e1046]:
+          - generic [ref=e1047]:
+            - button "Capture" [ref=e1048] [cursor=pointer]
+            - button "Capture" [disabled] [ref=e1050]
+          - region "Session 1" [ref=e1053]:
+            - heading "Session" [level=2] [ref=e1055]
+            - button "Stop" [ref=e1058] [cursor=pointer]
+          - region "Session 2" [ref=e1060]:
+            - heading "Session" [level=2] [ref=e1062]
+            - group "Stop the observation?" [ref=e1065]:
+              - paragraph [ref=e1066]:
+                - strong [ref=e1067]: Stop the observation?
+                - text: The telescope parks and your remaining time is not returned.
+              - generic [ref=e1068]:
+                - button "Stop" [ref=e1069] [cursor=pointer]
+                - button "Keep observing" [ref=e1071] [cursor=pointer]
+          - region "Session 3" [ref=e1073]:
+            - heading "Session" [level=2] [ref=e1075]
+            - group "Stop the observation?" [ref=e1078]:
+              - paragraph [ref=e1079]:
+                - strong [ref=e1080]: Stop the observation?
+                - text: The telescope parks and your remaining time is not returned.
+              - generic [ref=e1081]:
+                - button "Stop" [disabled] [ref=e1082]
+                - button "Keep observing" [disabled] [ref=e1085]
+        - heading "MissionSteps — the tracker at a step, complete, and stopped by a failure" [level=3] [ref=e1087]
+        - generic [ref=e1088]:
+          - region [ref=e1089]:
+            - generic [ref=e1090]:
+              - heading "Progress — Verifying position" [level=2] [ref=e1091]
+              - generic [ref=e1094]: Step 3 of 5
+            - list [ref=e1095]:
+              - listitem [ref=e1096]:
+                - generic [ref=e1100]: Prepare
+              - listitem [ref=e1101]:
+                - generic [ref=e1105]: Slew
+              - listitem [ref=e1106]:
+                - generic [ref=e1107]: "03"
+                - generic [ref=e1108]: Centre
+                - generic [ref=e1109]: Now
+              - listitem [ref=e1110]:
+                - generic [ref=e1111]: "04"
+                - generic [ref=e1112]: Observe
+              - listitem [ref=e1113]:
+                - generic [ref=e1114]: "05"
+                - generic [ref=e1115]: Capture
+          - region [ref=e1116]:
+            - generic [ref=e1117]:
+              - heading "Progress — Observation complete" [level=2] [ref=e1118]
+              - generic [ref=e1121]: Step 5 of 5
+            - list [ref=e1122]:
+              - listitem [ref=e1123]:
+                - generic [ref=e1127]: Prepare
+              - listitem [ref=e1128]:
+                - generic [ref=e1132]: Slew
+              - listitem [ref=e1133]:
+                - generic [ref=e1137]: Centre
+              - listitem [ref=e1138]:
+                - generic [ref=e1142]: Observe
+              - listitem [ref=e1143]:
+                - generic [ref=e1147]: Capture
+          - region [ref=e1148]:
+            - generic [ref=e1149]:
+              - heading "Progress — Observatory hardware error" [level=2] [ref=e1150]
+              - generic [ref=e1153]: Step 2 of 5
+            - list [ref=e1154]:
+              - listitem [ref=e1155]:
+                - generic [ref=e1159]: Prepare
+              - listitem [ref=e1160]:
+                - generic [ref=e1161]: "02"
+                - generic [ref=e1162]: Slew
+                - generic [ref=e1163]: Stopped here
+              - listitem [ref=e1164]:
+                - generic [ref=e1165]: "03"
+                - generic [ref=e1166]: Centre
+              - listitem [ref=e1167]:
+                - generic [ref=e1168]: "04"
+                - generic [ref=e1169]: Observe
+              - listitem [ref=e1170]:
+                - generic [ref=e1171]: "05"
+                - generic [ref=e1172]: Capture
+        - heading "PointingDial — high in the south, low in the west, below the horizon, the telescope slewing to the target, the telescope with no position" [level=3] [ref=e1173]
+        - generic [ref=e1174]:
+          - 'img "Sky dial: the horizon at the rim, overhead at the centre, north at the top." [ref=e1175]':
+            - generic [ref=e1247]: "N"
+            - generic [ref=e1248]: E
+            - generic [ref=e1249]: S
+            - generic [ref=e1250]: W
+          - 'img "Sky dial: the horizon at the rim, overhead at the centre, north at the top." [ref=e1256]':
+            - generic [ref=e1328]: "N"
+            - generic [ref=e1329]: E
+            - generic [ref=e1330]: S
+            - generic [ref=e1331]: W
+          - 'img "Sky dial: the horizon at the rim, overhead at the centre, north at the top." [ref=e1337]':
+            - generic [ref=e1409]: "N"
+            - generic [ref=e1410]: E
+            - generic [ref=e1411]: S
+            - generic [ref=e1412]: W
+          - 'img "Sky dial: the horizon at the rim, overhead at the centre, north at the top." [ref=e1414]':
+            - generic [ref=e1486]: "N"
+            - generic [ref=e1487]: E
+            - generic [ref=e1488]: S
+            - generic [ref=e1489]: W
+          - 'img "Sky dial: the horizon at the rim, overhead at the centre, north at the top." [ref=e1495]':
+            - generic [ref=e1567]: "N"
+            - generic [ref=e1568]: E
+            - generic [ref=e1569]: S
+            - generic [ref=e1570]: W
+        - heading "TargetPreview — a planet's plate, and a target with none" [level=3] [ref=e1573]
+        - generic [ref=e1574]:
+          - figure "Illustration — not telescope output The live view opens here when the telescope reaches Saturn." [ref=e1575]:
+            - generic [ref=e1577]:
+              - generic [ref=e1578]: Illustration — not telescope output
+              - generic [ref=e1579]: The live view opens here when the telescope reaches Saturn.
+          - figure "The live view opens here when the telescope reaches M13." [ref=e1580]:
+            - img "M13" [ref=e1582]
+        - heading "LiveFeed — not started, starting, connecting, live (simulated), reconnecting, offline, weather hold, expired, closed, refused, error" [level=3] [ref=e1592]
+        - generic [ref=e1593]:
+          - generic [ref=e1594]:
+            - generic [ref=e1596]:
+              - figure "Illustration — not telescope output" [ref=e1597]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - generic [ref=e1602]:
+              - status [ref=e1603]:
+                - strong [ref=e1604]: Not started
+                - generic [ref=e1605]: Your slot opens at 15 January 2030 at 22:00 GMT+4. You can start the observation from then.
+              - button "Start observation" [disabled] [ref=e1607]
+          - generic [ref=e1609]:
+            - generic [ref=e1611]:
+              - figure "Illustration — not telescope output" [ref=e1612]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - generic [ref=e1617]:
+              - status [ref=e1618]:
+                - strong [ref=e1619]: Starting
+                - generic [ref=e1620]: Opening your session with the observatory.
+              - button "Start observation" [disabled] [ref=e1622]
+          - generic [ref=e1625]:
+            - generic [ref=e1627]:
+              - figure "Illustration — not telescope output" [ref=e1628]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+                - paragraph:
+                  - text: Time left
+                  - time: 24:00
+            - status [ref=e1634]:
+              - strong [ref=e1635]: Connecting
+              - generic [ref=e1636]: Waiting for the first picture from the camera.
+          - generic [ref=e1637]:
+            - generic [ref=e1639]:
+              - generic [ref=e1640]:
+                - img "Simulated live view of Saturn" [ref=e1641]
+                - generic [ref=e1642]: Simulated
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+                - paragraph:
+                  - text: Time left
+                  - time: 24:00
+            - status [ref=e1646]:
+              - strong [ref=e1647]: Live
+              - generic [ref=e1648]: Simulator output, not telescope output.
+          - generic [ref=e1649]:
+            - generic [ref=e1651]:
+              - figure "Illustration — not telescope output" [ref=e1652]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+                - paragraph:
+                  - text: Time left
+                  - time: 24:00
+            - status [ref=e1658]:
+              - strong [ref=e1659]: Reconnecting
+              - generic [ref=e1660]: The connection to the observatory dropped. Trying again.
+          - generic [ref=e1661]:
+            - generic [ref=e1663]:
+              - figure "Illustration — not telescope output" [ref=e1664]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - status [ref=e1670]:
+              - strong [ref=e1671]: Observatory offline
+              - generic [ref=e1672]: The observatory is not connected. The live view comes back when it reconnects.
+          - generic [ref=e1673]:
+            - generic [ref=e1675]:
+              - figure "Illustration — not telescope output" [ref=e1676]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - status [ref=e1682]:
+              - strong [ref=e1683]: Weather hold
+              - generic [ref=e1684]: The sky is not safe for observing. The mission waits for it to clear.
+          - generic [ref=e1685]:
+            - generic [ref=e1687]:
+              - figure "Illustration — not telescope output" [ref=e1688]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - status [ref=e1694]:
+              - strong [ref=e1695]: Your time is up
+              - generic [ref=e1696]: Your observing session has ended. Your captures stay in your Collection.
+          - generic [ref=e1697]:
+            - generic [ref=e1699]:
+              - figure "Illustration — not telescope output" [ref=e1700]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - status [ref=e1706]:
+              - strong [ref=e1707]: Live view closed
+              - generic [ref=e1708]: This mission's live view has closed.
+          - generic [ref=e1709]:
+            - generic [ref=e1711]:
+              - figure "Illustration — not telescope output" [ref=e1712]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - generic [ref=e1717]:
+              - status [ref=e1718]:
+                - strong [ref=e1719]: Observation stopped
+                - generic [ref=e1720]: The telescope is safe. Your captures so far stay in your Collection.
+              - generic [ref=e1721]:
+                - link "See your booking" [ref=e1722] [cursor=pointer]:
+                  - /url: /en/app/bookings
+                - link "Book another night" [ref=e1724] [cursor=pointer]:
+                  - /url: /en/app/book
+          - generic [ref=e1726]:
+            - generic [ref=e1728]:
+              - figure "Illustration — not telescope output" [ref=e1729]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - generic [ref=e1734]:
+              - alert [ref=e1735]:
+                - strong [ref=e1736]: The live view could not open
+                - generic [ref=e1737]: The observatory's safety checks refused the target at this moment. Try again in a few minutes.
+              - button "Try again" [ref=e1739] [cursor=pointer]
+          - generic [ref=e1741]:
+            - generic [ref=e1743]:
+              - figure "Illustration — not telescope output" [ref=e1744]
+              - generic:
+                - paragraph:
+                  - generic: Tbilisi Observatory
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: Saturn
+            - generic [ref=e1749]:
+              - alert [ref=e1750]:
+                - strong [ref=e1751]: Something went wrong
+                - generic [ref=e1752]: Our servers did not answer. Try again in a moment.
+              - button "Try again" [ref=e1754] [cursor=pointer]
+      - region [ref=e1756]:
+        - generic [ref=e1757]:
+          - generic [ref=e1758]: "07"
+          - generic [ref=e1759]:
+            - heading "Overlays & disclosure" [level=2] [ref=e1760]
+            - paragraph [ref=e1761]: Native modal, sheet, dropdown, and tooltip behavior.
+            - paragraph [ref=e1762]: Brand Identity System v2.0 · §08 Surface mapping · §09 What Stellar must never be, 04
+        - generic [ref=e1764]:
+          - button "Open modal" [ref=e1765] [cursor=pointer]
+          - button "Open sheet" [ref=e1767] [cursor=pointer]
+          - generic [ref=e1769]:
+            - generic [ref=e1770]: Observation mode
+            - generic [ref=e1771]:
+              - combobox "Observation mode" [ref=e1772] [cursor=pointer]:
+                - option "Guided mission" [selected]
+                - option "Scheduled mission"
+                - option "Private observatory"
+              - generic: ⌄
+          - generic [ref=e1773]:
+            - generic "Coordinate information" [ref=e1774]: J2000
+            - tooltip "Coordinates use the J2000 epoch"
+      - region [ref=e1775]:
+        - generic [ref=e1776]:
+          - generic [ref=e1777]: "08"
+          - generic [ref=e1778]:
+            - heading "Tabs" [level=2] [ref=e1779]
+            - paragraph [ref=e1780]: Compact keyboard-navigable content switching.
+            - paragraph [ref=e1781]: Brand Identity System v2.0 · §08 Surface mapping · §04 The 90 / 8 / 2 rule
+        - generic [ref=e1782]:
+          - tablist "Target data views" [ref=e1783]:
+            - tab "Overview" [selected] [ref=e1784] [cursor=pointer]
+            - tab "Visibility" [ref=e1785] [cursor=pointer]
+            - tab "Equipment" [ref=e1786] [cursor=pointer]
+          - tabpanel "Overview" [ref=e1787]: Scientific context and a concise observation summary.
+      - region [ref=e1788]:
+        - generic [ref=e1789]:
+          - generic [ref=e1790]: "09"
+          - generic [ref=e1791]:
+            - heading "Loading & recovery" [level=2] [ref=e1792]
+            - paragraph [ref=e1793]: Skeleton, empty, and error states.
+            - paragraph [ref=e1794]: Brand Identity System v2.0 · §02 Tone of voice · §04 Semantic colors
+        - generic [ref=e1795]:
+          - generic "Loading preview" [ref=e1796]
+          - status [ref=e1803]:
+            - generic [ref=e1804]: ○
+            - heading "No captures yet" [level=3] [ref=e1805]
+            - paragraph [ref=e1806]: Images captured during completed missions will appear here.
+            - button "Explore targets" [ref=e1808] [cursor=pointer]
+          - alert [ref=e1810]:
+            - generic [ref=e1811]: "!"
+            - heading "Observatory state unavailable" [level=3] [ref=e1812]
+            - paragraph [ref=e1813]: The last verified state is preserved while the connection recovers.
+            - button "Try again" [ref=e1815] [cursor=pointer]
+      - region [ref=e1817]:
+        - generic [ref=e1818]:
+          - generic [ref=e1819]: "10"
+          - generic [ref=e1820]:
+            - heading "Forms" [level=2] [ref=e1821]
+            - paragraph [ref=e1822]: Clear labels, guidance, validation, and disabled states.
+            - paragraph [ref=e1823]: Brand Identity System v2.0 · §08 Surface mapping · §05 Typography (16px UI minimum)
+        - generic [ref=e1825]:
+          - heading "Mission request" [level=3] [ref=e1826]
+          - generic [ref=e1827]:
+            - generic [ref=e1828]: Target name
+            - textbox "Target name" [ref=e1830]:
+              - /placeholder: Messier or common name
+            - paragraph [ref=e1831]: Search uses catalog and common names.
+          - generic [ref=e1832]:
+            - generic [ref=e1833]: Observation notes
+            - textbox "Observation notes" [ref=e1835]:
+              - /placeholder: Optional notes for this mission
+          - generic [ref=e1836]:
+            - generic [ref=e1837]: Notification email
+            - textbox "Notification email" [invalid] [ref=e1839]: observer@
+            - paragraph [ref=e1840]: Enter a valid email address.
+          - generic [ref=e1841] [cursor=pointer]:
+            - checkbox "Notify me when observation begins" [checked] [ref=e1842]
+            - generic [ref=e1844]: Notify me when observation begins
+          - button "Review request" [ref=e1845] [cursor=pointer]
+        - generic [ref=e1847]:
+          - heading "Password" [level=3] [ref=e1848]
+          - status [ref=e1849]: Password changed. You're signed out everywhere else.
+          - alert [ref=e1850]: Account changes are unavailable right now. Try again later.
+          - button "Change password" [disabled] [ref=e1851]
+      - region [ref=e1854]:
+        - generic [ref=e1855]:
+          - generic [ref=e1856]: "11"
+          - generic [ref=e1857]:
+            - heading "Plate fan" [level=2] [ref=e1858]
+            - paragraph [ref=e1859]: Three plates in cream poster frames beside the homepage headline, always captioned as illustrations. A soft shadow under the stock; nothing glows.
+            - paragraph [ref=e1860]: Brand Identity System v2.0 · as amended by ADR-039 — the homepage
+        - figure "Three planets the telescope observes, drawn as plates" [ref=e1862]:
+          - generic [ref=e1863]:
+            - generic [ref=e1864]:
+              - generic [ref=e1866]: Planet
+              - generic [ref=e1867]: Jupiter
+            - generic [ref=e1868]:
+              - generic [ref=e1870]: Planet
+              - generic [ref=e1871]: Saturn
+            - generic [ref=e1872]:
+              - generic [ref=e1874]: Planet
+              - generic [ref=e1875]: Mars
+          - generic [ref=e1876]: Illustration — not telescope output
+      - region [ref=e1877]:
+        - generic [ref=e1878]:
+          - generic [ref=e1879]: "12"
+          - generic [ref=e1880]:
+            - heading "Homepage sections" [level=2] [ref=e1881]
+            - paragraph [ref=e1882]: How a session works as four steps between hairlines, each with where it stands today, and tonight's targets as ruled rows from the platform.
+            - paragraph [ref=e1883]: Brand Identity System v2.0 · as amended by ADR-039 — the homepage
+        - generic [ref=e1884]:
+          - list [ref=e1885]:
+            - listitem [ref=e1886]:
+              - heading "Reserve" [level=3] [ref=e1892]
+              - paragraph [ref=e1893]: Pick a target from tonight's observable sky and reserve a slot.
+              - generic [ref=e1894]: Simulated today
+            - listitem [ref=e1895]:
+              - heading "Slew" [level=3] [ref=e1901]
+              - paragraph [ref=e1902]: At your slot the telescope in Tbilisi turns to your target.
+              - generic [ref=e1903]: Simulated today
+            - listitem [ref=e1904]:
+              - heading "Watch" [level=3] [ref=e1910]
+              - paragraph [ref=e1911]: You watch its camera live as short exposures stack into a clearer view.
+              - generic [ref=e1912]: Simulated today
+            - listitem [ref=e1913]:
+              - heading "Keep" [level=3] [ref=e1918]
+              - paragraph [ref=e1919]: Capture the stacked frame and keep it in your Collection.
+              - generic [ref=e1920]: Simulated today
+          - list [ref=e1921]:
+            - listitem [ref=e1922]:
+              - generic [ref=e1923]: "01"
+              - generic [ref=e1924]:
+                - paragraph [ref=e1925]: Planet
+                - heading [level=3] [ref=e1926]:
+                  - link "Saturn" [ref=e1927] [cursor=pointer]:
+                    - /url: /en/app/missions/specimen-observable
+              - generic [ref=e1928]: Observable now
+              - generic [ref=e1930]:
+                - generic [ref=e1931]:
+                  - term [ref=e1932]: Altitude now
+                  - definition [ref=e1933]: 38°
+                - generic [ref=e1934]:
+                  - term [ref=e1935]: Window
+                  - definition [ref=e1936]: 19:10 – 05:40
+              - generic [ref=e1937]: →
+            - listitem [ref=e1938]:
+              - generic [ref=e1939]: "02"
+              - generic [ref=e1940]:
+                - paragraph [ref=e1941]: Planet
+                - heading [level=3] [ref=e1942]:
+                  - link "Venus" [ref=e1943] [cursor=pointer]:
+                    - /url: /en/app/missions/specimen-blocked
+              - generic [ref=e1944]: Below the horizon
+              - generic [ref=e1946]:
+                - generic [ref=e1947]:
+                  - term [ref=e1948]: Altitude now
+                  - definition [ref=e1949]: "-12°"
+                - generic [ref=e1950]:
+                  - term [ref=e1951]: Window
+                  - definition [ref=e1952]: 19:10 – 05:40
+              - generic [ref=e1953]: →
+      - region [ref=e1954]:
+        - generic [ref=e1955]:
+          - generic [ref=e1956]: "13"
+          - generic [ref=e1957]:
+            - heading "Observatory scene" [level=2] [ref=e1958]
+            - paragraph [ref=e1959]: "The observatory page's parts on its navy night: the state as a pill in each of its five values, the site's clock, the camera's frame drawn on the Moon to scale and captioned, and the dock of ways in. Panels float without blur; nothing glows."
+            - paragraph [ref=e1960]: Brand Identity System v2.0 · as amended by ADR-041 — the observatory page
+        - generic [ref=e1961]:
+          - generic [ref=e1962]:
+            - generic [ref=e1963]: Online
+            - generic [ref=e1965]: Observing
+            - generic [ref=e1967]: Weather hold
+            - generic [ref=e1969]: Degraded
+            - generic [ref=e1971]: Offline
+          - generic [ref=e1973]:
+            - time [ref=e1975]: "--:--"
+            - generic [ref=e1976]: Site time · Tbilisi
+          - figure "The camera's frame drawn over the Moon, to scale" [ref=e1978]:
+            - generic [ref=e1979]:
+              - generic [ref=e1986]:
+                - generic [ref=e1987]: 25.5′ × 14.4′
+                - text: Camera frame
+              - generic [ref=e1988]:
+                - generic [ref=e1989]: 31.1′
+                - text: Moon, mean size
+            - generic [ref=e1990]: Illustration — not telescope output
+          - navigation "Ways in" [ref=e1991]:
+            - link "01 Book a slot Book" [ref=e1992] [cursor=pointer]:
+              - /url: "#observatory-scene-title"
+              - generic [ref=e1993]: "01"
+              - generic [ref=e1994]: Book a slot
+              - generic [ref=e1995]: Book →
+            - link "02 Watch a live session Watch" [ref=e1996] [cursor=pointer]:
+              - /url: "#observatory-scene-title"
+              - generic [ref=e1997]: "02"
+              - generic [ref=e1998]: Watch a live session
+              - generic [ref=e1999]: Watch →
+            - link "03 See tonight's targets Browse" [ref=e2000] [cursor=pointer]:
+              - /url: "#observatory-scene-title"
+              - generic [ref=e2001]: "03"
+              - generic [ref=e2002]: See tonight's targets
+              - generic [ref=e2003]: Browse →
+  - alert [ref=e2004]
+```

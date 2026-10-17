@@ -1,0 +1,28 @@
+{
+  "browser": "154.0.8037.98",
+  "tabStops": [
+    {
+      "tag": "A",
+      "cls": "skip-link",
+      "text": "Skip to content"
+    },
+    {
+      "tag": "A",
+      "cls": "brand-link",
+      "text": "Stellarby Astroman"
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "public-menu-button",
+      "text": ""
+    },
+    {
+      "tag": "DIV",
+      "cls": "status-table-scroll",
+      "text": "HourCloudLow / mid / highPrecipitationHumidityWindSeeing00:0012%4% / 4% / 4%5%62"
+    }
+  ],
+  "tableReached": true,
+  "scrollBefore": 0,
+  "scrollAfter": 1
+}

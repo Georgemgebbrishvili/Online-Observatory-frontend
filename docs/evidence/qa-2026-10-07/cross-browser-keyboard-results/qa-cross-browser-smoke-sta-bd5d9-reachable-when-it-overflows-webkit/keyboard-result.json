@@ -1,0 +1,293 @@
+{
+  "dimensions": {
+    "clientWidth": 358,
+    "scrollWidth": 713
+  },
+  "reached": false,
+  "stops": [
+    {
+      "tag": "A",
+      "className": "skip-link"
+    },
+    {
+      "tag": "A",
+      "className": "brand-link"
+    },
+    {
+      "tag": "BUTTON",
+      "className": "public-menu-button"
+    },
+    {
+      "tag": "A",
+      "className": "page-link status-back"
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "NEXTJS-PORTAL",
+      "className": ""
+    },
+    {
+      "tag": "BODY",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": "skip-link"
+    },
+    {
+      "tag": "A",
+      "className": "brand-link"
+    },
+    {
+      "tag": "BUTTON",
+      "className": "public-menu-button"
+    },
+    {
+      "tag": "A",
+      "className": "page-link status-back"
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "NEXTJS-PORTAL",
+      "className": ""
+    },
+    {
+      "tag": "BODY",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": "skip-link"
+    },
+    {
+      "tag": "A",
+      "className": "brand-link"
+    },
+    {
+      "tag": "BUTTON",
+      "className": "public-menu-button"
+    },
+    {
+      "tag": "A",
+      "className": "page-link status-back"
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "NEXTJS-PORTAL",
+      "className": ""
+    },
+    {
+      "tag": "BODY",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": "skip-link"
+    },
+    {
+      "tag": "A",
+      "className": "brand-link"
+    },
+    {
+      "tag": "BUTTON",
+      "className": "public-menu-button"
+    },
+    {
+      "tag": "A",
+      "className": "page-link status-back"
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "NEXTJS-PORTAL",
+      "className": ""
+    },
+    {
+      "tag": "BODY",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": "skip-link"
+    },
+    {
+      "tag": "A",
+      "className": "brand-link"
+    },
+    {
+      "tag": "BUTTON",
+      "className": "public-menu-button"
+    },
+    {
+      "tag": "A",
+      "className": "page-link status-back"
+    },
+    {
+      "tag": "A",
+      "className": ""
+    },
+    {
+      "tag": "A",
+      "className": ""
+    }
+  ],
+  "prototype": {
+    "reached": true,
+    "scrollLeft": 50
+  }
+}

@@ -1,0 +1,14 @@
+
+> @darkview/realtime@0.1.0 start
+> tsx src/server.ts
+
+darkview realtime: OPEN_METEO_API_KEY is not set; forecasts use the non-commercial endpoint
+darkview realtime: NOTIFICATION_WEBHOOK_URL is not set; emails are queued and not sent
+darkview realtime listening on :4001/ws/agent
+npm error Lifecycle script `start` failed with error:
+npm error code 143
+npm error path /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+npm error workspace @darkview/realtime@0.1.0
+npm error location /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+npm error command failed
+npm error command sh -c tsx src/server.ts

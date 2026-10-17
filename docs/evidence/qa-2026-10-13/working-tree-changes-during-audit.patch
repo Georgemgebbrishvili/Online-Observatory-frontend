@@ -1,0 +1,74 @@
+diff --git a/apps/web/e2e/visual.css b/apps/web/e2e/visual.css
+index 32dc46e..ef9cda2 100644
+--- a/apps/web/e2e/visual.css
++++ b/apps/web/e2e/visual.css
+@@ -72,6 +72,11 @@ nextjs-portal {
+   visibility: hidden !important;
+ }
+ 
++/* The sky still counts what its hidden light finds: 0 or 1 by the time of the capture. */
++.sky-hint b:first-of-type {
++  color: transparent !important;
++}
++
+ .sky-hero::after,
+ .sky-hero-copy > *,
+ .status-dot,
+diff --git a/apps/web/e2e/visual.spec.ts-snapshots/en-home-1440-visual-linux.png b/apps/web/e2e/visual.spec.ts-snapshots/en-home-1440-visual-linux.png
+index 5930dc4..dc7f698 100644
+Binary files a/apps/web/e2e/visual.spec.ts-snapshots/en-home-1440-visual-linux.png and b/apps/web/e2e/visual.spec.ts-snapshots/en-home-1440-visual-linux.png differ
+diff --git a/apps/web/e2e/visual.spec.ts-snapshots/ka-home-1440-visual-linux.png b/apps/web/e2e/visual.spec.ts-snapshots/ka-home-1440-visual-linux.png
+index 3295e35..883e25f 100644
+Binary files a/apps/web/e2e/visual.spec.ts-snapshots/ka-home-1440-visual-linux.png and b/apps/web/e2e/visual.spec.ts-snapshots/ka-home-1440-visual-linux.png differ
+diff --git a/apps/web/src/app/[locale]/design-system/page.tsx b/apps/web/src/app/[locale]/design-system/page.tsx
+index f537888..11ae782 100644
+--- a/apps/web/src/app/[locale]/design-system/page.tsx
++++ b/apps/web/src/app/[locale]/design-system/page.tsx
+@@ -1180,7 +1180,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
+         <section className="ds-section" aria-labelledby="showcase-title">
+           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
+           <div className="ds-home-specimen">
+-            <SkyHero content={dictionary.home.hero} locale={locale} />
++            <SkyHero content={dictionary.home.hero} headingLevel={2} locale={locale} />
+           </div>
+         </section>
+ 
+diff --git a/apps/web/src/components/home/sky-hero.tsx b/apps/web/src/components/home/sky-hero.tsx
+index 4482401..37782c3 100644
+--- a/apps/web/src/components/home/sky-hero.tsx
++++ b/apps/web/src/components/home/sky-hero.tsx
+@@ -6,20 +6,24 @@ import type { HomepageDictionary } from "@/types/homepage";
+ type SkyHeroProps = {
+   content: HomepageDictionary["hero"];
+   locale: Locale;
++  /** The homepage's h1; an h2 where the hero is shown inside another page. */
++  headingLevel?: 1 | 2;
+ };
+ 
+ /**
+  * The homepage hero as the Skychaser site sets its own (ADR-052 §7): the sky behind, a
+  * centred Anton headline whose last words are red, the lede, and one filled button.
+  */
+-export function SkyHero({ content, locale }: SkyHeroProps) {
++export function SkyHero({ content, headingLevel = 1, locale }: SkyHeroProps) {
++  const Heading = headingLevel === 1 ? "h1" : "h2";
++  const titleId = headingLevel === 1 ? "home-title" : "ds-home-title";
+   return (
+-    <section className="sky-hero" aria-labelledby="home-title">
++    <section className="sky-hero" aria-labelledby={titleId}>
+       <SkyReveal locale={locale} names={content.plates} copy={content.sky} />
+       <div className="sky-hero-copy">
+-        <h1 id="home-title" className="sky-hero-title">
++        <Heading id={titleId} className="sky-hero-title">
+           <span>{content.headline}</span> <em>{content.sunset}</em>
+-        </h1>
++        </Heading>
+         <p className="sky-hero-lede">{content.lede}</p>
+         <ButtonLink href={`/${locale}/app/book`} size="large">
+           {content.cta}
+ apps/web/e2e/visual.css                            |   5 +++++
+ .../en-home-1440-visual-linux.png                  | Bin 738956 -> 738857 bytes
+ .../ka-home-1440-visual-linux.png                  | Bin 986055 -> 985973 bytes
+ apps/web/src/app/[locale]/design-system/page.tsx   |   2 +-
+ apps/web/src/components/home/sky-hero.tsx          |  12 ++++++++----
+ 5 files changed, 14 insertions(+), 5 deletions(-)

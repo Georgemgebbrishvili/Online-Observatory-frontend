@@ -1,0 +1,589 @@
+HEAD at start: 71c0fdf88553ddaa7ffaeced8d48f17e2265f5c9
+19:47  up  5:55, 1 user, load averages: 4.58 9.71 32.93
+[WebServer] ⚠ Turbopack's filesystem cache has been deleted because we previously detected an internal error in Turbopack. Builds or page loads may be slower as a result.
+
+Running 331 tests using 1 worker
+
+  ✓    1 [setup] › e2e/auth.setup.ts:10:3 › sign in as the observer (12.6s)
+  ✓    2 [setup] › e2e/auth.setup.ts:10:3 › sign in as the operator (5.0s)
+  ✓    3 [warm] › e2e/warm.setup.ts:22:1 › warm every route so the parallel run is not racing the compiler (1.5m)
+  ✓    4 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en has no WCAG 2.1 AA violations (14.0s)
+  ✓    5 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/pricing has no WCAG 2.1 AA violations (8.6s)
+  ✓    6 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/observatory has no WCAG 2.1 AA violations (11.0s)
+  ✓    7 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/status has no WCAG 2.1 AA violations (6.8s)
+  ✓    8 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/terms has no WCAG 2.1 AA violations (5.4s)
+  ✓    9 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/privacy has no WCAG 2.1 AA violations (6.1s)
+  ✓   10 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/refunds has no WCAG 2.1 AA violations (6.3s)
+  ✓   11 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/design-system has no WCAG 2.1 AA violations (17.4s)
+  ✓   12 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app has no WCAG 2.1 AA violations (6.1s)
+  ✓   13 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/missions has no WCAG 2.1 AA violations (6.3s)
+  ✓   14 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/collection has no WCAG 2.1 AA violations (6.1s)
+  ✓   15 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/profile has no WCAG 2.1 AA violations (5.7s)
+  ✓   16 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/book has no WCAG 2.1 AA violations (6.5s)
+  ✓   17 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/subscription has no WCAG 2.1 AA violations (5.8s)
+  ✓   18 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/loyalty has no WCAG 2.1 AA violations (5.6s)
+  ✓   19 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/passes has no WCAG 2.1 AA violations (5.9s)
+  ✓   20 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/missions/saturn has no WCAG 2.1 AA violations (5.9s)
+  ✓   21 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/missions/20000000-0000-4000-8000-000000000001/session has no WCAG 2.1 AA violations (10.2s)
+  ✓   22 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/missions/21000000-0000-4000-8000-000000000002/session has no WCAG 2.1 AA violations (8.9s)
+  ✓   23 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/missions/22000000-0000-4000-8000-000000000003/session has no WCAG 2.1 AA violations (9.4s)
+  ✓   24 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/missions/20000000-0000-4000-8000-000000000001/watch has no WCAG 2.1 AA violations (7.3s)
+  ✓   25 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/collection/60000000-0000-4000-8000-000000000001 has no WCAG 2.1 AA violations (6.1s)
+  ✓   26 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/bookings/52000000-0000-4000-8000-000000000003 has no WCAG 2.1 AA violations (6.2s)
+  ✓   27 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/bookings/53000000-0000-4000-8000-000000000004 has no WCAG 2.1 AA violations (10.5s)
+  ✓   28 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/book/reserve?startAt=2026-09-25T14:00:00.000Z has no WCAG 2.1 AA violations (15.0s)
+  ✓   29 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /en/app/book?reschedule=53000000-0000-4000-8000-000000000004 has no WCAG 2.1 AA violations (24.1s)
+  ✓   30 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka has no WCAG 2.1 AA violations (20.8s)
+  ✓   31 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/pricing has no WCAG 2.1 AA violations (12.8s)
+  ✓   32 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/observatory has no WCAG 2.1 AA violations (20.9s)
+  ✓   33 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/status has no WCAG 2.1 AA violations (20.0s)
+  ✓   34 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/terms has no WCAG 2.1 AA violations (19.0s)
+  ✓   35 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/privacy has no WCAG 2.1 AA violations (18.5s)
+  ✓   36 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/refunds has no WCAG 2.1 AA violations (14.9s)
+  ✓   37 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/design-system has no WCAG 2.1 AA violations (43.4s)
+  ✓   38 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app has no WCAG 2.1 AA violations (19.7s)
+  ✓   39 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/missions has no WCAG 2.1 AA violations (17.3s)
+  ✓   40 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/collection has no WCAG 2.1 AA violations (15.4s)
+  ✓   41 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/profile has no WCAG 2.1 AA violations (15.9s)
+  ✓   42 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/book has no WCAG 2.1 AA violations (16.4s)
+  ✓   43 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/subscription has no WCAG 2.1 AA violations (12.4s)
+  ✓   44 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/loyalty has no WCAG 2.1 AA violations (14.1s)
+  ✓   45 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/passes has no WCAG 2.1 AA violations (17.2s)
+  ✓   46 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/missions/saturn has no WCAG 2.1 AA violations (19.8s)
+  ✓   47 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/missions/20000000-0000-4000-8000-000000000001/session has no WCAG 2.1 AA violations (24.1s)
+  ✓   48 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/missions/21000000-0000-4000-8000-000000000002/session has no WCAG 2.1 AA violations (21.5s)
+  ✓   49 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/missions/22000000-0000-4000-8000-000000000003/session has no WCAG 2.1 AA violations (24.9s)
+  ✓   50 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/missions/20000000-0000-4000-8000-000000000001/watch has no WCAG 2.1 AA violations (17.7s)
+  ✓   51 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/collection/60000000-0000-4000-8000-000000000001 has no WCAG 2.1 AA violations (15.3s)
+  ✓   52 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/bookings/52000000-0000-4000-8000-000000000003 has no WCAG 2.1 AA violations (15.6s)
+  ✓   53 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/bookings/53000000-0000-4000-8000-000000000004 has no WCAG 2.1 AA violations (13.9s)
+  ✓   54 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/book/reserve?startAt=2026-09-25T14:00:00.000Z has no WCAG 2.1 AA violations (14.0s)
+  ✓   55 [chromium] › e2e/a11y.spec.ts:36:7 › observer › /ka/app/book?reschedule=53000000-0000-4000-8000-000000000004 has no WCAG 2.1 AA violations (15.4s)
+  ✓   56 [chromium] › e2e/a11y.spec.ts:36:7 › signed out › /en/sign-in has no WCAG 2.1 AA violations (13.7s)
+  ✓   57 [chromium] › e2e/a11y.spec.ts:36:7 › signed out › /en/register has no WCAG 2.1 AA violations (14.5s)
+  ✓   58 [chromium] › e2e/a11y.spec.ts:36:7 › signed out › /en/reset-password has no WCAG 2.1 AA violations (18.0s)
+  ✓   59 [chromium] › e2e/a11y.spec.ts:36:7 › signed out › /ka/sign-in has no WCAG 2.1 AA violations (17.7s)
+  ✓   60 [chromium] › e2e/a11y.spec.ts:36:7 › signed out › /ka/register has no WCAG 2.1 AA violations (21.2s)
+  ✓   61 [chromium] › e2e/a11y.spec.ts:36:7 › signed out › /ka/reset-password has no WCAG 2.1 AA violations (13.9s)
+  ✓   62 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /en/admin has no WCAG 2.1 AA violations (20.5s)
+  ✓   63 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /en/admin/control has no WCAG 2.1 AA violations (15.1s)
+  ✓   64 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /en/admin/missions has no WCAG 2.1 AA violations (19.7s)
+  ✓   65 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /en/admin/targets has no WCAG 2.1 AA violations (15.9s)
+  ✓   66 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /en/admin/logs has no WCAG 2.1 AA violations (17.0s)
+  ✓   67 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /ka/admin has no WCAG 2.1 AA violations (18.1s)
+  ✓   68 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /ka/admin/control has no WCAG 2.1 AA violations (17.2s)
+  ✓   69 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /ka/admin/missions has no WCAG 2.1 AA violations (16.1s)
+  ✓   70 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /ka/admin/targets has no WCAG 2.1 AA violations (18.2s)
+  ✓   71 [chromium] › e2e/a11y.spec.ts:36:7 › operator › /ka/admin/logs has no WCAG 2.1 AA violations (17.0s)
+  ✓   72 [chromium] › e2e/booking.spec.ts:6:1 › /app/book lists a night's slots from the platform, each open one a way to reserve it (11.2s)
+  ✓   73 [chromium] › e2e/booking.spec.ts:45:1 › a date outside the seven nights shows tonight instead (8.3s)
+  ✓   74 [chromium] › e2e/booking.spec.ts:53:1 › the Georgian booking page fits a phone (9.8s)
+  ✓   75 [chromium] › e2e/bookings.spec.ts:10:1 › /app/book lists the nights latest slot first, four to a page (13.8s)
+  ✓   76 [chromium] › e2e/bookings.spec.ts:36:1 › /app/bookings still lands, on the nights under /app/book (22.8s)
+  ✓   77 [chromium] › e2e/bookings.spec.ts:47:1 › a confirmed booking opens its observation and says why it cannot be cancelled (8.3s)
+  ✓   78 [chromium] › e2e/bookings.spec.ts:66:1 › a booking awaiting payment says how long it is held and offers the checkout (7.6s)
+  ✓   79 [chromium] › e2e/bookings.spec.ts:81:1 › an unknown booking and a malformed id are both not found (10.3s)
+  ✓   80 [chromium] › e2e/bookings.spec.ts:91:1 › the Georgian bookings fit a phone (10.9s)
+  ✓   81 [chromium] › e2e/bookings.spec.ts:121:3 › changing a booking › a booking awaiting payment is cancelled after a confirmation (17.4s)
+  ✓   82 [chromium] › e2e/bookings.spec.ts:142:3 › changing a booking › a slot lost to the weather is refunded (20.2s)
+  ✓   83 [chromium] › e2e/collection.spec.ts:28:1 › the Collection lists the platform's captures, newest first, and pages (12.0s)
+  ✓   84 [chromium] › e2e/collection.spec.ts:61:1 › a cursor past the end says so, and a malformed one starts at the newest (9.5s)
+  ✓   85 [chromium] › e2e/collection.spec.ts:71:1 › a capture shows its provenance and mints downloads on the click (7.4s)
+  ✓   86 [chromium] › e2e/collection.spec.ts:99:1 › a capture with no images and no FITS says so (6.9s)
+  ✓   87 [chromium] › e2e/collection.spec.ts:108:1 › an unknown capture and a malformed id are both not found (11.8s)
+  ✓   88 [chromium] › e2e/collection.spec.ts:120:1 › the Georgian capture page fits a phone (8.0s)
+  ✓   89 [chromium] › e2e/home.spec.ts:6:1 › communicates real telescope access in the English sky hero (9.2s)
+  ✓   90 [chromium] › e2e/home.spec.ts:29:1 › renders the Georgian sky hero and switches locale (13.5s)
+  ✓   91 [chromium] › e2e/home.spec.ts:48:1 › renders the complete data-driven public homepage (9.6s)
+  ✓   92 [chromium] › e2e/home.spec.ts:110:1 › keeps the public homepage within a mobile viewport (16.8s)
+  ✓   93 [chromium] › e2e/home.spec.ts:128:1 › provides the complete public navigation on desktop and mobile (12.0s)
+  ✓   94 [chromium] › e2e/home.spec.ts:155:1 › uses the desktop app bar and native-style mobile app navigation (13.3s)
+  ✓   95 [chromium] › e2e/home.spec.ts:205:1 › shows and operates the internal visual system (18.1s)
+  ✓   96 [chromium] › e2e/home.spec.ts:223:1 › keeps the visual system within a mobile viewport (15.5s)
+  ✓   97 [chromium] › e2e/home.spec.ts:237:1 › lists tonight's targets observable-first, with the platform's reasons (9.0s)
+  ✓   98 [chromium] › e2e/home.spec.ts:260:1 › shows a target from the platform, and books rather than starting a fake mission (6.6s)
+  ✓   99 [chromium] › e2e/home.spec.ts:277:1 › reads fixed-position coordinates in the technical details (7.3s)
+  ✓  100 [chromium] › e2e/home.spec.ts:285:1 › answers an unknown target with the not-found page (7.8s)
+  ✓  101 [chromium] › e2e/home.spec.ts:294:1 › keeps missions usable inside a mobile viewport (10.0s)
+  ✓  102 [chromium] › e2e/home.spec.ts:312:1 › /app/live opens the observer's live mission room (24.2s)
+  ✓  103 [chromium] › e2e/home.spec.ts:325:3 › with no live or imminent mission › /app/live shows the next night and the way to book, in the caller's language (15.2s)
+  ✓  104 [chromium] › e2e/home.spec.ts:348:1 › the /app dashboard reads the platform, section by section (8.5s)
+  ✓  105 [chromium] › e2e/home.spec.ts:389:1 › keeps the Georgian authenticated home within a mobile viewport (9.9s)
+  ✓  106 [chromium] › e2e/home.spec.ts:407:1 › the observatory scene carries the state, tonight's sky, the plate and the ways in (13.8s)
+  ✓  107 [chromium] › e2e/home.spec.ts:469:1 › /network is folded into the observatory page (17.4s)
+  ✓  108 [chromium] › e2e/home.spec.ts:478:1 › preserves observatory locale and mobile width (14.4s)
+  ✓  109 [chromium] › e2e/home.spec.ts:502:1 › shows what exists today, without invented prices or concept tiers (8.9s)
+  ✓  110 [chromium] › e2e/home.spec.ts:534:1 › keeps localized pricing inside the mobile viewport (9.0s)
+  ✓  111 [chromium] › e2e/legal.spec.ts:17:3 › /terms is published as a draft (12.0s)
+  ✓  112 [chromium] › e2e/legal.spec.ts:17:3 › /privacy is published as a draft (9.8s)
+  ✓  113 [chromium] › e2e/legal.spec.ts:17:3 › /refunds is published as a draft (9.4s)
+  ✓  114 [chromium] › e2e/legal.spec.ts:30:1 › the footer reaches all three documents, in both locales (16.9s)
+  ✓  115 [chromium] › e2e/legal.spec.ts:39:1 › the Georgian documents carry the same draft notice (10.5s)
+  ✓  116 [chromium] › e2e/profile.spec.ts:31:1 › saves a name and the language emails come in (23.0s)
+  ✓  117 [chromium] › e2e/profile.spec.ts:47:1 › names a wrong current password, and keeps it out of the page (16.6s)
+  ✓  118 [chromium] › e2e/profile.spec.ts:58:1 › changes the password, and signs in with the new one (33.8s)
+  ✓  119 [chromium] › e2e/profile.spec.ts:75:1 › moves the address only when the link sent to the new one is opened (1.0m)
+  ✓  120 [chromium] › e2e/profile.spec.ts:120:1 › says what to settle before an account can be deleted, and keeps it (22.2s)
+  ✓  121 [chromium] › e2e/profile.spec.ts:140:1 › deletes the account after the password, and it cannot sign in again (27.2s)
+  ✘  122 [chromium] › e2e/reschedule.spec.ts:21:1 › a lost slot is replaced with a free one, and the offer then closes (35.7s)
+  ✓  123 [chromium] › e2e/reschedule.spec.ts:75:1 › a slot taken a moment ago is refused, and the free slot stays open (25.6s)
+  ✓  124 [chromium] › e2e/reschedule.spec.ts:91:1 › a booking that is not the customer's, or has nothing to claim, offers no slot (20.3s)
+  ✓  125 [chromium] › e2e/reschedule.spec.ts:110:1 › the Georgian reschedule fits a phone (22.5s)
+  ✘  126 [chromium] › e2e/reserve.spec.ts:25:1 › a slot is reserved, paid at the sandbox checkout, and confirmed (38.1s)
+  ✘  127 [chromium] › e2e/reserve.spec.ts:65:1 › a customer who left the checkout pays from the booking's own page (30.7s)
+  ✓  128 [chromium] › e2e/reserve.spec.ts:99:1 › declining at the checkout cancels the booking (27.6s)
+  ✓  129 [chromium] › e2e/reserve.spec.ts:110:1 › a slot taken a moment ago is refused, and the customer is sent elsewhere (23.2s)
+  ✓  130 [chromium] › e2e/reserve.spec.ts:124:1 › a booked slot, or no slot at all, cannot be reserved (26.5s)
+  ✓  131 [chromium] › e2e/reserve.spec.ts:138:1 › the Georgian reserve page fits a phone (20.3s)
+  ✓  132 [chromium] › e2e/room-controls.spec.ts:29:1 › a nudge is relayed, answered by the telescope, and the controls unlock (12.9s)
+  ✓  133 [chromium] › e2e/room-controls.spec.ts:49:1 › a capture runs, and the controls return when it is done (16.5s)
+[WebServer] ⨯ Error: The destination stream errored while writing data.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '49656757'
+[WebServer] }
+  ✓  134 [chromium] › e2e/room-controls.spec.ts:64:1 › the telescope's own refusal is named, though the cloud approved it (15.6s)
+  ✓  135 [chromium] › e2e/room-controls.spec.ts:75:1 › the cloud's safety refusal is named, and nothing is retried (10.8s)
+  ✓  136 [chromium] › e2e/room-controls.spec.ts:89:1 › a command with no answer gives up at its deadline (14.5s)
+  ✓  137 [chromium] › e2e/room-controls.spec.ts:97:1 › the keyboard keeps its place through a nudge and the stop question (12.2s)
+  ✓  138 [chromium] › e2e/room-controls.spec.ts:121:1 › stopping asks first, then ends the observation (15.5s)
+  ✓  139 [chromium] › e2e/room-controls.spec.ts:140:1 › the Georgian controls fit a phone (13.6s)
+  ✓  140 [chromium] › e2e/room-controls.spec.ts:157:1 › on a phone, the dock's hand control nudges from a sheet (13.2s)
+  ✓  141 [chromium] › e2e/room-live.spec.ts:21:1 › an observing mission opens its session and shows the simulated stream (10.1s)
+  ✘  142 [chromium] › e2e/room-live.spec.ts:49:1 › the Georgian live room fits a phone (12.8s)
+  ✓  143 [chromium] › e2e/room-live.spec.ts:69:1 › starting is stated while the platform opens the session (15.0s)
+  ✓  144 [chromium] › e2e/room-live.spec.ts:80:3 › en: a scheduled mission waits for its slot, with the plate as an illustration (10.2s)
+  ✓  145 [chromium] › e2e/room-live.spec.ts:80:3 › ka: a scheduled mission waits for its slot, with the plate as an illustration (11.2s)
+  ✓  146 [chromium] › e2e/room-live.spec.ts:94:1 › the customer starts a scheduled mission once its slot is open (20.2s)
+  ✓  147 [chromium] › e2e/room-live.spec.ts:134:3 › en: a dropped channel is stated as reconnecting (13.0s)
+  ✓  148 [chromium] › e2e/room-live.spec.ts:134:3 › ka: a dropped channel is stated as reconnecting (13.6s)
+  ✓  149 [chromium] › e2e/room-live.spec.ts:145:3 › en: an offline agent is stated, with no telescope position (10.2s)
+  ✓  150 [chromium] › e2e/room-live.spec.ts:145:3 › ka: an offline agent is stated, with no telescope position (13.4s)
+  ✓  151 [chromium] › e2e/room-live.spec.ts:162:3 › en: a weather hold from the channel stops the feed (11.2s)
+[WebServer] ⨯ Error: The destination stream errored while writing data.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '49656757'
+[WebServer] }
+  ✓  152 [chromium] › e2e/room-live.spec.ts:162:3 › ka: a weather hold from the channel stops the feed (12.8s)
+  ✓  153 [chromium] › e2e/room-live.spec.ts:177:3 › en: the session ends at its expiresAt (16.6s)
+  ✓  154 [chromium] › e2e/room-live.spec.ts:177:3 › ka: the session ends at its expiresAt (16.9s)
+  ✓  155 [chromium] › e2e/room-live.spec.ts:189:3 › en: a start the platform fails is an error with a retry (17.5s)
+  ✓  156 [chromium] › e2e/room-live.spec.ts:189:3 › ka: a start the platform fails is an error with a retry (14.3s)
+  ✓  157 [chromium] › e2e/room-live.spec.ts:232:5 › en: not-visible stops the observation, with a way forward (13.3s)
+  ✓  158 [chromium] › e2e/room-live.spec.ts:232:5 › ka: not-visible stops the observation, with a way forward (19.2s)
+  ✓  159 [chromium] › e2e/room-live.spec.ts:232:5 › en: hardware stops the observation, with a way forward (14.6s)
+  ✓  160 [chromium] › e2e/room-live.spec.ts:232:5 › ka: hardware stops the observation, with a way forward (13.9s)
+  ✓  161 [chromium] › e2e/room-live.spec.ts:232:5 › en: cancelled stops the observation, with a way forward (15.3s)
+  ✓  162 [chromium] › e2e/room-live.spec.ts:232:5 › ka: cancelled stops the observation, with a way forward (17.8s)
+  ✓  163 [chromium] › e2e/room-live.spec.ts:232:5 › en: failed stops the observation, with a way forward (13.5s)
+  ✓  164 [chromium] › e2e/room-live.spec.ts:232:5 › ka: failed stops the observation, with a way forward (21.9s)
+  ✓  165 [chromium] › e2e/room-live.spec.ts:232:5 › en: heartbeat stops the observation, with a way forward (16.0s)
+  ✓  166 [chromium] › e2e/room-live.spec.ts:232:5 › ka: heartbeat stops the observation, with a way forward (15.9s)
+  ✓  167 [chromium] › e2e/room-live.spec.ts:266:1 › a session another tab holds offers to watch here (10.3s)
+  ✓  168 [chromium] › e2e/room-sharing.spec.ts:7:1 › the owner opens the session, copies the watch link, and closes it again (14.1s)
+  ✓  169 [chromium] › e2e/room-sharing.spec.ts:42:1 › the Georgian sharing panel fits a phone (11.8s)
+  ✓  170 [chromium] › e2e/room.spec.ts:9:1 › the room reads an observing mission from the platform (13.5s)
+  ✓  171 [chromium] › e2e/room.spec.ts:38:1 › a scheduled planet shows its plate, captioned as an illustration (11.9s)
+  ✓  172 [chromium] › e2e/room.spec.ts:57:1 › a complete mission shows its captures and every step done (11.9s)
+  ✓  173 [chromium] › e2e/room.spec.ts:67:1 › the dashboard's upcoming mission opens its room (14.7s)
+  ✓  174 [chromium] › e2e/room.spec.ts:75:1 › a mission that is not the caller's, or not a mission, is not found (13.8s)
+  ✓  175 [chromium] › e2e/room.spec.ts:87:1 › the Georgian room fits a phone (12.9s)
+  ✓  176 [chromium] › e2e/shell-contract.ts:54:7 › /en holds its shape at every width (12.5s)
+  ✓  177 [chromium] › e2e/shell-contract.ts:70:7 › /en exposes one unambiguous landmark set (10.1s)
+  ✓  178 [chromium] › e2e/shell-contract.ts:102:7 › /en starts its heading outline at h1 (9.9s)
+  ✓  179 [chromium] › e2e/shell-contract.ts:54:7 › /en/pricing holds its shape at every width (7.9s)
+  ✓  180 [chromium] › e2e/shell-contract.ts:70:7 › /en/pricing exposes one unambiguous landmark set (7.3s)
+  ✓  181 [chromium] › e2e/shell-contract.ts:102:7 › /en/pricing starts its heading outline at h1 (6.3s)
+  ✓  182 [chromium] › e2e/shell-contract.ts:54:7 › /en/observatory holds its shape at every width (10.7s)
+  ✓  183 [chromium] › e2e/shell-contract.ts:70:7 › /en/observatory exposes one unambiguous landmark set (13.1s)
+  ✓  184 [chromium] › e2e/shell-contract.ts:102:7 › /en/observatory starts its heading outline at h1 (10.3s)
+  ✓  185 [chromium] › e2e/shell-contract.ts:54:7 › /en/status holds its shape at every width (8.3s)
+  ✓  186 [chromium] › e2e/shell-contract.ts:70:7 › /en/status exposes one unambiguous landmark set (11.2s)
+  ✓  187 [chromium] › e2e/shell-contract.ts:102:7 › /en/status starts its heading outline at h1 (10.0s)
+  ✓  188 [chromium] › e2e/shell-contract.ts:54:7 › /en/terms holds its shape at every width (10.0s)
+  ✓  189 [chromium] › e2e/shell-contract.ts:70:7 › /en/terms exposes one unambiguous landmark set (7.8s)
+  ✓  190 [chromium] › e2e/shell-contract.ts:102:7 › /en/terms starts its heading outline at h1 (7.0s)
+  ✓  191 [chromium] › e2e/shell-contract.ts:54:7 › /en/privacy holds its shape at every width (9.2s)
+  ✓  192 [chromium] › e2e/shell-contract.ts:70:7 › /en/privacy exposes one unambiguous landmark set (8.7s)
+  ✓  193 [chromium] › e2e/shell-contract.ts:102:7 › /en/privacy starts its heading outline at h1 (9.5s)
+  ✓  194 [chromium] › e2e/shell-contract.ts:54:7 › /en/refunds holds its shape at every width (7.6s)
+  ✓  195 [chromium] › e2e/shell-contract.ts:70:7 › /en/refunds exposes one unambiguous landmark set (8.0s)
+  ✓  196 [chromium] › e2e/shell-contract.ts:102:7 › /en/refunds starts its heading outline at h1 (7.3s)
+  ✓  197 [chromium] › e2e/shell-contract.ts:54:7 › /en/design-system holds its shape at every width (16.4s)
+  ✓  198 [chromium] › e2e/shell-contract.ts:70:7 › /en/design-system exposes one unambiguous landmark set (12.7s)
+  ✓  199 [chromium] › e2e/shell-contract.ts:102:7 › /en/design-system starts its heading outline at h1 (14.6s)
+  ✓  200 [chromium] › e2e/shell-contract.ts:54:7 › /en/app holds its shape at every width (11.9s)
+  ✓  201 [chromium] › e2e/shell-contract.ts:70:7 › /en/app exposes one unambiguous landmark set (13.2s)
+  ✓  202 [chromium] › e2e/shell-contract.ts:102:7 › /en/app starts its heading outline at h1 (11.0s)
+  ✓  203 [chromium] › e2e/shell-contract.ts:54:7 › /en/app/missions holds its shape at every width (13.0s)
+  ✓  204 [chromium] › e2e/shell-contract.ts:70:7 › /en/app/missions exposes one unambiguous landmark set (11.2s)
+  ✓  205 [chromium] › e2e/shell-contract.ts:102:7 › /en/app/missions starts its heading outline at h1 (10.5s)
+  ✓  206 [chromium] › e2e/shell-contract.ts:54:7 › /en/app/collection holds its shape at every width (8.6s)
+  ✓  207 [chromium] › e2e/shell-contract.ts:70:7 › /en/app/collection exposes one unambiguous landmark set (7.4s)
+  ✓  208 [chromium] › e2e/shell-contract.ts:102:7 › /en/app/collection starts its heading outline at h1 (7.7s)
+  ✓  209 [chromium] › e2e/shell-contract.ts:54:7 › /en/app/profile holds its shape at every width (8.0s)
+  ✓  210 [chromium] › e2e/shell-contract.ts:70:7 › /en/app/profile exposes one unambiguous landmark set (8.5s)
+  ✓  211 [chromium] › e2e/shell-contract.ts:102:7 › /en/app/profile starts its heading outline at h1 (8.1s)
+  ✓  212 [chromium] › e2e/shell-contract.ts:54:7 › /en/app/book holds its shape at every width (10.9s)
+  ✓  213 [chromium] › e2e/shell-contract.ts:70:7 › /en/app/book exposes one unambiguous landmark set (10.7s)
+  ✓  214 [chromium] › e2e/shell-contract.ts:102:7 › /en/app/book starts its heading outline at h1 (8.3s)
+  ✓  215 [chromium] › e2e/shell-contract.ts:54:7 › /en/app/subscription holds its shape at every width (8.4s)
+  ✓  216 [chromium] › e2e/shell-contract.ts:70:7 › /en/app/subscription exposes one unambiguous landmark set (7.4s)
+  ✓  217 [chromium] › e2e/shell-contract.ts:102:7 › /en/app/subscription starts its heading outline at h1 (9.4s)
+  ✓  218 [chromium] › e2e/shell-contract.ts:54:7 › /en/app/loyalty holds its shape at every width (11.9s)
+  ✓  219 [chromium] › e2e/shell-contract.ts:70:7 › /en/app/loyalty exposes one unambiguous landmark set (12.7s)
+  ✓  220 [chromium] › e2e/shell-contract.ts:102:7 › /en/app/loyalty starts its heading outline at h1 (11.8s)
+  ✓  221 [chromium] › e2e/shell-contract.ts:54:7 › /en/app/passes holds its shape at every width (10.3s)
+  ✓  222 [chromium] › e2e/shell-contract.ts:70:7 › /en/app/passes exposes one unambiguous landmark set (10.5s)
+  ✓  223 [chromium] › e2e/shell-contract.ts:102:7 › /en/app/passes starts its heading outline at h1 (8.8s)
+  ✓  224 [chromium] › e2e/shell-contract.ts:54:7 › /ka holds its shape at every width (11.8s)
+  ✓  225 [chromium] › e2e/shell-contract.ts:70:7 › /ka exposes one unambiguous landmark set (9.5s)
+  ✓  226 [chromium] › e2e/shell-contract.ts:102:7 › /ka starts its heading outline at h1 (9.7s)
+  ✓  227 [chromium] › e2e/shell-contract.ts:54:7 › /ka/pricing holds its shape at every width (9.1s)
+  ✓  228 [chromium] › e2e/shell-contract.ts:70:7 › /ka/pricing exposes one unambiguous landmark set (10.4s)
+  ✓  229 [chromium] › e2e/shell-contract.ts:102:7 › /ka/pricing starts its heading outline at h1 (9.2s)
+  ✓  230 [chromium] › e2e/shell-contract.ts:54:7 › /ka/observatory holds its shape at every width (14.6s)
+  ✓  231 [chromium] › e2e/shell-contract.ts:70:7 › /ka/observatory exposes one unambiguous landmark set (14.1s)
+  ✓  232 [chromium] › e2e/shell-contract.ts:102:7 › /ka/observatory starts its heading outline at h1 (11.2s)
+  ✓  233 [chromium] › e2e/shell-contract.ts:54:7 › /ka/status holds its shape at every width (12.5s)
+  ✓  234 [chromium] › e2e/shell-contract.ts:70:7 › /ka/status exposes one unambiguous landmark set (10.9s)
+  ✓  235 [chromium] › e2e/shell-contract.ts:102:7 › /ka/status starts its heading outline at h1 (14.7s)
+  ✓  236 [chromium] › e2e/shell-contract.ts:54:7 › /ka/terms holds its shape at every width (9.4s)
+  ✓  237 [chromium] › e2e/shell-contract.ts:70:7 › /ka/terms exposes one unambiguous landmark set (8.1s)
+  ✓  238 [chromium] › e2e/shell-contract.ts:102:7 › /ka/terms starts its heading outline at h1 (8.9s)
+  ✓  239 [chromium] › e2e/shell-contract.ts:54:7 › /ka/privacy holds its shape at every width (9.9s)
+  ✓  240 [chromium] › e2e/shell-contract.ts:70:7 › /ka/privacy exposes one unambiguous landmark set (7.9s)
+  ✓  241 [chromium] › e2e/shell-contract.ts:102:7 › /ka/privacy starts its heading outline at h1 (6.9s)
+  ✓  242 [chromium] › e2e/shell-contract.ts:54:7 › /ka/refunds holds its shape at every width (8.0s)
+  ✓  243 [chromium] › e2e/shell-contract.ts:70:7 › /ka/refunds exposes one unambiguous landmark set (7.6s)
+  ✓  244 [chromium] › e2e/shell-contract.ts:102:7 › /ka/refunds starts its heading outline at h1 (8.6s)
+  ✓  245 [chromium] › e2e/shell-contract.ts:54:7 › /ka/design-system holds its shape at every width (17.7s)
+  ✓  246 [chromium] › e2e/shell-contract.ts:70:7 › /ka/design-system exposes one unambiguous landmark set (18.6s)
+  ✓  247 [chromium] › e2e/shell-contract.ts:102:7 › /ka/design-system starts its heading outline at h1 (10.8s)
+  ✓  248 [chromium] › e2e/shell-contract.ts:54:7 › /ka/app holds its shape at every width (10.2s)
+  ✓  249 [chromium] › e2e/shell-contract.ts:70:7 › /ka/app exposes one unambiguous landmark set (9.9s)
+  ✓  250 [chromium] › e2e/shell-contract.ts:102:7 › /ka/app starts its heading outline at h1 (11.5s)
+  ✓  251 [chromium] › e2e/shell-contract.ts:54:7 › /ka/app/missions holds its shape at every width (13.1s)
+  ✓  252 [chromium] › e2e/shell-contract.ts:70:7 › /ka/app/missions exposes one unambiguous landmark set (10.2s)
+  ✓  253 [chromium] › e2e/shell-contract.ts:102:7 › /ka/app/missions starts its heading outline at h1 (9.4s)
+  ✓  254 [chromium] › e2e/shell-contract.ts:54:7 › /ka/app/collection holds its shape at every width (16.8s)
+  ✓  255 [chromium] › e2e/shell-contract.ts:70:7 › /ka/app/collection exposes one unambiguous landmark set (13.9s)
+  ✓  256 [chromium] › e2e/shell-contract.ts:102:7 › /ka/app/collection starts its heading outline at h1 (11.3s)
+  ✓  257 [chromium] › e2e/shell-contract.ts:54:7 › /ka/app/profile holds its shape at every width (9.5s)
+  ✓  258 [chromium] › e2e/shell-contract.ts:70:7 › /ka/app/profile exposes one unambiguous landmark set (9.7s)
+  ✓  259 [chromium] › e2e/shell-contract.ts:102:7 › /ka/app/profile starts its heading outline at h1 (9.0s)
+  ✓  260 [chromium] › e2e/shell-contract.ts:54:7 › /ka/app/book holds its shape at every width (12.6s)
+  ✓  261 [chromium] › e2e/shell-contract.ts:70:7 › /ka/app/book exposes one unambiguous landmark set (8.5s)
+  ✓  262 [chromium] › e2e/shell-contract.ts:102:7 › /ka/app/book starts its heading outline at h1 (7.3s)
+  ✓  263 [chromium] › e2e/shell-contract.ts:54:7 › /ka/app/subscription holds its shape at every width (9.7s)
+  ✓  264 [chromium] › e2e/shell-contract.ts:70:7 › /ka/app/subscription exposes one unambiguous landmark set (10.4s)
+  ✓  265 [chromium] › e2e/shell-contract.ts:102:7 › /ka/app/subscription starts its heading outline at h1 (7.7s)
+  ✓  266 [chromium] › e2e/shell-contract.ts:54:7 › /ka/app/loyalty holds its shape at every width (7.4s)
+  ✓  267 [chromium] › e2e/shell-contract.ts:70:7 › /ka/app/loyalty exposes one unambiguous landmark set (9.2s)
+  ✓  268 [chromium] › e2e/shell-contract.ts:102:7 › /ka/app/loyalty starts its heading outline at h1 (8.5s)
+  ✓  269 [chromium] › e2e/shell-contract.ts:54:7 › /ka/app/passes holds its shape at every width (8.7s)
+  ✓  270 [chromium] › e2e/shell-contract.ts:70:7 › /ka/app/passes exposes one unambiguous landmark set (7.4s)
+  ✓  271 [chromium] › e2e/shell-contract.ts:102:7 › /ka/app/passes starts its heading outline at h1 (7.6s)
+  ✓  272 [chromium] › e2e/status.spec.ts:17:1 › reports the observatory, and says the simulator is answering (9.5s)
+  ✓  273 [chromium] › e2e/status.spec.ts:35:1 › shows an hour with no forecast as unknown, never as clear (7.8s)
+  ✓  274 [chromium] › e2e/status.spec.ts:48:1 › calls the forecast advisory and keeps the operator's hold authoritative (9.0s)
+  ✓  275 [chromium] › e2e/status.spec.ts:59:1 › renders in Georgian (10.6s)
+  ✓  276 [chromium] › e2e/status.spec.ts:69:1 › the footer reaches the status page in both locales (15.2s)
+  ✓  277 [chromium] › e2e/watch.spec.ts:35:3 › a watcher › buys a seat, watches the simulated session, and leaves (25.4s)
+  ✓  278 [chromium] › e2e/watch.spec.ts:70:3 › a watcher › waits for a payment that settles late, then watches (29.6s)
+  ✓  279 [chromium] › e2e/watch.spec.ts:82:3 › a watcher › is told when the owner closes the session (28.9s)
+  ✓  280 [chromium] › e2e/watch.spec.ts:110:3 › a watcher › finds every seat taken (19.7s)
+  ✓  281 [chromium] › e2e/watch.spec.ts:118:3 › a watcher › is told a session nobody opened is not open to watch (18.3s)
+  ✓  282 [chromium] › e2e/watch.spec.ts:126:3 › a watcher › buys and watches in Georgian, returned to the Georgian page (20.9s)
+  ✓  283 [chromium] › e2e/watch.spec.ts:147:3 › a watcher › the Georgian watch page fits a phone (22.5s)
+  ✓  284 [chromium] › e2e/watch.spec.ts:158:1 › the owner is sent to the live room (8.8s)
+  ✓  285 [chromium] › e2e/watch.spec.ts:169:1 › the Georgian owner is sent to the live room (15.7s)
+  ✓  286 [operator] › e2e/operator.spec.ts:14:3 › operator › shows live telemetry, SIMULATED, and Emergency Park on both routes (18.1s)
+  ✓  287 [operator] › e2e/operator.spec.ts:31:3 › operator › fits a 320px screen on every route, in both languages (36.5s)
+  ✓  288 [operator] › e2e/operator.spec.ts:46:3 › operator › offers GoTo only for targets with fixed coordinates (8.2s)
+  ✓  289 [operator] › e2e/operator.spec.ts:53:3 › operator › switches to REAL only after presence is affirmed, then back (11.6s)
+  ✓  290 [operator] › e2e/operator.spec.ts:87:3 › operator › Emergency Park parks the simulated mission in one click (15.5s)
+  ✓  291 [operator] › e2e/operator.spec.ts:112:3 › non-operator › is sent back to the app, and the API refuses the console's data (20.3s)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <LoadingBoundary name="control/" loading={null}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/en/admin/..." tree={[...]} params={{locale:"en"}} renderTree={{...}} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="[locale]/a...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <OperatorControlPage>
+[WebServer]                   <div className="operator-c...">
+[WebServer]                     <ModeSwitch>
+[WebServer]                     <ManualControl copy={{title:"Man...", ...}} locale="en" targets={[...]}>
+[WebServer]                       <section className="surface-pa..." aria-labelledby="operator-m..." aria-busy={true}>
+[WebServer]                         <h2>
+[WebServer]                         <p>
+[WebServer]                         <Field htmlFor="override-r..." label="Reason" hint="At least 8...">
+[WebServer]                           <div className="field">
+[WebServer]                             <label>
+[WebServer]                             <div>
+[WebServer]                               <TextArea id="override-r..." minLength={8} onChange={function onChange} value="" ...>
+[WebServer]                                 <textarea
+[WebServer]                                   className={"textarea "}
+[WebServer]                                   id="override-reason"
+[WebServer]                                   minLength={8}
+[WebServer]                                   onChange={function onChange}
+[WebServer]                                   value=""
+[WebServer]                                   aria-describedby="override-reason-message"
+[WebServer]                                   aria-invalid={false}
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                             ...
+[WebServer]                         ...
+[WebServer]                           <Field htmlFor="capture-fr..." label="Frames">
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput id="capture-fr..." inputMode="numeric" onChange={function onChange} ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     id="capture-frames"
+[WebServer]                                     inputMode="numeric"
+[WebServer]                                     onChange={function onChange}
+[WebServer]                                     pattern="[1-9][0-9]*"
+[WebServer]                                     value=""
+[WebServer]                                     aria-describedby={undefined}
+[WebServer]                                     aria-invalid={false}
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]  
+  ✓  292 [operator-evidence] › e2e/operator.evidence.spec.ts:15:1 › overview and control, simulated (14.0s)
+  ✓  293 [operator-evidence] › e2e/operator.evidence.spec.ts:31:1 › the REAL switch demands an attended operator (12.6s)
+  ✓  294 [operator-evidence] › e2e/operator.evidence.spec.ts:53:1 › the console in Georgian (7.6s)
+  ✓  295 [operator-evidence] › e2e/operator.evidence.spec.ts:61:1 › Emergency Park (8.5s)
+  ✓  296 [operator-records] › e2e/operator-records.spec.ts:33:1 › missions list, filter by state, and page (13.7s)
+  ✓  297 [operator-records] › e2e/operator-records.spec.ts:52:1 › a completed mission offers no cancel (8.5s)
+  ✓  298 [operator-records] › e2e/operator-records.spec.ts:59:1 › targets enable and disable against the platform's answer (9.9s)
+  ✓  299 [operator-records] › e2e/operator-records.spec.ts:81:1 › the audit log filters by category, and by mission from the missions table (10.7s)
+  ✓  300 [operator-records] › e2e/operator-records.spec.ts:110:1 › cancelling a mission demands a settlement and a reason, and is audited (13.1s)
+  ✓  301 [operator-records] › e2e/operator-records.spec.ts:150:1 › a non-operator reaches none of it (10.6s)
+  ✓  302 [signed-out] › e2e/auth.spec.ts:25:1 › signs in through /api and reaches the app on the session the API set (15.8s)
+  ✓  303 [signed-out] › e2e/auth.spec.ts:38:1 › signs in with Google through the platform's redirect and lands in the app (13.2s)
+  ✓  304 [signed-out] › e2e/auth.spec.ts:49:1 › says so, on the sign-in page, when Google sign-in did not complete (11.5s)
+  ✓  305 [signed-out] › e2e/auth.spec.ts:64:1 › refuses a wrong password without leaving the sign-in page (16.2s)
+  ✓  306 [signed-out] › e2e/auth.spec.ts:72:1 › treats a session cookie without its CSRF cookie as signed out (11.8s)
+  ✓  307 [signed-out] › e2e/auth.spec.ts:84:1 › signs out and ends the session (12.3s)
+  ✓  308 [signed-out] › e2e/auth.spec.ts:97:1 › lands in the app when the platform verified the address at once (7.9s)
+  ✓  309 [signed-out] › e2e/auth.spec.ts:111:1 › creates an account, and asks for the email before any session (12.3s)
+  ✓  310 [signed-out] › e2e/auth.spec.ts:140:1 › resets a forgotten password from the sign-in page, and signs in with the new one (19.3s)
+  ✓  311 [signed-out] › e2e/auth.spec.ts:179:1 › answers an unknown address exactly as a known one, in Georgian (7.0s)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <RedirectErrorBoundary router={{...}}>
+[WebServer]       <InnerLayoutRouter url="/en/reset-..." tree={[...]} params={{locale:"en", ...}} renderTree={{...}} ...>
+[WebServer]         <SegmentViewNode type="page" pagePath="[locale]/r...">
+[WebServer]           <SegmentTrieNode>
+[WebServer]           <ResetPasswordTokenPage>
+[WebServer]             <div className="site-frame">
+[WebServer]               <SiteHeader>
+[WebServer]               <AuthPage>
+[WebServer]                 <main className="auth-page" id="main-content">
+[WebServer]                   <Container>
+[WebServer]                     <div className="page-conta...">
+[WebServer]                       <section>
+[WebServer]                       ...
+[WebServer]                         <form action={function bound dispatchActionState} className="auth-form">
+[WebServer]                           <FormMessage>
+[WebServer]                           <Field htmlFor="password" label="New password" hint="Use at lea..." error={undefined}>
+[WebServer]                             <div className="field">
+[WebServer]                               <label>
+[WebServer]                               <div>
+[WebServer]                                 <TextInput autoComplete="new-password" id="password" maxLength={128} minLength={12} ...>
+[WebServer]                                   <input
+[WebServer]                                     className={"input "}
+[WebServer]                                     autoComplete="new-password"
+[WebServer]                                     id="password"
+[WebServer]                                     maxLength={128}
+[WebServer] +                                   minLength={12}
+[WebServer] -                                   minLength={null}
+[WebServer]                                     name="password"
+[WebServer]                                     required={true}
+[WebServer]                                     type="password"
+[WebServer]                                     aria-describedby="password-message"
+[WebServer]                                     aria-invalid={false}
+[WebServer]                                   >
+[WebServer]                               ...
+[WebServer]                           ...
+[WebServer]               ...
+[WebServer]         ...
+[WebServer]       ...
+[WebServer]  
+  ✓  312 [signed-out] › e2e/auth.spec.ts:191:1 › refuses a short new password before asking the platform (4.2s)
+  ✓  313 [signed-out] › e2e/auth.spec.ts:203:1 › offers a new link when the reset link was mangled on its way out of the email (4.3s)
+  ✓  314 [signed-out] › e2e/shell-contract.ts:54:7 › /en/sign-in holds its shape at every width (4.4s)
+  ✓  315 [signed-out] › e2e/shell-contract.ts:70:7 › /en/sign-in exposes one unambiguous landmark set (4.1s)
+  ✓  316 [signed-out] › e2e/shell-contract.ts:102:7 › /en/sign-in starts its heading outline at h1 (4.4s)
+  ✓  317 [signed-out] › e2e/shell-contract.ts:54:7 › /en/register holds its shape at every width (4.9s)
+  ✓  318 [signed-out] › e2e/shell-contract.ts:70:7 › /en/register exposes one unambiguous landmark set (4.2s)
+  ✓  319 [signed-out] › e2e/shell-contract.ts:102:7 › /en/register starts its heading outline at h1 (4.3s)
+  ✓  320 [signed-out] › e2e/shell-contract.ts:54:7 › /en/reset-password holds its shape at every width (4.9s)
+  ✓  321 [signed-out] › e2e/shell-contract.ts:70:7 › /en/reset-password exposes one unambiguous landmark set (4.3s)
+  ✓  322 [signed-out] › e2e/shell-contract.ts:102:7 › /en/reset-password starts its heading outline at h1 (3.9s)
+  ✓  323 [signed-out] › e2e/shell-contract.ts:54:7 › /ka/sign-in holds its shape at every width (4.8s)
+  ✓  324 [signed-out] › e2e/shell-contract.ts:70:7 › /ka/sign-in exposes one unambiguous landmark set (7.6s)
+  ✓  325 [signed-out] › e2e/shell-contract.ts:102:7 › /ka/sign-in starts its heading outline at h1 (8.2s)
+  ✓  326 [signed-out] › e2e/shell-contract.ts:54:7 › /ka/register holds its shape at every width (6.8s)
+  ✓  327 [signed-out] › e2e/shell-contract.ts:70:7 › /ka/register exposes one unambiguous landmark set (6.3s)
+  ✓  328 [signed-out] › e2e/shell-contract.ts:102:7 › /ka/register starts its heading outline at h1 (7.5s)
+  ✓  329 [signed-out] › e2e/shell-contract.ts:54:7 › /ka/reset-password holds its shape at every width (8.6s)
+  ✓  330 [signed-out] › e2e/shell-contract.ts:70:7 › /ka/reset-password exposes one unambiguous landmark set (6.1s)
+  ✓  331 [signed-out] › e2e/shell-contract.ts:102:7 › /ka/reset-password starts its heading outline at h1 (6.1s)
+
+
+  1) [chromium] › e2e/reschedule.spec.ts:21:1 › a lost slot is replaced with a free one, and the offer then closes 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('link', { name: 'Choose a free slot' })
+    Expected: 0
+    Received: undefined
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByRole('link', { name: 'Choose a free slot' })
+      - Protocol error (Runtime.callFunctionOn): Internal server error, session closed.
+
+
+      61 |   await page.goto(`/en/app/bookings/${lostId}`);
+      62 |   await expect(page.getByRole("link", { name: "See the new booking" })).toBeVisible();
+    > 63 |   await expect(page.getByRole("link", { name: "Choose a free slot" })).toHaveCount(0);
+         |                                                                        ^
+      64 |
+      65 |   await page.goto(`/en/app/book?reschedule=${lostId}`);
+      66 |   await expect(
+        at /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e/reschedule.spec.ts:63:72
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/reschedule-a-lost-slot-is--443c2-e-and-the-offer-then-closes-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/reschedule-a-lost-slot-is--443c2-e-and-the-offer-then-closes-chromium/error-context.md
+
+  2) [chromium] › e2e/reserve.spec.ts:25:1 › a slot is reserved, paid at the sandbox checkout, and confirmed 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.booking-row').filter({ hasText: 'Saturn' }).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('.booking-row').filter({ hasText: 'Saturn' }).first()
+        - waiting for navigation to finish...
+
+
+      60 |
+      61 |   await page.goto("/en/app/bookings");
+    > 62 |   await expect(page.locator(".booking-row", { hasText: "Saturn" }).first()).toBeVisible();
+         |                                                                             ^
+      63 | });
+      64 |
+      65 | test("a customer who left the checkout pays from the booking's own page", async ({
+        at /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e/reserve.spec.ts:62:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/reserve-a-slot-is-reserved-58e55-dbox-checkout-and-confirmed-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/reserve-a-slot-is-reserved-58e55-dbox-checkout-and-confirmed-chromium/error-context.md
+
+  3) [chromium] › e2e/reserve.spec.ts:65:1 › a customer who left the checkout pays from the booking's own page 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Pay' })
+        - locator resolved to <button value="PAID" name="result">Pay</button>
+
+
+      90 |   await page.getByRole("link", { name: "Continue to payment" }).click();
+      91 |   await expect(page).toHaveURL(/\/api\/payments\/[0-9a-f-]+\/sandbox-checkout$/);
+    > 92 |   await page.getByRole("button", { name: "Pay" }).click();
+         |                                                   ^
+      93 |
+      94 |   await expect(page).toHaveURL(/\/en\/app\/bookings\/[0-9a-f-]+$/);
+      95 |   await expect(page.getByText("Confirmed", { exact: true })).toBeVisible();
+        at /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e/reserve.spec.ts:92:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/reserve-a-customer-who-lef-b565f-from-the-booking-s-own-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/reserve-a-customer-who-lef-b565f-from-the-booking-s-own-page-chromium/error-context.md
+
+  4) [chromium] › e2e/room-live.spec.ts:49:1 › the Georgian live room fits a phone ─────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('img', { name: 'სიმულირებული პირდაპირი ხედი: ჰერკულესის გროვა' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('img', { name: 'სიმულირებული პირდაპირი ხედი: ჰერკულესის გროვა' })
+
+
+      53 |   await expect(
+      54 |     page.getByRole("img", { name: "სიმულირებული პირდაპირი ხედი: ჰერკულესის გროვა" }),
+    > 55 |   ).toBeVisible();
+         |     ^
+      56 |   await expect(page.locator(".live-feed").getByText("სიმულირებული")).toBeVisible();
+      57 |   await expect(page.locator(".live-feed").getByText(/დარჩენილი დრო/)).toBeVisible();
+      58 |
+        at /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/e2e/room-live.spec.ts:55:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/room-live-the-Georgian-live-room-fits-a-phone-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/room-live-the-Georgian-live-room-fits-a-phone-chromium/error-context.md
+
+  Slow test file: [chromium] › e2e/a11y.spec.ts (16.4m)
+  Slow test file: [chromium] › e2e/shell-contract.ts (16.3m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  4 failed
+    [chromium] › e2e/reschedule.spec.ts:21:1 › a lost slot is replaced with a free one, and the offer then closes 
+    [chromium] › e2e/reserve.spec.ts:25:1 › a slot is reserved, paid at the sandbox checkout, and confirmed 
+    [chromium] › e2e/reserve.spec.ts:65:1 › a customer who left the checkout pays from the booking's own page 
+    [chromium] › e2e/room-live.spec.ts:49:1 › the Georgian live room fits a phone ──────────────────
+  327 passed (1.2h)
+exit 1

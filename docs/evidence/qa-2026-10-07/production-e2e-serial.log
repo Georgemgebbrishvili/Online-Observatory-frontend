@@ -1,0 +1,34 @@
+[WebServer] (node:47071) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:47103) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 18 tests using 1 worker
+
+(node:47123) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [setup] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.setup.ts:10:3 › sign in as the observer (10.9s)
+  ✓   2 [setup] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.setup.ts:10:3 › sign in as the operator (5.9s)
+(node:47203) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:10:1 › /app/bookings lists the bookings latest slot first, four to a page (5.8s)
+  ✓   4 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/bookings.spec.ts:137:3 › changing a booking › a slot lost to the weather is refunded (8.9s)
+  ✓   5 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/profile.spec.ts:140:1 › deletes the account after the password, and it cannot sign in again (11.5s)
+  ✓   6 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:21:1 › a lost slot is replaced with a free one, and the offer then closes (10.6s)
+  ✓   7 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reschedule.spec.ts:75:1 › a slot taken a moment ago is refused, and the free slot stays open (8.3s)
+[WebServer] ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3100". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+  ✓   8 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:25:1 › a slot is reserved, paid at the sandbox checkout, and confirmed (9.9s)
+  ✓   9 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/reserve.spec.ts:65:1 › a customer who left the checkout pays from the booking's own page (9.2s)
+  ✓  10 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-controls.spec.ts:71:1 › the cloud's safety refusal is named, and nothing is retried (5.7s)
+  ✓  11 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:69:1 › starting is stated while the platform opens the session (5.6s)
+  ✓  12 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/room-live.spec.ts:266:1 › a session another tab holds offers to watch here (6.2s)
+  ✓  13 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /en/design-system holds its shape at every width (8.8s)
+  ✓  14 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7 › /ka/design-system holds its shape at every width (12.0s)
+  ✓  15 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:35:3 › a watcher › buys a seat, watches the simulated session, and leaves (10.1s)
+  ✓  16 [chromium] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/watch.spec.ts:70:3 › a watcher › waits for a payment that settles late, then watches (12.1s)
+(node:47428) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  17 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:36:1 › refuses a wrong password without leaving the sign-in page (7.2s)
+  ✓  18 [signed-out] › ../../../../../../../private/tmp/stellar-prod-tests/e2e/auth.spec.ts:56:1 › signs out and ends the session (10.6s)
+
+  18 passed (3.4m)

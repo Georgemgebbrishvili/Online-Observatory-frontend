@@ -1,0 +1,4 @@
+
+> darkview-clients@0.1.0 lint
+> eslint . && stylelint "apps/web/src/**/*.css"
+

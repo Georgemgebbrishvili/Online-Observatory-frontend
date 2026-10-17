@@ -1,0 +1,9 @@
+
+Running 4 tests using 1 worker
+
+  ✓  1 [setup] › e2e/auth.setup.ts:10:3 › sign in as the observer (7.7s)
+  ✓  2 [setup] › e2e/auth.setup.ts:10:3 › sign in as the operator (4.7s)
+  ✓  3 [firefox] › ../../qa-cross-browser/smoke.spec.ts:22:2 › signed-out › sign in with the browser UI (10.1s)
+  ✓  4 [webkit] › ../../qa-cross-browser/smoke.spec.ts:22:2 › signed-out › sign in with the browser UI (5.7s)
+
+  4 passed (43.0s)

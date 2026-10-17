@@ -1,0 +1,12 @@
+2026-10-07 19:18:04,803 INFO darkview.agent: agent starting: driver_mode=SIMULATED attended=False
+2026-10-07 19:18:04,803 WARNING darkview.agent: safety envelope: UNMEASURED — every slew will be refused with SAFETY_ENVELOPE_UNMEASURED until MAX_ALT_SAFE is measured
+2026-10-07 19:18:04,808 INFO darkview.agent: local state: /tmp/stellar-qa-night-20261007.sqlite3
+2026-10-07 19:18:04,810 INFO darkview.agent.supervisor: recovered the measured safety envelope from local state
+2026-10-07 19:18:05,138 INFO darkview.agent: agent running; watchdog thread up
+2026-10-07 19:18:05,437 WARNING darkview.agent.link: link down (connect failed: [Errno 61] Connection refused); retrying in 1.0s
+2026-10-07 19:18:06,465 WARNING darkview.agent.link: link down (connect failed: [Errno 61] Connection refused); retrying in 2.0s
+2026-10-07 19:18:08,524 WARNING darkview.agent.link: link down (connect failed: [Errno 61] Connection refused); retrying in 4.0s
+2026-10-07 19:18:15,167 INFO darkview.agent.link: link online: heartbeat every 5.0s, 0 queued message(s) to replay
+2026-10-07 19:18:15,169 INFO darkview.agent.supervisor: safety envelope updated: MEASURED
+2026-10-07 19:33:24,792 INFO darkview.agent: received signal 15
+2026-10-07 19:33:24,816 INFO darkview.agent: stopping: parking the mount

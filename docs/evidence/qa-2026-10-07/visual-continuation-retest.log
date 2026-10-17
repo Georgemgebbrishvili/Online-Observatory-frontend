@@ -1,0 +1,241 @@
+
+Running 4 tests using 1 worker
+
+  ✓  1 [visual-setup] › e2e/auth.setup.ts:10:3 › sign in as the observer (4.7s)
+  ✓  2 [visual-setup] › e2e/auth.setup.ts:10:3 › sign in as the operator (2.8s)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+[WebServer]       <LoadingBoundary name="design-sys..." loading={null}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/en/design..." tree={[...]} params={{locale:"en"}} cacheNode={{rsc:{...}, ...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="[locale]/d...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <DesignSystemPage>
+[WebServer]                     <main id="main-content" className="design-sys...">
+[WebServer]                       <Container>
+[WebServer]                         <div className={"page-con..."}>
+[WebServer]                           <header>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section className="ds-section" aria-labelledby="surfaces-t...">
+[WebServer]                             <header>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <ol>
+[WebServer]                             <h3>
+[WebServer]                             <ol>
+[WebServer]                             <h3>
+[WebServer]                             <div>
+[WebServer]                             <h3>
+[WebServer]                             <div className="ds-room-sp...">
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                               ...
+[WebServer]                                 <ul className="reserve-ch...">
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="albireo"
+[WebServer]                                         checked={false}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   <li>
+[WebServer]                                     <label className="reserve-ch...">
+[WebServer]                                       <input
+[WebServer]                                         type="radio"
+[WebServer]                                         name="target"
+[WebServer]                                         value="saturn"
+[WebServer]                                         checked={true}
+[WebServer]                                         onChange={function onChange}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                             ...
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section>
+[WebServer]                           <section className="ds-section" aria-labelledby="form-title">
+[WebServer]                             <header>
+[WebServer]                             <SurfacePanel>
+[WebServer]                               <div className="surface-pa...">
+[WebServer]                                 <form className="ds-form" noValidate={true}>
+[WebServer]                                   <h3>
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextInput>
+[WebServer]                                           <input
+[WebServer]                                             className={"input "}
+[WebServer]                                             id="target-name"
+[WebServer]                                             name="target"
+[WebServer]                                             placeholder="Messier or common name"
+[WebServer]                                             aria-describedby="target-name-message"
+[WebServer]                                             aria-invalid={false}
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                       ...
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextArea>
+[WebServer]                                           <textarea
+[WebServer]                                             className={"textarea "}
+[WebServer]                                             id="mission-notes"
+[WebServer]                                             name="notes"
+[WebServer]                                             placeholder="Optional notes for this mission"
+[WebServer]                                             aria-invalid={false}
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                   <Field>
+[WebServer]                                     <div className="field">
+[WebServer]                                       <label>
+[WebServer]                                       <div>
+[WebServer]                                         <TextInput>
+[WebServer]                                           <input
+[WebServer]                                             className={"input "}
+[WebServer]                                             id="notification-email"
+[WebServer]                                             name="email"
+[WebServer]                                             type="email"
+[WebServer]                                             defaultValue="observer@"
+[WebServer]                                             aria-invalid="true"
+[WebServer]                                             aria-describedby="notification-email-message"
+[WebServer] -                                           style={{caret-color:"transparent"}}
+[WebServer]                                           >
+[WebServer]                                       ...
+[WebServer]                                   <Checkbox>
+[WebServer]                                     <label className={"checkbox "}>
+[WebServer]                                       <input
+[WebServer]                                         type="checkbox"
+[WebServer]                                         defaultChecked={true}
+[WebServer] -                                       style={{caret-color:"transparent"}}
+[WebServer]                                       >
+[WebServer]                                       ...
+[WebServer]                                   ...
+[WebServer]                             ...
+[WebServer]                           ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]  
+  ✓  3 [visual] › e2e/visual.spec.ts:127:9 › public at 390 › en /design-system (6.7s)
+  ✓  4 [visual] › e2e/visual.spec.ts:127:9 › public at 1440 › en /privacy (2.4s)
+
+  4 passed (40.5s)

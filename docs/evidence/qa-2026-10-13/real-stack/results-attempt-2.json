@@ -1,0 +1,59 @@
+[
+  {
+    "group": "auth",
+    "check": "register a new address",
+    "passed": true,
+    "url": "http://localhost:3000/en/verify-email",
+    "cookies": [],
+    "note": "sent to verify-email (webhook sender configured, ADR-049 not taken)"
+  },
+  {
+    "group": "auth",
+    "check": "verification link from the mail sink signs the address in",
+    "passed": false,
+    "error": "ENOENT: no such file or directory, open '/Users/nika/Desktop/Stellar%20Observatory/part-2-clients/docs/evidence/qa-2026-10-13/dev-stack.log'"
+  },
+  {
+    "group": "auth",
+    "check": "sign out from the app bar returns to sign-in",
+    "passed": false,
+    "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByRole('banner').filter({ has: locator('nav[data-placement=\\'bar\\']') }).getByRole('button', { name: 'Sign out' })\n"
+  },
+  {
+    "group": "auth",
+    "check": "wrong password is refused with the localized alert",
+    "passed": false,
+    "text": "Too many attempts. Try again in 15 minutes.",
+    "shot": "shots/auth-wrong-password-en.png"
+  },
+  {
+    "group": "auth",
+    "check": "wrong password, Georgian",
+    "passed": true,
+    "text": "ცდების ლიმიტი ამოიწურა. სცადე 15 წუთში.",
+    "shot": "shots/auth-wrong-password-ka.png"
+  },
+  {
+    "group": "auth",
+    "check": "Continue with Google is present and routed on sign-in and register",
+    "passed": true,
+    "en": "/api/auth/google/start?locale=en",
+    "ka": "/api/auth/google/start?locale=ka"
+  },
+  {
+    "group": "auth",
+    "check": "Google start without a configured client fails closed",
+    "passed": true,
+    "status": 200,
+    "url": "http://localhost:3000/en/sign-in?error=google",
+    "alertText": "Google sign-in did not complete. Try again, or use your email and password.",
+    "shot": "shots/auth-google-start.png",
+    "note": "records what the platform does with no Google client; see platform env"
+  },
+  {
+    "group": "auth",
+    "check": "demo observer signs in",
+    "passed": false,
+    "error": "page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================"
+  }
+]

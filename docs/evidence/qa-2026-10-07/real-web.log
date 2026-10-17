@@ -1,0 +1,20 @@
+
+> @darkview/web@0.1.0 start
+> next start --port 3200
+
+▲ Next.js 16.3.6
+- Local:         http://localhost:3200
+- Network:       http://192.168.1.204:3200
+✓ Ready in 5.4s
+✓ Running next.config.ts took 1558ms
+⨯ Error: The destination stream closed early.
+    at ignore-listed frames {
+  digest: '593898523'
+}
+npm error Lifecycle script `start` failed with error:
+npm error code 143
+npm error path /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+npm error workspace @darkview/web@0.1.0
+npm error location /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+npm error command failed
+npm error command sh -c next start --port 3200

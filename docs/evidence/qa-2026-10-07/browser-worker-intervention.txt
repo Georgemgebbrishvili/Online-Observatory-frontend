@@ -1,0 +1,1 @@
+One production-suite worker remained after 246 completed tests, with test 227 lacking a result. Its Chrome parent had exited, leaving an orphan network helper. The worker was terminated after exceeding normal test timeouts, so the run can report the interruption and finish. This is retained as an infrastructure failure, not counted as a pass.

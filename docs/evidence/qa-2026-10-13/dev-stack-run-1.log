@@ -1,0 +1,652 @@
+
+> darkview-clients@0.1.0 dev:stack
+> node scripts/dev-stack.mjs
+
+dev-stack: platform HEAD 26511620e4459eb4373483fb20eba7a0ed1bfcff matches the synced contract
+ Container darkview-dev-storage-1 Running 
+ Container darkview-dev-postgres-1 Running 
+ Container darkview-dev-storage-1 Waiting 
+ Container darkview-dev-postgres-1 Waiting 
+ Container darkview-dev-postgres-1 Healthy 
+ Container darkview-dev-storage-1 Healthy 
+ Container darkview-dev-storage-1 Running 
+ Container darkview-dev-storage-1 Waiting 
+ Container darkview-dev-storage-1 Healthy 
+ Container darkview-dev-storage-bucket-run-b567618f8420 Creating 
+ Container darkview-dev-storage-bucket-run-b567618f8420 Created 
+[34mmail    |[0m listening on 127.0.0.1:4010
+[36mapi     |[0m 
+[36mapi     |[0m > @darkview/api@0.1.0 dev
+[36mapi     |[0m > next dev --port 4000
+[36mapi     |[0m 
+[35mrealtime|[0m 
+[35mrealtime|[0m > @darkview/realtime@0.1.0 dev
+[35mrealtime|[0m > tsx watch src/server.ts
+[35mrealtime|[0m 
+[36mapi     |[0m ▲ Next.js 16.4.0 (Turbopack)
+[36mapi     |[0m - Local:         http://localhost:4000
+[36mapi     |[0m - Network:       http://192.168.1.204:4000
+[36mapi     |[0m ✓ Ready in 1410ms
+[36mapi     |[0m ✓ Running next.config.ts took 911ms
+[35mrealtime|[0m darkview realtime: OPEN_METEO_API_KEY is not set; forecasts use the non-commercial endpoint
+[35mrealtime|[0m darkview realtime: NOTIFICATION_WEBHOOK_URL is not set; emails are queued and not sent
+[35mrealtime|[0m darkview realtime listening on :4001/ws/agent
+[36mapi     |[0m 
+[36mapi     |[0m ✓ Generated AGENTS.md for AI agents. Set `agentRules: false` in next.config to disable.
+[36mapi     |[0m  GET /health 200 in 330ms (next.js: 296ms, application-code: 34ms)
+[32mweb     |[0m 
+[32mweb     |[0m > darkview-clients@0.1.0 dev
+[32mweb     |[0m > npm run dev --workspace @darkview/web
+[32mweb     |[0m 
+[32mweb     |[0m 
+[32mweb     |[0m > @darkview/web@0.1.0 dev
+[32mweb     |[0m > next dev
+[32mweb     |[0m 
+[32mweb     |[0m ▲ Next.js 16.4.0 (Turbopack)
+[32mweb     |[0m - Local:         http://localhost:3000
+[32mweb     |[0m - Network:       http://192.168.1.204:3000
+[32mweb     |[0m ✓ Ready in 1617ms
+[32mweb     |[0m ✓ Running next.config.ts took 267ms
+[93mnight   |[0m 2026-10-13 22:42:23,507 INFO darkview.agent: agent starting: driver_mode=SIMULATED attended=False
+[93mnight   |[0m 2026-10-13 22:42:23,507 WARNING darkview.agent: safety envelope: UNMEASURED — every slew will be refused with SAFETY_ENVELOPE_UNMEASURED until MAX_ALT_SAFE is measured
+[33magent   |[0m 2026-10-13 22:42:23,507 INFO darkview.agent: agent starting: driver_mode=SIMULATED attended=False
+[33magent   |[0m 2026-10-13 22:42:23,507 WARNING darkview.agent: safety envelope: UNMEASURED — every slew will be refused with SAFETY_ENVELOPE_UNMEASURED until MAX_ALT_SAFE is measured
+[93mnight   |[0m 2026-10-13 22:42:23,511 INFO darkview.agent: local state: /Users/nika/Desktop/Stellar Observatory/part-2-clients/dev/.state/night-agent-state.sqlite3
+[33magent   |[0m 2026-10-13 22:42:23,511 INFO darkview.agent: local state: /Users/nika/Desktop/Stellar Observatory/part-2-clients/dev/.state/agent-state.sqlite3
+[93mnight   |[0m 2026-10-13 22:42:23,515 INFO darkview.agent.supervisor: recovered the measured safety envelope from local state
+[33magent   |[0m 2026-10-13 22:42:23,515 INFO darkview.agent.supervisor: recovered the measured safety envelope from local state
+[33magent   |[0m 2026-10-13 22:42:23,519 INFO darkview.agent: agent running; watchdog thread up
+[93mnight   |[0m 2026-10-13 22:42:23,519 INFO darkview.agent.state: pruned 1 command record(s) and 0 audit event(s)
+[93mnight   |[0m 2026-10-13 22:42:23,519 INFO darkview.agent: agent running; watchdog thread up
+[93mnight   |[0m 2026-10-13 22:42:23,955 INFO darkview.agent.link: link online: heartbeat every 5.0s, 0 queued message(s) to replay
+[93mnight   |[0m 2026-10-13 22:42:23,959 INFO darkview.agent.supervisor: safety envelope updated: MEASURED
+[33magent   |[0m 2026-10-13 22:42:23,963 INFO darkview.agent.link: link online: heartbeat every 5.0s, 0 queued message(s) to replay
+[33magent   |[0m 2026-10-13 22:42:23,965 INFO darkview.agent.supervisor: safety envelope updated: MEASURED
+[32mweb     |[0m 
+[32mweb     |[0m ○ Compiling /[locale] ...
+
+[32mdev-stack: up. Open http://localhost:3000 (not 127.0.0.1).[0m
+
+[36mapi     |[0m  GET /observatories 200 in 107ms (next.js: 1.7ms, application-code: 105ms)
+[36mapi     |[0m  GET /observatories 200 in 537ms (next.js: 75ms, application-code: 462ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 342ms (next.js: 76ms, application-code: 265ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 1826ms (next.js: 1739ms, application-code: 87ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 1940ms (next.js: 1850ms, application-code: 90ms)
+[32mweb     |[0m  GET /en 200 in 10.5s (next.js: 4.6s, proxy.ts: 293ms, generate-params: 693ms, application-code: 4.9s)
+[36mapi     |[0m ○ Compiling /me ...
+[36mapi     |[0m  GET /me 401 in 325ms (next.js: 260ms, application-code: 65ms)
+[32mweb     |[0m  GET /en/register 200 in 6.5s (next.js: 874ms, proxy.ts: 7ms, generate-params: 1126ms, application-code: 4.5s)
+[34mmail    |[0m verification for qa-1791916969539@qa.invalid:
+[34mmail    |[0m     http://localhost:3000/en/verify-email/McssF69r6Xw7z_0Nnh9_6A7vb1Y_3ylo1gT7WvAMQVM
+[36mapi     |[0m  POST /auth/register 202 in 869ms (next.js: 96ms, application-code: 773ms)
+[32mweb     |[0m  GET /en/verify-email 200 in 2.6s (next.js: 700ms, proxy.ts: 17ms, generate-params: 1311ms, application-code: 536ms)
+[36mapi     |[0m  GET /me 401 in 8ms (next.js: 1.5ms, application-code: 7ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 1350ms (next.js: 204ms, proxy.ts: 9ms, generate-params: 844ms, application-code: 293ms)
+[36mapi     |[0m  GET /me 401 in 8ms (next.js: 1.3ms, application-code: 6ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 420ms (next.js: 88ms, proxy.ts: 12ms, generate-params: 3ms, application-code: 316ms)
+[36mapi     |[0m  POST /auth/sign-in 401 in 291ms (next.js: 58ms, application-code: 233ms)
+[36mapi     |[0m  GET /me 401 in 10ms (next.js: 4ms, application-code: 7ms)
+[32mweb     |[0m  GET /ka/sign-in 200 in 240ms (next.js: 6ms, proxy.ts: 7ms, generate-params: 2ms, application-code: 225ms)
+[36mapi     |[0m  POST /auth/sign-in 401 in 366ms (next.js: 1.5ms, application-code: 364ms)
+[36mapi     |[0m  GET /me 401 in 5ms (next.js: 0.8ms, application-code: 4ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 239ms (next.js: 12ms, proxy.ts: 5ms, generate-params: 3ms, application-code: 219ms)
+[36mapi     |[0m  GET /me 401 in 5ms (next.js: 0.9ms, application-code: 5ms)
+[32mweb     |[0m  GET /ka/register 200 in 491ms (next.js: 105ms, proxy.ts: 3ms, generate-params: 7ms, application-code: 376ms)
+[36mapi     |[0m  GET /auth/google/start?locale=en 303 in 60ms (next.js: 48ms, application-code: 11ms)
+[36mapi     |[0m  GET /me 401 in 6ms (next.js: 0.9ms, application-code: 5ms)
+[32mweb     |[0m  GET /en/sign-in?error=google 200 in 404ms (next.js: 12ms, proxy.ts: 6ms, generate-params: 5ms, application-code: 380ms)
+[32mweb     |[0m [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[32mweb     |[0m 
+[32mweb     |[0m - A server/client branch `if (typeof window !== 'undefined')`.
+[32mweb     |[0m - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[32mweb     |[0m - Date formatting in a user's locale which doesn't match the server.
+[32mweb     |[0m - External changing data without sending a snapshot of it along with the HTML.
+[32mweb     |[0m - Invalid HTML tag nesting.
+[32mweb     |[0m 
+[32mweb     |[0m It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[32mweb     |[0m 
+[32mweb     |[0m https://react.dev/link/hydration-mismatch
+[32mweb     |[0m 
+[32mweb     |[0m   ...
+[32mweb     |[0m     <RedirectErrorBoundary router={{...}}>
+[32mweb     |[0m       <InnerLayoutRouter url="/en/sign-i..." tree={[...]} params={{locale:"en"}} renderTree={{...}} segmentPath={[...]} ...>
+[32mweb     |[0m         <SegmentViewNode type="page" pagePath="[locale]/s...">
+[32mweb     |[0m           <SegmentTrieNode>
+[32mweb     |[0m           <SignInPage>
+[32mweb     |[0m             <div className="site-frame">
+[32mweb     |[0m               <SiteHeader>
+[32mweb     |[0m               <AuthPage>
+[32mweb     |[0m                 <main className="auth-page" id="main-content">
+[32mweb     |[0m                   <Container>
+[32mweb     |[0m                     <div className="page-conta...">
+[32mweb     |[0m                       <section>
+[32mweb     |[0m                       ...
+[32mweb     |[0m                         <form action={function bound dispatchActionState} className="auth-form">
+[32mweb     |[0m                           <FormMessage>
+[32mweb     |[0m                           <GoogleOrEmail>
+[32mweb     |[0m                           <Field htmlFor="email" label="Email" error={undefined}>
+[32mweb     |[0m                             <div className="field">
+[32mweb     |[0m                               <label>
+[32mweb     |[0m                               <div>
+[32mweb     |[0m                                 <TextInput autoComplete="email" id="email" name="email" placeholder="you@exampl..." ...>
+[32mweb     |[0m                                   <input
+[32mweb     |[0m                                     className={"input "}
+[32mweb     |[0m                                     autoComplete="email"
+[32mweb     |[0m                                     id="email"
+[32mweb     |[0m                                     name="email"
+[32mweb     |[0m                                     placeholder="you@example.com"
+[32mweb     |[0m                                     required={true}
+[32mweb     |[0m                                     type="email"
+[32mweb     |[0m                                     aria-describedby={undefined}
+[32mweb     |[0m                                     aria-invalid={false}
+[32mweb     |[0m -                                   style={{caret-color:"transparent"}}
+[32mweb     |[0m                                   >
+[32mweb     |[0m                           <Field htmlFor="password" label="Password" error={undefined}>
+[32mweb     |[0m                             <div className="field">
+[32mweb     |[0m                               <label>
+[32mweb     |[0m                               <div>
+[32mweb     |[0m                                 <TextInput autoComplete="current-pa..." id="password" name="password" required={true} ...>
+[32mweb     |[0m                                   <input
+[32mweb     |[0m                                     className={"input "}
+[32mweb     |[0m                                     autoComplete="current-password"
+[32mweb     |[0m                                     id="password"
+[32mweb     |[0m                                     name="password"
+[32mweb     |[0m                                     required={true}
+[32mweb     |[0m                                     type="password"
+[32mweb     |[0m                                     aria-describedby={undefined}
+[32mweb     |[0m                                     aria-invalid={false}
+[32mweb     |[0m -                                   style={{caret-color:"transparent"}}
+[32mweb     |[0m                                   >
+[32mweb     |[0m                           ...
+[32mweb     |[0m               ...
+[32mweb     |[0m         ...
+[32mweb     |[0m       ...
+[32mweb     |[0m  
+[36mapi     |[0m  GET /me 401 in 6ms (next.js: 0.9ms, application-code: 5ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 435ms (next.js: 11ms, proxy.ts: 4ms, generate-params: 3ms, application-code: 417ms)
+[36mapi     |[0m  POST /auth/sign-in 200 in 430ms (next.js: 1.0ms, application-code: 429ms)
+[36mapi     |[0m  GET /me 200 in 31ms (next.js: 5ms, application-code: 26ms)
+[36mapi     |[0m  GET /me 200 in 42ms (next.js: 0.9ms, application-code: 41ms)
+[36mapi     |[0m  GET /observatories 200 in 265ms (next.js: 1.1ms, application-code: 264ms)
+[36mapi     |[0m  GET /observatories 200 in 149ms (next.js: 1.0ms, application-code: 148ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 55ms (next.js: 10ms, application-code: 45ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 77ms (next.js: 4ms, application-code: 73ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 81ms (next.js: 1.3ms, application-code: 80ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 88ms (next.js: 55ms, application-code: 32ms)
+[36mapi     |[0m  GET /captures?limit=3 200 in 507ms (next.js: 165ms, application-code: 343ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 292ms (next.js: 120ms, application-code: 172ms)
+[32mweb     |[0m  GET /en/app 200 in 3.8s (next.js: 656ms, proxy.ts: 5ms, generate-params: 773ms, application-code: 2.4s)
+[36mapi     |[0m  GET /me 401 in 9ms (next.js: 1.3ms, application-code: 8ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 369ms (next.js: 46ms, proxy.ts: 4ms, generate-params: 4ms, application-code: 315ms)
+[36mapi     |[0m  POST /auth/sign-in 200 in 247ms (next.js: 1.6ms, application-code: 245ms)
+[36mapi     |[0m  GET /me 200 in 147ms (next.js: 1.4ms, application-code: 145ms)
+[36mapi     |[0m  GET /me 200 in 122ms (next.js: 1.2ms, application-code: 120ms)
+[36mapi     |[0m  GET /observatories 200 in 45ms (next.js: 1.7ms, application-code: 44ms)
+[36mapi     |[0m  GET /captures?limit=3 200 in 282ms (next.js: 0.9ms, application-code: 281ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 271ms (next.js: 0.9ms, application-code: 270ms)
+[36mapi     |[0m  GET /observatories 200 in 292ms (next.js: 1.0ms, application-code: 291ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 384ms (next.js: 1.3ms, application-code: 383ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 222ms (next.js: 27ms, application-code: 195ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 166ms (next.js: 0.8ms, application-code: 165ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 187ms (next.js: 3ms, application-code: 183ms)
+[32mweb     |[0m  GET /en/app 200 in 1489ms (next.js: 8ms, proxy.ts: 8ms, generate-params: 3ms, application-code: 1471ms)
+[36mapi     |[0m  GET /me 200 in 36ms (next.js: 0.8ms, application-code: 35ms)
+[36mapi     |[0m  GET /me 200 in 49ms (next.js: 0.8ms, application-code: 48ms)
+[36mapi     |[0m  GET /observatories 200 in 21ms (next.js: 1.1ms, application-code: 20ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 80ms (next.js: 5ms, application-code: 75ms)
+[36mapi     |[0m  GET /slots?observatoryId=00000000-0000-4000-8000-000000000010&date=2026-10-13 200 in 118ms (next.js: 64ms, application-code: 54ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 11ms (next.js: 0.8ms, application-code: 10ms)
+[36mapi     |[0m  GET /bookings?limit=20 200 in 141ms (next.js: 88ms, application-code: 53ms)
+[32mweb     |[0m  GET /en/app/book 200 in 2.9s (next.js: 269ms, proxy.ts: 93ms, generate-params: 1193ms, application-code: 1324ms)
+[36mapi     |[0m  GET /me 200 in 18ms (next.js: 1.0ms, application-code: 17ms)
+[36mapi     |[0m  GET /observatories 200 in 10ms (next.js: 0.8ms, application-code: 9ms)
+[36mapi     |[0m  GET /slots?observatoryId=00000000-0000-4000-8000-000000000010&date=2026-10-13 200 in 18ms (next.js: 0.8ms, application-code: 17ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 30ms (next.js: 3ms, application-code: 26ms)
+[36mapi     |[0m  GET /targets/visibility?observatoryId=00000000-0000-4000-8000-000000000010&startAt=2026-10-13T19%3A20%3A00.000Z&durationMinutes=30 200 in 211ms (next.js: 57ms, application-code: 154ms)
+[32mweb     |[0m  GET /en/app/book/reserve?startAt=2026-10-13T19%3A20%3A00.000Z 200 in 1641ms (next.js: 168ms, proxy.ts: 10ms, generate-params: 605ms, application-code: 859ms)
+[36mapi     |[0m  POST /bookings 201 in 200ms (next.js: 4ms, application-code: 196ms)
+[36mapi     |[0m  GET /payments/789b3ff3-6097-4154-a9b2-2201f3b9eaf5/sandbox-checkout 200 in 1230ms (next.js: 1161ms, application-code: 69ms)
+[36mapi     |[0m  POST /payments/789b3ff3-6097-4154-a9b2-2201f3b9eaf5/sandbox-checkout 303 in 247ms (next.js: 3ms, application-code: 243ms)
+[36mapi     |[0m  GET /me 200 in 24ms (next.js: 0.9ms, application-code: 23ms)
+[36mapi     |[0m  GET /me 200 in 18ms (next.js: 1.7ms, application-code: 17ms)
+[36mapi     |[0m  GET /bookings/ee367493-f21e-4562-b99d-133f734da6f3 200 in 1279ms (next.js: 1242ms, application-code: 37ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 13ms (next.js: 0.9ms, application-code: 13ms)
+[36mapi     |[0m  GET /observatories 200 in 31ms (next.js: 0.7ms, application-code: 30ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 67ms (next.js: 4ms, application-code: 63ms)
+[32mweb     |[0m  GET /en/app/bookings/ee367493-f21e-4562-b99d-133f734da6f3 200 in 3.1s (next.js: 774ms, proxy.ts: 4ms, application-code: 2.3s)
+[36mapi     |[0m  GET /me 200 in 64ms (next.js: 1.2ms, application-code: 63ms)
+[32mweb     |[0m  GET /en/app/bookings 200 in 1286ms (next.js: 148ms, proxy.ts: 7ms, generate-params: 810ms, application-code: 322ms)
+[36mapi     |[0m  GET /me 200 in 44ms (next.js: 0.7ms, application-code: 43ms)
+[36mapi     |[0m  GET /me 200 in 61ms (next.js: 0.8ms, application-code: 60ms)
+[36mapi     |[0m  GET /observatories 200 in 23ms (next.js: 0.9ms, application-code: 22ms)
+[36mapi     |[0m  GET /slots?observatoryId=00000000-0000-4000-8000-000000000010&date=2026-10-13 200 in 47ms (next.js: 2ms, application-code: 44ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 79ms (next.js: 12ms, application-code: 67ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 29ms (next.js: 1.8ms, application-code: 27ms)
+[36mapi     |[0m  GET /bookings?limit=20 200 in 44ms (next.js: 0.8ms, application-code: 43ms)
+[32mweb     |[0m  GET /en/app/book 200 in 1055ms (next.js: 15ms, proxy.ts: 8ms, generate-params: 2ms, application-code: 1029ms)
+[36mapi     |[0m  GET /me 200 in 21ms (next.js: 0.9ms, application-code: 20ms)
+[36mapi     |[0m  GET /me 200 in 19ms (next.js: 0.8ms, application-code: 18ms)
+[36mapi     |[0m  GET /bookings/ee367493-f21e-4562-b99d-133f734da6f3 200 in 151ms (next.js: 11ms, application-code: 141ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 14ms (next.js: 1.1ms, application-code: 13ms)
+[36mapi     |[0m  GET /observatories 200 in 26ms (next.js: 1.8ms, application-code: 24ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 40ms (next.js: 1.7ms, application-code: 38ms)
+[32mweb     |[0m  GET /ka/app/bookings/ee367493-f21e-4562-b99d-133f734da6f3 200 in 1210ms (next.js: 59ms, proxy.ts: 3ms, application-code: 1147ms)
+[36mapi     |[0m  GET /me 401 in 6ms (next.js: 1.1ms, application-code: 5ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 500ms (next.js: 49ms, proxy.ts: 4ms, generate-params: 4ms, application-code: 443ms)
+[36mapi     |[0m  POST /auth/sign-in 200 in 287ms (next.js: 0.9ms, application-code: 286ms)
+[36mapi     |[0m  GET /me 200 in 36ms (next.js: 0.8ms, application-code: 36ms)
+[36mapi     |[0m  GET /me 200 in 50ms (next.js: 0.8ms, application-code: 49ms)
+[36mapi     |[0m  GET /observatories 200 in 45ms (next.js: 2ms, application-code: 43ms)
+[36mapi     |[0m  GET /observatories 200 in 65ms (next.js: 1.0ms, application-code: 64ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 29ms (next.js: 1.2ms, application-code: 28ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 15ms (next.js: 0.9ms, application-code: 14ms)
+[36mapi     |[0m  GET /captures?limit=3 200 in 46ms (next.js: 1.1ms, application-code: 44ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 108ms (next.js: 1.3ms, application-code: 107ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 185ms (next.js: 5ms, application-code: 180ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 117ms (next.js: 0.8ms, application-code: 116ms)
+[32mweb     |[0m  GET /en/app 200 in 1370ms (next.js: 15ms, proxy.ts: 8ms, generate-params: 3ms, application-code: 1344ms)
+[36mapi     |[0m  GET /me 200 in 18ms (next.js: 0.8ms, application-code: 18ms)
+[36mapi     |[0m  GET /me 200 in 30ms (next.js: 1.0ms, application-code: 29ms)
+[36mapi     |[0m  GET /bookings/ee367493-f21e-4562-b99d-133f734da6f3 200 in 36ms (next.js: 5ms, application-code: 31ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 28ms (next.js: 9ms, application-code: 19ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 62ms (next.js: 0.8ms, application-code: 62ms)
+[36mapi     |[0m  GET /observatories 200 in 58ms (next.js: 0.8ms, application-code: 57ms)
+[32mweb     |[0m  GET /en/app/bookings/ee367493-f21e-4562-b99d-133f734da6f3 200 in 1134ms (next.js: 31ms, proxy.ts: 4ms, application-code: 1099ms)
+[36mapi     |[0m  GET /me 200 in 77ms (next.js: 0.9ms, application-code: 76ms)
+[36mapi     |[0m  GET /me 200 in 97ms (next.js: 0.9ms, application-code: 96ms)
+[36mapi     |[0m  GET /observatories 200 in 30ms (next.js: 1.2ms, application-code: 29ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 95ms (next.js: 0.8ms, application-code: 94ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 130ms (next.js: 10ms, application-code: 119ms)
+[32mweb     |[0m  GET /en/app/missions 200 in 2.9s (next.js: 626ms, proxy.ts: 3ms, generate-params: 1429ms, application-code: 870ms)
+[36mapi     |[0m  GET /me 200 in 19ms (next.js: 0.7ms, application-code: 18ms)
+[36mapi     |[0m  GET /me 200 in 26ms (next.js: 1.0ms, application-code: 25ms)
+[36mapi     |[0m  GET /observatories 200 in 29ms (next.js: 0.8ms, application-code: 28ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 109ms (next.js: 1.7ms, application-code: 107ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 360ms (next.js: 1.3ms, application-code: 359ms)
+[32mweb     |[0m  GET /ka/app/missions 200 in 932ms (next.js: 10ms, proxy.ts: 6ms, generate-params: 3ms, application-code: 914ms)
+[36mapi     |[0m  GET /me 200 in 13ms (next.js: 0.7ms, application-code: 12ms)
+[36mapi     |[0m  GET /me 200 in 20ms (next.js: 0.7ms, application-code: 20ms)
+[36mapi     |[0m  GET /captures?limit=24 200 in 30ms (next.js: 0.8ms, application-code: 29ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 51ms (next.js: 0.8ms, application-code: 50ms)
+[36mapi     |[0m  GET /observatories 200 in 44ms (next.js: 0.9ms, application-code: 43ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 71ms (next.js: 0.9ms, application-code: 70ms)
+[32mweb     |[0m  GET /en/app/collection 200 in 1530ms (next.js: 260ms, proxy.ts: 6ms, generate-params: 715ms, application-code: 548ms)
+[36mapi     |[0m  GET /me 200 in 17ms (next.js: 0.6ms, application-code: 16ms)
+[36mapi     |[0m  GET /me 200 in 22ms (next.js: 0.6ms, application-code: 22ms)
+[36mapi     |[0m  GET /missions/00000000-0000-4000-8000-000000000205/watch 200 in 1351ms (next.js: 1082ms, application-code: 269ms)
+[32mweb     |[0m  GET /en/app/missions/00000000-0000-4000-8000-000000000205/watch 200 in 3.0s (next.js: 881ms, proxy.ts: 3ms, application-code: 2.1s)
+[36mapi     |[0m  GET /me 401 in 10ms (next.js: 1.2ms, application-code: 8ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 375ms (next.js: 87ms, proxy.ts: 4ms, generate-params: 5ms, application-code: 278ms)
+[36mapi     |[0m  POST /auth/sign-in 200 in 436ms (next.js: 1.0ms, application-code: 435ms)
+[36mapi     |[0m  GET /me 200 in 22ms (next.js: 1.2ms, application-code: 20ms)
+[36mapi     |[0m  GET /me 200 in 27ms (next.js: 1.1ms, application-code: 26ms)
+[36mapi     |[0m  GET /observatories 200 in 57ms (next.js: 4ms, application-code: 53ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 80ms (next.js: 1.7ms, application-code: 78ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 40ms (next.js: 1.1ms, application-code: 39ms)
+[36mapi     |[0m  GET /captures?limit=3 200 in 101ms (next.js: 1.3ms, application-code: 99ms)
+[36mapi     |[0m  GET /observatories 200 in 113ms (next.js: 1.4ms, application-code: 111ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 86ms (next.js: 7ms, application-code: 79ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 179ms (next.js: 1.1ms, application-code: 178ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 214ms (next.js: 1.1ms, application-code: 213ms)
+[32mweb     |[0m  GET /en/app 200 in 1188ms (next.js: 19ms, proxy.ts: 7ms, generate-params: 2ms, application-code: 1159ms)
+[36mapi     |[0m  GET /me 200 in 21ms (next.js: 0.8ms, application-code: 20ms)
+[36mapi     |[0m  GET /observatories 200 in 29ms (next.js: 1.4ms, application-code: 28ms)
+[32mweb     |[0m  GET /en/admin 200 in 2.7s (next.js: 390ms, proxy.ts: 9ms, generate-params: 1829ms, application-code: 506ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 1023ms (next.js: 924ms, application-code: 99ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 1100ms (next.js: 991ms, application-code: 109ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 523ms (next.js: 7ms, application-code: 516ms)
+[36mapi     |[0m  GET /me 401 in 6ms (next.js: 0.9ms, application-code: 5ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 791ms (next.js: 41ms, proxy.ts: 4ms, generate-params: 7ms, application-code: 739ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 52ms (next.js: 2ms, application-code: 49ms)
+[36mapi     |[0m  POST /auth/sign-in 429 in 29ms (next.js: 4ms, application-code: 25ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 54ms (next.js: 5ms, application-code: 49ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 81ms (next.js: 0.8ms, application-code: 80ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 67ms (next.js: 3ms, application-code: 64ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 37ms (next.js: 3ms, application-code: 34ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 35ms (next.js: 4ms, application-code: 31ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 121ms (next.js: 3ms, application-code: 118ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 36ms (next.js: 3ms, application-code: 32ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 33ms (next.js: 4ms, application-code: 29ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 32ms (next.js: 3ms, application-code: 30ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 33ms (next.js: 4ms, application-code: 29ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 34ms (next.js: 5ms, application-code: 29ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 40ms (next.js: 3ms, application-code: 37ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 43ms (next.js: 0.7ms, application-code: 42ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 56ms (next.js: 5ms, application-code: 51ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 53ms (next.js: 3ms, application-code: 51ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 77ms (next.js: 1.0ms, application-code: 76ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 35ms (next.js: 4ms, application-code: 31ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 52ms (next.js: 4ms, application-code: 48ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 34ms (next.js: 0.8ms, application-code: 34ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 36ms (next.js: 4ms, application-code: 32ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 73ms (next.js: 1.3ms, application-code: 71ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 37ms (next.js: 4ms, application-code: 33ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 36ms (next.js: 4ms, application-code: 32ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 42ms (next.js: 4ms, application-code: 39ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 37ms (next.js: 3ms, application-code: 33ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 39ms (next.js: 5ms, application-code: 34ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 41ms (next.js: 3ms, application-code: 38ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 59ms (next.js: 4ms, application-code: 55ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 57ms (next.js: 7ms, application-code: 50ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 1050ms (next.js: 1.3ms, application-code: 1048ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 205ms (next.js: 1.1ms, application-code: 204ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 406ms (next.js: 1.2ms, application-code: 405ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 615ms (next.js: 1.0ms, application-code: 614ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 252ms (next.js: 5ms, application-code: 247ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 127ms (next.js: 1.0ms, application-code: 126ms)
+[36mapi     |[0m  GET /me 200 in 261ms (next.js: 3ms, application-code: 258ms)
+[36mapi     |[0m  GET /observatories 200 in 34ms (next.js: 1.3ms, application-code: 33ms)
+[32mweb     |[0m  GET /en/admin/targets 200 in 10.2s (next.js: 2.1s, proxy.ts: 11ms, generate-params: 7.3s, application-code: 731ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 818ms (next.js: 9ms, application-code: 809ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 384ms (next.js: 4ms, application-code: 380ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 596ms (next.js: 5ms, application-code: 591ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 61ms (next.js: 1.0ms, application-code: 60ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 186ms (next.js: 1.2ms, application-code: 184ms)
+[36mapi     |[0m  PATCH /admin/targets/00000000-0000-4000-8000-000000000103 200 in 3.3s (next.js: 3.2s, application-code: 167ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 178ms (next.js: 5ms, application-code: 173ms)
+[36mapi     |[0m  PATCH /admin/targets/00000000-0000-4000-8000-000000000103 200 in 77ms (next.js: 12ms, application-code: 66ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 207ms (next.js: 1.0ms, application-code: 206ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 930ms (next.js: 3ms, application-code: 927ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 65ms (next.js: 1.1ms, application-code: 64ms)
+[36mapi     |[0m  GET /me 200 in 31ms (next.js: 0.9ms, application-code: 30ms)
+[36mapi     |[0m  GET /observatories 200 in 185ms (next.js: 1.1ms, application-code: 184ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 203ms (next.js: 83ms, application-code: 120ms)
+[32mweb     |[0m  GET /en/admin/logs 200 in 4.7s (next.js: 1232ms, proxy.ts: 5ms, generate-params: 2.4s, application-code: 1075ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 74ms (next.js: 2ms, application-code: 72ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 99ms (next.js: 1.3ms, application-code: 98ms)
+[36mapi     |[0m  GET /admin/logs 200 in 771ms (next.js: 74ms, application-code: 697ms)
+[36mapi     |[0m  GET /admin/logs?category=AGENT_LINK 200 in 242ms (next.js: 136ms, application-code: 106ms)
+[36mapi     |[0m  GET /admin/logs 200 in 604ms (next.js: 1.5ms, application-code: 602ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 327ms (next.js: 1.8ms, application-code: 325ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 40ms (next.js: 3ms, application-code: 37ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 34ms (next.js: 3ms, application-code: 31ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 30ms (next.js: 3ms, application-code: 27ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 31ms (next.js: 4ms, application-code: 27ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 39ms (next.js: 0.7ms, application-code: 38ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 39ms (next.js: 4ms, application-code: 35ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 73ms (next.js: 0.7ms, application-code: 73ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 37ms (next.js: 4ms, application-code: 33ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 31ms (next.js: 3ms, application-code: 28ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 34ms (next.js: 3ms, application-code: 30ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 39ms (next.js: 9ms, application-code: 30ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 34ms (next.js: 5ms, application-code: 29ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 62ms (next.js: 4ms, application-code: 57ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 64ms (next.js: 1.0ms, application-code: 63ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 61ms (next.js: 5ms, application-code: 56ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 73ms (next.js: 1.6ms, application-code: 71ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 73ms (next.js: 8ms, application-code: 65ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 74ms (next.js: 6ms, application-code: 68ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 42ms (next.js: 4ms, application-code: 38ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 61ms (next.js: 2ms, application-code: 58ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 44ms (next.js: 5ms, application-code: 39ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 70ms (next.js: 0.9ms, application-code: 69ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 73ms (next.js: 11ms, application-code: 63ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 76ms (next.js: 1.3ms, application-code: 75ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 180ms (next.js: 1.7ms, application-code: 178ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 71ms (next.js: 9ms, application-code: 63ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 400ms (next.js: 3ms, application-code: 397ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 592ms (next.js: 1.2ms, application-code: 591ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 726ms (next.js: 1.3ms, application-code: 725ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 357ms (next.js: 1.4ms, application-code: 355ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 119ms (next.js: 1.6ms, application-code: 117ms)
+[36mapi     |[0m  GET /me 200 in 34ms (next.js: 1.2ms, application-code: 33ms)
+[36mapi     |[0m  GET /observatories 200 in 63ms (next.js: 1.8ms, application-code: 61ms)
+[32mweb     |[0m  GET /en/admin/missions 200 in 8.4s (next.js: 705ms, proxy.ts: 12ms, generate-params: 6.7s, application-code: 1023ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 548ms (next.js: 8ms, application-code: 540ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 617ms (next.js: 1.2ms, application-code: 616ms)
+[36mapi     |[0m  GET /admin/missions 200 in 290ms (next.js: 139ms, application-code: 150ms)
+[36mapi     |[0m  GET /admin/missions 200 in 285ms (next.js: 2ms, application-code: 283ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 606ms (next.js: 1.4ms, application-code: 604ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 155ms (next.js: 5ms, application-code: 150ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 148ms (next.js: 12ms, application-code: 136ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 162ms (next.js: 1.2ms, application-code: 161ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 131ms (next.js: 2ms, application-code: 129ms)
+[36mapi     |[0m  POST /admin/missions/73713d54-65a2-475d-997c-4fc973b36eb7/cancel 200 in 4.3s (next.js: 4.0s, application-code: 308ms)
+[36mapi     |[0m  GET /me 200 in 149ms (next.js: 1.2ms, application-code: 148ms)
+[36mapi     |[0m  GET /observatories 200 in 250ms (next.js: 1.3ms, application-code: 249ms)
+[32mweb     |[0m  GET /en/admin/logs 200 in 1528ms (next.js: 57ms, proxy.ts: 25ms, generate-params: 26ms, application-code: 1419ms)
+[36mapi     |[0m  GET /admin/logs 200 in 607ms (next.js: 1.4ms, application-code: 606ms)
+[36mapi     |[0m  GET /admin/logs 200 in 868ms (next.js: 2ms, application-code: 866ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 1100ms (next.js: 10ms, application-code: 1090ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 1188ms (next.js: 5ms, application-code: 1182ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 121ms (next.js: 1.2ms, application-code: 120ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 147ms (next.js: 9ms, application-code: 138ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 78ms (next.js: 1.1ms, application-code: 76ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 50ms (next.js: 5ms, application-code: 45ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 46ms (next.js: 1.3ms, application-code: 45ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 42ms (next.js: 3ms, application-code: 39ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 50ms (next.js: 5ms, application-code: 45ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 32ms (next.js: 0.9ms, application-code: 31ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 44ms (next.js: 3ms, application-code: 41ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 42ms (next.js: 5ms, application-code: 37ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 71ms (next.js: 0.7ms, application-code: 71ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 44ms (next.js: 3ms, application-code: 41ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 41ms (next.js: 1.6ms, application-code: 40ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 39ms (next.js: 3ms, application-code: 36ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 84ms (next.js: 6ms, application-code: 78ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 44ms (next.js: 3ms, application-code: 41ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 52ms (next.js: 2ms, application-code: 50ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 48ms (next.js: 5ms, application-code: 44ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 47ms (next.js: 0.8ms, application-code: 46ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 39ms (next.js: 3ms, application-code: 36ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 43ms (next.js: 3ms, application-code: 40ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 68ms (next.js: 8ms, application-code: 60ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 64ms (next.js: 0.7ms, application-code: 64ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 76ms (next.js: 4ms, application-code: 73ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 45ms (next.js: 3ms, application-code: 42ms)
+[36mapi     |[0m  GET /me 200 in 22ms (next.js: 0.9ms, application-code: 21ms)
+[36mapi     |[0m  GET /observatories 200 in 60ms (next.js: 1.8ms, application-code: 58ms)
+[32mweb     |[0m  GET /en/admin 200 in 909ms (next.js: 38ms, proxy.ts: 6ms, generate-params: 2ms, application-code: 862ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 139ms (next.js: 1.8ms, application-code: 137ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 151ms (next.js: 0.8ms, application-code: 150ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 52ms (next.js: 4ms, application-code: 48ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 44ms (next.js: 2ms, application-code: 42ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 47ms (next.js: 4ms, application-code: 43ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 53ms (next.js: 1.1ms, application-code: 52ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 50ms (next.js: 6ms, application-code: 44ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 37ms (next.js: 0.8ms, application-code: 37ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 40ms (next.js: 4ms, application-code: 36ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 102ms (next.js: 0.8ms, application-code: 102ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 54ms (next.js: 3ms, application-code: 50ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 47ms (next.js: 6ms, application-code: 41ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 76ms (next.js: 8ms, application-code: 68ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 46ms (next.js: 5ms, application-code: 41ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 55ms (next.js: 1.7ms, application-code: 53ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 42ms (next.js: 3ms, application-code: 39ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 50ms (next.js: 0.8ms, application-code: 49ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 39ms (next.js: 5ms, application-code: 34ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 61ms (next.js: 3ms, application-code: 58ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 41ms (next.js: 0.8ms, application-code: 40ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 206ms (next.js: 11ms, application-code: 196ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 57ms (next.js: 0.9ms, application-code: 56ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 17ms (next.js: 1.0ms, application-code: 16ms)
+[36mapi     |[0m  GET /me 200 in 32ms (next.js: 2ms, application-code: 30ms)
+[36mapi     |[0m  GET /observatories 200 in 67ms (next.js: 0.8ms, application-code: 66ms)
+[32mweb     |[0m  GET /ka/admin/control 200 in 2.6s (next.js: 570ms, proxy.ts: 10ms, generate-params: 1264ms, application-code: 776ms)
+[32mweb     |[0m [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[32mweb     |[0m 
+[32mweb     |[0m - A server/client branch `if (typeof window !== 'undefined')`.
+[32mweb     |[0m - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[32mweb     |[0m - Date formatting in a user's locale which doesn't match the server.
+[32mweb     |[0m - External changing data without sending a snapshot of it along with the HTML.
+[32mweb     |[0m - Invalid HTML tag nesting.
+[32mweb     |[0m 
+[32mweb     |[0m It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[32mweb     |[0m 
+[32mweb     |[0m https://react.dev/link/hydration-mismatch
+[32mweb     |[0m 
+[32mweb     |[0m   ...
+[32mweb     |[0m     <LoadingBoundary name="control/" loading={null}>
+[32mweb     |[0m       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[32mweb     |[0m         <RedirectBoundary>
+[32mweb     |[0m           <RedirectErrorBoundary router={{...}}>
+[32mweb     |[0m             <InnerLayoutRouter url="/ka/admin/..." tree={[...]} params={{locale:"ka"}} renderTree={{...}} ...>
+[32mweb     |[0m               <SegmentViewNode type="page" pagePath="[locale]/a...">
+[32mweb     |[0m                 <SegmentTrieNode>
+[32mweb     |[0m                 <OperatorControlPage>
+[32mweb     |[0m                   <div className="operator-c...">
+[32mweb     |[0m                     <ModeSwitch>
+[32mweb     |[0m                     <ManualControl copy={{title:"ხელ...", ...}} locale="ka" targets={[...]}>
+[32mweb     |[0m                       <section className="surface-pa..." aria-labelledby="operator-m..." aria-busy={true}>
+[32mweb     |[0m                         <h2>
+[32mweb     |[0m                         <p>
+[32mweb     |[0m                         <Field htmlFor="override-r..." label="მიზეზი" hint="მინიმუმ 8 ...">
+[32mweb     |[0m                           <div className="field">
+[32mweb     |[0m                             <label>
+[32mweb     |[0m                             <div>
+[32mweb     |[0m                               <TextArea id="override-r..." minLength={8} onChange={function onChange} value="" ...>
+[32mweb     |[0m                                 <textarea
+[32mweb     |[0m                                   className={"textarea "}
+[32mweb     |[0m                                   id="override-reason"
+[32mweb     |[0m                                   minLength={8}
+[32mweb     |[0m                                   onChange={function onChange}
+[32mweb     |[0m                                   value=""
+[32mweb     |[0m                                   aria-describedby="override-reason-message"
+[32mweb     |[0m                                   aria-invalid={false}
+[32mweb     |[0m -                                 style={{caret-color:"transparent"}}
+[32mweb     |[0m                                 >
+[32mweb     |[0m                             ...
+[32mweb     |[0m                         ...
+[32mweb     |[0m                           <Field htmlFor="capture-fr..." label="კადრები">
+[32mweb     |[0m                             <div className="field">
+[32mweb     |[0m                               <label>
+[32mweb     |[0m                               <div>
+[32mweb     |[0m                                 <TextInput id="capture-fr..." inputMode="numeric" onChange={function onChange} ...>
+[32mweb     |[0m                                   <input
+[32mweb     |[0m                                     className={"input "}
+[32mweb     |[0m                                     id="capture-frames"
+[32mweb     |[0m                                     inputMode="numeric"
+[32mweb     |[0m                                     onChange={function onChange}
+[32mweb     |[0m                                     pattern="[1-9][0-9]*"
+[32mweb     |[0m                                     value=""
+[32mweb     |[0m                                     aria-describedby={undefined}
+[32mweb     |[0m                                     aria-invalid={false}
+[32mweb     |[0m -                                   style={{caret-color:"transparent"}}
+[32mweb     |[0m                                   >
+[32mweb     |[0m               ...
+[32mweb     |[0m             ...
+[32mweb     |[0m  
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 179ms (next.js: 0.9ms, application-code: 178ms)
+[36mapi     |[0m  GET /admin/observatories/00000000-0000-4000-8000-000000000010/state 200 in 311ms (next.js: 5ms, application-code: 306ms)
+[36mapi     |[0m  GET /me 401 in 7ms (next.js: 1.4ms, application-code: 6ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 961ms (next.js: 33ms, proxy.ts: 10ms, generate-params: 4ms, application-code: 913ms)
+[36mapi     |[0m  POST /auth/sign-in 429 in 170ms (next.js: 1.0ms, application-code: 169ms)
+[36mapi     |[0m  GET /me 401 in 22ms (next.js: 5ms, application-code: 17ms)
+[32mweb     |[0m  GET /en/register 200 in 2.4s (next.js: 403ms, proxy.ts: 18ms, generate-params: 10ms, application-code: 1954ms)
+[34mmail    |[0m verification for qa-1791917332735@qa.invalid:
+[34mmail    |[0m     http://localhost:3000/en/verify-email/Clk3_BXgx0oIV8HeWpDKaHpPs6feR7NVv_iC5qkaE8Y
+[36mapi     |[0m  POST /auth/register 202 in 780ms (next.js: 1.9ms, application-code: 778ms)
+[32mweb     |[0m  GET /en/verify-email 200 in 2.4s (next.js: 1601ms, proxy.ts: 8ms, generate-params: 2ms, application-code: 824ms)
+[36mapi     |[0m  GET /me 401 in 7ms (next.js: 1.3ms, application-code: 6ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 1083ms (next.js: 22ms, proxy.ts: 11ms, generate-params: 7ms, application-code: 1043ms)
+[36mapi     |[0m  GET /me 401 in 7ms (next.js: 0.8ms, application-code: 6ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 385ms (next.js: 18ms, proxy.ts: 8ms, generate-params: 3ms, application-code: 356ms)
+[36mapi     |[0m  POST /auth/sign-in 429 in 50ms (next.js: 0.9ms, application-code: 49ms)
+[36mapi     |[0m  GET /me 401 in 8ms (next.js: 1.5ms, application-code: 7ms)
+[32mweb     |[0m  GET /ka/sign-in 200 in 436ms (next.js: 20ms, proxy.ts: 4ms, generate-params: 4ms, application-code: 408ms)
+[36mapi     |[0m  POST /auth/sign-in 429 in 34ms (next.js: 1.9ms, application-code: 32ms)
+[36mapi     |[0m  GET /me 401 in 9ms (next.js: 1.0ms, application-code: 8ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 727ms (next.js: 36ms, proxy.ts: 4ms, generate-params: 0.0ms, application-code: 687ms)
+[36mapi     |[0m  GET /me 401 in 6ms (next.js: 0.8ms, application-code: 6ms)
+[32mweb     |[0m  GET /ka/register 200 in 1032ms (next.js: 29ms, proxy.ts: 24ms, generate-params: 5ms, application-code: 974ms)
+[36mapi     |[0m  GET /auth/google/start?locale=en 303 in 8ms (next.js: 2ms, application-code: 6ms)
+[36mapi     |[0m  GET /me 401 in 18ms (next.js: 1.1ms, application-code: 17ms)
+[32mweb     |[0m  GET /en/sign-in?error=google 200 in 1499ms (next.js: 46ms, proxy.ts: 3ms, generate-params: 4ms, application-code: 1446ms)
+[32mweb     |[0m [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[32mweb     |[0m 
+[32mweb     |[0m - A server/client branch `if (typeof window !== 'undefined')`.
+[32mweb     |[0m - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[32mweb     |[0m - Date formatting in a user's locale which doesn't match the server.
+[32mweb     |[0m - External changing data without sending a snapshot of it along with the HTML.
+[32mweb     |[0m - Invalid HTML tag nesting.
+[32mweb     |[0m 
+[32mweb     |[0m It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[32mweb     |[0m 
+[32mweb     |[0m https://react.dev/link/hydration-mismatch
+[32mweb     |[0m 
+[32mweb     |[0m   ...
+[32mweb     |[0m     <RedirectErrorBoundary router={{...}}>
+[32mweb     |[0m       <InnerLayoutRouter url="/en/sign-i..." tree={[...]} params={{locale:"en"}} renderTree={{...}} segmentPath={[...]} ...>
+[32mweb     |[0m         <SegmentViewNode type="page" pagePath="[locale]/s...">
+[32mweb     |[0m           <SegmentTrieNode>
+[32mweb     |[0m           <SignInPage>
+[32mweb     |[0m             <div className="site-frame">
+[32mweb     |[0m               <SiteHeader>
+[32mweb     |[0m               <AuthPage>
+[32mweb     |[0m                 <main className="auth-page" id="main-content">
+[32mweb     |[0m                   <Container>
+[32mweb     |[0m                     <div className="page-conta...">
+[32mweb     |[0m                       <section>
+[32mweb     |[0m                       ...
+[32mweb     |[0m                         <form action={function bound dispatchActionState} className="auth-form">
+[32mweb     |[0m                           <FormMessage>
+[32mweb     |[0m                           <GoogleOrEmail>
+[32mweb     |[0m                           <Field htmlFor="email" label="Email" error={undefined}>
+[32mweb     |[0m                             <div className="field">
+[32mweb     |[0m                               <label>
+[32mweb     |[0m                               <div>
+[32mweb     |[0m                                 <TextInput autoComplete="email" id="email" name="email" placeholder="you@exampl..." ...>
+[32mweb     |[0m                                   <input
+[32mweb     |[0m                                     className={"input "}
+[32mweb     |[0m                                     autoComplete="email"
+[32mweb     |[0m                                     id="email"
+[32mweb     |[0m                                     name="email"
+[32mweb     |[0m                                     placeholder="you@example.com"
+[32mweb     |[0m                                     required={true}
+[32mweb     |[0m                                     type="email"
+[32mweb     |[0m                                     aria-describedby={undefined}
+[32mweb     |[0m                                     aria-invalid={false}
+[32mweb     |[0m -                                   style={{caret-color:"transparent"}}
+[32mweb     |[0m                                   >
+[32mweb     |[0m                           <Field htmlFor="password" label="Password" error={undefined}>
+[32mweb     |[0m                             <div className="field">
+[32mweb     |[0m                               <label>
+[32mweb     |[0m                               <div>
+[32mweb     |[0m                                 <TextInput autoComplete="current-pa..." id="password" name="password" required={true} ...>
+[32mweb     |[0m                                   <input
+[32mweb     |[0m                                     className={"input "}
+[32mweb     |[0m                                     autoComplete="current-password"
+[32mweb     |[0m                                     id="password"
+[32mweb     |[0m                                     name="password"
+[32mweb     |[0m                                     required={true}
+[32mweb     |[0m                                     type="password"
+[32mweb     |[0m                                     aria-describedby={undefined}
+[32mweb     |[0m                                     aria-invalid={false}
+[32mweb     |[0m -                                   style={{caret-color:"transparent"}}
+[32mweb     |[0m                                   >
+[32mweb     |[0m                           ...
+[32mweb     |[0m               ...
+[32mweb     |[0m         ...
+[32mweb     |[0m       ...
+[32mweb     |[0m  
+[36mapi     |[0m  GET /me 401 in 9ms (next.js: 2ms, application-code: 7ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 535ms (next.js: 38ms, proxy.ts: 4ms, generate-params: 0.0ms, application-code: 492ms)
+[36mapi     |[0m  POST /auth/sign-in 429 in 32ms (next.js: 1.6ms, application-code: 31ms)
+[36mapi     |[0m  GET /me 401 in 20ms (next.js: 3ms, application-code: 16ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 3.6s (next.js: 185ms, proxy.ts: 5ms, generate-params: 27ms, application-code: 3.4s)
+[36mapi     |[0m  POST /auth/sign-in 429 in 1372ms (next.js: 5ms, application-code: 1367ms)
+[32mweb     |[0m [?25h
+[32mweb     |[0m npm error Lifecycle script `dev` failed with error:
+[32mweb     |[0m npm error code 143
+[32mweb     |[0m npm error path /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+[32mweb     |[0m npm error workspace @darkview/web@0.1.0
+[32mweb     |[0m npm error location /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+[32mweb     |[0m npm error command failed
+[32mweb     |[0m npm error command sh -c next dev
+
+[1mdev-stack: web exited (code 143); stopping the rest.[0m
+[93mnight   |[0m 2026-10-13 23:01:03,362 INFO darkview.agent: received signal 15
+[93mnight   |[0m 2026-10-13 23:01:03,384 INFO darkview.agent: stopping: parking the mount
+[33magent   |[0m 2026-10-13 23:01:03,362 INFO darkview.agent: received signal 15
+[33magent   |[0m 2026-10-13 23:01:03,397 INFO darkview.agent: stopping: parking the mount
+[36mapi     |[0m [?25h
+[35mrealtime|[0m 11:01:03 PM [tsx] Previous process hasn't exited yet. Force killing...
+[35mrealtime|[0m npm error Lifecycle script `dev` failed with error:
+[35mrealtime|[0m npm error code 143
+[35mrealtime|[0m npm error path /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+[35mrealtime|[0m npm error workspace @darkview/realtime@0.1.0
+[35mrealtime|[0m npm error location /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+[35mrealtime|[0m npm error command failed
+[35mrealtime|[0m npm error command sh -c tsx watch src/server.ts
+dev-stack: all stopped. Containers are still up: npm run dev:stack:down
+dev-stack exited 1

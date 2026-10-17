@@ -1,0 +1,1742 @@
+[
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/\nCall log:\n  - navigating to \"http://localhost:3100/en/\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "pricing",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/pricing\nCall log:\n  - navigating to \"http://localhost:3100/en/pricing\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "observatory",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/observatory\nCall log:\n  - navigating to \"http://localhost:3100/en/observatory\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "status",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/status\nCall log:\n  - navigating to \"http://localhost:3100/en/status\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "terms",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/terms\nCall log:\n  - navigating to \"http://localhost:3100/en/terms\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "privacy",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/privacy\nCall log:\n  - navigating to \"http://localhost:3100/en/privacy\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "refunds",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/refunds\nCall log:\n  - navigating to \"http://localhost:3100/en/refunds\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "sign-in",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/sign-in\nCall log:\n  - navigating to \"http://localhost:3100/en/sign-in\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "register",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/register\nCall log:\n  - navigating to \"http://localhost:3100/en/register\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "reset-password",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/reset-password\nCall log:\n  - navigating to \"http://localhost:3100/en/reset-password\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "verify-email",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/verify-email\nCall log:\n  - navigating to \"http://localhost:3100/en/verify-email\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 390,
+    "route": "not-found",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/not-found\nCall log:\n  - navigating to \"http://localhost:3100/en/not-found\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/\nCall log:\n  - navigating to \"http://localhost:3100/en/\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "pricing",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/pricing\nCall log:\n  - navigating to \"http://localhost:3100/en/pricing\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "observatory",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/observatory\nCall log:\n  - navigating to \"http://localhost:3100/en/observatory\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "status",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/status\nCall log:\n  - navigating to \"http://localhost:3100/en/status\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "terms",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/terms\nCall log:\n  - navigating to \"http://localhost:3100/en/terms\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "privacy",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/privacy\nCall log:\n  - navigating to \"http://localhost:3100/en/privacy\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "refunds",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/refunds\nCall log:\n  - navigating to \"http://localhost:3100/en/refunds\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "sign-in",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/sign-in\nCall log:\n  - navigating to \"http://localhost:3100/en/sign-in\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "register",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/register\nCall log:\n  - navigating to \"http://localhost:3100/en/register\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "reset-password",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/reset-password\nCall log:\n  - navigating to \"http://localhost:3100/en/reset-password\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "verify-email",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/verify-email\nCall log:\n  - navigating to \"http://localhost:3100/en/verify-email\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 768,
+    "route": "not-found",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/not-found\nCall log:\n  - navigating to \"http://localhost:3100/en/not-found\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/\nCall log:\n  - navigating to \"http://localhost:3100/en/\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "pricing",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/pricing\nCall log:\n  - navigating to \"http://localhost:3100/en/pricing\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "observatory",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/observatory\nCall log:\n  - navigating to \"http://localhost:3100/en/observatory\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "status",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/status\nCall log:\n  - navigating to \"http://localhost:3100/en/status\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "terms",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/terms\nCall log:\n  - navigating to \"http://localhost:3100/en/terms\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "privacy",
+    "error": "Page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3100/en/privacy\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "refunds",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/refunds\nCall log:\n  - navigating to \"http://localhost:3100/en/refunds\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "sign-in",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/sign-in\nCall log:\n  - navigating to \"http://localhost:3100/en/sign-in\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "register",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/register\nCall log:\n  - navigating to \"http://localhost:3100/en/register\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "reset-password",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/reset-password\nCall log:\n  - navigating to \"http://localhost:3100/en/reset-password\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "verify-email",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/verify-email\nCall log:\n  - navigating to \"http://localhost:3100/en/verify-email\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "en",
+    "width": 1440,
+    "route": "not-found",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/not-found\nCall log:\n  - navigating to \"http://localhost:3100/en/not-found\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/\nCall log:\n  - navigating to \"http://localhost:3100/ka/\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "pricing",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/pricing\nCall log:\n  - navigating to \"http://localhost:3100/ka/pricing\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "observatory",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/observatory\nCall log:\n  - navigating to \"http://localhost:3100/ka/observatory\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "status",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/status\nCall log:\n  - navigating to \"http://localhost:3100/ka/status\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "terms",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/terms\nCall log:\n  - navigating to \"http://localhost:3100/ka/terms\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "privacy",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/privacy\nCall log:\n  - navigating to \"http://localhost:3100/ka/privacy\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "refunds",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/refunds\nCall log:\n  - navigating to \"http://localhost:3100/ka/refunds\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "sign-in",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/sign-in\nCall log:\n  - navigating to \"http://localhost:3100/ka/sign-in\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "register",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/register\nCall log:\n  - navigating to \"http://localhost:3100/ka/register\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "reset-password",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/reset-password\nCall log:\n  - navigating to \"http://localhost:3100/ka/reset-password\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "verify-email",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/verify-email\nCall log:\n  - navigating to \"http://localhost:3100/ka/verify-email\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 390,
+    "route": "not-found",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/not-found\nCall log:\n  - navigating to \"http://localhost:3100/ka/not-found\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/\nCall log:\n  - navigating to \"http://localhost:3100/ka/\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "pricing",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/pricing\nCall log:\n  - navigating to \"http://localhost:3100/ka/pricing\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "observatory",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/observatory\nCall log:\n  - navigating to \"http://localhost:3100/ka/observatory\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "status",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/status\nCall log:\n  - navigating to \"http://localhost:3100/ka/status\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "terms",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/terms\nCall log:\n  - navigating to \"http://localhost:3100/ka/terms\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "privacy",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/privacy\nCall log:\n  - navigating to \"http://localhost:3100/ka/privacy\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "refunds",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/refunds\nCall log:\n  - navigating to \"http://localhost:3100/ka/refunds\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "sign-in",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/sign-in\nCall log:\n  - navigating to \"http://localhost:3100/ka/sign-in\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "register",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/register\nCall log:\n  - navigating to \"http://localhost:3100/ka/register\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "reset-password",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/reset-password\nCall log:\n  - navigating to \"http://localhost:3100/ka/reset-password\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "verify-email",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/verify-email\nCall log:\n  - navigating to \"http://localhost:3100/ka/verify-email\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 768,
+    "route": "not-found",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/not-found\nCall log:\n  - navigating to \"http://localhost:3100/ka/not-found\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/\nCall log:\n  - navigating to \"http://localhost:3100/ka/\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "pricing",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/pricing\nCall log:\n  - navigating to \"http://localhost:3100/ka/pricing\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "observatory",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/observatory\nCall log:\n  - navigating to \"http://localhost:3100/ka/observatory\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "status",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/status\nCall log:\n  - navigating to \"http://localhost:3100/ka/status\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "terms",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/terms\nCall log:\n  - navigating to \"http://localhost:3100/ka/terms\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "privacy",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/privacy\nCall log:\n  - navigating to \"http://localhost:3100/ka/privacy\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "refunds",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/refunds\nCall log:\n  - navigating to \"http://localhost:3100/ka/refunds\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "sign-in",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/sign-in\nCall log:\n  - navigating to \"http://localhost:3100/ka/sign-in\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "register",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/register\nCall log:\n  - navigating to \"http://localhost:3100/ka/register\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "reset-password",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/reset-password\nCall log:\n  - navigating to \"http://localhost:3100/ka/reset-password\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "verify-email",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/verify-email\nCall log:\n  - navigating to \"http://localhost:3100/ka/verify-email\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "public",
+    "locale": "ka",
+    "width": 1440,
+    "route": "not-found",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/not-found\nCall log:\n  - navigating to \"http://localhost:3100/ka/not-found\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app\nCall log:\n  - navigating to \"http://localhost:3100/en/app\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/collection",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/collection\nCall log:\n  - navigating to \"http://localhost:3100/en/app/collection\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/profile",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/profile\nCall log:\n  - navigating to \"http://localhost:3100/en/app/profile\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/bookings",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/bookings\nCall log:\n  - navigating to \"http://localhost:3100/en/app/bookings\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/book",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/book\nCall log:\n  - navigating to \"http://localhost:3100/en/app/book\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/subscription",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/subscription\nCall log:\n  - navigating to \"http://localhost:3100/en/app/subscription\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/loyalty",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/loyalty\nCall log:\n  - navigating to \"http://localhost:3100/en/app/loyalty\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/passes",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/passes\nCall log:\n  - navigating to \"http://localhost:3100/en/app/passes\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/missions/saturn",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions/saturn\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions/saturn\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 390,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001\nCall log:\n  - navigating to \"http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app\nCall log:\n  - navigating to \"http://localhost:3100/en/app\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/collection",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/collection\nCall log:\n  - navigating to \"http://localhost:3100/en/app/collection\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/profile",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/profile\nCall log:\n  - navigating to \"http://localhost:3100/en/app/profile\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/bookings",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/bookings\nCall log:\n  - navigating to \"http://localhost:3100/en/app/bookings\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/book",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/book\nCall log:\n  - navigating to \"http://localhost:3100/en/app/book\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/subscription",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/subscription\nCall log:\n  - navigating to \"http://localhost:3100/en/app/subscription\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/loyalty",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/loyalty\nCall log:\n  - navigating to \"http://localhost:3100/en/app/loyalty\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/passes",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/passes\nCall log:\n  - navigating to \"http://localhost:3100/en/app/passes\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/missions/saturn",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions/saturn\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions/saturn\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 768,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001\nCall log:\n  - navigating to \"http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app\nCall log:\n  - navigating to \"http://localhost:3100/en/app\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/collection",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/collection\nCall log:\n  - navigating to \"http://localhost:3100/en/app/collection\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/profile",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/profile\nCall log:\n  - navigating to \"http://localhost:3100/en/app/profile\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/bookings",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/bookings\nCall log:\n  - navigating to \"http://localhost:3100/en/app/bookings\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/book",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/book\nCall log:\n  - navigating to \"http://localhost:3100/en/app/book\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/subscription",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/subscription\nCall log:\n  - navigating to \"http://localhost:3100/en/app/subscription\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/loyalty",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/loyalty\nCall log:\n  - navigating to \"http://localhost:3100/en/app/loyalty\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/passes",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/passes\nCall log:\n  - navigating to \"http://localhost:3100/en/app/passes\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/missions/saturn",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions/saturn\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions/saturn\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session\nCall log:\n  - navigating to \"http://localhost:3100/en/app/missions/20000000-0000-4000-8000-000000000001/session\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "en",
+    "width": 1440,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001\nCall log:\n  - navigating to \"http://localhost:3100/en/app/collection/60000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app\nCall log:\n  - navigating to \"http://localhost:3100/ka/app\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/collection",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/collection\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/collection\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/profile",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/profile\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/profile\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/bookings",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/bookings\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/bookings\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/book",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/book\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/book\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/subscription",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/subscription\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/subscription\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/loyalty",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/loyalty\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/loyalty\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/passes",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/passes\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/passes\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/missions/saturn",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions/saturn\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions/saturn\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 390,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/collection/60000000-0000-4000-8000-000000000001\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/collection/60000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app\nCall log:\n  - navigating to \"http://localhost:3100/ka/app\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/collection",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/collection\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/collection\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/profile",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/profile\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/profile\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/bookings",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/bookings\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/bookings\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/book",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/book\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/book\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/subscription",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/subscription\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/subscription\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/loyalty",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/loyalty\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/loyalty\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/passes",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/passes\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/passes\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/missions/saturn",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions/saturn\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions/saturn\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 768,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "error": "Page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/collection/60000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app\nCall log:\n  - navigating to \"http://localhost:3100/ka/app\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/collection",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/collection\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/collection\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/profile",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/profile\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/profile\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/bookings",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/bookings\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/bookings\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/book",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/book\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/book\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/subscription",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/subscription\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/subscription\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/loyalty",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/loyalty\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/loyalty\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/passes",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/passes\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/passes\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/missions/saturn",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions/saturn\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions/saturn\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/missions/20000000-0000-4000-8000-000000000001/session",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/missions/20000000-0000-4000-8000-000000000001/session\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "observer",
+    "locale": "ka",
+    "width": 1440,
+    "route": "app/collection/60000000-0000-4000-8000-000000000001",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/app/collection/60000000-0000-4000-8000-000000000001\nCall log:\n  - navigating to \"http://localhost:3100/ka/app/collection/60000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin\nCall log:\n  - navigating to \"http://localhost:3100/en/admin\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin/control",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/control\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/control\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/missions\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin/targets",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/targets\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/targets\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 390,
+    "route": "admin/logs",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/logs\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/logs\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin\nCall log:\n  - navigating to \"http://localhost:3100/en/admin\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin/control",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/control\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/control\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/missions\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin/targets",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/targets\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/targets\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 768,
+    "route": "admin/logs",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/logs\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/logs\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin\nCall log:\n  - navigating to \"http://localhost:3100/en/admin\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin/control",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/control\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/control\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/missions\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin/targets",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/targets\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/targets\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "en",
+    "width": 1440,
+    "route": "admin/logs",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/en/admin/logs\nCall log:\n  - navigating to \"http://localhost:3100/en/admin/logs\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin/control",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/control\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/control\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/missions\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin/targets",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/targets\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/targets\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 390,
+    "route": "admin/logs",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/logs\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/logs\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin/control",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/control\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/control\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/missions\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin/targets",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/targets\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/targets\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 768,
+    "route": "admin/logs",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/logs\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/logs\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin/control",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/control\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/control\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin/missions",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/missions\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/missions\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin/targets",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/targets\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/targets\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  {
+    "role": "operator",
+    "locale": "ka",
+    "width": 1440,
+    "route": "admin/logs",
+    "error": "Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3100/ka/admin/logs\nCall log:\n  - navigating to \"http://localhost:3100/ka/admin/logs\", waiting until \"domcontentloaded\"\n",
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  }
+]

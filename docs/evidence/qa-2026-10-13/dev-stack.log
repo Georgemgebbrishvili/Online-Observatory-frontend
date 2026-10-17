@@ -1,0 +1,249 @@
+
+> darkview-clients@0.1.0 dev:stack
+> node scripts/dev-stack.mjs
+
+dev-stack: platform HEAD 26511620e4459eb4373483fb20eba7a0ed1bfcff matches the synced contract
+ Container darkview-dev-storage-1 Running 
+ Container darkview-dev-postgres-1 Running 
+ Container darkview-dev-storage-1 Waiting 
+ Container darkview-dev-postgres-1 Waiting 
+ Container darkview-dev-storage-1 Healthy 
+ Container darkview-dev-postgres-1 Healthy 
+ Container darkview-dev-storage-1 Running 
+ Container darkview-dev-storage-1 Waiting 
+ Container darkview-dev-storage-1 Healthy 
+ Container darkview-dev-storage-bucket-run-e9d18c1615bf Creating 
+ Container darkview-dev-storage-bucket-run-e9d18c1615bf Created 
+[34mmail    |[0m listening on 127.0.0.1:4010
+[36mapi     |[0m 
+[36mapi     |[0m > @darkview/api@0.1.0 dev
+[36mapi     |[0m > next dev --port 4000
+[36mapi     |[0m 
+[35mrealtime|[0m 
+[35mrealtime|[0m > @darkview/realtime@0.1.0 dev
+[35mrealtime|[0m > tsx watch src/server.ts
+[35mrealtime|[0m 
+[36mapi     |[0m ▲ Next.js 16.4.0 (Turbopack)
+[36mapi     |[0m - Local:         http://localhost:4000
+[36mapi     |[0m - Network:       http://192.168.1.204:4000
+[36mapi     |[0m ✓ Ready in 5.6s
+[36mapi     |[0m ✓ Running next.config.ts took 862ms
+[35mrealtime|[0m darkview realtime: OPEN_METEO_API_KEY is not set; forecasts use the non-commercial endpoint
+[35mrealtime|[0m darkview realtime: NOTIFICATION_WEBHOOK_URL is not set; emails are queued and not sent
+[35mrealtime|[0m darkview realtime listening on :4001/ws/agent
+[36mapi     |[0m 
+[36mapi     |[0m  GET /health 200 in 1718ms (next.js: 1570ms, application-code: 147ms)
+[32mweb     |[0m 
+[32mweb     |[0m > darkview-clients@0.1.0 dev
+[32mweb     |[0m > npm run dev --workspace @darkview/web
+[32mweb     |[0m 
+[32mweb     |[0m 
+[32mweb     |[0m > @darkview/web@0.1.0 dev
+[32mweb     |[0m > next dev
+[32mweb     |[0m 
+[93mnight   |[0m 2026-10-13 23:06:05,334 INFO darkview.agent: agent starting: driver_mode=SIMULATED attended=False
+[93mnight   |[0m 2026-10-13 23:06:05,335 WARNING darkview.agent: safety envelope: UNMEASURED — every slew will be refused with SAFETY_ENVELOPE_UNMEASURED until MAX_ALT_SAFE is measured
+[93mnight   |[0m 2026-10-13 23:06:05,350 INFO darkview.agent: local state: /Users/nika/Desktop/Stellar Observatory/part-2-clients/dev/.state/night-agent-state.sqlite3
+[93mnight   |[0m 2026-10-13 23:06:05,355 INFO darkview.agent.supervisor: recovered the measured safety envelope from local state
+[93mnight   |[0m 2026-10-13 23:06:05,370 INFO darkview.agent: agent running; watchdog thread up
+[33magent   |[0m 2026-10-13 23:06:05,421 INFO darkview.agent: agent starting: driver_mode=SIMULATED attended=False
+[33magent   |[0m 2026-10-13 23:06:05,422 WARNING darkview.agent: safety envelope: UNMEASURED — every slew will be refused with SAFETY_ENVELOPE_UNMEASURED until MAX_ALT_SAFE is measured
+[33magent   |[0m 2026-10-13 23:06:05,441 INFO darkview.agent: local state: /Users/nika/Desktop/Stellar Observatory/part-2-clients/dev/.state/agent-state.sqlite3
+[33magent   |[0m 2026-10-13 23:06:05,452 INFO darkview.agent.supervisor: recovered the measured safety envelope from local state
+[33magent   |[0m 2026-10-13 23:06:05,472 INFO darkview.agent: agent running; watchdog thread up
+[93mnight   |[0m 2026-10-13 23:06:06,966 INFO darkview.agent.link: link online: heartbeat every 5.0s, 0 queued message(s) to replay
+[33magent   |[0m 2026-10-13 23:06:07,251 INFO darkview.agent.link: link online: heartbeat every 5.0s, 0 queued message(s) to replay
+[93mnight   |[0m 2026-10-13 23:06:07,748 INFO darkview.agent.supervisor: safety envelope updated: MEASURED
+[33magent   |[0m 2026-10-13 23:06:08,281 INFO darkview.agent.supervisor: safety envelope updated: MEASURED
+[32mweb     |[0m ▲ Next.js 16.4.0 (Turbopack)
+[32mweb     |[0m - Local:         http://localhost:3000
+[32mweb     |[0m - Network:       http://192.168.1.204:3000
+[32mweb     |[0m ✓ Ready in 14.9s
+[32mweb     |[0m ✓ Running next.config.ts took 2.4s
+[32mweb     |[0m ○ Compiling proxy ...
+[32mweb     |[0m 
+[32mweb     |[0m ○ Compiling /[locale] ...
+[32mweb     |[0m ✓ Finished filesystem cache database compaction in 28.7s
+[36mapi     |[0m ○ Compiling /observatories ...
+
+[32mdev-stack: up. Open http://localhost:3000 (not 127.0.0.1).[0m
+
+[32mweb     |[0m  GET /en 200 in 102s (next.js: 43s, proxy.ts: 8.9s, generate-params: 20.9s, application-code: 29.2s)
+[36mapi     |[0m  GET /observatories 200 in 17.4s (next.js: 3.3s, application-code: 14.1s)
+[36mapi     |[0m  GET /observatories 200 in 1359ms (next.js: 332ms, application-code: 1027ms)
+[36mapi     |[0m  GET /observatories 200 in 4.8s (next.js: 1.8ms, application-code: 4.8s)
+[36mapi     |[0m  GET /observatories 200 in 6.5s (next.js: 10ms, application-code: 6.5s)
+[36mapi     |[0m ○ Compiling /targets/tonight ...
+[32mweb     |[0m  GET /en 200 in 23.0s (next.js: 637ms, proxy.ts: 856ms, generate-params: 23ms, application-code: 21.5s)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 3.2s
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 11.2s (next.js: 6.7s, application-code: 4.5s)
+[32mweb     |[0m ○ Compiling /[locale]/register ...
+[32mweb     |[0m  GET /en/register 200 in 19.4s (proxy.ts: 16ms)
+[36mapi     |[0m  GET /me 401 in 4.6s (next.js: 3.4s, application-code: 1161ms)
+[36mapi     |[0m  GET /me 401 in 35ms (next.js: 6ms, application-code: 30ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 19.2s (next.js: 1882ms, proxy.ts: 115ms, generate-params: 11.8s, application-code: 5.4s)
+[36mapi     |[0m  GET /me 401 in 13ms (next.js: 4ms, application-code: 9ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 5.9s (next.js: 850ms, proxy.ts: 176ms, generate-params: 16ms, application-code: 4.9s)
+[36mapi     |[0m  GET /me 401 in 11ms (next.js: 3ms, application-code: 9ms)
+[32mweb     |[0m  GET /ka/register 200 in 1354ms (next.js: 20ms, proxy.ts: 9ms, generate-params: 19ms, application-code: 1306ms)
+[36mapi     |[0m  GET /auth/google/start?locale=en 303 in 238ms (next.js: 195ms, application-code: 42ms)
+[36mapi     |[0m  GET /me 401 in 12ms (next.js: 4ms, application-code: 8ms)
+[32mweb     |[0m  GET /en/sign-in?error=google 200 in 1492ms (next.js: 30ms, proxy.ts: 5ms, generate-params: 4ms, application-code: 1453ms)
+[32mweb     |[0m [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[32mweb     |[0m 
+[32mweb     |[0m - A server/client branch `if (typeof window !== 'undefined')`.
+[32mweb     |[0m - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[32mweb     |[0m - Date formatting in a user's locale which doesn't match the server.
+[32mweb     |[0m - External changing data without sending a snapshot of it along with the HTML.
+[32mweb     |[0m - Invalid HTML tag nesting.
+[32mweb     |[0m 
+[32mweb     |[0m It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[32mweb     |[0m 
+[32mweb     |[0m https://react.dev/link/hydration-mismatch
+[32mweb     |[0m 
+[32mweb     |[0m   ...
+[32mweb     |[0m     <RedirectErrorBoundary router={{...}}>
+[32mweb     |[0m       <InnerLayoutRouter url="/en/sign-i..." tree={[...]} params={{locale:"en"}} renderTree={{...}} segmentPath={[...]} ...>
+[32mweb     |[0m         <SegmentViewNode type="page" pagePath="[locale]/s...">
+[32mweb     |[0m           <SegmentTrieNode>
+[32mweb     |[0m           <SignInPage>
+[32mweb     |[0m             <div className="site-frame">
+[32mweb     |[0m               <SiteHeader>
+[32mweb     |[0m               <AuthPage>
+[32mweb     |[0m                 <main className="auth-page" id="main-content">
+[32mweb     |[0m                   <Container>
+[32mweb     |[0m                     <div className="page-conta...">
+[32mweb     |[0m                       <section>
+[32mweb     |[0m                       ...
+[32mweb     |[0m                         <form action={function bound dispatchActionState} className="auth-form">
+[32mweb     |[0m                           <FormMessage>
+[32mweb     |[0m                           <GoogleOrEmail>
+[32mweb     |[0m                           <Field htmlFor="email" label="Email" error={undefined}>
+[32mweb     |[0m                             <div className="field">
+[32mweb     |[0m                               <label>
+[32mweb     |[0m                               <div>
+[32mweb     |[0m                                 <TextInput autoComplete="email" id="email" name="email" placeholder="you@exampl..." ...>
+[32mweb     |[0m                                   <input
+[32mweb     |[0m                                     className={"input "}
+[32mweb     |[0m                                     autoComplete="email"
+[32mweb     |[0m                                     id="email"
+[32mweb     |[0m                                     name="email"
+[32mweb     |[0m                                     placeholder="you@example.com"
+[32mweb     |[0m                                     required={true}
+[32mweb     |[0m                                     type="email"
+[32mweb     |[0m                                     aria-describedby={undefined}
+[32mweb     |[0m                                     aria-invalid={false}
+[32mweb     |[0m -                                   style={{caret-color:"transparent"}}
+[32mweb     |[0m                                   >
+[32mweb     |[0m                           <Field htmlFor="password" label="Password" error={undefined}>
+[32mweb     |[0m                             <div className="field">
+[32mweb     |[0m                               <label>
+[32mweb     |[0m                               <div>
+[32mweb     |[0m                                 <TextInput autoComplete="current-pa..." id="password" name="password" required={true} ...>
+[32mweb     |[0m                                   <input
+[32mweb     |[0m                                     className={"input "}
+[32mweb     |[0m                                     autoComplete="current-password"
+[32mweb     |[0m                                     id="password"
+[32mweb     |[0m                                     name="password"
+[32mweb     |[0m                                     required={true}
+[32mweb     |[0m                                     type="password"
+[32mweb     |[0m                                     aria-describedby={undefined}
+[32mweb     |[0m                                     aria-invalid={false}
+[32mweb     |[0m -                                   style={{caret-color:"transparent"}}
+[32mweb     |[0m                                   >
+[32mweb     |[0m                           ...
+[32mweb     |[0m               ...
+[32mweb     |[0m         ...
+[32mweb     |[0m       ...
+[32mweb     |[0m  
+[36mapi     |[0m  GET /me 401 in 8ms (next.js: 0.9ms, application-code: 7ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 601ms (next.js: 8ms, proxy.ts: 9ms, generate-params: 4ms, application-code: 580ms)
+[36mapi     |[0m  POST /auth/sign-in 200 in 617ms (next.js: 140ms, application-code: 477ms)
+[36mapi     |[0m  GET /me 200 in 30ms (next.js: 5ms, application-code: 25ms)
+[36mapi     |[0m  GET /me 200 in 46ms (next.js: 0.9ms, application-code: 45ms)
+[36mapi     |[0m  GET /observatories 200 in 481ms (next.js: 3ms, application-code: 478ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 540ms (next.js: 47ms, application-code: 493ms)
+[36mapi     |[0m  GET /observatories 200 in 563ms (next.js: 3ms, application-code: 560ms)
+[36mapi     |[0m  GET /captures?limit=3 200 in 258ms (next.js: 133ms, application-code: 125ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 524ms (next.js: 147ms, application-code: 378ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 63ms (next.js: 1.0ms, application-code: 62ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 146ms (next.js: 1.0ms, application-code: 145ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 293ms (next.js: 15ms, application-code: 279ms)
+[32mweb     |[0m  GET /en/app 200 in 4.0s (next.js: 773ms, proxy.ts: 11ms, generate-params: 1033ms, application-code: 2.2s)
+[36mapi     |[0m  GET /me 200 in 32ms (next.js: 0.9ms, application-code: 31ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 533ms (next.js: 15ms, proxy.ts: 10ms, generate-params: 3ms, application-code: 506ms)
+[36mapi     |[0m  GET /me 200 in 21ms (next.js: 0.9ms, application-code: 20ms)
+[36mapi     |[0m  GET /me 200 in 23ms (next.js: 1.3ms, application-code: 22ms)
+[36mapi     |[0m  GET /observatories 200 in 32ms (next.js: 1.0ms, application-code: 31ms)
+[36mapi     |[0m  GET /observatories 200 in 43ms (next.js: 2ms, application-code: 40ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 26ms (next.js: 1.0ms, application-code: 25ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 67ms (next.js: 1.1ms, application-code: 66ms)
+[36mapi     |[0m  GET /captures?limit=3 200 in 52ms (next.js: 1.2ms, application-code: 50ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 139ms (next.js: 1.3ms, application-code: 138ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 248ms (next.js: 1.7ms, application-code: 247ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 535ms (next.js: 5ms, application-code: 530ms)
+[32mweb     |[0m  GET /en/app 200 in 2.6s (next.js: 36ms, proxy.ts: 12ms, generate-params: 8ms, application-code: 2.6s)
+[36mapi     |[0m  GET /me 200 in 163ms (next.js: 1.0ms, application-code: 162ms)
+[32mweb     |[0m  GET /ka/sign-in 200 in 493ms (next.js: 8ms, proxy.ts: 7ms, generate-params: 7ms, application-code: 471ms)
+[36mapi     |[0m  GET /me 200 in 45ms (next.js: 0.8ms, application-code: 44ms)
+[36mapi     |[0m  GET /me 200 in 63ms (next.js: 0.6ms, application-code: 62ms)
+[36mapi     |[0m  GET /observatories 200 in 272ms (next.js: 0.9ms, application-code: 271ms)
+[36mapi     |[0m  GET /observatories 200 in 335ms (next.js: 2ms, application-code: 333ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 314ms (next.js: 1.2ms, application-code: 313ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 816ms (next.js: 1.0ms, application-code: 815ms)
+[36mapi     |[0m  GET /captures?limit=3 200 in 853ms (next.js: 0.8ms, application-code: 852ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 618ms (next.js: 0.9ms, application-code: 617ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 872ms (next.js: 1.0ms, application-code: 871ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 865ms (next.js: 9ms, application-code: 856ms)
+[32mweb     |[0m  GET /ka/app 200 in 2.1s (next.js: 18ms, proxy.ts: 6ms, generate-params: 5ms, application-code: 2.0s)
+[36mapi     |[0m  GET /me 401 in 16ms (next.js: 0.9ms, application-code: 16ms)
+[32mweb     |[0m  GET /en/sign-in 200 in 826ms (next.js: 20ms, proxy.ts: 9ms, generate-params: 4ms, application-code: 793ms)
+[36mapi     |[0m  POST /auth/sign-in 200 in 746ms (next.js: 1.4ms, application-code: 744ms)
+[36mapi     |[0m  GET /me 200 in 28ms (next.js: 1.2ms, application-code: 27ms)
+[36mapi     |[0m  GET /me 200 in 23ms (next.js: 3ms, application-code: 20ms)
+[36mapi     |[0m  GET /observatories 200 in 374ms (next.js: 4ms, application-code: 370ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 530ms (next.js: 1.2ms, application-code: 529ms)
+[36mapi     |[0m  GET /captures?limit=3 200 in 805ms (next.js: 1.0ms, application-code: 804ms)
+[36mapi     |[0m  GET /observatories 200 in 1351ms (next.js: 1.2ms, application-code: 1350ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 325ms (next.js: 2ms, application-code: 323ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 1005ms (next.js: 13ms, application-code: 992ms)
+[36mapi     |[0m  GET /targets/tonight?observatoryId=00000000-0000-4000-8000-000000000010 200 in 1103ms (next.js: 6ms, application-code: 1097ms)
+[36mapi     |[0m  GET /missions?limit=100 200 in 1782ms (next.js: 1.1ms, application-code: 1781ms)
+[32mweb     |[0m  GET /en/app 200 in 3.3s (next.js: 27ms, proxy.ts: 16ms, generate-params: 4ms, application-code: 3.3s)
+[36mapi     |[0m  GET /me 200 in 23ms (next.js: 0.7ms, application-code: 22ms)
+[36mapi     |[0m  GET /me 200 in 29ms (next.js: 0.8ms, application-code: 28ms)
+[36mapi     |[0m  GET /observatories 200 in 118ms (next.js: 1.2ms, application-code: 117ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 143ms (next.js: 10ms, application-code: 133ms)
+[36mapi     |[0m  GET /slots?observatoryId=00000000-0000-4000-8000-000000000010&date=2026-10-13 200 in 236ms (next.js: 82ms, application-code: 154ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 19ms (next.js: 1.7ms, application-code: 18ms)
+[36mapi     |[0m  GET /bookings?limit=20 200 in 184ms (next.js: 135ms, application-code: 49ms)
+[32mweb     |[0m  GET /en/app/book 200 in 5.8s (next.js: 911ms, proxy.ts: 74ms, generate-params: 2.1s, application-code: 2.7s)
+[36mapi     |[0m  GET /me 200 in 100ms (next.js: 4ms, application-code: 96ms)
+[32mweb     |[0m  GET /en/app/bookings 200 in 3.8s (next.js: 421ms, proxy.ts: 18ms, generate-params: 2.5s, application-code: 783ms)
+[36mapi     |[0m  GET /me 200 in 141ms (next.js: 1.1ms, application-code: 140ms)
+[36mapi     |[0m  GET /me 200 in 180ms (next.js: 0.9ms, application-code: 179ms)
+[36mapi     |[0m  GET /observatories 200 in 76ms (next.js: 1.0ms, application-code: 75ms)
+[36mapi     |[0m  GET /slots?observatoryId=00000000-0000-4000-8000-000000000010&date=2026-10-13 200 in 494ms (next.js: 0.9ms, application-code: 493ms)
+[36mapi     |[0m  GET /observatories/00000000-0000-4000-8000-000000000010/state 200 in 1107ms (next.js: 25ms, application-code: 1082ms)
+[36mapi     |[0m  GET /targets?limit=100 200 in 204ms (next.js: 0.9ms, application-code: 203ms)
+[36mapi     |[0m  GET /bookings?limit=20 200 in 620ms (next.js: 0.8ms, application-code: 619ms)
+[32mweb     |[0m  GET /en/app/book 200 in 7.2s (next.js: 39ms, proxy.ts: 6ms, generate-params: 51ms, application-code: 7.1s)
+[93mnight   |[0m 2026-10-13 23:20:19,309 WARNING darkview.agent.link: link down (peer closed the connection); retrying in 1.0s
+[93mnight   |[0m 2026-10-13 23:20:20,597 INFO darkview.agent.link: link online: heartbeat every 5.0s, 0 queued message(s) to replay
+[93mnight   |[0m 2026-10-13 23:20:20,598 INFO darkview.agent.supervisor: safety envelope updated: MEASURED
+
+[1mdev-stack: SIGTERM; stopping.[0m
+[93mnight   |[0m 2026-10-13 23:30:04,032 INFO darkview.agent: received signal 15
+[93mnight   |[0m 2026-10-13 23:30:04,033 INFO darkview.agent: stopping: parking the mount
+[33magent   |[0m 2026-10-13 23:30:04,032 INFO darkview.agent: received signal 15
+[33magent   |[0m 2026-10-13 23:30:04,034 INFO darkview.agent: stopping: parking the mount
+[35mrealtime|[0m npm error Lifecycle script `dev` failed with error:
+[35mrealtime|[0m npm error code 143
+[35mrealtime|[0m npm error path /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+[35mrealtime|[0m npm error workspace @darkview/realtime@0.1.0
+[35mrealtime|[0m npm error location /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+[35mrealtime|[0m npm error command failed
+[35mrealtime|[0m npm error command sh -c tsx watch src/server.ts
+[32mweb     |[0m [?25h
+[36mapi     |[0m [?25h
+dev-stack: all stopped. Containers are still up: npm run dev:stack:down

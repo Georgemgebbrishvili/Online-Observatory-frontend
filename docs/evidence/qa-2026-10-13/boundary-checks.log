@@ -1,0 +1,36 @@
+=== part two: prisma / @darkview/db imports
+(none above = clean)
+
+=== part two: secret-looking names in source
+apps/web/src/components/room/mission-watch.test.tsx:275:      .mockResolvedValueOnce(answer(402, refusal("PAYMENT_REQUIRED")))
+apps/web/src/components/room/mission-watch.test.tsx:276:      .mockResolvedValueOnce(answer(402, refusal("PAYMENT_REQUIRED")))
+apps/web/src/components/room/mission-watch.test.tsx:301:    fetchMock.mockImplementation(async () => answer(402, refusal("PAYMENT_REQUIRED")));
+apps/web/src/i18n/resources/room.ts:350:    PAYMENT_FAILED: "The payment did not go through.",
+apps/web/src/i18n/resources/room.ts:607:    PAYMENT_FAILED: "გადახდა ვერ შესრულდა.",
+(none above = clean)
+
+=== part two: env vars read
+   2 process.env.NODE_ENV
+   2 process.env.DARKVIEW_STORAGE_ORIGIN
+   1 process.env.UPDATE_CONTRAST
+   1 process.env.DARKVIEW_REALTIME_URL
+   1 process.env.DARKVIEW_PLATFORM_API_URL
+   1 process.env.APP_URL
+
+=== part two: mount/camera addressing outside tests and copy
+(none = clean)
+
+=== part one: alpaca bind / base url
+../part-1-platform/agent/darkview_agent/devices/base.py:11:Real implementations arrive in DV-028 (AlpacaMount), DV-029 (ZwoCamera) and
+../part-1-platform/agent/darkview_agent/devices/alpaca.py:9:listener at the observatory -- the ASCOM Remote / Alpaca bridge on `127.0.0.1` --
+../part-1-platform/agent/darkview_agent/devices/alpaca.py:87:            f"Alpaca host {host!r} is not a literal IP address. The bridge is reached on "
+../part-1-platform/agent/darkview_agent/devices/alpaca.py:92:            f"Alpaca host {host} is not a loopback address. The Alpaca bridge listens on "
+../part-1-platform/agent/darkview_agent/devices/alpaca.py:116:            raise DeviceError(f"Alpaca bridge at {host}:{port} did not answer: {error}") from None
+../part-1-platform/agent/tests/test_alpaca_mount.py:39:@pytest.mark.parametrize("host", ["192.168.1.20", "0.0.0.0", "10.0.0.5", "localhost", ""])
+../part-1-platform/agent/tests/test_link_no_listening_ports.py:120:        "import socket\ns = socket.socket()\ns.bind(('0.0.0.0', 8080))\ns.listen(5)\n",
+
+=== both: sharpcap / obs / screen capture
+(none = clean)
+
+=== both: no shared source paths
+(no CONFLICT = clean)

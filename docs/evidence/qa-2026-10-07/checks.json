@@ -1,0 +1,107 @@
+[
+  {
+    "part": "clients",
+    "command": "npm run contracts:check",
+    "exit": 0,
+    "seconds": 12.3,
+    "log": "clients-contracts-check.log"
+  },
+  {
+    "part": "clients",
+    "command": "npm run lint",
+    "exit": 0,
+    "seconds": 191.5,
+    "log": "clients-lint.log"
+  },
+  {
+    "part": "clients",
+    "command": "npm run typecheck",
+    "exit": 0,
+    "seconds": 52.1,
+    "log": "clients-typecheck.log"
+  },
+  {
+    "part": "clients",
+    "command": "npm run test",
+    "exit": 1,
+    "seconds": 2852.2,
+    "log": "clients-test.log"
+  },
+  {
+    "part": "clients",
+    "command": "npm run build",
+    "exit": 0,
+    "seconds": 330.6,
+    "log": "clients-build.log"
+  },
+  {
+    "part": "clients",
+    "command": "npm run format:check",
+    "exit": 1,
+    "seconds": 182.0,
+    "log": "clients-format-check.log"
+  },
+  {
+    "part": "platform",
+    "command": "npm run contracts:check",
+    "exit": 0,
+    "seconds": 24.2,
+    "log": "platform-contracts-check.log"
+  },
+  {
+    "part": "platform",
+    "command": "npm run lint",
+    "exit": 0,
+    "seconds": 5098.6,
+    "log": "platform-lint.log"
+  },
+  {
+    "part": "platform",
+    "command": "npm run typecheck",
+    "exit": 0,
+    "seconds": 5108.5,
+    "log": "platform-typecheck.log"
+  },
+  {
+    "part": "platform",
+    "command": "npm run test",
+    "exit": 1,
+    "seconds": 3327.9,
+    "log": "platform-test.log"
+  },
+  {
+    "part": "platform",
+    "command": "npm run build",
+    "exit": 0,
+    "seconds": 739.4,
+    "log": "platform-build.log"
+  },
+  {
+    "part": "platform",
+    "command": "npm run format:check",
+    "exit": 1,
+    "seconds": 734.7,
+    "log": "platform-format-check.log"
+  },
+  {
+    "part": "clients",
+    "command": "npm run css:check",
+    "exit": 0,
+    "seconds": 2.0,
+    "log": "clients-css-check.log"
+  },
+  {
+    "part": "platform",
+    "command": "npm run test:agent",
+    "exit": 0,
+    "seconds": 1198.6,
+    "log": "platform-test-agent.log"
+  },
+  {
+    "part": "platform",
+    "command": "npm run lint:agent",
+    "exit": 0,
+    "seconds": 17.4,
+    "log": "platform-lint-agent.log"
+  }
+]

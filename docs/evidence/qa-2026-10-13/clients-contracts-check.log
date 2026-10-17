@@ -1,0 +1,10 @@
+
+> darkview-clients@0.1.0 contracts:check
+> node scripts/contracts-check.mjs
+
+[90m@hey-api/openapi-ts v0.99.0[39m
+
+[90m[Job 1] [39m[90m~[39m [36mGenerating...[39m
+[90m[Job 1] [39m[36m  [1] [39m./openapi.yaml
+[90m[Job 1] [39m[32m✓[39m [96m./../../../../../var/folders/dj/vyjd0jbn3834krsk7npzn05r0000gn/T/darkview-contracts-2YnKsG[39m [90m· 3 files · 1s[39m
+contracts: 3 generated artifacts match the pinned contract

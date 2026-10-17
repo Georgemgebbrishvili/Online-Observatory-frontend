@@ -1,0 +1,26 @@
+{
+  "dimensions": {
+    "clientWidth": 358,
+    "scrollWidth": 713
+  },
+  "reached": true,
+  "stops": [
+    {
+      "tag": "A",
+      "className": "skip-link"
+    },
+    {
+      "tag": "A",
+      "className": "brand-link"
+    },
+    {
+      "tag": "BUTTON",
+      "className": "public-menu-button"
+    },
+    {
+      "tag": "DIV",
+      "className": "status-table-scroll"
+    }
+  ],
+  "prototype": null
+}

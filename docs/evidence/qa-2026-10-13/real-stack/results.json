@@ -1,0 +1,101 @@
+[
+  {
+    "group": "auth",
+    "check": "register a new address",
+    "passed": false,
+    "error": "page.goto: Timeout 20000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3000/en/register\", waiting until \"load\"\n"
+  },
+  {
+    "group": "auth",
+    "check": "verification link from the mail sink signs the address in",
+    "passed": false,
+    "note": "no verify-email link in dev-stack.log"
+  },
+  {
+    "group": "auth",
+    "check": "sign out from the app bar returns to sign-in",
+    "passed": false,
+    "error": "page.goto: Timeout 20000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3000/en/app\", waiting until \"load\"\n"
+  },
+  {
+    "group": "auth",
+    "check": "Continue with Google is present and routed on sign-in and register",
+    "passed": true,
+    "en": "/api/auth/google/start?locale=en",
+    "ka": "/api/auth/google/start?locale=ka"
+  },
+  {
+    "group": "auth",
+    "check": "Google start without a configured client fails closed",
+    "passed": true,
+    "status": 200,
+    "url": "http://localhost:3000/en/sign-in?error=google",
+    "alertText": "Google sign-in did not complete. Try again, or use your email and password.",
+    "shot": "shots/auth-google-start.png",
+    "note": "records what the platform does with no Google client; see platform env"
+  },
+  {
+    "group": "auth",
+    "check": "demo observer signs in",
+    "passed": true,
+    "cookies": [
+      "darkview_csrf",
+      "darkview_session"
+    ],
+    "shot": "shots/app-home-en-1440.png"
+  },
+  {
+    "group": "auth",
+    "check": "wrong password is refused with the localized alert",
+    "passed": false,
+    "error": "locator.fill: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByLabel('Email')\n"
+  },
+  {
+    "group": "auth",
+    "check": "wrong password, Georgian",
+    "passed": false,
+    "error": "locator.fill: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByLabel('ელფოსტა')\n    - waiting for \"http://localhost:3000/ka/app\" navigation to finish...\n    - navigated to \"http://localhost:3000/ka/app\"\n"
+  },
+  {
+    "group": "book",
+    "check": "slots are offered on /en/app/book",
+    "passed": false,
+    "rows": 6,
+    "bookable": 0,
+    "nights": [
+      "Tue 13 Oct",
+      "Wed 14 Oct",
+      "Thu 15 Oct",
+      "Fri 16 Oct",
+      "Sat 17 Oct",
+      "Sun 18 Oct",
+      "Mon 19 Oct"
+    ],
+    "shot": "shots/book-en-1440.png"
+  },
+  {
+    "group": "book",
+    "check": "reserve the first bookable slot and reach the sandbox checkout",
+    "passed": false,
+    "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n  - waiting for locator('.slot-row').getByRole('link').first()\n"
+  },
+  {
+    "group": "book",
+    "check": "sandbox payment confirms the booking",
+    "passed": false,
+    "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Pay' })\n"
+  },
+  {
+    "group": "book",
+    "check": "the booking appears in Book / bookings",
+    "passed": false,
+    "rows": 0,
+    "shot": "shots/bookings-en-1440.png"
+  },
+  {
+    "group": "book",
+    "check": "the booking page in Georgian",
+    "passed": false,
+    "error": "Cannot read properties of null (reading 'replace')"
+  }
+]

@@ -1,0 +1,5 @@
+
+> darkview-platform@0.1.0 lint:agent
+> agent/.venv/bin/ruff check agent
+
+All checks passed!

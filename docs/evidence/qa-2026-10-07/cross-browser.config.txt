@@ -1,0 +1,2 @@
+import original from './apps/web/playwright.config.ts';
+export default {...original,testDir:'/work',outputDir:'/work/qa-cross-browser-results',projects:[{name:'setup',testMatch:/apps\/web\/e2e\/auth.setup.ts/,use:{browserName:'chromium'}},...['firefox','webkit'].map(browserName=>({name:browserName,testMatch:/qa-cross-browser\/smoke.spec.ts/,dependencies:['setup'],use:{browserName,storageState:'e2e/.auth/observer.json'}}))],webServer:(original.webServer as any[]).map(s=>({...s,cwd:'/work/apps/web',timeout:300000}))};

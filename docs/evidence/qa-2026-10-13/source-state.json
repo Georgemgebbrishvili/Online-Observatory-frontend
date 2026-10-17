@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-13T14:12:14.955Z",
+  "partTwo": {
+    "head": "fec347b125393a5a60e494c5a71e9142fc241d01",
+    "status": "?? docs/evidence/qa-2026-10-07/\n?? docs/evidence/qa-2026-10-13/\n?? docs/test-audit-2026-10-07.md",
+    "headMovedDuringAudit": {
+      "from": "fec347b125393a5a60e494c5a71e9142fc241d01",
+      "to": "71c0fdf88553ddaa7ffaeced8d48f17e2265f5c9",
+      "subject": "fix(web): one h1 on the design system, and a still sky under the visual gate",
+      "committedAt": "2026-10-13T19:37:50+04:00",
+      "note": "Static, unit and the four-worker browser run tested fec347b (the uncommitted edits of this commit appeared in the tree at 18:17 local, mid-run). The one-worker browser run, the visual gate, the real-stack checks and the part two static/unit rerun test 71c0fdf."
+    }
+  },
+  "partOne": {
+    "head": "26511620e4459eb4373483fb20eba7a0ed1bfcff",
+    "status": ""
+  },
+  "node": "v24.14.1",
+  "python": "Python 3.12.14",
+  "chrome": "Google Chrome 155.0.8059.40",
+  "contractSource": {
+    "ref": "26511620e4459eb4373483fb20eba7a0ed1bfcff",
+    "commit": "26511620e4459eb4373483fb20eba7a0ed1bfcff",
+    "sha256": "1b28f29365e49da9574b5c0595df94c0b82ff7da59f51b5e6576673416b2b98f",
+    "syncedAt": "2026-10-09T17:15:49.212Z"
+  },
+  "workingTreeChangedDuringAudit": {
+    "noticedAt": "2026-10-13T14:59Z",
+    "files": {
+      "apps/web/e2e/visual.css": "2026-10-13 18:17:21 +04",
+      "apps/web/src/app/[locale]/design-system/page.tsx": "2026-10-13 18:17:21 +04",
+      "apps/web/src/components/home/sky-hero.tsx": "2026-10-13 18:17:21 +04",
+      "apps/web/e2e/visual.spec.ts-snapshots/en-home-1440-visual-linux.png": "2026-10-13 18:28:54 +04",
+      "apps/web/e2e/visual.spec.ts-snapshots/ka-home-1440-visual-linux.png": "2026-10-13 18:28:54 +04"
+    },
+    "byThisAudit": false,
+    "patch": "working-tree-changes-during-audit.patch"
+  }
+}

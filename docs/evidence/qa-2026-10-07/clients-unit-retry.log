@@ -1,0 +1,13 @@
+
+> @darkview/web@0.1.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+
+
+ Test Files  46 passed (46)
+      Tests  261 passed (261)
+   Start at  19:03:34
+   Duration  1069.27s (transform 6.06s, setup 158.96s, import 49.53s, tests 77.48s, environment 667.01s)
+

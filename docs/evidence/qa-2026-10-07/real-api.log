@@ -1,0 +1,16 @@
+
+> @darkview/api@0.1.0 start
+> next start --port 4000
+
+▲ Next.js 16.3.4
+- Local:         http://localhost:4000
+- Network:       http://192.168.1.204:4000
+✓ Ready in 7.1s
+✓ Running next.config.ts took 3.0s
+npm error Lifecycle script `start` failed with error:
+npm error code 143
+npm error path /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api
+npm error workspace @darkview/api@0.1.0
+npm error location /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api
+npm error command failed
+npm error command sh -c next start --port 4000

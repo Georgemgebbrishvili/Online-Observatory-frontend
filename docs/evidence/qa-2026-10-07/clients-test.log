@@ -1,0 +1,319 @@
+
+> darkview-clients@0.1.0 test
+> npm run test --workspaces --if-present
+
+
+> @darkview/web@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+
+ ❯ src/components/room/room-live.test.tsx (11 tests | 2 failed) 27284ms
+     × reopens a live mission's session, subscribes, and shows the simulated stream 6383ms
+     × drops a channel message the contract does not describe 2032ms
+ ❯ src/components/booking/reserve-form.test.tsx (12 tests | 1 failed) 11553ms
+     × waits for a target, then reserves it once and follows the checkout 7000ms
+ ❯ src/components/room/mission-watch.test.tsx (19 tests | 1 failed) 25555ms
+     × offers a seat, and buying one follows the checkout and notes the mission 14418ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/booking/reserve-form.test.tsx > ReserveForm > waits for a target, then reserves it once and follows the checkout
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/booking/reserve-form.test.tsx:101:3
+     99|
+    100| describe("ReserveForm", () => {
+    101|   it("waits for a target, then reserves it once and follows the checko…
+       |   ^
+    102|     fetchMock.mockResolvedValue(
+    103|       answer(201, created(`${window.location.origin}/api/payments/p/sa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/components/room/mission-watch.test.tsx > MissionWatch > offers a seat, and buying one follows the checkout and notes the mission
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/room/mission-watch.test.tsx:166:3
+    164|
+    165| describe("MissionWatch", () => {
+    166|   it("offers a seat, and buying one follows the checkout and notes the…
+       |   ^
+    167|     const checkout = "http://localhost:3000/api/payments/91/sandbox-ch…
+    168|     fetchMock.mockResolvedValueOnce(answer(201, pack("PENDING_PAYMENT"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/components/room/room-live.test.tsx > RoomLive > reopens a live mission's session, subscribes, and shows the simulated stream
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/room/room-live.test.tsx:150:3
+    148|
+    149| describe("RoomLive", () => {
+    150|   it("reopens a live mission's session, subscribes, and shows the simu…
+       |   ^
+    151|     const fetch = answer(200, session());
+    152|     vi.stubGlobal("fetch", fetch);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/components/room/room-live.test.tsx > RoomLive > drops a channel message the contract does not describe
+AssertionError: expected [] to have a length of 1 but got +0
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"room-head"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"room-back"[39m
+          [33mhref[39m=[32m"/en/app/missions/m13-hercules-cluster"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+          [36m>[39m
+            [0m←[0m
+          [36m</span>[39m
+          [0m [0m
+          [0mBack to Hercules Cluster[0m
+        [36m</a>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"eyebrow"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+          [36m/>[39m
+          [0mMission · Hercules Cluster[0m
+        [36m</p>[39m
+        [36m<h1>[39m
+          [0mObserving Hercules Cluster[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0mThe telescope is tracking Hercules Cluster in real time.[0m
+        [36m</p>[39m
+      [36m</header>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"mode-notice mode-notice-simulated"[39m
+        [33mrole[39m=[32m"note"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0mSIMULATED OBSERVATORY[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0mThe simulator is answering. No real telescope is moving.[0m
+        [36m</span>[39m
+      [36m</aside>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"room-grid"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33maria-labelledby[39m=[32m"room-feed-title"[39m
+          [33mclass[39m=[32m"room-feed"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"visually-hidden"[39m
+            [33mid[39m=[32m"room-feed-title"[39m
+          [36m>[39m
+            [0mLive view[0m
+          [36m</h2>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"live-feed"[39m
+            [33mdata-live-busy[39m=[32m"true"[39m
+            [33mdata-live-status[39m=[32m"connecting"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"live-feed-well"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"live-feed-view"[39m
+              [36m>[39m
+                [36m<figure[39m
+                  [33mclass[39m=[32m"target-preview"[39m
+                  [33mdata-plate[39m=[32m"false"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"target-preview-stage"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33maria-label[39m=[32m"Hercules Cluster"[39m
+                      [33mclass[39m=[32m"optical-ring optical-ring-large "[39m
+                      [33mrole[39m=[32m"img"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mviewBox[39m=[32m"0 0 100 100"[39m
+                      [36m>[39m
+                        [36m<circle[39m
+                          [33mcx[39m=[32m"50"[39m
+                          [33mcy[39m=[32m"50"[39m
+                          [33mr[39m=[32m"47.5"[39m
+                        [36m/>[39m
+                        [36m<circle[39m
+                          [33mcx[39m=[32m"50"[39m
+                          [33mcy[39m=[32m"50"[39m
+                          [33mr[39m=[32m"34"[39m
+                        [36m/>[39m
+                        [36m<circle[39m
+                          [33mcx[39m=[32m"50"[39m
+                          [33mcy[39m=[32m"50"[39m
+                          [33mr[39m=[32m"12"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M50 2.5v9M50 88.5v9M2.5 50h9M88.5 50h9"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33mclass[39m=[32m"optical-ring-accent"[39m
+                          [33md[39m=[32m"M19 25A39.5 39.5 0 0 1 50 10.5"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"optical-ring-center"[39m
+                      [36m/>[39m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</figure>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"live-feed-plates"[39m
+                [36m>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"live-feed-plate live-feed-time"[39m
+                  [36m>[39m
+                    [0mTime left[0m
+                    [0m [0m
+                    [36m<time[39m
+                      [33mclass[39m=[32m"data"[39m
+                      [33mdatetime[39m=[32m"PT1799S"[39m
+                    [36m>[39m
+                      [0m29:59[0m
+                    [36m</time>[39m
+                  [36m</p>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"live-feed-flow"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-labelledby[39m=[32m"mission-steps-title"[39m
+                [33mclass[39m=[32m"mission-steps"[39m
+              [36m>[39m
+                [36m<header[39m
+                  [33mclass[39m=[32m"panel-head"[39m
+                [36m>[39m
+                  [36m<h2[39m
+                    [33mclass[39m=[32m"panel-title"[39m
+                    [33mid[39m=[32m"mission-steps-title"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mviewBox[39m=[32m"0 0 16 16"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M2 8h12M4 6v4M8 6v4M12 6v4"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [0mProgress[0m
+                  [36m</h2>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"panel-meta"[39m
+                  [36m>[39m
+                    [0mStep 4 of 5[0m
+                  [36m</div>[39m
+                [36m</header>[39m
+                [36m<ol>[39m
+                  [36m<li[39m
+                    [33mdata-status[39m=[32m"done"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"mission-step-dot"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+              ...
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/components/room/room-live.test.tsx:125:46
+    123|
+    124| async function openChannel() {
+    125|   await waitFor(() => expect(FakeSocket.all).toHaveLength(1));
+       |                                              ^
+    126|   const socket = FakeSocket.all[0];
+    127|   act(() => socket.onopen?.());
+ ❯ runWithExpensiveErrorDiagnosticsDisabled ../../node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback ../../node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback ../../node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 3 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Failed to start forks worker for test files /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/src/features/observatory/observatories.test.ts.
+ ❯ ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:94
+ ❯ runNextTicks node:internal/process/task_queues:65:5
+ ❯ listOnTimeout node:internal/timers:567:9
+ ❯ processTimers node:internal/timers:541:7
+ ❯ Pool.schedule ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:5
+
+Caused by: Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+ ❯ Timeout.<anonymous> ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3108:58
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Failed to start forks worker for test files /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/src/features/missions/watch.test.ts.
+ ❯ ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:94
+ ❯ runNextTicks node:internal/process/task_queues:65:5
+ ❯ listOnTimeout node:internal/timers:567:9
+ ❯ processTimers node:internal/timers:541:7
+ ❯ Pool.schedule ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:5
+
+Caused by: Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+ ❯ Timeout.<anonymous> ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3108:58
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Failed to start forks worker for test files /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web/src/features/targets/homepage-data.test.ts.
+ ❯ ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:94
+ ❯ runNextTicks node:internal/process/task_queues:65:5
+ ❯ processTimers node:internal/timers:538:9
+ ❯ Pool.schedule ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3532:5
+
+Caused by: Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+ ❯ Timeout.<anonymous> ../../../../Stellar%20Observatory/part-2-clients/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3108:58
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  3 failed | 40 passed (43)
+      Tests  4 failed | 250 passed (254)
+     Errors  3 errors
+   Start at  17:12:39
+   Duration  2841.91s (transform 17.23s, setup 676.72s, import 86.65s, tests 136.09s, environment 707.87s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+npm error workspace @darkview/web@0.1.0
+npm error location /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+npm error command failed
+npm error command sh -c vitest run
+

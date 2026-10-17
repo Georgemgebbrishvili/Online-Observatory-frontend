@@ -1,0 +1,13 @@
+{"check": "real slots offered", "count": 6}
+{"check": "real reserve target choices", "count": 0, "title": ["Time on the telescope."]}
+{"check": "real operator signs in", "passed": true}
+{"check": "real operator page", "locale": "en", "route": "admin", "status": 200, "title": ["Operator console"], "url": "http://localhost:3200/en/admin", "overflow": false}
+{"check": "real operator page", "locale": "en", "route": "admin/control", "status": 200, "title": ["Operator console"], "url": "http://localhost:3200/en/admin/control", "overflow": false}
+{"check": "real operator page", "locale": "en", "route": "admin/missions", "status": 200, "title": ["Operator console"], "url": "http://localhost:3200/en/admin/missions", "overflow": false}
+{"check": "real operator page", "locale": "en", "route": "admin/targets", "status": 200, "title": ["Operator console"], "url": "http://localhost:3200/en/admin/targets", "overflow": false}
+{"check": "real operator page", "locale": "en", "route": "admin/logs", "status": 200, "title": ["Operator console"], "url": "http://localhost:3200/en/admin/logs", "overflow": false}
+{"check": "real operator page", "locale": "ka", "route": "admin", "status": 200, "title": ["ოპერატორის პანელი"], "url": "http://localhost:3200/ka/admin", "overflow": false}
+{"check": "real operator page", "locale": "ka", "route": "admin/control", "status": 200, "title": ["ოპერატორის პანელი"], "url": "http://localhost:3200/ka/admin/control", "overflow": false}
+{"check": "real operator page", "locale": "ka", "route": "admin/missions", "status": 200, "title": ["ოპერატორის პანელი"], "url": "http://localhost:3200/ka/admin/missions", "overflow": false}
+{"check": "real operator page", "locale": "ka", "route": "admin/targets", "status": 200, "title": ["ოპერატორის პანელი"], "url": "http://localhost:3200/ka/admin/targets", "overflow": false}
+{"check": "real operator page", "locale": "ka", "route": "admin/logs", "status": 200, "title": ["ოპერატორის პანელი"], "url": "http://localhost:3200/ka/admin/logs", "overflow": false}

@@ -1,0 +1,30 @@
+
+> darkview-platform@0.1.0 test
+> npm run test --workspaces --if-present
+
+
+> @darkview/api@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/api
+
+
+ Test Files  62 passed (62)
+      Tests  592 passed (592)
+   Start at  18:18:40
+   Duration  52.72s (transform 7.95s, setup 0ms, import 58.93s, tests 18.09s, environment 51ms)
+
+
+> @darkview/realtime@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-1-platform/apps/realtime
+
+
+ Test Files  31 passed (31)
+      Tests  359 passed (359)
+   Start at  18:19:35
+   Duration  21.11s (transform 4.12s, setup 0ms, import 23.86s, tests 5.46s, environment 7ms)
+

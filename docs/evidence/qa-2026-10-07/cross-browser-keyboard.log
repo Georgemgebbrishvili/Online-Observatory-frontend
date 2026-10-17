@@ -1,0 +1,37 @@
+
+Running 4 tests using 1 worker
+
+  ✓  1 [setup] › apps/web/e2e/auth.setup.ts:10:3 › sign in as the observer (10.9s)
+  ✓  2 [setup] › apps/web/e2e/auth.setup.ts:10:3 › sign in as the operator (9.1s)
+  ✓  3 [firefox] › qa-cross-browser/smoke.spec.ts:32:1 › status table is keyboard reachable when it overflows (7.0s)
+  ✘  4 [webkit] › qa-cross-browser/smoke.spec.ts:32:1 › status table is keyboard reachable when it overflows (13.6s)
+
+
+  1) [webkit] › qa-cross-browser/smoke.spec.ts:32:1 › status table is keyboard reachable when it overflows 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      48 |  await writeFile(resultPath,JSON.stringify({dimensions,reached,stops,prototype},null,2));
+      49 |  await info.attach('keyboard-result',{path:resultPath,contentType:'application/json'});
+    > 50 |  if(dimensions.scrollWidth>dimensions.clientWidth){expect(reached).toBe(true);await page.keyboard.press('ArrowRight');await expect.poll(()=>region.evaluate(e=>e.scrollLeft)).toBeGreaterThan(0);}
+         |                                                                    ^
+      51 | });
+      52 |
+        at /work/qa-cross-browser/smoke.spec.ts:50:68
+
+    attachment #1: keyboard-result (application/json) ──────────────────────────────────────────────
+    qa-cross-browser-keyboard-results/qa-cross-browser-smoke-sta-bd5d9-reachable-when-it-overflows-webkit/attachments/keyboard-result-09655a09f6011fe722a2c053366fb4959ac26dc1.json
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa-cross-browser-keyboard-results/qa-cross-browser-smoke-sta-bd5d9-reachable-when-it-overflows-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa-cross-browser-keyboard-results/qa-cross-browser-smoke-sta-bd5d9-reachable-when-it-overflows-webkit/error-context.md
+
+  1 failed
+    [webkit] › qa-cross-browser/smoke.spec.ts:32:1 › status table is keyboard reachable when it overflows 
+  3 passed (1.1m)

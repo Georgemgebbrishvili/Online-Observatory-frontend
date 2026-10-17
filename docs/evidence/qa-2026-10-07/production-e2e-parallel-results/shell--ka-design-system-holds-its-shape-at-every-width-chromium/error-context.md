@@ -1,0 +1,1343 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: shell.spec.ts >> /ka/design-system holds its shape at every width
+- Location: ../../../../../../../private/tmp/stellar-prod-tests/e2e/shell-contract.ts:54:7
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "შინაარსზე გადასვლა" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - paragraph [ref=e7]: შიდა ცნობარი · 01
+        - heading "ვიზუალური სისტემა" [level=1] [ref=e9]
+        - paragraph [ref=e10]: "სტელარის პოსტერის ენა, ADR-039: შავი ფონი, კრემისფერი ტექსტი, თბილი პანელები და მაღალი სათაურები. ნარინჯისფერი — ქმედებისთვის, ყვითელი — ყველაფრისთვის, რაც პირდაპირ ეთერშია, ცისფერი — მონაცემებისთვის. არაფერი ანათებს."
+        - generic [ref=e11]: დეველოპერული გვერდი · noindex
+      - region [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: "01"
+          - generic [ref=e15]:
+            - heading "საფუძვლები" [level=2] [ref=e16]
+            - paragraph [ref=e17]: ფერების როლები და ხუთი შრიფტი, ქართულის ჩათვლით.
+            - paragraph [ref=e18]: Brand Identity System v2.0 · as amended by ADR-039 — ground and ink, colour roles, type
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - heading "ძირითადი პალიტრა" [level=3] [ref=e21]
+            - generic [ref=e22]:
+              - generic [ref=e23]:
+                - generic [ref=e25]: ღამე
+                - code [ref=e26]: "--color-night"
+                - code [ref=e27]: "#000000"
+              - generic [ref=e28]:
+                - generic [ref=e30]: სიღრმე · ჭები
+                - code [ref=e31]: "--color-surface-base"
+                - code [ref=e32]: "#050505"
+              - generic [ref=e33]:
+                - generic [ref=e35]: პანელი
+                - code [ref=e36]: "--color-surface-raised"
+                - code [ref=e37]: cream 4.5%
+              - generic [ref=e38]:
+                - generic [ref=e40]: პანელი · კურსორის მიტანისას
+                - code [ref=e41]: "--color-surface-hover"
+                - code [ref=e42]: cream 8.5%
+              - generic [ref=e43]:
+                - generic [ref=e45]: ხაზი
+                - code [ref=e46]: "--color-border-subtle"
+                - code [ref=e47]: cream 11%
+              - generic [ref=e48]:
+                - generic [ref=e50]: ხაზი · მკვეთრი
+                - code [ref=e51]: "--color-border-strong"
+                - code [ref=e52]: cream 20%
+              - generic [ref=e53]:
+                - generic [ref=e55]: ტექსტი
+                - code [ref=e56]: "--color-text-primary"
+                - code [ref=e57]: "#f6ecd8"
+              - generic [ref=e58]:
+                - generic [ref=e60]: ტექსტი 2 · მეორადი
+                - code [ref=e61]: "--color-text-secondary"
+                - code [ref=e62]: cream 76%
+              - generic [ref=e63]:
+                - generic [ref=e65]: ტექსტი 3 · მესამეული
+                - code [ref=e66]: "--color-text-tertiary"
+                - code [ref=e67]: cream 56%
+              - generic [ref=e68]:
+                - generic [ref=e70]: ტექსტი 4 · გამორთული
+                - code [ref=e71]: "--color-text-disabled"
+                - code [ref=e72]: cream 34%
+              - generic [ref=e73]:
+                - generic [ref=e75]: ნარინჯისფერი · ქმედება
+                - code [ref=e76]: "--color-accent"
+                - code [ref=e77]: "#e8742f"
+              - generic [ref=e78]:
+                - generic [ref=e80]: ნარინჯისფერი · კურსორის მიტანისას
+                - code [ref=e81]: "--color-accent-hover"
+                - code [ref=e82]: "#f6a63f"
+              - generic [ref=e83]:
+                - generic [ref=e85]: ნარინჯისფერი ტექსტი
+                - code [ref=e86]: "--color-accent-ink"
+                - code [ref=e87]: "#f6b062"
+              - generic [ref=e88]:
+                - generic [ref=e90]: ყვითელი · პირდაპირი
+                - code [ref=e91]: "--color-live"
+                - code [ref=e92]: "#ffd36b"
+              - generic [ref=e93]:
+                - generic [ref=e95]: ცისფერი · მონაცემები
+                - code [ref=e96]: "--color-photon"
+                - code [ref=e97]: "#5cc8ff"
+              - generic [ref=e98]:
+                - generic [ref=e100]: წარმატება
+                - code [ref=e101]: "--color-success"
+                - code [ref=e102]: "#4fd1a5"
+              - generic [ref=e103]:
+                - generic [ref=e105]: გაფრთხილება
+                - code [ref=e106]: "--color-warning"
+                - code [ref=e107]: "#e5b454"
+              - generic [ref=e108]:
+                - generic [ref=e110]: შეცდომა
+                - code [ref=e111]: "--color-error"
+                - code [ref=e112]: "#ff6b6b"
+          - generic [ref=e113]:
+            - heading "ტიპოგრაფია" [level=3] [ref=e114]
+            - generic [ref=e115]:
+              - generic [ref=e116]:
+                - text: Anton · სათაური — Noto Sans Georgian 800
+                - paragraph [ref=e117]: შენი დრო ნამდვილ ცასთან.
+                - paragraph [ref=e118]: შენი დრო ნამდვილ ცასთან.
+              - generic [ref=e119]:
+                - text: Bowlby One · მზის ჩასვლის სათაური — ერთი ხაზი გვერდზე
+                - paragraph [ref=e120]:
+                  - generic [ref=e121]: The real sky
+              - generic [ref=e122]:
+                - text: Oswald · ეტიკეტი — Noto Sans Georgian 600
+                - paragraph [ref=e123]: Tonight · Tbilisi
+                - paragraph [ref=e124]: ამაღამ · თბილისი
+              - generic [ref=e125]:
+                - text: Geist · ტექსტი — FiraGO
+                - paragraph [ref=e126]: ინსტრუმენტული ინტერფეისი დაბალი განათების პირობებშიც მკაფიო, გაწონასწორებული და მშვიდი უნდა დარჩეს.
+                - paragraph [ref=e127]: ტელესკოპი ნამდვილად მიბრუნდება შენ მიერ არჩეული ობიექტისკენ.
+              - generic [ref=e128]:
+                - text: JetBrains Mono · მონაცემები
+                - paragraph [ref=e129]: RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15
+              - generic [ref=e130]:
+                - code [ref=e131]: "04"
+                - code [ref=e132]: "08"
+                - code [ref=e133]: "12"
+                - code [ref=e134]: "16"
+                - code [ref=e135]: "24"
+                - code [ref=e136]: "32"
+      - region [ref=e137]:
+        - generic [ref=e138]:
+          - generic [ref=e139]: "02"
+          - generic [ref=e140]:
+            - heading "ტიპოგრაფიული შკალა" [level=2] [ref=e141]
+            - paragraph [ref=e142]: პროდუქტში ყველა ზომა ამ შკალიდან მოდის.
+            - paragraph [ref=e143]: Brand Identity System v2.0 · as amended by ADR-039 — type
+        - generic [ref=e145]:
+          - generic [ref=e146]:
+            - term [ref=e147]:
+              - code [ref=e148]: "--font-size-display"
+            - definition [ref=e149]: ნამდვილი ცა
+          - generic [ref=e150]:
+            - term [ref=e151]:
+              - code [ref=e152]: "--font-size-hero"
+            - definition [ref=e153]: შენი დრო ნამდვილ ცასთან.
+          - generic [ref=e154]:
+            - term [ref=e155]:
+              - code [ref=e156]: "--font-size-h1"
+            - definition [ref=e157]: ამაღამ ჰორიზონტის ზემოთ
+          - generic [ref=e158]:
+            - term [ref=e159]:
+              - code [ref=e160]: "--font-size-h2"
+            - definition [ref=e161]: ინსტრუმენტი მზადაა
+          - generic [ref=e162]:
+            - term [ref=e163]:
+              - code [ref=e164]: "--font-size-h3"
+            - definition [ref=e165]: დაკვირვების დაჯავშნა
+          - generic [ref=e166]:
+            - term [ref=e167]:
+              - code [ref=e168]: "--font-size-stat"
+            - definition [ref=e169]: 14 · 42.7° · 08:12
+          - generic [ref=e170]:
+            - term [ref=e171]:
+              - code [ref=e172]: "--font-size-kicker"
+            - definition [ref=e173]: პირდაპირი დაკვირვება · თბილისი
+          - generic [ref=e174]:
+            - term [ref=e175]:
+              - code [ref=e176]: "--font-size-body-lg"
+            - definition [ref=e177]: შესავალი აბზაცები
+          - generic [ref=e178]:
+            - term [ref=e179]:
+              - code [ref=e180]: "--font-size-body"
+            - definition [ref=e181]: ძირითადი ტექსტი მთელ პროდუქტში
+          - generic [ref=e182]:
+            - term [ref=e183]:
+              - code [ref=e184]: "--font-size-label"
+            - definition [ref=e185]: ეტიკეტები · მეტამონაცემები
+          - generic [ref=e186]:
+            - term [ref=e187]:
+              - code [ref=e188]: "--font-size-caption"
+            - definition [ref=e189]: წარწერები და მოკლე ტექსტი
+          - generic [ref=e190]:
+            - term [ref=e191]:
+              - code [ref=e192]: "--font-size-mono"
+            - definition [ref=e193]: RA 05h 35m 17.3s · DEC −05° 23′ 28″ · EXP 4.0s × 15
+      - region [ref=e194]:
+        - generic [ref=e195]:
+          - generic [ref=e196]: "03"
+          - generic [ref=e197]:
+            - heading "ზედწარწერა და მაჩვენებლები" [level=2] [ref=e198]
+            - paragraph [ref=e199]: ნარინჯისფერი ზედწარწერა სათაურის ზემოთ; დიდი ციფრები წარწერების ზემოთ, თხელი ხაზის ქვეშ.
+            - paragraph [ref=e200]: Brand Identity System v2.0 · as amended by ADR-039 — components
+        - generic [ref=e201]:
+          - paragraph [ref=e202]: პირდაპირი დაკვირვება · თბილისი
+          - paragraph [ref=e203]: ერთი ტელესკოპი. შენი ცა.
+          - generic [ref=e204]:
+            - generic [ref=e205]:
+              - paragraph [ref=e206]: 6″
+              - paragraph [ref=e207]: აპერტურა
+            - generic [ref=e208]:
+              - paragraph [ref=e209]: "1"
+              - paragraph [ref=e210]: დამკვირვებელი მართვის პულტთან
+            - generic [ref=e211]:
+              - paragraph [ref=e212]: "10"
+              - paragraph [ref=e213]: მაყურებლის ადგილი
+      - region [ref=e214]:
+        - generic [ref=e215]:
+          - generic [ref=e216]: "04"
+          - generic [ref=e217]:
+            - heading "ქმედებები და არჩევა" [level=2] [ref=e218]
+            - paragraph [ref=e219]: ერთი ნარინჯისფერი მთავარი ღილაკი; კონტურიანი, უფონო და საშიში; ჩიპები და სიმულაციის ნიშანი. ფოკუსი — ცისფერი რგოლი.
+            - paragraph [ref=e220]: Brand Identity System v2.0 · as amended by ADR-039 — components
+        - generic [ref=e221]:
+          - generic [ref=e222]:
+            - button "დაკვირვების დაჯავშნა" [ref=e223] [cursor=pointer]
+            - button "დეტალების ნახვა" [ref=e225] [cursor=pointer]
+            - button "გაუქმება" [ref=e227] [cursor=pointer]
+            - button "დაკვირვების დასრულება" [ref=e229] [cursor=pointer]
+            - button "ცის შემოწმება" [disabled] [ref=e231]
+            - button "მიუწვდომელია" [disabled] [ref=e234]
+          - generic [ref=e236]:
+            - button "პატარა" [ref=e237] [cursor=pointer]
+            - button "საშუალო" [ref=e239] [cursor=pointer]
+            - button "დიდი" [ref=e241] [cursor=pointer]
+            - button "მიუწვდომელია" [disabled] [ref=e243]
+            - button "ცის შემოწმება" [disabled] [ref=e245]
+          - generic [ref=e248]:
+            - button "ობიექტების ძიება" [ref=e249] [cursor=pointer]
+            - button "ტელესკოპის პოვნა" [ref=e253] [cursor=pointer]
+            - generic [ref=e258]: ხელმისაწვდომია ამაღამ
+            - generic [ref=e259]: ნათელი ნისლეული
+            - generic [ref=e260]: არჩეულია
+            - generic [ref=e261]: სიმულირებული
+      - region [ref=e262]:
+        - generic [ref=e263]:
+          - generic [ref=e264]: "05"
+          - generic [ref=e265]:
+            - heading "ოპერაციული სტატუსი" [level=2] [ref=e266]
+            - paragraph [ref=e267]: მდგომარეობა ტექსტით, ფორმითა და თავშეკავებული ფერით.
+            - paragraph [ref=e268]: Brand Identity System v2.0 · §04 Semantic colors · §08 Live observation page, rule 04
+        - generic [ref=e269]:
+          - generic [ref=e270]:
+            - heading "ObservatoryStatus" [level=3] [ref=e271]
+            - generic [ref=e272]:
+              - generic [ref=e273]: ონლაინ
+              - generic [ref=e275]: მზადდება
+              - generic [ref=e277]: დაკვირვება მიმდინარეობს
+              - generic [ref=e279]: გაჩერებულია
+              - generic [ref=e281]: კავშირგარეშეა
+              - generic [ref=e283]: ამინდის გამო შეჩერებულია
+              - generic [ref=e285]: ტექნიკური მომსახურება
+          - generic [ref=e287]:
+            - heading "LiveIndicator" [level=3] [ref=e288]
+            - generic [ref=e289]:
+              - generic [ref=e290]: პირდაპირი
+              - generic [ref=e292]: უმოქმედო
+            - heading "TargetAvailability" [level=3] [ref=e294]
+            - generic [ref=e295]:
+              - generic [ref=e296]: ახლა დაკვირვებადია
+              - generic [ref=e298]: ტელესკოპის უსაფრთხოების ზღვრები ჯერ არ არის გაზომილი
+              - generic [ref=e300]: ამჟამად არ არის ხელმისაწვდომი
+              - generic [ref=e302]: ობსერვატორია კავშირგარეშეა
+              - generic [ref=e304]: შეჩერებულია ამინდის გამო
+              - generic [ref=e306]: ჰორიზონტს ქვემოთაა
+              - generic [ref=e308]: ცაში ძალიან დაბლაა
+              - generic [ref=e310]: ტელესკოპისთვის ძალიან მაღლაა
+              - generic [ref=e312]: ადგილობრივი ჰორიზონტის მიღმაა
+              - generic [ref=e314]: ტელესკოპი ამ მიმართულებით არ მიიმართება
+              - generic [ref=e316]: ცა ჯერ საკმარისად ბნელი არ არის
+              - generic [ref=e318]: მზესთან ძალიან ახლოსაა
+              - generic [ref=e320]: მთვარესთან ძალიან ახლოსაა
+              - generic [ref=e322]: ტელესკოპის ხედვის არეზე დიდია
+          - generic [ref=e324]:
+            - heading "ModeNotice" [level=3] [ref=e325]
+            - generic [ref=e326]:
+              - note [ref=e327]:
+                - strong [ref=e328]: SIMULATED OBSERVATORY
+                - generic [ref=e329]: პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.
+              - note [ref=e330]:
+                - strong [ref=e331]: ნამდვილი აპარატურა
+                - generic [ref=e332]: პასუხობს ფიზიკური ტელესკოპი.
+          - generic [ref=e333]:
+            - heading "MissionStatus" [level=3] [ref=e334]
+            - generic [ref=e335]:
+              - generic [ref=e336]: მისია მოთხოვნილია
+              - generic [ref=e338]: დაკვირვება დაგეგმილია
+              - generic [ref=e340]: შენი დაკვირვება მზადდება
+              - generic [ref=e342]: ტელესკოპი ობიექტისკენ მოძრაობს
+              - generic [ref=e344]: მდებარეობა მოწმდება
+              - generic [ref=e346]: ობიექტი ცენტრდება
+              - generic [ref=e348]: დაკვირვება მიმდინარეობს
+              - generic [ref=e350]: მიმდინარეობს გადაღება
+              - generic [ref=e352]: გამოსახულება მუშავდება
+              - generic [ref=e354]: დაკვირვება დასრულებულია
+              - generic [ref=e356]: მისია ამინდის გამო შეჩერდა
+              - generic [ref=e358]: ობიექტი არ ჩანს
+              - generic [ref=e360]: ობსერვატორიის აპარატურის შეცდომა
+              - generic [ref=e362]: მისია გაუქმებულია
+              - generic [ref=e364]: მისია ვერ შესრულდა
+      - region [ref=e366]:
+        - generic [ref=e367]:
+          - generic [ref=e368]: "06"
+          - generic [ref=e369]:
+            - heading "ზედაპირები" [level=2] [ref=e370]
+            - paragraph [ref=e371]: ბარათები და პანელები მშვიდი ინფორმაციული იერარქიისთვის.
+            - paragraph [ref=e372]: Brand Identity System v2.0 · §08 Surface mapping · §07 Iconography (card radius)
+        - generic [ref=e373]:
+          - article [ref=e374]:
+            - generic [ref=e375]:
+              - paragraph [ref=e376]: ამაღამ · 22:40
+              - heading "M42 · ორიონის ნისლეული" [level=3] [ref=e377]
+            - paragraph [ref=e379]: ემისიური ნისლეული ორიონში, თბილისიდან დაკვირვებისთვის შესანიშნავი დროის მონაკვეთით.
+            - generic [ref=e381]:
+              - generic [ref=e382]: ხელმისაწვდომია 12-წუთიანი მისიისთვის
+              - button "დეტალების ნახვა" [ref=e383] [cursor=pointer]
+          - generic [ref=e385]:
+            - heading "ზედაპირის პანელი" [level=3] [ref=e386]
+            - paragraph [ref=e387]: მშვიდი კონტეინერი მართვის ელემენტებისა და ობსერვატორიის მონაცემებისთვის.
+          - generic [ref=e388]:
+            - heading "ამაღლებული პანელი" [level=3] [ref=e389]
+            - paragraph [ref=e390]: გამოიყენება ფოკუსირებულ ფენებსა და მკაფიოდ გამოსაყოფ კონტენტში.
+        - heading "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები" [level=3] [ref=e391]
+        - generic [ref=e392]:
+          - article [ref=e393]:
+            - 'link "კადრის გახსნა: ჰერკულესის გროვა" [ref=e394] [cursor=pointer]':
+              - /url: /ka/design-system#surfaces-title
+              - img "ჰერკულესის გროვა — გადაღებული კადრი" [ref=e395]
+              - generic [ref=e396]:
+                - generic [ref=e397]: სიმულირებული კადრი
+                - generic [ref=e398]: პირადი
+            - generic [ref=e399]:
+              - generic [ref=e400]: M13 · 60000000
+              - heading [level=3] [ref=e401]:
+                - link "ჰერკულესის გროვა" [ref=e402] [cursor=pointer]:
+                  - /url: /ka/design-system#surfaces-title
+              - paragraph [ref=e403]: 23 სექტემბერი, 2026, 00:10 GMT+4
+          - article [ref=e404]:
+            - 'link "კადრის გახსნა: ჰერკულესის გროვა" [ref=e405] [cursor=pointer]':
+              - /url: /ka/design-system#surfaces-title
+              - generic [ref=e406]:
+                - generic [ref=e407]: ○
+                - text: ამ კადრს მინიატურა არ აქვს
+              - generic [ref=e408]: გალერეაში
+            - generic [ref=e410]:
+              - generic [ref=e411]: M13 · 60000000
+              - heading [level=3] [ref=e412]:
+                - link "ჰერკულესის გროვა" [ref=e413] [cursor=pointer]:
+                  - /url: /ka/design-system#surfaces-title
+              - paragraph [ref=e414]: 23 სექტემბერი, 2026, 00:02 GMT+4
+          - generic [ref=e415]:
+            - generic [ref=e416]:
+              - generic [ref=e417]:
+                - button "კადრის ჩამოტვირთვა" [ref=e418]
+                - paragraph [ref=e420]: ამ კადრისთვის FITS არ ჩაწერილა
+              - paragraph [ref=e421]: ჩამოტვირთვის ბმული მოთხოვნისას იქმნება და მალევე ვადა ეწურება.
+            - note [ref=e422]: ჩამოტვირთვის ბმული ვერ შეიქმნა. სცადე ხელახლა.
+        - heading "SlotRow — თავისუფალი, დაჯავშნილი და ამინდის გამო შეჩერებული" [level=3] [ref=e423]
+        - list [ref=e424]:
+          - listitem [ref=e425]:
+            - generic [ref=e426]:
+              - time [ref=e427]: 18:00
+              - text: –
+              - time [ref=e428]: 18:30
+              - text: GMT+4
+            - generic [ref=e429]: 30 წთ
+            - generic [ref=e430]: 45,00 ₾
+            - link "არჩევა 18:00–18:30" [ref=e432] [cursor=pointer]:
+              - /url: "#"
+              - text: არჩევა
+          - listitem [ref=e433]:
+            - generic [ref=e434]:
+              - time [ref=e435]: 18:40
+              - text: –
+              - time [ref=e436]: 19:10
+              - text: GMT+4
+            - generic [ref=e437]: 30 წთ
+            - generic [ref=e438]: 45,00 ₾
+            - generic [ref=e439]: დაჯავშნილია
+          - listitem [ref=e440]:
+            - generic [ref=e441]:
+              - time [ref=e442]: 19:20
+              - text: –
+              - time [ref=e443]: 19:50
+              - text: GMT+4
+            - generic [ref=e444]: 30 წთ
+            - generic [ref=e445]: 45,00 ₾
+            - generic [ref=e446]: ამინდის გამო შეჩერება
+          - listitem [ref=e447]:
+            - generic [ref=e448]:
+              - time [ref=e449]: 18:00
+              - text: –
+              - time [ref=e450]: 18:30
+              - text: GMT+4
+            - generic [ref=e451]: 30 წთ
+            - generic [ref=e452]: უფასო
+            - link "არჩევა 18:00–18:30" [ref=e454] [cursor=pointer]:
+              - /url: "#"
+              - text: არჩევა
+        - heading "BookingRow — გადახდას ელოდება, დადასტურებული, გაუქმებული, ვადაგასული, თანხა დაბრუნებული" [level=3] [ref=e455]
+        - list [ref=e456]:
+          - listitem [ref=e457]:
+            - link "Saturn ხუთ, 1 ოქტ. 2026, 18:00–18:30 GMT+4 45,00 ₾ გადახდას ელოდება" [ref=e458] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e459]: Saturn
+              - generic [ref=e460]: ხუთ, 1 ოქტ. 2026, 18:00–18:30 GMT+4
+              - generic [ref=e461]: 45,00 ₾
+              - generic [ref=e462]: გადახდას ელოდება
+          - listitem [ref=e464]:
+            - link "Albireo პარ, 2 ოქტ. 2026, 18:00–18:30 GMT+4 45,00 ₾ დადასტურებულია" [ref=e465] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e466]: Albireo
+              - generic [ref=e467]: პარ, 2 ოქტ. 2026, 18:00–18:30 GMT+4
+              - generic [ref=e468]: 45,00 ₾
+              - generic [ref=e469]: დადასტურებულია
+          - listitem [ref=e471]:
+            - link "M13 შაბ, 3 ოქტ. 2026, 18:00–18:30 GMT+4 45,00 ₾ გაუქმებულია" [ref=e472] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e473]: M13
+              - generic [ref=e474]: შაბ, 3 ოქტ. 2026, 18:00–18:30 GMT+4
+              - generic [ref=e475]: 45,00 ₾
+              - generic [ref=e476]: გაუქმებულია
+          - listitem [ref=e478]:
+            - link "Venus კვი, 4 ოქტ. 2026, 18:00–18:30 GMT+4 45,00 ₾ ვადა ამოიწურა" [ref=e479] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e480]: Venus
+              - generic [ref=e481]: კვი, 4 ოქტ. 2026, 18:00–18:30 GMT+4
+              - generic [ref=e482]: 45,00 ₾
+              - generic [ref=e483]: ვადა ამოიწურა
+          - listitem [ref=e485]:
+            - link "Moon ორშ, 5 ოქტ. 2026, 18:00–18:30 GMT+4 45,00 ₾ თანხა დაბრუნებულია" [ref=e486] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e487]: Moon
+              - generic [ref=e488]: ორშ, 5 ოქტ. 2026, 18:00–18:30 GMT+4
+              - generic [ref=e489]: 45,00 ₾
+              - generic [ref=e490]: თანხა დაბრუნებულია
+        - heading "BookingActions — გაუქმება, დადასტურების კითხვა, უქმდება, თანხის დაბრუნება, ბრუნდება, დაბრუნება უარყოფილია" [level=3] [ref=e492]
+        - generic [ref=e493]:
+          - button "ჯავშნის გაუქმება" [ref=e496] [cursor=pointer]
+          - group "გავაუქმოთ ეს ჯავშანი და გავათავისუფლოთ დრო?" [ref=e500]:
+            - paragraph [ref=e501]: გავაუქმოთ ეს ჯავშანი და გავათავისუფლოთ დრო?
+            - generic [ref=e502]:
+              - button "დიახ, გაუქმება" [ref=e503] [cursor=pointer]
+              - button "დატოვება" [ref=e505] [cursor=pointer]
+          - group "გავაუქმოთ ეს ჯავშანი და გავათავისუფლოთ დრო?" [ref=e509]:
+            - paragraph [ref=e510]: გავაუქმოთ ეს ჯავშანი და გავათავისუფლოთ დრო?
+            - generic [ref=e511]:
+              - button "უქმდება" [disabled] [ref=e512]
+              - button "დატოვება" [disabled] [ref=e515]
+          - button "თანხის დაბრუნება" [ref=e519] [cursor=pointer]
+          - button "ბრუნდება" [disabled] [ref=e523]
+          - generic [ref=e527]:
+            - button "თანხის დაბრუნება" [ref=e528] [cursor=pointer]
+            - alert [ref=e530]: ამ გადახდისთვის თანხის დაბრუნება ჯერ შეუძლებელია. შენი უფლება ძალაში რჩება.
+        - heading "ReserveForm — არაფერია არჩეული, ობიექტი არჩეულია, იჯავშნება, იხსნება გადახდის გვერდი, დრო დაკავებულია" [level=3] [ref=e531]
+        - generic [ref=e532]:
+          - generic [ref=e534]:
+            - group "აირჩიე, რას დააკვირდები" [ref=e535]:
+              - list [ref=e537]:
+                - listitem [ref=e538]:
+                  - generic [ref=e539] [cursor=pointer]:
+                    - radio "Albireo β Cyg" [ref=e540]
+                    - generic [ref=e541]: Albireo
+                    - generic [ref=e542]: β Cyg
+                - listitem [ref=e543]:
+                  - generic [ref=e544] [cursor=pointer]:
+                    - radio "Saturn" [ref=e545]
+                    - generic [ref=e546]: Saturn
+            - button "დაჯავშნა და გადახდა" [disabled] [ref=e547]
+          - generic [ref=e550]:
+            - group "აირჩიე, რას დააკვირდები" [ref=e551]:
+              - list [ref=e553]:
+                - listitem [ref=e554]:
+                  - generic [ref=e555] [cursor=pointer]:
+                    - radio "Albireo β Cyg" [ref=e556]
+                    - generic [ref=e557]: Albireo
+                    - generic [ref=e558]: β Cyg
+                - listitem [ref=e559]:
+                  - generic [ref=e560] [cursor=pointer]:
+                    - radio "Saturn" [checked] [ref=e561]
+                    - generic [ref=e562]: Saturn
+            - button "დაჯავშნა და გადახდა" [ref=e563] [cursor=pointer]
+          - generic [ref=e566]:
+            - group "აირჩიე, რას დააკვირდები" [ref=e567]:
+              - list [ref=e569]:
+                - listitem [ref=e570]:
+                  - generic [ref=e571]:
+                    - radio "Albireo β Cyg" [disabled] [ref=e572]
+                    - generic [ref=e573]: Albireo
+                    - generic [ref=e574]: β Cyg
+                - listitem [ref=e575]:
+                  - generic [ref=e576]:
+                    - radio "Saturn" [checked] [disabled] [ref=e577]
+                    - generic [ref=e578]: Saturn
+            - button "იჯავშნება" [disabled] [ref=e579]
+          - generic [ref=e583]:
+            - group "აირჩიე, რას დააკვირდები" [ref=e584]:
+              - list [ref=e586]:
+                - listitem [ref=e587]:
+                  - generic [ref=e588]:
+                    - radio "Albireo β Cyg" [disabled] [ref=e589]
+                    - generic [ref=e590]: Albireo
+                    - generic [ref=e591]: β Cyg
+                - listitem [ref=e592]:
+                  - generic [ref=e593]:
+                    - radio "Saturn" [checked] [disabled] [ref=e594]
+                    - generic [ref=e595]: Saturn
+            - button "იხსნება გადახდის გვერდი" [disabled] [ref=e596]
+          - generic [ref=e600]:
+            - group "აირჩიე, რას დააკვირდები" [ref=e601]:
+              - list [ref=e603]:
+                - listitem [ref=e604]:
+                  - generic [ref=e605] [cursor=pointer]:
+                    - radio "Albireo β Cyg" [ref=e606]
+                    - generic [ref=e607]: Albireo
+                    - generic [ref=e608]: β Cyg
+                - listitem [ref=e609]:
+                  - generic [ref=e610] [cursor=pointer]:
+                    - radio "Saturn" [checked] [ref=e611]
+                    - generic [ref=e612]: Saturn
+            - button "დაჯავშნა და გადახდა" [ref=e613] [cursor=pointer]
+            - alert [ref=e615]: ეს დრო ახლახან სხვამ დაჯავშნა. აირჩიე სხვა.
+        - heading "RoomSharing — პირადი, იხსნება, ღიაა ორი მაყურებლით, შეწყვეტის კითხვა, ბმული დაკოპირდა, სესია დასრულდა" [level=3] [ref=e616]
+        - generic [ref=e617]:
+          - region "გაზიარება 1" [ref=e618]:
+            - heading "გაზიარება" [level=2] [ref=e620]
+            - paragraph [ref=e623]: ამ სესიას მხოლოდ შენ ხედავ.
+            - button "ნება დართე სხვებს, უყურონ" [ref=e625] [cursor=pointer]
+            - paragraph [ref=e627]
+          - region "გაზიარება 2" [ref=e628]:
+            - heading "გაზიარება" [level=2] [ref=e630]
+            - paragraph [ref=e633]: ამ სესიას მხოლოდ შენ ხედავ.
+            - button "ინახება" [disabled] [ref=e635]
+            - paragraph [ref=e638]
+          - region "გაზიარება 3" [ref=e639]:
+            - generic [ref=e640]:
+              - heading "გაზიარება" [level=2] [ref=e641]
+              - generic [ref=e644]: 2 / 5
+            - paragraph [ref=e645]: სხვებს შეუძლიათ უყურონ. დაკავებულია 2 ადგილი 5-დან.
+            - generic [ref=e646]:
+              - button "ბმულის კოპირება" [ref=e647] [cursor=pointer]
+              - button "გაზიარების შეწყვეტა" [ref=e649] [cursor=pointer]
+            - paragraph [ref=e651]
+          - region "გაზიარება 4" [ref=e652]:
+            - generic [ref=e653]:
+              - heading "გაზიარება" [level=2] [ref=e654]
+              - generic [ref=e657]: 2 / 5
+            - paragraph [ref=e658]: სხვებს შეუძლიათ უყურონ. დაკავებულია 2 ადგილი 5-დან.
+            - button "ბმულის კოპირება" [ref=e660] [cursor=pointer]
+            - group "შევწყვიტოთ გაზიარება?" [ref=e662]:
+              - paragraph [ref=e663]:
+                - strong [ref=e664]: შევწყვიტოთ გაზიარება?
+                - text: ყველა მაყურებელი გაითიშება.
+              - generic [ref=e665]:
+                - button "შეწყვეტა" [ref=e666] [cursor=pointer]
+                - button "გაგრძელება" [ref=e668] [cursor=pointer]
+            - paragraph [ref=e670]
+          - region "გაზიარება 5" [ref=e671]:
+            - generic [ref=e672]:
+              - heading "გაზიარება" [level=2] [ref=e673]
+              - generic [ref=e676]: 2 / 5
+            - paragraph [ref=e677]: სხვებს შეუძლიათ უყურონ. დაკავებულია 2 ადგილი 5-დან.
+            - generic [ref=e678]:
+              - button "ბმულის კოპირება" [ref=e679] [cursor=pointer]
+              - button "გაზიარების შეწყვეტა" [ref=e681] [cursor=pointer]
+            - paragraph [ref=e683]: ბმული დაკოპირდა
+          - region "გაზიარება 6" [ref=e684]:
+            - heading "გაზიარება" [level=2] [ref=e686]
+            - paragraph [ref=e689]: ეს სესია დასრულდა.
+        - heading "WatchView — ადგილი იყიდება, იყიდება, იტვირთება, შეცდომა, სიმულირებული, სავსეა, გადახდის მოლოდინი, ყურება, გასული, მფლობელმა დახურა, დასრულდა, მფლობელი, არ არის ღია" [level=3] [ref=e690]
+        - generic [ref=e691]:
+          - region "WatchView 1" [ref=e692]:
+            - generic [ref=e693]:
+              - paragraph [ref=e694]: ყურება · Saturn
+              - 'heading "Nino აკვირდება: Saturn." [level=2] [ref=e696]'
+              - paragraph [ref=e697]: დაკავებულია 2 ადგილი 5-დან.
+            - generic [ref=e699]:
+              - generic [ref=e700]:
+                - heading "შენი ადგილი" [level=3] [ref=e701]
+                - generic [ref=e704]: თბილისის ობსერვატორია
+              - button "ადგილის ყიდვა" [ref=e706] [cursor=pointer]
+          - region "WatchView 2" [ref=e708]:
+            - generic [ref=e709]:
+              - paragraph [ref=e710]: ყურება · Saturn
+              - 'heading "Nino აკვირდება: Saturn." [level=2] [ref=e712]'
+              - paragraph [ref=e713]: დაკავებულია 2 ადგილი 5-დან.
+            - generic [ref=e715]:
+              - generic [ref=e716]:
+                - heading "შენი ადგილი" [level=3] [ref=e717]
+                - generic [ref=e720]: თბილისის ობსერვატორია
+              - button "ადგილის ყიდვა" [disabled] [ref=e722]
+          - region "WatchView 3" [ref=e725]:
+            - heading "სესია იხსნება" [level=2] [ref=e727]
+            - generic [ref=e729]:
+              - heading "შენი ადგილი" [level=3] [ref=e731]
+              - status [ref=e734]:
+                - generic [ref=e735]: სესია იხსნება
+          - region "WatchView 4" [ref=e740]:
+            - heading "რაღაც შეფერხდა. სცადე თავიდან." [level=2] [ref=e742]
+          - region "WatchView 5" [ref=e743]:
+            - generic [ref=e744]:
+              - paragraph [ref=e745]: ყურება · Saturn
+              - 'heading "Nino აკვირდება: Saturn." [level=2] [ref=e747]'
+              - paragraph [ref=e748]: დაკავებულია 2 ადგილი 5-დან.
+            - note [ref=e749]:
+              - strong [ref=e750]: სიმულირებული ობსერვატორია
+              - generic [ref=e751]: პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.
+            - generic [ref=e753]:
+              - generic [ref=e754]:
+                - heading "შენი ადგილი" [level=3] [ref=e755]
+                - generic [ref=e758]: თბილისის ობსერვატორია
+              - button "ადგილის ყიდვა" [ref=e760] [cursor=pointer]
+          - region "WatchView 6" [ref=e762]:
+            - generic [ref=e763]:
+              - paragraph [ref=e764]: ყურება · Saturn
+              - 'heading "Nino აკვირდება: Saturn." [level=2] [ref=e766]'
+              - paragraph [ref=e767]: დაკავებულია 5 ადგილი 5-დან.
+            - note [ref=e768]:
+              - strong [ref=e769]: სიმულირებული ობსერვატორია
+              - generic [ref=e770]: პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.
+            - generic [ref=e772]:
+              - generic [ref=e773]:
+                - heading "შენი ადგილი" [level=3] [ref=e774]
+                - generic [ref=e777]: თბილისის ობსერვატორია
+              - paragraph [ref=e778]: ყველა ადგილი დაკავებულია.
+          - region "WatchView 7" [ref=e779]:
+            - generic [ref=e780]:
+              - paragraph [ref=e781]: ყურება · Saturn
+              - 'heading "Nino აკვირდება: Saturn." [level=2] [ref=e783]'
+              - paragraph [ref=e784]: დაკავებულია 2 ადგილი 5-დან.
+            - note [ref=e785]:
+              - strong [ref=e786]: სიმულირებული ობსერვატორია
+              - generic [ref=e787]: პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.
+            - generic [ref=e789]:
+              - generic [ref=e790]:
+                - heading "შენი ადგილი" [level=3] [ref=e791]
+                - generic [ref=e794]: თბილისის ობსერვატორია
+              - status [ref=e795]: ველოდებით გადახდის დადასტურებას
+              - button "ხელახლა შემოწმება" [disabled] [ref=e797]
+          - region "WatchView 8" [ref=e800]:
+            - generic [ref=e801]:
+              - paragraph [ref=e802]: ყურება · Saturn
+              - 'heading "Nino აკვირდება: Saturn." [level=2] [ref=e804]'
+              - paragraph [ref=e805]: დაკავებულია 2 ადგილი 5-დან.
+            - note [ref=e806]:
+              - strong [ref=e807]: სიმულირებული ობსერვატორია
+              - generic [ref=e808]: პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.
+            - generic [ref=e809]:
+              - generic [ref=e810]:
+                - generic [ref=e812]:
+                  - generic [ref=e813]:
+                    - 'img "სიმულირებული პირდაპირი ხედი: Saturn" [ref=e814]'
+                    - generic [ref=e815]: სიმულირებული
+                  - generic:
+                    - paragraph:
+                      - generic: თბილისის ობსერვატორია
+                      - generic: ZWO ASI585MC · 1500 mm · f/10
+                    - paragraph:
+                      - generic: სატურნი
+                - generic [ref=e817]:
+                  - region [ref=e818]:
+                    - generic [ref=e819]:
+                      - heading "მიმდინარეობა" [level=2] [ref=e820]
+                      - generic [ref=e823]: ნაბიჯი 4 5-დან
+                    - list [ref=e824]:
+                      - listitem [ref=e825]:
+                        - generic [ref=e829]: მომზადება
+                      - listitem [ref=e830]:
+                        - generic [ref=e834]: მიმართვა
+                      - listitem [ref=e835]:
+                        - generic [ref=e839]: ცენტრირება
+                      - listitem [ref=e840]:
+                        - generic [ref=e841]: "04"
+                        - generic [ref=e842]: დაკვირვება
+                        - generic [ref=e843]: ახლა
+                      - listitem [ref=e844]:
+                        - generic [ref=e845]: "05"
+                        - generic [ref=e846]: გადაღება
+                  - status [ref=e848]:
+                    - strong [ref=e849]: პირდაპირი ხედი
+                    - generic [ref=e850]: სიმულატორის გამოსახულება და არა ტელესკოპის კადრი.
+              - generic [ref=e851]:
+                - generic [ref=e852]:
+                  - heading "შენი ადგილი" [level=3] [ref=e853]
+                  - generic [ref=e856]: თბილისის ობსერვატორია
+                - paragraph [ref=e857]: შენ უყურებ. ტელესკოპის მართვა და კადრების შენახვა შეუძლებელია.
+                - button "ყურების შეწყვეტა" [ref=e859] [cursor=pointer]
+          - region "WatchView 9" [ref=e861]:
+            - generic [ref=e862]:
+              - paragraph [ref=e863]: ყურება · Saturn
+              - 'heading "Nino აკვირდება: Saturn." [level=2] [ref=e865]'
+              - paragraph [ref=e866]: დაკავებულია 2 ადგილი 5-დან.
+            - note [ref=e867]:
+              - strong [ref=e868]: სიმულირებული ობსერვატორია
+              - generic [ref=e869]: პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.
+            - generic [ref=e871]:
+              - generic [ref=e872]:
+                - heading "შენი ადგილი" [level=3] [ref=e873]
+                - generic [ref=e876]: თბილისის ობსერვატორია
+              - paragraph [ref=e877]: შენ გახვედი. ადგილი სესიის დასრულებამდე შენია.
+              - button "ხელახლა ყურება" [ref=e879] [cursor=pointer]
+          - region "WatchView 10" [ref=e881]:
+            - generic [ref=e882]:
+              - paragraph [ref=e883]: ყურება · Saturn
+              - heading "მფლობელმა სესია მაყურებლებისთვის დახურა." [level=2] [ref=e885]
+          - region "WatchView 11" [ref=e886]:
+            - generic [ref=e887]:
+              - paragraph [ref=e888]: ყურება · Saturn
+              - heading "ეს სესია დასრულდა." [level=2] [ref=e890]
+          - region "WatchView 12" [ref=e891]:
+            - generic [ref=e892]:
+              - paragraph [ref=e893]: ყურება · Saturn
+              - heading "ეს შენი სესიაა." [level=2] [ref=e895]
+            - generic [ref=e897]:
+              - generic [ref=e898]:
+                - heading "Saturn" [level=3] [ref=e899]
+                - generic [ref=e902]: თბილისის ობსერვატორია
+              - paragraph [ref=e903]: მას პირდაპირი დაკვირვების ოთახიდან მართავ. ყურება მათთვისაა, ვისაც სესიას გაუზიარებ.
+              - link "პირდაპირი დაკვირვების ოთახში გადასვლა" [ref=e905] [cursor=pointer]:
+                - /url: /ka/design-system
+          - region "WatchView 13" [ref=e907]:
+            - heading "ეს სესია საყურებლად ღია არ არის." [level=2] [ref=e909]
+        - heading "RoomControls — მართვა დაკვირვებისას, ტელესკოპის მოლოდინი, გადაღება დაიწყო, უარი, პასუხი არ არის, ცენტრირებამდე, გადაღებისას, გადაღების გარეშე; შემდეგ გადაღება და სესიის პანელის დასრულება, დასრულების კითხვა და დასრულება" [level=3] [ref=e910]
+        - generic [ref=e911]:
+          - region "მართვა 1" [ref=e912]:
+            - generic [ref=e913]:
+              - heading "მართვა" [level=2] [ref=e914]
+              - generic [ref=e917]: 2′
+            - generic [ref=e918]:
+              - button "მაღლა, 2 რკალური წუთი" [ref=e919] [cursor=pointer]:
+                - generic [ref=e920]: ↑
+              - button "მარცხნივ, 2 რკალური წუთი" [ref=e921] [cursor=pointer]:
+                - generic [ref=e922]: ←
+              - button "მარჯვნივ, 2 რკალური წუთი" [ref=e923] [cursor=pointer]:
+                - generic [ref=e924]: →
+              - button "დაბლა, 2 რკალური წუთი" [ref=e925] [cursor=pointer]:
+                - generic [ref=e926]: ↓
+              - button "ცენტრირება" [ref=e927] [cursor=pointer]
+            - paragraph [ref=e928]
+          - region "მართვა 2" [ref=e929]:
+            - generic [ref=e930]:
+              - heading "მართვა" [level=2] [ref=e931]
+              - generic [ref=e934]: 2′
+            - generic [ref=e935]:
+              - button "მაღლა, 2 რკალური წუთი" [disabled] [ref=e936]:
+                - generic [ref=e937]: ↑
+              - button "მარცხნივ, 2 რკალური წუთი" [disabled] [ref=e938]:
+                - generic [ref=e939]: ←
+              - button "მარჯვნივ, 2 რკალური წუთი" [disabled] [ref=e940]:
+                - generic [ref=e941]: →
+              - button "დაბლა, 2 რკალური წუთი" [disabled] [ref=e942]:
+                - generic [ref=e943]: ↓
+              - button "ცენტრირება" [disabled] [ref=e944]
+            - paragraph [ref=e945]: ველოდებით ტელესკოპს
+          - region "მართვა 3" [ref=e946]:
+            - generic [ref=e947]:
+              - heading "მართვა" [level=2] [ref=e948]
+              - generic [ref=e951]: 2′
+            - generic [ref=e952]:
+              - button "მაღლა, 2 რკალური წუთი" [ref=e953] [cursor=pointer]:
+                - generic [ref=e954]: ↑
+              - button "მარცხნივ, 2 რკალური წუთი" [ref=e955] [cursor=pointer]:
+                - generic [ref=e956]: ←
+              - button "მარჯვნივ, 2 რკალური წუთი" [ref=e957] [cursor=pointer]:
+                - generic [ref=e958]: →
+              - button "დაბლა, 2 რკალური წუთი" [ref=e959] [cursor=pointer]:
+                - generic [ref=e960]: ↓
+              - button "ცენტრირება" [ref=e961] [cursor=pointer]
+            - paragraph [ref=e962]: გადაღება დაიწყო.
+          - region "მართვა 4" [ref=e963]:
+            - generic [ref=e964]:
+              - heading "მართვა" [level=2] [ref=e965]
+              - generic [ref=e968]: 2′
+            - generic [ref=e969]:
+              - button "მაღლა, 2 რკალური წუთი" [ref=e970] [cursor=pointer]:
+                - generic [ref=e971]: ↑
+              - button "მარცხნივ, 2 რკალური წუთი" [ref=e972] [cursor=pointer]:
+                - generic [ref=e973]: ←
+              - button "მარჯვნივ, 2 რკალური წუთი" [ref=e974] [cursor=pointer]:
+                - generic [ref=e975]: →
+              - button "დაბლა, 2 რკალური წუთი" [ref=e976] [cursor=pointer]:
+                - generic [ref=e977]: ↓
+              - button "ცენტრირება" [ref=e978] [cursor=pointer]
+            - paragraph [ref=e979]: ეს ტელესკოპს ობიექტიდან დასაშვებზე მეტად გადასწევდა. გასაგრძელებლად გამოიყენე ცენტრირება.
+          - region "მართვა 5" [ref=e980]:
+            - generic [ref=e981]:
+              - heading "მართვა" [level=2] [ref=e982]
+              - generic [ref=e985]: 2′
+            - generic [ref=e986]:
+              - button "მაღლა, 2 რკალური წუთი" [ref=e987] [cursor=pointer]:
+                - generic [ref=e988]: ↑
+              - button "მარცხნივ, 2 რკალური წუთი" [ref=e989] [cursor=pointer]:
+                - generic [ref=e990]: ←
+              - button "მარჯვნივ, 2 რკალური წუთი" [ref=e991] [cursor=pointer]:
+                - generic [ref=e992]: →
+              - button "დაბლა, 2 რკალური წუთი" [ref=e993] [cursor=pointer]:
+                - generic [ref=e994]: ↓
+              - button "ცენტრირება" [ref=e995] [cursor=pointer]
+            - paragraph [ref=e996]: ტელესკოპმა არ უპასუხა. სცადე თავიდან.
+          - region "მართვა 6" [ref=e997]:
+            - generic [ref=e998]:
+              - heading "მართვა" [level=2] [ref=e999]
+              - generic [ref=e1002]: 2′
+            - generic [ref=e1003]:
+              - button "მაღლა, 2 რკალური წუთი" [ref=e1004] [cursor=pointer]:
+                - generic [ref=e1005]: ↑
+              - button "მარცხნივ, 2 რკალური წუთი" [ref=e1006] [cursor=pointer]:
+                - generic [ref=e1007]: ←
+              - button "მარჯვნივ, 2 რკალური წუთი" [ref=e1008] [cursor=pointer]:
+                - generic [ref=e1009]: →
+              - button "დაბლა, 2 რკალური წუთი" [ref=e1010] [cursor=pointer]:
+                - generic [ref=e1011]: ↓
+              - button "ცენტრირება" [ref=e1012] [cursor=pointer]
+            - paragraph [ref=e1013]
+          - region "მართვა 7" [ref=e1014]:
+            - heading "მართვა" [level=2] [ref=e1016]
+            - paragraph [ref=e1019]: მართვა გაიხსნება, როცა ობიექტი ცენტრში მოექცევა.
+            - paragraph [ref=e1020]
+          - region "მართვა 8" [ref=e1021]:
+            - heading "მართვა" [level=2] [ref=e1023]
+            - paragraph [ref=e1026]: მიმდინარეობს გადაღება. მართვა დასრულების შემდეგ დაბრუნდება.
+            - paragraph [ref=e1027]
+          - region "მართვა 9" [ref=e1028]:
+            - generic [ref=e1029]:
+              - heading "მართვა" [level=2] [ref=e1030]
+              - generic [ref=e1033]: 2′
+            - generic [ref=e1034]:
+              - button "მაღლა, 2 რკალური წუთი" [ref=e1035] [cursor=pointer]:
+                - generic [ref=e1036]: ↑
+              - button "მარცხნივ, 2 რკალური წუთი" [ref=e1037] [cursor=pointer]:
+                - generic [ref=e1038]: ←
+              - button "მარჯვნივ, 2 რკალური წუთი" [ref=e1039] [cursor=pointer]:
+                - generic [ref=e1040]: →
+              - button "დაბლა, 2 რკალური წუთი" [ref=e1041] [cursor=pointer]:
+                - generic [ref=e1042]: ↓
+              - button "ცენტრირება" [ref=e1043] [cursor=pointer]
+            - paragraph [ref=e1044]: "გადაღება მიუწვდომელია: ეს ობიექტი კატალოგში აღარ არის."
+            - paragraph [ref=e1045]
+        - generic [ref=e1046]:
+          - generic [ref=e1047]:
+            - button "გადაღება" [ref=e1048] [cursor=pointer]
+            - button "გადაღება" [disabled] [ref=e1050]
+          - region "სესია 1" [ref=e1053]:
+            - heading "სესია" [level=2] [ref=e1055]
+            - button "დასრულება" [ref=e1058] [cursor=pointer]
+          - region "სესია 2" [ref=e1060]:
+            - heading "სესია" [level=2] [ref=e1062]
+            - group "დავასრულოთ დაკვირვება?" [ref=e1065]:
+              - paragraph [ref=e1066]:
+                - strong [ref=e1067]: დავასრულოთ დაკვირვება?
+                - text: ტელესკოპი პარკირდება და დარჩენილი დრო არ ბრუნდება.
+              - generic [ref=e1068]:
+                - button "დასრულება" [ref=e1069] [cursor=pointer]
+                - button "გაგრძელება" [ref=e1071] [cursor=pointer]
+          - region "სესია 3" [ref=e1073]:
+            - heading "სესია" [level=2] [ref=e1075]
+            - group "დავასრულოთ დაკვირვება?" [ref=e1078]:
+              - paragraph [ref=e1079]:
+                - strong [ref=e1080]: დავასრულოთ დაკვირვება?
+                - text: ტელესკოპი პარკირდება და დარჩენილი დრო არ ბრუნდება.
+              - generic [ref=e1081]:
+                - button "დასრულება" [disabled] [ref=e1082]
+                - button "გაგრძელება" [disabled] [ref=e1085]
+        - heading "MissionSteps — მიმდინარე ნაბიჯი, დასრულებული და შეცდომით შეჩერებული" [level=3] [ref=e1087]
+        - generic [ref=e1088]:
+          - region [ref=e1089]:
+            - generic [ref=e1090]:
+              - heading "მიმდინარეობა — მდებარეობა მოწმდება" [level=2] [ref=e1091]
+              - generic [ref=e1094]: ნაბიჯი 3 5-დან
+            - list [ref=e1095]:
+              - listitem [ref=e1096]:
+                - generic [ref=e1100]: მომზადება
+              - listitem [ref=e1101]:
+                - generic [ref=e1105]: მიმართვა
+              - listitem [ref=e1106]:
+                - generic [ref=e1107]: "03"
+                - generic [ref=e1108]: ცენტრირება
+                - generic [ref=e1109]: ახლა
+              - listitem [ref=e1110]:
+                - generic [ref=e1111]: "04"
+                - generic [ref=e1112]: დაკვირვება
+              - listitem [ref=e1113]:
+                - generic [ref=e1114]: "05"
+                - generic [ref=e1115]: გადაღება
+          - region [ref=e1116]:
+            - generic [ref=e1117]:
+              - heading "მიმდინარეობა — დაკვირვება დასრულებულია" [level=2] [ref=e1118]
+              - generic [ref=e1121]: ნაბიჯი 5 5-დან
+            - list [ref=e1122]:
+              - listitem [ref=e1123]:
+                - generic [ref=e1127]: მომზადება
+              - listitem [ref=e1128]:
+                - generic [ref=e1132]: მიმართვა
+              - listitem [ref=e1133]:
+                - generic [ref=e1137]: ცენტრირება
+              - listitem [ref=e1138]:
+                - generic [ref=e1142]: დაკვირვება
+              - listitem [ref=e1143]:
+                - generic [ref=e1147]: გადაღება
+          - region [ref=e1148]:
+            - generic [ref=e1149]:
+              - heading "მიმდინარეობა — ობსერვატორიის აპარატურის შეცდომა" [level=2] [ref=e1150]
+              - generic [ref=e1153]: ნაბიჯი 2 5-დან
+            - list [ref=e1154]:
+              - listitem [ref=e1155]:
+                - generic [ref=e1159]: მომზადება
+              - listitem [ref=e1160]:
+                - generic [ref=e1161]: "02"
+                - generic [ref=e1162]: მიმართვა
+                - generic [ref=e1163]: აქ შეჩერდა
+              - listitem [ref=e1164]:
+                - generic [ref=e1165]: "03"
+                - generic [ref=e1166]: ცენტრირება
+              - listitem [ref=e1167]:
+                - generic [ref=e1168]: "04"
+                - generic [ref=e1169]: დაკვირვება
+              - listitem [ref=e1170]:
+                - generic [ref=e1171]: "05"
+                - generic [ref=e1172]: გადაღება
+        - heading "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ, ტელესკოპი ობიექტისკენ მიიწევს, ტელესკოპი მდებარეობის გარეშე" [level=3] [ref=e1173]
+        - generic [ref=e1174]:
+          - 'img "ცის ციფერბლატი: ჰორიზონტი კიდეზეა, ზენიტი — ცენტრში, ჩრდილოეთი — ზემოთ." [ref=e1175]':
+            - generic [ref=e1247]: ჩ
+            - generic [ref=e1248]: ა
+            - generic [ref=e1249]: ს
+            - generic [ref=e1250]: დ
+          - 'img "ცის ციფერბლატი: ჰორიზონტი კიდეზეა, ზენიტი — ცენტრში, ჩრდილოეთი — ზემოთ." [ref=e1256]':
+            - generic [ref=e1328]: ჩ
+            - generic [ref=e1329]: ა
+            - generic [ref=e1330]: ს
+            - generic [ref=e1331]: დ
+          - 'img "ცის ციფერბლატი: ჰორიზონტი კიდეზეა, ზენიტი — ცენტრში, ჩრდილოეთი — ზემოთ." [ref=e1337]':
+            - generic [ref=e1409]: ჩ
+            - generic [ref=e1410]: ა
+            - generic [ref=e1411]: ს
+            - generic [ref=e1412]: დ
+          - 'img "ცის ციფერბლატი: ჰორიზონტი კიდეზეა, ზენიტი — ცენტრში, ჩრდილოეთი — ზემოთ." [ref=e1414]':
+            - generic [ref=e1486]: ჩ
+            - generic [ref=e1487]: ა
+            - generic [ref=e1488]: ს
+            - generic [ref=e1489]: დ
+          - 'img "ცის ციფერბლატი: ჰორიზონტი კიდეზეა, ზენიტი — ცენტრში, ჩრდილოეთი — ზემოთ." [ref=e1495]':
+            - generic [ref=e1567]: ჩ
+            - generic [ref=e1568]: ა
+            - generic [ref=e1569]: ს
+            - generic [ref=e1570]: დ
+        - heading "TargetPreview — პლანეტის ილუსტრაცია და ობიექტი ილუსტრაციის გარეშე" [level=3] [ref=e1573]
+        - generic [ref=e1574]:
+          - 'figure "ილუსტრაცია — არა ტელესკოპის კადრი პირდაპირი ხედი აქ გაიხსნება, როცა ტელესკოპი ობიექტს მიაღწევს: Saturn." [ref=e1575]':
+            - generic [ref=e1577]:
+              - generic [ref=e1578]: ილუსტრაცია — არა ტელესკოპის კადრი
+              - generic [ref=e1579]: "პირდაპირი ხედი აქ გაიხსნება, როცა ტელესკოპი ობიექტს მიაღწევს: Saturn."
+          - 'figure "პირდაპირი ხედი აქ გაიხსნება, როცა ტელესკოპი ობიექტს მიაღწევს: M13." [ref=e1580]':
+            - img "M13" [ref=e1582]
+        - heading "LiveFeed — დაუწყებელი, იწყება, კავშირი მყარდება, პირდაპირი (სიმულირებული), კავშირი აღდგება, კავშირგარეშე, ამინდის გამო შეჩერებული, დრო ამოწურული, დახურული, უარყოფილი, შეცდომა" [level=3] [ref=e1592]
+        - generic [ref=e1593]:
+          - generic [ref=e1594]:
+            - generic [ref=e1596]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1597]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - generic [ref=e1602]:
+              - status [ref=e1603]:
+                - strong [ref=e1604]: ჯერ არ დაწყებულა
+                - generic [ref=e1605]: შენი დრო 15 იანვარი, 2030, 22:00 GMT+4-ზე იწყება. დაკვირვებას მაშინ დაიწყებ.
+              - button "დაიწყე დაკვირვება" [disabled] [ref=e1607]
+          - generic [ref=e1609]:
+            - generic [ref=e1611]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1612]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - generic [ref=e1617]:
+              - status [ref=e1618]:
+                - strong [ref=e1619]: იწყება
+                - generic [ref=e1620]: ობსერვატორიასთან შენი სესია იხსნება.
+              - button "დაიწყე დაკვირვება" [disabled] [ref=e1622]
+          - generic [ref=e1625]:
+            - generic [ref=e1627]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1628]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+                - paragraph:
+                  - text: დარჩენილი დრო
+                  - time: 24:00
+            - status [ref=e1634]:
+              - strong [ref=e1635]: კავშირი მყარდება
+              - generic [ref=e1636]: ველოდებით კამერის პირველ კადრს.
+          - generic [ref=e1637]:
+            - generic [ref=e1639]:
+              - generic [ref=e1640]:
+                - 'img "სიმულირებული პირდაპირი ხედი: Saturn" [ref=e1641]'
+                - generic [ref=e1642]: სიმულირებული
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+                - paragraph:
+                  - text: დარჩენილი დრო
+                  - time: 24:00
+            - status [ref=e1646]:
+              - strong [ref=e1647]: პირდაპირი ხედი
+              - generic [ref=e1648]: სიმულატორის გამოსახულება და არა ტელესკოპის კადრი.
+          - generic [ref=e1649]:
+            - generic [ref=e1651]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1652]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+                - paragraph:
+                  - text: დარჩენილი დრო
+                  - time: 24:00
+            - status [ref=e1658]:
+              - strong [ref=e1659]: კავშირი აღდგება
+              - generic [ref=e1660]: ობსერვატორიასთან კავშირი გაწყდა. ვცდილობთ თავიდან.
+          - generic [ref=e1661]:
+            - generic [ref=e1663]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1664]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - status [ref=e1670]:
+              - strong [ref=e1671]: ობსერვატორია კავშირგარეშეა
+              - generic [ref=e1672]: ობსერვატორია არ არის დაკავშირებული. პირდაპირი ხედი კავშირის აღდგენისთანავე დაბრუნდება.
+          - generic [ref=e1673]:
+            - generic [ref=e1675]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1676]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - status [ref=e1682]:
+              - strong [ref=e1683]: მისია ამინდის გამო შეჩერდა
+              - generic [ref=e1684]: ცა დაკვირვებისთვის უსაფრთხო არ არის. მისია გამოდარებას ელოდება.
+          - generic [ref=e1685]:
+            - generic [ref=e1687]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1688]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - status [ref=e1694]:
+              - strong [ref=e1695]: დრო ამოიწურა
+              - generic [ref=e1696]: შენი დაკვირვების სესია დასრულდა. კადრები შენს კოლექციაში რჩება.
+          - generic [ref=e1697]:
+            - generic [ref=e1699]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1700]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - status [ref=e1706]:
+              - strong [ref=e1707]: პირდაპირი ხედი დაიხურა
+              - generic [ref=e1708]: ამ მისიის პირდაპირი ხედი დაიხურა.
+          - generic [ref=e1709]:
+            - generic [ref=e1711]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1712]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - generic [ref=e1717]:
+              - status [ref=e1718]:
+                - strong [ref=e1719]: დაკვირვება შეწყდა
+                - generic [ref=e1720]: ტელესკოპი უსაფრთხოდაა. აქამდე გადაღებული კადრები კოლექციაში რჩება.
+              - generic [ref=e1721]:
+                - link "ჯავშნის ნახვა" [ref=e1722] [cursor=pointer]:
+                  - /url: /ka/app/bookings
+                - link "დაჯავშნე სხვა ღამე" [ref=e1724] [cursor=pointer]:
+                  - /url: /ka/app/book
+          - generic [ref=e1726]:
+            - generic [ref=e1728]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1729]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - generic [ref=e1734]:
+              - alert [ref=e1735]:
+                - strong [ref=e1736]: პირდაპირი ხედი ვერ გაიხსნა
+                - generic [ref=e1737]: ობსერვატორიის უსაფრთხოების შემოწმებამ ობიექტი ამ წუთას უარყო. სცადე რამდენიმე წუთში.
+              - button "სცადე თავიდან" [ref=e1739] [cursor=pointer]
+          - generic [ref=e1741]:
+            - generic [ref=e1743]:
+              - figure "ილუსტრაცია — არა ტელესკოპის კადრი" [ref=e1744]
+              - generic:
+                - paragraph:
+                  - generic: თბილისის ობსერვატორია
+                  - generic: ZWO ASI585MC · 1500 mm · f/10
+                - paragraph:
+                  - generic: სატურნი
+            - generic [ref=e1749]:
+              - alert [ref=e1750]:
+                - strong [ref=e1751]: რაღაც შეფერხდა
+                - generic [ref=e1752]: ჩვენმა სერვერებმა არ უპასუხეს. სცადე ცოტა ხანში.
+              - button "სცადე თავიდან" [ref=e1754] [cursor=pointer]
+      - region [ref=e1756]:
+        - generic [ref=e1757]:
+          - generic [ref=e1758]: "07"
+          - generic [ref=e1759]:
+            - heading "ზედდებული ფენები" [level=2] [ref=e1760]
+            - paragraph [ref=e1761]: მოდალი, გვერდითი პანელი, ჩამონათვალი და მინიშნება.
+            - paragraph [ref=e1762]: Brand Identity System v2.0 · §08 Surface mapping · §09 What Stellar must never be, 04
+        - generic [ref=e1764]:
+          - button "მოდალის გახსნა" [ref=e1765] [cursor=pointer]
+          - button "პანელის გახსნა" [ref=e1767] [cursor=pointer]
+          - generic [ref=e1769]:
+            - generic [ref=e1770]: დაკვირვების რეჟიმი
+            - generic [ref=e1771]:
+              - combobox "დაკვირვების რეჟიმი" [ref=e1772] [cursor=pointer]:
+                - option "მართვადი მისია" [selected]
+                - option "დაგეგმილი მისია"
+                - option "პირადი ობსერვატორია"
+              - generic: ⌄
+          - generic [ref=e1773]:
+            - generic "ინფორმაცია კოორდინატებზე" [ref=e1774]: J2000
+            - tooltip "კოორდინატები იყენებს J2000 ეპოქას"
+      - region [ref=e1775]:
+        - generic [ref=e1776]:
+          - generic [ref=e1777]: "08"
+          - generic [ref=e1778]:
+            - heading "ტაბები" [level=2] [ref=e1779]
+            - paragraph [ref=e1780]: კლავიატურით მართვადი კომპაქტური ნავიგაცია.
+            - paragraph [ref=e1781]: Brand Identity System v2.0 · §08 Surface mapping · §04 The 90 / 8 / 2 rule
+        - generic [ref=e1782]:
+          - tablist "ობიექტის მონაცემები" [ref=e1783]:
+            - tab "მიმოხილვა" [selected] [ref=e1784] [cursor=pointer]
+            - tab "ხილვადობა" [ref=e1785] [cursor=pointer]
+            - tab "აღჭურვილობა" [ref=e1786] [cursor=pointer]
+          - tabpanel "მიმოხილვა" [ref=e1787]: სამეცნიერო კონტექსტი და დაკვირვების მოკლე აღწერა.
+      - region [ref=e1788]:
+        - generic [ref=e1789]:
+          - generic [ref=e1790]: "09"
+          - generic [ref=e1791]:
+            - heading "ჩატვირთვა და აღდგენა" [level=2] [ref=e1792]
+            - paragraph [ref=e1793]: ჩატვირთვის, ცარიელი და შეცდომის მდგომარეობები.
+            - paragraph [ref=e1794]: Brand Identity System v2.0 · §02 Tone of voice · §04 Semantic colors
+        - generic [ref=e1795]:
+          - generic "პრევიუს ჩატვირთვა" [ref=e1796]
+          - status [ref=e1803]:
+            - generic [ref=e1804]: ○
+            - heading "სურათები ჯერ არ არის" [level=3] [ref=e1805]
+            - paragraph [ref=e1806]: დასრულებული მისიების დროს გადაღებული სურათები აქ გამოჩნდება.
+            - button "ობიექტების ნახვა" [ref=e1808] [cursor=pointer]
+          - alert [ref=e1810]:
+            - generic [ref=e1811]: "!"
+            - heading "ობსერვატორიის სტატუსი მიუწვდომელია" [level=3] [ref=e1812]
+            - paragraph [ref=e1813]: ბოლო დადასტურებული მდგომარეობა ინახება კავშირის აღდგენამდე.
+            - button "სცადე თავიდან" [ref=e1815] [cursor=pointer]
+      - region [ref=e1817]:
+        - generic [ref=e1818]:
+          - generic [ref=e1819]: "10"
+          - generic [ref=e1820]:
+            - heading "ფორმები" [level=2] [ref=e1821]
+            - paragraph [ref=e1822]: გასაგები ეტიკეტები, მინიშნებები და ვალიდაცია.
+            - paragraph [ref=e1823]: Brand Identity System v2.0 · §08 Surface mapping · §05 Typography (16px UI minimum)
+        - generic [ref=e1825]:
+          - heading "მისიის მოთხოვნა" [level=3] [ref=e1826]
+          - generic [ref=e1827]:
+            - generic [ref=e1828]: ობიექტის სახელი
+            - textbox "ობიექტის სახელი" [ref=e1830]:
+              - /placeholder: მესიეს ან გავრცელებული სახელი
+            - paragraph [ref=e1831]: ძიება იყენებს კატალოგურ და გავრცელებულ სახელებს.
+          - generic [ref=e1832]:
+            - generic [ref=e1833]: დაკვირვების შენიშვნები
+            - textbox "დაკვირვების შენიშვნები" [ref=e1835]:
+              - /placeholder: ამ მისიის დამატებითი შენიშვნები
+          - generic [ref=e1836]:
+            - generic [ref=e1837]: შეტყობინების ელფოსტა
+            - textbox "შეტყობინების ელფოსტა" [invalid] [ref=e1839]: observer@
+            - paragraph [ref=e1840]: შეიყვანე სწორი ელფოსტის მისამართი.
+          - generic [ref=e1841] [cursor=pointer]:
+            - checkbox "შემატყობინე დაკვირვების დაწყებისას" [checked] [ref=e1842]
+            - generic [ref=e1844]: შემატყობინე დაკვირვების დაწყებისას
+          - button "მოთხოვნის შემოწმება" [ref=e1845] [cursor=pointer]
+        - generic [ref=e1847]:
+          - heading "პაროლი" [level=3] [ref=e1848]
+          - status [ref=e1849]: პაროლი შეიცვალა. ყველა სხვა მოწყობილობაზე სესია დასრულდა.
+          - alert [ref=e1850]: ანგარიშის ცვლილება ახლა მიუწვდომელია. მოგვიანებით სცადე.
+          - button "პაროლის შეცვლა" [disabled] [ref=e1851]
+      - region [ref=e1854]:
+        - generic [ref=e1855]:
+          - generic [ref=e1856]: "11"
+          - generic [ref=e1857]:
+            - heading "ფირფიტების მარაო" [level=2] [ref=e1858]
+            - paragraph [ref=e1859]: სამი ფირფიტა კრემისფერ ჩარჩოებში მთავარი გვერდის სათაურის გვერდით, ყოველთვის ილუსტრაციის წარწერით. რბილი ჩრდილი ქვემოთ; არაფერი ანათებს.
+            - paragraph [ref=e1860]: Brand Identity System v2.0 · as amended by ADR-039 — the homepage
+        - figure "სამი პლანეტა, რომელსაც ტელესკოპი აკვირდება, დახატული ფირფიტებად" [ref=e1862]:
+          - generic [ref=e1863]:
+            - generic [ref=e1864]:
+              - generic [ref=e1866]: პლანეტა
+              - generic [ref=e1867]: იუპიტერი
+            - generic [ref=e1868]:
+              - generic [ref=e1870]: პლანეტა
+              - generic [ref=e1871]: სატურნი
+            - generic [ref=e1872]:
+              - generic [ref=e1874]: პლანეტა
+              - generic [ref=e1875]: მარსი
+          - generic [ref=e1876]: ილუსტრაცია — არა ტელესკოპის კადრი
+      - region [ref=e1877]:
+        - generic [ref=e1878]:
+          - generic [ref=e1879]: "12"
+          - generic [ref=e1880]:
+            - heading "მთავარი გვერდის სექციები" [level=2] [ref=e1881]
+            - paragraph [ref=e1882]: როგორ მიმდინარეობს სესია — ოთხი ნაბიჯი თხელ ხაზებს შორის, თითოეული იმით, სად დგას დღეს, და ამაღამინდელი ობიექტები პლატფორმიდან, ხაზებით გაყოფილ რიგებად.
+            - paragraph [ref=e1883]: Brand Identity System v2.0 · as amended by ADR-039 — the homepage
+        - generic [ref=e1884]:
+          - list [ref=e1885]:
+            - listitem [ref=e1886]:
+              - heading "დაჯავშნა" [level=3] [ref=e1892]
+              - paragraph [ref=e1893]: აირჩიე ობიექტი დღევანდელი დაკვირვებადი ციდან და დაჯავშნე დრო.
+              - generic [ref=e1894]: დღეს — სიმულაცია
+            - listitem [ref=e1895]:
+              - heading "მიბრუნება" [level=3] [ref=e1901]
+              - paragraph [ref=e1902]: შენს დროზე ტელესკოპი თბილისში შენი ობიექტისკენ მიბრუნდება.
+              - generic [ref=e1903]: დღეს — სიმულაცია
+            - listitem [ref=e1904]:
+              - heading "ყურება" [level=3] [ref=e1910]
+              - paragraph [ref=e1911]: პირდაპირ უყურებ მის კამერას და ხედავ, როგორ იკრიბება მოკლე ექსპოზიციებიდან უფრო მკაფიო გამოსახულება.
+              - generic [ref=e1912]: დღეს — სიმულაცია
+            - listitem [ref=e1913]:
+              - heading "შენახვა" [level=3] [ref=e1918]
+              - paragraph [ref=e1919]: გადაიღე დაგროვილი კადრი და შეინახე შენს კოლექციაში.
+              - generic [ref=e1920]: დღეს — სიმულაცია
+          - list [ref=e1921]:
+            - listitem [ref=e1922]:
+              - generic [ref=e1923]: "01"
+              - generic [ref=e1924]:
+                - paragraph [ref=e1925]: პლანეტა
+                - heading [level=3] [ref=e1926]:
+                  - link "სატურნი" [ref=e1927] [cursor=pointer]:
+                    - /url: /ka/app/missions/specimen-observable
+              - generic [ref=e1928]: ახლა დაკვირვებადია
+              - generic [ref=e1930]:
+                - generic [ref=e1931]:
+                  - term [ref=e1932]: მიმდინარე სიმაღლე
+                  - definition [ref=e1933]: 38°
+                - generic [ref=e1934]:
+                  - term [ref=e1935]: დაკვირვების დრო
+                  - definition [ref=e1936]: 19:10 – 05:40
+              - generic [ref=e1937]: →
+            - listitem [ref=e1938]:
+              - generic [ref=e1939]: "02"
+              - generic [ref=e1940]:
+                - paragraph [ref=e1941]: პლანეტა
+                - heading [level=3] [ref=e1942]:
+                  - link "ვენერა" [ref=e1943] [cursor=pointer]:
+                    - /url: /ka/app/missions/specimen-blocked
+              - generic [ref=e1944]: ჰორიზონტს ქვემოთაა
+              - generic [ref=e1946]:
+                - generic [ref=e1947]:
+                  - term [ref=e1948]: მიმდინარე სიმაღლე
+                  - definition [ref=e1949]: "-12°"
+                - generic [ref=e1950]:
+                  - term [ref=e1951]: დაკვირვების დრო
+                  - definition [ref=e1952]: 19:10 – 05:40
+              - generic [ref=e1953]: →
+      - region [ref=e1954]:
+        - generic [ref=e1955]:
+          - generic [ref=e1956]: "13"
+          - generic [ref=e1957]:
+            - heading "ობსერვატორიის სცენა" [level=2] [ref=e1958]
+            - paragraph [ref=e1959]: "ობსერვატორიის გვერდის ნაწილები მის მუქ ლურჯ ღამეზე: მდგომარეობა აბრად ხუთივე მნიშვნელობით, ადგილობრივი საათი, კამერის კადრი მთვარეზე მასშტაბით და წარწერით, და გზების პანელი. პანელები ბუნდოვნების გარეშე ცურავს; არაფერი ანათებს."
+            - paragraph [ref=e1960]: Brand Identity System v2.0 · as amended by ADR-041 — the observatory page
+        - generic [ref=e1961]:
+          - generic [ref=e1962]:
+            - generic [ref=e1963]: ხაზზეა
+            - generic [ref=e1965]: დაკვირვება მიმდინარეობს
+            - generic [ref=e1967]: ამინდის გამო შეჩერებულია
+            - generic [ref=e1969]: კავშირი შეფერხებულია
+            - generic [ref=e1971]: ხაზგარეშეა
+          - generic [ref=e1973]:
+            - generic [ref=e1974]: Wed, Oct 7, 2026
+            - time [ref=e1975]: 19:52
+            - generic [ref=e1976]: ადგილობრივი დრო · თბილისი
+          - figure "კამერის კადრი მთვარეზე, მასშტაბით" [ref=e1978]:
+            - generic [ref=e1979]:
+              - generic [ref=e1986]:
+                - generic [ref=e1987]: 25,5′ × 14,4′
+                - text: კამერის კადრი
+              - generic [ref=e1988]:
+                - generic [ref=e1989]: 31,1′
+                - text: მთვარე, საშუალო ზომა
+            - generic [ref=e1990]: ილუსტრაცია — არა ტელესკოპის გამოსახულება
+          - navigation "როგორ დაიწყო" [ref=e1991]:
+            - link "01 დაჯავშნე დრო დაჯავშნა" [ref=e1992] [cursor=pointer]:
+              - /url: "#observatory-scene-title"
+              - generic [ref=e1993]: "01"
+              - generic [ref=e1994]: დაჯავშნე დრო
+              - generic [ref=e1995]: დაჯავშნა →
+            - link "02 უყურე პირდაპირ სესიას ყურება" [ref=e1996] [cursor=pointer]:
+              - /url: "#observatory-scene-title"
+              - generic [ref=e1997]: "02"
+              - generic [ref=e1998]: უყურე პირდაპირ სესიას
+              - generic [ref=e1999]: ყურება →
+            - link "03 ნახე ამაღამ ხილული ობიექტები დათვალიერება" [ref=e2000] [cursor=pointer]:
+              - /url: "#observatory-scene-title"
+              - generic [ref=e2001]: "03"
+              - generic [ref=e2002]: ნახე ამაღამ ხილული ობიექტები
+              - generic [ref=e2003]: დათვალიერება →
+  - alert [ref=e2004]
+```

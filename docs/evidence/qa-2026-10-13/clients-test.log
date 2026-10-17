@@ -1,0 +1,17 @@
+
+> darkview-clients@0.1.0 test
+> npm run test --workspaces --if-present
+
+
+> @darkview/web@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/nika/Desktop/Stellar Observatory/part-2-clients/apps/web
+
+
+ Test Files  47 passed (47)
+      Tests  273 passed (273)
+   Start at  18:16:36
+   Duration  108.59s (transform 4.00s, setup 42.79s, import 18.56s, tests 33.15s, environment 194.74s)
+
