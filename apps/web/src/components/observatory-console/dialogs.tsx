@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import type { Station } from '@/lib/observatory-sim/sim-stations';
-import { TELESCOPE_TARGETS, sortGraded, targetPosition, type TargetKind, type TargetOrder, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
+import { TELESCOPE_TARGETS, manualTarget, parseDec, parseRa, sortGraded, targetPosition, type TargetKind, type TargetOrder, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
+import { exposureLabel } from '@/lib/observatory-sim/camera';
 import { AltCurve } from './charts';
 import { useCopy } from './copy-context';
 import Icon from './icons';
@@ -101,6 +102,19 @@ export function TargetsDialog({ night, station, tonightId, onPoint, onClose }: {
     return sorted.slice(0, 60);
   }, [graded, tab, query, order, tonightId]);
   const paths = useMemo(() => new Map(rows.map((r) => [r.target.id, altitudePath(r.target, station, span, 30)])), [rows, station, span]);
+  const [ra, setRa] = useState('');
+  const [dec, setDec] = useState('');
+  const [coordError, setCoordError] = useState(false);
+  const gotoCoordinates = () => {
+    const h = parseRa(ra);
+    const d = parseDec(dec);
+    if (h === null || d === null) {
+      setCoordError(true);
+      return;
+    }
+    setCoordError(false);
+    onPoint(manualTarget(h, d));
+  };
 
   return (
     <Modal width={860} night={night} onClose={onClose} labelledBy="sdo-targets-t" head={<><Icon name="search" size={16} /><span id="sdo-targets-t">{t.targets.title}</span></>}>
@@ -152,6 +166,13 @@ export function TargetsDialog({ night, station, tonightId, onPoint, onClose }: {
             );
           })}
         </ul>
+        <form className="sdo-coords" onSubmit={(e) => { e.preventDefault(); gotoCoordinates(); }} aria-label={t.targets.coordinates}>
+          <span className="sdo-lbl">{t.targets.coordinates}</span>
+          <label><span className="sdo-sr">{t.targets.ra}</span><input className="sdo-input" inputMode="decimal" placeholder={t.targets.ra} value={ra} onChange={(e) => setRa(e.target.value)} aria-invalid={coordError || undefined} /></label>
+          <label><span className="sdo-sr">{t.targets.dec}</span><input className="sdo-input" inputMode="decimal" placeholder={t.targets.dec} value={dec} onChange={(e) => setDec(e.target.value)} aria-invalid={coordError || undefined} /></label>
+          <button type="submit" className="sdo-btn">{t.targets.goto}</button>
+          {coordError && <p className="sdo-note sdo-coords__err" role="alert" style={{ padding: 0 }}>{t.targets.invalid}</p>}
+        </form>
         <div className="sdo-targets__foot">
           <span>{t.targets.foot(station.name)}</span>
           <span>{t.targets.refusedBelow}</span>
@@ -244,7 +265,7 @@ export function CaptureDialog({ night, frame, onClose }: { night: boolean; frame
         <div className="sdo-capture__img">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={frame.dataUrl} alt={t.capture.frameAlt(frame.targetName, frame.n)} />
-          <span className="sdo-hud sdo-glass sdo-hud--tl">{t.capture.hud(frame.n, frame.subs, frame.exposureSec)}</span>
+          <span className="sdo-hud sdo-glass sdo-hud--tl">{t.capture.hud(frame.n, frame.subs, exposureLabel(frame.exposureSec))}</span>
         </div>
         <div className="sdo-capture__info">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -273,7 +294,7 @@ export function CaptureDialog({ night, frame, onClose }: { night: boolean; frame
           <dl className="sdo-dl">
             {([
               [t.capture.captured, `${clock(frame.capturedAt, 'UTC')} UTC`],
-              [t.capture.exposure, `${frame.subs} × ${frame.exposureSec} s`],
+              [t.capture.exposure, `${frame.subs} × ${exposureLabel(frame.exposureSec)}`],
               [t.capture.optics, frame.optics],
               [t.capture.seeing, frame.seeing],
               [t.capture.scale, frame.scale],

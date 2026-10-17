@@ -8,6 +8,7 @@
  */
 
 import { getSunAltitude } from './dark-window';
+import { TBILISI_8SE } from './instrument';
 import { LIMITS } from './safety';
 import { NODES } from './nodes';
 import type { Instrument, ObservatoryNode } from './types';
@@ -25,17 +26,8 @@ export type Station = ObservatoryNode & {
 /** Minutes of telescope time a connection buys in the console. */
 export const SESSION_MINUTES = 120;
 
-const NEXSTAR_8SE: Instrument = {
-  optics: 'Celestron NexStar 8SE',
-  apertureMm: 203,
-  focalLengthMm: 2032,
-  mount: 'Single-fork altazimuth, GoTo',
-  camera: 'ZWO ASI585MC',
-  sensorWidthMm: 11.18,
-  sensorHeightMm: 6.32,
-  pixelSizeUm: 2.9,
-  suitedTo: ['Moon', 'Planets', 'BrightDeepSky'],
-};
+/** The instrument the maintainer named for the station (ADR-054 §1). */
+const NEXSTAR_8SE: Instrument = TBILISI_8SE;
 
 const EVOLUTION_925: Instrument = {
   optics: 'Celestron Evolution 9.25',
@@ -62,7 +54,7 @@ const simulated = (
 });
 
 export const STATIONS: Station[] = [
-  { ...NODES[0], sessionMinutes: SESSION_MINUTES, elevationM: 450, simulated: true },
+  { ...NODES[0], instrument: NEXSTAR_8SE, sessionMinutes: SESSION_MINUTES, elevationM: 450, simulated: true },
   simulated({
     id: 'abastumani-sim',
     name: 'Abastumani Ridge',

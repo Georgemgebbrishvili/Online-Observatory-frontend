@@ -1,23 +1,31 @@
 /**
- * Drawing a frame the way the sensor would produce it.
+ * Drawing a frame the way the sensor would record it (ADR-054 §4).
  *
- * A reference photograph supplies the content. Everything else — how large the
- * object is in the field, how badly the seeing smears it, how much the sky glow
- * lifts the background, how much noise a single sub carries — is computed from
- * the instrument, the site and the integration time. That is the difference
- * between a simulator and a slideshow.
+ * Everything inside the field is drawn where it really is, at its true angular size,
+ * from one projection around the pointing: the anonymous star field fixed to the
+ * sky, the catalogue's deep-sky objects, the planets with their phases and moons.
+ * Slew by hand and the whole sky slides; track and it holds; leave tracking off and
+ * it drifts. No object is pinned to the screen, because none is drawn relative to it.
+ *
+ * What the instrument and the air do to the light — the seeing's blur, the
+ * out-of-focus donut of an obstructed telescope, atmospheric extinction and
+ * dispersion by altitude, burn-out past the sensor's full well, the sky's glow by
+ * Bortle class and moonlight, cloud — is computed, not painted.
  */
 
+import { burnOut, limitingMagnitude } from './camera';
+import { dispersionArcsec, extinctionMag } from './optics';
+import type { AltAz } from './safety';
+import { airmass } from './site-time';
 import {
   altAzToRaDec,
+  BRIGHTEST_FIELD_MAG,
   fieldStarsNear,
-  limitingMagnitude,
   northAngleDeg,
   raDecToAltAz,
   tangentOffsetDeg,
   type SkyObject,
 } from './sky-field';
-import type { AltAz } from './safety';
 
 export type FrameInputs = {
   /** Canvas size in device-independent pixels. */
@@ -25,44 +33,45 @@ export type FrameInputs = {
   height: number;
   /** Field of view across the long axis, arcminutes. */
   fovArcmin: number;
-  /** Apparent size of the target, arcminutes. */
-  targetArcmin: number;
-  /** Seeing FWHM in arcseconds — 1.5 is excellent, 4 is poor. */
+  /** Seeing FWHM in arcseconds. */
   seeingArcsec: number;
-  /** Dawes limit for the aperture — the floor stacking can approach, never beat. */
+  /** Dawes' limit for the aperture: the floor stacking approaches, never beats. */
   diffractionArcsec: number;
-  /** Arcseconds per sensor pixel at the current focal length. */
-  plateScaleArcsecPx: number;
-  /** Bortle class at the site, 1-9. Sets the background level. */
+  /** The secondary's shadow as a fraction of the aperture, for the defocused donut. */
+  obstruction: number;
+  /** Focuser steps from best focus; zero is sharp. */
+  defocus: number;
+  /** Bortle class at the site, 1–9. */
   bortle: number;
-  /** Subframes stacked so far. Noise falls as the square root of this. */
+  /** Moonlight on the sky tonight, 0–1. */
+  moonlight: number;
+  /** Cloud across the field, 0–1: thins the stars and lifts the background. */
+  cloud: number;
+  /** Subframes in the stack. Noise falls as its square root. */
   subs: number;
-  /**
-   * Stack depth used for the atmospheric shift only.
-   *
-   * In the split comparison both halves must sit on the same pixels or the
-   * seam reads as a broken image rather than a before and after. Registering
-   * them is also the truer statement: stacking *aligns* frames, so what a
-   * stack removes is the noise and the blur, not the object's position.
-   */
-  jitterSubs?: number;
-  /** Camera gain, 0-100. Raises signal and noise together. */
+  /** Camera gain in ZWO units, 0–600. */
   gain: number;
-  /** Field rotation accumulated since the stack began, degrees. */
-  rotationDeg: number;
-  /** How far off-centre the target still is, as a fraction of frame width. */
-  centeringOffset: number;
-  /** Deterministic seed so a given pointing always draws the same field. */
-  seed: number;
-  /**
-   * How many target diameters the reference photo spans across its width.
-   * Saturn's rings run about 2.3 globe diameters, so a ring-cropped photo is
-   * that wide; a tight planetary disc is barely wider than 1.
-   */
-  frameSpan: number;
+  exposureSec: number;
+  /** Illumination at the field's edge, 0–1: the train's vignetting. */
+  edgeIllumination: number;
 };
 
-/** Mulberry32 — small, fast, and repeatable, so a field does not shimmer. */
+export type LiveScene = {
+  pointing: AltAz;
+  /** How far the sky moved across the sensor during the exposure, degrees (x right, y up). */
+  drift: { x: number; y: number };
+  latDeg: number;
+  lstHours: number;
+  objects: SkyObject[];
+  image: (src: string) => HTMLImageElement | null;
+  sunAltitudeDeg: number;
+};
+
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+/** Gaussian sigma for a FWHM: CSS blur() takes sigma, seeing is quoted as FWHM. */
+const FWHM_TO_SIGMA = 1 / 2.355;
+
+/** Mulberry32: small, fast, repeatable, so a field does not shimmer. */
 function rng(seed: number) {
   let a = seed >>> 0;
   return () => {
@@ -73,172 +82,87 @@ function rng(seed: number) {
   };
 }
 
+/* --- the sky's own light -------------------------------------------------- */
+
 /**
- * Sky background luminance from the site's Bortle class, 0-1.
- *
- * Even a Bortle 8 city sky is dark grey on a short sub, not the pale fog that
- * a naive linear ramp produces — the eye adapts, the sensor does not, and an
- * over-bright background hides exactly the faint structure the simulator is
- * supposed to reveal as the stack builds.
+ * Sky background luminance, 0–1, from the Bortle class, the Moon and the cloud. A
+ * Bortle 8 sky on a short sub is dark grey, not fog; moonlight and cloud lift it.
  */
-function skyGlow(bortle: number): number {
+function skyGlow(i: FrameInputs): number {
   const ceiling = 0.13;
-  return Math.min(ceiling, Math.max(0.008, (bortle - 1) / 8) * ceiling);
+  const city = Math.max(0.008, (i.bortle - 1) / 8) * ceiling;
+  return Math.min(0.3, city + i.moonlight * 0.06 + i.cloud * city * 1.5);
 }
 
 export function drawSky(ctx: CanvasRenderingContext2D, i: FrameInputs, wash = 0) {
-  const glow = skyGlow(i.bortle) * (0.6 + i.gain / 150);
+  const glow = skyGlow(i) * (0.6 + i.gain / 900);
   const level = Math.round(glow * 255);
-  // Light pollution is warm and brightest toward the horizon; a flat fill
-  // would read as a black rectangle rather than a real sky.
   const gradient = ctx.createLinearGradient(0, i.height, 0, 0);
-  // Light pollution is warm and strongest toward the horizon, but only just —
-  // a heavy tint reads as brown haze rather than sky.
   gradient.addColorStop(0, `rgb(${level + 5}, ${level + 3}, ${level})`);
   gradient.addColorStop(1, `rgb(${Math.max(0, level - 2)}, ${Math.max(0, level - 1)}, ${level})`);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, i.width, i.height);
 
-  // Daylight. The sensor does not adapt the way the eye does: a sub of any
-  // real length under a lit sky is pale blue, and the stars are gone.
+  // Daylight. The sensor does not adapt the way the eye does: a sub of any real
+  // length under a lit sky is pale blue, and the stars are gone.
   if (wash > 0) {
     ctx.fillStyle = `rgba(158, 186, 232, ${Math.min(1, wash).toFixed(3)})`;
     ctx.fillRect(0, 0, i.width, i.height);
   }
 }
 
-/**
- * Field stars.
- *
- * At 26 arcminutes there are no famous stars in frame — just anonymous field
- * stars, which is exactly what a real capture looks like. Count scales with
- * field area and falls away under a bright sky.
- */
-export function drawFieldStars(ctx: CanvasRenderingContext2D, i: FrameInputs) {
-  const random = rng(i.seed);
-  const areaFactor = (i.fovArcmin / 26) ** 2;
-  const count = Math.round(90 * areaFactor * (1 - skyGlow(i.bortle)));
-  const starBlur = blurPx(i);
-
-  for (let n = 0; n < count; n++) {
-    const x = random() * i.width;
-    const y = random() * i.height;
-    // Faint stars vastly outnumber bright ones; the cube pushes the
-    // distribution that way without needing a real luminosity function.
-    const brightness = random() ** 3;
-    const radius = Math.max(0.4, starBlur * (0.35 + brightness * 0.5));
-
-    const halo = ctx.createRadialGradient(x, y, 0, x, y, radius * 2.4);
-    halo.addColorStop(0, `rgba(255, 252, 245, ${0.25 + brightness * 0.75})`);
-    halo.addColorStop(1, 'rgba(255, 252, 245, 0)');
-    ctx.fillStyle = halo;
-    ctx.beginPath();
-    ctx.arc(x, y, radius * 2.4, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
+/* --- blur, focus, jitter --------------------------------------------------- */
 
 /**
- * Effective blur, in display pixels.
- *
- * This is lucky imaging in one line. A single frame is smeared by the seeing;
- * stacking the best of many averages the turbulence out and the result walks
- * toward the aperture's diffraction limit, which it can never beat. It is why
- * a planet starts as a soft blob and resolves into belts and a Cassini
- * division as the stack builds — the thing the simulator most needs to show.
+ * Lucky imaging in one line: a single frame is smeared by the seeing; the stack of
+ * the best of many walks toward the aperture's diffraction limit, never past it.
  */
-export function effectiveBlurArcsec(i: {
-  seeingArcsec: number;
-  diffractionArcsec: number;
-  subs: number;
-}): number {
+export function effectiveBlurArcsec(i: { seeingArcsec: number; diffractionArcsec: number; subs: number }): number {
   const averaged = i.seeingArcsec / Math.sqrt(Math.max(1, i.subs));
   return Math.max(i.diffractionArcsec, averaged);
 }
 
-/** Gaussian sigma for a given FWHM. CSS blur() takes sigma, seeing is quoted as FWHM. */
-const FWHM_TO_SIGMA = 1 / 2.355;
+function arcsecPerPx(i: FrameInputs): number {
+  return (i.fovArcmin * 60) / i.width;
+}
 
 function blurPx(i: FrameInputs): number {
-  const arcsecPerPx = (i.fovArcmin * 60) / i.width;
-  return Math.max(0.3, (effectiveBlurArcsec(i) / arcsecPerPx) * FWHM_TO_SIGMA);
+  return Math.max(0.3, (effectiveBlurArcsec(i) / arcsecPerPx(i)) * FWHM_TO_SIGMA);
 }
 
 /**
- * Atmospheric wobble for the current frame, in display pixels.
- *
- * Seeing does not only blur, it moves the image around between frames. The
- * stack aligns them, so the shake dies away as subs accumulate.
+ * The defocused star's radius in display pixels. Each focuser step throws the image
+ * about 0.9″ out on an f/10; the SCT's secondary leaves a hole in the middle.
+ */
+function donutPx(i: FrameInputs): number {
+  return (Math.abs(i.defocus) * 0.9) / arcsecPerPx(i);
+}
+
+/**
+ * Atmospheric wobble for the current frame, in display pixels. Seeing moves the
+ * image between frames as well as blurring it; the stack aligns them, so the shake
+ * dies away as subs accumulate.
  */
 export function jitterPx(i: FrameInputs, frame: number): { x: number; y: number } {
-  const arcsecPerPx = (i.fovArcmin * 60) / i.width;
-  const amplitude = (i.seeingArcsec / arcsecPerPx) / Math.sqrt(Math.max(1, i.jitterSubs ?? i.subs));
-  // Two incommensurate frequencies read as turbulence rather than a wobble.
+  const amplitude = (i.seeingArcsec / arcsecPerPx(i)) / Math.sqrt(Math.max(1, i.subs));
   return {
     x: Math.sin(frame * 0.31) * amplitude * 0.5 + Math.sin(frame * 0.11) * amplitude * 0.3,
     y: Math.cos(frame * 0.27) * amplitude * 0.5 + Math.cos(frame * 0.13) * amplitude * 0.3,
   };
 }
 
-/**
- * The target itself, at its true angular size in this field.
- *
- * Jupiter really is 2.5% of the frame width, and M31 really does overflow it
- * six times over. Scaling to the viewport instead would be the one lie that
- * makes the whole exercise worthless.
- */
-/**
- * How many pixels across the target is in this frame.
- *
- * The single number the whole simulation rests on: scale to the viewport
- * instead and Jupiter becomes a dinner plate, which is the one lie that would
- * make the exercise worthless.
- */
+/** How many display pixels across an object of this angular size is in this frame. */
 export function targetDiameterPx(targetArcmin: number, fovArcmin: number, widthPx: number): number {
   return (targetArcmin / fovArcmin) * widthPx;
 }
 
-export function drawTarget(
-  ctx: CanvasRenderingContext2D,
-  image: HTMLImageElement,
-  i: FrameInputs,
-  frame: number,
-) {
-  const diameterPx = targetDiameterPx(i.targetArcmin, i.fovArcmin, i.width);
-  // Honour the photo's own proportions. Forcing a 640x310 ring-crop of Saturn
-  // into a square stretches the globe into an egg.
-  const drawW = diameterPx * i.frameSpan;
-  const drawH = image.naturalWidth ? drawW * (image.naturalHeight / image.naturalWidth) : drawW;
-  const shake = jitterPx(i, frame);
-  const cx = i.width / 2 + i.centeringOffset * i.width + shake.x;
-  const cy = i.height / 2 + shake.y;
+/* --- noise ---------------------------------------------------------------- */
 
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate((i.rotationDeg * Math.PI) / 180);
-  // Astronomical signal adds to the sky rather than covering it.
-  ctx.globalCompositeOperation = 'lighter';
-  // Contrast climbs with the stack: a single sub is too noisy to stretch, and
-  // stretching it is exactly the mistake the sources warn against.
-  const contrast = 1 + Math.min(0.45, Math.log2(Math.max(1, i.subs)) * 0.09);
-  ctx.filter = `blur(${blurPx(i).toFixed(2)}px) contrast(${contrast.toFixed(2)}) brightness(1.06)`;
-  ctx.drawImage(image, -drawW / 2, -drawH / 2, drawW, drawH);
-  ctx.restore();
-}
-
-/**
- * Sensor noise, falling as the square root of the stack.
- *
- * One sub is mostly noise; sixteen is four times cleaner. This is the whole
- * reason live stacking exists, so it is the one thing the simulator must get
- * qualitatively right.
- */
-export function drawNoise(ctx: CanvasRenderingContext2D, i: FrameInputs, tile: CanvasImageSource) {
-  const amplitude = (0.5 + i.gain / 120) / Math.sqrt(Math.max(1, i.subs));
-
+/** Sensor noise on the stack, as `frameNoise` sized it: one sub is grain, sixteen are four times cleaner. */
+export function drawNoise(ctx: CanvasRenderingContext2D, i: FrameInputs, tile: CanvasImageSource, amplitude: number) {
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
-  ctx.globalAlpha = Math.min(0.6, amplitude);
+  ctx.globalAlpha = clamp(amplitude, 0, 0.6);
   const pattern = ctx.createPattern(tile, 'repeat');
   if (pattern) {
     ctx.fillStyle = pattern;
@@ -254,7 +178,6 @@ export function makeNoiseTile(size = 96): HTMLCanvasElement {
   canvas.height = size;
   const ctx = canvas.getContext('2d');
   if (!ctx) return canvas;
-
   const data = ctx.createImageData(size, size);
   for (let p = 0; p < data.data.length; p += 4) {
     const v = Math.random() * 255;
@@ -267,117 +190,101 @@ export function makeNoiseTile(size = 96): HTMLCanvasElement {
   return canvas;
 }
 
-/**
- * One complete frame, so the same scene can be drawn twice under different
- * stack depths and clipped side by side. That comparison — a single raw sub
- * against the built stack — is the clearest statement the simulator makes
- * about what stacking actually buys you.
- */
-export function drawScene(
-  ctx: CanvasRenderingContext2D,
-  i: FrameInputs,
-  frame: number,
-  opts: { image: HTMLImageElement | null; showFieldStars: boolean; showTarget: boolean },
-) {
-  drawSky(ctx, i);
-  if (opts.showFieldStars) drawFieldStars(ctx, i);
-  if (opts.image && opts.showTarget) drawTarget(ctx, opts.image, i, frame);
-}
-
-/* --- the live frame ----------------------------------------------------- */
-
-export type LiveScene = {
-  pointing: AltAz;
-  /** Signed axis rates, degrees per second. A moving field streaks. */
-  azRate: number;
-  altRate: number;
-  latDeg: number;
-  lstHours: number;
-  objects: SkyObject[];
-  image: (src: string) => HTMLImageElement | null;
-  exposureSec: number;
-  sunAltitudeDeg: number;
-};
-
-/** Frame time the streaks are integrated over: a planetary camera at 30 fps. */
-const STREAK_S = 1 / 30;
-
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+/* --- the live frame -------------------------------------------------------- */
 
 /**
- * One live frame, built from the sky rather than from a single target.
- *
- * Whatever is inside the field at the current pointing is drawn where it
- * really is — the anonymous star field, the catalogue objects, the planets
- * and their moons — so steering by hand shows the sky sliding past at the
- * commanded rate, and a target arrives at the edge of the frame before it
- * is centred rather than materialising in the middle.
+ * One frame, built from the sky. Whatever is inside the field at the pointing is drawn
+ * where it is, so a hand slew shows the sky sliding at the commanded rate and a
+ * target arrives from the edge of the frame rather than materialising in the middle.
  */
-export function drawLiveScene(
-  ctx: CanvasRenderingContext2D,
-  i: FrameInputs,
-  frame: number,
-  s: LiveScene,
-) {
+/** How far beyond the frame a slewing sub looks for stars whose trails cross it. */
+const MAX_TRAIL_SEARCH_DEG = 1.5;
+
+export function drawLiveScene(ctx: CanvasRenderingContext2D, i: FrameInputs, frame: number, s: LiveScene) {
   const pxPerDeg = i.width / (i.fovArcmin / 60);
-  // Twilight ends at -12 degrees for the sky; the wash ramps from there.
+  // Astronomical twilight ends at -18°; the wash ramps from -12° up.
   const daylight = clamp((s.sunAltitudeDeg + 12) / 18, 0, 1);
-  drawSky(ctx, i, daylight * clamp(s.exposureSec / 0.004, 0.35, 1));
+  drawSky(ctx, i, daylight * clamp(i.exposureSec / 0.004, 0.35, 1));
 
-  const limit = limitingMagnitude(s.exposureSec, i.subs, i.bortle) - daylight * 14;
+  const am = airmass(s.pointing.altitude) ?? 10;
+  const extinction = extinctionMag(am);
+  const limit = limitingMagnitude(i.exposureSec, i.gain, i.subs, i.bortle) - daylight * 14 - extinction - i.cloud * 4 - i.moonlight * 1.2;
   const north = northAngleDeg(s.pointing, s.latDeg, s.lstHours);
   const shake = jitterPx(i, frame);
   const sigma = blurPx(i);
-  const cosAlt = Math.cos((s.pointing.altitude * Math.PI) / 180);
-  const streak = {
-    x: -s.azRate * cosAlt * pxPerDeg * STREAK_S,
-    y: s.altRate * pxPerDeg * STREAK_S,
-  };
+  const donut = donutPx(i);
+  const streak = { x: s.drift.x * pxPerDeg, y: -s.drift.y * pxPerDeg };
 
   const project = (o: AltAz) => {
     const d = tangentOffsetDeg(s.pointing, o);
     return { x: i.width / 2 + d.x * pxPerDeg + shake.x, y: i.height / 2 - d.y * pxPerDeg + shake.y };
   };
-  const margin = 40;
+  const margin = 40 + Math.hypot(streak.x, streak.y);
   const inFrame = (p: { x: number; y: number }, reach: number) =>
     p.x > -reach - margin && p.x < i.width + reach + margin && p.y > -reach - margin && p.y < i.height + reach + margin;
 
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
 
+  // A trailed star spreads its light along the trail, so each pixel of it is fainter by
+  // the trail's length over the star's width: a sub exposed through a slew keeps only
+  // the bright stars, as the sensor would.
+  const trail = Math.hypot(streak.x, streak.y);
+  const starLimit = limit - (trail > 1 ? 2.5 * Math.log10(Math.max(1, trail / Math.max(1, sigma * 2))) : 0);
   const eq = altAzToRaDec(s.pointing, s.latDeg, s.lstHours);
-  const radiusDeg = Math.hypot(i.width, i.height) / pxPerDeg / 2 + 0.05;
-  for (const star of fieldStarsNear(eq, radiusDeg)) {
-    if (star.mag > limit) continue;
-    const p = project(raDecToAltAz(star, s.latDeg, s.lstHours));
-    if (!inFrame(p, 0)) continue;
-    drawStar(ctx, p.x, p.y, limit - star.mag, star.tint, sigma, streak);
-  }
-
-  // Extended objects sit behind the planets, and stars on top of everything —
-  // a Galilean moon in transit is in front of the disc.
-  const order: Record<SkyObject['kind'], number> = { dso: 0, body: 1, star: 2 };
-  const objects = [...s.objects].sort((a, b) => order[a.kind] - order[b.kind]);
-
-  for (const o of objects) {
-    const p = project(o);
-    const diameter = targetDiameterPx(o.sizeArcmin, i.fovArcmin, i.width) * (o.frameSpan ?? 1);
-    if (!inFrame(p, diameter / 2 + 30)) continue;
-
-    if (o.kind === 'star') {
-      if (o.mag > limit) continue;
-      drawStar(ctx, p.x, p.y, limit - o.mag, 0.45, sigma, streak);
-    } else if (o.kind === 'body') {
-      drawBody(ctx, i, o, p, north, sigma, s);
-    } else {
-      drawDeepSky(ctx, i, o, p, north, sigma, s);
+  // Stars whose trails reach in from further than this are left out: past it a slew's
+  // sub is a smear, and searching the whole path would be millions of stars.
+  const reachDeg = Math.min(Math.hypot(s.drift.x, s.drift.y), MAX_TRAIL_SEARCH_DEG);
+  const radiusDeg = Math.hypot(i.width, i.height) / pxPerDeg / 2 + 0.05 + reachDeg;
+  const look = { sigma, donut, obstruction: i.obstruction, streak };
+  if (starLimit > BRIGHTEST_FIELD_MAG) {
+    for (const star of fieldStarsNear(eq, radiusDeg)) {
+      if (star.mag > starLimit) continue;
+      const p = project(raDecToAltAz(star, s.latDeg, s.lstHours));
+      if (!inFrame(p, donut)) continue;
+      drawStar(ctx, p.x, p.y, starLimit - star.mag, star.tint, look);
     }
   }
 
+  // Extended objects sit behind the planets, and stars on top of everything: a
+  // Galilean moon in transit is in front of the disc.
+  const order: Record<SkyObject['kind'], number> = { dso: 0, body: 1, star: 2 };
+  const objects = [...s.objects].sort((a, b) => order[a.kind] - order[b.kind]);
+  for (const o of objects) {
+    const p = project(o);
+    const diameter = targetDiameterPx(o.sizeArcmin, i.fovArcmin, i.width) * (o.frameSpan ?? 1);
+    if (!inFrame(p, diameter / 2 + 30 + donut)) continue;
+    if (o.kind === 'star') {
+      if (o.mag > starLimit) continue;
+      drawStar(ctx, p.x, p.y, starLimit - o.mag, 0.45, look);
+    } else if (o.kind === 'body') {
+      drawBody(ctx, i, o, p, north, look, s, extinction);
+    } else {
+      drawDeepSky(ctx, i, o, p, north, sigma, s, limit);
+    }
+  }
   ctx.restore();
+
+  // The train's vignetting, and cloud's veil: both over everything, as they are in a frame.
+  if (i.edgeIllumination < 0.95) {
+    const v = ctx.createRadialGradient(i.width / 2, i.height / 2, i.width * 0.3, i.width / 2, i.height / 2, i.width * 0.62);
+    v.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    v.addColorStop(1, `rgba(0, 0, 0, ${(1 - i.edgeIllumination).toFixed(2)})`);
+    ctx.fillStyle = v;
+    ctx.fillRect(0, 0, i.width, i.height);
+  }
+  if (i.cloud > 0.02) {
+    const level = Math.round(skyGlow(i) * 255 * 1.6);
+    ctx.fillStyle = `rgba(${level + 8}, ${level + 6}, ${level + 2}, ${(i.cloud * 0.5).toFixed(2)})`;
+    ctx.fillRect(0, 0, i.width, i.height);
+  }
 }
 
-/** Star colour by a 0-1 tint: blue-white through white to orange. */
+/* --- stars ----------------------------------------------------------------- */
+
+type Look = { sigma: number; donut: number; obstruction: number; streak: { x: number; y: number } };
+
+/** Star colour by a 0–1 tint: blue-white through white to orange. */
 function starColor(tint: number): [number, number, number] {
   if (tint < 0.5) {
     const t = tint / 0.5;
@@ -388,37 +295,40 @@ function starColor(tint: number): [number, number, number] {
 }
 
 /**
- * A star, as the sensor records it: a seeing-blurred spot whose size and
- * brightness grow with how far above the limit it sits. Past saturation the
- * spot blooms, which is why Vega on a one-second sub is a blob and not a dot.
- * This is an SCT, so there are no diffraction spikes.
+ * A star as the sensor records it: a seeing-blurred spot whose size and brightness
+ * grow with how far above the limit it sits; past saturation it blooms. Out of focus
+ * it opens into the ring of an obstructed telescope. Moving, its light spreads along
+ * its trail. An SCT has no spider, so there are no spikes.
  */
-function drawStar(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  excess: number,
-  tint: number,
-  sigma: number,
-  streak: { x: number; y: number },
-) {
+function drawStar(ctx: CanvasRenderingContext2D, x: number, y: number, excess: number, tint: number, look: Look) {
   const e = Math.max(0, excess);
   const bloom = e > 6 ? Math.pow(1.35, e - 6) : 1;
-  const radius = Math.min(60, Math.max(0.8, sigma * (0.7 + Math.min(e, 6) * 0.3) * bloom));
-  // A capture program stretches the display, so a star at the limit is a
-  // visible speck rather than a value hidden in the noise.
-  const alpha = Math.min(1, 0.32 + e * 0.15);
   const [r, g, b] = starColor(tint);
-  const length = Math.hypot(streak.x, streak.y);
+  const length = Math.hypot(look.streak.x, look.streak.y);
+
+  if (look.donut > 1.5) {
+    // The light is spread over the ring: a faint star vanishes, a bright one is a bright ring.
+    const outer = look.donut + look.sigma;
+    const inner = look.donut * look.obstruction;
+    const alpha = clamp((0.2 + e * 0.12) * Math.min(1, (look.sigma * 3) / outer), 0, 1);
+    ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})`;
+    ctx.lineWidth = Math.max(1, outer - inner);
+    ctx.beginPath();
+    ctx.arc(x, y, (outer + inner) / 2, 0, Math.PI * 2);
+    ctx.stroke();
+    return;
+  }
+
+  const radius = Math.min(60, Math.max(0.8, look.sigma * (0.7 + Math.min(e, 6) * 0.3) * bloom));
+  const alpha = Math.min(1, 0.32 + e * 0.15);
 
   if (length > 1) {
-    // The light of a moving star is spread along its trail.
-    ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${(alpha * Math.max(0.3, Math.min(1, (radius * 2.5) / length))).toFixed(3)})`;
+    ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${(alpha * Math.max(0.25, Math.min(1, (radius * 2.5) / length))).toFixed(3)})`;
     ctx.lineWidth = radius * 1.8;
     ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(x - streak.x / 2, y - streak.y / 2);
-    ctx.lineTo(x + streak.x / 2, y + streak.y / 2);
+    ctx.moveTo(x - look.streak.x / 2, y - look.streak.y / 2);
+    ctx.lineTo(x + look.streak.x / 2, y + look.streak.y / 2);
     ctx.stroke();
     return;
   }
@@ -431,20 +341,60 @@ function drawStar(
   ctx.beginPath();
   ctx.arc(x, y, radius * 2.4, 0, Math.PI * 2);
   ctx.fill();
-
   if (e > 8) {
-    ctx.fillStyle = `rgba(255, 255, 255, 0.95)`;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
     ctx.beginPath();
     ctx.arc(x, y, radius * 0.55, 0, Math.PI * 2);
     ctx.fill();
   }
 }
 
+/* --- bodies ----------------------------------------------------------------- */
+
 /**
- * A planet or the Moon. The photo at its true angular size, rotated to the
- * frame's north, unless the sub is long enough to burn the disc out — at
- * which point it is a white blob with a bloom, which is exactly what a
- * 30-second sub of Jupiter looks like.
+ * The night side of a disc: the terminator is an ellipse whose minor axis is the
+ * cosine of the phase angle. Drawn as a mask that darkens what the Sun does not
+ * light, with the bright limb toward the Sun.
+ */
+function maskPhase(ctx: CanvasRenderingContext2D, radius: number, phase: { fraction: number; limbPaDeg: number }, northDeg: number) {
+  const k = clamp(phase.fraction, 0, 1);
+  if (k > 0.995) return;
+  // The bright limb points toward the Sun; position angle runs east of north, east is
+  // anticlockwise on the sensor once north is where the frame puts it.
+  ctx.save();
+  ctx.rotate(((northDeg - phase.limbPaDeg) * Math.PI) / 180);
+  // In this frame the lit limb is at -y. The dark region is the far half plus the
+  // terminator ellipse (lit half minus the crescent) when k < 0.5, or the far half
+  // minus the ellipse when k > 0.5.
+  const b = Math.abs(2 * k - 1) * radius;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = 'rgba(4, 4, 6, 0.96)';
+  ctx.beginPath();
+  // The half away from the Sun.
+  ctx.arc(0, 0, radius + 0.5, 0, Math.PI, false);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  if (k < 0.5) {
+    // Less than half lit: the terminator bulges into the sunward half; darken it.
+    ctx.ellipse(0, 0, radius + 0.5, b, 0, Math.PI, 2 * Math.PI, false);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // More than half lit: the terminator bulges into the far half; relight it.
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.ellipse(0, 0, radius - 0.5, b, 0, 0, Math.PI, false);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+/**
+ * A planet or the Moon: the reference photograph at its true angular size, rotated
+ * to the frame's north, its phase masked, dimmed by extinction and fringed by
+ * dispersion low down; or, past the full well, a white blob with a bloom, which is
+ * what a 30-second sub of Jupiter looks like.
  */
 function drawBody(
   ctx: CanvasRenderingContext2D,
@@ -452,17 +402,19 @@ function drawBody(
   o: SkyObject,
   p: { x: number; y: number },
   northDeg: number,
-  sigma: number,
+  look: Look,
   s: LiveScene,
+  extinction: number,
 ) {
   const diameter = targetDiameterPx(o.sizeArcmin, i.fovArcmin, i.width);
-  const factor = s.exposureSec / (o.saturateSec ?? 1);
+  const factor = burnOut(o.saturateSec ?? 1, i.exposureSec, i.gain);
+  const sigma = look.sigma + look.donut * 0.6;
 
   if (factor > 6) {
     const radius = (diameter / 2) * (1 + 0.35 * Math.log10(factor)) + sigma * 2;
     const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 1.6);
     glow.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    glow.addColorStop(radius / (radius * 1.6), 'rgba(255, 250, 240, 0.95)');
+    glow.addColorStop(1 / 1.6, 'rgba(255, 250, 240, 0.95)');
     glow.addColorStop(1, 'rgba(255, 245, 225, 0)');
     ctx.fillStyle = glow;
     ctx.beginPath();
@@ -472,35 +424,70 @@ function drawBody(
   }
 
   const image = o.photoSrc ? s.image(o.photoSrc) : null;
-  const brightness = clamp(Math.pow(factor, 0.5), 0.3, 1.25);
+  const brightness = clamp(Math.pow(factor, 0.5), 0.25, 1.25) * Math.pow(10, -0.4 * extinction);
   const contrast = 1 + Math.min(0.45, Math.log2(Math.max(1, i.subs)) * 0.09);
+  const dispersion = dispersionArcsec(o.altitude) / arcsecPerPx(i);
+  const length = Math.hypot(look.streak.x, look.streak.y);
 
-  ctx.save();
-  ctx.translate(p.x, p.y);
-  ctx.rotate((northDeg * Math.PI) / 180);
-  ctx.filter = `blur(${sigma.toFixed(2)}px) contrast(${contrast.toFixed(2)}) brightness(${brightness.toFixed(2)})`;
-  if (image) {
-    const w = diameter * (o.frameSpan ?? 1);
-    const h = image.naturalWidth ? w * (image.naturalHeight / image.naturalWidth) : w;
-    ctx.drawImage(image, -w / 2, -h / 2, w, h);
-  } else {
-    ctx.fillStyle = 'rgba(235, 225, 205, 0.9)';
-    ctx.beginPath();
-    ctx.arc(0, 0, Math.max(1, diameter / 2), 0, Math.PI * 2);
-    ctx.fill();
+  const disc = (dx: number, dy: number, tint: string | null, alpha: number) => {
+    ctx.save();
+    ctx.translate(p.x + dx, p.y + dy);
+    ctx.rotate((northDeg * Math.PI) / 180);
+    ctx.globalAlpha = alpha;
+    ctx.filter = `blur(${sigma.toFixed(2)}px) contrast(${contrast.toFixed(2)}) brightness(${brightness.toFixed(2)})`;
+    if (image) {
+      const w = diameter * (o.frameSpan ?? 1);
+      const h = image.naturalWidth ? w * (image.naturalHeight / image.naturalWidth) : w;
+      ctx.drawImage(image, -w / 2, -h / 2, w, h);
+    } else {
+      ctx.fillStyle = 'rgba(235, 225, 205, 0.9)';
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(1, diameter / 2), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (tint) {
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.fillStyle = tint;
+      ctx.filter = 'none';
+      ctx.fillRect(-diameter, -diameter, diameter * 2, diameter * 2);
+    }
+    ctx.restore();
+  };
+
+  // The trail of a moving disc: a few copies along the streak, each fainter.
+  const copies = length > 2 ? Math.min(6, Math.ceil(length / Math.max(2, diameter / 3))) : 1;
+  for (let c = 0; c < copies; c++) {
+    const t = copies === 1 ? 0 : c / (copies - 1) - 0.5;
+    disc(look.streak.x * t, look.streak.y * t, null, 1 / copies);
   }
-  ctx.restore();
+  if (dispersion > 0.6 && copies === 1) {
+    // Refraction lifts blue more than red: a blue fringe on the upper limb, red below.
+    disc(0, -dispersion / 2, 'rgba(120, 160, 255, 0.5)', 0.22);
+    disc(0, dispersion / 2, 'rgba(255, 110, 80, 0.5)', 0.22);
+  }
+
+  if (o.phase && image && copies === 1) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.filter = `blur(${(sigma * 0.8).toFixed(2)}px)`;
+    maskPhase(ctx, diameter / 2, o.phase, northDeg);
+    ctx.restore();
+  }
 }
 
+/* --- deep sky ---------------------------------------------------------------- */
+
 /**
- * How much of a faint extended object this sub and stack reveal, 0-1.
- * Nothing at planetary exposures, the bright ones from half a second, and
- * the stack keeps lifting the faint ones out of the noise.
+ * How much of a faint extended object this sub and stack reveal, 0–1: nothing at
+ * planetary exposures, the bright ones from half a second, and the stack keeps
+ * lifting the faint ones out of the noise.
  */
-function deepSkyVisibility(mag: number, exposureSec: number, subs: number): number {
+function deepSkyVisibility(mag: number, exposureSec: number, subs: number, limit: number): number {
   const exposure = clamp((Math.log10(Math.max(0.001, exposureSec)) + 1.3) / 2.2, 0, 1);
   const faintness = clamp(1 - (mag - 4) / 8, 0.25, 1);
-  return clamp(exposure * faintness * (1 + 0.2 * Math.log10(Math.max(1, subs))), 0, 1);
+  const reach = clamp((limit - 8) / 6, 0, 1);
+  return clamp(exposure * faintness * reach * (1 + 0.2 * Math.log10(Math.max(1, subs))), 0, 1);
 }
 
 function seedFrom(id: string): number {
@@ -510,11 +497,9 @@ function seedFrom(id: string): number {
 }
 
 /**
- * A deep-sky object. Three have photographs; the rest are drawn from their
- * catalogued shape, size and orientation — a galaxy is a tilted glow, a
- * globular a dense ball of stars, an open cluster a loose scatter of bright
- * ones, a planetary a small ring. Illustrated where there is no photograph,
- * never a photograph of something else.
+ * A deep-sky object: three have photographs; the rest are drawn from their catalogued
+ * shape, size and orientation. Illustrated where there is no photograph, never a
+ * photograph of something else.
  */
 function drawDeepSky(
   ctx: CanvasRenderingContext2D,
@@ -524,8 +509,9 @@ function drawDeepSky(
   northDeg: number,
   sigma: number,
   s: LiveScene,
+  limit: number,
 ) {
-  const alpha = deepSkyVisibility(o.mag, s.exposureSec, i.subs);
+  const alpha = deepSkyVisibility(o.mag, i.exposureSec, i.subs, limit);
   if (alpha <= 0.01) return;
 
   const major = targetDiameterPx(o.sizeArcmin, i.fovArcmin, i.width);
@@ -550,6 +536,7 @@ function drawDeepSky(
   }
 
   const random = rng(seedFrom(o.id));
+  const still: Look = { sigma, donut: 0, obstruction: 0, streak: { x: 0, y: 0 } };
   switch (o.shape) {
     case 'galaxy': {
       ctx.filter = `blur(${(sigma * 2).toFixed(2)}px)`;
@@ -575,10 +562,9 @@ function drawDeepSky(
       ctx.arc(0, 0, major / 2, 0, Math.PI * 2);
       ctx.fill();
       for (let n = 0; n < 260; n++) {
-        // Gaussian-ish scatter: dense in the middle, thinning outward.
         const r = (major / 2) * Math.pow(random(), 1.6);
         const t = random() * Math.PI * 2;
-        drawStar(ctx, Math.cos(t) * r, Math.sin(t) * r, 1 + random() * 3.5, 0.6, sigma, { x: 0, y: 0 });
+        drawStar(ctx, Math.cos(t) * r, Math.sin(t) * r, 1 + random() * 3.5, 0.6, still);
       }
       break;
     }
@@ -598,7 +584,7 @@ function drawDeepSky(
       for (let n = 0; n < count; n++) {
         const r = (major / 2) * Math.sqrt(random());
         const t = random() * Math.PI * 2;
-        drawStar(ctx, Math.cos(t) * r, Math.sin(t) * r, 2 + random() * 6, 0.3 + random() * 0.4, sigma, { x: 0, y: 0 });
+        drawStar(ctx, Math.cos(t) * r, Math.sin(t) * r, 2 + random() * 6, 0.3 + random() * 0.4, still);
       }
       break;
     }

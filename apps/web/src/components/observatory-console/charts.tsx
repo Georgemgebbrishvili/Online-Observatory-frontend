@@ -39,10 +39,12 @@ export function AltCurve({ path, span, now, color = '#f0785a', w = 150, h = 34 }
 }
 
 const R = 62;
+// Node and Chrome differ in the last digits of sin and cos; rounded, the server's dial hydrates.
+const px = (v: number) => Math.round(v * 100) / 100;
 const polar = (alt: number, az: number) => {
   const r = R * (1 - Math.max(0, alt) / 90);
   const a = (az * Math.PI) / 180;
-  return [70 + r * Math.sin(a), 70 - r * Math.cos(a)] as const;
+  return [px(70 + r * Math.sin(a)), px(70 - r * Math.cos(a))] as const;
 };
 
 /** The sky from above: horizon at the rim, zenith at the centre, the target's path tonight and where the tube points. */
@@ -50,7 +52,7 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
   const ticks = Array.from({ length: 72 }, (_, i) => {
     const a = (i * 5 * Math.PI) / 180;
     const L = i % 18 === 0 ? 6 : 3;
-    return <line key={i} x1={70 + R * Math.sin(a)} y1={70 - R * Math.cos(a)} x2={70 + (R - L) * Math.sin(a)} y2={70 - (R - L) * Math.cos(a)} stroke="rgba(244, 244, 242, .35)" strokeWidth=".7" />;
+    return <line key={i} x1={px(70 + R * Math.sin(a))} y1={px(70 - R * Math.cos(a))} x2={px(70 + (R - L) * Math.sin(a))} y2={px(70 - (R - L) * Math.cos(a))} stroke="rgba(244, 244, 242, .35)" strokeWidth=".7" />;
   });
   const up = path?.filter((p) => p.altitude > 0) ?? [];
   const at = pointing ? polar(pointing.altitude, pointing.azimuth) : null;
@@ -70,7 +72,7 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
       {(['N', 'E', 'S', 'W'] as const).map((t, i) => {
         const a = (i * 90 * Math.PI) / 180;
         return (
-          <text key={t} x={70 + (R - 13) * Math.sin(a)} y={70 - (R - 13) * Math.cos(a)} textAnchor="middle" dominantBaseline="middle" fill={t === 'N' ? '#b8321f' : 'rgba(244, 244, 242, .6)'} style={{ font: '600 10px var(--o-cond)' }}>
+          <text key={t} x={px(70 + (R - 13) * Math.sin(a))} y={px(70 - (R - 13) * Math.cos(a))} textAnchor="middle" dominantBaseline="middle" fill={t === 'N' ? '#b8321f' : 'rgba(244, 244, 242, .6)'} style={{ font: '600 10px var(--o-cond)' }}>
             {t}
           </text>
         );

@@ -96,7 +96,7 @@ export type FieldStar = {
 /** Cells are a quarter degree on a side, about a frame at native focal length. */
 const CELL_DEG = 0.25;
 const FAINTEST_MAG = 16;
-const BRIGHTEST_FIELD_MAG = 4;
+export const BRIGHTEST_FIELD_MAG = 4;
 /** Average stellar density: log10 N(<m) per square degree ≈ 0.36 m − 2.7. */
 const densityBelow = (mag: number) => Math.pow(10, 0.36 * mag - 2.7);
 
@@ -184,7 +184,35 @@ export type SkyObject = {
   frameSpan?: number;
   /** For bright bodies: the sub length beyond which the disc burns out. */
   saturateSec?: number;
+  /**
+   * The lit fraction of the disc and the position angle of the bright limb, degrees
+   * east of north: the Moon's phase, Venus's crescent, Mars's gibbous shoulder.
+   */
+  phase?: { fraction: number; limbPaDeg: number };
 };
+
+/**
+ * Position angle of a body's bright limb, degrees east of north: the direction to the
+ * Sun on the sky from the body.
+ */
+export function brightLimbPa(body: { ra: number; dec: number }, sun: { ra: number; dec: number }): number {
+  const dRa = (sun.ra - body.ra) * 15 * DEG;
+  const ds = sun.dec * DEG;
+  const db = body.dec * DEG;
+  const y = Math.cos(ds) * Math.sin(dRa);
+  const x = Math.sin(ds) * Math.cos(db) - Math.cos(ds) * Math.sin(db) * Math.cos(dRa);
+  return ((Math.atan2(y, x) / DEG) + 360) % 360;
+}
+
+/** How much the Moon brightens the sky tonight, 0–1: nothing below the horizon, full at a high full Moon. */
+export function moonBrightening(node: ObservatoryNode, date: Date): number {
+  const observer = new Observer(node.lat, node.lon, 0);
+  const eq = Equator(Body.Moon, date, observer, true, true);
+  const h = Horizon(date, observer, eq.ra, eq.dec, 'normal');
+  if (h.altitude <= 0) return 0;
+  const lit = Illumination(Body.Moon, date).phase_fraction;
+  return clamp(Math.sin(h.altitude * DEG), 0, 1) * Math.pow(lit, 1.6);
+}
 
 type BodySpec = { id: string; body: Body; name: string; saturateSec: number; frameSpan: number };
 
@@ -277,6 +305,7 @@ export function skyObjectsNear(
 ): SkyObject[] {
   const out: SkyObject[] = [];
   const observer = new Observer(node.lat, node.lon, 0);
+  let sunEq: { ra: number; dec: number } | null = null;
 
   for (const spec of BODIES) {
     const eq = Equator(spec.body, date, observer, true, true);
@@ -285,16 +314,22 @@ export function skyObjectsNear(
     const size = (apparentDiameterArcsec(spec.id, date) ?? 4) / 60;
     if (separationDeg(pointing, at) > radiusDeg + size / 2) continue;
 
+    const illumination = Illumination(spec.body, date);
+    sunEq ??= Equator(Body.Sun, date, observer, true, true);
     out.push({
       id: spec.id,
       name: spec.name,
       kind: 'body',
       ...at,
-      mag: Illumination(spec.body, date).mag,
+      mag: illumination.mag,
       sizeArcmin: size,
       photoSrc: TARGET_PHOTOS[spec.id]?.src,
       frameSpan: spec.frameSpan,
       saturateSec: spec.saturateSec,
+      phase:
+        spec.id === 'moon' || spec.id === 'mercury' || spec.id === 'venus' || spec.id === 'mars'
+          ? { fraction: illumination.phase_fraction, limbPaDeg: brightLimbPa(eq, sunEq) }
+          : undefined,
     });
 
     if (spec.id === 'jupiter') {
@@ -359,13 +394,13 @@ export function skyObjectsNear(
   return out;
 }
 
-/**
- * The faintest star a sub of this length records, before the sky is added.
- * A 10 ms planetary sub on 150 mm reaches about 9th magnitude; a 1 s sub about
- * 14th; stacking buys 1.25 magnitudes per tenfold. The city sky takes some back.
- */
-export function limitingMagnitude(exposureSec: number, subs: number, bortle: number): number {
-  const base = 9 + 2.5 * Math.log10(Math.max(0.001, exposureSec) / 0.01);
-  const stacked = base + 1.25 * Math.log10(Math.max(1, subs));
-  return clamp(stacked - (bortle - 1) * 0.15, 4, 17);
+/** The catalogued object nearest the pointing, and how far off it is: the hand control's Identify. */
+export function nearestObject(objects: SkyObject[], pointing: AltAz): { object: SkyObject; separationDeg: number } | null {
+  let best: { object: SkyObject; separationDeg: number } | null = null;
+  for (const o of objects) {
+    if (o.kind === 'star' && o.mag > 3) continue;
+    const d = separationDeg(pointing, o);
+    if (!best || d < best.separationDeg) best = { object: o, separationDeg: d };
+  }
+  return best;
 }

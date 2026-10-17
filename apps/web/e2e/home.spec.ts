@@ -429,7 +429,9 @@ test("the observatory console stands by on the sky model, badged simulated, with
     "true",
   );
   await expect(telescopes.getByText("12%")).toBeVisible();
-  await expect(telescopes.getByText("Coming soon")).toHaveCount(4);
+  // ADR-053 §6 as amended: no stations the product has no plan behind.
+  await expect(telescopes.getByText("Coming soon")).toHaveCount(0);
+  await expect(telescopes.getByRole("button", { name: /Station$/ })).toHaveCount(0);
 
   // The quick start points at tonight's highest observable target from the catalogue.
   await expect(
@@ -455,18 +457,19 @@ test("the observatory console stands by on the sky model, badged simulated, with
   expect(jsonLd.join("")).not.toContain("GeoCoordinates");
 });
 
-test("the console connects, calibrates and points at the quick start's target", async ({
+test("the console connects, aligns and points at the quick start's target", async ({
   page,
 }) => {
-  // The chain runs on the model's own clock: two seconds to connect, a park slew and its
-  // settle, six seconds to calibrate, then the GoTo. Well over the default thirty.
+  // The chain runs on the model's own clock (ADR-054): two seconds to connect, the
+  // alignment slew and its solve, then the GoTo at the mount's pace. `?turbo` runs the
+  // slews eight times faster so the chain fits a test; the model is otherwise its own.
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/en/observatory");
+  await page.goto("/en/observatory?turbo");
   await page.getByRole("button", { name: /Start · Albireo/ }).click();
 
-  // Park, calibrate and point run as one chain; the feed is the sky model's.
-  await expect(page.locator(".sdo-flow .is-now")).toContainText("Calibrate", {
+  // Align and point run as one chain; the feed is the sky model's.
+  await expect(page.locator(".sdo-flow .is-now")).toContainText("Align", {
     timeout: 15_000,
   });
   const view = page.getByRole("region", { name: "Telescope view" });
@@ -474,7 +477,7 @@ test("the console connects, calibrates and points at the quick start's target", 
     timeout: 20_000,
   });
   await expect(view.getByText(/Simulated feed/)).toBeVisible();
-  await expect(view.getByRole("status")).toHaveText(/On target/, { timeout: 30_000 });
+  await expect(view.getByRole("status")).toHaveText(/On target · tracking/, { timeout: 60_000 });
   await expect(view.getByText(/^Albireo/)).toBeVisible();
   await expect(page.getByRole("button", { name: /^Capture \d+ × \d+ s/ })).toBeEnabled();
 

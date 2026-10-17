@@ -32,6 +32,7 @@ which stays the record of Phases 0–4. The decisions behind it:
 | 6 Mobile                                      | Not started | After launch (ADR-037); no `apps/mobile`                                                          |
 | Hosted demo                                   | Live        | stellar.astroman.ge since 2026-10-08, on the simulator                                            |
 | Skychaser modules (ADR-053)                   | Built       | `/observatory` is the console, `/app/book` the board, `/vote` the ballot (tally on the platform)  |
+| The console's 8SE and its handover (ADR-054)  | Built       | The console drives a modelled NexStar 8SE + ASI585MC as the manual describes them, and the real one through the platform in REAL mode |
 | Hardware                                      | None        | No mount, camera or focuser on site. `MAX_ALT_SAFE` is unmeasured; the camera binding is unpinned |
 
 ## What was wrong with the plan

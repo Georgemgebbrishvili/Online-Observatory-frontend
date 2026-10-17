@@ -1,15 +1,10 @@
 'use client';
 
-import { memo, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { memo, type ReactNode, type RefObject } from 'react';
+import { ROIS, type RoiPreset } from '@/lib/observatory-sim/camera';
+import { TRAINS, type OpticalTrainId } from '@/lib/observatory-sim/optics';
 import { useCopy } from './copy-context';
 import Icon from './icons';
-import SlewField, { type SlewPan } from './SlewField';
-
-export type Train = 'reducer' | 'native' | 'barlow2';
-export const TRAIN_K: Record<Train, number> = { reducer: 0.7, native: 1, barlow2: 1.9 };
-/** On target the camera runs planetary exposures: the sky goes black and only the stars stay. */
-export const LOCKED_FEED_FILTER = 'contrast(1.35) brightness(.9)';
-const TRAIN_LABEL: Record<Train, [string, string]> = { reducer: ['0.63×', 'Focal reducer'], native: ['1×', 'Native'], barlow2: ['2×', 'Barlow'] };
 
 const RULER = (() => {
   const lines: string[] = [];
@@ -29,6 +24,7 @@ function Reticle() {
     <svg className="sdo-overlay" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <g fill="none">
         <path d="M450 40v160M450 400v160M120 300h200M580 300h200" stroke="rgba(244, 244, 242, .22)" vectorEffect="non-scaling-stroke" />
+        <circle cx="450" cy="300" r="60" stroke="rgba(244, 244, 242, .16)" vectorEffect="non-scaling-stroke" />
       </g>
     </svg>
   );
@@ -36,89 +32,61 @@ function Reticle() {
 
 export type ViewStageProps = {
   viewRef: RefObject<HTMLDivElement | null>;
+  /** The camera's picture: the sky model's canvas, or the platform's stream. */
   feed: ReactNode | null;
-  plate: string | null;
-  /** pan: the mount is slewing and the object is on its way in; sharp: it is in the field. */
-  art: 'none' | 'pan' | 'sharp';
-  /** Where the object sits from the centre of the field, degrees on the sky (x right, y up). */
-  offsetDeg: { x: number; y: number };
-  /** Width of the camera frame on the sky, degrees. */
-  fovDeg: number;
-  pan: SlewPan | null;
-  train: Train;
-  onTrain: (t: Train) => void;
+  /** The feed is a stream: it keeps its own aspect and is never drawn over. */
+  stream: boolean;
+  train: OpticalTrainId;
+  onTrain: ((t: OpticalTrainId) => void) | null;
+  roi: RoiPreset['id'];
+  onRoi: ((r: RoiPreset['id']) => void) | null;
   reticle: boolean;
   onReticle: () => void;
   full: boolean;
   onFull: () => void;
   status: { text: string; go: boolean; blink: boolean };
+  /** The running exposure, 0–1, under the status pill; null at video rate or off. */
+  exposing: number | null;
   hudLive: [string, string, string];
-  hudTarget: [string, string] | null;
+  hudTarget: [string, string, string | null] | null;
   hudField: [string, string];
   /** Under the frame, always: what is drawn here is an illustration (ADR-052). */
   caption: string;
   idle: { title: string; text: string; note?: string } | null;
-  /** The object in the eyepiece: its photograph, or the drawn plate where there is none. */
-  objectSrc: string | null;
-  /** objectSrc is a true-scale telescope view, drawn small in the field. */
-  scope: boolean;
 };
 
 function ViewStage(p: ViewStageProps) {
   const t = useCopy();
-  const k = TRAIN_K[p.train];
-  const stageRef = useRef<HTMLElement>(null);
-  const artRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ w: 0, h: 0 });
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!el) return;
-    const measure = () => setSize({ w: el.clientWidth, h: el.clientHeight });
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, [p.full]);
-  // The feed is a 16:9 frame covering the view, so the sky's scale follows the wider of the two.
-  const feedW = Math.max(size.w, (size.h * 16) / 9);
-  const pxPerDeg = feedW / p.fovDeg;
-  const feedStyle = {
-    ...(feedW > 0 ? { inset: 'auto', left: '50%', top: '50%', width: feedW, height: (feedW * 9) / 16, transform: 'translate(-50%, -50%)' } : {}),
-    ...(p.art !== 'none' ? { filter: LOCKED_FEED_FILTER } : {}),
-  };
-  const artStyle = { transform: `translate(${(p.offsetDeg.x * pxPerDeg).toFixed(1)}px, ${(-p.offsetDeg.y * pxPerDeg).toFixed(1)}px) scale(${k})` };
-  const trains = (Object.keys(TRAIN_K) as Train[]).map((t) => (
-    <button key={t} type="button" className={p.train === t ? 'is-on' : ''} aria-pressed={p.train === t} title={TRAIN_LABEL[t][1]} onClick={() => p.onTrain(t)}>
-      {TRAIN_LABEL[t][0]}
+  const trains = TRAINS.map((train) => (
+    <button key={train.id} type="button" className={p.train === train.id ? 'is-on' : ''} aria-pressed={p.train === train.id} title={train.label} disabled={!p.onTrain} onClick={() => p.onTrain?.(train.id)}>
+      {train.short}
+    </button>
+  ));
+  const rois = ROIS.map((roi) => (
+    <button key={roi.id} type="button" className={p.roi === roi.id ? 'is-on' : ''} aria-pressed={p.roi === roi.id} title={roi.label} disabled={!p.onRoi} onClick={() => p.onRoi?.(roi.id)}>
+      {roi.id === 'full' ? 'Full' : roi.id === '1080' ? '1080' : '640'}
     </button>
   ));
   const toggles = (
-    <>
-      <button className={`sdo-ib${p.reticle ? ' is-on' : ''}`} type="button" onClick={p.onReticle} aria-pressed={p.reticle} aria-label={t.stage.reticle} title={t.stage.reticle}><Icon name="target" /></button>
-    </>
+    <button className={`sdo-ib${p.reticle ? ' is-on' : ''}`} type="button" onClick={p.onReticle} aria-pressed={p.reticle} aria-label={t.stage.reticle} title={t.stage.reticle}><Icon name="target" /></button>
   );
 
   return (
-    <section ref={stageRef} className={`sdo-view${p.full ? ' is-full' : ''}${p.status.go ? ' is-go' : ''}`} aria-label={t.stage.aria}>
+    <section className={`sdo-view${p.full ? ' is-full' : ''}${p.status.go ? ' is-go' : ''}`} aria-label={t.stage.aria}>
       <div className="sdo-view__sky" aria-hidden="true" />
-      <div className="sdo-view__feed" ref={p.viewRef} style={feedStyle}>{p.feed}</div>
-      {p.pan && p.art === 'pan' && <SlewField pan={p.pan} artRef={artRef} />}
-      {p.objectSrc && p.art !== 'none' && (
-        <div ref={artRef} className={`sdo-art sdo-art--photo${p.scope ? ' is-scope' : ''}${p.art === 'pan' ? ' is-pan' : ''}`} style={artStyle}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={p.objectSrc} alt="" />
-        </div>
-      )}
-      {p.art !== 'none' && <div className="sdo-skyglow" />}
-      {p.reticle && p.art !== 'none' && <Reticle />}
+      <div className={`sdo-view__feed${p.stream ? ' is-stream' : ''}`} ref={p.viewRef}>{p.feed}</div>
+      {p.reticle && p.feed && <Reticle />}
       <svg className="sdo-overlay" viewBox="0 0 900 600" preserveAspectRatio="none" aria-hidden="true">
         <path d={RULER} stroke="rgba(244, 244, 242, .35)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
       </svg>
-      <div className="sdo-scan" />
+      {!p.stream && <div className="sdo-scan" />}
       <div className="sdo-vignette" />
 
       <div className="sdo-tools sdo-glass">
         <span className="sdo-lbl">{t.stage.optics}</span>
         <div className="sdo-seg" role="group" aria-label={t.stage.train}>{trains}</div>
+        <span className="sdo-tools__sep" />
+        <div className="sdo-seg" role="group" aria-label={t.stage.roi}>{rois}</div>
         <span className="sdo-tools__sep" />
         {toggles}
         <button className={`sdo-ib${p.full ? ' is-on' : ''}`} type="button" onClick={p.onFull} aria-pressed={p.full} aria-label={t.stage.fullView} title={t.stage.fullView}><Icon name="expand" /></button>
@@ -129,10 +97,13 @@ function ViewStage(p: ViewStageProps) {
           <span className={`sdo-led ${p.status.go ? 'is-go' : 'is-hold'}${p.status.blink ? ' sdo-blink' : ''}`} />
           {p.status.text}
         </span>
+        {p.exposing !== null && (
+          <span className="sdo-expose" aria-hidden="true"><i style={{ width: `${Math.round(p.exposing * 100)}%` }} /></span>
+        )}
       </div>
       <div className="sdo-hud sdo-glass sdo-hud--tl"><span style={{ color: '#f0785a' }}>{p.hudLive[0]}</span> · {p.hudLive[1]}<br />{p.hudLive[2]}</div>
       {p.hudTarget && (
-        <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#b8321f' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}</div>
+        <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#b8321f' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}{p.hudTarget[2] && <><br />{p.hudTarget[2]}</>}</div>
       )}
       <div className="sdo-hud sdo-glass sdo-hud--br">{p.hudField[0]}<br />{p.hudField[1]}</div>
       <p className="sdo-hud sdo-glass sdo-hud--bc sdo-caption">{p.caption}</p>

@@ -59,10 +59,12 @@ says how each is resolved.
 5. **The console speaks Georgian.** Every string lives in
    `components/observatory-console/copy.ts` in both languages; `:lang(ka)` gives the
    console the Mkhedruli faces, untracked (ADR-052 §2).
-6. **The four stations after the first are the source's, listed as coming soon.** They
-   are the sky model's fiction, named as the source names them, never connectable, and
-   nothing on them is a claim about this product's roadmap. The maintainer may strike
-   them by amending this record.
+6. **The telescope list holds the one station.** The source listed four stations still
+   to come — the sky model's fiction — and the first build kept them as "coming soon".
+   Amended 2026-10-17 on the maintainer's instruction: they are struck, since nothing in
+   this product's plan stands behind them, and the list names only the platform's
+   observatory. The model's other stations stay in `lib/observatory-sim/sim-stations.ts`,
+   unused, so the model is still the source's.
 7. **`/app/book` is the booking board.** One screen: the nights, the starts, the targets,
    and the session beside them, in the board's own stylesheet rewritten on our tokens.
    The data is the platform's: `GET /slots` for each of the seven nights, `GET

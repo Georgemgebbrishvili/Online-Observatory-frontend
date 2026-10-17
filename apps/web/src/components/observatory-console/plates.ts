@@ -9,6 +9,3 @@ const PLATES = new Set(["saturn", "jupiter", "mars", "venus"]);
 export const plateFor = (targetId: string) => (PLATES.has(targetId) ? targetId : null);
 
 export const plateArt = (plate: string) => `/plates/${plate}.webp`;
-
-/** What a backyard telescope actually shows: small, soft and warm — not the plate. */
-export const SCOPE_VIEW: Record<string, string> = { saturn: "/plates/scope/saturn.webp" };

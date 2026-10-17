@@ -1086,6 +1086,15 @@ function error(response, status, code, message, details) {
   send(response, status, zApiError.parse({ code, message, ...(details && { details }) }));
 }
 
+// ADR-054: a session that has once called with `fake_mode=real` sees the real instrument,
+// so the page's server-side reads, which forward only the session cookies, see it too.
+function modeOf(request) {
+  const cookies = cookiesOf(request);
+  const session = sessions.get(cookies[sessionCookie]);
+  if (cookies.fake_mode === "real" && session) session.mode = "REAL";
+  return cookies.fake_mode === "real" || session?.mode === "REAL" ? "REAL" : "SIMULATED";
+}
+
 function cookiesOf(request) {
   return Object.fromEntries(
     (request.headers.cookie ?? "")
@@ -1355,8 +1364,8 @@ const routes = {
     }
     send(response, 200, tonightTargets());
   },
-  [`GET /observatories/${observatoryId}/state`]: (_request, response) =>
-    send(response, 200, publicStatus()),
+  [`GET /observatories/${observatoryId}/state`]: (request, response) =>
+    send(response, 200, { ...publicStatus(), mode: modeOf(request) }),
   [`GET /observatories/${observatoryId}/conditions`]: (_request, response) =>
     send(response, 200, viewingConditions()),
   "GET /me": (request, response) => {
@@ -1801,7 +1810,7 @@ async function startSession(request, response, id) {
     missionChannelUrl: `/ws/mission/${mission.id}`,
     allowedCommands: ["NUDGE", "CAPTURE", "RECENTER", "ABORT"],
   });
-  liveSessions.set(session.sessionId, { ...session, scenario });
+  liveSessions.set(session.sessionId, { ...session, scenario, mode: modeOf(request) });
   send(response, 200, session);
 }
 
@@ -1828,7 +1837,7 @@ function subscribed(socket, mission, session) {
   const telemetry = (link, pointing = null) =>
     say({
       type: "MISSION_TELEMETRY",
-      mode: "SIMULATED",
+      mode: session.mode ?? "SIMULATED",
       link,
       tracking: link === "ONLINE",
       centeringIteration: null,
@@ -1899,7 +1908,7 @@ function subscribed(socket, mission, session) {
         type: "MISSION_STREAM",
         streamUrl: `${appOrigin}/stream/mission/${mission.id}?t=${token}`,
         encoding: "JPEG",
-        mode: "SIMULATED",
+        mode: session.mode ?? "SIMULATED",
         expiresAt: expiresAt.toISOString(),
       });
     }
@@ -2486,6 +2495,7 @@ http
     if (request.method !== "GET" && request.headers.origin !== appOrigin) {
       return error(response, 403, "FORBIDDEN", "Cross-origin mutation refused.");
     }
+    modeOf(request);
     const route = routes[`${request.method} ${path}`];
     if (route) return await route(request, response);
 

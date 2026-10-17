@@ -1,47 +1,59 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import {
-  drawLiveScene,
-  drawNoise,
-  makeNoiseTile,
-  type FrameInputs,
-  type LiveScene,
-} from '@/lib/observatory-sim/render';
-import type { SkyObject } from '@/lib/observatory-sim/sky-field';
+import { frameNoise, skyElectronsPerSecond } from '@/lib/observatory-sim/camera';
+import { drawLiveScene, drawNoise, makeNoiseTile, type FrameInputs, type LiveScene } from '@/lib/observatory-sim/render';
+import { altAzToRaDec, raDecToAltAz, tangentOffsetDeg, type SkyObject } from '@/lib/observatory-sim/sky-field';
 import type { AltAz } from '@/lib/observatory-sim/safety';
 
-export type MountSample = { pointing: AltAz; azRate: number; altRate: number };
+export type MountSample = { pointing: AltAz; lstHours: number; nowMs: number };
+
+export type Exposure = {
+  /** When the running exposure began, and how long it runs. */
+  startedAtMs: number;
+  seconds: number;
+};
 
 export type LiveViewProps = {
-  /** Read once per frame: where the axes are right now, and how fast they move. */
+  /** Read once per animation frame: where the tube is and what sidereal time it is. */
   sample: () => MountSample;
   /** Everything real near the pointing, refreshed a few times a second. */
   objects: SkyObject[];
   latDeg: number;
-  lstHours: number;
   sunAltitudeDeg: number;
   exposureSec: number;
   fovArcmin: number;
   seeingArcsec: number;
   diffractionArcsec: number;
   plateScaleArcsecPx: number;
+  apertureMm: number;
+  obstruction: number;
+  defocus: number;
   bortle: number;
+  moonlight: number;
+  cloud: number;
+  edgeIllumination: number;
+  /** Subs in the stack shown; 1 when not stacking. */
   subs: number;
   gain: number;
-  /**
-   * Fraction of the frame width showing a single raw sub instead of the stack.
-   * Null hides the comparison entirely.
-   */
-  splitAt: number | null;
+  /** Called when a sub finishes, with the fraction of the next already exposed. */
+  onExposure?: (progress: number) => void;
 };
 
+/** Frames shorter than this are shown as they come; longer ones land when they end. */
+const VIDEO_RATE_S = 1 / 30;
+
+/**
+ * The camera's live view: one canvas, drawn by the sky model from the mount's pointing.
+ * A frame takes its exposure time (ADR-054 §3): the canvas shows the last completed sub
+ * and the next lands when its exposure ends, with the sky's motion across the sensor
+ * during that exposure drawn as its trail. At video rates the canvas simply follows.
+ */
 export default function LiveView(props: LiveViewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef(new Map<string, HTMLImageElement>());
   const noiseRef = useRef<HTMLCanvasElement | null>(null);
-  // The draw loop reads the newest props without being torn down and rebuilt
-  // on every frame, which would restart the animation each render.
+  // The draw loop reads the newest props without being torn down on every render.
   const latest = useRef(props);
   latest.current = props;
 
@@ -54,9 +66,10 @@ export default function LiveView(props: LiveViewProps) {
     let frame = 0;
     let running = true;
     let lastNoiseSwap = 0;
+    // The exposure in progress: when it began, and where the sky was then.
+    let exposure: { startedAtMs: number; seconds: number; start: MountSample } | null = null;
+    let lastDrawnKey = '';
 
-    // Reference photos load the first time an object comes near the field and
-    // are drawn from the next frame on; until then the object is a plain disc.
     const image = (src: string): HTMLImageElement | null => {
       const cached = imagesRef.current.get(src);
       if (cached) return cached.complete && cached.naturalWidth > 0 ? cached : null;
@@ -67,10 +80,53 @@ export default function LiveView(props: LiveViewProps) {
       return null;
     };
 
+    /** How far a sky point at the centre moved across the sensor between two samples, degrees. */
+    const driftBetween = (a: MountSample, b: MountSample, latDeg: number) => {
+      const eq = altAzToRaDec(a.pointing, latDeg, a.lstHours);
+      const later = raDecToAltAz(eq, latDeg, b.lstHours);
+      const d = tangentOffsetDeg(b.pointing, later);
+      return { x: d.x, y: d.y };
+    };
+
+    const draw = (p: LiveViewProps, at: MountSample, drift: { x: number; y: number }, width: number, height: number, time: number) => {
+      const skyE = skyElectronsPerSecond(p.bortle, p.plateScaleArcsecPx, p.apertureMm);
+      const noise = frameNoise(p.exposureSec, p.gain, skyE, p.subs);
+      const inputs: FrameInputs = {
+        width,
+        height,
+        fovArcmin: p.fovArcmin,
+        seeingArcsec: p.seeingArcsec,
+        diffractionArcsec: p.diffractionArcsec,
+        obstruction: p.obstruction,
+        defocus: p.defocus,
+        bortle: p.bortle,
+        moonlight: p.moonlight,
+        cloud: p.cloud,
+        subs: p.subs,
+        gain: p.gain,
+        exposureSec: p.exposureSec,
+        edgeIllumination: p.edgeIllumination,
+      };
+      const scene: LiveScene = {
+        pointing: at.pointing,
+        drift,
+        latDeg: p.latDeg,
+        lstHours: at.lstHours,
+        objects: p.objects,
+        image,
+        sunAltitudeDeg: p.sunAltitudeDeg,
+      };
+      drawLiveScene(ctx, inputs, frame, scene);
+      if (noiseRef.current && time - lastNoiseSwap > 180) {
+        noiseRef.current = makeNoiseTile();
+        lastNoiseSwap = time;
+      }
+      if (noiseRef.current) drawNoise(ctx, inputs, noiseRef.current, noise.display);
+    };
+
     const render = (time: number) => {
       if (!running) return;
       frame += 1;
-
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       const rect = canvas.getBoundingClientRect();
       const width = Math.round(rect.width);
@@ -78,81 +134,45 @@ export default function LiveView(props: LiveViewProps) {
       if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
         canvas.width = width * dpr;
         canvas.height = height * dpr;
+        lastDrawnKey = '';
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const p = latest.current;
-      const mount = p.sample();
+      const now = p.sample();
+      const seconds = Math.max(p.exposureSec, VIDEO_RATE_S);
 
-      const inputs: FrameInputs = {
-        width,
-        height,
-        fovArcmin: p.fovArcmin,
-        targetArcmin: 0,
-        seeingArcsec: p.seeingArcsec,
-        diffractionArcsec: p.diffractionArcsec,
-        plateScaleArcsecPx: p.plateScaleArcsecPx,
-        bortle: p.bortle,
-        subs: p.subs,
-        gain: p.gain,
-        rotationDeg: 0,
-        centeringOffset: 0,
-        seed: 0,
-        frameSpan: 1,
-      };
-
-      const scene: LiveScene = {
-        pointing: mount.pointing,
-        azRate: mount.azRate,
-        altRate: mount.altRate,
-        latDeg: p.latDeg,
-        lstHours: p.lstHours,
-        objects: p.objects,
-        image,
-        exposureSec: p.exposureSec,
-        sunAltitudeDeg: p.sunAltitudeDeg,
-      };
-
-      // Regrain a few times a second rather than every frame — the tile is an
-      // ImageData round-trip and the eye cannot tell.
-      if (noiseRef.current && time - lastNoiseSwap > 180) {
-        noiseRef.current = makeNoiseTile();
-        lastNoiseSwap = time;
+      if (!exposure || exposure.seconds !== seconds) {
+        exposure = { startedAtMs: now.nowMs, seconds, start: now };
       }
-      const noise = noiseRef.current;
+      const elapsed = (now.nowMs - exposure.startedAtMs) / 1000;
+      if (seconds <= VIDEO_RATE_S * 2) {
+        // Video rate: every animation frame is a sub; its trail is the motion since the last.
+        const drift = driftBetween(exposure.start, now, p.latDeg);
+        draw(p, now, drift, width, height, time);
+        exposure = { startedAtMs: now.nowMs, seconds, start: now };
+        p.onExposure?.(1);
+        requestAnimationFrame(render);
+        return;
+      }
 
-      if (p.splitAt === null) {
-        drawLiveScene(ctx, inputs, frame, scene);
-        if (noise) drawNoise(ctx, inputs, noise);
+      if (elapsed >= seconds) {
+        // The sub ends: draw it as the sensor integrated it, from where the sky was at
+        // its start to where it is now, then begin the next.
+        const drift = driftBetween(exposure.start, now, p.latDeg);
+        draw(p, now, drift, width, height, time);
+        lastDrawnKey = `${now.nowMs}`;
+        exposure = { startedAtMs: now.nowMs, seconds, start: now };
+        p.onExposure?.(0);
       } else {
-        const boundary = Math.round(width * p.splitAt);
-        // Left: one raw sub, the frame as the sensor delivered it. Right: the
-        // stack as it stands. Noise is the loudest part of a single sub, so it
-        // respects the split too.
-        const raw: FrameInputs = { ...inputs, subs: 1, jitterSubs: inputs.subs };
-        for (const [x, w, frameInputs] of [
-          [0, boundary, raw],
-          [boundary, width - boundary, inputs],
-        ] as const) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(x, 0, w, height);
-          ctx.clip();
-          drawLiveScene(ctx, frameInputs, frame, scene);
-          if (noise) drawNoise(ctx, frameInputs, noise);
-          ctx.restore();
+        if (lastDrawnKey === '') {
+          // Nothing has landed yet: the sensor is dark until the first sub ends.
+          ctx.fillStyle = '#05070c';
+          ctx.fillRect(0, 0, width, height);
+          lastDrawnKey = 'dark';
         }
-
-        ctx.save();
-        ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(boundary + 0.5, 0);
-        ctx.lineTo(boundary + 0.5, height);
-        ctx.stroke();
-        ctx.restore();
+        p.onExposure?.(elapsed / seconds);
       }
-
       requestAnimationFrame(render);
     };
 

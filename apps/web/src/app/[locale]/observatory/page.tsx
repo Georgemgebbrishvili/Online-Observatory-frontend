@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import ObservatoryConsole from "@/components/observatory-console/ObservatoryConsole";
+import type { PlatformMission } from "@/components/observatory-console/platform-console";
 import { JsonLd } from "@/components/seo/json-ld";
-import { readConditions, readObservatoryPanel } from "@/features/home/read";
+import { readConditions, readMyMissions, readObservatoryPanel } from "@/features/home/read";
+import { activeMission } from "@/features/missions/active";
+import { readRoom } from "@/features/missions/read-room";
 import { quickStartTarget } from "@/features/observatory/console-target";
 import { observatories } from "@/features/observatory/observatories";
 import { readTonight } from "@/features/targets/read";
@@ -36,6 +39,21 @@ export async function generateMetadata({
   });
 }
 
+/** The caller's active mission with its target named, for the console to drive; null without one. */
+async function readCallersMission(locale: "en" | "ka"): Promise<PlatformMission | null> {
+  const mine = await readMyMissions();
+  const active = mine.kind === "ok" ? activeMission(mine.missions, Date.now()) : null;
+  const room = active ? await readRoom(active.id) : null;
+  if (room?.kind !== "ok") return null;
+  const target = room.room.target;
+  return {
+    mission: room.room.mission,
+    targetName: target ? (locale === "ka" ? target.nameKa : target.nameEn) : room.room.mission.targetId,
+    imagingProfile: target?.imagingProfile ?? null,
+    opticalConfig: target?.opticalConfig ?? null,
+  };
+}
+
 /**
  * /observatory is the observatory console (ADR-053): connect, calibrate, point and
  * capture on the sky model, in the Skychaser site's console. The real instrument's name,
@@ -57,6 +75,10 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
   ]);
   const conditions =
     panel.kind === "ok" ? await readConditions(panel.observatory.id) : null;
+  // The real instrument is the caller's to drive only with the platform in REAL mode
+  // and a mission of theirs under way (ADR-054 §6).
+  const real = panel.kind === "ok" && panel.status.mode === "REAL";
+  const mission = real && user ? await readCallersMission(locale) : null;
   const cloud =
     conditions?.items.find(
       (hour) => hour.status === "KNOWN" && hour.cloudCoverPercent !== null,
@@ -92,7 +114,8 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
         tonight={tonight.kind === "ok" ? quickStartTarget(tonight.items, locale) : null}
         nodeCloud={cloud === null ? null : Math.round(cloud)}
         observatoryName={name}
-        simulated={panel.kind !== "ok" || panel.status.mode !== "REAL"}
+        simulated={!real}
+        mission={mission}
         brandLabel={nav.brandAriaLabel}
         links={[
           { label: nav.public.explore, href: `/${locale}#tonight` },

@@ -1,7 +1,8 @@
 'use client';
 
-import { memo } from 'react';
-import type { Axis } from '@/lib/observatory-sim/mount-drive';
+import { memo, useId } from 'react';
+import { EXPOSURES_S, GAIN, STACK_SIZES, exposureLabel } from '@/lib/observatory-sim/camera';
+import { HC_RATES, type Axis, type MountSettings, type TrackingMode } from '@/lib/observatory-sim/mount-drive';
 import type { AltAz } from '@/lib/observatory-sim/safety';
 import type { Station } from '@/lib/observatory-sim/sim-stations';
 import { Dial, Spark } from './charts';
@@ -88,7 +89,7 @@ function TelescopesBase({ rows, selectedId, onPick, sky }: { rows: StationRow[];
   );
 }
 
-function SessionBase({ elapsed, connected, onEnd }: { elapsed: string; connected: boolean; onEnd: () => void }) {
+function SessionBase({ elapsed, connected, onEnd, label, note }: { elapsed: string; connected: boolean; onEnd: () => void; label: string; note?: string | null }) {
   const t = useCopy();
   return (
     <section className="sdo-panel" aria-labelledby="sdo-session-t">
@@ -96,19 +97,29 @@ function SessionBase({ elapsed, connected, onEnd }: { elapsed: string; connected
         <h2 id="sdo-session-t" className="sdo-ph__t">{t.session.title}</h2>
         <span className="sdo-ph__id">{elapsed}</span>
       </div>
+      {note && <p className="sdo-note" style={{ padding: '0 16px 10px' }}>{note}</p>}
       <div className="sdo-session__row">
         <button className="sdo-btn sdo-btn--danger" type="button" onClick={onEnd} disabled={!connected}>
-          <Icon name="park" size={14} />{t.session.parkEnd}
+          <Icon name="park" size={14} />{label}
         </button>
       </div>
     </section>
   );
 }
 
-function PointingBase({ path, pointing, rows, rms, rmsHistory, seeing, seeingHistory, battery, sensor }: {
-  path: PathPoint[] | null; pointing: AltAz | null; rows: [string, string][]; rms: string; rmsHistory: number[];
-  seeing: string; seeingHistory: number[]; battery: number | null; sensor: string;
-}) {
+export type PointingProps = {
+  path: PathPoint[] | null;
+  pointing: AltAz | null;
+  rows: [string, string][];
+  rms: string;
+  rmsHistory: number[];
+  seeing: string;
+  seeingHistory: number[];
+  battery: number | null;
+  sensor: string;
+};
+
+function PointingBase({ path, pointing, rows, rms, rmsHistory, seeing, seeingHistory, battery, sensor }: PointingProps) {
   const t = useCopy();
   return (
     <section className="sdo-panel" aria-labelledby="sdo-point-t">
@@ -163,10 +174,25 @@ function Stepper({ label, value, onDown, onUp, min, max }: { label: string; valu
   );
 }
 
-function CameraBase({ exp, subs, gain, total, locked, onExp, onSubs, onGain }: {
-  exp: number; subs: number; gain: number; total: string; locked: boolean; onExp: (v: number) => void; onSubs: (v: number) => void; onGain: (v: number) => void;
-}) {
+export type CameraProps = {
+  /** Index into EXPOSURES_S and STACK_SIZES. */
+  exp: number;
+  subs: number;
+  gain: number;
+  total: string;
+  locked: boolean;
+  /** The platform sets the real camera: the controls show, and do nothing. */
+  enabled: boolean;
+  onExp: (i: number) => void;
+  onSubs: (i: number) => void;
+  onGain: (v: number) => void;
+  onAuto: (() => void) | null;
+  refreshNote: string | null;
+};
+
+function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, onGain, onAuto, refreshNote }: CameraProps) {
   const t = useCopy();
+  const off = locked || !enabled;
   return (
     <section className="sdo-panel" aria-labelledby="sdo-cam-t">
       <div className="sdo-ph">
@@ -176,20 +202,26 @@ function CameraBase({ exp, subs, gain, total, locked, onExp, onSubs, onGain }: {
       <div className="sdo-cam">
         <div className="sdo-cam__row">
           <span className="sdo-lbl">{t.camera.exposure}</span>
-          <Stepper label={t.camera.exposure} value={`${exp} s`} onDown={() => onExp(exp / 2)} onUp={() => onExp(exp * 2)} min={locked || exp <= 1} max={locked || exp >= 64} />
+          <Stepper label={t.camera.exposure} value={exposureLabel(EXPOSURES_S[exp])} onDown={() => onExp(exp - 1)} onUp={() => onExp(exp + 1)} min={off || exp <= 0} max={off || exp >= EXPOSURES_S.length - 1} />
         </div>
         <div className="sdo-cam__row">
           <span className="sdo-lbl">{t.camera.frames}</span>
-          <Stepper label={t.camera.frames} value={String(subs)} onDown={() => onSubs(subs - 1)} onUp={() => onSubs(subs + 1)} min={locked || subs <= 1} max={locked || subs >= 64} />
+          <Stepper label={t.camera.frames} value={String(STACK_SIZES[subs])} onDown={() => onSubs(subs - 1)} onUp={() => onSubs(subs + 1)} min={off || subs <= 0} max={off || subs >= STACK_SIZES.length - 1} />
         </div>
         <div className="sdo-cam__gain">
           <div className="sdo-cam__row">
             <label className="sdo-lbl" htmlFor="sdo-gain">{t.camera.gain}</label>
-            <span className="sdo-mono" style={{ fontSize: 12 }}>{gain}</span>
+            <span className="sdo-mono" style={{ fontSize: 12 }}>{gain}{gain >= GAIN.hcg ? ' · HCG' : ''}</span>
           </div>
-          <input id="sdo-gain" className="sdo-range" type="range" min={0} max={400} step={10} value={gain} disabled={locked}
-            style={{ ['--fill' as string]: `${(gain / 400) * 100}%` }} onChange={(e) => onGain(Number(e.target.value))} />
+          <input id="sdo-gain" className="sdo-range" type="range" min={GAIN.min} max={GAIN.max} step={GAIN.step} value={gain} disabled={off}
+            aria-valuetext={`${gain}${gain >= GAIN.hcg ? ', high conversion gain' : ''}`}
+            style={{ ['--fill' as string]: `${(gain / GAIN.max) * 100}%`, ['--hcg' as string]: `${(GAIN.hcg / GAIN.max) * 100}%` }} onChange={(e) => onGain(Number(e.target.value))} />
+          <span className="sdo-lbl sdo-cam__hcg">{t.camera.hcg}</span>
         </div>
+        {onAuto && (
+          <button type="button" className="sdo-sec" onClick={onAuto} disabled={off}>{t.camera.auto}</button>
+        )}
+        {refreshNote && <p className="sdo-note" style={{ padding: 0 }}>{refreshNote}</p>}
       </div>
     </section>
   );
@@ -201,55 +233,144 @@ function PadButton({ axis, dir, icon, label, enabled, onPress, onRelease }: {
 }) {
   return (
     <button type="button" className="sdo-padb" aria-label={label} disabled={!enabled}
-      onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); onPress(axis, dir); }}
+      onPointerDown={(e) => {
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch {
+          /* a synthetic pointer has no capture to take */
+        }
+        onPress(axis, dir);
+      }}
       onPointerUp={() => onRelease(axis)} onPointerCancel={() => onRelease(axis)} onLostPointerCapture={() => onRelease(axis)}>
       <Icon name={icon} />
     </button>
   );
 }
 
-function HandControlBase({ rate, onRate, tracking, onTracking, onFocus, focus, enabled, onPress, onRelease, onCentre, canCentre }: {
-  rate: number; onRate: (v: number) => void; tracking: boolean; onTracking: (v: boolean) => void; focus: number; onFocus: (d: number) => void;
-  enabled: boolean; onPress: (a: Axis, d: 1 | -1) => void; onRelease: (a: Axis) => void; onCentre: () => void; canCentre: boolean;
-}) {
+export type HandProps = {
+  rate: number;
+  onRate: ((v: number) => void) | null;
+  tracking: TrackingMode;
+  onTracking: ((v: TrackingMode) => void) | null;
+  focus: number;
+  onFocus: ((d: number) => void) | null;
+  onAutofocus: (() => void) | null;
+  focusing: boolean;
+  enabled: boolean;
+  onPress: (a: Axis, d: 1 | -1) => void;
+  onRelease: (a: Axis) => void;
+  onCentre: () => void;
+  canCentre: boolean;
+  onSync: (() => void) | null;
+  synced: boolean;
+  onStop: () => void;
+  canStop: boolean;
+  onSettings: (() => void) | null;
+  /** What the pad does on the real instrument: bounded steps. */
+  stepNote: string | null;
+  limitNote: string | null;
+  commandNote: string | null;
+};
+
+function HandControlBase(p: HandProps) {
   const t = useCopy();
+  // The desk's panel and the phone's sheet can both be in the document: ids are per instance.
+  const titleId = useId();
+  const trackId = useId();
+  const rateLabel = HC_RATES.find((r) => r.rate === p.rate)?.label ?? '';
+  const modes: TrackingMode[] = ['off', 'sidereal', 'lunar', 'solar'];
   return (
-    <section className="sdo-panel" aria-labelledby="sdo-hand-t">
+    <section className="sdo-panel" aria-labelledby={titleId}>
       <div className="sdo-ph">
-        <h2 id="sdo-hand-t" className="sdo-ph__t"><Icon name="target" size={15} />{t.hand.title}</h2>
-        <span className="sdo-ph__id">{t.hand.rate(rate)}</span>
+        <h2 id={titleId} className="sdo-ph__t"><Icon name="target" size={15} />{t.hand.title}</h2>
+        <span className="sdo-ph__id">{p.stepNote ?? t.hand.rate(p.rate, rateLabel)}</span>
       </div>
       <div className="sdo-hand">
         <div className="sdo-pad">
           <span />
-          <PadButton axis="alt" dir={1} icon="up" label={t.hand.up} enabled={enabled} onPress={onPress} onRelease={onRelease} />
+          <PadButton axis="alt" dir={1} icon="up" label={t.hand.up} enabled={p.enabled} onPress={p.onPress} onRelease={p.onRelease} />
           <span />
-          <PadButton axis="az" dir={-1} icon="left" label={t.hand.west} enabled={enabled} onPress={onPress} onRelease={onRelease} />
-          <button type="button" className="sdo-padb sdo-padb--c" onClick={onCentre} disabled={!canCentre} aria-label={t.hand.recentre}>{t.hand.centre}</button>
-          <PadButton axis="az" dir={1} icon="right" label={t.hand.east} enabled={enabled} onPress={onPress} onRelease={onRelease} />
+          <PadButton axis="az" dir={-1} icon="left" label={t.hand.west} enabled={p.enabled} onPress={p.onPress} onRelease={p.onRelease} />
+          <button type="button" className="sdo-padb sdo-padb--c" onClick={p.onCentre} disabled={!p.canCentre} aria-label={t.hand.recentre}>{t.hand.centre}</button>
+          <PadButton axis="az" dir={1} icon="right" label={t.hand.east} enabled={p.enabled} onPress={p.onPress} onRelease={p.onRelease} />
           <span />
-          <PadButton axis="alt" dir={-1} icon="down" label={t.hand.down} enabled={enabled} onPress={onPress} onRelease={onRelease} />
+          <PadButton axis="alt" dir={-1} icon="down" label={t.hand.down} enabled={p.enabled} onPress={p.onPress} onRelease={p.onRelease} />
           <span />
         </div>
         <div className="sdo-hand__side">
           <div className="is-col">
             <span className="sdo-lbl">{t.hand.slewRate}</span>
-            <Stepper label={t.hand.slewRate} value={String(rate)} onDown={() => onRate(rate - 1)} onUp={() => onRate(rate + 1)} min={rate <= 1} max={rate >= 9} />
+            <Stepper label={t.hand.slewRate} value={`${p.rate} · ${rateLabel}`} onDown={() => p.onRate?.(p.rate - 1)} onUp={() => p.onRate?.(p.rate + 1)} min={!p.onRate || p.rate <= 1} max={!p.onRate || p.rate >= 9} />
           </div>
           <div>
-            <span className="sdo-lbl" id="sdo-track-l">{t.hand.tracking}</span>
-            <button type="button" className={`sdo-tg${tracking ? ' is-on' : ''}`} role="switch" aria-checked={tracking} aria-labelledby="sdo-track-l" onClick={() => onTracking(!tracking)} />
-          </div>
-          <div>
-            <span className="sdo-lbl">{t.hand.focus}{focus !== 0 ? ` ${focus > 0 ? '+' : '−'}${Math.abs(focus)}` : ''}</span>
+            <span className="sdo-lbl">{t.hand.focus}{p.focus !== 0 ? ` ${p.focus > 0 ? '+' : '−'}${Math.abs(p.focus)}` : ''}</span>
             <div style={{ display: 'flex', gap: 4 }}>
-              <button className="sdo-ib sdo-ib--sm" type="button" aria-label={t.hand.focusIn} onClick={() => onFocus(-1)}><Icon name="minus" size={14} /></button>
-              <button className="sdo-ib sdo-ib--sm" type="button" aria-label={t.hand.focusOut} onClick={() => onFocus(1)}><Icon name="plus" size={14} /></button>
+              <button className="sdo-ib sdo-ib--sm" type="button" aria-label={t.hand.focusIn} disabled={!p.onFocus || p.focusing} onClick={() => p.onFocus?.(-1)}><Icon name="minus" size={14} /></button>
+              <button className="sdo-ib sdo-ib--sm" type="button" aria-label={t.hand.focusOut} disabled={!p.onFocus || p.focusing} onClick={() => p.onFocus?.(1)}><Icon name="plus" size={14} /></button>
+              <button className="sdo-sec" type="button" disabled={!p.onAutofocus || p.focusing} onClick={() => p.onAutofocus?.()}>{p.focusing ? t.hand.focusing : t.hand.autofocus}</button>
             </div>
           </div>
         </div>
       </div>
+      <div className="sdo-hand__track">
+        <span className="sdo-lbl" id={trackId}>{t.hand.tracking}</span>
+        <div className="sdo-seg sdo-seg--sm" role="group" aria-labelledby={trackId}>
+          {modes.map((m) => (
+            <button key={m} type="button" className={p.tracking === m ? 'is-on' : ''} aria-pressed={p.tracking === m} disabled={!p.onTracking} onClick={() => p.onTracking?.(m)}>{t.hand.trackingModes[m]}</button>
+          ))}
+        </div>
+      </div>
+      <div className="sdo-hand__foot">
+        <button className="sdo-sec" type="button" disabled={!p.onSync} onClick={() => p.onSync?.()} title={p.onSync ? undefined : t.hand.operatorOnly}>{p.synced ? t.hand.synced : t.hand.sync}</button>
+        <button className="sdo-sec" type="button" disabled={!p.onSettings} onClick={() => p.onSettings?.()} title={p.onSettings ? undefined : t.hand.operatorOnly}>{t.hand.settings}</button>
+        <button className="sdo-sec sdo-sec--danger" type="button" disabled={!p.canStop} onClick={p.onStop}>{t.hand.stop}</button>
+      </div>
+      {(p.limitNote || p.commandNote) && <p className="sdo-note sdo-hand__note" role="status">{p.limitNote ?? p.commandNote}</p>}
     </section>
+  );
+}
+
+export type MountSettingsProps = { settings: MountSettings; onChange: (next: MountSettings) => void };
+
+function Choice<T extends string | number | boolean>({ label, value, options, onPick }: { label: string; value: T; options: Array<[T, string]>; onPick: (v: T) => void }) {
+  return (
+    <div className="sdo-mount__row">
+      <span className="sdo-lbl">{label}</span>
+      <div className="sdo-seg sdo-seg--sm" role="group" aria-label={label}>
+        {options.map(([v, text]) => (
+          <button key={String(v)} type="button" className={value === v ? 'is-on' : ''} aria-pressed={value === v} onClick={() => onPick(v)}>{text}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** The hand control's Scope Setup: anti-backlash, slew limits, GoTo approach, cordwrap. */
+function MountSettingsBase({ settings: s, onChange }: MountSettingsProps) {
+  const t = useCopy();
+  const set = (patch: Partial<MountSettings>) => onChange({ ...s, ...patch });
+  return (
+    <div className="sdo-mount">
+      <div className="sdo-mount__group">
+        <span className="sdo-lbl">{t.mount.backlash}</span>
+        <div className="sdo-mount__row"><span>{t.mount.backlashAlt}</span><Stepper label={`${t.mount.backlash} · ${t.mount.backlashAlt}`} value={String(s.backlashAlt)} onDown={() => set({ backlashAlt: Math.max(0, s.backlashAlt - 10) })} onUp={() => set({ backlashAlt: Math.min(99, s.backlashAlt + 10) })} min={s.backlashAlt <= 0} max={s.backlashAlt >= 99} /></div>
+        <div className="sdo-mount__row"><span>{t.mount.backlashAz}</span><Stepper label={`${t.mount.backlash} · ${t.mount.backlashAz}`} value={String(s.backlashAz)} onDown={() => set({ backlashAz: Math.max(0, s.backlashAz - 10) })} onUp={() => set({ backlashAz: Math.min(99, s.backlashAz + 10) })} min={s.backlashAz <= 0} max={s.backlashAz >= 99} /></div>
+      </div>
+      <div className="sdo-mount__group">
+        <span className="sdo-lbl">{t.mount.limits}</span>
+        <div className="sdo-mount__row"><span>{t.mount.altMin}</span><Stepper label={t.mount.altMin} value={`${s.slewAltMin}°`} onDown={() => set({ slewAltMin: Math.max(0, s.slewAltMin - 5) })} onUp={() => set({ slewAltMin: Math.min(s.slewAltMax - 5, s.slewAltMin + 5) })} min={s.slewAltMin <= 0} max={s.slewAltMin >= s.slewAltMax - 5} /></div>
+        <div className="sdo-mount__row"><span>{t.mount.altMax}</span><Stepper label={t.mount.altMax} value={`${s.slewAltMax}°`} onDown={() => set({ slewAltMax: Math.max(s.slewAltMin + 5, s.slewAltMax - 5) })} onUp={() => set({ slewAltMax: Math.min(90, s.slewAltMax + 5) })} min={s.slewAltMax <= s.slewAltMin + 5} max={s.slewAltMax >= 90} /></div>
+      </div>
+      <div className="sdo-mount__group">
+        <span className="sdo-lbl">{t.mount.approach}</span>
+        <Choice label={t.mount.approachAlt} value={s.approachAlt} options={[[1, t.mount.positive], [-1, t.mount.negative]]} onPick={(v) => set({ approachAlt: v })} />
+        <Choice label={t.mount.approachAz} value={s.approachAz} options={[[1, t.mount.positive], [-1, t.mount.negative]]} onPick={(v) => set({ approachAz: v })} />
+      </div>
+      <div className="sdo-mount__group">
+        <Choice label={t.mount.cordwrap} value={s.cordwrap} options={[[false, t.mount.off], [true, t.mount.on]]} onPick={(v) => set({ cordwrap: v })} />
+      </div>
+      <p className="sdo-note" style={{ padding: 0 }}>{t.mount.note}</p>
+    </div>
   );
 }
 
@@ -290,5 +411,6 @@ export const Session = memo(SessionBase);
 export const Pointing = memo(PointingBase);
 export const Camera = memo(CameraBase);
 export const HandControl = memo(HandControlBase);
+export const MountSettingsPanel = memo(MountSettingsBase);
 export const FrameThumbs = memo(FrameThumbsBase);
 export const Frames = memo(FramesBase);

@@ -229,8 +229,6 @@
   radial-gradient(1px 1px at 311px 263px, rgba(255, 255, 255, .5), transparent 60%) 90px 40px / 700px 620px,
   radial-gradient(120% 80% at 50% 110%, rgba(27, 26, 36, .9), transparent 70%),
   #040404; }
-.sdo-art { position: absolute; inset: 0; transition: transform .7s cubic-bezier(.2,.7,.2,1), filter .6s; pointer-events: none; }
-.sdo-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .sdo-scan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(180deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px); mix-blend-mode: screen; }
 .sdo-vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(closest-side, transparent 70%, rgba(4, 4, 4, .8) 100%); }
 .sdo-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -278,8 +276,9 @@
 
 /* right */
 .sdo-point { padding: 0 16px 14px; display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 14px; align-items: center; }
-.sdo-point__vals { display: flex; flex-direction: column; gap: 12px; }
-.sdo-point__vals > div { display: flex; flex-direction: column; gap: 5px; }
+.sdo-point__vals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 8px; }
+.sdo-point__vals > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sdo-point__vals .sdo-v { font-size: 15px; white-space: nowrap; }
 .sdo-stats { padding: 0 12px 12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .sdo-cam { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
 .sdo-cam__row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -368,7 +367,7 @@
 @keyframes sdo-spin { to { transform: rotate(360deg); } }
 @keyframes sdo-blink { 50% { opacity: .3; } }
 .sdo-blink { animation: sdo-blink 1.1s steps(2) infinite; }
-@media (prefers-reduced-motion: reduce) { .sdo-fs.is-now .sdo-fs__dot, .sdo-spin, .sdo-blink, .sdo-atmo__aurora { animation: none; } .sdo-art { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sdo-fs.is-now .sdo-fs__dot, .sdo-spin, .sdo-blink, .sdo-atmo__aurora { animation: none; } }
 
 /* ── narrower desks ─────────────────────────────────────────── */
 /* The header sizes itself: it holds nothing fixed, so it may be a container. */
@@ -489,25 +488,6 @@
 .sdo-stn.is-next .sdo-stn__soon { color: var(--o-teal); }
 .sdo-idle__note { display: inline-flex; align-items: center; gap: 9px; margin-top: 4px; padding: 7px 13px; border-radius: 30px; border: 1px solid rgba(226, 184, 90, .4); background: rgba(226, 184, 90, .07); font: 600 11px/1 var(--o-cond); letter-spacing: .18em; text-transform: uppercase; color: var(--o-teal); }
 .sdo-idle__note .sdo-led { width: 6px; height: 6px; }
-/* A photograph on black, screened onto the live star field, a little smaller than the field, with the air moving over it. */
-.sdo-art--photo { display: grid; place-items: center; mix-blend-mode: screen; }
-.sdo-art--photo img { width: auto; height: auto; max-width: 92%; max-height: 96%; object-fit: contain; filter: contrast(1.08) saturate(.92); }
-.sdo-art--photo.is-scope img { width: 22%; max-width: none; max-height: none; filter: none; }
-/* Sky glow: a real camera never records pure black; the darkest sky lifts to a dim blue-grey. */
-.sdo-skyglow { position: absolute; inset: 0; background: #1b1a24; mix-blend-mode: lighten; pointer-events: none; }
-.sdo-art.is-pan { transition: none; }
-.sdo-view__feed { transition: filter .6s; }
-/* The field streaming past while the mount slews; it covers the live feed until the axes stop. */
-.sdo-slewfield { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
-@media (prefers-reduced-motion: no-preference) {
-  .sdo-art--photo img { animation: sdo-seeing 2.6s ease-in-out infinite; }
-}
-@keyframes sdo-seeing {
-  0%, 100% { translate: 0 0; filter: contrast(1.08) saturate(.92) blur(0.25px); }
-  20% { translate: 0.6px -0.4px; filter: contrast(1.08) saturate(.92) blur(0.6px); }
-  45% { translate: -0.5px 0.5px; filter: contrast(1.08) saturate(.92) blur(0.2px); }
-  70% { translate: 0.3px 0.6px; filter: contrast(1.08) saturate(.92) blur(0.5px); }
-}
 /* In the strip only the step in hand keeps its name; where the strip is narrowest, only that step shows. */
 @media (--xl) {
   .sdo-fs:not(.is-now) .sdo-fs__nm { display: none; }
@@ -532,3 +512,40 @@
 }
 :lang(ka) .sdo :is(.sdo-lbl, .sdo-cond, .sdo-ph__t, .sdo-ph__id, .sdo-btn, .sdo-sec, .sdo-pill, .sdo-seg button, .sdo-fs__nm, .sdo-tab, .sdo-quick__title, .sdo-idle__title, .sdo-idle__note, .sdo-mh__t, .sdo-phead__t, .sd-navlink, .sdo-badge, .sdo-hud, .sdo-targets__foot, .sdo-note, .sdo-pstep, .sdo-stn__soon, .sdo-padb--c) { letter-spacing: 0; }
 :lang(ka) .sdo :is(.sdo-quick__title, .sdo-idle__title, .sdo-phead__t, .sdo-capture__info h2, .sdo-refused h2) { font-weight: 800; }
+
+/* ── ADR-054: the instrument's own controls ─────────────────────── */
+/* The platform's stream keeps its own aspect, centred, and nothing is drawn over it. */
+.sdo-view__feed.is-stream { display: grid; place-items: center; background: #040404; }
+.sdo-view__feed.is-stream img { max-width: 100%; max-height: 100%; display: block; }
+/* The running exposure, under the status pill: how far through the sub the sensor is. */
+.sdo-status { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.sdo-expose { display: block; width: 120px; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .14); overflow: hidden; }
+.sdo-expose i { display: block; height: 100%; background: var(--o-teal); transition: width 120ms linear; }
+.sdo-seg--sm button { height: 26px; padding: 0 9px; font-size: 11px; letter-spacing: .08em; }
+.sdo-seg button:disabled { cursor: not-allowed; opacity: .55; }
+.sdo-hand__track { padding: 0 16px 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sdo-hand__foot { padding: 0 16px 14px; display: flex; gap: 6px; flex-wrap: wrap; }
+.sdo-hand__foot .sdo-sec { flex: 1 1 auto; height: 32px; padding: 0 10px; font-size: 11px; }
+.sdo-hand__note { padding: 0 16px 12px; margin: 0; }
+.sdo-sec--danger { border-color: rgba(255, 122, 107, .45); color: var(--o-red); }
+.sdo-sec--danger:hover:not(:disabled) { border-color: var(--o-red); color: #fff; background: rgba(255, 122, 107, .12); }
+.sdo-cam__hcg { font-size: 10px; color: rgba(244, 244, 242, .4); }
+.sdo-range::-webkit-slider-runnable-track { background-image: linear-gradient(90deg, #e3482c, var(--o-teal)), linear-gradient(rgba(244, 244, 242, .6), rgba(244, 244, 242, .6)); background-size: var(--fill, 50%) 100%, 2px 100%; background-position: 0 0, var(--hcg, 42%) 0; background-repeat: no-repeat; }
+.sdo-cam .sdo-sec { align-self: flex-start; }
+/* The hand control's Scope Setup. */
+.sdo-mount { display: flex; flex-direction: column; gap: 16px; }
+.sdo-mount__group { display: flex; flex-direction: column; gap: 8px; }
+.sdo-mount__row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font: 400 13px/1.3 var(--o-sans); color: var(--o-ink-2); }
+/* GoTo by coordinates, in the picker. */
+.sdo-coords { display: grid; grid-template-columns: auto 1fr 1fr auto; gap: 8px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--o-line); }
+.sdo-coords label { display: contents; }
+.sdo-input { height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--o-line-hi); background: rgba(0, 0, 0, .4); color: var(--o-ink); font: 400 13px var(--o-mono); min-width: 0; }
+.sdo-input:focus-visible { outline: 2px solid var(--o-lilac); outline-offset: 1px; }
+.sdo-input[aria-invalid="true"] { border-color: var(--o-red); }
+.sdo-coords .sdo-btn { height: 36px; }
+.sdo-coords__err { grid-column: 1 / -1; color: var(--o-red); }
+@media (--below-md) {
+  .sdo-coords { grid-template-columns: 1fr 1fr; }
+  .sdo-coords .sdo-lbl, .sdo-coords .sdo-btn { grid-column: 1 / -1; }
+  .sdo-point__vals { grid-template-columns: 1fr 1fr; }
+}
