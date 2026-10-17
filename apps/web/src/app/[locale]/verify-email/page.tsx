@@ -37,7 +37,6 @@ export default async function VerificationPendingPage({
         eyebrow={copy.eyebrow}
         title={copy.verifyPending.title}
         description={copy.verifyPending.description}
-        securityNote={copy.securityNote}
       >
         <Link className="button button-primary button-large" href={`/${locale}/sign-in`}>
           <span>{copy.verifyPending.action}</span>

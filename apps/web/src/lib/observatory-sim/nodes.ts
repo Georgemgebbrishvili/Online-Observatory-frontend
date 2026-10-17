@@ -19,7 +19,7 @@ export const NODES: ObservatoryNode[] = [
     tier: "first_party",
     status: "commissioning",
     instrument: {
-      optics: "Celestron NexStar 6SE",
+      optics: "150 mm Schmidt-Cassegrain",
       apertureMm: 150,
       focalLengthMm: 1500,
       mount: "Single-fork altazimuth, GoTo",

@@ -13,7 +13,6 @@ type SiteFooterProps = {
 };
 
 export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
-  const futureItems = [footer.about, footer.contact];
   const legalItems = [
     { href: `/${locale}/${legalPaths.terms}`, label: footer.terms },
     { href: `/${locale}/${legalPaths.privacy}`, label: footer.privacy },
@@ -32,28 +31,16 @@ export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
           <p>{footer.statement}</p>
         </div>
 
-        <nav className="footer-nav" aria-label={`${footer.product} · ${footer.company}`}>
+        <nav className="footer-nav" aria-label={footer.product}>
           <div>
             <h2>{footer.product}</h2>
-            <Link href={`/${locale}#tonight`} prefetch={false}>
-              {footer.missions}
-            </Link>
-            <Link href={`/${locale}/app/live`} prefetch={false}>
-              {footer.live}
-            </Link>
-            <Link href={`/${locale}/app/collection`} prefetch={false}>
-              {footer.collection}
-            </Link>
             <Link href={`/${locale}/observatory`}>{footer.observatory}</Link>
+            <Link href={`/${locale}/app/book`}>{footer.book}</Link>
+            <Link href={`/${locale}/app/live`}>{footer.live}</Link>
+            <Link href={`/${locale}/app/collection`}>{footer.collection}</Link>
+            <Link href={`/${locale}/vote`}>{footer.vote}</Link>
+            <Link href={`/${locale}/pricing`}>{footer.pricing}</Link>
             <Link href={`/${locale}/status`}>{footer.status}</Link>
-          </div>
-          <div>
-            <h2>{footer.company}</h2>
-            {futureItems.map((item) => (
-              <span key={item} title={footer.comingSoon}>
-                {item}
-              </span>
-            ))}
           </div>
           <div>
             <h2>{footer.legal}</h2>

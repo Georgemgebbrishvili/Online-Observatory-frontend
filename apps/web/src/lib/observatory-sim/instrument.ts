@@ -10,7 +10,7 @@ import type { Instrument } from './types';
 
 /** Celestron NexStar 8SE: 203.2 mm Schmidt-Cassegrain, 2032 mm, f/10. */
 export const NEXSTAR_8SE = {
-  model: 'Celestron NexStar 8SE',
+  model: '203 mm Schmidt-Cassegrain',
   apertureMm: 203.2,
   focalLengthMm: 2032,
   /** Secondary obstruction, 64 mm: 31 % by diameter, 9.8 % by area. Out of focus a star is this ring. */

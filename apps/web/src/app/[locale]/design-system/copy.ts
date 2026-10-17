@@ -9,7 +9,7 @@ export const designSystemCopy = {
     metadataDescription: `Internal ${brand.en.name} visual system and component reference.`,
     eyebrow: "Internal reference · 01",
     title: "Visual system",
-    introduction: `The ${brand.en.name} visuals, ADR-052, from the Skychaser site: a near-black canvas under a star field, white ink, Anton headlines. Red for highlights and filled buttons, green for live, gold for simulated. Buttons and live badges glow.`,
+    introduction: `The ${brand.en.name} visuals, ADR-052 recoloured by ADR-055: a navy canvas under a star field, cool white ink, Anton headlines. NASA blue for highlights and filled buttons, green for live, gold for simulated. Buttons and live badges glow.`,
     internal: "Development route · noindex",
     sections: {
       foundations: [
@@ -27,13 +27,13 @@ export const designSystemCopy = {
       poster: [
         "03",
         "Kicker and stats",
-        "A red kicker above an Anton headline; Anton numbers over Oswald labels, under a hairline.",
+        "A blue kicker above an Anton headline; Anton numbers over Oswald labels, under a hairline.",
         "as amended by ADR-052 — components",
       ],
       actions: [
         "04",
         "Actions & selection",
-        "One filled red primary with its glow; outline, ghost and danger; chips and the simulated badge. Focus is a red-ink ring.",
+        "One filled blue primary with its glow; outline, ghost and danger; chips and the simulated badge. Focus is a blue-ink ring.",
         "as amended by ADR-052 — components",
       ],
       statuses: [
@@ -75,7 +75,7 @@ export const designSystemCopy = {
       showcase: [
         "11",
         "The sky",
-        "The homepage hero: the Skychaser sky, where the pointer finds our drawn plates, captioned as illustrations; the headline's last words in red, one filled button.",
+        "The homepage hero: the Skychaser sky, where the pointer finds our drawn plates, captioned as illustrations; the headline's last words in blue, one filled button.",
         "as amended by ADR-052 — the homepage",
       ],
       homepage: [
@@ -103,9 +103,9 @@ export const designSystemCopy = {
       "Ink 2 · secondary",
       "Ink 3 · tertiary",
       "Ink 4 · disabled",
-      "Red · highlight",
-      "Red · button fill",
-      "Red ink · text",
+      "Blue · highlight",
+      "Blue · button fill",
+      "Blue ink · text",
       "Green · live",
       "Gold · simulated",
       "Success",
@@ -277,7 +277,7 @@ export const designSystemCopy = {
     metadataDescription: `${brand.ka.genitive} შიდა ვიზუალური სისტემა და კომპონენტების ცნობარი.`,
     eyebrow: "შიდა ცნობარი · 01",
     title: "ვიზუალური სისტემა",
-    introduction: `${brand.ka.genitive} ვიზუალური ენა, ADR-052, Skychaser-ის საიტიდან: თითქმის შავი ფონი ვარსკვლავებით, თეთრი ტექსტი, მაღალი სათაურები. წითელი — აქცენტებისა და მთავარი ღილაკებისთვის, მწვანე — პირდაპირი ეთერისთვის, ოქროსფერი — სიმულაციისთვის. ღილაკები და პირდაპირი ეთერის ნიშნები ანათებს.`,
+    introduction: `${brand.ka.genitive} ვიზუალური ენა, ADR-052, ADR-055-ის ფერებით: მუქი ლურჯი ფონი ვარსკვლავებით, თეთრი ტექსტი, მაღალი სათაურები. NASA-ს ლურჯი — აქცენტებისა და მთავარი ღილაკებისთვის, მწვანე — პირდაპირი ეთერისთვის, ოქროსფერი — სიმულაციისთვის. ღილაკები და პირდაპირი ეთერის ნიშნები ანათებს.`,
     internal: "დეველოპერული გვერდი · noindex",
     sections: {
       foundations: [
@@ -295,13 +295,13 @@ export const designSystemCopy = {
       poster: [
         "03",
         "ზედწარწერა და მაჩვენებლები",
-        "წითელი ზედწარწერა სათაურის ზემოთ; დიდი ციფრები წარწერების ზემოთ, თხელი ხაზის ქვეშ.",
+        "ლურჯი ზედწარწერა სათაურის ზემოთ; დიდი ციფრები წარწერების ზემოთ, თხელი ხაზის ქვეშ.",
         "as amended by ADR-052 — components",
       ],
       actions: [
         "04",
         "ქმედებები და არჩევა",
-        "ერთი წითელი მთავარი ღილაკი თავისი ნათებით; კონტურიანი, უფონო და საშიში; ჩიპები და სიმულაციის ნიშანი. ფოკუსი — წითელი რგოლი.",
+        "ერთი ლურჯი მთავარი ღილაკი თავისი ნათებით; კონტურიანი, უფონო და საშიში; ჩიპები და სიმულაციის ნიშანი. ფოკუსი — ლურჯი რგოლი.",
         "as amended by ADR-052 — components",
       ],
       statuses: [
@@ -343,7 +343,7 @@ export const designSystemCopy = {
       showcase: [
         "11",
         "ცა",
-        "მთავარი გვერდის პირველი ეკრანი: Skychaser-ის ცა, სადაც კურსორი ჩვენს დახატულ ფირფიტებს პოულობს, ილუსტრაციის წარწერით; სათაურის ბოლო სიტყვები წითლად, ერთი მთავარი ღილაკი.",
+        "მთავარი გვერდის პირველი ეკრანი: Skychaser-ის ცა, სადაც კურსორი ჩვენს დახატულ ფირფიტებს პოულობს, ილუსტრაციის წარწერით; სათაურის ბოლო სიტყვები ლურჯად, ერთი მთავარი ღილაკი.",
         "as amended by ADR-052 — the homepage",
       ],
       homepage: [
@@ -371,9 +371,9 @@ export const designSystemCopy = {
       "ტექსტი 2 · მეორადი",
       "ტექსტი 3 · მესამეული",
       "ტექსტი 4 · გამორთული",
-      "წითელი · აქცენტი",
-      "წითელი · ღილაკის ფონი",
-      "წითელი ტექსტი",
+      "ლურჯი · აქცენტი",
+      "ლურჯი · ღილაკის ფონი",
+      "ლურჯი ტექსტი",
       "მწვანე · პირდაპირი ეთერი",
       "ოქროსფერი · სიმულაცია",
       "წარმატება",

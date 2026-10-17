@@ -21,7 +21,7 @@ async function onTarget(page: Page) {
 const degrees = (text: string | null) => Number((text ?? "").replace(/[^\d.−-]/g, "").replace("−", "-"));
 
 test.describe("the sky model's 8SE", () => {
-  test("is the instrument Celestron specifies, framed by the 585", async ({ page }) => {
+  test("is the 8-inch Schmidt-Cassegrain, framed by the 585", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/en/observatory");
@@ -29,7 +29,7 @@ test.describe("the sky model's 8SE", () => {
     // The station's details are the maker's numbers.
     await page.getByRole("button", { name: "Station details" }).click();
     const sheet = page.getByRole("dialog");
-    await expect(sheet.getByText("Celestron NexStar 8SE")).toBeVisible();
+    await expect(sheet.getByText("203 mm Schmidt-Cassegrain")).toBeVisible();
     await expect(sheet.getByText("203.2 mm")).toBeVisible();
     await expect(sheet.getByText("2032 mm")).toBeVisible();
     await expect(sheet.getByText("0.57″")).toBeVisible();
@@ -55,7 +55,6 @@ test.describe("the sky model's 8SE", () => {
     await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("8 s");
     for (let i = 0; i < 9; i += 1) await camera.getByRole("button", { name: "Exposure: less" }).click();
     await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("10 ms");
-    await expect(camera.getByText("HCG from 252")).toBeVisible();
   });
 
   test("a hand slew moves the telescope and leaves the object where it is on the sky", async ({ page }) => {
@@ -76,8 +75,19 @@ test.describe("the sky model's 8SE", () => {
     await expect(view(page).getByText(/Off target .* S$/)).toBeVisible({ timeout: 5_000 });
     await expect.poll(async () => degrees(await altitude(page).textContent()) - before, { timeout: 5_000 }).toBeGreaterThan(0.8);
     // Still tracking the sky from the new position: the offset holds rather than drifting.
+    // A busy page takes the key's release late, so wait for the slew to finish first.
     await expect(status(page)).toHaveText(/On target · tracking/);
-    const offset = await view(page).getByText(/Off target/).textContent();
+    let offset: string | null = null;
+    await expect
+      .poll(
+        async () => {
+          const previous = offset;
+          offset = await view(page).getByText(/Off target/).textContent();
+          return offset === previous;
+        },
+        { intervals: [500], timeout: 10_000 },
+      )
+      .toBe(true);
     await page.waitForTimeout(2000);
     await expect(view(page).getByText(/Off target/)).toHaveText(offset ?? "");
 

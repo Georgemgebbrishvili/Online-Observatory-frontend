@@ -239,8 +239,8 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
 
       if (gain > 0.01) {
         const lg = c.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, R * 1.4);
-        lg.addColorStop(0, withAlpha(palette.cream, 0.07 * gain));
-        lg.addColorStop(0.5, withAlpha(palette.cream, 0.02 * gain));
+        lg.addColorStop(0, withAlpha(palette.ice, 0.07 * gain));
+        lg.addColorStop(0.5, withAlpha(palette.ice, 0.02 * gain));
         lg.addColorStop(1, withAlpha(palette.black, 0));
         c.fillStyle = lg;
         c.fillRect(cur.x - R * 1.4, cur.y - R * 1.4, R * 2.8, R * 2.8);
@@ -313,7 +313,7 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
         c.textBaseline = "middle";
         c.letterSpacing = "0.04em";
         c.font = labelFont;
-        c.fillStyle = withAlpha(palette.cream, 0.96 * la);
+        c.fillStyle = withAlpha(palette.ice, 0.96 * la);
         const lx = Math.min(W - 80, Math.max(80, o.cx));
         c.fillText(o.name, lx, ty);
         const tw = c.measureText(o.name).width;

@@ -47,11 +47,11 @@
   text-transform: uppercase;
 }
 
-.footer-nav a,
-.footer-nav span {
-  width: fit-content;
-  color: var(--color-text-small);
-  font-size: var(--font-size-caption);
+.footer-nav a {
+  max-width: 100%;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  overflow-wrap: anywhere;
 }
 
 .footer-nav a {
@@ -82,7 +82,7 @@
 
 @media (--md) {
   .footer-nav {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

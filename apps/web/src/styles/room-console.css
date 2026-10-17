@@ -352,7 +352,7 @@
 .room-console .panel-meta,
 .room-console .panel-meta a {
   color: var(--room-ink-3);
-  font: 500 11px/1 var(--font-mono);
+  font: 500 13px/1 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -373,7 +373,7 @@
 
 .room-console .room-note {
   color: color-mix(in srgb, var(--room-ink-3) 75%, transparent);
-  font: 400 11px/1.5 var(--font-mono);
+  font: 400 13px/1.5 var(--font-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -486,7 +486,7 @@
   background: var(--room-glass);
   backdrop-filter: blur(10px);
   color: color-mix(in srgb, var(--room-ink-warm) 86%, transparent);
-  font: 400 11px/1.7 var(--font-mono);
+  font: 400 13px/1.7 var(--font-mono);
   letter-spacing: 0.08em;
   text-align: right;
   text-transform: uppercase;
@@ -510,7 +510,7 @@
   background: var(--room-glass);
   backdrop-filter: blur(10px);
   color: color-mix(in srgb, var(--room-ink-warm) 86%, transparent);
-  font: 400 11px/1.7 var(--font-mono);
+  font: 400 13px/1.7 var(--font-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -572,7 +572,7 @@
   background: var(--room-glass);
   backdrop-filter: blur(10px);
   color: var(--room-gold);
-  font: 600 12px/1 var(--room-font-cond);
+  font: 600 13px/1 var(--room-font-cond);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -632,7 +632,7 @@
   border: 1.5px solid color-mix(in srgb, var(--room-warm) 25%, transparent);
   background: var(--room-dot);
   color: inherit;
-  font: 500 11px var(--font-mono);
+  font: 500 13px var(--font-mono);
   transition:
     background 140ms,
     border-color 140ms,
@@ -648,7 +648,7 @@
 
 .room-console .mission-step-note {
   color: inherit;
-  font: 400 11px/1 var(--font-mono);
+  font: 400 13px/1 var(--font-mono);
   opacity: 0.7;
   text-transform: uppercase;
 }
@@ -787,7 +787,7 @@
 .room-console .room-values dt,
 .room-console .room-readings dt {
   color: var(--room-ink-3);
-  font: 600 11px/1 var(--room-font-cond);
+  font: 600 13px/1 var(--room-font-cond);
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
@@ -855,7 +855,7 @@
     color-mix(in srgb, var(--room-pad) 90%, transparent)
   );
   color: var(--room-white);
-  font: 600 11px/1 var(--room-font-cond);
+  font: 600 13px/1 var(--room-font-cond);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -898,7 +898,7 @@
 
 .room-console .room-history time {
   color: var(--room-ink-3);
-  font: 400 11px/1.5 var(--font-mono);
+  font: 400 13px/1.5 var(--font-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1018,13 +1018,13 @@
   }
 
   .room.room-console .room-observatory .room-readings dt {
-    font: 600 10px/1.2 var(--room-font-cond);
+    font: 600 12px/1.2 var(--room-font-cond);
     letter-spacing: 0.12em;
   }
 
   .room.room-console .room-observatory .room-readings dd {
     margin: 0;
-    font: 500 12px/1.2 var(--font-mono);
+    font: 500 13px/1.2 var(--font-mono);
     text-align: right;
   }
 
@@ -1089,7 +1089,7 @@
 
   .room.room-console .room-stats dt {
     color: var(--room-ink-3);
-    font: 600 10px/1.2 var(--room-font-cond);
+    font: 600 12px/1.2 var(--room-font-cond);
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }

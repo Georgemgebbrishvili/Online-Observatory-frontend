@@ -7,17 +7,10 @@ type AuthPageProps = {
   eyebrow: string;
   title: string;
   description: string;
-  securityNote: string;
   children: ReactNode;
 };
 
-export function AuthPage({
-  children,
-  description,
-  eyebrow,
-  securityNote,
-  title,
-}: AuthPageProps) {
+export function AuthPage({ children, description, eyebrow, title }: AuthPageProps) {
   return (
     <main className="auth-page" id="main-content">
       <Container className="auth-layout">
@@ -32,10 +25,7 @@ export function AuthPage({
             <OpticalRing active size="large" />
           </div>
         </section>
-        <section className="auth-panel">
-          {children}
-          <p className="auth-security-note">{securityNote}</p>
-        </section>
+        <section className="auth-panel">{children}</section>
       </Container>
     </main>
   );

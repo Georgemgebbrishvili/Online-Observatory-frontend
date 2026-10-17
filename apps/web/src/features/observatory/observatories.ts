@@ -6,8 +6,6 @@ type LocalizedText = Record<Locale, string>;
 export type EquipmentConfigurationStatus = "EXPECTED_MVP" | "FINALIZED";
 
 export type TelescopeConfiguration = {
-  manufacturer: string;
-  model: string;
   type: LocalizedText;
   aperture: string;
   focalLength: string;
@@ -32,8 +30,6 @@ export const observatories: ObservatorySite[] = [
     },
     location: { en: "Tbilisi, Georgia", ka: "თბილისი, საქართველო" },
     telescope: {
-      manufacturer: "Celestron",
-      model: "NexStar 6SE",
       type: { en: "Schmidt-Cassegrain", ka: "შმიდტ-კასეგრენი" },
       aperture: "150 mm",
       focalLength: "1500 mm",

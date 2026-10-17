@@ -145,7 +145,7 @@ function PointingBase({ path, pointing, rows, rms, rmsHistory, seeing, seeingHis
         </div>
         <div className="sdo-stat">
           <div className="sdo-stat__row"><span className="sdo-lbl">{t.seeing}</span><span className="sdo-v sdo-v--sm">{seeing}</span></div>
-          <Spark values={seeingHistory} color="#f0785a" lo={1} hi={5} />
+          <Spark values={seeingHistory} color="#8ab8ff" lo={1} hi={5} />
         </div>
         <div className="sdo-stat">
           <span className="sdo-lbl">{t.pointing.battery}</span>
@@ -211,12 +211,11 @@ function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, on
         <div className="sdo-cam__gain">
           <div className="sdo-cam__row">
             <label className="sdo-lbl" htmlFor="sdo-gain">{t.camera.gain}</label>
-            <span className="sdo-mono" style={{ fontSize: 12 }}>{gain}{gain >= GAIN.hcg ? ' · HCG' : ''}</span>
+            <span className="sdo-mono" style={{ fontSize: 13 }}>{gain}{gain >= GAIN.hcg ? ' · HCG' : ''}</span>
           </div>
           <input id="sdo-gain" className="sdo-range" type="range" min={GAIN.min} max={GAIN.max} step={GAIN.step} value={gain} disabled={off}
             aria-valuetext={`${gain}${gain >= GAIN.hcg ? ', high conversion gain' : ''}`}
             style={{ ['--fill' as string]: `${(gain / GAIN.max) * 100}%`, ['--hcg' as string]: `${(GAIN.hcg / GAIN.max) * 100}%` }} onChange={(e) => onGain(Number(e.target.value))} />
-          <span className="sdo-lbl sdo-cam__hcg">{t.camera.hcg}</span>
         </div>
         {onAuto && (
           <button type="button" className="sdo-sec" onClick={onAuto} disabled={off}>{t.camera.auto}</button>

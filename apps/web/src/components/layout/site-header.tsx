@@ -8,6 +8,7 @@ import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/ui/container";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
+import { publicLinks } from "@/lib/navigation/public-links";
 
 type SiteHeaderProps = {
   locale: Locale;
@@ -21,14 +22,7 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const publicNavigation = navigation.public;
-  const links = [
-    { label: publicNavigation.explore, href: `/${locale}#tonight` },
-    { label: publicNavigation.live, href: `/${locale}/app/live` },
-    { label: publicNavigation.observatory, href: `/${locale}/observatory` },
-    { label: publicNavigation.vote, href: `/${locale}/vote` },
-    { label: publicNavigation.pricing, href: `/${locale}/pricing` },
-    { label: publicNavigation.about, href: `/${locale}#about` },
-  ];
+  const links = publicLinks(locale, publicNavigation);
 
   return (
     <header
@@ -49,8 +43,7 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
             <Link
               key={link.href}
               href={link.href}
-              prefetch={link.href.includes("#") ? false : undefined}
-              aria-current={link.href === pathname ? "page" : undefined}
+              aria-current={pathname.startsWith(link.href) ? "page" : undefined}
             >
               {link.label}
             </Link>
@@ -71,10 +64,9 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
           </Link>
           <Link
             className="button button-primary button-small"
-            href={`/${locale}#tonight`}
-            prefetch={false}
+            href={`/${locale}/app/book`}
           >
-            <span>{publicNavigation.startExploring}</span>
+            <span>{publicNavigation.reserve}</span>
           </Link>
         </div>
         <button
@@ -100,7 +92,7 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
             <Link
               key={link.href}
               href={link.href}
-              prefetch={link.href.includes("#") ? false : undefined}
+              aria-current={pathname.startsWith(link.href) ? "page" : undefined}
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
@@ -119,10 +111,9 @@ export function SiteHeader({ locale, navigation }: SiteHeaderProps) {
           </Link>
           <Link
             className="button button-primary button-medium"
-            href={`/${locale}#tonight`}
-            prefetch={false}
+            href={`/${locale}/app/book`}
           >
-            <span>{publicNavigation.startExploring}</span>
+            <span>{publicNavigation.reserve}</span>
           </Link>
         </div>
       </div>

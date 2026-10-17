@@ -11,7 +11,7 @@ type TargetCopy = {
   reasons: Record<VisibilityBlockReason, string>;
   observable: string;
   window: { between: string; from: string; until: string; none: string };
-  simulated: { label: string; detail: string };
+  simulated: { label: string };
   unreachable: { title: string; description: string };
   noObservatory: { title: string; description: string };
   noneObservable: { title: string; reason: string };
@@ -59,7 +59,6 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
     },
     simulated: {
       label: "SIMULATED OBSERVATORY",
-      detail: "Visibility is computed for the simulator. No real telescope is moving.",
     },
     unreachable: {
       title: "Tonight's sky could not be read",
@@ -117,7 +116,6 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
     },
     simulated: {
       label: "SIMULATED OBSERVATORY",
-      detail: "ხილვადობა სიმულატორისთვის ითვლება. ნამდვილი ტელესკოპი არ მოძრაობს.",
     },
     unreachable: {
       title: "ამაღამინდელი ცის მონაცემები ვერ მივიღეთ",

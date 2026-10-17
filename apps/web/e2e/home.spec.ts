@@ -64,15 +64,21 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
     await expect(page.getByRole("heading", { name: gone })).toHaveCount(0);
   }
 
-  // How a session works: four steps, each saying it is simulated today.
+  // How a session works: four steps, each a link to the page where it happens.
   const steps = page.locator("#about .flight-plan-step");
   await expect(steps).toHaveCount(4);
   for (const step of ["Reserve", "Slew", "Watch", "Keep"]) {
     await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
   }
-  await expect(page.locator("#about .flight-plan-status")).toHaveText(
-    Array(4).fill("Simulated today"),
-  );
+  await expect(page.locator("#about .flight-plan-link")).toHaveCount(4);
+  for (const [name, href] of [
+    ["Book a slot", "/en/app/book"],
+    ["Open the observatory", "/en/observatory"],
+    ["Go live", "/en/app/live"],
+    ["Your collection", "/en/app/collection"],
+  ]) {
+    await expect(steps.getByRole("link", { name })).toHaveAttribute("href", href);
+  }
 
   // Tonight's list comes from GET /targets/tonight on the fake platform.
   const tonight = page.locator("#tonight");
@@ -92,12 +98,12 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
 
   // The instrument is the platform's telescope, not a fixture.
   const instrument = page.locator("#live");
-  await expect(instrument.getByText("Celestron NexStar 6SE")).toBeVisible();
+  await expect(page.getByText(/Celestron/)).toHaveCount(0);
   await expect(instrument.getByText("150", { exact: true })).toBeVisible();
   await expect(instrument.getByText("1500", { exact: true })).toBeVisible();
   await expect(instrument.getByText("f/10", { exact: true })).toBeVisible();
   await expect(instrument.getByText("ZWO ASI585MC")).toBeVisible();
-  await expect(instrument.getByText(/Not long-exposure astrophotography/)).toBeVisible();
+  await expect(instrument.getByText("Live view", { exact: true })).toBeVisible();
   await expect(instrument.getByText("Online", { exact: true })).toBeVisible();
 
   await expect(page.getByText("30 min", { exact: true })).toBeVisible();
@@ -135,12 +141,24 @@ test("provides the complete public navigation on desktop and mobile", async ({
     name: "Public navigation",
   });
 
-  for (const item of ["Explore", "Live", "Observatory", "Vote", "Pricing", "About"]) {
-    await expect(publicNavigation.getByRole("link", { name: item })).toBeVisible();
+  for (const [item, href] of [
+    ["Observatory", "/en/observatory"],
+    ["Book", "/en/app/book"],
+    ["Live", "/en/app/live"],
+    ["Vote", "/en/vote"],
+    ["Pricing", "/en/pricing"],
+  ]) {
+    await expect(publicNavigation.getByRole("link", { name: item, exact: true })).toHaveAttribute(
+      "href",
+      href,
+    );
   }
 
   await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
-  await expect(header.getByRole("link", { name: "Start exploring" })).toBeVisible();
+  await expect(header.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(
+    "href",
+    "/en/app/book",
+  );
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
@@ -368,7 +386,7 @@ test("the /app dashboard reads the platform, section by section", async ({ page 
   ).toBeVisible();
   await expect(observatory.getByText("Simulated observatory")).toBeVisible();
   await expect(
-    observatory.getByText("Celestron NexStar 6SE · 150 mm · 1500 mm"),
+    observatory.getByText("150 mm · 1500 mm"),
   ).toBeVisible();
 
   const upcoming = page.locator(".home-upcoming");

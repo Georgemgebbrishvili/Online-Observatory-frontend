@@ -37,7 +37,7 @@ export default async function OpenGraphImage() {
           width: 600,
           height: 600,
           borderRadius: "50%",
-          background: `radial-gradient(circle, ${palette.red}66, ${palette.ember}00 62%)`,
+          background: `radial-gradient(circle, ${palette.blue}66, ${palette.ember}00 62%)`,
         }}
       />
       <svg

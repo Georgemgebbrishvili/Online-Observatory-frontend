@@ -23,8 +23,8 @@ function Reticle() {
   return (
     <svg className="sdo-overlay" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <g fill="none">
-        <path d="M450 40v160M450 400v160M120 300h200M580 300h200" stroke="rgba(244, 244, 242, .22)" vectorEffect="non-scaling-stroke" />
-        <circle cx="450" cy="300" r="60" stroke="rgba(244, 244, 242, .16)" vectorEffect="non-scaling-stroke" />
+        <path d="M450 40v160M450 400v160M120 300h200M580 300h200" stroke="rgba(243, 246, 251, .22)" vectorEffect="non-scaling-stroke" />
+        <circle cx="450" cy="300" r="60" stroke="rgba(243, 246, 251, .16)" vectorEffect="non-scaling-stroke" />
       </g>
     </svg>
   );
@@ -77,7 +77,7 @@ function ViewStage(p: ViewStageProps) {
       <div className={`sdo-view__feed${p.stream ? ' is-stream' : ''}`} ref={p.viewRef}>{p.feed}</div>
       {p.reticle && p.feed && <Reticle />}
       <svg className="sdo-overlay" viewBox="0 0 900 600" preserveAspectRatio="none" aria-hidden="true">
-        <path d={RULER} stroke="rgba(244, 244, 242, .35)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <path d={RULER} stroke="rgba(243, 246, 251, .35)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
       </svg>
       {!p.stream && <div className="sdo-scan" />}
       <div className="sdo-vignette" />
@@ -101,9 +101,9 @@ function ViewStage(p: ViewStageProps) {
           <span className="sdo-expose" aria-hidden="true"><i style={{ width: `${Math.round(p.exposing * 100)}%` }} /></span>
         )}
       </div>
-      <div className="sdo-hud sdo-glass sdo-hud--tl"><span style={{ color: '#f0785a' }}>{p.hudLive[0]}</span> · {p.hudLive[1]}<br />{p.hudLive[2]}</div>
+      <div className="sdo-hud sdo-glass sdo-hud--tl"><span style={{ color: '#8ab8ff' }}>{p.hudLive[0]}</span> · {p.hudLive[1]}<br />{p.hudLive[2]}</div>
       {p.hudTarget && (
-        <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#b8321f' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}{p.hudTarget[2] && <><br />{p.hudTarget[2]}</>}</div>
+        <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#8ab8ff' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}{p.hudTarget[2] && <><br />{p.hudTarget[2]}</>}</div>
       )}
       <div className="sdo-hud sdo-glass sdo-hud--br">{p.hudField[0]}<br />{p.hudField[1]}</div>
       <p className="sdo-hud sdo-glass sdo-hud--bc sdo-caption">{p.caption}</p>

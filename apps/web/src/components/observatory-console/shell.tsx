@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import type { ReactNode, RefObject } from 'react';
+import { useState, type ReactNode, type RefObject } from 'react';
 import { BrandLockup } from '@/components/brand/brand-lockup';
 import type { Station } from '@/lib/observatory-sim/sim-stations';
 import type { ConsoleCopy } from './copy';
@@ -57,6 +57,7 @@ const pad2 = (n: number) => String(n).padStart(2, '0');
 
 export function ConsoleShell(p: ShellProps) {
   const { t } = p;
+  const [menu, setMenu] = useState(false);
   const actionButtons = (
     <div className="sdo-act__btns">
       {p.flow.secondary.map((b) => (
@@ -109,7 +110,7 @@ export function ConsoleShell(p: ShellProps) {
 
       <div className="sdo-phone">
         <div className="sdo-phead">
-          <p className="sdo-phead__t">{t.observatory}</p>
+          <Link href={p.links[0]?.href.replace(/\/observatory$/, '') ?? '/'} className="sdo-phead__t">{t.observatory}</Link>
           <div>
             {p.simulated ? (
               <span className="sdo-pill sdo-pill--sim"><span className="sdo-led" />{t.simulated}</span>
@@ -118,7 +119,16 @@ export function ConsoleShell(p: ShellProps) {
             )}
             <button className={`sdo-ib${p.night ? ' is-on' : ''}`} type="button" onClick={p.onNight} aria-pressed={p.night} aria-label={t.nightMode}><Icon name="moon" /></button>
             <Link href={p.account.href} className="sdo-ib" aria-label={p.account.label}><Icon name="user" /></Link>
+            <button className={`sdo-ib${menu ? ' is-on' : ''}`} type="button" onClick={() => setMenu((open) => !open)} aria-expanded={menu} aria-controls="sdo-pmenu" aria-label={t.menu}><Icon name={menu ? 'x' : 'menu'} /></button>
           </div>
+          {menu && (
+            <nav id="sdo-pmenu" className="sdo-pmenu sdo-panel" aria-label={p.brandLabel}>
+              {p.links.map((l) => (
+                <Link key={l.href} href={l.href} aria-current={l.current ? 'page' : undefined} onClick={() => setMenu(false)}>{l.label}</Link>
+              ))}
+              <Link href={p.language.href} hrefLang={p.language.hrefLang} lang={p.language.hrefLang}>{p.language.label}</Link>
+            </nav>
+          )}
         </div>
         <button className="sdo-panel sdo-pstation" type="button" onClick={() => p.sheets.onOpenStations()} aria-haspopup="dialog">
           <span>
@@ -180,7 +190,7 @@ export function ConsoleShell(p: ShellProps) {
             <div className="sdo-pstats">
               <div className="sdo-stat"><span className="sdo-lbl">{t.phone.tracking}</span><span className="sdo-v sdo-v--sm">{p.phone.tracking}</span></div>
               <div className="sdo-stat"><span className="sdo-lbl">{t.phone.seeing}</span><span className="sdo-v sdo-v--sm">{p.phone.seeing}</span></div>
-              <div className="sdo-stat"><span className="sdo-lbl">{t.phone.frames}</span><span className="sdo-v sdo-v--sm">{p.frames.length}</span><span className="sdo-mono" style={{ fontSize: 11, color: 'var(--o-ink-3)' }}>{t.phone.thisSession}</span></div>
+              <div className="sdo-stat"><span className="sdo-lbl">{t.phone.frames}</span><span className="sdo-v sdo-v--sm">{p.frames.length}</span></div>
             </div>
             <div className="sdo-pcap">
               <div className="sdo-pcap__head"><span className="sdo-lbl">{t.frames.captured}</span></div>

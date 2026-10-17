@@ -201,11 +201,7 @@ export default async function MissionTargetPage({ params }: MissionTargetPagePro
           <p className="plate-title">{copy.observatory}</p>
           <h2>{tonight?.observatory.name ?? copy.observatoryName}</h2>
           {tonight?.observatory.mode === "SIMULATED" && (
-            <ModeNotice
-              mode="SIMULATED"
-              label={words.simulated.label}
-              detail={words.simulated.detail}
-            />
+            <ModeNotice mode="SIMULATED" label={words.simulated.label} />
           )}
           <div>
             {/* Booking is Phase 3; /app/book says so plainly until then. */}

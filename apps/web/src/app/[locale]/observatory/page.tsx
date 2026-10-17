@@ -13,6 +13,7 @@ import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
+import { publicLinks } from "@/lib/navigation/public-links";
 import { getCurrentUser } from "@/lib/platform/session";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
 import "@/styles/observatory-console.css";
@@ -117,14 +118,10 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
         simulated={!real}
         mission={mission}
         brandLabel={nav.brandAriaLabel}
-        links={[
-          { label: nav.public.explore, href: `/${locale}#tonight` },
-          { label: nav.public.live, href: `/${locale}/app/live` },
-          { label: nav.public.observatory, href: `/${locale}/observatory`, current: true },
-          { label: nav.public.vote, href: `/${locale}/vote` },
-          { label: nav.public.pricing, href: `/${locale}/pricing` },
-          { label: nav.public.about, href: `/${locale}#about` },
-        ]}
+        links={publicLinks(locale, nav.public).map((link) => ({
+          ...link,
+          current: link.href === `/${locale}/observatory`,
+        }))}
         language={{
           label: nav.languageName,
           href: `/${alternate}/observatory`,

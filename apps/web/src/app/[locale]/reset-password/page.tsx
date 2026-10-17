@@ -49,7 +49,6 @@ export default async function ResetPasswordPage({
         description={
           sent ? copy.resetRequest.sentDescription : copy.resetRequest.description
         }
-        securityNote={copy.securityNote}
       >
         {sent ? (
           <Link

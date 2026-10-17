@@ -12,8 +12,8 @@ describe("observatory configuration", () => {
     const observatory = getObservatory("tbilisi-01");
 
     expect(observatory?.telescope).toMatchObject({
-      manufacturer: "Celestron",
-      model: "NexStar 6SE",
+      aperture: "150 mm",
+      focalLength: "1500 mm",
       configurationStatus: "EXPECTED_MVP",
     });
   });

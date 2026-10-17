@@ -41,7 +41,6 @@ export default async function SignInPage({ params, searchParams }: SignInPagePro
         eyebrow={copy.eyebrow}
         title={copy.signIn.title}
         description={copy.signIn.description}
-        securityNote={copy.securityNote}
       >
         <SignInForm copy={copy} locale={locale} message={message} />
       </AuthPage>

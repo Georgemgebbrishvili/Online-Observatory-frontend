@@ -2,14 +2,13 @@ export type PublicNavigationDictionary = {
   ariaLabel: string;
   menu: string;
   closeMenu: string;
-  explore: string;
+  book: string;
   live: string;
   observatory: string;
   vote: string;
   pricing: string;
-  about: string;
   signIn: string;
-  startExploring: string;
+  reserve: string;
 };
 
 export type AppNavigationDictionary = {

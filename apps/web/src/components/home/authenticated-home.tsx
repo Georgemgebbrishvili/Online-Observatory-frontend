@@ -96,9 +96,6 @@ export function ObservatoryPanel({
             <div>
               <dt>{copy.telescope}</dt>
               <dd>
-                {panel.observatory.telescope.manufacturer}{" "}
-                {panel.observatory.telescope.model}
-                {" · "}
                 {panel.observatory.telescope.apertureMm} mm ·{" "}
                 {panel.observatory.telescope.focalLengthMm} mm
               </dd>

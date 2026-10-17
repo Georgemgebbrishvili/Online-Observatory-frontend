@@ -148,7 +148,7 @@ describe("feedPlates", () => {
     const partner = { ...observatory, kind: "PARTNER" } as const;
     const saturn = { ...m13, nameEn: "Saturn", coordinates: null } as Target;
     expect(feedPlates(partner, saturn, "en", roomCopy.en.feed)).toEqual({
-      instrument: ["Tbilisi Observatory", "Celestron NexStar 6SE"],
+      instrument: ["Tbilisi Observatory", "150 mm · 1500 mm"],
       subject: { name: "Saturn", coordinates: null },
     });
     expect(feedPlates(null, null, "ka", roomCopy.ka.feed)).toEqual({

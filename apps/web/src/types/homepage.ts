@@ -30,24 +30,19 @@ export type HomepageDictionary = {
     altitude: string;
   };
   howItWorks: HomepageSectionHeading & {
-    steps: readonly { title: string; description: string }[];
-    status: { simulated: string; real: string };
+    steps: readonly { title: string; description: string; action: string }[];
   };
   tonight: HomepageSectionHeading & {
-    scheduleNote: string;
     all: string;
   };
   instrument: HomepageSectionHeading & {
-    telescope: string;
     aperture: string;
     focalLength: string;
     focalRatio: string;
     camera: string;
     cameraValue: string;
-    cameraNote: string;
     mode: string;
     modeValue: string;
-    modeNote: string;
     location: string;
     locationValue: string;
     millimetres: string;
@@ -59,7 +54,6 @@ export type HomepageDictionary = {
     action: string;
     secondary: string;
     privateTitle: string;
-    privateNote: string;
   };
 };
 
@@ -68,20 +62,18 @@ export type FooterDictionary = {
   brandEndorsement: string;
   statement: string;
   product: string;
-  company: string;
   legal: string;
   language: string;
   georgianLanguage: string;
   englishLanguage: string;
-  missions: string;
+  book: string;
+  vote: string;
+  pricing: string;
   live: string;
   collection: string;
   observatory: string;
   status: string;
-  about: string;
-  contact: string;
   privacy: string;
   terms: string;
   refunds: string;
-  comingSoon: string;
 };

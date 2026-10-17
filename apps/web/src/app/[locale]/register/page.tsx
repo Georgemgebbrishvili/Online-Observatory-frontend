@@ -37,7 +37,6 @@ export default async function RegistrationPage({ params }: RegistrationPageProps
         eyebrow={copy.eyebrow}
         title={copy.register.title}
         description={copy.register.description}
-        securityNote={copy.securityNote}
       >
         <RegistrationForm copy={copy} locale={locale} />
       </AuthPage>

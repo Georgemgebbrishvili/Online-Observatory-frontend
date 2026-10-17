@@ -11,6 +11,7 @@ export type ConsoleCopy = {
   simulatedLong: string;
   live: string;
   nightMode: string;
+  menu: string;
   skyLabel: string;
   sky: { night: string; twilight: string; day: string };
   cloud: string;
@@ -52,7 +53,6 @@ export type ConsoleCopy = {
     exposure: string;
     frames: string;
     gain: string;
-    hcg: string;
     roi: string;
     auto: string;
     less: string;
@@ -190,7 +190,7 @@ export type ConsoleCopy = {
     chooseRisen: string;
     platform: (target: string) => string;
   };
-  phone: { tracking: string; seeing: string; frames: string; thisSession: string };
+  phone: { tracking: string; seeing: string; frames: string };
   details: {
     title: (name: string) => string;
     site: string;
@@ -286,6 +286,7 @@ const en: ConsoleCopy = {
   simulatedLong: "sky model",
   live: "Live",
   nightMode: "Night mode",
+  menu: "Menu",
   skyLabel: "Sky",
   sky: { night: "Dark", twilight: "Twilight", day: "Day" },
   cloud: "Cloud",
@@ -330,7 +331,6 @@ const en: ConsoleCopy = {
     exposure: "Exposure",
     frames: "Frames to stack",
     gain: "Gain",
-    hcg: "HCG from 252",
     roi: "Read-out",
     auto: "Auto for target",
     less: "less",
@@ -488,7 +488,7 @@ const en: ConsoleCopy = {
     chooseRisen: "Choose a target that has risen.",
     platform: (target) => `Your booked observation of ${target}. Start the session to take the controls.`,
   },
-  phone: { tracking: "Tracking", seeing: "Seeing", frames: "Frames", thisSession: "THIS SESSION" },
+  phone: { tracking: "Tracking", seeing: "Seeing", frames: "Frames" },
   details: {
     title: (name) => `${name} · details`,
     site: "Site",
@@ -593,6 +593,7 @@ const ka: ConsoleCopy = {
   simulatedLong: "ცის მოდელი",
   live: "პირდაპირი",
   nightMode: "ღამის რეჟიმი",
+  menu: "მენიუ",
   skyLabel: "ცა",
   sky: { night: "ბნელა", twilight: "ბინდი", day: "დღეა" },
   cloud: "ღრუბელი",
@@ -637,7 +638,6 @@ const ka: ConsoleCopy = {
     exposure: "ექსპოზიცია",
     frames: "კადრები დასტაში",
     gain: "გაძლიერება",
-    hcg: "HCG 252-დან",
     roi: "წაკითხვის არე",
     auto: "ავტომატურად ობიექტისთვის",
     less: "ნაკლები",
@@ -795,7 +795,7 @@ const ka: ConsoleCopy = {
     chooseRisen: "აირჩიე ამოსული ობიექტი.",
     platform: (target) => `შენი დაჯავშნილი დაკვირვება: ${target}. დაიწყე სესია მართვის ასაღებად.`,
   },
-  phone: { tracking: "ტრეკინგი", seeing: "სიინგი", frames: "კადრები", thisSession: "ამ სესიაში" },
+  phone: { tracking: "ტრეკინგი", seeing: "სიინგი", frames: "კადრები" },
   details: {
     title: (name) => `${name} · დეტალები`,
     site: "ადგილი",

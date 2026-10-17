@@ -34,6 +34,7 @@ const PATHS = {
     </>
   ),
   x: <path d="M6 6l12 12M18 6L6 18" />,
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   check: <path d="M5 12.5l4.5 4.5L19 7" />,
   park: (
     <>

@@ -28,7 +28,7 @@ export type ReadinessState =
   | 'offline'; // no heartbeat
 
 export type Instrument = {
-  /** Optical tube: "Celestron NexStar 6SE". */
+  /** Optical tube, by aperture and design: "150 mm Schmidt-Cassegrain". */
   optics: string;
   /** Millimetres. */
   apertureMm: number;

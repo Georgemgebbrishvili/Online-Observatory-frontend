@@ -41,11 +41,7 @@ export function TonightNotices({
   return (
     <>
       {result.observatory.mode === "SIMULATED" && (
-        <ModeNotice
-          mode="SIMULATED"
-          label={copy.simulated.label}
-          detail={copy.simulated.detail}
-        />
+        <ModeNotice mode="SIMULATED" label={copy.simulated.label} />
       )}
       {blocked && (
         <StatePanel

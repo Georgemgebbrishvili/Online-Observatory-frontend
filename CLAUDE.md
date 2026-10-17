@@ -225,10 +225,11 @@ telescope.
 Tagline: *The real sky, live.*
 Georgian: *შენი დრო ნამდვილ ცასთან.*
 
-Core colors (ADR-052): canvas `#0d0d0d`, bars and console `#050507` · ink `#F4F4F2`,
-`#B8B8B4`, `#969692` · accent red `#E3482C` for highlights and glows · action fill
-`#C8392A` under white text · gold `#E2B85A` for simulated and done · green `#2ECC71`
-for LIVE · focus ring `#F0785A`. The lockup is the Skychaser kit's comet mark beside
+Core colors (ADR-055, NASA blue on navy): canvas `#070D1A`, bars and console `#040914` ·
+ink `#F3F6FB`, `#B6C0D0`, `#97A3B8` · accent blue `#3D8BFD` for highlights and glows ·
+action fill `#1F5FD1` under white text · NASA red `#FC3D21` for a hold only · gold
+`#E2B85A` for simulated and done · green `#2ECC71` for LIVE · focus ring `#8AB8FF`.
+Nothing reads below 13 px; the header carries Observatory, Book, Live, Vote, Pricing. The lockup is the Skychaser kit's comet mark beside
 STELLAR in Archivo Expanded Black. Type: Anton, Oswald, Geist, JetBrains Mono; Georgian in
 Noto Sans Georgian and FiraGO, never uppercased or tracked.
 
@@ -236,8 +237,8 @@ The glow is Skychaser's (ADR-052 §4): filled buttons, the LIVE pill, the camera
 the console's current step and the active tab glow; the header and phone tab bar are
 glass. White text on `#E3482C` fails WCAG AA and is never used.
 
-Avoid: purple-nebula SaaS gradients, cartoon astronomy, fake NASA/military HUD
-decoration, stock space imagery presented as telescope output, any claim of
+Avoid: purple-nebula SaaS gradients, cartoon astronomy, military HUD decoration or
+NASA marks (ADR-055 takes NASA's colour, not its costume), stock space imagery presented as telescope output, any claim of
 Hubble/JWST-class or professional long-exposure results, and "NASA-cosplay" vocabulary.
 Skychaser's cards, capsules, rarities and wallet are its content, not ours.
 

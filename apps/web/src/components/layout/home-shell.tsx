@@ -52,20 +52,10 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
   const observatoryCopy = observatoryPageCopy[locale];
   const instrument = content.instrument;
   const telescope = panel.kind === "ok" ? panel.observatory.telescope : null;
-  const mode =
-    panel.kind === "ok"
-      ? panel.status.mode
-      : tonight.kind === "ok"
-        ? tonight.observatory.mode
-        : null;
-
-  const steps = content.howItWorks.steps.map((step) => ({
+  const stepPages = ["app/book", "observatory", "app/live", "app/collection"];
+  const steps = content.howItWorks.steps.map((step, index) => ({
     ...step,
-    status: mode
-      ? mode === "SIMULATED"
-        ? content.howItWorks.status.simulated
-        : content.howItWorks.status.real
-      : undefined,
+    href: `/${locale}/${stepPages[index]}`,
   }));
 
   return (
@@ -83,7 +73,6 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
         <Container className="home-split">
           <div>
             <Heading id="tonight-title" {...content.tonight} />
-            <p className="home-note">{content.tonight.scheduleNote}</p>
           </div>
           <div className="home-tonight-body">
             <div className="home-notices">
@@ -118,12 +107,6 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
               {telescope && (
                 <>
                   <div>
-                    <dt>{instrument.telescope}</dt>
-                    <dd>
-                      {telescope.manufacturer} {telescope.model}
-                    </dd>
-                  </div>
-                  <div>
                     <dt>{instrument.aperture}</dt>
                     <dd className="home-spec-number">
                       <span>{telescope.apertureMm}</span>
@@ -147,17 +130,11 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
               )}
               <div>
                 <dt>{instrument.camera}</dt>
-                <dd>
-                  {instrument.cameraValue}
-                  <small>{instrument.cameraNote}</small>
-                </dd>
+                <dd>{instrument.cameraValue}</dd>
               </div>
               <div>
                 <dt>{instrument.mode}</dt>
-                <dd>
-                  {instrument.modeValue}
-                  <small>{instrument.modeNote}</small>
-                </dd>
+                <dd>{instrument.modeValue}</dd>
               </div>
               <div>
                 <dt>{instrument.location}</dt>
@@ -188,7 +165,6 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
                 <ModeNotice
                   mode={panel.status.mode}
                   label={words.mode[panel.status.mode].banner}
-                  detail={words.mode[panel.status.mode].detail}
                 />
                 <dl>
                   <div>
@@ -259,7 +235,6 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
                 </li>
               ))}
             </ul>
-            <p>{content.finalCta.privateNote}</p>
           </div>
         </Container>
       </section>

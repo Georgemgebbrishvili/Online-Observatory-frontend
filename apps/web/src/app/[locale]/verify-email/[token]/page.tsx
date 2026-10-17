@@ -46,7 +46,6 @@ export default async function VerifyEmailPage({
         eyebrow={copy.eyebrow}
         title={copy.verify.title}
         description={copy.verify.description}
-        securityNote={copy.securityNote}
       >
         {invalid && (
           <p className="auth-form-error" role="alert">

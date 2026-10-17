@@ -30,7 +30,7 @@ export const SESSION_MINUTES = 120;
 const NEXSTAR_8SE: Instrument = TBILISI_8SE;
 
 const EVOLUTION_925: Instrument = {
-  optics: 'Celestron Evolution 9.25',
+  optics: '235 mm Schmidt-Cassegrain',
   apertureMm: 235,
   focalLengthMm: 2350,
   mount: 'Single-fork altazimuth, GoTo',

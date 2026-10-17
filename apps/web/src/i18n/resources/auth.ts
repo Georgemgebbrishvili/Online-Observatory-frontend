@@ -74,8 +74,6 @@ const en = {
     unavailable: "Authentication is temporarily unavailable. Please try again later.",
     google: "Google sign-in did not complete. Try again, or use your email and password.",
   },
-  securityNote:
-    "Your session is verified on the server. Observatory credentials never reach this browser.",
   logout: "Sign out",
 };
 
@@ -155,8 +153,6 @@ export const authCopy = {
       unavailable: "ავტორიზაცია დროებით მიუწვდომელია. მოგვიანებით სცადე.",
       google: "Google-ით შესვლა ვერ დასრულდა. სცადე ხელახლა, ან შედი ელფოსტითა და პაროლით.",
     },
-    securityNote:
-      "შენი სესია სერვერზე მოწმდება. ობსერვატორიის წვდომის მონაცემები ბრაუზერამდე არასოდეს აღწევს.",
     logout: "გასვლა",
   },
 } as const satisfies Record<Locale, typeof en>;

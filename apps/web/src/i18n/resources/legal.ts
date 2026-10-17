@@ -64,7 +64,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             heading: `What ${brand.en.name} is`,
             status: "decided",
             body: [
-              `${brand.en.name} is a live remote observatory in Tbilisi, Georgia. You reserve an observation slot, choose a target from an operator-approved list, and a real Celestron NexStar 6SE moves to that target while you watch its camera output.`,
+              `${brand.en.name} is a live remote observatory in Tbilisi, Georgia. You reserve an observation slot, choose a target from an operator-approved list, and a real telescope moves to that target while you watch its camera output.`,
               `${brand.en.name} is a live-view service. It uses short exposures and live stacking, the technique usually called electronically assisted astronomy. It is not a long-exposure astrophotography service, and it does not produce results comparable to a research observatory or a space telescope.`,
             ],
           },
@@ -168,7 +168,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             heading: `რა არის ${brand.ka.nominative}`,
             status: "decided",
             body: [
-              `${brand.ka.nominative} არის დისტანციური ობსერვატორია თბილისში პირდაპირი დაკვირვებისთვის. შენ ჯავშნი დაკვირვების სლოტს, ირჩევ ობიექტს ოპერატორის დამტკიცებული სიიდან, და ნამდვილი Celestron NexStar 6SE ფიზიკურად ობიექტისკენ შებრუნდება, სანამ შენ კამერის გამოსახულებას უყურებ.`,
+              `${brand.ka.nominative} არის დისტანციური ობსერვატორია თბილისში პირდაპირი დაკვირვებისთვის. შენ ჯავშნი დაკვირვების სლოტს, ირჩევ ობიექტს ოპერატორის დამტკიცებული სიიდან, და ნამდვილი ტელესკოპი ფიზიკურად ობიექტისკენ შებრუნდება, სანამ შენ კამერის გამოსახულებას უყურებ.`,
               `${brand.ka.nominative} პირდაპირი ხედის სერვისია. ის იყენებს მოკლე ექსპოზიციებს და რეალურ დროში დასტეკვას — მეთოდს, რომელსაც ელექტრონულად დახმარებულ ასტრონომიას უწოდებენ. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფიის სერვისი და არ იძლევა სამეცნიერო ობსერვატორიის ან კოსმოსური ტელესკოპის დონის შედეგს.`,
             ],
           },

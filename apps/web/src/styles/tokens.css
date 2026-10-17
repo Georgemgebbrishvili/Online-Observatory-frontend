@@ -8,31 +8,33 @@
   /* ADR-052 palette, from the Skychaser site's skychaser-theme.css and its console. */
   --st-black: #000000;
   --st-white: #ffffff;
-  --st-canvas: #0d0d0d;
-  --st-deep: #131313;
-  --st-bar: #050507;
-  --st-monolith-top: #121218;
-  --st-monolith-bottom: #060609;
-  --st-cream: #f4e8cc;
-  --st-rule: #f1e6cf;
-  --st-ink: #f4f4f2;
-  --st-ink-2: #b8b8b4;
-  --st-ink-3: #969692;
-  --st-ink-4: #73736f;
-  --st-ink-small: #adada8;
-  --st-red: #e3482c;
-  --st-red-hi: #f06a45;
-  --st-red-ink: #f0785a;
-  --st-red-fill: #c8392a;
-  --st-red-deep: #8f1f16;
+  --st-canvas: #070d1a;
+  --st-deep: #0b1424;
+  --st-bar: #040914;
+  --st-monolith-top: #0f1a30;
+  --st-monolith-bottom: #050b18;
+  --st-ice: #e3ecfa;
+  --st-ice-rule: #dde7f7;
+  --st-ink: #f3f6fb;
+  --st-ink-2: #b6c0d0;
+  --st-ink-3: #97a3b8;
+  --st-ink-4: #6e7b91;
+  --st-ink-small: #aeb8c8;
+  --st-blue: #3d8bfd;
+  --st-blue-hi: #6aa6ff;
+  --st-blue-ink: #8ab8ff;
+  --st-blue-fill: #1f5fd1;
+  --st-blue-deep: #0b3d91;
+  /* NASA red, kept for a hold and a stop and nothing else. */
+  --st-nasa-red: #fc3d21;
   --st-gold: #e2b85a;
   --st-green: #2ecc71;
   --st-error: #ff7a6b;
-  --st-sun-1: #fff4d8;
-  --st-sun-2: #f0c75e;
-  --st-sun-3: #e8893a;
-  --st-sun-4: #d9442a;
-  --st-sun-5: #8f1f16;
+  --st-ramp-1: #ffffff;
+  --st-ramp-2: #dbe8ff;
+  --st-ramp-3: #8ab8ff;
+  --st-ramp-4: #3d8bfd;
+  --st-ramp-5: #0b3d91;
   --st-sky-blue: #4c8dff;
   --st-sky-violet: #a66bff;
   --st-paper-ink: #2b1b12;
@@ -59,17 +61,17 @@
    */
   --color-night: var(--st-canvas);
   --color-surface-base: var(--st-deep);
-  --color-surface-raised: color-mix(in srgb, var(--st-cream) 6%, var(--st-canvas));
-  --color-surface-hover: color-mix(in srgb, var(--st-cream) 11%, var(--st-canvas));
+  --color-surface-raised: color-mix(in srgb, var(--st-ice) 6%, var(--st-canvas));
+  --color-surface-hover: color-mix(in srgb, var(--st-ice) 11%, var(--st-canvas));
   /* The glass of the header and the phone tab bar, and the console's ground. */
   --color-bar: color-mix(in srgb, var(--st-bar) 82%, transparent);
   --color-glass: color-mix(in srgb, var(--st-bar) 78%, transparent);
   --color-console: var(--st-bar);
 
   /* Rule and strong rule are hairlines. A form control's edge needs 3:1 (SC 1.4.11). */
-  --color-border-subtle: color-mix(in srgb, var(--st-rule) 12%, transparent);
-  --color-border-strong: color-mix(in srgb, var(--st-rule) 22%, transparent);
-  --color-border-control: color-mix(in srgb, var(--st-rule) 40%, transparent);
+  --color-border-subtle: color-mix(in srgb, var(--st-ice-rule) 12%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--st-ice-rule) 22%, transparent);
+  --color-border-control: color-mix(in srgb, var(--st-ice-rule) 40%, transparent);
   --color-line: color-mix(in srgb, var(--st-white) 9%, transparent);
   --color-line-strong: color-mix(in srgb, var(--st-white) 22%, transparent);
 
@@ -80,26 +82,26 @@
   --color-text-disabled: var(--st-ink-4);
   --color-text-technical: var(--color-text-secondary);
   /* The cream of a lede over the sky. */
-  --color-text-cream: color-mix(in srgb, var(--st-cream) 84%, transparent);
+  --color-text-cream: color-mix(in srgb, var(--st-ice) 84%, transparent);
   /* Text under 14px never drops below this grey; a footer head is cream at 62%. */
   --color-text-small: var(--st-ink-small);
-  --color-text-quiet: color-mix(in srgb, var(--st-cream) 62%, transparent);
+  --color-text-quiet: color-mix(in srgb, var(--st-ice) 62%, transparent);
 
   /*
    * Red. accent is the highlight — the red word, the active tab, the current step, every
    * glow. Filled buttons use action, a shade deeper, because white on accent is 4.0:1.
    */
-  --color-accent: var(--st-red);
-  --color-accent-hover: var(--st-red-hi);
-  --color-accent-ink: var(--st-red-ink);
+  --color-accent: var(--st-blue);
+  --color-accent-hover: var(--st-blue-hi);
+  --color-accent-ink: var(--st-blue-ink);
   --color-on-accent: var(--st-white);
-  --color-action: var(--st-red-fill);
+  --color-action: var(--st-blue-fill);
   --color-on-action: var(--st-white);
   --gradient-accent: radial-gradient(
     circle at 50% 38%,
-    var(--st-red-hi),
-    var(--st-red) 50%,
-    var(--st-red-deep)
+    var(--st-blue-hi),
+    var(--st-blue) 50%,
+    var(--st-blue-deep)
   );
 
   /* Green for LIVE; gold for simulated, done and "go". */
@@ -114,11 +116,11 @@
   /* The sunset ramp, as a text fill on one display line per page at most. */
   --gradient-sunset: linear-gradient(
     180deg,
-    var(--st-sun-1) 22%,
-    var(--st-sun-2) 42%,
-    var(--st-sun-3) 58%,
-    var(--st-sun-4) 72%,
-    var(--st-sun-5) 86%
+    var(--st-ramp-1) 22%,
+    var(--st-ramp-2) 42%,
+    var(--st-ramp-3) 58%,
+    var(--st-ramp-4) 72%,
+    var(--st-ramp-5) 86%
   );
 
   --color-star-brass: var(--st-gold);
@@ -127,8 +129,8 @@
   --color-error: var(--st-error);
 
   /* Tints derived from the palette above — no new hues */
-  --color-accent-muted: color-mix(in srgb, var(--st-red) 14%, transparent);
-  --color-accent-border: color-mix(in srgb, var(--st-red) 45%, transparent);
+  --color-accent-muted: color-mix(in srgb, var(--st-blue) 14%, transparent);
+  --color-accent-border: color-mix(in srgb, var(--st-blue) 45%, transparent);
   --color-live-border: color-mix(in srgb, var(--st-green) 55%, transparent);
   --color-live-muted: color-mix(in srgb, var(--st-green) 12%, transparent);
   --color-simulated-border: color-mix(in srgb, var(--st-gold) 45%, transparent);
@@ -143,8 +145,8 @@
   --color-error-border: color-mix(in srgb, var(--st-error) 40%, transparent);
   --color-overlay-hover: color-mix(in srgb, var(--st-white) 6%, transparent);
   --color-overlay-active: color-mix(in srgb, var(--st-white) 10%, transparent);
-  --color-optical-faint: color-mix(in srgb, var(--st-cream) 12%, transparent);
-  --color-optical-medium: color-mix(in srgb, var(--st-cream) 20%, transparent);
+  --color-optical-faint: color-mix(in srgb, var(--st-ice) 12%, transparent);
+  --color-optical-medium: color-mix(in srgb, var(--st-ice) 20%, transparent);
   --color-scrim-soft: color-mix(in srgb, var(--st-black) 60%, transparent);
   --color-scrim: color-mix(in srgb, var(--st-black) 74%, transparent);
   --color-scrim-strong: color-mix(in srgb, var(--st-black) 94%, transparent);
@@ -155,7 +157,7 @@
   --color-on-paper: var(--st-paper-ink);
   --color-mark: var(--st-mark);
   /* The booking board's Moon glyph (ADR-053 §7): its dark side and its lit side. */
-  --color-moon-dark: #2a2a30;
+  --color-moon-dark: #1e2638;
   --color-moon-lit: #e6e3d6;
   /* The outlined button: white at 2.5% under a 22% edge, 6% under 50% on hover. */
   --color-outline-fill: color-mix(in srgb, var(--st-white) 2.5%, transparent);
@@ -194,8 +196,8 @@
   /* The site backdrop's three lights: blue and violet above, red below. */
   --color-sky-blue: color-mix(in srgb, var(--st-sky-blue) 10%, transparent);
   --color-sky-violet: color-mix(in srgb, var(--st-sky-violet) 7%, transparent);
-  --color-sky-red: color-mix(in srgb, var(--st-red) 20%, transparent);
-  --color-star-warm: color-mix(in srgb, var(--st-sun-1) 75%, transparent);
+  --color-sky-red: color-mix(in srgb, var(--st-blue) 20%, transparent);
+  --color-star-warm: color-mix(in srgb, var(--st-ramp-1) 75%, transparent);
   --color-star-cool: color-mix(in srgb, var(--st-white) 75%, transparent);
   /*
    * The Skychaser sky (ADR-052 §1): one tile of seven stars, laid three times at three
@@ -205,7 +207,7 @@
   --gradient-stars:
     radial-gradient(1.2px 1.2px at 23px 41px, color-mix(in srgb, var(--st-white) 90%, transparent), transparent 60%),
     radial-gradient(1px 1px at 131px 187px, color-mix(in srgb, var(--st-white) 70%, transparent), transparent 60%),
-    radial-gradient(1.5px 1.5px at 207px 73px, color-mix(in srgb, var(--st-sun-1) 75%, transparent), transparent 60%),
+    radial-gradient(1.5px 1.5px at 207px 73px, color-mix(in srgb, var(--st-ramp-1) 75%, transparent), transparent 60%),
     radial-gradient(1px 1px at 61px 223px, color-mix(in srgb, var(--st-blush) 75%, transparent), transparent 60%),
     radial-gradient(1px 1px at 283px 131px, color-mix(in srgb, var(--st-white) 60%, transparent), transparent 60%),
     radial-gradient(1px 1px at 167px 17px, color-mix(in srgb, var(--st-white) 60%, transparent), transparent 60%),
@@ -234,38 +236,38 @@
    * monoliths with corner ticks, red for the call to action and the current step, gold
    * for anything done or live. Read by room-console.css and nothing else.
    */
-  --room-ground: #050507;
-  --room-ink: #f4f4f2;
-  --room-ink-2: #b8b8b4;
-  --room-ink-3: #adada8;
-  --room-copper: #e3482c;
-  --room-copper-ink: #f0785a;
-  --room-amber: #e3482c;
+  --room-ground: #040914;
+  --room-ink: #f3f6fb;
+  --room-ink-2: #b6c0d0;
+  --room-ink-3: #aeb8c8;
+  --room-copper: #3d8bfd;
+  --room-copper-ink: #8ab8ff;
+  --room-amber: #3d8bfd;
   --room-gold: #e2b85a;
   --room-red: #ff7a6b;
   --room-warm: #ffffff;
   --room-blue: #4c8dff;
   --room-violet: #a66bff;
-  --room-panel: color-mix(in srgb, #121218 90%, transparent);
-  --room-glass: color-mix(in srgb, #08080c 78%, transparent);
-  --room-well: color-mix(in srgb, #0b0b0b 60%, transparent);
+  --room-panel: color-mix(in srgb, #0f1a30 90%, transparent);
+  --room-glass: color-mix(in srgb, #060c1a 78%, transparent);
+  --room-well: color-mix(in srgb, #081020 60%, transparent);
   --room-border: color-mix(in srgb, var(--room-warm) 9%, transparent);
   --room-border-faint: color-mix(in srgb, var(--room-warm) 6%, transparent);
   --room-black: #000000;
   --room-white: #ffffff;
-  --room-stage: #040404;
-  --room-panel-top: #121218;
-  --room-panel-bottom: #060609;
-  --room-raise: #1f1f1f;
-  --room-pad: #161616;
-  --room-pad-hi: #2c2c34;
-  --room-dot: #121212;
-  --room-dot-done: #212121;
-  --room-dial: #0c0c10;
-  --room-ink-warm: #f4f4f2;
-  --room-red-ink: #ffb4aa;
-  --room-core-hi: #ff8f73;
-  --room-core-deep: #7a160c;
+  --room-stage: #03060e;
+  --room-panel-top: #0f1a30;
+  --room-panel-bottom: #050b18;
+  --room-raise: #16223a;
+  --room-pad: #111b30;
+  --room-pad-hi: #24324e;
+  --room-dot: #0e1628;
+  --room-dot-done: #1a2640;
+  --room-dial: #0a1222;
+  --room-ink-warm: #f3f6fb;
+  --room-red-ink: #bcd6ff;
+  --room-core-hi: #7fb2ff;
+  --room-core-deep: #0b3d91;
   --room-font-cond: var(--font-oswald), var(--font-noto-sans-georgian), sans-serif;
   /* A monolith's four corner ticks, drawn as backgrounds so any panel can wear them. */
   --room-ticks:
@@ -309,19 +311,19 @@
   --font-size-body-lg: 1.125rem;
   --font-size-body: 1rem;
   --font-size-label: 0.875rem;
-  --font-size-caption: 0.8125rem;
-  --font-size-kicker: 0.78125rem;
+  --font-size-caption: 0.875rem;
+  --font-size-kicker: 0.8125rem;
   --font-size-mono: 0.875rem;
   /* The Skychaser bar's links (15px) and the phone tab bar's labels (12px). */
   --font-size-nav: 0.9375rem;
-  --font-size-tab: 0.75rem;
+  --font-size-tab: 0.8125rem;
   /* The wordmark: 20.35px fills the kit's 28px box as Skychaser's outlined word does. */
   --font-size-wordmark: 1.272rem;
   --font-size-wordmark-small: 1rem;
   /* The homepage sky's headline, lede and hint (ADR-052 §7). */
   --font-size-sky-title: clamp(1.6875rem, 5vw, 4.75rem);
   --font-size-sky-lede: clamp(1rem, 1.3vw, 1.1875rem);
-  --font-size-hint: 0.6875rem;
+  --font-size-hint: 0.8125rem;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -379,29 +381,29 @@
    * ADR-052 §4: the glows are Skychaser's, copied. The filled button's halo, the LIVE
    * pill and its LED, the red badge, the current step's pulse, the active tab's icon.
    */
-  --glow-action: 0 10px 26px -14px var(--st-red);
+  --glow-action: 0 10px 26px -14px var(--st-blue);
   --glow-live: 0 0 18px -6px color-mix(in srgb, var(--st-green) 60%, transparent);
   --glow-live-led:
     0 0 0 3px color-mix(in srgb, var(--st-green) 20%, transparent), 0 0 10px var(--st-green);
   --glow-hold-led:
-    0 0 0 3px color-mix(in srgb, var(--st-red) 14%, transparent), 0 0 12px var(--st-red);
+    0 0 0 3px color-mix(in srgb, var(--st-nasa-red) 14%, transparent), 0 0 12px var(--st-nasa-red);
   --glow-gold-led:
     0 0 0 3px color-mix(in srgb, var(--st-gold) 14%, transparent), 0 0 12px var(--st-gold);
   --glow-badge:
-    0 0 0 1px color-mix(in srgb, var(--st-red-ink) 45%, transparent),
-    0 0 0 7px color-mix(in srgb, var(--st-red) 8%, transparent),
-    0 0 36px -4px color-mix(in srgb, var(--st-red) 55%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--st-blue-ink) 45%, transparent),
+    0 0 0 7px color-mix(in srgb, var(--st-blue) 8%, transparent),
+    0 0 36px -4px color-mix(in srgb, var(--st-blue) 55%, transparent);
   --glow-pulse-low:
-    0 0 0 5px color-mix(in srgb, var(--st-red) 14%, transparent),
-    0 0 22px color-mix(in srgb, var(--st-red) 50%, transparent);
+    0 0 0 5px color-mix(in srgb, var(--st-blue) 14%, transparent),
+    0 0 22px color-mix(in srgb, var(--st-blue) 50%, transparent);
   --glow-pulse-high:
-    0 0 0 9px color-mix(in srgb, var(--st-red) 6%, transparent),
-    0 0 34px color-mix(in srgb, var(--st-red) 75%, transparent);
-  --glow-tab-icon: drop-shadow(0 0 6px color-mix(in srgb, var(--st-red) 55%, transparent));
+    0 0 0 9px color-mix(in srgb, var(--st-blue) 6%, transparent),
+    0 0 34px color-mix(in srgb, var(--st-blue) 75%, transparent);
+  --glow-tab-icon: drop-shadow(0 0 6px color-mix(in srgb, var(--st-blue) 55%, transparent));
   --glow-nav-current: 0 0 14px color-mix(in srgb, var(--st-white) 35%, transparent);
   --glow-sky: radial-gradient(
     circle,
-    color-mix(in srgb, var(--st-red) 22%, transparent),
+    color-mix(in srgb, var(--st-blue) 22%, transparent),
     transparent 62%
   );
   --focus-ring: 2px solid var(--color-accent-ink);

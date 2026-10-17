@@ -118,7 +118,7 @@ export function feedPlates(
           ? [labels.camera, target && labels.optics[target.opticalConfig]]
               .filter(Boolean)
               .join(" · ")
-          : `${observatory.telescope.manufacturer} ${observatory.telescope.model}`,
+          : `${observatory.telescope.apertureMm} mm · ${observatory.telescope.focalLengthMm} mm`,
       ]
     : null;
   return {

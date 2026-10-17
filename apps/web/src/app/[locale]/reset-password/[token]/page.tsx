@@ -44,7 +44,6 @@ export default async function ResetPasswordTokenPage({
         eyebrow={copy.eyebrow}
         title={copy.resetConfirm.title}
         description={copy.resetConfirm.description}
-        securityNote={copy.securityNote}
       >
         <PasswordResetConfirmForm copy={copy} locale={locale} token={token} />
       </AuthPage>

@@ -255,12 +255,6 @@
   font-size: var(--font-size-body-lg);
 }
 
-.home-note {
-  margin: var(--space-6) 0 0;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-}
-
 .home-split {
   display: grid;
   gap: var(--space-10);
@@ -324,26 +318,28 @@
   color: var(--color-text-secondary);
 }
 
-.flight-plan-status {
+.flight-plan-link {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-1);
-  color: var(--color-live);
+  min-height: var(--size-touch);
+  margin-top: var(--space-2);
+  color: var(--color-accent-ink);
   font-family: var(--font-label);
-  font-size: var(--font-size-caption);
+  font-size: var(--font-size-label);
   font-weight: var(--font-weight-label);
   letter-spacing: var(--tracking-label);
+  text-decoration: none;
   text-transform: uppercase;
 }
 
-.flight-plan-status::before {
-  flex-shrink: 0;
-  width: 0.375rem;
-  height: 0.375rem;
-  border-radius: var(--radius-full);
-  background: currentColor;
-  content: "";
+.flight-plan-link:hover {
+  color: var(--color-text-primary);
+}
+
+.flight-plan-link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 @media (--md) {
@@ -563,12 +559,6 @@
   color: var(--color-text-secondary);
   font-family: var(--font-mono);
   font-size: var(--font-size-mono);
-}
-
-.home-private p {
-  margin: var(--space-4) 0 0;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
 }
 
 .poster-hero-link:focus-visible,
