@@ -1,7 +1,7 @@
 # ADR-055 — NASA blue, navy ground, and a shorter path through the site
 
 - **Date:** 2026-10-17
-- **Status:** APPROVED
+- **Status:** APPROVED; palette and navigation amended by `ADR-056`
 - **Decided by:** project maintainer (Nika), in session: "make the colors of the
   observatory better, more NASA-like, and more easy to use, and polish all the website.
   Get rid of the small texts, leave only important texts, and the navigation to the site

@@ -17,7 +17,6 @@ import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
-import { brand } from "@/brand";
 
 type AuthenticatedHomeProps = {
   locale: Locale;
@@ -140,20 +139,7 @@ export function AuthenticatedHome({
 
   return (
     <div className="authenticated-home">
-      <header className="page-hero home-dashboard-header">
-        <p className="kicker">
-          {/* The contract localises the observatory's name, not its city. */}
-          {panel.kind === "ok"
-            ? locale === "ka"
-              ? panel.observatory.nameKa
-              : panel.observatory.nameEn
-            : locale === "ka"
-              ? brand.ka.nominative
-              : brand.en.name}
-        </p>
-        <h1>{copy.greeting(displayName)}</h1>
-        <p className="page-lede">{copy.introduction}</p>
-      </header>
+      <h1 className="visually-hidden">{copy.greeting(displayName)}</h1>
 
       <div className="tonight-notices">
         <TonightNotices result={tonight} locale={locale} headingLevel={2} />

@@ -30,7 +30,7 @@ export type HomepageDictionary = {
     altitude: string;
   };
   howItWorks: HomepageSectionHeading & {
-    steps: readonly { title: string; description: string; action: string }[];
+    steps: readonly { title: string; description: string; action?: string }[];
   };
   tonight: HomepageSectionHeading & {
     all: string;
@@ -67,9 +67,7 @@ export type FooterDictionary = {
   georgianLanguage: string;
   englishLanguage: string;
   book: string;
-  vote: string;
   pricing: string;
-  live: string;
   collection: string;
   observatory: string;
   status: string;

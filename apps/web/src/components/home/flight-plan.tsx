@@ -4,9 +4,9 @@ import type { ReactNode } from "react";
 export type FlightStep = {
   title: string;
   description: string;
-  /** The page where this step happens, and the words on its link. */
-  href: string;
-  action: string;
+  /** The page where this step happens, and the words on its link; a step can have none. */
+  href?: string;
+  action?: string;
 };
 
 // Line drawings of the instrument at each step. No reticle, no crosshair (ADR-039).
@@ -33,7 +33,7 @@ const icons: ReactNode[] = [
   </>,
 ];
 
-/** How a session works, in four steps, each a door to the page where it happens. */
+/** How a session works, in four steps, most a door to the page where it happens. */
 export function FlightPlan({ steps }: { steps: readonly FlightStep[] }) {
   return (
     <ol className="flight-plan">
@@ -53,9 +53,11 @@ export function FlightPlan({ steps }: { steps: readonly FlightStep[] }) {
           </span>
           <h3>{step.title}</h3>
           <p>{step.description}</p>
-          <Link className="flight-plan-link" href={step.href}>
-            {step.action} <span aria-hidden="true">→</span>
-          </Link>
+          {step.href && step.action && (
+            <Link className="flight-plan-link" href={step.href}>
+              {step.action} <span aria-hidden="true">→</span>
+            </Link>
+          )}
         </li>
       ))}
     </ol>

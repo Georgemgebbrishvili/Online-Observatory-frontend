@@ -36,9 +36,7 @@ export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
             <h2>{footer.product}</h2>
             <Link href={`/${locale}/observatory`}>{footer.observatory}</Link>
             <Link href={`/${locale}/app/book`}>{footer.book}</Link>
-            <Link href={`/${locale}/app/live`}>{footer.live}</Link>
             <Link href={`/${locale}/app/collection`}>{footer.collection}</Link>
-            <Link href={`/${locale}/vote`}>{footer.vote}</Link>
             <Link href={`/${locale}/pricing`}>{footer.pricing}</Link>
             <Link href={`/${locale}/status`}>{footer.status}</Link>
           </div>

@@ -18,7 +18,6 @@ export type ReserveFormCopy = {
 
 type ReserveCopy = {
   metadataTitle: string;
-  eyebrow: string;
   title: string;
   back: string;
   nothingUp: StateCopy;
@@ -33,7 +32,6 @@ type ReserveCopy = {
 export const reserveCopy: Record<"en" | "ka", ReserveCopy> = {
   en: {
     metadataTitle: `Reserve a slot · ${brand.en.name}`,
-    eyebrow: "Reserve a slot",
     title: "What will you observe?",
     back: "Back to the night",
     nothingUp: {
@@ -66,7 +64,6 @@ export const reserveCopy: Record<"en" | "ka", ReserveCopy> = {
   },
   ka: {
     metadataTitle: `დროის დაჯავშნა · ${brand.ka.nominative}`,
-    eyebrow: "დროის დაჯავშნა",
     title: "რას დააკვირდები?",
     back: "ღამეზე დაბრუნება",
     nothingUp: {

@@ -44,11 +44,8 @@ export default async function ResetPasswordPage({
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
       <AuthPage
-        eyebrow={copy.eyebrow}
         title={sent ? copy.resetRequest.sentTitle : copy.resetRequest.title}
-        description={
-          sent ? copy.resetRequest.sentDescription : copy.resetRequest.description
-        }
+        description={sent ? copy.resetRequest.sentDescription : undefined}
       >
         {sent ? (
           <Link

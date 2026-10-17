@@ -12,11 +12,6 @@
   padding: 0 var(--space-page) var(--space-16);
 }
 
-.home-dashboard-header h1 {
-  max-width: none;
-  font-size: min(var(--font-size-hero), 11vw);
-}
-
 .tonight-notices {
   display: grid;
   gap: var(--space-4);

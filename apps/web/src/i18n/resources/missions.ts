@@ -4,10 +4,7 @@ export const missionBrowserCopy = {
   en: {
     metadataTitle: `Missions · ${brand.en.name}`,
     metadataDescription: "Choose an observable object from tonight's sky.",
-    eyebrow: "Tonight · Tbilisi Observatory",
     title: "Tonight's targets",
-    description:
-      "Every target the observatory offers, with what it computes for right now: whether it can be observed, how high it stands, and its window tonight.",
     types: {
       Planet: "Planet",
       Moon: "Moon",
@@ -28,10 +25,7 @@ export const missionBrowserCopy = {
   ka: {
     metadataTitle: `მისიები · ${brand.ka.nominative}`,
     metadataDescription: "აირჩიე ამაღამ დაკვირვებისთვის ხელმისაწვდომი ობიექტი.",
-    eyebrow: "დღევანდელი ცა · თბილისის ობსერვატორია",
     title: "ამაღამინდელი ობიექტები",
-    description:
-      "ობსერვატორიის ყველა ობიექტი და მათი ახლანდელი გათვლები: შესაძლებელია თუ არა დაკვირვება, რა სიმაღლეზეა ობიექტი და როდის ჩანს ამაღამ.",
     types: {
       Planet: "პლანეტა",
       Moon: "მთვარე",

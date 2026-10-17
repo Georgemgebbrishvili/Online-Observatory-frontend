@@ -119,15 +119,8 @@ export function BookingNight({ locale, reschedule, result }: BookingNightProps) 
   return (
     <div className="booking-page">
       <header className="booking-hero">
-        <p className="kicker">
-          {result.kind === "ok"
-            ? locale === "ka"
-              ? result.observatory.nameKa
-              : result.observatory.nameEn
-            : copy.eyebrow}
-        </p>
-        <h1>{copy.title}</h1>
-        <p>{reschedule ? rescheduleCopy[locale].replacing : copy.introduction}</p>
+        <h1 className="visually-hidden">{copy.title}</h1>
+        {reschedule && <p>{rescheduleCopy[locale].replacing}</p>}
         <Link className="page-link booking-bookings" href="#booking-nights">
           {copy.yourBookings}
         </Link>

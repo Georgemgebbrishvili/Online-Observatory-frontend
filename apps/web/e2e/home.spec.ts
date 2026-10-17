@@ -64,17 +64,16 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
     await expect(page.getByRole("heading", { name: gone })).toHaveCount(0);
   }
 
-  // How a session works: four steps, each a link to the page where it happens.
+  // How a session works: four steps; all but Watch link to the page where it happens.
   const steps = page.locator("#about .flight-plan-step");
   await expect(steps).toHaveCount(4);
   for (const step of ["Reserve", "Slew", "Watch", "Keep"]) {
     await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
   }
-  await expect(page.locator("#about .flight-plan-link")).toHaveCount(4);
+  await expect(page.locator("#about .flight-plan-link")).toHaveCount(3);
   for (const [name, href] of [
     ["Book a slot", "/en/app/book"],
     ["Open the observatory", "/en/observatory"],
-    ["Go live", "/en/app/live"],
     ["Your collection", "/en/app/collection"],
   ]) {
     await expect(steps.getByRole("link", { name })).toHaveAttribute("href", href);
@@ -144,8 +143,6 @@ test("provides the complete public navigation on desktop and mobile", async ({
   for (const [item, href] of [
     ["Observatory", "/en/observatory"],
     ["Book", "/en/app/book"],
-    ["Live", "/en/app/live"],
-    ["Vote", "/en/vote"],
     ["Pricing", "/en/pricing"],
   ]) {
     await expect(publicNavigation.getByRole("link", { name: item, exact: true })).toHaveAttribute(
@@ -153,6 +150,7 @@ test("provides the complete public navigation on desktop and mobile", async ({
       href,
     );
   }
+  await expect(publicNavigation.getByRole("link")).toHaveCount(3);
 
   await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
   await expect(header.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(

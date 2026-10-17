@@ -18,9 +18,7 @@ const dictionary = {
       menu: "ნავიგაციის გახსნა",
       closeMenu: "ნავიგაციის დახურვა",
       book: "დაჯავშნა",
-      live: "პირდაპირ",
       observatory: "ობსერვატორია",
-      vote: "კენჭისყრა",
       pricing: "ფასები",
       signIn: "შესვლა",
       reserve: "დაჯავშნე დრო",
@@ -96,7 +94,6 @@ const dictionary = {
         {
           title: "ყურება",
           description: "უყურე მის კამერას პირდაპირ.",
-          action: "პირდაპირ ყურება",
         },
         {
           title: "შენახვა",
@@ -146,9 +143,7 @@ const dictionary = {
     legal: "სამართლებრივი",
     language: "ენა",
     book: "დაჯავშნა",
-    vote: "კენჭისყრა",
     pricing: "ფასები",
-    live: "პირდაპირი დაკვირვება",
     collection: "კოლექცია",
     observatory: "ობსერვატორია",
     status: "სტატუსი",

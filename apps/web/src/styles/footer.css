@@ -80,6 +80,28 @@
   outline-offset: 3px;
 }
 
+/* On a phone the product links sit two to a row, so the footer stays short. */
+@media (--below-md) {
+  .footer-grid {
+    gap: var(--space-6);
+    padding-block: var(--space-8);
+  }
+
+  .footer-nav {
+    gap: var(--space-6) var(--space-4);
+  }
+
+  .footer-nav > div:first-child {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-4);
+  }
+
+  .footer-nav > div:first-child h2 {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (--md) {
   .footer-nav {
     grid-template-columns: repeat(3, minmax(0, 1fr));

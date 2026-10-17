@@ -34,7 +34,6 @@ export default async function VerificationPendingPage({
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
       <AuthPage
-        eyebrow={copy.eyebrow}
         title={copy.verifyPending.title}
         description={copy.verifyPending.description}
       >

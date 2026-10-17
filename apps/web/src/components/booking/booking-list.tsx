@@ -84,11 +84,7 @@ export function BookingList({
       <h2 id="booking-nights-title">{copy.section}</h2>
     </header>
   ) : (
-    <header className="booking-hero">
-      <p className="kicker">{copy.eyebrow}</p>
-      <h1>{copy.title}</h1>
-      <p>{copy.introduction}</p>
-    </header>
+    <h1 className="visually-hidden">{copy.title}</h1>
   );
   const stateHeading = embedded ? 3 : 2;
   const frame = (children: ReactNode) =>

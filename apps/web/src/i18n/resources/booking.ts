@@ -7,9 +7,7 @@ type StateCopy = { title: string; description: string };
 type BookingCopy = {
   metadataTitle: string;
   metadataDescription: string;
-  eyebrow: string;
   title: string;
-  introduction: string;
   yourBookings: string;
   nights: string;
   slots: string;
@@ -27,10 +25,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
   en: {
     metadataTitle: `Book an observation · ${brand.en.name}`,
     metadataDescription: "Observing time on the telescope, night by night.",
-    eyebrow: "Book an observation",
     title: "Time on the telescope.",
-    introduction:
-      "Every slot is cut from astronomical darkness at the observatory, in its own time zone.",
     yourBookings: "Your bookings",
     nights: "Choose a night",
     slots: "Observing time",
@@ -62,10 +57,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
   ka: {
     metadataTitle: `დაკვირვების დაჯავშნა · ${brand.ka.nominative}`,
     metadataDescription: "ტელესკოპის დრო, ღამე-ღამე.",
-    eyebrow: "დაკვირვების დაჯავშნა",
     title: "დრო ტელესკოპთან.",
-    introduction:
-      "ყოველი სლოტი ობსერვატორიის ასტრონომიული სიბნელიდან იჭრება, მისივე დროის სარტყელში.",
     yourBookings: "შენი ჯავშნები",
     nights: "აირჩიე ღამე",
     slots: "დაკვირვების დრო",

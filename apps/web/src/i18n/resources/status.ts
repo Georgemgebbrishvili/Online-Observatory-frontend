@@ -4,10 +4,7 @@ import { brand } from "@/brand";
 const en = {
   metadataTitle: `Observatory status · ${brand.en.name}`,
   metadataDescription: `Live status of the ${brand.en.name} observatory in Tbilisi, and tonight's viewing conditions.`,
-  eyebrow: "Observatory status",
   title: "What the telescope is doing now.",
-  introduction:
-    "Read straight from the observatory. Nothing on this page is estimated, and nothing is shown that the observatory did not report.",
   updated: "Reported {age} ago",
   age: { seconds: "{value} s", minutes: "{value} min", hours: "{value} h" },
   mode: {
@@ -89,10 +86,7 @@ export const statusCopy = {
   ka: {
     metadataTitle: `ობსერვატორიის სტატუსი · ${brand.ka.nominative}`,
     metadataDescription: `${brand.ka.genitive} თბილისის ობსერვატორიის მიმდინარე სტატუსი და ამაღამინდელი დაკვირვების პირობები.`,
-    eyebrow: "ობსერვატორიის სტატუსი",
     title: "რას აკეთებს ტელესკოპი ახლა.",
-    introduction:
-      "წაკითხულია პირდაპირ ობსერვატორიიდან. ამ გვერდზე არაფერია ნავარაუდევი და არაფერი ჩანს ისეთი, რაც ობსერვატორიას არ მოუწოდებია.",
     updated: "მიღებულია {age} წინ",
     age: { seconds: "{value} წმ", minutes: "{value} წთ", hours: "{value} სთ" },
     mode: {

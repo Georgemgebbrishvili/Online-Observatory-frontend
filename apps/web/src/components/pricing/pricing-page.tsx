@@ -59,13 +59,9 @@ export function PricingPage({ locale }: { locale: Locale }) {
 
   return (
     <main id="main-content" className="public-page pricing-page">
-      <section className="page-hero" aria-labelledby="pricing-title">
-        <Container>
-          <p className="kicker">{copy.eyebrow}</p>
-          <h1 id="pricing-title">{copy.title}</h1>
-          <p className="page-lede">{copy.introduction}</p>
-        </Container>
-      </section>
+      <h1 id="pricing-title" className="visually-hidden">
+        {copy.title}
+      </h1>
 
       <section className="page-section" aria-labelledby="pricing-offerings-title">
         <Container>

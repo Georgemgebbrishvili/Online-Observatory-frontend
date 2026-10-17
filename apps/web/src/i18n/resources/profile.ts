@@ -5,9 +5,7 @@ import { brand } from "@/brand";
 /** Account slice 2 (DV-079, ADR-042): docs/plan/account/02-profile.md. */
 type ProfileCopy = {
   metadataTitle: string;
-  eyebrow: string;
   title: string;
-  introduction: string;
   details: {
     title: string;
     name: string;
@@ -61,9 +59,7 @@ type ProfileCopy = {
 export const profileCopy: Record<"en" | "ka", ProfileCopy> = {
   en: {
     metadataTitle: `Your profile · ${brand.en.name}`,
-    eyebrow: "Account",
     title: "Your profile.",
-    introduction: "Your name, your email and your password.",
     details: {
       title: "Details",
       name: "Name",
@@ -131,9 +127,7 @@ export const profileCopy: Record<"en" | "ka", ProfileCopy> = {
   },
   ka: {
     metadataTitle: `შენი პროფილი · ${brand.ka.nominative}`,
-    eyebrow: "ანგარიში",
     title: "შენი პროფილი.",
-    introduction: "შენი სახელი, ელფოსტა და პაროლი.",
     details: {
       title: "მონაცემები",
       name: "სახელი",

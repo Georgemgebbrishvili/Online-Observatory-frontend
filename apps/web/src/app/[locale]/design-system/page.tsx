@@ -86,21 +86,21 @@ type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-// ADR-055 roles. The value column is the palette entry, or the ice or rule share.
+// ADR-052 roles. The value column is the palette entry, or the cream or rule share.
 const swatches = [
   ["night", palette.canvas],
   ["surface-base", palette.deep],
-  ["surface-raised", "ice 6%"],
-  ["surface-hover", "ice 11%"],
+  ["surface-raised", "cream 6%"],
+  ["surface-hover", "cream 11%"],
   ["border-subtle", "rule 12%"],
   ["border-strong", "rule 22%"],
   ["text-primary", palette.ink],
   ["text-secondary", palette.ink2],
   ["text-tertiary", palette.ink3],
   ["text-disabled", palette.ink4],
-  ["accent", palette.blue],
-  ["action", palette.blueFill],
-  ["accent-ink", palette.blueInk],
+  ["accent", palette.red],
+  ["action", palette.redFill],
+  ["accent-ink", palette.redInk],
   ["live", palette.green],
   ["simulated", palette.gold],
   ["success", palette.green],

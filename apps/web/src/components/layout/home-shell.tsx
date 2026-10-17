@@ -52,10 +52,10 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
   const observatoryCopy = observatoryPageCopy[locale];
   const instrument = content.instrument;
   const telescope = panel.kind === "ok" ? panel.observatory.telescope : null;
-  const stepPages = ["app/book", "observatory", "app/live", "app/collection"];
+  const stepPages = ["app/book", "observatory", null, "app/collection"];
   const steps = content.howItWorks.steps.map((step, index) => ({
     ...step,
-    href: `/${locale}/${stepPages[index]}`,
+    href: stepPages[index] ? `/${locale}/${stepPages[index]}` : undefined,
   }));
 
   return (

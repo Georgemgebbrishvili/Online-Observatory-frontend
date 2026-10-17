@@ -96,11 +96,7 @@ export function CollectionGallery({
   const base = `/${locale}/app/collection`;
 
   const hero = (
-    <header className="page-hero collection-hero">
-      <p className="kicker">{copy.eyebrow}</p>
-      <h1>{copy.title}</h1>
-      <p className="page-lede">{copy.description}</p>
-    </header>
+    <h1 className="visually-hidden">{copy.title}</h1>
   );
 
   if (result.kind === "unreachable") {

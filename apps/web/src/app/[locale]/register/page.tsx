@@ -34,9 +34,7 @@ export default async function RegistrationPage({ params }: RegistrationPageProps
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
       <AuthPage
-        eyebrow={copy.eyebrow}
         title={copy.register.title}
-        description={copy.register.description}
       >
         <RegistrationForm copy={copy} locale={locale} />
       </AuthPage>

@@ -3,9 +3,7 @@ export type PublicNavigationDictionary = {
   menu: string;
   closeMenu: string;
   book: string;
-  live: string;
   observatory: string;
-  vote: string;
   pricing: string;
   signIn: string;
   reserve: string;

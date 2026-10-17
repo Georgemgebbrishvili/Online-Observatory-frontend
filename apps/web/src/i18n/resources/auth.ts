@@ -2,11 +2,9 @@ import type { Locale } from "@/i18n/config";
 import { brand } from "@/brand";
 
 const en = {
-  eyebrow: "Account",
   signIn: {
     metadataTitle: `Sign in · ${brand.en.name}`,
     title: "Welcome back.",
-    description: "Sign in to manage your missions and personal captures.",
     submit: "Sign in",
     alternate: `New to ${brand.en.name}?`,
     alternateAction: "Create an account",
@@ -17,7 +15,6 @@ const en = {
   register: {
     metadataTitle: `Create account · ${brand.en.name}`,
     title: "Begin your observing journey.",
-    description: "Create a verified account before requesting telescope time.",
     submit: "Create account",
     alternate: "Already have an account?",
     alternateAction: "Sign in",
@@ -39,8 +36,6 @@ const en = {
   resetRequest: {
     metadataTitle: `Reset password · ${brand.en.name}`,
     title: "Reset your password.",
-    description:
-      "Enter the email you registered with. We'll send a link to set a new one.",
     submit: "Send link",
     sentTitle: "Check your email.",
     sentDescription:
@@ -50,7 +45,6 @@ const en = {
   resetConfirm: {
     metadataTitle: `Choose a new password · ${brand.en.name}`,
     title: "Choose a new password.",
-    description: "You'll be signed in, and signed out everywhere else.",
     submit: "Set password",
     deadLink: "This link is invalid, used or expired.",
     newLink: "Send a new link",
@@ -80,11 +74,9 @@ const en = {
 export const authCopy = {
   en,
   ka: {
-    eyebrow: "ანგარიში",
     signIn: {
       metadataTitle: `შესვლა · ${brand.ka.nominative}`,
       title: "კეთილი იყოს შენი დაბრუნება.",
-      description: "შედი ანგარიშში მისიებისა და პირადი კადრების სამართავად.",
       submit: "შესვლა",
       alternate: `ჯერ არ გაქვს ${brand.ka.genitive} ანგარიში?`,
       alternateAction: "ანგარიშის შექმნა",
@@ -95,7 +87,6 @@ export const authCopy = {
     register: {
       metadataTitle: `ანგარიშის შექმნა · ${brand.ka.nominative}`,
       title: "დაიწყე დაკვირვების გზა.",
-      description: "ტელესკოპის დროის მოთხოვნამდე შექმენი და დაადასტურე ანგარიში.",
       submit: "ანგარიშის შექმნა",
       alternate: "უკვე გაქვს ანგარიში?",
       alternateAction: "შესვლა",
@@ -118,8 +109,6 @@ export const authCopy = {
     resetRequest: {
       metadataTitle: `პაროლის აღდგენა · ${brand.ka.nominative}`,
       title: "აღადგინე პაროლი.",
-      description:
-        "შეიყვანე რეგისტრაციის ელფოსტა. გამოგიგზავნით ბმულს ახალი პაროლის დასაყენებლად.",
       submit: "ბმულის გაგზავნა",
       sentTitle: "შეამოწმე ელფოსტა.",
       sentDescription:
@@ -129,7 +118,6 @@ export const authCopy = {
     resetConfirm: {
       metadataTitle: `ახალი პაროლი · ${brand.ka.nominative}`,
       title: "აირჩიე ახალი პაროლი.",
-      description: "შეხვალ ანგარიშში, ყველა სხვა მოწყობილობაზე კი სესია დასრულდება.",
       submit: "პაროლის დაყენება",
       deadLink: "ეს ბმული არასწორია, გამოყენებულია ან ვადა გაუვიდა.",
       newLink: "ახალი ბმულის გაგზავნა",

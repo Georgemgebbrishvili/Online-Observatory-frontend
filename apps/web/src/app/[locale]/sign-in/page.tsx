@@ -38,9 +38,7 @@ export default async function SignInPage({ params, searchParams }: SignInPagePro
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
       <AuthPage
-        eyebrow={copy.eyebrow}
         title={copy.signIn.title}
-        description={copy.signIn.description}
       >
         <SignInForm copy={copy} locale={locale} message={message} />
       </AuthPage>

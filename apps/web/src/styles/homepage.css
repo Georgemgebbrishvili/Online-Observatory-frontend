@@ -572,3 +572,118 @@
     padding-block: var(--space-20);
   }
 }
+
+/*
+ * PHONE — one short scroll: the hero is two thirds of a screen, the steps a two-by-two
+ * grid of doors, three of tonight's targets, the specs as tiles, and no lede under a
+ * heading that already says it.
+ */
+@media (--below-md) {
+  .sky-hero {
+    min-height: min(68svh, 34rem);
+  }
+
+  .home-band,
+  .home-final {
+    padding-block: var(--space-10);
+  }
+
+  .home-lede {
+    display: none;
+  }
+
+  .home-heading h2,
+  .home-final h2 {
+    font-size: var(--font-size-h2);
+  }
+
+  .home-split {
+    gap: var(--space-6);
+  }
+
+  .flight-plan {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    border-top: 0;
+  }
+
+  .flight-plan-step,
+  .flight-plan-step + .flight-plan-step {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-panel);
+    background: var(--color-surface-raised);
+  }
+
+  .flight-plan-icon {
+    grid-row: auto;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .flight-plan-step h3 {
+    font-size: var(--font-size-h3);
+    overflow-wrap: anywhere;
+  }
+
+  .flight-plan-step p {
+    font-size: var(--font-size-label);
+  }
+
+  .flight-plan-link {
+    margin-top: auto;
+  }
+
+  .home-tonight-body .tonight-list > li:nth-child(n + 4) {
+    display: none;
+  }
+
+  .home-tonight-all {
+    justify-self: stretch;
+  }
+
+  .home-specs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    border-top: 0;
+  }
+
+  .home-specs > div {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-panel);
+  }
+
+  .home-status {
+    padding: var(--space-5);
+  }
+
+  .home-final-actions {
+    display: grid;
+    width: 100%;
+    margin-top: var(--space-6);
+  }
+
+  .home-private {
+    margin-top: var(--space-10);
+  }
+}
+
+@media (--below-sm) {
+  .flight-plan-step,
+  .flight-plan-step + .flight-plan-step {
+    padding: var(--space-3);
+  }
+
+  .flight-plan-step p,
+  .flight-plan-link {
+    overflow-wrap: anywhere;
+  }
+}

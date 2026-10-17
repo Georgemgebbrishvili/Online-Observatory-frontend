@@ -29,11 +29,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="profile-page">
-      <header className="profile-hero">
-        <p className="kicker">{copy.eyebrow}</p>
-        <h1>{copy.title}</h1>
-        <p>{copy.introduction}</p>
-      </header>
+      <h1 className="visually-hidden">{copy.title}</h1>
       <section className="surface-panel profile-panel" aria-labelledby="profile-details-title">
         <h2 id="profile-details-title">{copy.details.title}</h2>
         <DetailsForm locale={locale} user={user} />

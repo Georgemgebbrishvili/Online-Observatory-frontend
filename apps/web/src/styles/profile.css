@@ -13,29 +13,6 @@
   min-width: 0;
 }
 
-.profile-hero {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.profile-hero .kicker,
-.profile-hero h1 {
-  margin: 0;
-}
-
-.profile-hero h1 {
-  font-size: min(var(--font-size-hero), 10.6vw);
-}
-
-html[lang="ka"] .profile-hero h1 {
-  max-width: none;
-}
-
-.profile-hero > p:not(.kicker) {
-  margin: 0;
-  color: var(--color-text-secondary);
-}
-
 .profile-panel {
   display: grid;
   gap: var(--space-4);

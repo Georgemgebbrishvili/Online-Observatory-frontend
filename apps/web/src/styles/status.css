@@ -16,10 +16,6 @@
   gap: var(--space-8);
 }
 
-.status-hero h1 {
-  max-width: 16ch;
-}
-
 .status-observatory {
   align-self: end;
 }
@@ -47,7 +43,9 @@
 /* RIGHT NOW — the four readings as plates, then two ruled rows. */
 .status-summary {
   display: grid;
-  gap: var(--space-4);
+  /* Two to a row on a phone, one on the narrowest, where a Georgian reading needs the room. */
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-3);
   margin: var(--space-8) 0 0;
 }
 
@@ -245,9 +243,13 @@
   }
 }
 
-@media (--sm) {
-  .status-summary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (--below-md) {
+  .status-heading {
+    font-size: var(--font-size-h2);
+  }
+
+  .status-summary .plate {
+    padding: var(--space-4);
   }
 }
 
@@ -262,12 +264,6 @@
 }
 
 @media (--lg) {
-  .status-hero {
-    grid-template-columns: minmax(0, 1.4fr) minmax(18rem, 0.6fr);
-    align-items: end;
-    gap: var(--space-16);
-  }
-
   .status-summary {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

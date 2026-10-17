@@ -32,11 +32,7 @@ export function LiveNext({ locale, panel, upcoming }: LiveNextProps) {
 
   return (
     <div className="authenticated-home live-next">
-      <header className="page-hero">
-        <p className="kicker">{copy.eyebrow}</p>
-        <h1>{copy.title}</h1>
-        <p className="page-lede">{copy.description}</p>
-      </header>
+      <h1 className="visually-hidden">{copy.title}</h1>
 
       <div className="home-dashboard-grid">
         <ObservatoryPanel locale={locale} panel={panel} />

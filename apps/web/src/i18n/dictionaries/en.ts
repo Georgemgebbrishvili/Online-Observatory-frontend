@@ -18,9 +18,7 @@ const dictionary = {
       menu: "Open navigation",
       closeMenu: "Close navigation",
       book: "Book",
-      live: "Live",
       observatory: "Observatory",
-      vote: "Vote",
       pricing: "Pricing",
       signIn: "Sign in",
       reserve: "Reserve a slot",
@@ -96,7 +94,6 @@ const dictionary = {
         {
           title: "Watch",
           description: "See its camera live as the picture sharpens.",
-          action: "Go live",
         },
         {
           title: "Keep",
@@ -147,9 +144,7 @@ const dictionary = {
     legal: "Legal",
     language: "Language",
     book: "Book",
-    vote: "Vote",
     pricing: "Pricing",
-    live: "Live",
     collection: "Collection",
     observatory: "Observatory",
     status: "Status",

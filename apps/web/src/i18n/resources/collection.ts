@@ -15,9 +15,7 @@ type StateCopy = { title: string; description: string };
 type CollectionCopy = {
   metadataTitle: string;
   metadataDescription: string;
-  eyebrow: string;
   title: string;
-  description: string;
   featured: string;
   allCaptures: string;
   allDescription: string;
@@ -76,10 +74,7 @@ export const collectionGalleryCopy: Record<"en" | "ka", CollectionCopy> = {
   en: {
     metadataTitle: `Collection · ${brand.en.name}`,
     metadataDescription: "Your personal archive of completed observations.",
-    eyebrow: "Your observations",
     title: "A sky only you have seen.",
-    description:
-      "Every capture you take during an observation is kept here, with the settings the telescope used.",
     featured: "Latest capture",
     allCaptures: "Observation archive",
     allDescription: "Newest first, by the time the shutter closed.",
@@ -124,10 +119,7 @@ export const collectionGalleryCopy: Record<"en" | "ka", CollectionCopy> = {
   ka: {
     metadataTitle: `კოლექცია · ${brand.ka.nominative}`,
     metadataDescription: "შენი დასრულებული დაკვირვებების პირადი არქივი.",
-    eyebrow: "შენი დაკვირვებები",
     title: "ცა, რომელიც მხოლოდ შენ ნახე.",
-    description:
-      "დაკვირვებისას გადაღებული ყველა კადრი აქ ინახება, ტელესკოპის მიერ გამოყენებულ პარამეტრებთან ერთად.",
     featured: "ბოლო კადრი",
     allCaptures: "დაკვირვებების არქივი",
     allDescription: "ჯერ უახლესი, ჩამკეტის დახურვის დროის მიხედვით.",

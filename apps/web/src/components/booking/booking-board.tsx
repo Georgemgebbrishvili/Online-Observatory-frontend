@@ -270,16 +270,12 @@ export function BookingBoard({
         : reschedule
           ? replacing.form.book
           : reserve.form.reserve;
-  const observatoryName = locale === "ka" ? observatory.nameKa : observatory.nameEn;
 
   return (
     <form className="board" onSubmit={submit} aria-busy={phase !== "idle" || undefined}>
       <header className="board-head">
-        <div>
-          <p className="kicker">{observatoryName}</p>
-          <h1 className="board-title">{booking.title}</h1>
-          {reschedule && <p className="board-lede">{replacing.replacing}</p>}
-        </div>
+        <h1 className="visually-hidden">{booking.title}</h1>
+        {reschedule && <p className="board-lede">{replacing.replacing}</p>}
         <ul className="board-facts">
           <li>
             <b>{copy.facts.slot}</b>

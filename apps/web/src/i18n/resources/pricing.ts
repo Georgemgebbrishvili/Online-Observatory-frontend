@@ -4,10 +4,7 @@ export const pricingPageCopy = {
   en: {
     metadataTitle: `Pricing · ${brand.en.name}`,
     metadataDescription: `What ${brand.en.name} costs today: browsing is free; a seat in a live session and an observation slot are priced when you buy them.`,
-    eyebrow: "Pricing",
     title: "What it costs today.",
-    introduction:
-      "Three things exist today: browsing tonight's sky, which is free, a seat in somebody's live session, and a slot of your own on the telescope.",
     offerings: "What exists today",
     free: "Free",
     perSlot: "Priced per slot",
@@ -23,10 +20,7 @@ export const pricingPageCopy = {
   ka: {
     metadataTitle: `ფასები · ${brand.ka.nominative}`,
     metadataDescription: `რა ღირს ${brand.ka.nominative} დღეს: დათვალიერება უფასოა, ადგილი პირდაპირ სესიაში და დაკვირვების სლოტი კი ყიდვისას ფასდება.`,
-    eyebrow: "ფასები",
     title: "რა ღირს დღეს.",
-    introduction:
-      "დღეს სამი რამ არსებობს: ამაღამინდელი ცის დათვალიერება, რომელიც უფასოა, ადგილი სხვის პირდაპირ სესიაში და შენი საკუთარი სლოტი ტელესკოპზე.",
     offerings: "რა არსებობს დღეს",
     free: "უფასო",
     perSlot: "ფასი სლოტზე",

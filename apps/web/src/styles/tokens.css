@@ -309,19 +309,19 @@
   --font-size-body-lg: 1.125rem;
   --font-size-body: 1rem;
   --font-size-label: 0.875rem;
-  --font-size-caption: 0.8125rem;
-  --font-size-kicker: 0.78125rem;
+  --font-size-caption: 0.875rem;
+  --font-size-kicker: 0.8125rem;
   --font-size-mono: 0.875rem;
   /* The Skychaser bar's links (15px) and the phone tab bar's labels (12px). */
   --font-size-nav: 0.9375rem;
-  --font-size-tab: 0.75rem;
+  --font-size-tab: 0.8125rem;
   /* The wordmark: 20.35px fills the kit's 28px box as Skychaser's outlined word does. */
   --font-size-wordmark: 1.272rem;
   --font-size-wordmark-small: 1rem;
   /* The homepage sky's headline, lede and hint (ADR-052 §7). */
   --font-size-sky-title: clamp(1.6875rem, 5vw, 4.75rem);
   --font-size-sky-lede: clamp(1rem, 1.3vw, 1.1875rem);
-  --font-size-hint: 0.6875rem;
+  --font-size-hint: 0.8125rem;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

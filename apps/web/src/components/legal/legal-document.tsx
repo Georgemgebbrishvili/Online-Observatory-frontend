@@ -28,13 +28,9 @@ export function LegalDocumentPage({
 
   return (
     <main className="public-page legal-page" id="main-content">
-      <section className="page-hero" aria-labelledby="legal-title">
-        <Container>
-          <p className="kicker">{document.eyebrow}</p>
-          <h1 id="legal-title">{document.title}</h1>
-          <p className="page-lede">{document.introduction}</p>
-        </Container>
-      </section>
+      <h1 id="legal-title" className="visually-hidden">
+        {document.title}
+      </h1>
 
       <Container className="legal-layout">
         <nav className="legal-toc" aria-labelledby="legal-toc-title">

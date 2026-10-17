@@ -34,13 +34,9 @@ export default async function MissionsPage({ params }: MissionsPageProps) {
 
   return (
     <section className="missions-page" aria-labelledby="missions-title">
-      <header className="page-hero">
-        <p className="kicker">
-          {tonight.kind === "ok" ? tonight.observatory.name : copy.eyebrow}
-        </p>
-        <h1 id="missions-title">{copy.title}</h1>
-        <p className="page-lede">{copy.description}</p>
-      </header>
+      <h1 id="missions-title" className="visually-hidden">
+        {copy.title}
+      </h1>
 
       <div className="tonight-notices">
         <TonightNotices result={tonight} locale={locale} headingLevel={2} />

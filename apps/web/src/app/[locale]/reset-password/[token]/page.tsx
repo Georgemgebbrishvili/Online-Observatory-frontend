@@ -41,9 +41,7 @@ export default async function ResetPasswordTokenPage({
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
       <AuthPage
-        eyebrow={copy.eyebrow}
         title={copy.resetConfirm.title}
-        description={copy.resetConfirm.description}
       >
         <PasswordResetConfirmForm copy={copy} locale={locale} token={token} />
       </AuthPage>

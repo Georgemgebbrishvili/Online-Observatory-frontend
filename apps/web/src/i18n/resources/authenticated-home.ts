@@ -6,7 +6,6 @@ type AuthenticatedHomeCopy = {
   metadataTitle: string;
   metadataDescription: string;
   greeting: (name: string | null) => string;
-  introduction: string;
   tonight: string;
   recommendation: (target: string) => string;
   observe: (target: string) => string;
@@ -38,8 +37,6 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     metadataTitle: `Home · ${brand.en.name}`,
     metadataDescription: "Your observatory, missions, and Collection for tonight.",
     greeting: (name) => (name ? `Welcome back, ${name}.` : "Welcome back."),
-    introduction:
-      "Here is what the observatory can see tonight, and what is ahead for you.",
     tonight: "Tonight",
     recommendation: (target) => `${target} is up tonight`,
     observe: (target) => `Observe ${target}`,
@@ -83,7 +80,6 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     metadataDescription: "შენი ობსერვატორია, მისიები და კოლექცია ამაღამ.",
     greeting: (name) =>
       name ? `კეთილი იყოს შენი დაბრუნება, ${name}.` : "კეთილი იყოს შენი დაბრუნება.",
-    introduction: "აი, რას ხედავს ობსერვატორია ამაღამ და რა გელის წინ.",
     tonight: "ამაღამ",
     recommendation: (target) => `${target} ამაღამ ჩანს`,
     observe: (target) => `დააკვირდი: ${target}`,

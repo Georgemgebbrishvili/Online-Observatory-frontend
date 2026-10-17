@@ -151,11 +151,9 @@ export function StatusPage({
     <main className="public-page status-page" id="main-content">
       <section className="page-hero" aria-labelledby="status-title">
         <Container className="status-hero">
-          <header>
-            <p className="kicker">{copy.eyebrow}</p>
-            <h1 id="status-title">{copy.title}</h1>
-            <p className="page-lede">{copy.introduction}</p>
-          </header>
+          <h1 id="status-title" className="visually-hidden">
+            {copy.title}
+          </h1>
           <div className="plate status-observatory">
             <strong>{observatoryName}</strong>
             <span className="data">

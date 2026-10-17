@@ -12,9 +12,7 @@ export type LegalSection = {
 export type LegalDocument = {
   metadataTitle: string;
   metadataDescription: string;
-  eyebrow: string;
   title: string;
-  introduction: string;
   sections: LegalSection[];
 };
 
@@ -56,9 +54,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       terms: {
         metadataTitle: `Terms of service · ${brand.en.name}`,
         metadataDescription: `Draft terms of service for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
-        eyebrow: "Legal · Draft",
         title: "Terms of service",
-        introduction: `What ${brand.en.name} offers, and what it does not. This draft is published early so that the parts already settled can be read and challenged.`,
         sections: [
           {
             heading: `What ${brand.en.name} is`,
@@ -87,9 +83,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       privacy: {
         metadataTitle: `Privacy policy · ${brand.en.name}`,
         metadataDescription: `Draft privacy policy for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
-        eyebrow: "Legal · Draft",
         title: "Privacy policy",
-        introduction: `What ${brand.en.name} records about you and why. This document needs a data inventory and legal review before it can be published properly.`,
         sections: [
           {
             heading: "Staying signed in",
@@ -110,10 +104,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       refunds: {
         metadataTitle: `Refund policy · ${brand.en.name}`,
         metadataDescription: `Draft refund and cancellation policy for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
-        eyebrow: "Legal · Draft",
         title: "Refund policy",
-        introduction:
-          "When money comes back, when telescope time comes back instead, and when neither does. Weather makes this document matter more than it would for most services.",
         sections: [
           {
             heading: "Bookings paid with minutes or a voucher",
@@ -160,9 +151,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       terms: {
         metadataTitle: `მომსახურების პირობები · ${brand.ka.nominative}`,
         metadataDescription: `${brand.ka.genitive} მომსახურების პირობების მონახაზი. ჯერ არ მოქმედებს.`,
-        eyebrow: "იურიდიული · მონახაზი",
         title: "მომსახურების პირობები",
-        introduction: `რას გთავაზობს ${brand.ka.nominative} და რას არა. მონახაზი ადრე ქვეყნდება, რომ უკვე გადაწყვეტილი ნაწილის წაკითხვა და გასაჩივრება შესაძლებელი იყოს.`,
         sections: [
           {
             heading: `რა არის ${brand.ka.nominative}`,
@@ -191,9 +180,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       privacy: {
         metadataTitle: `კონფიდენციალურობის პოლიტიკა · ${brand.ka.nominative}`,
         metadataDescription: `${brand.ka.genitive} კონფიდენციალურობის პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.`,
-        eyebrow: "იურიდიული · მონახაზი",
         title: "კონფიდენციალურობის პოლიტიკა",
-        introduction: `რას ინახავს ${brand.ka.nominative} შენს შესახებ და რატომ. დოკუმენტს სჭირდება მონაცემთა აღწერა და იურიდიული განხილვა, სანამ სათანადოდ გამოქვეყნდება.`,
         sections: [
           {
             heading: "სისტემაში დარჩენა",
@@ -214,10 +201,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       refunds: {
         metadataTitle: `თანხის დაბრუნების პოლიტიკა · ${brand.ka.nominative}`,
         metadataDescription: `${brand.ka.genitive} თანხის დაბრუნებისა და გაუქმების პოლიტიკის მონახაზი. ჯერ არ მოქმედებს.`,
-        eyebrow: "იურიდიული · მონახაზი",
         title: "თანხის დაბრუნების პოლიტიკა",
-        introduction:
-          "როდის ბრუნდება თანხა, როდის ბრუნდება მის ნაცვლად ტელესკოპის დრო და როდის არცერთი. ამინდის გამო ეს დოკუმენტი აქ უფრო მნიშვნელოვანია, ვიდრე სხვა სერვისებში.",
         sections: [
           {
             heading: "წუთებით ან ვაუჩერით გადახდილი ჯავშანი",

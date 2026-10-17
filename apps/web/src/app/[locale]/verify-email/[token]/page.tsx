@@ -43,7 +43,6 @@ export default async function VerifyEmailPage({
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
       <AuthPage
-        eyebrow={copy.eyebrow}
         title={copy.verify.title}
         description={copy.verify.description}
       >

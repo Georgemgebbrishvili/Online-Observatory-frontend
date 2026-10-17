@@ -48,20 +48,28 @@
   transform: translateY(-0.2rem) rotate(-45deg);
 }
 
+/* On a phone the menu is a solid sheet over the whole page, so nothing reads through it.
+   The bar's backdrop filter makes it the containing block, so the sheet hangs from it. */
 .public-mobile-menu {
   position: absolute;
   top: 100%;
   right: 0;
   left: 0;
+  height: calc(100dvh - var(--size-app-header));
   display: none;
-  padding: var(--space-3) var(--space-page) var(--space-5);
-  border-bottom: 1px solid var(--color-line);
-  background: var(--color-glass);
-  backdrop-filter: blur(14px) saturate(140%);
+  align-content: start;
+  gap: var(--space-8);
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-page) calc(var(--space-8) + env(safe-area-inset-bottom));
+  background: var(--color-surface-base);
 }
 
 .public-mobile-menu[data-open] {
   display: grid;
+}
+
+html:has(.public-mobile-menu[data-open]) {
+  overflow: hidden;
 }
 
 .public-mobile-menu nav {
@@ -70,15 +78,26 @@
 
 .public-mobile-menu nav a {
   display: flex;
-  min-height: 3.25rem;
+  min-height: 4rem;
   align-items: center;
+  justify-content: space-between;
   border-bottom: 1px solid var(--color-line);
-  color: var(--color-text-secondary);
-  font-family: var(--font-label);
-  font-size: var(--font-size-nav);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-nav);
+  color: var(--color-text-primary);
+  font-family: var(--font-headline);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-headline);
   text-transform: uppercase;
+}
+
+.public-mobile-menu nav a::after {
+  content: "→";
+  color: var(--color-accent);
+  font-family: var(--font-body);
+  font-size: var(--font-size-h3);
+}
+
+.public-mobile-menu nav a[aria-current="page"] {
+  color: var(--color-accent);
 }
 
 .public-mobile-menu > div {
@@ -86,20 +105,23 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
   align-items: center;
-  padding-top: var(--space-5);
 }
 
 .public-mobile-menu > div > a:not(.button) {
-  min-height: 2.75rem;
+  min-height: var(--size-touch);
   display: inline-flex;
   align-items: center;
-  color: var(--color-text-secondary);
+  justify-content: center;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-control);
+  color: var(--color-text-primary);
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-medium);
 }
 
 .public-mobile-menu .button {
   grid-column: 1 / -1;
+  width: 100%;
 }
 
 .public-menu-button:focus-visible,

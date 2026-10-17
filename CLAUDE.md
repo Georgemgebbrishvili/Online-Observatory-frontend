@@ -225,11 +225,12 @@ telescope.
 Tagline: *The real sky, live.*
 Georgian: *შენი დრო ნამდვილ ცასთან.*
 
-Core colors (ADR-055, NASA blue on navy): canvas `#070D1A`, bars and console `#040914` ·
-ink `#F3F6FB`, `#B6C0D0`, `#97A3B8` · accent blue `#3D8BFD` for highlights and glows ·
-action fill `#1F5FD1` under white text · NASA red `#FC3D21` for a hold only · gold
-`#E2B85A` for simulated and done · green `#2ECC71` for LIVE · focus ring `#8AB8FF`.
-Nothing reads below 13 px; the header carries Observatory, Book, Live, Vote, Pricing. The lockup is the Skychaser kit's comet mark beside
+Core colors (ADR-052, restored by ADR-056): canvas `#0d0d0d`, bars `#050507` · ink
+`#F4F4F2`, `#B8B8B4`, `#969692` · accent red `#E3482C` for highlights and glows · action
+fill `#C8392A` under white text · gold `#E2B85A` for simulated and done · green `#2ECC71`
+for LIVE · focus ring `#F0785A`. The observatory console alone keeps ADR-055's NASA blue
+on navy. Nothing reads below 13 px; pages carry no title block, and the header carries
+Observatory, Book, Pricing. The lockup is the Skychaser kit's comet mark beside
 STELLAR in Archivo Expanded Black. Type: Anton, Oswald, Geist, JetBrains Mono; Georgian in
 Noto Sans Georgian and FiraGO, never uppercased or tracked.
 
