@@ -11,6 +11,11 @@
  * slew moves that point when the key is released, so the object stays where it is on
  * the sky and nothing follows the screen. Lunar and solar rates follow their bodies.
  *
+ * The motor encoders report where the motors are, not where the tube points: the worm
+ * gears' periodic error, the slow drift of an imperfect alignment and the tube's ringing
+ * after the axes stop all move the image without moving the readout. They come out as
+ * the snapshot's `imageOffset`, which only the camera sees.
+ *
  * Nothing here sleeps or sets a timer. `step(nowMs)` advances the axes to the clock,
  * and a GoTo is a plan evaluated against the clock, so a test can run a 150° slew in
  * one call and the browser can run it over thirty seconds, identically.
@@ -70,6 +75,61 @@ export const SETTLE_S = 1.5;
 /** The GoTo's final leg: how far out it starts, and the rate it comes in at (rate 7). */
 export const APPROACH_DEG = 0.25;
 export const APPROACH_DEG_S = 1;
+
+/* --- what the encoders do not see ---------------------------------------- */
+
+/**
+ * The drive's tracking error. The SE's worm gears carry a periodic error of several to
+ * a dozen arcseconds over one turn of the worm, and an alt-az alignment that is a few
+ * arcminutes out lets the field creep by a few arcseconds a minute.
+ */
+export type TrackingErrorModel = {
+  /** Peak periodic error on each axis, arcseconds, and the worm's period, seconds. */
+  peArcsec: { alt: number; az: number };
+  wormPeriodS: number;
+  /** The alignment's slow drift, arcseconds per minute, in a seeded direction. */
+  driftArcsecPerMin: number;
+  seed: number;
+};
+
+export const SE_TRACKING_ERROR: TrackingErrorModel = { peArcsec: { alt: 9, az: 15 }, wormPeriodS: 470, driftArcsecPerMin: 3, seed: 1 };
+
+/** The worm's periodic error at an absolute time, arcseconds on each axis: a fundamental and a harmonic. */
+export function periodicErrorArcsec(m: TrackingErrorModel, atS: number): { alt: number; az: number } {
+  const phase = (2 * Math.PI * atS) / m.wormPeriodS + m.seed;
+  return {
+    alt: m.peArcsec.alt * (0.8 * Math.sin(phase) + 0.2 * Math.sin(2 * phase + 1.1)),
+    az: m.peArcsec.az * (0.8 * Math.sin(phase + 0.6) + 0.2 * Math.sin(3 * phase + 0.4)),
+  };
+}
+
+/**
+ * Where tracking has carried the image from where it started, arcseconds: the change in
+ * the periodic error since tracking began, plus the drift since then. Zero at the start,
+ * so taking up tracking never jumps the image.
+ */
+export function trackingErrorArcsec(m: TrackingErrorModel, startS: number, nowS: number): { alt: number; az: number } {
+  const a = periodicErrorArcsec(m, startS);
+  const b = periodicErrorArcsec(m, nowS);
+  const drift = (m.driftArcsecPerMin * Math.max(0, nowS - startS)) / 60;
+  const dir = m.seed * 2.4;
+  return { alt: b.alt - a.alt + drift * Math.cos(dir), az: b.az - a.az + drift * Math.sin(dir) };
+}
+
+/** The tube rings after the axes stop: about two cycles a second, dying away over a second or two. */
+export const RING_HZ = 2.2;
+export const RING_DECAY_S = 0.6;
+
+/** The ringing's displacement s seconds after a stop, as a fraction of its first swing. */
+export function settleRing(sinceStopS: number): number {
+  if (sinceStopS < 0 || sinceStopS > 5) return 0;
+  return Math.exp(-sinceStopS / RING_DECAY_S) * Math.cos(2 * Math.PI * RING_HZ * sinceStopS);
+}
+
+/** The first swing after a stop from this rate, arcseconds: a few at centring rates, twenty at rate 9. */
+export function ringAmplitudeArcsec(rateDegS: number): number {
+  return 3 + 18 * Math.min(1, Math.abs(rateDegS));
+}
 
 /** Longest step the integrator takes; a longer gap between frames is integrated in steps this long. */
 const MAX_STEP_S = 0.1;
@@ -241,6 +301,8 @@ type AxisState = {
   vel: number;
   /** Where the motor sits inside the gear play, from -play/2 to +play/2. */
   play: number;
+  /** The fastest the axis has turned since it last stood still: what it rings from. */
+  peak: number;
 };
 
 export type AxisRates = { alt: number; az: number };
@@ -257,12 +319,17 @@ export type MountSnapshot = {
   atLimit: Axis | 'cordwrap' | null;
   /** The instant the pointing is for. */
   atMs: number;
+  /**
+   * Where the image sits from `pointing`, degrees on each axis: tracking error and the
+   * tube's ringing after a stop. The camera sees it; the encoders do not.
+   */
+  imageOffset: { alt: number; az: number };
 };
 
 export class NexStarMount {
   private alt = 0;
   private azUnwrapped = 0;
-  private axes: Record<Axis, AxisState> = { alt: { cmd: 0, vel: 0, play: 0 }, az: { cmd: 0, vel: 0, play: 0 } };
+  private axes: Record<Axis, AxisState> = { alt: { cmd: 0, vel: 0, play: 0, peak: 0 }, az: { cmd: 0, vel: 0, play: 0, peak: 0 } };
   private lastMs: number | null = null;
   private plan: GotoPlan | null = null;
   private settleUntilMs = 0;
@@ -271,11 +338,19 @@ export class NexStarMount {
   private trackPoint: Equatorial | null = null;
   private trackBodyBasis: { body: TrackedBody; at: Equatorial } | null = null;
   private atLimit: MountSnapshot['atLimit'] = null;
+  /** When the drive last took up tracking from a standstill. */
+  private trackedSinceMs: number | null = null;
+  /** The last stop's ringing: when, and its first swing on each axis, arcseconds. */
+  private ring: { atMs: number; alt: number; az: number } | null = null;
+  /** The plan whose stop has already rung. */
+  private rungPlan: GotoPlan | null = null;
   parked = true;
   settings: MountSettings = { ...DEFAULT_SETTINGS };
   /** Above one, every GoTo runs this much faster than the mount: for tests only (`?turbo`). */
   pace = 1;
   model: PointingModel = { errorAlt: 0, errorAz: 0, syncs: [] };
+  /** The drive's tracking error; null tracks perfectly, as the tests assume. */
+  trackingError: TrackingErrorModel | null = null;
 
   constructor(private readonly sky: Sky) {}
 
@@ -304,10 +379,13 @@ export class NexStarMount {
   reset() {
     this.plan = null;
     this.settleUntilMs = 0;
-    for (const axis of ['alt', 'az'] as const) this.axes[axis] = { cmd: 0, vel: 0, play: 0 };
+    for (const axis of ['alt', 'az'] as const) this.axes[axis] = { cmd: 0, vel: 0, play: 0, peak: 0 };
     this.trackingMode = 'off';
     this.trackPoint = null;
     this.trackBodyBasis = null;
+    this.trackedSinceMs = null;
+    this.ring = null;
+    this.rungPlan = null;
     this.parked = true;
     this.model = { errorAlt: 0, errorAz: 0, syncs: [] };
     this.alt = 0;
@@ -347,11 +425,18 @@ export class NexStarMount {
 
   /** Emergency stop: every motor dead now, no spin-down, the GoTo abandoned. */
   halt() {
+    const { alt, az } = this.axes;
+    if (alt.vel !== 0 || az.vel !== 0) {
+      // A dead stop from speed rings harder than a ramped one.
+      const swing = (v: number) => (v === 0 ? 0 : Math.sign(v) * ringAmplitudeArcsec(Math.abs(v)) * 1.4);
+      this.ring = { atMs: this.lastMs ?? 0, alt: swing(alt.vel), az: swing(az.vel) };
+    }
     this.plan = null;
     this.settleUntilMs = 0;
     for (const axis of ['alt', 'az'] as const) {
       this.axes[axis].cmd = 0;
       this.axes[axis].vel = 0;
+      this.axes[axis].peak = 0;
     }
     this.retrack(this.lastMs ?? 0);
   }
@@ -402,7 +487,13 @@ export class NexStarMount {
 
   setTracking(mode: TrackingMode, nowMs: number) {
     this.trackingMode = mode;
-    this.retrack(nowMs);
+    // Mid-GoTo the drive takes up tracking where the axes land, not where the tube is
+    // passing now: holding a point mid-slew would leave the target off centre.
+    if (this.plan) return;
+    // The tube's position is the one the last step computed: hold the sky point it is on
+    // at that instant. A caller's clock that lags the steps would otherwise hold a point
+    // the sky has already turned past, and the drive would track off target.
+    this.retrack(this.lastMs ?? nowMs);
   }
 
   /** Make the tube's present sky position the one the drive holds. */
@@ -423,9 +514,11 @@ export class NexStarMount {
     if (this.trackingMode === 'off' || this.parked) {
       this.trackPoint = null;
       this.trackBodyBasis = null;
+      this.trackedSinceMs = null;
       return;
     }
     this.trackPoint = this.equatorialAt(nowMs);
+    this.trackedSinceMs = nowMs;
     const body: TrackedBody | null = this.trackingMode === 'lunar' ? 'moon' : this.trackingMode === 'solar' ? 'sun' : null;
     this.trackBodyBasis = body ? { body, at: this.sky.bodyAt(body, nowMs) } : null;
   }
@@ -464,6 +557,15 @@ export class NexStarMount {
 
     if (this.plan) {
       const axesEndMs = this.plan.startedAtMs + this.plan.axesS * 1000;
+      if (nowMs >= axesEndMs && this.rungPlan !== this.plan) {
+        // The axes come in on the approach leg and stop: the tube rings along it.
+        this.rungPlan = this.plan;
+        const swing = (legs: AxisLeg[]) => {
+          const last = legs.at(-1);
+          return last ? Math.sign(last.to - last.from) * ringAmplitudeArcsec(last.rate) * 0.6 : 0;
+        };
+        this.ring = { atMs: axesEndMs, alt: swing(this.plan.alt), az: swing(this.plan.az) };
+      }
       if (nowMs >= axesEndMs && this.trackingMode !== 'off' && !this.parked) {
         // The axes have stopped: the drive tracks from where they landed, through the
         // settle, so the object stays where it landed in the field.
@@ -499,7 +601,14 @@ export class NexStarMount {
       for (const axis of ['alt', 'az'] as const) {
         const a = this.axes[axis];
         const before = axis === 'alt' ? this.alt : this.azUnwrapped;
+        const was = a.vel;
         a.vel = ramp(a.vel, a.cmd, dt);
+        a.peak = Math.max(a.peak, Math.abs(a.vel));
+        if (was !== 0 && a.vel === 0) {
+          const swing = Math.sign(was) * ringAmplitudeArcsec(a.peak);
+          a.peak = 0;
+          this.ring = { atMs: nowMs - remaining * 1000, alt: axis === 'alt' ? swing : 0, az: axis === 'az' ? swing : 0 };
+        }
         let moved = 0;
         if (a.vel !== 0) {
           // The motor turns; the tube moves only once the motor is against the play's edge.
@@ -549,8 +658,27 @@ export class NexStarMount {
     return this.snapshot(altRate, azRate, nowMs);
   }
 
+  /** Where the image sits from the encoders' pointing at `nowMs`, degrees. */
+  imageOffsetAt(nowMs: number): { alt: number; az: number } {
+    let alt = 0;
+    let az = 0;
+    if (this.trackingError && this.trackPoint && this.trackedSinceMs !== null && !this.plan) {
+      const e = trackingErrorArcsec(this.trackingError, this.trackedSinceMs / 1000, nowMs / 1000);
+      alt += e.alt;
+      az += e.az;
+    }
+    if (this.ring) {
+      // `?turbo` shortens the settle; the ringing dies away as much faster with it.
+      const k = settleRing(((nowMs - this.ring.atMs) / 1000) * this.pace);
+      alt += this.ring.alt * k;
+      az += this.ring.az * k;
+    }
+    return { alt: alt / 3600, az: az / 3600 };
+  }
+
   private snapshot(altRate: number, azRate: number, nowMs: number): MountSnapshot {
     return {
+      imageOffset: this.imageOffsetAt(nowMs),
       pointing: this.pointing,
       rates: { alt: altRate, az: azRate },
       slewing: this.plan !== null && nowMs < this.plan.startedAtMs + this.plan.axesS * 1000,

@@ -189,6 +189,42 @@ export type SkyObject = {
    * east of north: the Moon's phase, Venus's crescent, Mars's gibbous shoulder.
    */
   phase?: { fraction: number; limbPaDeg: number };
+  /** A star's colour, 0 blue-white to 1 orange, from its B−V index. */
+  tint?: number;
+};
+
+/** A star's colour on the 0 blue to 1 orange scale the renderer uses, from its B−V colour index. */
+export function bvToTint(bv: number): number {
+  return clamp((bv + 0.3) / 1.9, 0, 1);
+}
+
+/** B−V of the named bright stars, from the Bright Star Catalogue. */
+const STAR_BV: Record<string, number> = {
+  sirius: 0.0, canopus: 0.15, rigil: 0.71, arcturus: 1.23, vega: 0.0, capella: 0.8, rigel: -0.03, procyon: 0.42,
+  achernar: -0.16, betelgeuse: 1.85, hadar: -0.23, altair: 0.22, aldebaran: 1.54, antares: 1.83, spica: -0.23,
+  pollux: 1.0, fomalhaut: 0.09, deneb: 0.09, mimosa: -0.24, regulus: -0.11, adhara: -0.21, shaula: -0.22,
+  castor: 0.03, gacrux: 1.6, bellatrix: -0.22, elnath: -0.13, miaplacidus: 0.07, alnilam: -0.18, alnitak: -0.21,
+  mintaka: -0.22, alnair: -0.13, alioth: -0.02, dubhe: 1.07, merak: 0.03, phecda: 0.04, megrez: 0.08,
+  alkaid: -0.19, mizar: 0.02, kochab: 1.47, polaris: 0.6, schedar: 1.17, caph: 0.34, ruchbah: 0.13, segin: -0.15,
+  sadr: 0.67, gienah: 1.03, fawaris: -0.03, albireo: 1.13, alpheratz: -0.11, mirach: 1.58, almach: 1.37,
+  saiph: -0.17, sheliak: 0.0, sulafat: -0.05, pherkad: 0.05, denebola: 0.09, algieba: 1.13, zosma: 0.13,
+  dschubba: -0.12,
+};
+
+/**
+ * The companions a telescope splits: magnitude, B−V, separation in arcseconds and
+ * position angle east of north, from the Washington Double Star Catalog. Albireo's gold
+ * and blue, Almach's orange and blue, Mizar's white pair.
+ */
+const COMPANIONS: Record<string, { name: string; mag: number; bv: number; sepArcsec: number; paDeg: number }> = {
+  albireo: { name: 'Albireo B', mag: 5.11, bv: -0.1, sepArcsec: 34.6, paDeg: 54 },
+  almach: { name: 'Almach B', mag: 4.84, bv: 0.03, sepArcsec: 9.6, paDeg: 63 },
+  mizar: { name: 'Mizar B', mag: 3.88, bv: 0.13, sepArcsec: 14.4, paDeg: 152 },
+  castor: { name: 'Castor B', mag: 2.85, bv: 0.04, sepArcsec: 5.5, paDeg: 52 },
+  algieba: { name: 'Algieba B', mag: 3.47, bv: 0.97, sepArcsec: 4.7, paDeg: 127 },
+  polaris: { name: 'Polaris B', mag: 8.7, bv: 0.42, sepArcsec: 18.2, paDeg: 230 },
+  rigel: { name: 'Rigel B', mag: 6.8, bv: 0.0, sepArcsec: 9.5, paDeg: 204 },
+  antares: { name: 'Antares B', mag: 5.5, bv: -0.02, sepArcsec: 2.7, paDeg: 277 },
 };
 
 /**
@@ -204,14 +240,13 @@ export function brightLimbPa(body: { ra: number; dec: number }, sun: { ra: numbe
   return ((Math.atan2(y, x) / DEG) + 360) % 360;
 }
 
-/** How much the Moon brightens the sky tonight, 0–1: nothing below the horizon, full at a high full Moon. */
-export function moonBrightening(node: ObservatoryNode, date: Date): number {
+/** Where the Moon is tonight and how much of it is lit: what its scattered light depends on. Null when it is down. */
+export function moonInSky(node: ObservatoryNode, date: Date): { altitudeDeg: number; azimuthDeg: number; fraction: number } | null {
   const observer = new Observer(node.lat, node.lon, 0);
   const eq = Equator(Body.Moon, date, observer, true, true);
   const h = Horizon(date, observer, eq.ra, eq.dec, 'normal');
-  if (h.altitude <= 0) return 0;
-  const lit = Illumination(Body.Moon, date).phase_fraction;
-  return clamp(Math.sin(h.altitude * DEG), 0, 1) * Math.pow(lit, 1.6);
+  if (h.altitude <= 0) return null;
+  return { altitudeDeg: h.altitude, azimuthDeg: h.azimuth, fraction: Illumination(Body.Moon, date).phase_fraction };
 }
 
 type BodySpec = { id: string; body: Body; name: string; saturateSec: number; frameSpan: number };
@@ -380,6 +415,7 @@ export function skyObjectsNear(
     const rough = raDecToAltAz({ raHours: star.ra, decDeg: star.dec }, node.lat, lstHours);
     if (separationDeg(pointing, rough) > radiusDeg + 1) continue;
     const exact = raDecToAzAlt(star.ra, star.dec, node.lat, node.lon, date);
+    const bv = STAR_BV[star.id];
     out.push({
       id: star.id,
       name: star.name,
@@ -388,7 +424,16 @@ export function skyObjectsNear(
       azimuth: exact.azimuth,
       mag: star.mag,
       sizeArcmin: 0,
+      tint: bv === undefined ? undefined : bvToTint(bv),
     });
+    const pair = COMPANIONS[star.id];
+    if (pair) {
+      const sep = pair.sepArcsec / 3600;
+      const decDeg = star.dec + sep * Math.cos(pair.paDeg * DEG);
+      const raHours = star.ra + (sep * Math.sin(pair.paDeg * DEG)) / Math.cos(star.dec * DEG) / 15;
+      const at = raDecToAzAlt(raHours, decDeg, node.lat, node.lon, date);
+      out.push({ id: `${star.id}-b`, name: pair.name, kind: 'star', altitude: at.altitude, azimuth: at.azimuth, mag: pair.mag, sizeArcmin: 0, tint: bvToTint(pair.bv) });
+    }
   }
 
   return out;
@@ -398,7 +443,8 @@ export function skyObjectsNear(
 export function nearestObject(objects: SkyObject[], pointing: AltAz): { object: SkyObject; separationDeg: number } | null {
   let best: { object: SkyObject; separationDeg: number } | null = null;
   for (const o of objects) {
-    if (o.kind === 'star' && o.mag > 3) continue;
+    // Identify names the primary, not a companion seconds of arc from it.
+    if (o.kind === 'star' && (o.mag > 3 || o.id.endsWith('-b'))) continue;
     const d = separationDeg(pointing, o);
     if (!best || d < best.separationDeg) best = { object: o, separationDeg: d };
   }

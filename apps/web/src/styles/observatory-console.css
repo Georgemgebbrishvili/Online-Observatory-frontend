@@ -554,3 +554,24 @@
   .sdo-coords .sdo-lbl, .sdo-coords .sdo-btn { grid-column: 1 / -1; }
   .sdo-point__vals { grid-template-columns: 1fr 1fr; }
 }
+/* What the field is going through: under the status pill, a hold in red. */
+.sdo-alerts { position: absolute; right: 16px; top: 64px; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin: 0; padding: 0; list-style: none; pointer-events: none; }
+.sdo-alerts .sdo-pill { color: var(--o-amber-ink); border-color: rgba(61, 139, 253, .45); }
+.sdo-alerts .sdo-pill.is-warn { color: var(--o-red); border-color: rgba(255, 122, 107, .45); }
+.sdo-cam__hist { display: block; border-radius: 6px; background: rgba(0, 0, 0, .4); }
+@media (--below-md) {
+  .sdo-alerts { right: 10px; top: 46px; }
+  .sdo-alerts .sdo-pill { height: 28px; font-size: 13px; }
+}
+/* The sensor's frame is 16:9: shown whole and undistorted in whatever box the view has. */
+.sdo-view__feed canvas { object-fit: contain; }
+/* The caption owns the bottom edge; the target and field readouts sit above it. */
+.sdo-hud--bl, .sdo-hud--br { bottom: 64px; }
+@media (--below-md) {
+  /* The phone's box is far from 16:9: the frame fills it, cropped evenly about the optical centre. */
+  .sdo-view__feed canvas { object-fit: cover; }
+  .sdo-hud--bc { bottom: 62px; width: max-content; max-width: min(300px, calc(100% - 20px)); white-space: normal; text-align: center; }
+  /* The field the crop leaves, above the caption; the scale and frame count stay on the desk. */
+  .sdo-view .sdo-hud--br { display: block; right: auto; left: 50%; bottom: 128px; transform: translateX(-50%); white-space: nowrap; text-align: center; }
+  .sdo-hud__more { display: none; }
+}

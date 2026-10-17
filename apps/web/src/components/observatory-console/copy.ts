@@ -59,6 +59,7 @@ export type ConsoleCopy = {
     more: string;
     exposing: (done: string, total: string) => string;
     refresh: (seconds: string) => string;
+    histogram: string;
   };
   hand: {
     title: string;
@@ -128,6 +129,7 @@ export type ConsoleCopy = {
     offset: string;
     centred: string;
     noFeed: string;
+    conditions: string;
   };
   steps: {
     label: string;
@@ -142,6 +144,7 @@ export type ConsoleCopy = {
       stacking: (done: number, goal: number, exposure: string) => string;
       tracking: string;
       drifting: string;
+      belowHorizon: string;
       platform: { connect: string; running: string; observing: string; stopped: string };
     };
     connecting: string;
@@ -206,6 +209,7 @@ export type ConsoleCopy = {
     sensor: string;
     session: string;
     hours: (n: number) => string;
+    cameraKind: string;
   };
   targets: {
     title: string;
@@ -255,6 +259,8 @@ export type ConsoleCopy = {
     histogram: string;
     captured: string;
     exposure: string;
+    integration: string;
+    gain: string;
     optics: string;
     seeing: string;
     scale: string;
@@ -273,6 +279,8 @@ export type ConsoleCopy = {
     noAnswer: string;
     failed: string;
   };
+  /** What the field is going through right now, over the view. */
+  alerts: { belowHorizon: string; low: (limitDeg: number) => string; cloud: string; dew: (humidity: number) => string };
   provenanceSimulated: string;
   close: string;
 };
@@ -337,6 +345,7 @@ const en: ConsoleCopy = {
     more: "more",
     exposing: (done, total) => `Exposing · ${done} / ${total}`,
     refresh: (seconds) => `The view refreshes every ${seconds}. Use a short exposure to centre.`,
+    histogram: "Histogram",
   },
   hand: {
     title: "Hand control",
@@ -406,6 +415,7 @@ const en: ConsoleCopy = {
     offset: "Off target",
     centred: "Centred",
     noFeed: "No stream yet",
+    conditions: "Conditions",
   },
   steps: {
     label: "Steps",
@@ -421,6 +431,7 @@ const en: ConsoleCopy = {
       stacking: (done, goal, exposure) => `Stacking ${done} of ${goal} frames of ${exposure}.`,
       tracking: "On target and tracking the sky. Nudge with the pad: the object stays where it is on the sky.",
       drifting: "Tracking is off: the sky drifts through the field at sidereal rate.",
+      belowHorizon: "The target has set below the horizon. Choose another.",
       platform: {
         connect: "Start your session to take the real instrument's controls.",
         running: "The observatory is slewing to your booked target. Nudges open once it is centred.",
@@ -504,6 +515,7 @@ const en: ConsoleCopy = {
     sensor: "Sensor",
     session: "Session",
     hours: (n) => `${n} hours`,
+    cameraKind: "Colour CMOS camera",
   },
   targets: {
     title: "Choose a target",
@@ -562,6 +574,8 @@ const en: ConsoleCopy = {
     histogram: "Histogram of the frame",
     captured: "Captured",
     exposure: "Exposure",
+    integration: "Integration",
+    gain: "Gain",
     optics: "Optics",
     seeing: "Seeing",
     scale: "Scale",
@@ -579,6 +593,12 @@ const en: ConsoleCopy = {
     refused: "Refused by the observatory",
     noAnswer: "No answer from the observatory",
     failed: "Could not be sent",
+  },
+  alerts: {
+    belowHorizon: "Below the horizon",
+    low: (limitDeg) => `Low · under ${limitDeg}°`,
+    cloud: "Cloud passing",
+    dew: (humidity) => `Dew on the optics · ${humidity}%`,
   },
   provenanceSimulated: "Simulated · sky model",
   close: "Close",
@@ -644,6 +664,7 @@ const ka: ConsoleCopy = {
     more: "მეტი",
     exposing: (done, total) => `ექსპოზიცია · ${done} / ${total}`,
     refresh: (seconds) => `ხედი განახლდება ყოველ ${seconds}. დასაცენტრებლად გამოიყენე მოკლე ექსპოზიცია.`,
+    histogram: "ჰისტოგრამა",
   },
   hand: {
     title: "ხელის პულტი",
@@ -713,6 +734,7 @@ const ka: ConsoleCopy = {
     offset: "ობიექტიდან",
     centred: "დაცენტრებულია",
     noFeed: "ნაკადი ჯერ არ არის",
+    conditions: "პირობები",
   },
   steps: {
     label: "ნაბიჯები",
@@ -728,6 +750,7 @@ const ka: ConsoleCopy = {
       stacking: (done, goal, exposure) => `იდგმება ${done} / ${goal} კადრი, თითო ${exposure}.`,
       tracking: "ობიექტზეა და ცას მიჰყვება. პულტით გადაწიე: ობიექტი ცაზე თავის ადგილას რჩება.",
       drifting: "ტრეკინგი გამორთულია: ცა ველში ვარსკვლავური სიჩქარით სრიალებს.",
+      belowHorizon: "ობიექტი ჰორიზონტს ქვემოთ ჩავიდა. აირჩიე სხვა.",
       platform: {
         connect: "დაიწყე სესია, რომ ნამდვილი ინსტრუმენტის მართვა აიღო.",
         running: "ობსერვატორია შენი დაჯავშნილი ობიექტისკენ მოძრაობს. გადაწევა დაცენტრების შემდეგ იხსნება.",
@@ -811,6 +834,7 @@ const ka: ConsoleCopy = {
     sensor: "სენსორი",
     session: "სესია",
     hours: (n) => `${n} საათი`,
+    cameraKind: "ფერადი CMOS კამერა",
   },
   targets: {
     title: "აირჩიე ობიექტი",
@@ -869,6 +893,8 @@ const ka: ConsoleCopy = {
     histogram: "კადრის ჰისტოგრამა",
     captured: "გადაღებულია",
     exposure: "ექსპოზიცია",
+    integration: "ჯამური ექსპოზიცია",
+    gain: "გაძლიერება",
     optics: "ოპტიკა",
     seeing: "სიინგი",
     scale: "მასშტაბი",
@@ -886,6 +912,12 @@ const ka: ConsoleCopy = {
     refused: "ობსერვატორიამ უარყო",
     noAnswer: "ობსერვატორიისგან პასუხი არ არის",
     failed: "ვერ გაიგზავნა",
+  },
+  alerts: {
+    belowHorizon: "ჰორიზონტს ქვემოთ",
+    low: (limitDeg) => `დაბლაა · ${limitDeg}°-ზე ქვემოთ`,
+    cloud: "ღრუბელი გადის",
+    dew: (humidity) => `ნამი ოპტიკაზე · ${humidity}%`,
   },
   provenanceSimulated: "სიმულირებული · ცის მოდელი",
   close: "დახურვა",

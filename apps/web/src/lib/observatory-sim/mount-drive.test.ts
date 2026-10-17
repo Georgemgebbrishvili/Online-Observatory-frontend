@@ -5,6 +5,11 @@ import {
   GEAR_PLAY_DEG,
   NexStarMount,
   SETTLE_S,
+  SE_TRACKING_ERROR,
+  periodicErrorArcsec,
+  ringAmplitudeArcsec,
+  settleRing,
+  trackingErrorArcsec,
   alignmentError,
   landingError,
   legSeconds,
@@ -238,5 +243,116 @@ describe('the mount', () => {
     mount.reset();
     expect(mount.slewing).toBe(false);
     expect(mount.pointing).toEqual({ altitude: 0, azimuth: 0 });
+  });
+});
+
+describe('what the encoders do not see', () => {
+  const arcsec = (o: { alt: number; az: number }) => Math.hypot(o.alt, o.az) * 3600;
+
+  it('a perfect drive by default: tracking moves the image nowhere', () => {
+    const mount = new NexStarMount(sky);
+    mount.unpark();
+    mount.setPointing({ altitude: 45, azimuth: 180 });
+    mount.setTracking('sidereal', 0);
+    const later = run(mount, 0, 120_000, 500);
+    expect(arcsec(later.imageOffset)).toBe(0);
+  });
+
+  it('the worm repeats its periodic error each turn, and tracking error starts from zero', () => {
+    const m = SE_TRACKING_ERROR;
+    const a = periodicErrorArcsec(m, 100);
+    const b = periodicErrorArcsec(m, 100 + m.wormPeriodS);
+    expect(a.alt).toBeCloseTo(b.alt, 6);
+    expect(a.az).toBeCloseTo(b.az, 6);
+    expect(Math.abs(a.az)).toBeLessThanOrEqual(m.peArcsec.az);
+    const start = trackingErrorArcsec(m, 500, 500);
+    expect(Math.hypot(start.alt, start.az)).toBe(0);
+    // One worm turn later only the drift is left: three arcseconds a minute.
+    const turn = trackingErrorArcsec(m, 500, 500 + m.wormPeriodS);
+    expect(Math.hypot(turn.alt, turn.az)).toBeCloseTo((m.driftArcsecPerMin * m.wormPeriodS) / 60, 3);
+  });
+
+  it('with the SE model the image wanders by arcseconds while the readout holds the sky', () => {
+    const perfect = new NexStarMount(sky);
+    const real = new NexStarMount(sky);
+    real.trackingError = SE_TRACKING_ERROR;
+    for (const m of [perfect, real]) {
+      m.unpark();
+      m.setPointing({ altitude: 45, azimuth: 180 });
+      m.setTracking('sidereal', 0);
+    }
+    const a = run(perfect, 0, 240_000, 500);
+    const b = run(real, 0, 240_000, 500);
+    expect(b.pointing.altitude).toBeCloseTo(a.pointing.altitude, 9);
+    expect(b.pointing.azimuth).toBeCloseTo(a.pointing.azimuth, 9);
+    expect(arcsec(b.imageOffset)).toBeGreaterThan(2);
+    expect(arcsec(b.imageOffset)).toBeLessThan(60);
+  });
+
+  it('the tube rings after a GoTo stops, and has settled before the slew reports complete', () => {
+    const mount = new NexStarMount(sky);
+    mount.unpark();
+    mount.setPointing({ altitude: 20, azimuth: 100 });
+    const plan = mount.goto(() => ({ altitude: 50, azimuth: 140 }), 0);
+    const axesEnd = plan.axesS * 1000;
+    run(mount, 0, axesEnd + 40);
+    const ringing = arcsec(mount.imageOffsetAt(axesEnd + 40));
+    expect(ringing).toBeGreaterThan(3);
+    expect(arcsec(mount.imageOffsetAt(axesEnd + 4000))).toBeLessThan(0.05 * ringing);
+    expect(Math.abs(settleRing(SETTLE_S))).toBeLessThan(0.1);
+  });
+
+  it('a stop from rate 9 rings harder than a stop from a centring rate', () => {
+    expect(ringAmplitudeArcsec(5)).toBeGreaterThan(ringAmplitudeArcsec(rateDegPerSec(5)) * 4);
+    const swingAfter = (rate: number) => {
+      const mount = new NexStarMount(sky);
+      mount.unpark();
+      mount.setPointing({ altitude: 40, azimuth: 100 });
+      mount.press('az', 1, rate);
+      run(mount, 0, 3000);
+      mount.release('az');
+      let peak = 0;
+      for (let t = 3000; t <= 6000; t += 20) {
+        mount.step(t);
+        peak = Math.max(peak, arcsec(mount.imageOffsetAt(t)));
+      }
+      return peak;
+    };
+    expect(swingAfter(9)).toBeGreaterThan(swingAfter(4) * 2);
+  });
+});
+
+describe('taking up tracking', () => {
+  it('holds the sky point the tube is on, even when the caller’s clock lags the steps', () => {
+    const mount = new NexStarMount(sky);
+    mount.unpark();
+    mount.setPointing({ altitude: 45, azimuth: 180 });
+    mount.setTracking('sidereal', 0);
+    run(mount, 0, 10_000);
+    const onSky = mount.equatorialAt(10_000);
+    // A tick that read the clock 600 ms before the last step.
+    mount.setTracking('sidereal', 9_400);
+    const held = mount.trackedPoint!;
+    expect(Math.abs(held.raHours - onSky.raHours) * 15 * 3600).toBeLessThan(0.5);
+    expect(Math.abs(held.decDeg - onSky.decDeg) * 3600).toBeLessThan(0.5);
+  });
+});
+
+describe('tracking chosen during a GoTo', () => {
+  it('takes up tracking where the axes land, not where the tube was when it was chosen', () => {
+    const mount = new NexStarMount(sky);
+    mount.unpark();
+    mount.setPointing({ altitude: 30, azimuth: 100 });
+    mount.setTracking('sidereal', 0);
+    const target = (ms: number) => raDecToAltAz({ raHours: 3, decDeg: 30 }, LAT, sky.lstHoursAt(ms));
+    const plan = mount.goto(target, 0);
+    run(mount, 0, plan.axesS * 500);
+    // The console re-asserts sidereal halfway through the slew.
+    mount.setTracking('sidereal', plan.axesS * 500);
+    const end = plan.totalS * 1000 + 2000;
+    const landed = run(mount, plan.axesS * 500, end);
+    const want = target(end);
+    expect(Math.abs(landed.pointing.altitude - want.altitude) * 60).toBeLessThan(0.05);
+    expect(Math.abs(landed.pointing.azimuth - want.azimuth) * 60 * Math.cos((want.altitude * Math.PI) / 180)).toBeLessThan(0.05);
   });
 });

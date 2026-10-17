@@ -3,15 +3,17 @@
 import { Body, Equator, Observer } from 'astronomy-engine';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '@/i18n/config';
+import { cloudOpacity, dewOnOptics, humidityAt, seeingAt } from '@/lib/observatory-sim/atmosphere';
 import { EXPOSURES_S, GAIN, ROI_BY_ID, STACK_SIZES, exposureLabel, type RoiPreset } from '@/lib/observatory-sim/camera';
+import { captureEntries, withPngText } from '@/lib/observatory-sim/capture-meta';
 import { getSunAltitude, getTonightDarkWindow } from '@/lib/observatory-sim/dark-window';
 import { acquisitionStateAt, planAcquisition, PLATE_SOLVE_MS, type Acquisition } from '@/lib/observatory-sim/mission';
-import { NexStarMount, alignmentError, planGoto, type Axis, type MountSettings, type MountSnapshot, type TrackingMode, type TrackedBody } from '@/lib/observatory-sim/mount-drive';
+import { NexStarMount, SE_TRACKING_ERROR, alignmentError, planGoto, type Axis, type MountSettings, type MountSnapshot, type TrackingMode, type TrackedBody } from '@/lib/observatory-sim/mount-drive';
 import { DEFAULT_SEEING_ARCSEC, TRAIN_BY_ID, edgeIllumination, effectiveFocalLength, fieldOfView, fieldRotationDegPerHour, obstructionRatio, resolvingPowerArcsec, type OpticalTrainId } from '@/lib/observatory-sim/optics';
 import { LIMITS, angularSeparation, evaluateSafety, sunPosition, type AltAz } from '@/lib/observatory-sim/safety';
 import { SESSION_MINUTES, STATIONS as SIM_STATIONS, skyStateAt, type Station } from '@/lib/observatory-sim/sim-stations';
 import { airmass, hourAngle, localSiderealHours } from '@/lib/observatory-sim/site-time';
-import { moonBrightening, nearestObject, skyObjectsNear, tangentOffsetDeg } from '@/lib/observatory-sim/sky-field';
+import { moonInSky, nearestObject, skyObjectsNear, tangentOffsetDeg } from '@/lib/observatory-sim/sky-field';
 import { TELESCOPE_TARGET_BY_ID, targetPosition, targetTitle, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
 import { consoleCopy } from './copy';
 import { CaptureDialog, RefusedDialog, SheetDialog, TargetsDialog, displayName, type Frame, type Refusal } from './dialogs';
@@ -150,6 +152,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
   const [snap, setSnap] = useState<MountSnapshot | null>(null);
   const [exposing, setExposing] = useState<number | null>(null);
   const [history, setHistory] = useState<{ rms: number[]; seeing: number[] }>({ rms: [], seeing: [] });
+  const [histogram, setHistogram] = useState<number[] | null>(null);
+  /** How much of the sensor's frame the view shows, across and up: under 1 where the phone crops it to fill. */
+  const [shown, setShown] = useState({ w: 1, h: 1 });
 
   const exp = EXPOSURES_S[expIx];
   const subsGoal = STACK_SIZES[subsIx];
@@ -169,11 +174,15 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
         return { raHours: eq.ra, decDeg: eq.dec };
       },
     });
+    // The SE's worm gears and an imperfect alignment: the image wanders a few arcseconds.
+    mountRef.current.trackingError = SE_TRACKING_ERROR;
   }
   const mount = mountRef.current;
   const acquisitionRef = useRef(acquisition);
   acquisitionRef.current = acquisition;
-  const sampleRef = useRef<MountSample>({ pointing: { altitude: 0, azimuth: 0 }, lstHours: 0, nowMs: 0 });
+  const sampleRef = useRef<MountSample>({ pointing: { altitude: 0, azimuth: 0 }, lstHours: 0, nowMs: 0, imageOffset: { alt: 0, az: 0 }, moving: false });
+  const histogramRef = useRef<number[] | null>(null);
+  const offsetsRef = useRef<number[][]>([]);
   const snapRef = useRef<MountSnapshot | null>(null);
   const exposingRef = useRef<number | null>(null);
   const viewRef = useRef<HTMLDivElement>(null);
@@ -196,8 +205,10 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
     const id = setInterval(() => {
       setClockMs(Date.now());
       const s = snapRef.current;
-      if (s) setSnap((prev) => (prev && Math.abs(prev.pointing.altitude - s.pointing.altitude) < 1e-4 && Math.abs(prev.pointing.azimuth - s.pointing.azimuth) < 1e-4 && prev.slewing === s.slewing && prev.atLimit === s.atLimit && prev.tracking === s.tracking ? prev : s));
+      // A still tube under a moving sky still needs a fresh instant: the target's offset is read at it.
+      if (s) setSnap((prev) => (prev && s.atMs - prev.atMs < 1000 && Math.abs(prev.pointing.altitude - s.pointing.altitude) < 1e-4 && Math.abs(prev.pointing.azimuth - s.pointing.azimuth) < 1e-4 && prev.slewing === s.slewing && prev.atLimit === s.atLimit && prev.tracking === s.tracking ? prev : s));
       setExposing(exposingRef.current);
+      setHistogram(histogramRef.current);
     }, TICK_MS);
     return () => clearInterval(id);
   }, []);
@@ -217,7 +228,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
   const fov = useMemo(() => fieldOfView(instrument, trainInfo, roi), [instrument, trainInfo, roi]);
   const focal = effectiveFocalLength(instrument, trainInfo);
   const fRatio = focal / instrument.apertureMm;
-  const seeing = DEFAULT_SEEING_ARCSEC;
+  // The night's seeing wanders about the site's typical figure; before a connection the panels show the typical one.
+  const seeing = station ? seeingAt(DEFAULT_SEEING_ARCSEC, skyMs) : DEFAULT_SEEING_ARCSEC;
 
   const status = acquisition ? acquisitionStateAt(acquisition, now) : null;
   // The timeline is the plan; the mount has the last word on whether it has stopped.
@@ -235,8 +247,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
     () => (station && cameraOn ? skyObjectsNear(station, date, pointing, OBJECT_RADIUS_DEG, lstHours) : []),
     [station, cameraOn, date, pointing, lstHours],
   );
-  const moonlight = useMemo(() => (station ? moonBrightening(station, date) : 0), [station, date]);
-  const cloud = nodeCloud === null ? 0 : Math.min(1, Math.max(0, nodeCloud / 100)) * (0.5 + 0.5 * Math.sin(skyMs / 90_000));
+  const moon = useMemo(() => (station ? moonInSky(station, date) : null), [station, date]);
+  // The forecast's cover is the cloud the field drifts through; where it is now is the model's.
+  const cloudCover = nodeCloud === null ? 0 : Math.min(1, Math.max(0, nodeCloud / 100));
   const stacking = stack !== null;
   const subsDone = stack ? Math.min(subsGoal, Math.floor((now - stack.startsAtMs) / (exp * 1000))) : 0;
   const padEnabled = cal === 'done' && park !== 'running' && !stacking && !!station;
@@ -257,7 +270,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
       s = { ...s, pointing: mount.pointing, rates: { alt: 0, az: 0 } };
     }
     snapRef.current = s;
-    sampleRef.current = { pointing: s.pointing, lstHours: localSiderealHours(node.lon, skyDate(nowMs)), nowMs };
+    sampleRef.current = { pointing: s.pointing, lstHours: localSiderealHours(node.lon, skyDate(nowMs)), nowMs, imageOffset: s.imageOffset,
+      moving: s.slewing || s.settling || Math.abs(s.rates.alt) > 0.05 || Math.abs(s.rates.az) > 0.05 };
   }, [mount, node.lon, skyDate]);
 
   useEffect(() => {
@@ -274,6 +288,28 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
       cancelAnimationFrame(handle);
     };
   }, [stepMount]);
+
+  /* --- what of the frame the view shows -------------------------------- */
+
+  useEffect(() => {
+    const el = viewRef.current;
+    if (!el || !cameraOn) return;
+    const measure = () => {
+      const canvas = el.querySelector('canvas');
+      const { width, height } = el.getBoundingClientRect();
+      let next = { w: 1, h: 1 };
+      if (canvas && width > 0 && height > 0 && getComputedStyle(canvas).objectFit === 'cover') {
+        // Cover scales the 16:9 frame to fill the box and crops what overflows.
+        const box = width / height;
+        next = box < 16 / 9 ? { w: box / (16 / 9), h: 1 } : { w: 1, h: 16 / 9 / box };
+      }
+      setShown((prev) => (Math.abs(prev.w - next.w) < 1e-3 && Math.abs(prev.h - next.h) < 1e-3 ? prev : next));
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    measure();
+    return () => observer.disconnect();
+  }, [cameraOn]);
 
   /* --- full view ------------------------------------------------------ */
 
@@ -305,16 +341,20 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
     setFrames([]);
     setSynced(false);
     setFullView(false);
+    histogramRef.current = null;
+    offsetsRef.current = [];
   }, [mount, setFullView]);
 
   const connect = useCallback((s: Station) => {
     disconnect();
     // The agent leaves the mount parked at home: tube level, pointing north.
     mount.reset();
+    // The reset leaves the drive's tracking off; the selector still says what the user chose.
+    mount.setTracking(tracking, Date.now());
     setSelectedId(s.id);
     setStation(s);
     setConnectedAtMs(Date.now());
-  }, [disconnect, mount]);
+  }, [disconnect, mount, tracking]);
 
   const pick = useCallback((s: Station) => {
     if (s.soon) return;
@@ -405,24 +445,35 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
     setGain(p.gain);
   }, [target]);
 
-  const capture = useCallback(async (subs: number) => {
+  const capture = useCallback(async (subs: number, startedAtMs: number) => {
     const canvas = viewRef.current?.querySelector('canvas');
     if (!canvas || !target || !station || capturingRef.current) return;
     capturingRef.current = true;
     try {
-      const toBlob = (c: HTMLCanvasElement) => new Promise<Blob | null>((r) => c.toBlob(r, 'image/png'));
-      const blob = await toBlob(canvas);
+      const capturedAt = Date.now();
+      const provenance = simulated ? t.provenanceSimulated : station.name;
+      const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'));
       if (!blob) return;
-      const digest = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
+      // The file carries its own record: exposure, gain, frames and time ride in the PNG.
+      const png = withPngText(new Uint8Array(await blob.arrayBuffer()), captureEntries({
+        target: shortName(target), exposureSec: exp, gain, frames: subs, startedAtMs, endedAtMs: capturedAt, provenance,
+      }));
+      const digest = await crypto.subtle.digest('SHA-256', png);
       const hash = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
-      const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(new Blob([png], { type: 'image/png' }));
+      });
+      const stamp = new Date(capturedAt).toISOString().replace(/[:.]/g, '-').slice(0, 19);
       const n = frames.length + 1;
       const frame: Frame = {
-        id: `${stamp}-${n}`, n, dataUrl: canvas.toDataURL('image/png'), filename: `stellar_${stamp}_${target.id}.png`, hash,
-        targetName: shortName(target), subs, exposureSec: exp, capturedAt: Date.now(),
+        id: `${stamp}-${n}`, n, dataUrl, filename: `stellar_${stamp}_${target.id}.png`, hash,
+        targetName: shortName(target), subs, exposureSec: exp, gain, startedAt: startedAtMs, capturedAt,
         optics: `${Math.round(focal)} MM · F/${fRatio.toFixed(1).replace(/\.0$/, '')}`, scale: `${fov.plateScaleArcsecPx.toFixed(2)}″ / PX`,
         seeing: `${seeing.toFixed(1)}″`, stationName: station.name,
-        provenance: simulated ? t.provenanceSimulated : station.name,
+        provenance,
       };
       setFrames((prev) => [frame, ...prev]);
       setViewing(frame);
@@ -430,7 +481,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
     } finally {
       capturingRef.current = false;
     }
-  }, [target, station, frames.length, exp, focal, fRatio, fov.plateScaleArcsecPx, seeing, simulated, t]);
+  }, [target, station, frames.length, exp, gain, focal, fRatio, fov.plateScaleArcsecPx, seeing, simulated, t]);
 
   // Tracking follows the selector; the Moon takes the lunar rate when it is pointed at.
   useEffect(() => {
@@ -463,7 +514,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
       if (st.state === 'OBSERVING' && observingRef.current !== acquisition) {
         observingRef.current = acquisition;
         setTracking((mode) => (target.kind === 'moon' ? 'lunar' : mode === 'off' || mode === 'lunar' || mode === 'solar' ? 'sidereal' : mode));
-        mount.setTracking(target.kind === 'moon' ? 'lunar' : 'sidereal', now);
+        mount.setTracking(target.kind === 'moon' ? 'lunar' : 'sidereal', Date.now());
       }
     }
     if (autofocus) {
@@ -478,7 +529,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
     }
     if (stack && subsDone >= subsGoal) {
       setStack(null);
-      void capture(subsGoal);
+      void capture(subsGoal, stack.startsAtMs);
     }
     if (timeLeftMs !== null && timeLeftMs <= 0) disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -488,9 +539,13 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
   const second = Math.floor(now / 1000);
   useEffect(() => {
     if (!station) return;
-    const tt = second;
-    const rms = onTarget && tracking !== 'off' ? 0.55 + 0.12 * Math.sin(tt / 3.1) + 0.05 * Math.sin(tt * 1.7) : 0;
-    const see = seeing + 0.25 * Math.sin(tt / 4.3) + 0.12 * Math.sin(tt * 1.3);
+    // Track RMS: the scatter of the image about its mean over the last ten seconds, arcseconds.
+    const off = mount.imageOffsetAt(Date.now());
+    offsetsRef.current = [...offsetsRef.current, [off.alt * 3600, off.az * 3600]].slice(-10);
+    const pts = offsetsRef.current;
+    const mean = pts.reduce((m, p) => [m[0] + p[0] / pts.length, m[1] + p[1] / pts.length], [0, 0]);
+    const rms = onTarget && tracking !== 'off' ? Math.sqrt(pts.reduce((sum, p) => sum + (p[0] - mean[0]) ** 2 + (p[1] - mean[1]) ** 2, 0) / pts.length) : 0;
+    const see = seeingAt(DEFAULT_SEEING_ARCSEC, second * 1000 + skyAheadRef.current);
     setHistory((h) => ({ rms: [...h.rms, rms].slice(-28), seeing: [...h.seeing, see].slice(-28) }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [second]);
@@ -555,7 +610,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
     t.steps.hints.align,
     t.steps.hints.target(tonight?.name ?? null),
     t.steps.hints.point(pointEstimate),
-    stacking ? t.steps.hints.stacking(subsDone, subsGoal, expLabel) : tracking !== 'off' ? t.steps.hints.tracking : t.steps.hints.drifting,
+    stacking ? t.steps.hints.stacking(subsDone, subsGoal, expLabel)
+      : target && targetNow && targetNow.altitude <= 0 ? t.steps.hints.belowHorizon
+      : tracking !== 'off' ? t.steps.hints.tracking : t.steps.hints.drifting,
   ];
   const flowSteps: Array<[string, string]> = [
     [t.steps.names[0], `≈ ${CONNECT_MS / 1000} s`],
@@ -609,6 +666,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
   const onExposure = useCallback((progress: number) => {
     exposingRef.current = progress;
   }, []);
+  const onHistogram = useCallback((bins: number[]) => {
+    histogramRef.current = bins;
+  }, []);
 
   /* --- what the panels read -------------------------------------------- */
 
@@ -656,9 +716,10 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
       : { title: t.idle.ready, text: target ? t.idle.pointTo(shortName(target)) : t.idle.chooseRisen };
   const battery = station ? Math.max(5, 100 - Math.floor(((now - connectedAtMs) / 60_000) * 0.3)) : null;
   const stationName = (station ?? selected).name;
-  const fovText = `${t.stage.fov} ${fov.widthArcmin.toFixed(1)}′ × ${fov.heightArcmin.toFixed(1)}′`;
+  // The field the view actually shows: the whole frame, or what the phone's crop leaves.
+  const fovText = `${t.stage.fov} ${(fov.widthArcmin * (cameraOn ? shown.w : 1)).toFixed(1)}′ × ${(fov.heightArcmin * (cameraOn ? shown.h : 1)).toFixed(1)}′`;
   const scaleText = `${fov.plateScaleArcsecPx.toFixed(2)}″ / PX · ${t.stage.framesHud} ${frames.length}`;
-  const opticsLine = `${instrument.camera.replace(/^ZWO /, '')} · ${Math.round(focal)} MM · F/${fRatio.toFixed(1).replace(/\.0$/, '')}`;
+  const opticsLine = `${Math.round(focal)} MM · F/${fRatio.toFixed(1).replace(/\.0$/, '')}`;
   const sessionTime = station ? hms(now - connectedAtMs) : '00:00:00';
   const rmsNow = onTarget && tracking !== 'off' ? `${history.rms[history.rms.length - 1]?.toFixed(1) ?? '0.6'}″` : '—';
   const skyRow: [string, string][] = [
@@ -687,6 +748,18 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
   const eqNow = useMemo(() => (station ? mount.equatorialAt(Date.now()) : null), [station, pointing, mount]); // eslint-disable-line react-hooks/exhaustive-deps
   const am = airmass(pointing.altitude);
   const rotation = station ? fieldRotationDegPerHour(station.lat, pointing.altitude, pointing.azimuth) : 0;
+  // The conditions in the field: the target's height, the cloud over it, the dew on the glass.
+  const targetAlt = targetNow?.altitude ?? null;
+  const humidity = station ? humidityAt(skyMs, darkWin.duskStart?.getTime() ?? null, cloudCover) : null;
+  const dew = station && humidity !== null ? dewOnOptics(humidity, (now - connectedAtMs) / 60_000) : 0;
+  const cloudHere = cameraOn ? cloudOpacity(pointing, now, cloudCover) : 0;
+  const below = cameraOn && target !== null && targetAlt !== null && targetAlt <= 0;
+  const alerts: Array<{ text: string; warn: boolean }> = !cameraOn ? [] : [
+    ...(below ? [{ text: t.alerts.belowHorizon, warn: true }] : []),
+    ...(!below && target && targetAlt !== null && targetAlt < LIMITS.minAltitudeDeg && step >= 3 ? [{ text: t.alerts.low(LIMITS.minAltitudeDeg), warn: true }] : []),
+    ...(cloudHere > 0.3 ? [{ text: t.alerts.cloud, warn: false }] : []),
+    ...(dew > 0.25 && humidity !== null ? [{ text: t.alerts.dew(Math.round(humidity)), warn: false }] : []),
+  ];
   const limitNote = snap?.atLimit ? (snap.atLimit === 'cordwrap' ? t.hand.atLimit.cordwrap : t.hand.atLimit.alt) : null;
   const refreshNote = cameraOn && exp >= 2 ? t.camera.refresh(expLabel) : null;
 
@@ -696,6 +769,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
       objects={objects}
       latDeg={station.lat}
       sunAltitudeDeg={sunAltitude}
+      moon={moon}
       exposureSec={exp}
       fovArcmin={fov.widthArcmin}
       seeingArcsec={seeing}
@@ -705,12 +779,13 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
       obstruction={obstructionRatio(station.instrument)}
       defocus={focus}
       bortle={station.bortle}
-      moonlight={moonlight}
-      cloud={cloud}
+      cloudCover={cloudCover}
+      dew={dew}
       edgeIllumination={edgeIllumination(trainInfo)}
       subs={stacking ? Math.max(1, subsDone) : 1}
       gain={gain}
       onExposure={onExposure}
+      onHistogram={onHistogram}
     />
   ) : null;
 
@@ -740,7 +815,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
               [t.details.focalLength, `${selected.instrument.focalLengthMm} mm`],
               [t.details.resolution, `${resolvingPowerArcsec(selected.instrument).toFixed(2)}″`],
               [t.details.mount, selected.instrument.mount],
-              [t.details.camera, selected.instrument.camera],
+              [t.details.camera, t.details.cameraKind],
               [t.details.sensor, `${fieldOfView(selected.instrument).widthPx} × ${fieldOfView(selected.instrument).heightPx} · ${selected.instrument.pixelSizeUm} µm`],
               [t.details.session, t.details.hours(SESSION_MINUTES / 60)],
             ] as const).map(([k, v]) => (
@@ -782,6 +857,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
         onFull: () => setFullView(!full),
         status: { text: statusText, go: onTarget || stacking, blink: inGoto || connecting || park === 'running' || cal === 'running' },
         exposing: cameraOn && exp >= 0.5 && exposing !== null ? exposing : null,
+        alerts,
         hudLive: [cameraOn ? (simulated ? t.stage.simulatedFeed : t.stage.liveFeed) : t.stage.standby, stationName, opticsLine],
         hudTarget,
         hudField: [fovText, scaleText],
@@ -807,7 +883,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
         seeing: `${seeing.toFixed(1)}″`,
         seeingHistory: history.seeing,
         battery,
-        sensor: instrument.camera.includes('585') ? 'IMX585' : instrument.camera,
+        sensor: `${((fieldOfView(instrument).widthPx * fieldOfView(instrument).heightPx) / 1e6).toFixed(1)} MP`,
       }}
       camera={{
         exp: expIx, subs: subsIx, gain, total: expTotal, locked: stacking, enabled: true,
@@ -816,6 +892,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
         onGain: (v) => setGain(Math.max(GAIN.min, Math.min(GAIN.max, v))),
         onAuto: target ? autoCamera : null,
         refreshNote,
+        histogram: cameraOn ? histogram : null,
       }}
       hand={{
         rate, onRate: (v) => setRate(Math.max(1, Math.min(9, v))),

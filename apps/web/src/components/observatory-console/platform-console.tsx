@@ -215,7 +215,8 @@ export function PlatformConsole({ locale, observatoryName, nodeCloud, simulated,
         onFull: () => setFullView(!full),
         status: { text: statusText, go: live && observing, blink: d.status === 'starting' || d.status === 'connecting' || d.status === 'reconnecting' || (live && !observing && !ended) },
         exposing: null,
-        hudLive: [d.feed ? (streamSimulated ? t.stage.simulatedFeed : t.stage.liveFeed) : d.session ? t.stage.noFeed : t.stage.standby, observatoryName, `${station.instrument.camera.replace(/^ZWO /, '')} · ${Math.round(focal)} MM · F/${fRatio.toFixed(1).replace(/\.0$/, '')}`],
+        alerts: [],
+        hudLive: [d.feed ? (streamSimulated ? t.stage.simulatedFeed : t.stage.liveFeed) : d.session ? t.stage.noFeed : t.stage.standby, observatoryName, `${Math.round(focal)} MM · F/${fRatio.toFixed(1).replace(/\.0$/, '')}`],
         hudTarget: [mission.targetName, t.session.booked, null],
         hudField: [`${t.stage.fov} ${fov.widthArcmin.toFixed(1)}′ × ${fov.heightArcmin.toFixed(1)}′`, `${fov.plateScaleArcsecPx.toFixed(2)}″ / PX`],
         caption,
@@ -235,11 +236,11 @@ export function PlatformConsole({ locale, observatoryName, nodeCloud, simulated,
         seeing: `${DEFAULT_SEEING_ARCSEC.toFixed(1)}″`,
         seeingHistory: [],
         battery: null,
-        sensor: 'IMX585',
+        sensor: `${((fov.widthPx * fov.heightPx) / 1e6).toFixed(1)} MP`,
       }}
       camera={{
         exp: Math.max(0, EXPOSURES_S.findIndex((v) => v >= 8)), subs: Math.max(0, STACK_SIZES.findIndex((v) => v >= 8)), gain: 300, total: mission.imagingProfile ?? '—', locked: false, enabled: false,
-        onExp: () => undefined, onSubs: () => undefined, onGain: () => undefined, onAuto: null, refreshNote: null,
+        onExp: () => undefined, onSubs: () => undefined, onGain: () => undefined, onAuto: null, refreshNote: null, histogram: null,
       }}
       hand={{
         rate: 1, onRate: null,

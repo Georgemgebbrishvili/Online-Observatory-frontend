@@ -188,9 +188,25 @@ export type CameraProps = {
   onGain: (v: number) => void;
   onAuto: (() => void) | null;
   refreshNote: string | null;
+  /** The live frame's brightness histogram, 32 bins; null with no frame. */
+  histogram: number[] | null;
 };
 
-function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, onGain, onAuto, refreshNote }: CameraProps) {
+/** The live frame's histogram, log-scaled so the sky's peak does not flatten the stars' tail. */
+function Histogram({ bins, label }: { bins: number[]; label: string }) {
+  const logs = bins.map((v) => Math.log1p(v));
+  const max = Math.max(...logs) || 1;
+  return (
+    <svg className="sdo-cam__hist" width="100%" height="40" viewBox="0 0 256 40" preserveAspectRatio="none" role="img" aria-label={label}>
+      {logs.map((v, i) => {
+        const h = v > 0 ? 2 + (v / max) * 38 : 0;
+        return <rect key={i} x={i * 8} y={40 - h} width="7" height={h} fill={i >= 31 ? '#e2b85a' : '#3d8bfd'} opacity=".85" />;
+      })}
+    </svg>
+  );
+}
+
+function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, onGain, onAuto, refreshNote, histogram }: CameraProps) {
   const t = useCopy();
   const off = locked || !enabled;
   return (
@@ -219,6 +235,12 @@ function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, on
         </div>
         {onAuto && (
           <button type="button" className="sdo-sec" onClick={onAuto} disabled={off}>{t.camera.auto}</button>
+        )}
+        {histogram && (
+          <div className="sdo-cam__gain">
+            <span className="sdo-lbl">{t.camera.histogram}</span>
+            <Histogram bins={histogram} label={t.camera.histogram} />
+          </div>
         )}
         {refreshNote && <p className="sdo-note" style={{ padding: 0 }}>{refreshNote}</p>}
       </div>

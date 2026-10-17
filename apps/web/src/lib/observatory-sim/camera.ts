@@ -65,11 +65,24 @@ export function fullWellE(gain: number): number {
  * an 8 s sub well clear of the read noise, which is what makes short subs work.
  */
 export function skyElectronsPerSecond(bortle: number, plateScaleArcsecPx: number, apertureMm: number): number {
-  const magPerArcsec2 = 18.0 + (8 - bortle) * 0.38;
+  return skyElectronsFromSurface(18.0 + (8 - bortle) * 0.38, plateScaleArcsecPx, apertureMm);
+}
+
+/** Collecting area of the obstructed aperture, cm². */
+function apertureAreaCm2(apertureMm: number): number {
+  return Math.PI * (apertureMm / 20) ** 2 * (1 - 0.31 ** 2);
+}
+
+/** Sky background electrons per pixel per second for a sky of this surface brightness, V mag/arcsec². */
+export function skyElectronsFromSurface(magPerArcsec2: number, plateScaleArcsecPx: number, apertureMm: number): number {
   // Zero-point: a mag-0 star delivers about 1e6 photons/s/cm² in V; QE and losses to 0.5.
   const flux = 1e6 * Math.pow(10, -0.4 * magPerArcsec2) * plateScaleArcsecPx ** 2;
-  const areaCm2 = Math.PI * (apertureMm / 20) ** 2 * (1 - 0.31 ** 2);
-  return flux * areaCm2 * 0.5;
+  return flux * apertureAreaCm2(apertureMm) * 0.5;
+}
+
+/** Electrons per second a star of this magnitude puts on the sensor, all pixels together. */
+export function starElectronsPerSecond(mag: number, apertureMm: number): number {
+  return 1e6 * Math.pow(10, -0.4 * mag) * apertureAreaCm2(apertureMm) * 0.5;
 }
 
 export type FrameNoise = {

@@ -21,6 +21,9 @@ export type Frame = {
   targetName: string;
   subs: number;
   exposureSec: number;
+  gain: number;
+  /** When the stack's first frame began, and when the last ended. */
+  startedAt: number;
   capturedAt: number;
   optics: string;
   scale: string;
@@ -293,8 +296,10 @@ export function CaptureDialog({ night, frame, onClose }: { night: boolean; frame
           </svg>
           <dl className="sdo-dl">
             {([
-              [t.capture.captured, `${clock(frame.capturedAt, 'UTC')} UTC`],
+              [t.capture.captured, `${clock(frame.startedAt, 'UTC', true)}–${clock(frame.capturedAt, 'UTC', true)} UTC`],
               [t.capture.exposure, `${frame.subs} × ${exposureLabel(frame.exposureSec)}`],
+              [t.capture.integration, exposureLabel(Number((frame.subs * frame.exposureSec).toPrecision(4)))],
+              [t.capture.gain, String(frame.gain)],
               [t.capture.optics, frame.optics],
               [t.capture.seeing, frame.seeing],
               [t.capture.scale, frame.scale],
