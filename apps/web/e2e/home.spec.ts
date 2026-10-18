@@ -98,8 +98,8 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
   // The instrument is the platform's telescope, not a fixture.
   const instrument = page.locator("#live");
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
-  await expect(instrument.getByText("150", { exact: true })).toBeVisible();
-  await expect(instrument.getByText("1500", { exact: true })).toBeVisible();
+  await expect(instrument.getByText("203", { exact: true })).toBeVisible();
+  await expect(instrument.getByText("2032", { exact: true })).toBeVisible();
   await expect(instrument.getByText("f/10", { exact: true })).toBeVisible();
   await expect(instrument.getByText("ZWO ASI585MC")).toBeVisible();
   await expect(instrument.getByText("Live view", { exact: true })).toBeVisible();
@@ -392,7 +392,7 @@ test("the /app dashboard reads the platform, section by section", async ({ page 
   ).toBeVisible();
   await expect(observatory.getByText("Simulated observatory")).toBeVisible();
   await expect(
-    observatory.getByText("150 mm · 1500 mm"),
+    observatory.getByText("203 mm · 2032 mm"),
   ).toBeVisible();
 
   const upcoming = page.locator(".home-upcoming");

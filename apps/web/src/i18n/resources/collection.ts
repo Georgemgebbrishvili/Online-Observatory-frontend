@@ -192,9 +192,9 @@ export const captureDetailCopy: Record<"en" | "ka", CaptureDetailCopy> = {
     source: "Source",
     sources: { SIMULATED: "Simulator, not the telescope", REAL: "The telescope" },
     opticalConfigs: {
-      F20_BARLOW: "3000 mm · f/20, with Barlow",
-      F10_NATIVE: "1500 mm · f/10, native",
-      F6_3_REDUCER: "945 mm · f/6.3, with reducer",
+      F20_BARLOW: "4064 mm · f/20, with Barlow",
+      F10_NATIVE: "2032 mm · f/10, native",
+      F6_3_REDUCER: "1280 mm · f/6.3, with reducer",
     },
   },
   ka: {
@@ -225,9 +225,9 @@ export const captureDetailCopy: Record<"en" | "ka", CaptureDetailCopy> = {
     source: "წყარო",
     sources: { SIMULATED: "სიმულატორი, არა ტელესკოპი", REAL: "ტელესკოპი" },
     opticalConfigs: {
-      F20_BARLOW: "3000 mm · f/20, ბარლოუთი",
-      F10_NATIVE: "1500 mm · f/10, ძირითადი",
-      F6_3_REDUCER: "945 mm · f/6.3, რედუქტორით",
+      F20_BARLOW: "4064 mm · f/20, ბარლოუთი",
+      F10_NATIVE: "2032 mm · f/10, ძირითადი",
+      F6_3_REDUCER: "1280 mm · f/6.3, რედუქტორით",
     },
   },
 };

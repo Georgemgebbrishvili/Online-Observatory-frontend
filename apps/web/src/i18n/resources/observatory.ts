@@ -186,9 +186,9 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       opticsLede:
         "Each target is observed in one of three configurations, chosen for it in the catalogue.",
       configurations: [
-        { name: "With reducer", value: "945 mm · f/6.3" },
-        { name: "Native", value: "1500 mm · f/10" },
-        { name: "With Barlow", value: "3000 mm · f/20" },
+        { name: "With reducer", value: "1280 mm · f/6.3" },
+        { name: "Native", value: "2032 mm · f/10" },
+        { name: "With Barlow", value: "4064 mm · f/20" },
       ],
       millimetres: "mm",
     },
@@ -354,9 +354,9 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       opticsLede:
         "ყოველ ობიექტს სამიდან ერთ კონფიგურაციაში აკვირდებიან, რომელიც მისთვის კატალოგშია არჩეული.",
       configurations: [
-        { name: "რედუქტორით", value: "945 mm · f/6.3" },
-        { name: "ძირითადი", value: "1500 mm · f/10" },
-        { name: "ბარლოუთი", value: "3000 mm · f/20" },
+        { name: "რედუქტორით", value: "1280 mm · f/6.3" },
+        { name: "ძირითადი", value: "2032 mm · f/10" },
+        { name: "ბარლოუთი", value: "4064 mm · f/20" },
       ],
       millimetres: "mm",
     },

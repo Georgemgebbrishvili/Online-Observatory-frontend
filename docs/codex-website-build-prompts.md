@@ -966,7 +966,7 @@ Initial hardware data should be configurable.
 
 Support expected MVP configuration:
 
-Celestron NexStar 6SE or finalized equivalent.
+Celestron NexStar 8SE or finalized equivalent.
 
 ### Camera
 

@@ -21,7 +21,7 @@ system disagree, the brand system wins.
 
 | | Slooh | Darkview Phase 1 |
 | --- | --- | --- |
-| Instruments | Network across Canary Islands, Chile, Australia | **One** Celestron 6SE, Tbilisi rooftop |
+| Instruments | Network across Canary Islands, Chile, Australia | **One** Celestron 8SE, Tbilisi rooftop |
 | Users at once | Many; all members watch all missions | **One** active session owner |
 | Booking | "Reservation Engine" picks observatory, telescope and time for you | Customer picks the slot and the target |
 | Session | 5 or 10 minute queued mission | A reserved Observation Slot the customer attends |

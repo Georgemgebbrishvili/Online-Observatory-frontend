@@ -19,9 +19,9 @@ export const NODES: ObservatoryNode[] = [
     tier: "first_party",
     status: "commissioning",
     instrument: {
-      optics: "150 mm Schmidt-Cassegrain",
-      apertureMm: 150,
-      focalLengthMm: 1500,
+      optics: "203 mm Schmidt-Cassegrain",
+      apertureMm: 203,
+      focalLengthMm: 2032,
       mount: "Single-fork altazimuth, GoTo",
       camera: "ZWO ASI585MC",
       // 3856 x 2180 at 2.9 um.

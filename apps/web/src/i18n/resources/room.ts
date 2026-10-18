@@ -103,9 +103,9 @@ const en: RoomCopy = {
     before: "The live view opens here when the telescope reaches {target}.",
     camera: "ZWO ASI585MC",
     optics: {
-      F20_BARLOW: "3000 mm · f/20",
-      F10_NATIVE: "1500 mm · f/10",
-      F6_3_REDUCER: "945 mm · f/6.3",
+      F20_BARLOW: "4064 mm · f/20",
+      F10_NATIVE: "2032 mm · f/10",
+      F6_3_REDUCER: "1280 mm · f/6.3",
     },
   },
   steps: {
@@ -365,9 +365,9 @@ const ka: RoomCopy = {
     before: "პირდაპირი ხედი აქ გაიხსნება, როცა ტელესკოპი ობიექტს მიაღწევს: {target}.",
     camera: "ZWO ASI585MC",
     optics: {
-      F20_BARLOW: "3000 mm · f/20",
-      F10_NATIVE: "1500 mm · f/10",
-      F6_3_REDUCER: "945 mm · f/6.3",
+      F20_BARLOW: "4064 mm · f/20",
+      F10_NATIVE: "2032 mm · f/10",
+      F6_3_REDUCER: "1280 mm · f/6.3",
     },
   },
   steps: {

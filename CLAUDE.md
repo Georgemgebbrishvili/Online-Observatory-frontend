@@ -14,7 +14,7 @@ work in two: customer-visible strings are Stellar now, while identifiers — `@d
 and must not be "fixed" opportunistically.
 
 A customer reserves an Observation Slot, selects an operator-approved Target, and
-during the Live Observation a real Celestron NexStar 6SE physically slews to that
+during the Live Observation a real Celestron NexStar 8SE physically slews to that
 target. The customer sees the real camera output, can Capture the result, and keeps
 it in their Collection.
 
@@ -51,7 +51,7 @@ Stellar cloud + mission orchestrator
     |  authenticated OUTBOUND WSS (observatory dials out)
 Observatory Agent (Python 3.12)
     |  Alpaca HTTP (mount)  +  ZWO ASI SDK (camera)
-Celestron NexStar 6SE  +  ZWO ASI585MC
+Celestron NexStar 8SE  +  ZWO ASI585MC
 ```
 
 The observatory accepts **no inbound connection from the internet or the LAN**. It

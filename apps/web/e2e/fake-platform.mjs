@@ -165,9 +165,9 @@ const observatories = zListBookableObservatoriesResponse.parse({
       timezone: "Asia/Tbilisi",
       telescope: {
         manufacturer: "Celestron",
-        model: "NexStar 6SE",
-        apertureMm: 150,
-        focalLengthMm: 1500,
+        model: "NexStar 8SE",
+        apertureMm: 203,
+        focalLengthMm: 2032,
       },
     },
   ],

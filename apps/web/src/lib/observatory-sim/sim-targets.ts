@@ -2,7 +2,7 @@
  * What a visitor can point the simulator at.
  *
  * Deliberately short. A first session should be a thing you can actually see
- * in a 150 mm instrument, not a catalogue to get lost in. The Sun is absent on
+ * in a 203 mm instrument, not a catalogue to get lost in. The Sun is absent on
  * purpose — the safety envelope refuses it, and the list should not offer what
  * the instrument will not do.
  */

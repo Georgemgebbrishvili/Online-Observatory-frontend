@@ -1,7 +1,7 @@
 /**
  * Where the four Galilean moons are right now.
  *
- * Io, Europa, Ganymede and Callisto are the best value in a 150 mm scope:
+ * Io, Europa, Ganymede and Callisto are the best value in a 203 mm scope:
  * visible every clear night, obviously moving hour to hour, and occasionally
  * crossing the disc or slipping behind it. Positions come from
  * `JupiterMoons`, which returns Jupiter-centric state vectors; projecting them

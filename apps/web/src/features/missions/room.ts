@@ -99,7 +99,7 @@ export type FeedPlates = {
 };
 
 /**
- * The feed's plates, from the contract only. The camera and the C6's optical
+ * The feed's plates, from the contract only. The camera and the 8SE's optical
  * configurations are the first-party observatory's (ADR-001, `OpticalConfig`); a
  * partner publishes only its telescope, so that is all its plate names.
  */

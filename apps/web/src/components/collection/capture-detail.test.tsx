@@ -59,7 +59,7 @@ describe("CaptureDetail", () => {
     expect(screen.getByText("A target no longer in the catalogue")).toBeVisible();
     expect(screen.getByText("Simulated capture")).toBeVisible();
     expect(screen.getByText("Simulator, not the telescope")).toBeVisible();
-    expect(screen.getByText("3000 mm · f/20, with Barlow")).toBeVisible();
+    expect(screen.getByText("4064 mm · f/20, with Barlow")).toBeVisible();
     expect(screen.getByText("400 frames")).toBeVisible();
     expect(screen.getByText("1920 × 1080 px")).toBeVisible();
     expect(screen.getByRole("img")).toHaveAttribute("src", "http://storage.test/image/1");

@@ -276,7 +276,7 @@ type DsoSpec = {
 };
 
 /**
- * What a 150 mm scope can be steered onto between the eight GoTo targets.
+ * What a 203 mm scope can be steered onto between the eight GoTo targets.
  * J2000, magnitudes and sizes from the usual catalogues. Three have
  * reference photographs; the rest are drawn from their shape and size.
  */

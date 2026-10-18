@@ -24,7 +24,7 @@ Changing a `decided` section's substance means changing the ADR that decided it 
 
 | Section                                                                                                      | Source                                    |
 | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
-| What Darkview is — a live remote observatory in Tbilisi; NexStar 6SE; operator-approved targets              | `CLAUDE.md`, Product                      |
+| What Darkview is — a live remote observatory in Tbilisi; NexStar 8SE; operator-approved targets              | `CLAUDE.md`, Product                      |
 | Live view, not long-exposure astrophotography; short exposures and live stacking; no Hubble/JWST-class claim | `CLAUDE.md`, Product and Design and brand |
 | An observation slot; one observation at a time; one session owner at a time                                  | `CLAUDE.md`, Mission states; ADR-015      |
 | Visibility is decided by the sky, not the booking; altitude envelope and horizon mask                        | `CLAUDE.md`, Hardware safety              |

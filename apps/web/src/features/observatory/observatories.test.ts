@@ -12,8 +12,8 @@ describe("observatory configuration", () => {
     const observatory = getObservatory("tbilisi-01");
 
     expect(observatory?.telescope).toMatchObject({
-      aperture: "150 mm",
-      focalLength: "1500 mm",
+      aperture: "203 mm",
+      focalLength: "2032 mm",
       configurationStatus: "EXPECTED_MVP",
     });
   });

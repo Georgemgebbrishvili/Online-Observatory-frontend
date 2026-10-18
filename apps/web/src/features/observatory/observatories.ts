@@ -31,8 +31,8 @@ export const observatories: ObservatorySite[] = [
     location: { en: "Tbilisi, Georgia", ka: "თბილისი, საქართველო" },
     telescope: {
       type: { en: "Schmidt-Cassegrain", ka: "შმიდტ-კასეგრენი" },
-      aperture: "150 mm",
-      focalLength: "1500 mm",
+      aperture: "203 mm",
+      focalLength: "2032 mm",
       mount: { en: "Computerized alt-azimuth", ka: "კომპიუტერული ალტ-აზიმუტური" },
       configurationStatus: "EXPECTED_MVP",
     },

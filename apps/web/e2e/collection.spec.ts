@@ -79,7 +79,7 @@ test("a capture shows its provenance and mints downloads on the click", async ({
   ).toBeVisible();
   await expect(page.getByText("Stellar Tbilisi")).toBeVisible();
   await expect(page.getByText("Simulator, not the telescope")).toBeVisible();
-  await expect(page.getByText("945 mm · f/6.3, with reducer")).toBeVisible();
+  await expect(page.getByText("1280 mm · f/6.3, with reducer")).toBeVisible();
   await expect(page.getByText("948 mm")).toBeVisible();
   await expect(page.getByText("3840 × 2160 px")).toBeVisible();
   await decoded(page, "Hercules Cluster, as captured");

@@ -125,9 +125,9 @@ describe("feedPlates", () => {
     timezone: "Asia/Tbilisi",
     telescope: {
       manufacturer: "Celestron",
-      model: "NexStar 6SE",
-      apertureMm: 150,
-      focalLengthMm: 1500,
+      model: "NexStar 8SE",
+      apertureMm: 203,
+      focalLengthMm: 2032,
     },
   };
   const m13 = {
@@ -139,7 +139,7 @@ describe("feedPlates", () => {
 
   it("names the first-party camera and the target's optics, and a fixed target's RA/Dec", () => {
     expect(feedPlates(observatory, m13, "en", roomCopy.en.feed)).toEqual({
-      instrument: ["Tbilisi Observatory", "ZWO ASI585MC · 1500 mm · f/10"],
+      instrument: ["Tbilisi Observatory", "ZWO ASI585MC · 2032 mm · f/10"],
       subject: { name: "Hercules Cluster", coordinates: "16h 41m 42s / +36° 27′ 41″" },
     });
   });
@@ -148,7 +148,7 @@ describe("feedPlates", () => {
     const partner = { ...observatory, kind: "PARTNER" } as const;
     const saturn = { ...m13, nameEn: "Saturn", coordinates: null } as Target;
     expect(feedPlates(partner, saturn, "en", roomCopy.en.feed)).toEqual({
-      instrument: ["Tbilisi Observatory", "150 mm · 1500 mm"],
+      instrument: ["Tbilisi Observatory", "203 mm · 2032 mm"],
       subject: { name: "Saturn", coordinates: null },
     });
     expect(feedPlates(null, null, "ka", roomCopy.ka.feed)).toEqual({
