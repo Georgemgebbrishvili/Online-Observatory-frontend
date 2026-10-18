@@ -34,10 +34,10 @@ test("renders the Georgian sky hero and switches locale", async ({ page }) => {
     page.getByRole("heading", { level: 1, name: "შენი დრო ნამდვილ ცასთან." }),
   ).toBeVisible();
   await expect(
-    page.locator(".sky-hero").getByRole("link", { name: "დაჯავშნე დრო" }),
+    page.locator(".sky-hero").getByRole("link", { name: "დაჯავშნე სეანსი" }),
   ).toHaveAttribute("href", "/ka/app/book");
   await expect(
-    page.locator(".sky-hero").getByText("ილუსტრაცია — არა ტელესკოპის კადრი"),
+    page.locator(".sky-hero").getByText("ილუსტრაცია — არა ტელესკოპის გამოსახულება"),
   ).toBeVisible();
   // Mkhedruli has no capitals: the headline is never uppercased.
   await expect(page.locator(".sky-hero-title em")).toHaveCSS("text-transform", "none");
@@ -545,21 +545,24 @@ test("preserves observatory locale and mobile width", async ({ page }) => {
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("shows what exists today, without invented prices or concept tiers", async ({
+test("shows what exists today, priced by the platform, without concept tiers", async ({
   page,
 }) => {
   await page.goto("/en/pricing");
 
-  await expect(
-    page.getByRole("heading", { level: 1, name: "What it costs today." }),
-  ).toBeVisible();
-  for (const offering of ["Browse", "A seat in a live session", "An observation slot"]) {
+  await expect(page.getByRole("heading", { level: 1, name: "Pricing" })).toBeVisible();
+  for (const offering of ["Browse", "Watch a live session", "Your own slot"]) {
     await expect(page.getByRole("heading", { name: offering })).toBeVisible();
   }
   await expect(page.getByText("Free", { exact: true })).toBeVisible();
-  await expect(page.getByText("Priced per slot", { exact: true })).toBeVisible();
-  await expect(page.getByText("Priced per seat", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Book an observation" })).toHaveAttribute(
+  // The slot price is the fake platform's GET /slots figure, not one written on the page.
+  await expect(page.getByText("GEL 45.00").first()).toBeVisible();
+  await expect(page.getByText("for 30 minutes", { exact: true })).toBeVisible();
+  await expect(page.getByText("Price on the link", { exact: true })).toBeVisible();
+  // The club comes from GET /loyalty/scheme.
+  await expect(page.getByRole("heading", { name: /the less it costs/ })).toBeVisible();
+  await expect(page.getByText("10%", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Book a slot" }).first()).toHaveAttribute(
     "href",
     "/en/app/book",
   );
@@ -574,7 +577,6 @@ test("shows what exists today, without invented prices or concept tiers", async 
   await expect(
     page.getByText(/2026-08-draft|Configuration version|concept/i),
   ).toHaveCount(0);
-  await expect(page.getByText(/\d+(\.\d+)?\s?(GEL|₾)/)).toHaveCount(0);
 });
 
 test("keeps localized pricing inside the mobile viewport", async ({ page }) => {
@@ -582,7 +584,7 @@ test("keeps localized pricing inside the mobile viewport", async ({ page }) => {
   await page.goto("/ka/pricing");
 
   await expect(
-    page.getByRole("heading", { level: 1, name: "რა ღირს დღეს." }),
+    page.getByRole("heading", { level: 1, name: "ფასები" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "ნავიგაციის გახსნა" }).click();
   await expect(page.getByRole("link", { name: "ენა: English" })).toHaveAttribute(

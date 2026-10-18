@@ -28,8 +28,9 @@ export const pricingOfferings: PricingOffering[] = [
     },
     price: { kind: "FREE" },
     features: [
-      { en: "Tonight's sky", ka: "ამაღამინდელი ცა" },
-      { en: "The target catalogue", ka: "ობიექტების კატალოგი" },
+      { en: "Tonight's sky, hour by hour", ka: "ამაღამინდელი ცა, საათობრივად" },
+      { en: "The full target catalogue", ka: "ობიექტების სრული კატალოგი" },
+      { en: "The observatory's live status", ka: "ობსერვატორიის მიმდინარე მდგომარეობა" },
     ],
     action: {
       href: "app/missions",
@@ -38,49 +39,35 @@ export const pricingOfferings: PricingOffering[] = [
   },
   {
     id: "seat",
-    name: { en: "A seat in a live session", ka: "ადგილი პირდაპირ სესიაში" },
+    name: { en: "Watch a live session", ka: "უყურე პირდაპირ ეთერს" },
     description: {
-      en: "Watch somebody else's observation live, from the link they share with you.",
-      ka: "უყურე სხვის დაკვირვებას პირდაპირ, იმ ბმულით, რომელსაც გაგიზიარებს.",
+      en: "Take a seat in somebody else's observation, from the link they share with you.",
+      ka: "დაიკავე ადგილი სხვის დაკვირვებაზე, იმ ბმულით, რომელსაც გაგიზიარებენ.",
     },
     price: { kind: "PER_SEAT" },
     features: [
-      { en: "The live picture", ka: "პირდაპირი გამოსახულება" },
-      {
-        en: "Up to ten seats in each session",
-        ka: "თითო სესიაში მაქსიმუმ ათი ადგილი",
-      },
-      {
-        en: "The telescope stays with its owner",
-        ka: "ტელესკოპს მისი მფლობელი მართავს",
-      },
+      { en: "The same live picture as the host", ka: "იგივე პირდაპირი გამოსახულება, რასაც მასპინძელი ხედავს" },
+      { en: "Up to ten seats in each session", ka: "თითო ეთერში ათამდე ადგილი" },
+      { en: "The telescope stays with the host", ka: "ტელესკოპს მასპინძელი მართავს" },
     ],
   },
   {
     id: "slot",
-    name: { en: "An observation slot", ka: "დაკვირვების სლოტი" },
+    name: { en: "Your own slot", ka: "შენი სეანსი" },
     description: {
-      en: "Reserve the telescope, choose an approved target and watch it live.",
-      ka: "დაჯავშნე ტელესკოპი, აირჩიე დამტკიცებული ობიექტი და უყურე მას პირდაპირ.",
+      en: "Reserve the telescope, choose an approved target and watch it come in live.",
+      ka: "დაჯავშნე ტელესკოპი, აირჩიე დამტკიცებული ობიექტი და უყურე პირდაპირ.",
     },
     price: { kind: "PER_SLOT" },
     features: [
-      {
-        en: "The telescope, yours for the slot",
-        ka: "ტელესკოპი შენია სლოტის განმავლობაში",
-      },
-      {
-        en: "Your captures, kept in your Collection",
-        ka: "შენი კადრები, შენს კოლექციაში",
-      },
-      {
-        en: "Live view, never long exposure",
-        ka: "პირდაპირი ხედი, არა ხანგრძლივი ექსპოზიცია",
-      },
+      { en: "The telescope to yourself for the slot", ka: "მთელი სეანსის განმავლობაში ტელესკოპი მხოლოდ შენია" },
+      { en: "Your target slewed to and centred", ka: "ტელესკოპი თავად მობრუნდება შენი ობიექტისკენ და ცენტრში მოაქცევს" },
+      { en: "Captures kept in your Collection", ka: "გადაღებული კადრები შენს კოლექციაში ინახება" },
+      { en: "A watch link for up to ten friends", ka: "სანახავი ბმული ათამდე მეგობრისთვის" },
     ],
     action: {
       href: "app/book",
-      label: { en: "Book an observation", ka: "დაკვირვების დაჯავშნა" },
+      label: { en: "Book a slot", ka: "დაჯავშნე სეანსი" },
     },
   },
 ];

@@ -18,7 +18,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { MoonGlyph, moonThatNight } from "@/components/booking/moon-glyph";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { checkoutTarget } from "@/features/booking/checkout";
-import { targetName, targetVisual } from "@/features/targets/present";
+import { targetDescription, targetName, targetVisual } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { boardCopy } from "@/i18n/resources/board";
 import { bookingCopy } from "@/i18n/resources/booking";
@@ -275,25 +275,7 @@ export function BookingBoard({
     <form className="board" onSubmit={submit} aria-busy={phase !== "idle" || undefined}>
       <header className="board-head">
         <h1 className="visually-hidden">{booking.title}</h1>
-        {reschedule && <p className="board-lede">{replacing.replacing}</p>}
-        <ul className="board-facts">
-          <li>
-            <b>{copy.facts.slot}</b>
-            <span>
-              {firstSlot
-                ? `${booking.minutes(firstSlot.durationMinutes)} · ${price(firstSlot)}`
-                : "—"}
-            </span>
-          </li>
-          <li>
-            <b>{copy.facts.nights}</b>
-            <span>{copy.facts.nightsValue(nights.length)}</span>
-          </li>
-          <li>
-            <b>{copy.facts.hold}</b>
-            <span>{copy.facts.holdValue}</span>
-          </li>
-        </ul>
+        <p className="board-lede">{reschedule ? replacing.replacing : copy.lede}</p>
       </header>
 
       {mode === "SIMULATED" && (
@@ -398,34 +380,49 @@ export function BookingBoard({
               const item = judgement(candidate);
               const down = !!chosen && !!judged && !canBook(candidate);
               const plate = plateOf(candidate);
-              const sub = !chosen
-                ? words.types[candidate.type]
+              const about = targetDescription(candidate, locale);
+              const state = !chosen
+                ? null
                 : !item
-                  ? words.types[candidate.type]
+                  ? null
                   : bookable(item, chosen.durationMinutes)
-                    ? copy.up
+                    ? { tone: "up", text: copy.up }
                     : item.visibility.observable
-                      ? copy.needs(candidate.expectedMissionMinutes)
-                      : (item.visibility.blockReasons
-                          .map((reason) => words.reasons[reason])
-                          .join(" · ") ?? booking.unavailable);
+                      ? { tone: "down", text: copy.needs(candidate.expectedMissionMinutes) }
+                      : {
+                          tone: "down",
+                          text:
+                            item.visibility.blockReasons
+                              .map((reason) => words.reasons[reason])
+                              .join(" · ") || booking.unavailable,
+                        };
               return (
                 <button
                   key={candidate.id}
                   type="button"
                   role="radio"
                   aria-checked={targetId === candidate.id}
-                  className={`board-target board-target-${targetVisual(candidate)}${down ? " is-down" : ""}`}
+                  className={`board-target${down ? " is-down" : ""}`}
                   disabled={down}
                   onClick={() => setTargetId(candidate.id)}
-                  aria-label={`${targetName(candidate, locale)}, ${sub}`}
+                  aria-label={`${targetName(candidate, locale)}, ${state?.text ?? words.types[candidate.type]}`}
                 >
-                  {plate && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={plate} alt="" loading="lazy" decoding="async" />
+                  <span className={`board-thumb board-thumb-${targetVisual(candidate)}`} aria-hidden="true">
+                    {plate && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={plate} alt="" loading="lazy" decoding="async" />
+                    )}
+                  </span>
+                  <span className="board-target-text">
+                    <span className="board-target-name">{targetName(candidate, locale)}</span>
+                    <span className="board-target-sub">
+                      {words.types[candidate.type]} · {booking.minutes(candidate.expectedMissionMinutes)}
+                    </span>
+                    {about && <span className="board-target-about">{about}</span>}
+                  </span>
+                  {state && (
+                    <span className={`board-target-state is-${state.tone}`}>{state.text}</span>
                   )}
-                  <span className="board-target-name">{targetName(candidate, locale)}</span>
-                  <span className="board-target-sub">{sub}</span>
                 </button>
               );
             })}

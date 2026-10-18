@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { PricingPage } from "@/components/pricing/pricing-page";
+import { readPricing } from "@/features/pricing/read";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { pricingPageCopy } from "@/i18n/resources/pricing";
@@ -38,12 +39,12 @@ export default async function PricingRoute({ params }: PricingRouteProps) {
     notFound();
   }
 
-  const dictionary = await getDictionary(locale);
+  const [dictionary, facts] = await Promise.all([getDictionary(locale), readPricing(locale)]);
 
   return (
     <div className="site-frame">
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
-      <PricingPage locale={locale} />
+      <PricingPage facts={facts} locale={locale} />
       <SiteFooter footer={dictionary.footer} locale={locale} path="pricing" />
     </div>
   );

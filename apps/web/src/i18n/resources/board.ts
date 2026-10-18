@@ -1,6 +1,6 @@
 /** The booking board's own words (ADR-053 §7); the slot reasons and the form's are booking.ts's and reserve.ts's. */
 export type BoardCopy = {
-  facts: { slot: string; nights: string; nightsValue: (count: number) => string; hold: string; holdValue: string };
+  lede: string;
   night: string;
   start: string;
   target: string;
@@ -24,13 +24,7 @@ export type BoardCopy = {
 
 export const boardCopy: Record<"en" | "ka", BoardCopy> = {
   en: {
-    facts: {
-      slot: "Slot",
-      nights: "Nights",
-      nightsValue: (count) => `${count} ahead`,
-      hold: "Hold",
-      holdValue: "while you pay",
-    },
+    lede: "Pick a night, a start and a target. The telescope is yours for the whole slot.",
     night: "Night",
     start: "Start",
     target: "Target",
@@ -52,31 +46,25 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     siteTime: "Observatory time",
   },
   ka: {
-    facts: {
-      slot: "სლოტი",
-      nights: "ღამეები",
-      nightsValue: (count) => `${count} წინ`,
-      hold: "დაჯავშნა",
-      holdValue: "სანამ იხდი",
-    },
+    lede: "აირჩიე ღამე, დასაწყისი და ობიექტი. მთელი სეანსის განმავლობაში ტელესკოპი შენია.",
     night: "ღამე",
     start: "დასაწყისი",
     target: "ობიექტი",
-    open: (count) => `${count} ღია`,
+    open: (count) => `${count} თავისუფალი`,
     full: "სავსეა",
     noSlots: "ამ ღამეს დაკვირვების დრო არ არის.",
     tooSoon: "უკვე დაიწყო",
     pickSlotFirst: "აირჩიე დასაწყისი, რომ ნახო რა ჩანს",
-    up: "ჩანს მთელი სლოტის განმავლობაში",
+    up: "ჩანს მთელი სეანსის განმავლობაში",
     needs: (minutes) => `სჭირდება ${minutes} წთ`,
-    loadingTargets: "ამ სლოტისთვის ცას ვკითხულობთ",
-    noTargets: "კატალოგიდან არცერთი ობიექტი არ ჩანს ამ სლოტის მთელი განმავლობაში.",
-    session: "შენი სესია",
-    pickStart: "აირჩიე ნახევარი საათი",
+    loadingTargets: "ვამოწმებთ, რა ჩანს ამ სეანსზე",
+    noTargets: "კატალოგიდან არცერთი ობიექტი არ ჩანს ამ სეანსის მთელი განმავლობაში.",
+    session: "შენი სეანსი",
+    pickStart: "აირჩიე დაწყების დრო",
     pickTarget: "აირჩიე ობიექტი",
     cost: "ღირებულება",
     free: "უფასო",
-    goToSession: "შენს სესიაზე გადასვლა",
+    goToSession: "შენს სეანსზე გადასვლა",
     siteTime: "ობსერვატორიის დრო",
   },
 };

@@ -202,7 +202,7 @@ const targets = zListTargetsResponse.parse({
       descriptionEn:
         "The ringed planet. Its rings and largest moon, Titan, show in a short live stack.",
       descriptionKa:
-        "რგოლებიანი პლანეტა. მისი რგოლები და უდიდესი თანამგზავრი, ტიტანი, მოკლე ცოცხალ დასტაზე ჩანს.",
+        "რგოლებიანი პლანეტა. მისი რგოლები და უდიდესი თანამგზავრი, ტიტანი, რეალურ დროში დაჯამებულ მოკლე კადრზე ჩანს.",
       positionSource: "EPHEMERIS",
       coordinates: null,
       solarSystemBody: "SATURN",
@@ -1162,6 +1162,20 @@ const routes = {
     send(response, 201, weekVote(user));
   },
   "GET /observatories": (_request, response) => send(response, 200, observatories),
+  // GET /loyalty/scheme: the club's rules as the live platform's seed sets them.
+  "GET /loyalty/scheme": (_request, response) =>
+    send(response, 200, {
+      pointsPerGel: 5,
+      pointsPerGelRedeemed: 100,
+      welcomeBonusPoints: 100,
+      referralBonusPoints: 200,
+      minimumPayableMinor: 100,
+      progressMarkers: [5000],
+      tiers: [
+        { code: "MEMBER", nameEn: "Member", nameKa: "წევრი", thresholdPoints: 0, discountPercent: 10 },
+        { code: "VIP", nameEn: "VIP", nameKa: "VIP", thresholdPoints: 20000, discountPercent: 20 },
+      ],
+    }),
   // Enabled only, as the platform answers (features/targets/catalogue.ts).
   "GET /targets": (request, response) =>
     sessionUser(request)?.id === fakeAccounts["failing@darkview.test"].id

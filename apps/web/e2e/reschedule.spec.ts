@@ -36,7 +36,6 @@ test("a lost slot is replaced with a free one, and the offer then closes", async
     page.getByText("Choosing a free slot to replace the one that was lost."),
   ).toBeVisible();
   // The board prices the replacement at nothing, and keeps the lost booking's target.
-  await expect(page.locator(".board-facts")).toContainText("Free");
   await slots(page).first().click();
   await expect(page.locator(".board-total")).toContainText("Free");
   // The lost booking's target, the Moon, is kept but cannot be had for this slot.
@@ -111,14 +110,14 @@ test("the Georgian reschedule fits a phone", async ({ page }) => {
   await signIn(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/ka/app/bookings/${lostId}`);
-  await page.getByRole("link", { name: "აირჩიე უფასო დრო" }).click();
+  await page.getByRole("link", { name: "აირჩიე უფასო სეანსი" }).click();
   await page
     .getByRole("radiogroup", { name: /დაკვირვების დრო/ })
     .getByRole("radio")
     .first()
     .click();
   await expect(
-    page.getByRole("button", { name: "ამ დროის უფასოდ დაჯავშნა" }),
+    page.getByRole("button", { name: "ამ სეანსის უფასოდ დაჯავშნა" }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
