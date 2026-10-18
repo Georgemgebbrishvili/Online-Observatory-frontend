@@ -6,33 +6,9 @@ import {
   isPlannedSegment,
   isPreviewSegment,
   plannedDestinations,
-  primaryDestinations,
-  sidebarDestinations,
 } from "./navigation-model";
 
 describe("app navigation model", () => {
-  it("keeps the requested five destinations in order", () => {
-    // The bottom bar carries these and only these. Phase 1 added planned
-    // destinations to appDestinations; the primary five are unchanged.
-    expect(primaryDestinations.map((destination) => destination.key)).toEqual([
-      "home",
-      "book",
-      "live",
-      "collection",
-      "profile",
-    ]);
-  });
-
-  it("lists booking with the working destinations in the sidebar, not as planned", () => {
-    expect(sidebarDestinations.map((destination) => destination.key)).toEqual([
-      "home",
-      "book",
-      "live",
-      "collection",
-      "profile",
-    ]);
-  });
-
   it("carries the planned surfaces the inventory found missing", () => {
     expect(plannedDestinations.map((destination) => destination.key)).toEqual([
       "subscription",

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { brand } from "../src/brand";
-import { appBar, bottomNavigation } from "./selectors";
+import { openAccountMenu } from "./selectors";
 
 test("communicates real telescope access in the English sky hero", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -133,6 +133,8 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
 test("provides the complete public navigation on desktop and mobile", async ({
   page,
 }) => {
+  // A visitor without a session; signed in, "Sign in" becomes the Account menu.
+  await page.context().clearCookies();
   await page.goto("/en");
 
   const header = page.getByRole("banner");
@@ -168,48 +170,54 @@ test("provides the complete public navigation on desktop and mobile", async ({
   await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
 });
 
-test("uses the desktop app bar and native-style mobile app navigation", async ({
-  page,
-}) => {
-  await page.goto("/en/app");
+test("keeps the one site header on the signed-in pages", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/en/app/book");
 
-  const bar = appBar(page);
-  const barNavigation = bar.getByRole("navigation", { name: "Application navigation" });
-  await expect(bar).toBeVisible();
-  await expect(bar.getByLabel(brand.en.siteName)).toBeVisible();
-  await expect(bar.getByText("Tbilisi Observatory")).toBeVisible();
-  await expect(bar.getByText("Simulated status")).toBeVisible();
-
-  for (const item of ["Home", "Book", "Live", "Collection", "Profile"]) {
-    await expect(barNavigation.getByRole("link", { name: item })).toBeVisible();
-  }
-
-  await expect(barNavigation.getByRole("link", { name: "Home" })).toHaveAttribute(
+  const header = page.getByRole("banner");
+  const publicNavigation = header.getByRole("navigation", { name: "Public navigation" });
+  await expect(header.getByLabel(brand.en.siteName)).toBeVisible();
+  await expect(publicNavigation.getByRole("link")).toHaveCount(3);
+  await expect(publicNavigation.getByRole("link", { name: "Book" })).toHaveAttribute(
     "aria-current",
     "page",
   );
-  // The pages not built yet, in the footer under their own name.
+  await expect(header.getByRole("link", { name: "Sign in" })).toHaveCount(0);
+
+  const menu = await openAccountMenu(page);
+  for (const [item, href] of [
+    ["Overview", "/en/app"],
+    ["Live", "/en/app/live"],
+    ["Collection", "/en/app/collection"],
+    ["Profile", "/en/app/profile"],
+  ]) {
+    await expect(menu.getByRole("link", { name: item, exact: true })).toHaveAttribute(
+      "href",
+      href,
+    );
+  }
+  await expect(menu.getByRole("button", { name: "Sign out" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeHidden();
+
+  // The pages not built yet, under their own name above the footer.
   await expect(
     page
-      .getByRole("contentinfo")
       .getByRole("navigation", { name: "Not yet available" })
       .getByRole("link", { name: "Subscription" }),
   ).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
-
-  const bottomNav = bottomNavigation(page);
-  await expect(barNavigation).toBeHidden();
-  await expect(bottomNav).toBeVisible();
-  await expect(page.getByRole("banner").getByText("Online")).toBeVisible();
-  const mobileBookLink = bottomNav.getByRole("link", { name: "Book" });
-  await expect(mobileBookLink).toBeVisible();
-  await Promise.all([page.waitForURL(/\/en\/app\/book$/), mobileBookLink.click()]);
-  await expect(bottomNav.getByRole("link", { name: "Book" })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  const phoneAccount = header.locator("#public-mobile-menu").getByRole("navigation", {
+    name: "Account",
+  });
+  await expect(phoneAccount.getByRole("link", { name: "Live" })).toBeVisible();
+  await Promise.all([
+    page.waitForURL(/\/en\/app\/collection$/),
+    phoneAccount.getByRole("link", { name: "Collection" }).click(),
+  ]);
 
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
@@ -427,7 +435,9 @@ test("the observatory console stands by on the sky model, badged simulated, with
   await page.goto("/en/observatory");
 
   // The console's own header: the lockup, the public destinations, the clocks, the badge.
-  await expect(page.getByRole("link", { name: "Observatory", exact: true })).toHaveAttribute(
+  await expect(
+    page.getByRole("banner").getByRole("link", { name: "Observatory", exact: true }),
+  ).toHaveAttribute(
     "aria-current",
     "page",
   );

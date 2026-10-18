@@ -41,6 +41,8 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // The dev badge sits in the bottom-left corner, over the live room's phone dock.
+  devIndicators: false,
   reactStrictMode: true,
   async headers() {
     return [

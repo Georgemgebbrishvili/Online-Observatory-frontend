@@ -6,19 +6,11 @@ import type { Page } from "@playwright/test";
  * a single test needing to change.
  */
 
-/**
- * The application bar (ADR-052 §6): the one banner on an /app page, keyed to the
- * navigation it carries so it works in both languages without a looked-up name.
- */
-export function appBar(page: Page) {
-  return page
-    .getByRole("banner")
-    .filter({ has: page.locator("nav[data-placement='bar']") });
-}
-
-/** The mobile bottom navigation. Both placements share one accessible name. */
-export function bottomNavigation(page: Page) {
-  return page.locator("nav[data-placement='bottom']");
+/** The Account menu in the one site header, open, as a signed-in visitor sees it. */
+export async function openAccountMenu(page: Page) {
+  const banner = page.getByRole("banner");
+  await banner.getByRole("button", { name: /^(Account|ანგარიში)$/ }).click();
+  return banner.locator("#account-menu-list");
 }
 
 /** The live view. `data-capture-state` is behaviour the component already exposes. */

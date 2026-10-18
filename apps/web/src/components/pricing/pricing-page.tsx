@@ -1,3 +1,4 @@
+import { PageGuide } from "@/components/guide/page-guide";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { pricingOfferings, type PricingOffering } from "@/features/pricing/plans";
@@ -88,6 +89,8 @@ export function PricingPage({ locale }: { locale: Locale }) {
           </aside>
         </Container>
       </section>
+
+      <PageGuide id="pricing" locale={locale} />
     </main>
   );
 }

@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 
 import ObservatoryConsole from "@/components/observatory-console/ObservatoryConsole";
 import type { PlatformMission } from "@/components/observatory-console/platform-console";
+import { PageGuide } from "@/components/guide/page-guide";
+import { SiteFooter } from "@/components/layout/site-footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { readConditions, readMyMissions, readObservatoryPanel } from "@/features/home/read";
 import { activeMission } from "@/features/missions/active";
@@ -17,6 +19,7 @@ import { publicLinks } from "@/lib/navigation/public-links";
 import { getCurrentUser } from "@/lib/platform/session";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
 import "@/styles/observatory-console.css";
+import "@/styles/pages.css";
 
 type ObservatoryRouteProps = {
   params: Promise<{ locale: string }>;
@@ -134,6 +137,8 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
         }
         caption={copy.illustration}
       />
+      <PageGuide id="observatory" locale={locale} />
+      <SiteFooter footer={dictionary.footer} locale={locale} path="observatory" />
     </>
   );
 }

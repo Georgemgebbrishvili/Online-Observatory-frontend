@@ -30,7 +30,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
     <AppShell
       locale={locale}
       logoutLabel={authCopy[locale].logout}
-      navigation={dictionary.navigation.app}
+      dictionary={dictionary}
     >
       {children}
     </AppShell>

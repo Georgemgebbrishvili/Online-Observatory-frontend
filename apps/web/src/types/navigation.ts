@@ -7,12 +7,12 @@ export type PublicNavigationDictionary = {
   pricing: string;
   signIn: string;
   reserve: string;
+  account: string;
+  overview: string;
 };
 
 export type AppNavigationDictionary = {
   ariaLabel: string;
-  brandAriaLabel: string;
-  brandEndorsement: string;
   home: string;
   book: string;
   live: string;
@@ -24,18 +24,6 @@ export type AppNavigationDictionary = {
   loyalty: string;
   passes: string;
   plannedGroup: string;
-  // The bottom bar carries the five primary destinations only.
-  mobile: {
-    home: string;
-    book: string;
-    live: string;
-    collection: string;
-    profile: string;
-  };
-  observatory: string;
-  observatoryName: string;
-  statusOnline: string;
-  simulated: string;
   previewEyebrow: string;
   previewDescription: string;
   plannedEyebrow: string;

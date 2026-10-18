@@ -34,6 +34,7 @@ import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { TargetPreview } from "@/components/room/target-preview";
 import { FlightPlan } from "@/components/home/flight-plan";
+import { PageGuide } from "@/components/guide/page-guide";
 import { SkyHero } from "@/components/home/sky-hero";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
@@ -1194,6 +1195,9 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               locale={locale}
               common={dictionary.home.common}
             />
+          </div>
+          <div className="ds-home-specimen">
+            <PageGuide id="pricing" locale={locale} />
           </div>
         </section>
       </Container>

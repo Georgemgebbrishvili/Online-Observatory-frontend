@@ -6,7 +6,8 @@
 .board {
   display: grid;
   gap: var(--space-6);
-  width: min(100%, 72rem);
+  width: min(100%, 90rem);
+  margin-inline: auto;
   padding: var(--space-8) var(--space-page) var(--space-10);
 }
 
@@ -573,7 +574,7 @@
     position: fixed;
     left: var(--space-3);
     right: var(--space-3);
-    bottom: calc(var(--size-app-bottom-nav) + var(--space-2));
+    bottom: calc(env(safe-area-inset-bottom) + var(--space-2));
     z-index: 44;
     display: flex;
     align-items: center;

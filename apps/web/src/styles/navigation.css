@@ -1,10 +1,9 @@
 /*
  * The shell as the Skychaser site draws it (ADR-052 §6): a glass bar — the lockup,
  * spaced Oswald links with a drawn underline and a soft glow on the current page, the
- * account on the right — and on a phone a glass tab bar whose current tab is red.
+ * account on the right. Every page, signed in or not, carries this one bar.
  */
-.site-header,
-.app-bar {
+.site-header {
   position: sticky;
   z-index: 40;
   top: 0;
@@ -128,105 +127,10 @@ html:has(.public-mobile-menu[data-open]) {
 .public-navigation a:focus-visible,
 .public-actions a:focus-visible,
 .public-mobile-menu a:focus-visible,
-.app-brand:focus-visible,
+.public-mobile-menu button:focus-visible,
+.account-menu a:focus-visible,
+.account-menu button:focus-visible,
 .app-navigation a:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 3px;
-}
-
-/* A control focused from the keyboard scrolls clear of the bar and the tab bar. */
-html:has(.app-shell) {
-  scroll-padding-block: var(--size-app-header)
-    calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
-}
-
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-  padding-bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
-}
-
-.app-bar-inner {
-  display: flex;
-  width: min(100%, 92.5rem);
-  min-height: var(--size-app-header);
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-inline: auto;
-  padding-inline: max(var(--space-4), env(safe-area-inset-left));
-}
-
-.app-bar-end {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.app-brand {
-  display: inline-flex;
-  min-height: 2.5rem;
-  align-items: center;
-  border-radius: var(--radius-small);
-}
-
-.app-observatory-state {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.app-observatory-state strong {
-  display: none;
-  color: var(--color-text-secondary);
-  font-family: var(--font-label);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.app-observatory-state small {
-  display: none;
-  color: var(--color-simulated);
-  font-family: var(--font-label);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-/* Sign out: Skychaser's outlined chip. */
-.app-logout-form button {
-  min-height: 2.5rem;
-  padding-inline: var(--space-4);
-  border: 1px solid var(--color-line-strong);
-  border-radius: var(--radius-control);
-  background: var(--color-outline-fill);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-family: var(--font-label);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-nav);
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition:
-    border-color var(--duration-state) var(--ease-sky),
-    background-color var(--duration-state) var(--ease-sky);
-}
-
-.app-logout-form button:hover {
-  border-color: var(--color-outline-hover);
-  background: var(--color-outline-fill-hover);
-}
-
-.app-logout-form button:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 3px;
 }
@@ -258,93 +162,16 @@ html:has(.app-shell) {
   stroke-width: 1.7;
 }
 
-.app-navigation-bar {
-  display: none;
-}
-
-/* The phone's tab bar: glass, Geist labels, the current tab red with its glow. */
-.app-navigation-bottom {
-  position: fixed;
-  z-index: 40;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  min-height: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
-  padding: 0 max(var(--space-1), env(safe-area-inset-left)) env(safe-area-inset-bottom)
-    max(var(--space-1), env(safe-area-inset-right));
-  border-top: 1px solid var(--color-line);
-  background: var(--color-bar);
-  backdrop-filter: blur(14px) saturate(140%);
-}
-
-.app-navigation-bottom a {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  min-height: var(--size-app-bottom-nav);
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  color: var(--color-text-secondary);
-  font-family: var(--font-body);
-  font-size: var(--font-size-tab);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.01em;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.app-navigation-bottom a > span:last-child {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.app-navigation-bottom a[aria-current="page"] {
-  background: linear-gradient(180deg, var(--color-accent-muted), transparent 85%);
-  color: var(--color-text-primary);
-}
-
-.app-navigation-bottom a[aria-current="page"] .app-nav-icon {
-  color: var(--color-accent);
-  filter: var(--glow-tab-icon);
-}
-
-.app-navigation-bottom a[aria-current="page"] .app-nav-icon svg {
-  stroke-width: 2.2;
-}
-
-.app-navigation-bottom a[aria-current="page"]::before {
-  position: absolute;
-  top: 0;
-  right: 30%;
-  left: 30%;
-  height: 2px;
-  border-radius: 0 0 2px 2px;
-  background: var(--color-accent);
-  content: "";
-}
-
 .app-content {
   flex: 1;
   min-width: 0;
 }
 
-/* The app's footer: the lockup signed "by Astroman", and the pages not built yet. */
-.app-footer {
-  display: grid;
-  width: min(100%, 92.5rem);
-  gap: var(--space-5);
-  margin: var(--space-12) auto 0;
-  padding: var(--space-8) var(--space-page);
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.app-footer .brand-wordmark {
-  font-size: var(--font-size-wordmark-small);
+/* The pages not built yet: one quiet line above the footer, signed-in pages only. */
+.app-planned {
+  width: min(100%, 90rem);
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-page);
 }
 
 .app-navigation-planned {
@@ -403,27 +230,6 @@ html:has(.app-shell) {
   font-size: var(--font-size-body-lg);
 }
 
-@media (--below-md) {
-  .app-logout-form button {
-    padding-inline: var(--space-3);
-  }
-
-  .app-observatory-state .status-indicator {
-    padding-inline: var(--space-2);
-    letter-spacing: 0.04em;
-  }
-}
-
-@media (--md) {
-  .app-bar-inner {
-    padding-inline: var(--space-8);
-  }
-
-  .app-observatory-state small {
-    display: inline;
-  }
-}
-
 @media (--lg) {
   .public-menu-button,
   .public-mobile-menu {
@@ -438,8 +244,7 @@ html:has(.app-shell) {
   }
 
   .public-navigation a,
-  .public-sign-in,
-  .app-navigation-bar a {
+  .public-sign-in {
     position: relative;
     display: inline-flex;
     min-height: 2.75rem;
@@ -459,8 +264,7 @@ html:has(.app-shell) {
   }
 
   /* The underline: drawn in on hover, held at .55 on the current page. */
-  .public-navigation a::after,
-  .app-navigation-bar a::after {
+  .public-navigation a::after {
     position: absolute;
     right: 0;
     bottom: var(--space-1);
@@ -476,23 +280,19 @@ html:has(.app-shell) {
   .public-navigation a:hover,
   .public-navigation a[aria-current="page"],
   .public-sign-in:hover,
-  .app-navigation-bar a:hover,
-  .app-navigation-bar a[aria-current="page"] {
+  .account-menu-button[aria-expanded="true"] {
     color: var(--color-text-primary);
   }
 
-  .public-navigation a[aria-current="page"],
-  .app-navigation-bar a[aria-current="page"] {
+  .public-navigation a[aria-current="page"] {
     text-shadow: var(--glow-nav-current);
   }
 
-  .public-navigation a:is(:hover, :focus-visible)::after,
-  .app-navigation-bar a:is(:hover, :focus-visible)::after {
+  .public-navigation a:is(:hover, :focus-visible)::after {
     transform: scaleX(1);
   }
 
-  .public-navigation a[aria-current="page"]::after,
-  .app-navigation-bar a[aria-current="page"]::after {
+  .public-navigation a[aria-current="page"]::after {
     opacity: 0.55;
     transform: scaleX(1);
   }
@@ -502,44 +302,138 @@ html:has(.app-shell) {
     align-items: center;
     gap: var(--space-2);
   }
-
-  html:has(.app-shell) {
-    scroll-padding-block: var(--size-bar) 0;
-  }
-
-  .app-shell {
-    padding-bottom: 0;
-  }
-
-  .app-bar-inner {
-    min-height: var(--size-bar);
-    gap: var(--space-8);
-  }
-
-  .app-navigation-bar {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    gap: var(--space-5);
-    min-width: 0;
-  }
-
-  .app-navigation-bar .app-nav-icon {
-    display: none;
-  }
-
-  .app-navigation-bottom {
-    display: none;
-  }
 }
 
 @media (--xl) {
-  .public-navigation,
-  .app-navigation-bar {
+  .public-navigation {
     gap: var(--space-6);
   }
+}
 
-  .app-observatory-state strong {
-    display: inline;
-  }
+/* The Account menu: a button where "Sign in" sits, opening a small glass list. */
+.account-menu {
+  position: relative;
+}
+
+.account-menu-button {
+  gap: var(--space-2);
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.account-menu-caret {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-0.15rem) rotate(45deg);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.account-menu-button[aria-expanded="true"] .account-menu-caret {
+  transform: translateY(0.1rem) rotate(-135deg);
+}
+
+.account-menu-list {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  display: none;
+  min-width: 13rem;
+  padding: var(--space-2);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-base);
+  box-shadow: var(--shadow-small);
+}
+
+.account-menu-list[data-open] {
+  display: grid;
+}
+
+.account-menu-list nav {
+  display: grid;
+}
+
+.account-menu-list a,
+.account-menu-sign-out button {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--font-size-label);
+  text-align: start;
+}
+
+.account-menu-list a:hover,
+.account-menu-sign-out button:hover {
+  background: var(--color-outline-fill-hover);
+  color: var(--color-text-primary);
+}
+
+.account-menu-list a[aria-current="page"] {
+  color: var(--color-text-primary);
+}
+
+.account-menu-list a[aria-current="page"]::before {
+  width: 0.375rem;
+  height: 0.375rem;
+  margin-inline-end: var(--space-2);
+  border-radius: 50%;
+  background: var(--color-accent);
+  content: "";
+}
+
+.account-menu-sign-out {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-line);
+}
+
+/* The phone menu's account block: smaller than the three pages above it. */
+.public-mobile-menu .mobile-account p {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+}
+
+.public-mobile-menu .mobile-account a {
+  min-height: 3rem;
+  font-family: var(--font-body);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-medium);
+  text-transform: none;
+}
+
+.public-mobile-menu .mobile-account a::after {
+  font-size: var(--font-size-body);
+}
+
+.mobile-sign-out button {
+  width: 100%;
+  min-height: var(--size-touch);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-control);
+  background: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
+}
+
+:lang(ka) .account-menu-button,
+:lang(ka) .public-mobile-menu .mobile-account p {
+  letter-spacing: 0;
+  text-transform: none;
 }

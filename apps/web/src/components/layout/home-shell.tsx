@@ -4,6 +4,7 @@ import { TonightNotices } from "@/components/astronomy/tonight-notices";
 import { FlightPlan } from "@/components/home/flight-plan";
 import { SkyHero } from "@/components/home/sky-hero";
 import { TonightList } from "@/components/home/tonight-list";
+import { PageGuide } from "@/components/guide/page-guide";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { linkTone, weatherTone } from "@/components/status/status-page";
 import { ButtonLink } from "@/components/ui/button";
@@ -212,6 +213,8 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
           </aside>
         </Container>
       </section>
+
+      <PageGuide id="home" locale={locale} />
 
       <section className="home-final" id="final-cta" aria-labelledby="final-cta-title">
         <Container className="home-final-inner">

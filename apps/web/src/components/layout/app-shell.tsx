@@ -1,71 +1,40 @@
 import type { ReactNode } from "react";
 
-import { BrandLockup } from "@/components/brand/brand-lockup";
-import { AppNavigation, PlannedNavigation } from "@/components/navigation/app-navigation";
-import { ObservatoryStatus } from "@/components/observatory/observatory-status";
-import { SignOutButton } from "@/components/auth/sign-out-button";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeaderBar } from "@/components/layout/site-header-bar";
+import { PlannedNavigation } from "@/components/navigation/app-navigation";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
 type AppShellProps = {
   children: ReactNode;
   locale: Locale;
-  navigation: Dictionary["navigation"]["app"];
+  dictionary: Dictionary;
   logoutLabel: string;
 };
 
-function ObservatoryState({ navigation }: Pick<AppShellProps, "navigation">) {
-  return (
-    <div
-      className="app-observatory-state"
-      role="group"
-      aria-label={navigation.observatory}
-    >
-      <strong>{navigation.observatoryName}</strong>
-      <ObservatoryStatus status="ONLINE" label={navigation.statusOnline} />
-      <small>{navigation.simulated}</small>
-    </div>
-  );
-}
-
 /**
- * The signed-in shell as the Skychaser site draws its own (ADR-052 §6): one glass bar
- * with the lockup, the destinations, the observatory and the account; the tab bar on a
- * phone; a footer that signs off and holds the pages not built yet.
+ * The signed-in pages wear the site's own header and footer, so pressing Book never
+ * swaps the menu out from under the visitor. Their own pages sit in the Account menu.
  */
-export function AppShell({ children, locale, logoutLabel, navigation }: AppShellProps) {
+export function AppShell({ children, dictionary, locale, logoutLabel }: AppShellProps) {
   return (
-    <div className="app-shell">
-      <header className="app-bar">
-        <div className="app-bar-inner">
-          <a className="app-brand" href={`/${locale}`}>
-            <BrandLockup ariaLabel={navigation.brandAriaLabel} />
-          </a>
-          <AppNavigation locale={locale} navigation={navigation} placement="bar" />
-          <div className="app-bar-end">
-            <ObservatoryState navigation={navigation} />
-            <SignOutButton
-              className="app-logout-form"
-              label={logoutLabel}
-              locale={locale}
-            />
-          </div>
-        </div>
-      </header>
+    <div className="site-frame app-shell">
+      <SiteHeaderBar
+        locale={locale}
+        navigation={dictionary.navigation}
+        signOutLabel={logoutLabel}
+        signedIn
+      />
 
       <main id="main-content" className="app-content">
         {children}
       </main>
 
-      <footer className="app-footer">
-        <BrandLockup
-          ariaLabel={navigation.brandAriaLabel}
-          endorsement={navigation.brandEndorsement}
-        />
-        <PlannedNavigation locale={locale} navigation={navigation} />
-      </footer>
-
-      <AppNavigation locale={locale} navigation={navigation} placement="bottom" />
+      <div className="app-planned">
+        <PlannedNavigation locale={locale} navigation={dictionary.navigation.app} />
+      </div>
+      <SiteFooter footer={dictionary.footer} locale={locale} />
     </div>
   );
 }

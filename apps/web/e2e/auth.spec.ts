@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
 import { expect, test } from "@playwright/test";
-import { appBar } from "./selectors";
+import { openAccountMenu } from "./selectors";
 
 // A cold `next dev` compiles each route on its first visit, which takes longer
 // than the default five seconds.
@@ -86,7 +86,7 @@ test("signs out and ends the session", async ({ page }) => {
   await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
 
   await page.waitForLoadState("networkidle");
-  await appBar(page).getByRole("button", { name: "Sign out" }).click();
+  await (await openAccountMenu(page)).getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/en\/sign-in$/, { timeout: firstCompile });
 
   await page.goto("/en/app");

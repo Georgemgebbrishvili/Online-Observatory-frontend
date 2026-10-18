@@ -32,16 +32,6 @@ export type AppDestination = (typeof appDestinations)[number];
 export type AppDestinationKey = AppDestination["key"];
 export type NavigationIconName = AppDestination["icon"];
 
-/** The five that fit a bottom bar and earn a place in it. */
-export const primaryDestinations = appDestinations.filter(
-  (destination) => destination.group === "primary",
-);
-
-/** The sidebar's working destinations: the five. */
-export const sidebarDestinations = appDestinations.filter(
-  (destination) => destination.group !== "planned",
-);
-
 /** Reachable, navigable, and honest about not being built. */
 export const plannedDestinations = appDestinations.filter(
   (destination) => destination.group === "planned",

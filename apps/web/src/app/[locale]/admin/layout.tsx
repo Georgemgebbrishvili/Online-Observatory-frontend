@@ -56,7 +56,7 @@ export default async function OperatorLayout({ children, params }: OperatorLayou
         <header className="operator-header">
           <div className="operator-heading">
             <a href={`/${locale}`}>
-              <BrandLockup ariaLabel={dictionary.navigation.app.brandAriaLabel} />
+              <BrandLockup ariaLabel={dictionary.navigation.brandAriaLabel} />
             </a>
             <div>
               <p>

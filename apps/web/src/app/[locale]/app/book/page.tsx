@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { BookingBoard } from "@/components/booking/booking-board";
+import { PageGuide } from "@/components/guide/page-guide";
 import { BookingList } from "@/components/booking/booking-list";
 import { RescheduleClosed } from "@/components/booking/reschedule-closed";
 import { StatePanel } from "@/components/ui/state-panel";
@@ -95,6 +96,7 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
     <>
       {main}
       <BookingList embedded locale={locale} paged={cursor !== null} result={nights} />
+      <PageGuide id="book" locale={locale} />
     </>
   );
 }

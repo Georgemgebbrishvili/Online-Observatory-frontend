@@ -955,11 +955,9 @@
 }
 
 @media (--below-md) {
-  /* Focus scrolls clear of the dock as well as the bottom bar. */
+  /* Focus scrolls clear of the dock. */
   html:has(.room.room-console) {
-    scroll-padding-bottom: calc(
-      var(--size-app-bottom-nav) + env(safe-area-inset-bottom) + 5.5rem
-    );
+    scroll-padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem);
   }
 
   .room.room-console {
@@ -1110,7 +1108,7 @@
   .room.room-console .room-dock {
     position: fixed;
     right: 0;
-    bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom));
+    bottom: env(safe-area-inset-bottom);
     left: 0;
     z-index: 30;
     display: flex;
@@ -1165,7 +1163,7 @@
   .room.room-console .live-feed-action {
     position: fixed;
     right: 16px;
-    bottom: calc(var(--size-app-bottom-nav) + env(safe-area-inset-bottom) + 14px);
+    bottom: calc(env(safe-area-inset-bottom) + 14px);
     left: 16px;
     z-index: 31;
     flex-wrap: nowrap;
