@@ -82,7 +82,7 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
       DOUBLE_STAR: "ორმაგი ვარსკვლავი",
       GLOBULAR_CLUSTER: "სფერული გროვა",
       PLANETARY_NEBULA: "პლანეტარული ნისლეული",
-      BRIGHT_NEBULA: "ნათელი ნისლეული",
+      BRIGHT_NEBULA: "კაშკაშა ნისლეული",
     },
     typesPlural: {
       MOON: "მთვარე",
@@ -90,7 +90,7 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
       DOUBLE_STAR: "ორმაგი ვარსკვლავები",
       GLOBULAR_CLUSTER: "სფერული გროვები",
       PLANETARY_NEBULA: "პლანეტარული ნისლეულები",
-      BRIGHT_NEBULA: "ნათელი ნისლეულები",
+      BRIGHT_NEBULA: "კაშკაშა ნისლეულები",
     },
     reasons: {
       SAFETY_ENVELOPE_UNMEASURED: "ტელესკოპის უსაფრთხოების ზღვრები ჯერ არ არის გაზომილი",
@@ -101,11 +101,11 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
       BELOW_MIN_ALTITUDE: "ცაში ძალიან დაბლაა",
       ABOVE_MAX_ALTITUDE: "ტელესკოპისთვის ძალიან მაღლაა",
       BEHIND_HORIZON_MASK: "ადგილობრივი ჰორიზონტის მიღმაა",
-      IN_FORBIDDEN_AZIMUTH: "ტელესკოპი ამ მიმართულებით არ მიიმართება",
+      IN_FORBIDDEN_AZIMUTH: "იმ მიმართულებითაა, საითაც ტელესკოპი არ იხედება",
       SUN_TOO_HIGH: "ცა ჯერ საკმარისად ბნელი არ არის",
       TOO_CLOSE_TO_SUN: "მზესთან ძალიან ახლოსაა",
       TOO_CLOSE_TO_MOON: "მთვარესთან ძალიან ახლოსაა",
-      DOES_NOT_FIT_FIELD: "ტელესკოპის ხედვის არეზე დიდია",
+      DOES_NOT_FIT_FIELD: "ტელესკოპის ხედვის ველზე დიდია",
     },
     observable: "ახლა დაკვირვებადია",
     window: {
@@ -115,7 +115,7 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
       none: "—",
     },
     simulated: {
-      label: "SIMULATED OBSERVATORY",
+      label: "სიმულირებული ობსერვატორია",
     },
     unreachable: {
       title: "ამაღამინდელი ცის მონაცემები ვერ მივიღეთ",

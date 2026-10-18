@@ -143,10 +143,10 @@ test("the Georgian controls fit a phone", async ({ page }) => {
   // On a phone the pad waits in a sheet, and Capture sits in the dock (ADR-050 §1).
   await expect(page.getByRole("region", { name: "მართვა" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "გადაღება" })).toBeVisible();
-  await page.getByRole("button", { name: "ხელით მართვა" }).click();
+  await page.getByRole("button", { name: "ხელის პულტი" }).click();
   await expect(
     page
-      .getByRole("dialog", { name: "ხელით მართვა" })
+      .getByRole("dialog", { name: "ხელის პულტი" })
       .getByRole("region", { name: "მართვა" }),
   ).toBeVisible();
   expect(

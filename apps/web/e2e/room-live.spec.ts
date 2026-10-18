@@ -51,7 +51,7 @@ test("the Georgian live room fits a phone", async ({ page }) => {
   await page.goto(`/ka/app/missions/${observing}/session`);
 
   await expect(
-    page.getByRole("img", { name: "სიმულირებული პირდაპირი ხედი: ჰერკულესის გროვა" }),
+    page.getByRole("img", { name: "სიმულირებული პირდაპირი ეთერი: ჰერკულესის გროვა" }),
   ).toBeVisible();
   await expect(page.locator(".live-feed").getByText("სიმულირებული")).toBeVisible();
   await expect(page.locator(".live-feed").getByText(/დარჩენილი დრო/)).toBeVisible();
@@ -75,7 +75,7 @@ test("starting is stated while the platform opens the session", async ({ page })
 
 for (const [locale, opens, button] of [
   ["en", "Your slot opens at", "Start observation"],
-  ["ka", "შენი დრო", "დაიწყე დაკვირვება"],
+  ["ka", "შენი სეანსი", "დაიწყე დაკვირვება"],
 ] as const) {
   test(`${locale}: a scheduled mission waits for its slot, with the plate as an illustration`, async ({
     page,

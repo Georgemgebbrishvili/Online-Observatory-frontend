@@ -104,7 +104,7 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
   ka: {
     metadataTitle: `კენჭისყრა — კვირის დაკვირვება · ${brand.ka.nominative}`,
     metadataDescription:
-      "კვირაში ერთი ობიექტი, რომელსაც კენჭისყრით ირჩევენ იმათგან, რასაც ტელესკოპი ხედავს.",
+      "კვირაში ერთი ობიექტი, რომელსაც კენჭისყრით ირჩევენ იმ ობიექტებიდან, რომლებსაც ტელესკოპი ხედავს.",
     title: "კვირის კენჭისყრა",
     chapter: (week) => `კვირის კენჭისყრა · ${week}`,
     cast: (count) => `${count} ხმა`,
@@ -114,12 +114,12 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
       leading: "ლიდერობს კენჭისყრაში",
       highest: "ყველაზე მაღლა იმ ღამეს",
       quiet: "წყნარი ცა.",
-      lockOn: (day) => `ხმები კვირის ობიექტს ${day}, 13:00 UTC-ზე აფიქსირებს.`,
+      lockOn: (day) => `კვირის ობიექტი ${day}, 13:00 UTC-ზე ფიქსირდება.`,
       nothing: "კატალოგიდან არცერთი ობიექტი არ ამოდის ჰორიზონტზე ტელესკოპისთვის.",
       illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
     },
     facts: {
-      highest: "უმაღლესი",
+      highest: "მაქს. სიმაღლე",
       at: "დრო",
       votes: "ხმები",
       of: (votes, cast) => `${votes} / ${cast}`,
@@ -127,7 +127,7 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
     sky: (night) => `ცა ${night}`,
     ballot: {
       leading: "ლიდერი",
-      when: (altitude, time) => `უმაღლესი ${altitude}° ${time}-ზე`,
+      when: (altitude, time) => `მაქს. ${altitude}° ${time}-ზე`,
       votes: () => "ხმა",
       vote: "ხმის მიცემა",
       voteFor: (name) => `ხმის მიცემა: ${name}`,
@@ -135,11 +135,11 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
       opensNote:
         "ბიულეტენის წაკითხვა ამჟამად ვერ მოხერხდა. კვირის კანდიდატები ისაა, რასაც ობსერვატორია ხედავს.",
       lockedButton: "დახურულია",
-      lockedNote: "კვირის კენჭისყრა დაიხურა. გამარჯვებულს ოპერატორი კითხულობს.",
+      lockedNote: "კვირის კენჭისყრა დაიხურა. გამარჯვებულს ოპერატორი აცხადებს.",
       signIn: "ხმის მისაცემად შედი",
       signInFor: (name) => `შედი, რომ ხმა მისცე: ${name}`,
       yourVote: "შენი ხმა",
-      cast: (name) => `შენი ხმა ${name}-ზეა.`,
+      cast: (name) => `შენი ხმა: ${name}.`,
       locked: "კვირის კენჭისყრა დაიხურა.",
       notCandidate: "ეს ობიექტი ამ კვირის ბიულეტენში არ არის.",
       failed: "ხმა არ ჩაიწერა. სცადე ცოტა ხანში.",
@@ -151,7 +151,7 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
       summary: (count, dusk, dawn) => `${count} ობიექტზე დაკვირვება შესაძლებელია ${dusk}-დან ${dawn}-მდე.`,
       summaryLead: (name, altitude, at, count, dusk, dawn) =>
         `${name} ყველაზე მაღლა ${altitude}°-ზე ადის ${at}-ზე. ${count} ობიექტზე დაკვირვება შესაძლებელია ${dusk}-დან ${dawn}-მდე.`,
-      pathTitle: (name, altitude, at) => `${name} — უმაღლესი ${altitude}° ${at}-ზე`,
+      pathTitle: (name, altitude, at) => `${name} — მაქს. ${altitude}° ${at}-ზე`,
     },
   },
 };

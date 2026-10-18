@@ -92,7 +92,7 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
   },
   ka: {
     title: "მართვა",
-    sessionTitle: "სესია",
+    sessionTitle: "სეანსი",
     step: "{step} რკალური წუთი",
     labels: {
       up: "მაღლა",
@@ -134,12 +134,12 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
       MISSION_ALREADY_ACTIVE: "ტელესკოპზე სხვა დაკვირვება მიმდინარეობს.",
       PAYLOAD_TYPE_MISMATCH: "ბრძანება ვერ გაიშიფრა.",
       MALFORMED_PAYLOAD: "ბრძანება ვერ გაიშიფრა.",
-      COMMAND_NOT_PERMITTED_FOR_CLIENT: "ეს მართვა მომხმარებლისთვის მიუწვდომელია.",
+      COMMAND_NOT_PERMITTED_FOR_CLIENT: "ეს ბრძანება მომხმარებლებისთვის მიუწვდომელია.",
       SAFETY_ENVELOPE_UNMEASURED:
         "ტელესკოპის უსაფრთხო დიაპაზონი გაზომილი არ არის, ამიტომ ის არ მოძრაობს.",
       SAFETY_BELOW_MIN_ALTITUDE: "ეს ტელესკოპს ძალიან დაბლა მიმართავდა.",
       SAFETY_ABOVE_MAX_ALTITUDE: "ეს ტელესკოპს ძალიან მაღლა მიმართავდა.",
-      SAFETY_HORIZON_MASK: "ეს ტელესკოპს ხედის დამფარავ ობიექტს მიმართავდა.",
+      SAFETY_HORIZON_MASK: "ეს ტელესკოპს იქით მიმართავდა, სადაც ხედი დაფარულია.",
       SAFETY_FORBIDDEN_AZIMUTH: "ეს მიმართულება ტელესკოპისთვის დახურულია.",
       SAFETY_SUN_EXCLUSION: "ეს ტელესკოპს მზესთან ძალიან ახლოს მიმართავდა.",
       SAFETY_DAYLIGHT_LOCK: "დღის სინათლეზე ტელესკოპი არ მოძრაობს.",

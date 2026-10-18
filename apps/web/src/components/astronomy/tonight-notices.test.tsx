@@ -69,7 +69,7 @@ describe("TonightNotices", () => {
         }}
       />,
     );
-    expect(screen.getByRole("note")).toHaveTextContent("SIMULATED OBSERVATORY");
+    expect(screen.getByRole("note")).toHaveTextContent("სიმულირებული ობსერვატორია");
     expect(screen.queryByRole("status")).toBeNull();
   });
 

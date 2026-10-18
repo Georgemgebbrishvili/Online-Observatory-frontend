@@ -97,7 +97,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     },
     noObservatory: {
       title: "ობსერვატორია არ არის მითითებული.",
-      description: "ჯერჯერობით საანგარიშო არაფერია.",
+      description: "ჯერჯერობით სათქმელი არაფერია.",
     },
     upcoming: "დაგეგმილი დაკვირვებები",
     simulated: "სიმულირებული",
@@ -105,7 +105,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     retiredTarget: "ობიექტი, რომელიც კატალოგში აღარ არის",
     noUpcoming: {
       title: "დაგეგმილი დაკვირვება არ არის.",
-      description: "დაჯავშნე ამაღამ ხილული ობიექტებიდან.",
+      description: "დაჯავშნე ერთ-ერთი ამაღამ ხილული ობიექტი.",
       action: "ამაღამ ხილული ობიექტები",
     },
     upcomingUnavailable: {

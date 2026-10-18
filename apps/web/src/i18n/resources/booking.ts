@@ -56,7 +56,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
   },
   ka: {
     metadataTitle: `დაკვირვების დაჯავშნა · ${brand.ka.nominative}`,
-    metadataDescription: "ტელესკოპის დრო, ღამე-ღამე.",
+    metadataDescription: "დრო ტელესკოპთან, ღამეების მიხედვით.",
     title: "დრო ტელესკოპთან.",
     yourBookings: "შენი ჯავშნები",
     nights: "აირჩიე ღამე",

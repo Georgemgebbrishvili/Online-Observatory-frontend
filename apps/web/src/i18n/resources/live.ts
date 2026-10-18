@@ -23,13 +23,13 @@ const en = {
 export const liveCopy = {
   en,
   ka: {
-    metadataTitle: `პირდაპირი · ${brand.ka.nominative}`,
+    metadataTitle: `პირდაპირი დაკვირვება · ${brand.ka.nominative}`,
     title: "ახლა პირდაპირი დაკვირვება არ მიმდინარეობს.",
     next: "შენი შემდეგი ღამე",
     open: "მისიის გახსნა",
     none: {
       title: "ღამე ჯერ არ გაქვს დაჯავშნული.",
-      description: "აირჩიე ღამე და ობიექტი — შენი ოთახი აქედან გაიხსნება.",
+      description: "აირჩიე ღამე და ობიექტი — შენი სეანსი აქედან გაიხსნება.",
       action: "ღამის დაჯავშნა",
     },
     unavailable: {
@@ -37,6 +37,6 @@ export const liveCopy = {
       description: "ობსერვატორიამ არ უპასუხა. სცადე ცოტა ხანში.",
     },
     simulated: "სიმულირებული",
-    retiredTarget: "ობიექტი, რომელიც აღარ არის შეთავაზებაში",
+    retiredTarget: "ობიექტი, რომელიც კატალოგში აღარ არის",
   },
 } as const satisfies Record<Locale, typeof en>;

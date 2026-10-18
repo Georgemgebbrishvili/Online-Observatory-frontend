@@ -26,14 +26,14 @@ export const observatories: ObservatorySite[] = [
     id: "tbilisi-01",
     name: {
       en: `${brand.en.name} Tbilisi Observatory`,
-      ka: `${brand.ka.genitive} თბილისის ობსერვატორია`,
+      ka: `${brand.ka.genitive} ობსერვატორია, თბილისი`,
     },
     location: { en: "Tbilisi, Georgia", ka: "თბილისი, საქართველო" },
     telescope: {
       type: { en: "Schmidt-Cassegrain", ka: "შმიდტ-კასეგრენი" },
       aperture: "203 mm",
       focalLength: "2032 mm",
-      mount: { en: "Computerized alt-azimuth", ka: "კომპიუტერული ალტ-აზიმუტური" },
+      mount: { en: "Computerized alt-azimuth", ka: "კომპიუტერიზებული ალტაზიმუტური" },
       configurationStatus: "EXPECTED_MVP",
     },
     capabilities: ["PLANETARY", "LUNAR", "BRIGHT_DEEP_SKY"],

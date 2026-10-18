@@ -21,7 +21,7 @@ export const feedbackCopy = {
     errorKicker: "შეცდომა",
     errorTitle: "ვერ ჩაიტვირთა",
     errorDescription:
-      "შეცდომა ჩვენს მხარესაა. შენ არაფერი დაგიშავებია და არაფერი დაკარგულა.",
+      "შეცდომა ჩვენს მხარესაა — შენი ბრალი არ არის და არაფერი დაკარგულა.",
     errorRetry: "სცადე თავიდან",
     errorHome: `${brand.ka.on} დაბრუნება`,
     errorReference: "იდენტიფიკატორი",

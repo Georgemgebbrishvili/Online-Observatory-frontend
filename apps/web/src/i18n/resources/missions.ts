@@ -75,7 +75,7 @@ export const missionDetailCopy = {
     duration: "მისიის ხანგრძლივობა",
     minutes: "წუთი",
     observatory: "ობსერვატორია",
-    observatoryName: `${brand.ka.genitive} თბილისის ობსერვატორია`,
+    observatoryName: `${brand.ka.genitive} ობსერვატორია, თბილისი`,
     book: "დაჯავშნე დაკვირვება",
     visibilityUnknown: "ამაღამინდელი ხილვადობის მონაცემები ვერ მივიღეთ.",
     technical: "ტექნიკური ინფორმაცია",
