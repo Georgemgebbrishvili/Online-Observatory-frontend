@@ -482,7 +482,7 @@ const bookings = [
       status: "OPEN",
       cause: "WEATHER",
       minutesLost: 18,
-      expiresAt: "2026-10-20T16:30:00.000Z",
+      expiresAt: "2030-10-20T16:30:00.000Z",
       rescheduledBookingId: null,
     },
     createdAt: "2026-09-18T09:00:00.000Z",

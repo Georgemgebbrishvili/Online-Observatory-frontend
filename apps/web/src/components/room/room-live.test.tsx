@@ -294,6 +294,15 @@ describe("RoomLive", () => {
     expect(screen.queryByRole("img", { name: /live view/ })).toBeNull();
   });
 
+  it("keeps the view for a session that ends further off than a timer can wait", async () => {
+    vi.stubGlobal("fetch", answer(200, session(30 * 24 * 60 * 60_000)));
+    renderRoom();
+    const socket = await openChannel();
+    socket.receive(stream);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(screen.getByRole("status")).not.toHaveTextContent("Your time is up");
+  });
+
   it("waits for a scheduled mission's slot, then starts it on the customer's word", async () => {
     const fetch = answer(409, {
       code: "OBSERVATORY_OFFLINE",

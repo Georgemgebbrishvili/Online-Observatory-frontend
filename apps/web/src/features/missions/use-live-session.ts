@@ -63,6 +63,8 @@ export function useNow() {
  * The start is never retried by itself: for a scheduled mission it moves the telescope.
  * The channel is: it is subscription only.
  */
+const longestTimerMs = 2 ** 31 - 1;
+
 export function useLiveSession({
   failureReason,
   locale,
@@ -202,13 +204,14 @@ export function useLiveSession({
     };
   }, [channelPath, closed, connection, missionId, sessionId]);
 
-  // The session ends at its expiresAt, whatever the channel is doing.
+  // The session ends at its expiresAt, whatever the channel is doing. A browser timer
+  // longer than 2^31 - 1 ms (24.8 days) fires at once, so the wait is capped there.
   const expiresAt = live.session?.expiresAt ?? null;
   useEffect(() => {
     if (!expiresAt) return;
     const id = window.setTimeout(
       () => dispatch({ type: "expired" }),
-      Math.max(0, Date.parse(expiresAt) - Date.now()),
+      Math.min(longestTimerMs, Math.max(0, Date.parse(expiresAt) - Date.now())),
     );
     return () => window.clearTimeout(id);
   }, [expiresAt]);
