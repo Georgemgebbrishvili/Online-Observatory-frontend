@@ -73,7 +73,11 @@ function Tonight({ copy, facts, locale }: { copy: Copy; facts: PricingFacts; loc
         <h2 id="pricing-tonight-title" className="plate-title">
           {tonight?.isToday === false ? copy.tonight.next : copy.tonight.title}
         </h2>
-        {tonight && <p>{tonight.label}</p>}
+        {tonight && (
+          <p>
+            <time dateTime={tonight.date}>{tonight.label}</time>
+          </p>
+        )}
       </header>
       {!tonight || !time ? (
         <p className="pricing-tonight-note">
