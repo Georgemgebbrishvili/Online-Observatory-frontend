@@ -1,3 +1,5 @@
+import type { Booking } from "@darkview/contracts";
+
 import type { Locale } from "@/i18n/config";
 
 function intlLocale(locale: Locale) {
@@ -66,4 +68,13 @@ export function formatDeadline(at: string, timezone: string, locale: Locale) {
 /** The booking's id, shortened, as a reference the customer can quote. */
 export function bookingReference(id: string) {
   return id.slice(0, 8).toUpperCase();
+}
+
+/** A paid booking whose slot is still ahead or under way, and was not lost: the night is still to come. */
+export function stillToCome(
+  booking: Pick<Booking, "status" | "slotStartAt" | "durationMinutes" | "entitlement">,
+  now: number,
+) {
+  const end = Date.parse(booking.slotStartAt) + booking.durationMinutes * 60_000;
+  return booking.status === "CONFIRMED" && !booking.entitlement && end > now;
 }

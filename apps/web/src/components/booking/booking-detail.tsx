@@ -5,6 +5,7 @@ import { BookingActions } from "@/components/booking/booking-actions";
 import { bookingTitle, statusTone } from "@/components/booking/booking-list";
 import { formatPrice } from "@/components/booking/booking-night";
 import { ModeNotice } from "@/components/observatory/mode-notice";
+import { ViewerTime } from "@/components/booking/viewer-time";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import type { BookingEntry } from "@/features/booking/bookings";
 import { describeHold } from "@/features/booking/hold";
@@ -13,6 +14,7 @@ import {
   formatDay,
   formatDeadline,
   formatSlot,
+  stillToCome,
 } from "@/features/booking/present";
 import type { Locale } from "@/i18n/config";
 import { bookingActionsCopy, bookingsCopy } from "@/i18n/resources/bookings";
@@ -24,15 +26,18 @@ type BookingDetailProps = {
   entry: BookingEntry;
   mode: ObservatoryMode | null;
   locale: Locale;
+  /** The request's clock, read by the page. */
+  now: number;
 };
 
-export function BookingDetail({ entry, locale, mode }: BookingDetailProps) {
+export function BookingDetail({ entry, locale, mode, now }: BookingDetailProps) {
   const copy = bookingsCopy[locale];
   const { booking, observatory, timezone } = entry;
   const entitlement = booking.entitlement ?? null;
   const open = entitlement?.status === "OPEN";
   const base = `/${locale}/app/bookings`;
   const hold = describeHold(booking, siteUrl.origin);
+  const upcoming = stillToCome(booking, now);
 
   return (
     <div className="booking-page booking-detail">
@@ -76,6 +81,13 @@ export function BookingDetail({ entry, locale, mode }: BookingDetailProps) {
             </time>
           </dd>
         </div>
+        <ViewerTime
+          durationMinutes={booking.durationMinutes}
+          label={copy.facts.yourTime}
+          locale={locale}
+          startAt={booking.slotStartAt}
+          timezone={timezone}
+        />
         <div>
           <dt>{copy.facts.length}</dt>
           <dd>{copy.minutes(booking.durationMinutes)}</dd>
@@ -158,6 +170,17 @@ export function BookingDetail({ entry, locale, mode }: BookingDetailProps) {
 
       {booking.status === "CONFIRMED" && !open && (
         <p className="booking-rule">{copy.paidCannotCancel}</p>
+      )}
+
+      {upcoming && (
+        <section className="booking-next" aria-labelledby="booking-next-title">
+          <h2 id="booking-next-title">{copy.next.title}</h2>
+          <ol>
+            {copy.next.steps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+        </section>
       )}
 
       <BookingActions

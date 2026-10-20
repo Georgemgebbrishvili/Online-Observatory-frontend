@@ -29,6 +29,11 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
   };
 }
 
+/** The request's clock, read outside the render (react-hooks/purity). */
+function readClock() {
+  return Date.now();
+}
+
 export default async function BookingPage({ params }: BookingPageProps) {
   const { locale, bookingId } = await params;
   if (!isLocale(locale)) notFound();
@@ -50,5 +55,7 @@ export default async function BookingPage({ params }: BookingPageProps) {
     );
   }
 
-  return <BookingDetail entry={result.entry} locale={locale} mode={result.mode} />;
+  return (
+    <BookingDetail entry={result.entry} locale={locale} mode={result.mode} now={readClock()} />
+  );
 }

@@ -32,7 +32,11 @@ type BookingsCopy = {
     loyaltyPoints: string;
     subscriptionMinutes: string;
     reference: string;
+    /** The slot in the reader's own zone, shown only when it is not the observatory's. */
+    yourTime: string;
   };
+  /** After a confirmed booking: what the customer does on the night. */
+  next: { title: string; steps: string[] };
   minutes: (count: number) => string;
   points: (count: number) => string;
   /** A held slot: how long the hold lasts, and the way to pay (ADR-043). */
@@ -106,6 +110,15 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
       loyaltyPoints: "Points spent",
       subscriptionMinutes: "Paid with subscription minutes",
       reference: "Reference",
+      yourTime: "Your time",
+    },
+    next: {
+      title: "What happens next",
+      steps: [
+        "At the start of the slot, open the observation here or from your bookings. The telescope turns to your target.",
+        "Watch the live view. Move the frame, re-centre, and capture when the view is right.",
+        "Each capture is kept in your Collection, with its time and target.",
+      ],
     },
     minutes: (count) => `${count} min`,
     points: (count) => `${count} points`,
@@ -180,6 +193,15 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
       loyaltyPoints: "დახარჯული ქულები",
       subscriptionMinutes: "გადახდილია გამოწერის წუთებით",
       reference: "ნომერი",
+      yourTime: "შენი დროით",
+    },
+    next: {
+      title: "რა ხდება შემდეგ",
+      steps: [
+        "სეანსის დაწყებისას გახსენი დაკვირვება აქედან ან ჯავშნების გვერდიდან. ტელესკოპი შენი ობიექტისკენ მოძრაობს.",
+        "უყურე პირდაპირ გამოსახულებას. გადაადგილე კადრი, გააკეთე ცენტრირება და გადაიღე, როცა ხედი მოგეწონება.",
+        "ყოველი გადაღებული კადრი შენს კოლექციაში ინახება, დროითა და ობიექტით.",
+      ],
     },
     minutes: (count) => `${count} წთ`,
     points: (count) => `${count} ქულა`,

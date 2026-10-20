@@ -513,3 +513,22 @@ html[lang="ka"] .booking-hero h1 {
     transition-duration: 0.01ms;
   }
 }
+
+.booking-next {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 40rem;
+}
+
+.booking-next h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.booking-next ol {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--color-text-secondary);
+}

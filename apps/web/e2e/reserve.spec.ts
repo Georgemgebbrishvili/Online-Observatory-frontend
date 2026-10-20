@@ -107,7 +107,7 @@ test("declining at the checkout cancels the booking", async ({ page }) => {
   await expect(page.getByText("Cancelled", { exact: true })).toBeVisible();
 });
 
-test("a slot taken a moment ago is refused, and the board stays", async ({ page }) => {
+test("a slot taken a moment ago is refused, struck out, and the board stays", async ({ page }) => {
   await signIn(page);
   await chooseSlot(page, 8);
   await target(page, /^Saturn/).click();
@@ -117,6 +117,10 @@ test("a slot taken a moment ago is refused, and the board stays", async ({ page 
     "Somebody booked this slot a moment ago. Choose another.",
   );
   await expect(page).toHaveURL(/\/en\/app\/book$/);
+  await expect(
+    page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").nth(8),
+  ).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Reserve and pay" })).toBeDisabled();
 });
 
 test("a booked slot, or no slot at all, cannot be reserved", async ({ page }) => {

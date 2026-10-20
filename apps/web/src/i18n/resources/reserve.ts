@@ -12,6 +12,8 @@ export type ReserveFormCopy = {
   weatherHold: string;
   offline: string;
   notObservable: string;
+  /** `{reasons}` is replaced by the platform's block reasons, in words. */
+  notObservableBecause: string;
   failed: string;
   otherSlot: string;
 };
@@ -58,6 +60,8 @@ export const reserveCopy: Record<"en" | "ka", ReserveCopy> = {
       weatherHold: "The observatory is on weather hold for this night.",
       offline: "The observatory is offline.",
       notObservable: "That target is no longer up for this whole slot. Choose another.",
+      notObservableBecause:
+        "That target is no longer up for this whole slot. Why: {reasons}. Choose another.",
       failed: "Something went wrong. Try again.",
       otherSlot: "Choose another slot",
     },
@@ -90,6 +94,8 @@ export const reserveCopy: Record<"en" | "ka", ReserveCopy> = {
       weatherHold: "ამ ღამეს ობსერვატორია ამინდის გამო შეჩერებულია.",
       offline: "ობსერვატორია კავშირგარეშეა.",
       notObservable: "ეს ობიექტი ამ სეანსის მთელი განმავლობაში აღარ ჩანს. აირჩიე სხვა.",
+      notObservableBecause:
+        "ეს ობიექტი ამ სეანსის მთელი განმავლობაში აღარ ჩანს. მიზეზი: {reasons}. აირჩიე სხვა.",
       failed: "რაღაც შეფერხდა. სცადე თავიდან.",
       otherSlot: "აირჩიე სხვა სეანსი",
     },

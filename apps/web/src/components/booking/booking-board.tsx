@@ -13,11 +13,13 @@ import {
   zRescheduleBookingResponse,
 } from "@darkview/contracts/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { MoonGlyph, moonThatNight } from "@/components/booking/moon-glyph";
 import { ModeNotice } from "@/components/observatory/mode-notice";
 import { checkoutTarget } from "@/features/booking/checkout";
+import { readRefusal } from "@/features/booking/refusal";
 import { targetDescription, targetName, targetVisual } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { boardCopy } from "@/i18n/resources/board";
@@ -118,9 +120,15 @@ export function BookingBoard({
         .find((part) => part.type === "timeZoneName")?.value
     : undefined;
 
+  const router = useRouter();
+  // Slots refused as taken on this visit, struck out until the night is read again.
+  const [gone, setGone] = useState<ReadonlySet<string>>(() => new Set());
+
   // A replacement is for the lost slot's length (rescheduleBooking); otherwise any open slot.
   const offered = (slot: Slot) =>
-    slot.available && (!reschedule || slot.durationMinutes === reschedule.durationMinutes);
+    slot.available &&
+    !gone.has(slot.startAt) &&
+    (!reschedule || slot.durationMinutes === reschedule.durationMinutes);
   const openCount = (night: BoardNight) => night.slots.filter(offered).length;
   const nightOf = (startAt: string | null) =>
     nights.find((night) => night.slots.some((slot) => slot.startAt === startAt))?.date ?? null;
@@ -242,17 +250,23 @@ export function BookingBoard({
         navigateWithFreshSession(`/${locale}/app/bookings/${reschedule.id}`);
         return;
       }
-      setFeedback(
-        code === "SLOT_UNAVAILABLE" || code === "CONFLICT"
-          ? reserve.form.taken
-          : code === "WEATHER_HOLD"
-            ? reserve.form.weatherHold
-            : code === "OBSERVATORY_OFFLINE"
-              ? reserve.form.offline
-              : code === "TARGET_NOT_OBSERVABLE"
-                ? reserve.form.notObservable
-                : reserve.form.failed,
-      );
+      const refusal = readRefusal(error, reserve.form, words.reasons);
+      setFeedback(refusal.message);
+      if (refusal.slotGone) {
+        setGone((all) => new Set(all).add(chosen.startAt));
+        setSlotAt(null);
+        router.refresh();
+      }
+      if (refusal.skyChanged) {
+        setTargetId(null);
+        reading.current.delete(chosen.startAt);
+        setSkies((all) => {
+          const rest = { ...all };
+          delete rest[chosen.startAt];
+          return rest;
+        });
+        readSky(chosen);
+      }
     }
   }
 

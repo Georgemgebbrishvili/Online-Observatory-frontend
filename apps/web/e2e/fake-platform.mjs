@@ -637,6 +637,7 @@ async function createBooking(request, response) {
       422,
       "TARGET_NOT_OBSERVABLE",
       "The target is not observable across that slot.",
+      { blockReasons: judged.visibility.blockReasons },
     );
 
   const paymentId = randomUUID();
@@ -719,6 +720,7 @@ async function rescheduleBooking(request, response, id) {
       422,
       "TARGET_NOT_OBSERVABLE",
       "The target is not observable across that slot.",
+      { blockReasons: judged.visibility.blockReasons },
     );
 
   const replacement = zRescheduleBookingResponse.parse({
