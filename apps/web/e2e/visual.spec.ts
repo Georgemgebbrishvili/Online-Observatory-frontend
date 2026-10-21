@@ -64,6 +64,10 @@ function masks(page: Page) {
     page.locator(".board-nights"),
     page.locator(".board-rows"),
     page.locator(".board-bar"),
+    // The board's night bar: sunset, twilight and the Moon for the server's tonight.
+    page.locator(".night"),
+    // The homepage sky's found count: how far its opening drift got before the capture.
+    page.locator(".sky-hint p:first-child"),
   ];
 }
 
