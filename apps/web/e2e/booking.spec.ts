@@ -26,7 +26,8 @@ test("/app/book is one board: the nights, a night's slots, and what is up for a 
   await expect(nights).toHaveCount(7);
   await expect(nights.first()).toHaveAttribute("aria-checked", "true");
   // Every slot of the night but the booked one is open.
-  const open = Number(/(\d+) open/.exec((await nights.first().textContent()) ?? "")?.[1]);
+  // From the accessible name: the visible text runs the day's number into the count.
+  const open = Number(/, (\d+) open/.exec((await nights.first().getAttribute("aria-label")) ?? "")?.[1]);
   expect(open).toBeGreaterThan(4);
 
   const slots = page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio");

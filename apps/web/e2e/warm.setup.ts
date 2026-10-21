@@ -37,7 +37,12 @@ test("warm every route so the parallel run is not racing the compiler", async ({
       const path = `/${locale}${route ? `/${route}` : ""}`;
       // A redirect is a compiled route too; what matters is that the compiler has
       // already run by the time a timing-sensitive test asks for the page.
-      await page.goto(path, { waitUntil: "commit" });
+      // A signed-in visit to a signed-out page commits, then redirects in the browser;
+      // the next visit can land in the middle of that and be interrupted. Go again.
+      await page.goto(path, { waitUntil: "commit" }).catch((error: Error) => {
+        if (!error.message.includes("interrupted by another navigation")) throw error;
+        return page.goto(path, { waitUntil: "commit" });
+      });
     }
   }
 });
