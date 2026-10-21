@@ -230,7 +230,8 @@ Core colors (ADR-052, restored by ADR-056): canvas `#0d0d0d`, bars `#050507` · 
 fill `#C8392A` under white text · gold `#E2B85A` for simulated and done · green `#2ECC71`
 for LIVE · focus ring `#F0785A`. The observatory console alone keeps ADR-055's NASA blue
 on navy. Nothing reads below 13 px; pages carry no title block, and the header carries
-Observatory, Book, Pricing. The lockup is the Skychaser kit's comet mark beside
+Observatory, Book, Stellar Explorer, with only the language and a profile menu on its
+right (ADR-057). The lockup is the Skychaser kit's comet mark beside
 STELLAR in Archivo Expanded Black. Type: Anton, Oswald, Geist, JetBrains Mono; Georgian in
 Noto Sans Georgian and FiraGO, never uppercased or tracked.
 
