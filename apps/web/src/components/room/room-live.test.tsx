@@ -283,6 +283,40 @@ describe("RoomLive", () => {
     expect(refresh).toHaveBeenCalled();
   });
 
+  it("speaks a change of stage, and nothing on arrival", async () => {
+    vi.stubGlobal("fetch", answer(200, session()));
+    renderRoom();
+    const spoken = () => document.querySelector(".room-head [aria-live='polite']");
+    expect(spoken()).toHaveTextContent(/^$/);
+    const socket = await openChannel();
+
+    socket.receive({
+      type: "MISSION_STATE",
+      state: "WEATHER_HOLD",
+      failureReason: "WEATHER_UNSAFE",
+      remainingSeconds: null,
+    });
+    expect(spoken()).toHaveTextContent(
+      "Weather hold. The mission is paused because safe sky conditions are not available. The weather is not safe for observing.",
+    );
+  });
+
+  it("speaks a change of stage in Georgian", async () => {
+    vi.stubGlobal("fetch", answer(200, session()));
+    renderRoom({}, "ka");
+    const socket = await openChannel();
+
+    socket.receive({
+      type: "MISSION_STATE",
+      state: "SLEWING",
+      failureReason: null,
+      remainingSeconds: null,
+    });
+    expect(document.querySelector(".room-head [aria-live='polite']")).toHaveTextContent(
+      "ტელესკოპი ობიექტისკენ ბრუნდება: ჰერკულესის გროვა. მონტირება უსაფრთხო გზით ობიექტისკენ ბრუნდება.",
+    );
+  });
+
   it("ends the view when the session expires", async () => {
     vi.stubGlobal("fetch", answer(200, session(50)));
     renderRoom();

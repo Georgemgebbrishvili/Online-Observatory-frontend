@@ -142,6 +142,24 @@ export function RoomLive({
     state === "COMPLETE" ? 4 : 0,
   );
 
+  // The heading follows the mission, but a heading changing is silent: the stage is
+  // spoken through a status region, filled only on a change so the page is not read
+  // twice on arrival (WCAG 4.1.3). The feed's own status line stays the one role=status.
+  const [spokenState, setSpokenState] = useState(state);
+  const [announcement, setAnnouncement] = useState("");
+  if (state !== spokenState) {
+    setSpokenState(state);
+    setAnnouncement(
+      [
+        `${named(copy.states[state].title)}.`,
+        named(copy.states[state].description),
+        failureReason ? copy.reasons[failureReason] : "",
+      ]
+        .filter(Boolean)
+        .join(" "),
+    );
+  }
+
   const feedStatus = liveStatus(live);
   const opensAt = mission.scheduledStartAt ?? null;
   const slotOpen = now !== null && (opensAt === null || now >= Date.parse(opensAt));
@@ -258,6 +276,9 @@ export function RoomLive({
               {failureReason && (
                 <p className="room-reason">{copy.reasons[failureReason]}</p>
               )}
+              <p className="visually-hidden" aria-live="polite" aria-atomic="true">
+                {announcement}
+              </p>
             </header>
 
             {mission.mode === "SIMULATED" && (
