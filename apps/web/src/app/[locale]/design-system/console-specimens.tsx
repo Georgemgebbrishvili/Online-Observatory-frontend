@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { consoleCopy } from "@/components/observatory-console/copy";
 import { CopyProvider } from "@/components/observatory-console/copy-context";
@@ -25,6 +25,7 @@ const noop = () => {};
  */
 export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: Labels }) {
   const t = consoleCopy[locale];
+  const id = useId();
   const [exp, setExp] = useState(EXPOSURES_S.indexOf(8));
   const [subs, setSubs] = useState(STACK_SIZES.indexOf(8));
   const [gain, setGain] = useState(300);
@@ -53,9 +54,10 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
               onGain={(v) => setGain(Math.max(GAIN.min, Math.min(GAIN.max, v)))}
               onAuto={noop}
               refreshNote={null}
+              nameId={`${id}-live`}
               histogram={sampleHistogram}
             />
-            <figcaption>{labels.live} · {t.provenanceSimulated}</figcaption>
+            <figcaption id={`${id}-live`}>{labels.live} · {t.provenanceSimulated}</figcaption>
           </figure>
           <figure>
             <Camera
@@ -70,9 +72,10 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
               onGain={noop}
               onAuto={null}
               refreshNote={null}
+              nameId={`${id}-none`}
               histogram={null}
             />
-            <figcaption>{labels.noFrame}</figcaption>
+            <figcaption id={`${id}-none`}>{labels.noFrame}</figcaption>
           </figure>
           <figure>
             <Camera
@@ -87,9 +90,10 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
               onGain={noop}
               onAuto={noop}
               refreshNote={null}
+              nameId={`${id}-stacking`}
               histogram={sampleHistogram}
             />
-            <figcaption>{labels.stacking}</figcaption>
+            <figcaption id={`${id}-stacking`}>{labels.stacking}</figcaption>
           </figure>
           <figure>
             <div className="ds-console-stage">

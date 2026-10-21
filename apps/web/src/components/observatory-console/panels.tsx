@@ -190,6 +190,8 @@ export type CameraProps = {
   refreshNote: string | null;
   /** The live frame's brightness histogram, 32 bins; null with no frame. */
   histogram: number[] | null;
+  /** An element whose text completes the panel's name, where several panels share a page. */
+  nameId?: string;
 };
 
 /** The live frame's histogram, log-scaled so the sky's peak does not flatten the stars' tail. */
@@ -206,13 +208,14 @@ function Histogram({ bins, label }: { bins: number[]; label: string }) {
   );
 }
 
-function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, onGain, onAuto, refreshNote, histogram }: CameraProps) {
+function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, onGain, onAuto, refreshNote, histogram, nameId }: CameraProps) {
   const t = useCopy();
+  const id = useId();
   const off = locked || !enabled;
   return (
-    <section className="sdo-panel" aria-labelledby="sdo-cam-t">
+    <section className="sdo-panel" aria-labelledby={nameId ? `${id}-t ${nameId}` : `${id}-t`}>
       <div className="sdo-ph">
-        <h2 id="sdo-cam-t" className="sdo-ph__t"><Icon name="camera" size={15} />{t.camera.title}</h2>
+        <h2 id={`${id}-t`} className="sdo-ph__t"><Icon name="camera" size={15} />{t.camera.title}</h2>
         <span className="sdo-ph__id">{total}</span>
       </div>
       <div className="sdo-cam">
@@ -226,10 +229,10 @@ function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, on
         </div>
         <div className="sdo-cam__gain">
           <div className="sdo-cam__row">
-            <label className="sdo-lbl" htmlFor="sdo-gain">{t.camera.gain}</label>
+            <label className="sdo-lbl" htmlFor={`${id}-gain`}>{t.camera.gain}</label>
             <span className="sdo-mono" style={{ fontSize: 13 }}>{gain}{gain >= GAIN.hcg ? ' · HCG' : ''}</span>
           </div>
-          <input id="sdo-gain" className="sdo-range" type="range" min={GAIN.min} max={GAIN.max} step={GAIN.step} value={gain} disabled={off}
+          <input id={`${id}-gain`} className="sdo-range" type="range" min={GAIN.min} max={GAIN.max} step={GAIN.step} value={gain} disabled={off}
             aria-valuetext={`${gain}${gain >= GAIN.hcg ? ', high conversion gain' : ''}`}
             style={{ ['--fill' as string]: `${(gain / GAIN.max) * 100}%`, ['--hcg' as string]: `${(GAIN.hcg / GAIN.max) * 100}%` }} onChange={(e) => onGain(Number(e.target.value))} />
         </div>
