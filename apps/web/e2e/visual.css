@@ -62,7 +62,7 @@ nextjs-portal {
  * LED blinks; a loading button's sheen loops. Captured at rest.
  */
 .sky-live {
-  visibility: hidden !important;
+  display: none !important;
 }
 
 /*
@@ -115,5 +115,5 @@ nextjs-portal {
  * from one run and one machine to the next. Hidden, so the hero around it is compared.
  */
 .observatory-dome {
-  visibility: hidden !important;
+  display: none !important;
 }

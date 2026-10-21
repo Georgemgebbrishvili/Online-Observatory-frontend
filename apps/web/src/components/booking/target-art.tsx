@@ -54,7 +54,6 @@ export function TargetArt({ target }: { target: Target }) {
         className={`target-art target-art-${accent}`}
         src={`/sky/${accent}.webp`}
         alt=""
-        loading="lazy"
         decoding="async"
       />
     );
