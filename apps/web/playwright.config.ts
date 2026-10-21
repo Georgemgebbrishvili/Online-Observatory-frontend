@@ -1,5 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
+// CI runs the functional suite against `next build` + `next start` (E2E_BUILD=1): no
+// compile on first request, and the production cookie names and security headers.
+// Locally, and for the visual gate whose baselines come from it, it stays on `next dev`.
+const built = process.env.E2E_BUILD === "1";
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -106,10 +111,14 @@ export default defineConfig({
       command: "node e2e/fake-platform.mjs",
       url: "http://127.0.0.1:4110/health",
       reuseExistingServer: false,
-      env: { FAKE_PLATFORM_PORT: "4110", FAKE_PLATFORM_APP_URL: "http://localhost:3100" },
+      env: {
+        FAKE_PLATFORM_PORT: "4110",
+        FAKE_PLATFORM_APP_URL: "http://localhost:3100",
+        FAKE_PLATFORM_PRODUCTION: built ? "1" : "",
+      },
     },
     {
-      command: "npm run dev -- --port 3100",
+      command: built ? "npm run start -- --port 3100" : "npm run dev -- --port 3100",
       url: "http://localhost:3100/en",
       reuseExistingServer: false,
       timeout: 120_000,

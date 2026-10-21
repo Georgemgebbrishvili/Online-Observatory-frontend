@@ -64,10 +64,24 @@ jobs:
           cmp "$RUNNER_TEMP/openapi.yaml" packages/contracts/openapi.yaml
           echo "packages/contracts/openapi.yaml is byte-identical to $commit"
 
-  # Against e2e/fake-platform.mjs. operator-evidence and operator-records are left
-  # out: they write docs/evidence and are run by hand.
+  # Against e2e/fake-platform.mjs and a production build of the site (E2E_BUILD=1:
+  # `next start`, the production cookie names and headers), split over four runners.
+  # Each shard builds the site and runs its own fake; the sign-in and warm-up projects
+  # are dependencies, so every shard runs them. operator-evidence and operator-records
+  # are left out: they write docs/evidence and are run by hand.
   e2e:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      E2E_BUILD: "1"
+      # next.config.ts writes the storage origin into the CSP at build time.
+      DARKVIEW_PLATFORM_API_URL: http://127.0.0.1:4110
+      DARKVIEW_REALTIME_URL: http://127.0.0.1:4110
+      DARKVIEW_STORAGE_ORIGIN: http://127.0.0.1:4110
+      APP_URL: http://localhost:3100
     steps:
       - uses: actions/checkout@v4
 
@@ -83,14 +97,17 @@ jobs:
       - name: Install Chrome
         run: npx playwright install --with-deps chrome
 
+      - name: Build
+        run: npm run build
+
       - name: End-to-end
         working-directory: apps/web
-        run: npx playwright test --project=setup --project=warm --project=chromium --project=operator --project=signed-out
+        run: npx playwright test --project=chromium --project=operator --project=signed-out --shard=${{ matrix.shard }}/4
 
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: apps/web/playwright-report
           retention-days: 14
 

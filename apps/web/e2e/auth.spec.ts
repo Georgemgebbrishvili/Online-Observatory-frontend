@@ -3,6 +3,11 @@ import { createHash } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { openAccountMenu } from "./selectors";
 
+// Against a production build (E2E_BUILD=1) the cookies carry the __Host- prefix.
+const prefix = process.env.E2E_BUILD === "1" ? "__Host-" : "";
+const sessionName = `${prefix}darkview_session`;
+const csrfName = `${prefix}darkview_csrf`;
+
 // A cold `next dev` compiles each route on its first visit, which takes longer
 // than the default five seconds.
 const firstCompile = 90_000;
@@ -30,7 +35,7 @@ test("signs in through /api and reaches the app on the session the API set", asy
   await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
 
   const names = (await context.cookies()).map((cookie) => cookie.name).sort();
-  expect(names).toEqual(["darkview_csrf", "darkview_session"]);
+  expect(names).toEqual([csrfName, sessionName]);
 });
 
 // Platform ADR-048. The button is a link; the fake stands in for Google and the
@@ -43,7 +48,7 @@ test("signs in with Google through the platform's redirect and lands in the app"
   await page.getByRole("link", { name: "Continue with Google" }).click();
   await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
   const names = (await context.cookies()).map((cookie) => cookie.name).sort();
-  expect(names).toEqual(["darkview_csrf", "darkview_session"]);
+  expect(names).toEqual([csrfName, sessionName]);
 });
 
 test("says so, on the sign-in page, when Google sign-in did not complete", async ({
@@ -76,7 +81,7 @@ test("treats a session cookie without its CSRF cookie as signed out", async ({
   await signIn(page, "observer@darkview.test");
   await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
 
-  await context.clearCookies({ name: "darkview_csrf" });
+  await context.clearCookies({ name: csrfName });
   await page.goto("/en/app");
   await expect(page).toHaveURL(/\/en\/sign-in$/, { timeout: firstCompile });
 });
@@ -105,7 +110,7 @@ test("lands in the app when the platform verified the address at once", async ({
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
   const names = (await context.cookies()).map((cookie) => cookie.name).sort();
-  expect(names).toEqual(["darkview_csrf", "darkview_session"]);
+  expect(names).toEqual([csrfName, sessionName]);
 });
 
 test("creates an account, and asks for the email before any session", async ({
@@ -123,7 +128,7 @@ test("creates an account, and asks for the email before any session", async ({
   await expect(page).toHaveURL(/\/en\/verify-email$/, { timeout: firstCompile });
   // ADR-016: no session until the address is verified.
   expect((await context.cookies()).map((cookie) => cookie.name)).not.toContain(
-    "darkview_session",
+    sessionName,
   );
 
   await signIn(page, email, secret);

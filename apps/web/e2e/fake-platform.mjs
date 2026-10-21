@@ -61,8 +61,13 @@ import {
 
 const port = Number(process.env.FAKE_PLATFORM_PORT ?? 4100);
 const appOrigin = process.env.FAKE_PLATFORM_APP_URL ?? "http://localhost:3000";
-const sessionCookie = "darkview_session";
-const csrfCookie = "darkview_csrf";
+// Against `next start` (E2E_BUILD=1) the web app reads the production cookie names
+// (src/lib/platform/config.ts). A browser keeps a __Host- cookie only when it is Secure,
+// and Chrome keeps Secure cookies from http://localhost.
+const production = process.env.FAKE_PLATFORM_PRODUCTION === "1";
+const sessionCookie = production ? "__Host-darkview_session" : "darkview_session";
+const csrfCookie = production ? "__Host-darkview_csrf" : "darkview_csrf";
+const secure = production ? "; Secure" : "";
 
 // The observer owns the simulated live mission (OBSERVING), which /app/live opens.
 const fakeAccounts = {
@@ -1415,8 +1420,8 @@ const routes = {
     response.writeHead(303, {
       location: `/${locale}/app`,
       "set-cookie": [
-        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
-        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax${secure}`,
       ],
     });
     response.end();
@@ -1436,8 +1441,8 @@ const routes = {
     sessions.set(token, { user, csrf });
     send(response, 200, zUser.parse(user), {
       "set-cookie": [
-        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
-        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax${secure}`,
       ],
     });
   },
@@ -1467,8 +1472,8 @@ const routes = {
       sessions.set(token, { user, csrf });
       return send(response, 200, user, {
         "set-cookie": [
-          `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
-          `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+          `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+          `${csrfCookie}=${csrf}; Path=/; SameSite=Lax${secure}`,
         ],
       });
     }
@@ -1513,8 +1518,8 @@ const routes = {
       sessions.set(token, { user, csrf });
       return send(response, 200, zUser.parse(user), {
         "set-cookie": [
-          `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
-          `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+          `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+          `${csrfCookie}=${csrf}; Path=/; SameSite=Lax${secure}`,
         ],
       });
     }
@@ -1528,8 +1533,8 @@ const routes = {
     sessions.set(token, { user: pending.user, csrf });
     send(response, 200, zUser.parse(pending.user), {
       "set-cookie": [
-        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
-        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax${secure}`,
       ],
     });
   },
@@ -1575,8 +1580,8 @@ const routes = {
     sessions.set(token, { user, csrf });
     send(response, 200, zUser.parse(user), {
       "set-cookie": [
-        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax`,
-        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax`,
+        `${sessionCookie}=${token}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+        `${csrfCookie}=${csrf}; Path=/; SameSite=Lax${secure}`,
       ],
     });
   },
@@ -1714,8 +1719,8 @@ const routes = {
     }
     send(response, 204, undefined, {
       "set-cookie": [
-        `${sessionCookie}=; Path=/; Max-Age=0`,
-        `${csrfCookie}=; Path=/; Max-Age=0`,
+        `${sessionCookie}=; Path=/; Max-Age=0${secure}`,
+        `${csrfCookie}=; Path=/; Max-Age=0${secure}`,
       ],
     });
   },
@@ -1725,8 +1730,8 @@ const routes = {
     sessions.delete(cookiesOf(request)[sessionCookie]);
     send(response, 204, undefined, {
       "set-cookie": [
-        `${sessionCookie}=; Path=/; Max-Age=0`,
-        `${csrfCookie}=; Path=/; Max-Age=0`,
+        `${sessionCookie}=; Path=/; Max-Age=0${secure}`,
+        `${csrfCookie}=; Path=/; Max-Age=0${secure}`,
       ],
     });
   },
