@@ -6,6 +6,13 @@ import { expect, test, type Page } from "@playwright/test";
  * the sky, the rates and the readings are the model's own.
  */
 
+// The model's sky is the browser's clock. An evening when Albireo is up, so the GoTo is
+// not refused for the hour the suite happens to run; the clock runs on from there.
+const evening = new Date("2026-09-25T20:00:00+04:00");
+test.beforeEach(async ({ page }) => {
+  await page.clock.install({ time: evening });
+});
+
 const view = (page: Page) => page.getByRole("region", { name: "Telescope view" });
 const status = (page: Page) => view(page).getByRole("status");
 const altitude = (page: Page) =>

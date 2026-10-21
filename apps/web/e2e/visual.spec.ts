@@ -32,6 +32,9 @@ const widths = [
 function masks(page: Page) {
   return [
     page.locator("time"),
+    // /pricing: the next open night by the server's clock; the whole line, so the
+    // mask's box keeps its width when the day's name is longer.
+    page.locator(".pricing-tonight header p"),
     page.locator(".live-time"),
     // /status: the fake platform's hours and ages are relative to the server's clock.
     page.locator(".status-page tbody th"),

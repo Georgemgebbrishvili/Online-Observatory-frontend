@@ -490,6 +490,8 @@ test("the console connects, aligns and points at the quick start's target", asyn
   // alignment slew and its solve, then the GoTo at the mount's pace. `?turbo` runs the
   // slews eight times faster so the chain fits a test; the model is otherwise its own.
   test.setTimeout(120_000);
+  // The model's sky is the browser's clock: an evening when Albireo is up.
+  await page.clock.install({ time: new Date("2026-09-25T20:00:00+04:00") });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory?turbo");
   await page.getByRole("button", { name: /Start · Albireo/ }).click();
