@@ -7,7 +7,10 @@ import "@/styles/design-system.css";
 import "@/styles/pages.css";
 import "@/styles/homepage.css";
 import "@/styles/profile.css";
+import "@/styles/observatory-console.css";
 import { notFound } from "next/navigation";
+
+import { ConsoleSpecimens } from "./console-specimens";
 
 import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { BookingActionsView } from "@/components/booking/booking-actions";
@@ -1199,6 +1202,11 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
           <div className="ds-home-specimen">
             <PageGuide id="pricing" locale={locale} />
           </div>
+        </section>
+
+        <section className="ds-section" aria-labelledby="console-title">
+          <SectionHeader id="console-title" section={copy.sections.console} />
+          <ConsoleSpecimens locale={locale} labels={copy.consoleSpecimens} />
         </section>
       </Container>
     </main>

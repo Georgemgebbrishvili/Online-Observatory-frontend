@@ -497,3 +497,40 @@
   gap: var(--space-4);
 }
 
+
+/* The observatory console's camera and conditions (ADR-056), on the console's ground. */
+.ds-console.sdo {
+  min-height: 0;
+  padding: var(--space-5);
+  border-radius: var(--radius-medium);
+}
+
+.ds-console-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.ds-console-grid figure {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.ds-console-grid figcaption {
+  color: var(--o-ink-2);
+  font-size: var(--font-size-caption);
+}
+
+.ds-console-stage {
+  position: relative;
+  min-height: 12rem;
+  border: 1px solid var(--o-line);
+  border-radius: 12px;
+  background: var(--o-monolith);
+}
+
+.ds-console-stage .sdo-alerts {
+  top: var(--space-4);
+}

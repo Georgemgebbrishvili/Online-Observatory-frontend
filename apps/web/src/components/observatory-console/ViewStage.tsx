@@ -57,6 +57,19 @@ export type ViewStageProps = {
   idle: { title: string; text: string; note?: string } | null;
 };
 
+/** What the field is going through, over the picture: a warning is red, a passing condition is not. */
+export function ConditionAlerts({ alerts }: { alerts: ViewStageProps['alerts'] }) {
+  const t = useCopy();
+  if (alerts.length === 0) return null;
+  return (
+    <ul className="sdo-alerts" aria-label={t.stage.conditions}>
+      {alerts.map((a) => (
+        <li key={a.text} className={`sdo-pill sdo-glass${a.warn ? ' is-warn' : ''}`}><span className={`sdo-led ${a.warn ? 'is-warn' : 'is-hold'}`} />{a.text}</li>
+      ))}
+    </ul>
+  );
+}
+
 function ViewStage(p: ViewStageProps) {
   const t = useCopy();
   const trains = TRAINS.map((train) => (
@@ -103,13 +116,7 @@ function ViewStage(p: ViewStageProps) {
           <span className="sdo-expose" aria-hidden="true"><i style={{ width: `${Math.round(p.exposing * 100)}%` }} /></span>
         )}
       </div>
-      {p.alerts.length > 0 && (
-        <ul className="sdo-alerts" aria-label={t.stage.conditions}>
-          {p.alerts.map((a) => (
-            <li key={a.text} className={`sdo-pill sdo-glass${a.warn ? ' is-warn' : ''}`}><span className={`sdo-led ${a.warn ? 'is-warn' : 'is-hold'}`} />{a.text}</li>
-          ))}
-        </ul>
-      )}
+      <ConditionAlerts alerts={p.alerts} />
       <div className="sdo-hud sdo-glass sdo-hud--tl"><span style={{ color: '#8ab8ff' }}>{p.hudLive[0]}</span> · {p.hudLive[1]}<br />{p.hudLive[2]}</div>
       {p.hudTarget && (
         <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#8ab8ff' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}{p.hudTarget[2] && <><br />{p.hudTarget[2]}</>}</div>

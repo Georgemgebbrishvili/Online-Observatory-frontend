@@ -90,6 +90,18 @@ export const designSystemCopy = {
         "The observatory page's parts on the Skychaser console's ground: the state as a pill in each of its five values (online and observing glow green), the site's clock, the camera's frame drawn on the Moon to scale and captioned, and the dock of ways in — monoliths with corner ticks.",
         "as amended by ADR-052 — the observatory page",
       ],
+      console: [
+        "14",
+        "Console camera and conditions",
+        "The observatory console's camera panel with the live frame's histogram, log-scaled, its last bar gold where pixels clip; the panel before a frame and while a stack runs. Over the picture, what the field is going through: red when the target cannot be observed, blue when it is only passing.",
+        "ADR-055 console colours · ADR-056 sky model",
+      ],
+    },
+    consoleSpecimens: {
+      live: "Live frame",
+      noFrame: "Before the first frame",
+      stacking: "Stacking · controls locked",
+      conditions: "Conditions over the picture",
     },
     palette: "Core palette",
     paletteNames: [
@@ -358,6 +370,18 @@ export const designSystemCopy = {
         "ობსერვატორიის გვერდის ნაწილები Skychaser-ის კონსოლის ფონზე: მდგომარეობა აბრად ხუთივე მნიშვნელობით (ონლაინ და მიმდინარე დაკვირვება მწვანედ ანათებს), ადგილობრივი საათი, კამერის კადრი მთვარეზე მასშტაბით და წარწერით, და გზების პანელი — მუქი მონოლითები კუთხის ნიშნებით.",
         "as amended by ADR-052 — the observatory page",
       ],
+      console: [
+        "14",
+        "კონსოლის კამერა და პირობები",
+        "ობსერვატორიის კონსოლის კამერის პანელი პირდაპირი კადრის ჰისტოგრამით, ლოგარითმულ მასშტაბში; ბოლო სვეტი ოქროსფერია, როცა პიქსელები გაჯერებულია. პანელი პირველ კადრამდე და კადრების დაჯამებისას. გამოსახულებაზე — ველის პირობები: წითელი, როცა ობიექტზე დაკვირვება შეუძლებელია, ლურჯი, როცა პირობა დროებითია.",
+        "ADR-055 console colours · ADR-056 sky model",
+      ],
+    },
+    consoleSpecimens: {
+      live: "პირდაპირი კადრი",
+      noFrame: "პირველ კადრამდე",
+      stacking: "კადრების დაჯამება · მართვა დაბლოკილია",
+      conditions: "პირობები გამოსახულებაზე",
     },
     palette: "ძირითადი პალიტრა",
     paletteNames: [
