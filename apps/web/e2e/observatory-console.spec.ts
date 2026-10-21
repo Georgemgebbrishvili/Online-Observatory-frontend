@@ -7,11 +7,9 @@ import { expect, test, type Page } from "@playwright/test";
  */
 
 // The model's sky is the browser's clock. An evening when Albireo is up, so the GoTo is
-// not refused for the hour the suite happens to run; the clock runs on from there.
+// not refused for the hour the suite happens to run; the clock runs on from there. Only
+// for the model: the real instrument's commands expire on the platform's clock.
 const evening = new Date("2026-09-25T20:00:00+04:00");
-test.beforeEach(async ({ page }) => {
-  await page.clock.install({ time: evening });
-});
 
 const view = (page: Page) => page.getByRole("region", { name: "Telescope view" });
 const status = (page: Page) => view(page).getByRole("status");
@@ -28,6 +26,10 @@ async function onTarget(page: Page) {
 const degrees = (text: string | null) => Number((text ?? "").replace(/[^\d.−-]/g, "").replace("−", "-"));
 
 test.describe("the sky model's 8SE", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.clock.install({ time: evening });
+  });
+
   test("is the 8-inch Schmidt-Cassegrain, framed by the 585", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
