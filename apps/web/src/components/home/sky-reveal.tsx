@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
+import { skyAimEvent, type SkyAim } from "@/components/home/observatory-dome";
 import { skyPlates, type SkyPlate } from "@/features/targets/homepage-data";
 import type { Locale } from "@/i18n/config";
 import { palette, withAlpha } from "@/styles/tokens";
@@ -113,6 +114,9 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
     let tourIdx = 0;
     let tourTimer = 0;
     let rectCache: DOMRect | null = null;
+    // The headline's band, so a planet's name is never written across it.
+    let titleTop = -1;
+    let titleBottom = -1;
     let target = "";
     let swallowClick = false;
 
@@ -190,6 +194,12 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
       canvas!.height = H * dpr;
       wasDirty = [0, 0, W, H];
       labelFont = `300 24px ${getComputedStyle(root!).getPropertyValue("--font-label").trim() || "sans-serif"}`;
+      const title = hero!.querySelector(".sky-hero-title");
+      if (title) {
+        const t = title.getBoundingClientRect();
+        titleTop = t.top - rect.top;
+        titleBottom = t.bottom - rect.top;
+      }
       // The reach of the light: wide enough that pointing near a plate shows most of it.
       R = Math.max(170, Math.min(300, W * 0.17));
       const base = Math.min(W, H * 1.6);
@@ -218,6 +228,11 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
       cur.y += (tgt.y - cur.y) * k;
       gain += (gainTgt - gain) * (reduced ? 1 : 1 - Math.exp(-dt / 90));
       draw(now);
+      // The observatory below turns its telescope to wherever the light is.
+      if (gainTgt > 0)
+        hero!.dispatchEvent(
+          new CustomEvent<SkyAim>(skyAimEvent, { detail: { x: cur.x, y: cur.y } }),
+        );
       const moving =
         Math.abs(tgt.x - cur.x) + Math.abs(tgt.y - cur.y) > 0.25 ||
         Math.abs(gainTgt - gain) > 0.004 ||
@@ -239,12 +254,18 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
 
       if (gain > 0.01) {
         const lg = c.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, R * 1.4);
-        lg.addColorStop(0, withAlpha(palette.cream, 0.07 * gain));
-        lg.addColorStop(0.5, withAlpha(palette.cream, 0.02 * gain));
+        lg.addColorStop(0, withAlpha(palette.cream, 0.055 * gain));
+        lg.addColorStop(0.55, withAlpha(palette.cream, 0.016 * gain));
         lg.addColorStop(1, withAlpha(palette.black, 0));
         c.fillStyle = lg;
         c.fillRect(cur.x - R * 1.4, cur.y - R * 1.4, R * 2.8, R * 2.8);
         mark(cur.x - R * 1.4, cur.y - R * 1.4, R * 2.8, R * 2.8);
+        // The eyepiece's field: one faint ring where the telescope is looking.
+        c.strokeStyle = withAlpha(palette.cream, 0.09 * gain);
+        c.lineWidth = 1;
+        c.beginPath();
+        c.arc(cur.x, cur.y, R * 0.7, 0, 6.2832);
+        c.stroke();
       }
 
       let nearest: Live | null = null;
@@ -263,33 +284,35 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
         if (a > 0.3 && !o.lit) {
           o.lit = true;
           o.litAt = now;
-          activeUntil = Math.max(activeUntil, now + 1000);
+          activeUntil = Math.max(activeUntil, now + 1200);
         }
         if (a < 0.08) o.lit = false;
         const alpha = Math.max(o.found ? 0.035 : 0, a);
         if (alpha < 0.004) continue;
-        const t = o.lit ? Math.min(1, (now - o.litAt) / 900) : 1;
+        // A plate comes into focus as the light reaches it: soft, then sharp, settling
+        // from a touch smaller, the way an image does when the focuser finds it.
+        const t = o.lit ? Math.min(1, (now - o.litAt) / 1100) : 1;
         const pop = 1 - Math.pow(1 - t, 3);
-        const sc = (0.84 + 0.16 * pop) * (0.96 + 0.04 * a);
+        const sc = (0.965 + 0.035 * pop) * (0.985 + 0.015 * a);
         const w = (o.ar >= 1 ? o.r * 2 : o.r * 2 * o.ar) * sc;
         const h = (o.ar >= 1 ? (o.r * 2) / o.ar : o.r * 2) * sc;
-        c.globalAlpha = alpha;
+        const blur = reduced ? 0 : (1 - pop) * o.r * 0.06 + (1 - a) * o.r * 0.03;
+        c.globalAlpha = alpha * (0.55 + 0.45 * pop);
+        if (blur > 0.3) c.filter = `blur(${blur.toFixed(1)}px)`;
         c.drawImage(o.bmp, o.cx - w / 2, o.cy - h / 2, w, h);
-        mark(o.cx - w / 2, o.cy - h / 2, w, h);
+        c.filter = "none";
+        const pad = blur * 2;
+        mark(o.cx - w / 2 - pad, o.cy - h / 2 - pad, w + pad * 2, h + pad * 2);
         if (o.lit && t < 1) {
-          // Ignition: a bloom of light and a moment of overexposure that settles.
-          const br = o.r * (0.9 + t * 1.1);
-          const fg = c.createRadialGradient(o.cx, o.cy, 0, o.cx, o.cy, br);
-          fg.addColorStop(0, withAlpha(palette.bloomHot, (1 - t) * 0.38 * a));
-          fg.addColorStop(0.4, withAlpha(palette.bloomWarm, (1 - t) * 0.12 * a));
+          // A faint warmth around it while it settles, never a flash.
+          const br = o.r * 1.5;
+          const fg = c.createRadialGradient(o.cx, o.cy, o.r * 0.5, o.cx, o.cy, br);
+          fg.addColorStop(0, withAlpha(palette.bloomWarm, (1 - t) * 0.08 * a));
           fg.addColorStop(1, withAlpha(palette.black, 0));
+          c.globalAlpha = 1;
           c.fillStyle = fg;
           c.fillRect(o.cx - br, o.cy - br, br * 2, br * 2);
           mark(o.cx - br, o.cy - br, br * 2, br * 2);
-          c.globalCompositeOperation = "lighter";
-          c.globalAlpha = (1 - t) * 0.7 * a;
-          c.drawImage(o.bmp, o.cx - w / 2, o.cy - h / 2, w, h);
-          c.globalCompositeOperation = "source-over";
         }
         c.globalAlpha = 1;
         o.h = h;
@@ -307,8 +330,10 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
       if (nearest && nearestA > 0.35) {
         const o: Live = nearest;
         const la = (nearestA - 0.35) / 0.65;
-        const below = o.cy + o.h / 2 + 30 < H - 12;
-        const ty = below ? o.cy + o.h / 2 + 26 : o.cy - o.h / 2 - 22;
+        const underY = o.cy + o.h / 2 + 26;
+        const clearsTitle = underY + 14 < titleTop || underY - 14 > titleBottom;
+        const below = o.cy + o.h / 2 + 30 < H - 12 && clearsTitle;
+        const ty = below ? underY : Math.max(22, o.cy - o.h / 2 - 22);
         c.textAlign = "center";
         c.textBaseline = "middle";
         c.letterSpacing = "0.04em";
@@ -451,7 +476,7 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
       cur.y = tgt.y;
     }
     gainTgt = 1;
-    document.fonts.ready.then(wake);
+    document.fonts.ready.then(() => !dead && layout());
     if (hoverless) verbRef.current!.textContent = copy.tap;
     if (hoverless && !reduced) startTour(2400);
     wake();

@@ -5,6 +5,7 @@
 export const publicRoutes = [
   "",
   "pricing",
+  "explorer",
   "observatory",
   "vote",
   "status",
@@ -45,7 +46,8 @@ export const parameterisedRoutes = [
   "app/bookings/53000000-0000-4000-8000-000000000004",
   // The board with the fake platform's first slot chosen, on the night the visual gate's
   // clock is held to (ADR-053: the old reserve link lands here).
-  "app/book?startAt=2026-09-25T14:00:00.000Z",
+  // fakeSlotAt("2026-09-25", 0) in e2e/fake-night.mjs: the first slot of that night.
+  "app/book?startAt=2026-09-25T16:30:00.000Z",
   // The night offered in place of the fake platform's slot lost to the weather.
   "app/book?reschedule=53000000-0000-4000-8000-000000000004",
 ] as const;

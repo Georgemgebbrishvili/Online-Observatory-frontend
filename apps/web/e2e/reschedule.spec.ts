@@ -2,8 +2,8 @@ import { expect, type Page, test } from "@playwright/test";
 
 // A free slot for a lost one, on the board (ADR-053 §7, ADR-043), against
 // e2e/fake-platform.mjs: booking ...0004 lost 18 minutes to the weather and its
-// entitlement is OPEN. Albireo and Saturn are up for every slot; the ninth slot is taken
-// "a moment ago".
+// entitlement is OPEN. Albireo and Saturn are up for every slot; the night's last slot is
+// taken "a moment ago".
 //
 // Claiming the entitlement changes the booking for the session that did it, so these
 // sign in on their own.
@@ -76,7 +76,7 @@ test("a slot taken a moment ago is refused, and the free slot stays open", async
 }) => {
   await signIn(page);
   await page.goto(`/en/app/book?reschedule=${lostId}`);
-  await slots(page).nth(8).click();
+  await slots(page).last().click();
   await target(page, /^Saturn/).click();
   await page.getByRole("button", { name: "Book this slot free" }).click();
 

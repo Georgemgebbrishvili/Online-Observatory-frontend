@@ -51,6 +51,16 @@
   --st-flare: #fff8e6;
   --st-bloom-hot: #fff0d6;
   --st-bloom-warm: #ffd6a0;
+  /* The booking board's targets (ADR-057): each object's own colour, for its card's wash. */
+  --st-target-saturn: #e8c77e;
+  --st-target-jupiter: #e39a52;
+  --st-target-mars: #d4623c;
+  --st-target-venus: #f1e1b4;
+  --st-target-moon: #cdd3de;
+  --st-target-star-gold: #f4c24f;
+  --st-target-star-blue: #6d98ff;
+  --st-target-cluster: #b8d3ff;
+  --st-target-nebula: #6fd3c6;
 
   /*
    * Ground. Night is the page canvas; surface-base is a well (the feed, data, inputs).
@@ -157,6 +167,21 @@
   /* The booking board's Moon glyph (ADR-053 §7): its dark side and its lit side. */
   --color-moon-dark: #2a2a30;
   --color-moon-lit: #e6e3d6;
+  /* The booking board's target cards (ADR-057): a wash and a glow in each object's colour. */
+  --color-target-saturn: var(--st-target-saturn);
+  --color-target-jupiter: var(--st-target-jupiter);
+  --color-target-mars: var(--st-target-mars);
+  --color-target-venus: var(--st-target-venus);
+  --color-target-moon: var(--st-target-moon);
+  --color-target-star-gold: var(--st-target-star-gold);
+  --color-target-star-blue: var(--st-target-star-blue);
+  --color-target-cluster: var(--st-target-cluster);
+  --color-target-nebula: var(--st-target-nebula);
+  --color-target-glass: color-mix(in srgb, var(--st-white) 9%, transparent);
+  /* The night bar over the start picker: the Sun's glow, twilight blue, the dark. */
+  --color-night-sun: color-mix(in srgb, var(--st-sun-3) 70%, transparent);
+  --color-night-twilight: color-mix(in srgb, var(--st-sky-blue) 34%, var(--st-bar));
+  --color-night-dark: var(--st-bar);
   /* The outlined button: white at 2.5% under a 22% edge, 6% under 50% on hover. */
   --color-outline-fill: color-mix(in srgb, var(--st-white) 2.5%, transparent);
   --color-outline-fill-hover: color-mix(in srgb, var(--st-white) 6%, transparent);
@@ -322,6 +347,9 @@
   --font-size-sky-title: clamp(1.6875rem, 5vw, 4.75rem);
   --font-size-sky-lede: clamp(1rem, 1.3vw, 1.1875rem);
   --font-size-hint: 0.8125rem;
+  /* The game's name on its launch screen (ADR-057); Mkhedruli runs wider, so smaller. */
+  --font-size-explorer: clamp(3.25rem, 9vw, 8.5rem);
+  --font-size-explorer-ka: clamp(2.5rem, 7vw, 6.5rem);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -403,6 +431,47 @@
     color-mix(in srgb, var(--st-red) 22%, transparent),
     transparent 62%
   );
+  --glow-account: 0 0 18px -6px var(--st-red);
+  --glow-launch:
+    0 10px 26px -14px var(--st-red),
+    0 0 42px -10px color-mix(in srgb, var(--st-red) 70%, transparent);
+  --color-account-ring: color-mix(in srgb, var(--st-red) 60%, transparent);
+  /* The game's launch screen: the words on the dark, the game image beyond. */
+  --gradient-explorer-fade-phone:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--st-bar) 92%, transparent) 0%,
+      transparent 34%
+    ),
+    linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--st-bar) 70%, transparent) 0%,
+      transparent 30%
+    );
+  --gradient-explorer-fade:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--st-bar) 95%, transparent) 0%,
+      color-mix(in srgb, var(--st-bar) 80%, transparent) 40%,
+      transparent 66%
+    ),
+    linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--st-bar) 60%, transparent) 0%,
+      transparent 25%
+    );
+  --gradient-explorer-warp:
+    radial-gradient(
+      circle at 70% 70%,
+      transparent 0 8%,
+      color-mix(in srgb, var(--st-white) 70%, transparent) 9%,
+      transparent 40%
+    ),
+    repeating-conic-gradient(
+      from 0deg at 70% 70%,
+      color-mix(in srgb, var(--st-white) 26%, transparent) 0deg 0.6deg,
+      transparent 0.6deg 7deg
+    );
   --focus-ring: 2px solid var(--color-accent-ink);
 
   /* Motion: UI 160–220ms, instrument 500–1200ms; Skychaser's eases. */

@@ -15,6 +15,8 @@ export const brand = {
     endorsement: "by Astroman",
     maker: "an Astroman product",
     tagline: "The real sky, live.",
+    /** The game in the header (ADR-057). */
+    game: "Stellar Explorer",
   },
   ka: {
     nominative: "სტელარი",
@@ -24,5 +26,6 @@ export const brand = {
     endorsement: "Astroman-ისგან",
     maker: "Astroman-ის პროდუქტი",
     tagline: "შენი დრო ნამდვილ ცასთან.",
+    game: "სტელარ ექსპლორერი",
   },
 } as const;

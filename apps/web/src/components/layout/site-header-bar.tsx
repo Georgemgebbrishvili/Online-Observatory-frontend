@@ -25,10 +25,20 @@ type SiteHeaderBarProps = {
 const noSubscription = () => () => {};
 const hasSessionCookie = () => document.cookie.includes(`${csrfCookieName}=`);
 
+/** A head and shoulders in a ring: the account, signed in or not. */
+function ProfileIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <circle cx="12" cy="9" r="3.6" />
+      <path d="M5.2 19.2c1.3-3.1 3.9-4.7 6.8-4.7s5.5 1.6 6.8 4.7" />
+    </svg>
+  );
+}
+
 /**
- * The one header every page carries, signed in or not: the same three pages, the same
- * place for the language and the booking button. A signed-in visitor gets an Account
- * menu where "Sign in" would be, holding their own pages.
+ * The one header every page carries, signed in or not: three pages, and on the right
+ * only the language and a profile button (ADR-057). The profile opens a small menu —
+ * sign in and register for a visitor, their own pages for a signed-in customer.
  */
 export function SiteHeaderBar({
   locale,
@@ -53,6 +63,11 @@ export function SiteHeaderBar({
     { label: app.live, href: `/${locale}/app/live` },
     { label: app.collection, href: `/${locale}/app/collection` },
     { label: app.profile, href: `/${locale}/app/profile` },
+  ];
+  const guestLinks = [
+    { label: publicNavigation.signIn, href: `/${locale}/sign-in` },
+    { label: publicNavigation.register, href: `/${locale}/register` },
+    { label: publicNavigation.reserve, href: `/${locale}/app/book` },
   ];
   const isCurrent = (href: string) =>
     href === `/${locale}/app` ? pathname === href : pathname.startsWith(href);
@@ -103,53 +118,44 @@ export function SiteHeaderBar({
           >
             {navigation.languageName}
           </Link>
-          {account ? (
-            <div className="account-menu" ref={accountRef}>
-              <button
-                className="public-sign-in account-menu-button"
-                type="button"
-                aria-expanded={accountOpen}
-                aria-controls="account-menu-list"
-                onClick={() => setAccountOpen((current) => !current)}
-              >
-                {publicNavigation.account}
-                <span aria-hidden="true" className="account-menu-caret" />
-              </button>
-              <div
-                className="account-menu-list"
-                id="account-menu-list"
-                data-open={accountOpen || undefined}
-              >
-                <nav aria-label={publicNavigation.account}>
-                  {accountLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      aria-current={isCurrent(link.href) ? "page" : undefined}
-                      onClick={() => setAccountOpen(false)}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </nav>
+          <div className="account-menu" ref={accountRef}>
+            <button
+              className="account-menu-button"
+              type="button"
+              aria-expanded={accountOpen}
+              aria-controls="account-menu-list"
+              aria-label={publicNavigation.account}
+              data-signed-in={account ? "" : undefined}
+              onClick={() => setAccountOpen((current) => !current)}
+            >
+              <ProfileIcon />
+            </button>
+            <div
+              className="account-menu-list"
+              id="account-menu-list"
+              data-open={accountOpen || undefined}
+            >
+              <nav aria-label={publicNavigation.account}>
+                {(account ? accountLinks : guestLinks).map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={isCurrent(link.href) ? "page" : undefined}
+                    onClick={() => setAccountOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+              {account && (
                 <SignOutButton
                   className="account-menu-sign-out"
                   label={account.signOut}
                   locale={locale}
                 />
-              </div>
+              )}
             </div>
-          ) : (
-            <Link className="public-sign-in" href={`/${locale}/sign-in`}>
-              {publicNavigation.signIn}
-            </Link>
-          )}
-          <Link
-            className="button button-primary button-small"
-            href={`/${locale}/app/book`}
-          >
-            <span>{publicNavigation.reserve}</span>
-          </Link>
+          </div>
         </div>
         <button
           ref={menuButtonRef}
@@ -213,13 +219,6 @@ export function SiteHeaderBar({
             aria-label={`${navigation.language}: ${navigation.languageName}`}
           >
             {navigation.languageName}
-          </Link>
-          <Link
-            className="button button-primary button-medium"
-            href={`/${locale}/app/book`}
-            onClick={() => setMenuOpen(false)}
-          >
-            <span>{publicNavigation.reserve}</span>
           </Link>
         </div>
       </div>

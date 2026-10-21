@@ -133,7 +133,8 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
 test("provides the complete public navigation on desktop and mobile", async ({
   page,
 }) => {
-  // A visitor without a session; signed in, "Sign in" becomes the Account menu.
+  // A visitor without a session: the profile button opens sign in and registration
+  // (ADR-057); signed in, it holds the customer's own pages.
   await page.context().clearCookies();
   await page.goto("/en");
 
@@ -145,7 +146,7 @@ test("provides the complete public navigation on desktop and mobile", async ({
   for (const [item, href] of [
     ["Observatory", "/en/observatory"],
     ["Book", "/en/app/book"],
-    ["Pricing", "/en/pricing"],
+    ["Stellar Explorer", "/en/explorer"],
   ]) {
     await expect(publicNavigation.getByRole("link", { name: item, exact: true })).toHaveAttribute(
       "href",
@@ -154,11 +155,20 @@ test("provides the complete public navigation on desktop and mobile", async ({
   }
   await expect(publicNavigation.getByRole("link")).toHaveCount(3);
 
-  await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
-  await expect(header.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(
-    "href",
-    "/en/app/book",
-  );
+  // The bar's right side is the language and the profile button, nothing else.
+  await expect(header.getByRole("link", { name: "Reserve a slot" })).toHaveCount(0);
+  const guest = await openAccountMenu(page);
+  for (const [item, href] of [
+    ["Sign in", "/en/sign-in"],
+    ["Create an account", "/en/register"],
+    ["Reserve a slot", "/en/app/book"],
+  ]) {
+    await expect(guest.getByRole("link", { name: item, exact: true })).toHaveAttribute(
+      "href",
+      href,
+    );
+  }
+  await page.keyboard.press("Escape");
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();

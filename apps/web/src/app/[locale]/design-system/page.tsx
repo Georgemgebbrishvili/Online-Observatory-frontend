@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/booking.css";
+import "@/styles/booking-board.css";
 import "@/styles/room.css";
 import "@/styles/room-console.css";
 import "@/styles/collection.css";
@@ -10,6 +11,7 @@ import "@/styles/profile.css";
 import "@/styles/observatory-console.css";
 import { notFound } from "next/navigation";
 
+import { CalendarSpecimens } from "./calendar-specimens";
 import { ConsoleSpecimens } from "./console-specimens";
 
 import { TargetAvailability } from "@/components/astronomy/target-availability";
@@ -511,6 +513,8 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               locale={locale}
             />
           </ol>
+          <h3 className="ds-subheading">{copy.cards.skyCalendar}</h3>
+          <CalendarSpecimens locale={locale} />
           <h3 className="ds-subheading">{copy.cards.bookingRow}</h3>
           <ol className="booking-list">
             {bookingStatusSpecimens.map((status, index) => (

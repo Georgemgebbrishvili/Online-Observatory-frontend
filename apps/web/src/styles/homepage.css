@@ -114,6 +114,23 @@
   letter-spacing: 0.08em;
 }
 
+/* The observatory on its hill, a 3D scene over the whole hero, under the words. */
+.observatory-dome {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 900ms var(--ease-sky);
+}
+
+/* The scene fades in once it has drawn, rather than popping in. */
+.observatory-dome[data-ready] {
+  opacity: 1;
+}
+
 .sky-hero-copy {
   position: relative;
   z-index: 2;
@@ -127,6 +144,11 @@
 
 .sky-hero-copy a {
   pointer-events: auto;
+}
+
+/* The words stand above the observatory, clear of its raised telescope. */
+.sky-hero-copy {
+  padding-bottom: calc(var(--space-12) + min(11rem, 22svh));
 }
 
 .sky-hero-title {

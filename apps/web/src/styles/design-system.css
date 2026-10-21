@@ -424,6 +424,27 @@
   gap: var(--space-4);
 }
 
+/* The booking board's calendar: the month beside its list, at the board's own width. */
+.ds-calendar {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.ds-calendar .cal-list {
+  margin-top: 0;
+}
+
+.ds-calendar-wide {
+  grid-column: 1 / -1;
+}
+
+@media (--lg) {
+  .ds-calendar {
+    grid-template-columns: 23rem minmax(0, 1fr);
+  }
+}
+
 @media (--lg) {
   .ds-preview-specimens {
     grid-template-columns: repeat(2, minmax(0, 1fr));

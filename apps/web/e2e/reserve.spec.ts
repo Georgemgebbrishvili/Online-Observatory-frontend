@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// Reserving from the board (ADR-053 §7, ADR-043), against e2e/fake-platform.mjs: nine
-// slots from 18:00 Tbilisi, the second booked and the ninth taken "a moment ago"; Albireo
+// Reserving from the board (ADR-053 §7, ADR-043), against e2e/fake-platform.mjs: a
+// night's slots from dusk to dawn, the second booked and the last taken "a moment ago"; Albireo
 // and Saturn up for the whole slot, the Moon, M13 and Venus not. The fake's sandbox
 // checkout answers 303 to the booking's page, as the platform's does.
 //
@@ -16,13 +16,10 @@ async function signIn(page: Page) {
   await expect(page).toHaveURL(/\/en\/app$/);
 }
 
-async function chooseSlot(page: Page, index: number) {
+async function chooseSlot(page: Page, index: number | "last") {
   await page.goto("/en/app/book");
-  await page
-    .getByRole("radiogroup", { name: /^Observing time/ })
-    .getByRole("radio")
-    .nth(index)
-    .click();
+  const slots = page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio");
+  await (index === "last" ? slots.last() : slots.nth(index)).click();
   // The sky for the slot has been read when a target can be chosen.
   await expect(
     page.getByRole("radiogroup", { name: "Target" }).getByRole("radio", { name: /^Saturn, Up/ }),
@@ -109,7 +106,7 @@ test("declining at the checkout cancels the booking", async ({ page }) => {
 
 test("a slot taken a moment ago is refused, struck out, and the board stays", async ({ page }) => {
   await signIn(page);
-  await chooseSlot(page, 8);
+  await chooseSlot(page, "last");
   await target(page, /^Saturn/).click();
   await page.getByRole("button", { name: "Reserve and pay" }).click();
 
@@ -118,7 +115,7 @@ test("a slot taken a moment ago is refused, struck out, and the board stays", as
   );
   await expect(page).toHaveURL(/\/en\/app\/book$/);
   await expect(
-    page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").nth(8),
+    page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").last(),
   ).toBeDisabled();
   await expect(page.getByRole("button", { name: "Reserve and pay" })).toBeDisabled();
 });

@@ -42,6 +42,49 @@ export const palette = {
   flare: "#fff8e6",
   bloomHot: "#fff0d6",
   bloomWarm: "#ffd6a0",
+  targetSaturn: "#e8c77e",
+  targetJupiter: "#e39a52",
+  targetMars: "#d4623c",
+  targetVenus: "#f1e1b4",
+  targetMoon: "#cdd3de",
+  targetStarGold: "#f4c24f",
+  targetStarBlue: "#6d98ff",
+  targetCluster: "#b8d3ff",
+  targetNebula: "#6fd3c6",
+} as const;
+
+/**
+ * The observatory at the foot of the homepage sky (ADR-057), rendered in 3D: its
+ * plaster, paint, concrete and wood, its lit windows, the NexStar 8SE's orange tube and
+ * coated glass, and the moonlit night around it. An illustration's own colours, used
+ * only by that scene, so they live here rather than in the site's palette.
+ */
+export const observatoryArt = {
+  ground: "#16161a",
+  groundLit: "#24232a",
+  ridge: "#1b1c24",
+  plaster: "#d8ccb4",
+  concrete: "#8d8579",
+  domePaint: "#ece8df",
+  domeInside: "#1e1918",
+  rail: "#b9b6ae",
+  wood: "#4a3022",
+  woodFrame: "#cbbd9f",
+  windowGlass: "#ffc46b",
+  windowFrame: "#b9a888",
+  lamp: "#ffb35c",
+  pier: "#3a3b40",
+  mountBlack: "#121215",
+  fork: "#2c2d32",
+  otaOrange: "#d9692a",
+  otaCell: "#0e0e10",
+  corrector: "#16343a",
+  coating: "#3b6f8f",
+  chrome: "#c9ccd2",
+  moonlight: "#c7d6ff",
+  skyHigh: "#0c1530",
+  skyLow: "#050508",
+  interiorRed: "#ff4a30",
 } as const;
 
 /** A palette colour at an opacity, as a canvas fill or stop takes it. */

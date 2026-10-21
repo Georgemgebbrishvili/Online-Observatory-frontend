@@ -22,7 +22,8 @@ export function moonThatNight(date: string, timezone: string) {
 export function MoonGlyph({ lit, waxing }: { lit: number; waxing: boolean }) {
   const r = 6;
   const f = Math.max(0, Math.min(1, lit / 100));
-  const rx = Math.abs(Math.cos(Math.PI * f)) * r;
+  // Rounded: the server's and the browser's cosine differ in the last digit.
+  const rx = Math.round(Math.abs(Math.cos(Math.PI * f)) * r * 1000) / 1000;
   // The lit limb runs down the right; the terminator bulges toward the lit side below
   // half, away above.
   const d = `M0,${-r} A${r},${r} 0 0 1 0,${r} A${rx},${r} 0 0 ${f < 0.5 ? 0 : 1} 0,${-r} Z`;

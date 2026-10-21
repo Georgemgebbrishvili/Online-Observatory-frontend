@@ -1,8 +1,16 @@
 import { expect, test } from "@playwright/test";
 
-// The booking board (ADR-053 §7), against e2e/fake-platform.mjs: nine 30-minute slots
-// from 18:00 Tbilisi every night, the second booked; Albireo and Saturn up for the whole
-// of every slot, the Moon, M13 and Venus not.
+import { fakeLocalTime, fakeSlotAt } from "./fake-night.mjs";
+
+// The booking board (ADR-053 §7), against e2e/fake-platform.mjs: every night's
+// 30-minute slots from astronomical dusk to dawn at Tbilisi (e2e/fake-night.mjs), the
+// second booked; Albireo and Saturn up for the whole of every slot, the Moon, M13 and
+// Venus not.
+
+// The old reserve link's slot: the first of a fixed night, and its end half an hour on.
+const linkedSlot = fakeSlotAt("2026-09-25", 0);
+const linkedStart = fakeLocalTime(linkedSlot);
+const linkedEnd = fakeLocalTime(new Date(Date.parse(linkedSlot) + 30 * 60_000).toISOString());
 
 test("/app/book is one board: the nights, a night's slots, and what is up for a chosen slot", async ({
   page,
@@ -17,11 +25,14 @@ test("/app/book is one board: the nights, a night's slots, and what is up for a 
   const nights = page.getByRole("radiogroup", { name: "Choose a night" }).getByRole("radio");
   await expect(nights).toHaveCount(7);
   await expect(nights.first()).toHaveAttribute("aria-checked", "true");
-  await expect(nights.first()).toContainText("8 open");
+  // Every slot of the night but the booked one is open.
+  const open = Number(/(\d+) open/.exec((await nights.first().textContent()) ?? "")?.[1]);
+  expect(open).toBeGreaterThan(4);
 
   const slots = page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio");
-  await expect(slots).toHaveCount(9);
-  await expect(slots.first()).toHaveText("18:00");
+  await expect(slots).toHaveCount(open + 1);
+  const first = (await slots.first().textContent())?.trim() ?? "";
+  expect(first).toMatch(/^\d{2}:\d{2}$/);
   await expect(slots.nth(1)).toBeDisabled();
   await expect(slots.nth(1)).toHaveAccessibleName(/Booked/);
   await expect(page.getByText(/Observatory time · GMT\+4/)).toBeVisible();
@@ -33,7 +44,7 @@ test("/app/book is one board: the nights, a night's slots, and what is up for a 
 
   // A start chosen: the price, the times in the observatory's zone, and the sky for it.
   await slots.first().click();
-  await expect(session).toContainText("18:00 – 18:30 GMT+4");
+  await expect(session).toContainText(new RegExp(`${first} – \\d{2}:\\d{2} GMT\\+4`));
   await expect(session).toContainText("GEL");
   const targets = page.getByRole("radiogroup", { name: "Target" });
   await expect(targets.getByRole("radio", { name: /^Saturn, Up for the whole slot/ })).toBeEnabled();
@@ -49,12 +60,14 @@ test("/app/book is one board: the nights, a night's slots, and what is up for a 
 });
 
 test("the old reserve link lands on the board with its slot chosen", async ({ page }) => {
-  await page.goto("/en/app/book/reserve?startAt=2026-09-25T14:00:00.000Z");
-  await expect(page).toHaveURL(/\/en\/app\/book\?startAt=2026-09-25T14%3A00%3A00\.000Z$/);
+  await page.goto(`/en/app/book/reserve?startAt=${linkedSlot}`);
+  await expect(page).toHaveURL(
+    new RegExp(`/en/app/book\\?startAt=${encodeURIComponent(linkedSlot).replace(/\./g, "\\.")}$`),
+  );
   await expect(
     page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").first(),
   ).toHaveAttribute("aria-checked", "true");
-  await expect(page.locator(".board-sum")).toContainText("18:00 – 18:30");
+  await expect(page.locator(".board-sum")).toContainText(`${linkedStart} – ${linkedEnd}`);
 });
 
 test("the Georgian booking board fits a phone", async ({ page }) => {

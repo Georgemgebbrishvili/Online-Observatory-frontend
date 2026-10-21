@@ -1,3 +1,4 @@
+import { ObservatoryDome } from "@/components/home/observatory-dome";
 import { SkyReveal } from "@/components/home/sky-reveal";
 import { ButtonLink } from "@/components/ui/button";
 import type { Locale } from "@/i18n/config";
@@ -12,7 +13,8 @@ type SkyHeroProps = {
 
 /**
  * The homepage hero as the Skychaser site sets its own (ADR-052 §7): the sky behind, a
- * centred Anton headline whose last words are red, the lede, and one filled button.
+ * centred Anton headline whose last words are red, the lede, and one filled button. At
+ * its foot the observatory, whose telescope follows the sky's light (ADR-057).
  */
 export function SkyHero({ content, headingLevel = 1, locale }: SkyHeroProps) {
   const Heading = headingLevel === 1 ? "h1" : "h2";
@@ -20,6 +22,7 @@ export function SkyHero({ content, headingLevel = 1, locale }: SkyHeroProps) {
   return (
     <section className="sky-hero" aria-labelledby={titleId}>
       <SkyReveal locale={locale} names={content.plates} copy={content.sky} />
+      <ObservatoryDome />
       <div className="sky-hero-copy">
         <Heading id={titleId} className="sky-hero-title">
           <span>{content.headline}</span> <em>{content.sunset}</em>

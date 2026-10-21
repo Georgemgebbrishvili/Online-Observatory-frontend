@@ -212,6 +212,8 @@ export const designSystemCopy = {
       captureCard:
         "CaptureCard — a simulated capture with a drawn frame, one with no preview, and the download states",
       slotRow: "SlotRow — available, booked, and held for weather",
+      skyCalendar:
+        "SkyMonth and SkyList — the board's open week, a fully booked night, a day under the pointer, and the month's special nights",
       bookingRow:
         "BookingRow — awaiting payment, confirmed, cancelled, expired, refunded",
       bookingActions:
@@ -492,6 +494,8 @@ export const designSystemCopy = {
       captureCard:
         "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები",
       slotRow: "SlotRow — თავისუფალი, დაჯავშნილი და ამინდის გამო შეჩერებული",
+      skyCalendar:
+        "SkyMonth და SkyList — დაფის ღია კვირა, სრულად დაჯავშნილი ღამე, მაჩვენებლის ქვეშ მყოფი დღე და თვის განსაკუთრებული ღამეები",
       bookingRow:
         "BookingRow — გადახდას ელოდება, დადასტურებული, გაუქმებული, ვადაგასული, თანხა დაბრუნებული",
       bookingActions:

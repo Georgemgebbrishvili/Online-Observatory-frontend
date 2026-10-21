@@ -15,25 +15,37 @@
   min-width: 0;
 }
 
-/* ── The head: the title at text size, three facts beside it; the board begins at once ── */
+/* ── The head: one line of lede, the simulated notice beside it; the board begins at once ── */
 .board-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--color-line);
 }
 
-.board-lede {
-  max-width: 60ch;
+.board-head > * {
   margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
 }
 
-/* ── The grid: the picks, the session beside them ── */
+.board-lede {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+/* ── The grid: the month, the picks, the session — one screen on a desktop ── */
 .board-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 22.5rem;
-  gap: var(--space-6) var(--space-10);
+  grid-template-columns: 23rem minmax(0, 1fr) 20rem;
+  gap: var(--space-6) var(--space-8);
   align-items: start;
+}
+
+.board-cal {
+  min-width: 0;
 }
 
 .board-pick {
@@ -44,7 +56,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin: var(--space-8) 0 var(--space-3);
+  margin: var(--space-6) 0 var(--space-3);
 }
 
 .board-step:first-child {
@@ -77,78 +89,434 @@
   text-align: right;
 }
 
-/* ── 01 The nights: a strip of tabs, each with its Moon ── */
-.board-nights {
-  display: flex;
-  gap: var(--space-2);
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  padding: 2px 2px var(--space-2);
-  scrollbar-width: thin;
-  mask-image: linear-gradient(90deg, var(--color-mask) 92%, transparent);
+/* ── 01 The month: a calendar of the sky; the board's nights are the days that can be chosen ── */
+.cal {
+  display: grid;
+  gap: var(--space-3);
 }
 
-.board-night {
-  flex: 0 0 4.5rem;
-  scroll-snap-align: start;
-  display: flex;
-  flex-direction: column;
+.cal-head {
+  display: grid;
+  grid-template-columns: 2rem 1fr 2rem;
   align-items: center;
-  gap: 2px;
-  padding: var(--space-2) var(--space-1);
+  gap: var(--space-2);
+}
+
+.cal-month {
+  margin: 0;
+  text-align: center;
+  font: var(--font-weight-headline) var(--font-size-h3) / 1 var(--font-headline);
+  letter-spacing: var(--tracking-headline);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+.cal-month span {
+  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--color-text-tertiary);
+  vertical-align: middle;
+}
+
+.cal-nav {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-medium);
+  border-radius: var(--radius-control);
   background: var(--color-outline-fill);
   color: var(--color-text-secondary);
+  font: var(--font-weight-medium) var(--font-size-body-lg) / 1 var(--font-body);
   cursor: pointer;
   transition:
     border-color var(--duration-fast) var(--ease-standard),
-    background var(--duration-fast) var(--ease-standard);
+    color var(--duration-fast) var(--ease-standard);
 }
 
-.board-night small {
+.cal-nav:hover:not(:disabled) {
+  border-color: var(--color-outline-hover);
+  color: var(--color-text-primary);
+}
+
+.cal-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.cal-week,
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.cal-week span {
+  text-align: center;
   font: var(--font-weight-semibold) var(--font-size-hint) / 1 var(--font-label);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--color-text-tertiary);
 }
 
-.board-night b {
-  font: var(--font-weight-headline) var(--font-size-h3) / 1 var(--font-headline);
+.cal-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-text-secondary);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.cal-day b {
+  font: var(--font-weight-semibold) var(--font-size-body) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-day .board-moon {
+  width: 11px;
+  height: 11px;
+  opacity: 0.7;
+}
+
+.cal-mark {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
+}
+
+button.cal-day {
+  cursor: pointer;
+}
+
+.cal-day.is-info.has-event {
   color: var(--color-text-primary);
 }
 
-.board-night i {
-  margin-top: var(--space-1);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
-  font-style: normal;
-  color: var(--color-text-tertiary);
-}
-
-.board-night .board-moon {
-  margin-top: var(--space-1);
-}
-
-.board-night:hover {
+.cal-day.is-info:hover,
+.cal-day.is-info.is-shown {
   border-color: var(--color-line-strong);
   background: var(--color-overlay-hover);
 }
 
-.board-night[aria-checked="true"],
-.board-night[aria-checked="true"]:hover {
+/* Past days and the neighbouring months' recede by colour, never below the AA ink. */
+.cal-day.is-past,
+.cal-day.is-outside {
+  color: var(--color-text-tertiary);
+}
+
+.cal-day.is-past .board-moon,
+.cal-day.is-outside .board-moon {
+  opacity: 0.35;
+}
+
+/* The nights the board offers: lifted out of the month, with a line beneath for the open slots. */
+.cal-day.is-open {
+  border-color: var(--color-line-strong);
+  background: var(--color-outline-fill-hover);
+  color: var(--color-text-primary);
+}
+
+.cal-day.is-open::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 30%;
+  right: 30%;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+  opacity: 0.7;
+}
+
+.cal-day.is-open .board-moon {
+  opacity: 1;
+}
+
+.cal-day.is-open:hover {
+  border-color: var(--color-outline-hover);
+  background: var(--color-overlay-hover);
+}
+
+.cal-day.is-open[aria-checked="true"],
+.cal-day.is-open[aria-checked="true"]:hover {
   border-color: var(--color-accent);
   background: var(--color-accent-muted);
   box-shadow:
-    0 0 24px -8px var(--color-accent),
+    0 0 22px -6px var(--color-accent),
     inset 0 0 0 1px var(--color-accent-border);
 }
 
-.board-night[aria-checked="true"] i {
+.cal-day.is-open[aria-checked="true"]::after {
+  background: var(--color-accent);
+  opacity: 1;
+}
+
+.cal-day.is-open.is-full {
+  color: var(--color-text-tertiary);
+}
+
+.cal-day.is-open.is-full b {
+  text-decoration: line-through;
+}
+
+.cal-day.is-open.is-full::after {
+  background: var(--color-text-disabled);
+}
+
+.cal-day.is-today b {
   color: var(--color-accent-ink);
 }
 
-.board-night.is-full {
-  opacity: 0.55;
+/* The day under the pointer, or the one chosen: its Moon and its events, in words. */
+.cal-note {
+  display: grid;
+  gap: var(--space-2);
+  min-height: 7.5rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-medium);
+  background: var(--gradient-monolith);
+}
+
+.cal-note header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.cal-note-date {
+  margin: 0;
+  font: var(--font-weight-semibold) var(--font-size-caption) / 1.2 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+.cal-chip {
+  flex: none;
+  padding: 3px var(--space-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-full);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-mono);
+  color: var(--color-text-tertiary);
+}
+
+.cal-chip.is-open {
+  border-color: var(--color-success-border);
+  background: var(--color-success-muted);
+  color: var(--color-success);
+}
+
+.cal-note-moon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-mono);
+  color: var(--color-text-tertiary);
+}
+
+.cal-note ul,
+.cal-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cal-note ul {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cal-note li {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: var(--space-2);
+  align-items: start;
+  font-size: var(--font-size-caption);
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.cal-note li > svg {
+  margin-top: 3px;
+}
+
+.cal-note li b {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cal-note-none {
+  margin: 0;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+}
+
+/* The month's special nights: a short list under the targets, each a way to its day. */
+.cal-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.cal-list header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.cal-list h3 {
+  margin: 0;
+  font: var(--font-weight-semibold) var(--font-size-hint) / 1.2 var(--font-label);
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+  color: var(--color-accent-ink);
+}
+
+.cal-list header span {
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.cal-list ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--space-4);
+  max-height: 11.5rem;
+  overflow-y: auto;
+  border-top: 1px solid var(--color-line);
+  scrollbar-width: thin;
+}
+
+.cal-event {
+  display: grid;
+  grid-template-columns: 2.25rem 14px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-1);
+  border: 0;
+  border-bottom: 1px solid var(--color-line);
+  background: none;
+  color: var(--color-text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.cal-event:hover,
+.cal-event.is-shown {
+  background: var(--color-overlay-hover);
+}
+
+.cal-event-date {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+
+.cal-event-date b {
+  font: var(--font-weight-headline) var(--font-size-h3) / 1 var(--font-headline);
+  color: var(--color-text-primary);
+}
+
+.cal-event-date small {
+  font: var(--font-weight-semibold) var(--font-size-hint) / 1 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.cal-event-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cal-event-text b {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-caption);
+  line-height: 1.3;
+  color: var(--color-text-primary);
+}
+
+.cal-event-text small {
+  overflow: hidden;
+  font-size: var(--font-size-hint);
+  line-height: 1.35;
+  color: var(--color-text-tertiary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cal-event-open {
+  width: 7px;
+  height: 7px;
+  margin-right: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+  box-shadow: var(--glow-live);
+}
+
+/* The drawn signs: one glyph per kind of event. */
+.cal-sign {
+  flex: none;
+  fill: var(--color-text-secondary);
+  stroke: none;
+}
+
+.cal-sign path {
+  stroke: var(--color-text-secondary);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.cal-sign-season path {
+  stroke: none;
+  fill: var(--color-gold);
+}
+
+.cal-sign-ring {
+  fill: none;
+  stroke: var(--color-text-tertiary);
+  stroke-width: 1;
+}
+
+.cal-sign-lunarEclipse,
+.cal-sign-solarEclipse {
+  fill: var(--color-accent);
+}
+
+.cal-sign-shade {
+  fill: var(--color-night);
+}
+
+.cal-sign-opposition,
+.cal-sign-moonNear,
+.cal-sign-pair {
+  fill: var(--color-star-warm);
 }
 
 .board-moon-dark {
@@ -161,10 +529,157 @@
   fill: var(--color-moon-lit);
 }
 
-/* ── 02 The half-hours ── */
+/* ── 02 The night bar: sunset to sunrise, the dark between dusk and dawn, every slot a tick ── */
+.night {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.night-sun,
+.night-marks {
+  position: relative;
+  color: var(--color-text-tertiary);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.night-sun {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.night time {
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+}
+
+.night-bar {
+  position: relative;
+  height: 0.875rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    var(--color-night-sun) 0%,
+    var(--color-night-twilight) var(--tl-sunset),
+    var(--color-night-dark) var(--tl-dusk),
+    var(--color-night-dark) var(--tl-dawn),
+    var(--color-night-twilight) var(--tl-sunrise),
+    var(--color-night-sun) 100%
+  );
+  box-shadow: inset 0 0 0 1px var(--color-line);
+}
+
+.night-moon {
+  position: absolute;
+  top: -0.3125rem;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-target-moon);
+  opacity: 0.7;
+}
+
+.night-midnight {
+  position: absolute;
+  top: -0.125rem;
+  bottom: -0.125rem;
+  width: 1px;
+  background: var(--color-line-strong);
+}
+
+.night-tick {
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  min-width: 2px;
+  border-radius: 1px;
+  background: var(--color-text-tertiary);
+}
+
+.night-tick.is-taken {
+  background: var(--color-text-disabled);
+  opacity: 0.5;
+}
+
+.night-tick.is-chosen {
+  top: 0.0625rem;
+  bottom: 0.0625rem;
+  background: var(--color-accent);
+  box-shadow: 0 0 10px var(--color-accent);
+}
+
+.night-marks {
+  height: 1.125rem;
+}
+
+.night-marks > span {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.night-marks > .is-start {
+  transform: translateX(-0.5rem);
+}
+
+.night-marks > .is-end {
+  transform: translateX(calc(-100% + 0.5rem));
+}
+
+.night-moon-key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.night-moon-key i {
+  width: 0.75rem;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-target-moon);
+}
+
+:lang(ka) .night-sun,
+:lang(ka) .night-marks {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ── 03 The half-hours, in the night's three parts ── */
 .board-slots {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.board-part {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.board-part-name {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font: var(--font-weight-semibold) var(--font-size-hint) / 1.2 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+:lang(ka) .board-part-name {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.board-part-slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
 }
 
@@ -223,131 +738,163 @@
   color: var(--color-text-tertiary);
 }
 
-/* ── 03 The targets: a list, each with its plate or a drawn swatch; dimmed when not up ── */
+/* ── 04 The targets: glass cards, each washed in its object's colour ── */
 .board-targets {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
   gap: var(--space-2);
 }
 
+.board-target[data-accent="saturn"] {
+  --accent: var(--color-target-saturn);
+  --accent-2: var(--color-target-saturn);
+}
+
+.board-target[data-accent="jupiter"] {
+  --accent: var(--color-target-jupiter);
+  --accent-2: var(--color-target-jupiter);
+}
+
+.board-target[data-accent="mars"] {
+  --accent: var(--color-target-mars);
+  --accent-2: var(--color-target-mars);
+}
+
+.board-target[data-accent="venus"] {
+  --accent: var(--color-target-venus);
+  --accent-2: var(--color-target-venus);
+}
+
+.board-target[data-accent="moon"] {
+  --accent: var(--color-target-moon);
+  --accent-2: var(--color-target-moon);
+}
+
+.board-target[data-accent="star"] {
+  --accent: var(--color-target-star-gold);
+  --accent-2: var(--color-target-star-blue);
+}
+
+.board-target[data-accent="cluster"] {
+  --accent: var(--color-target-cluster);
+  --accent-2: var(--color-target-cluster);
+}
+
+.board-target[data-accent="nebula"] {
+  --accent: var(--color-target-nebula);
+  --accent-2: var(--color-target-nebula);
+}
+
 .board-target {
+  position: relative;
   display: grid;
-  grid-template-columns: 3.5rem minmax(0, 1fr);
-  align-items: center;
-  gap: var(--space-1) var(--space-3);
-  min-height: var(--size-touch);
-  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
-  border: 1px solid var(--color-line);
+  justify-items: center;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-5) var(--space-2) var(--space-3);
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   border-radius: var(--radius-medium);
-  background: var(--color-outline-fill);
+  background:
+    radial-gradient(
+      120% 70% at 30% 0%,
+      color-mix(in srgb, var(--accent) 20%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      90% 60% at 90% 10%,
+      color-mix(in srgb, var(--accent-2) 14%, transparent),
+      transparent 70%
+    ),
+    var(--color-surface-raised);
   color: var(--color-text-primary);
-  text-align: left;
+  text-align: center;
   cursor: pointer;
   transition:
     border-color var(--duration-fast) var(--ease-standard),
-    background var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
+    box-shadow var(--duration-standard) var(--ease-standard),
+    transform var(--duration-standard) var(--ease-standard),
+    opacity var(--duration-standard) var(--ease-standard);
+}
+
+/* The glass: a soft highlight across the top of every card. */
+.board-target::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 55%;
+  background: linear-gradient(180deg, var(--color-target-glass), transparent);
+  content: "";
+  pointer-events: none;
 }
 
 .board-thumb {
   position: relative;
-  grid-row: span 2;
-  display: block;
-  width: 3.5rem;
+  display: grid;
+  width: 4.75rem;
   aspect-ratio: 1;
-  overflow: hidden;
-  border-radius: var(--radius-small);
-  background: var(--color-night);
+  place-items: center;
+  margin-bottom: var(--space-1);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 26%, transparent) 0,
+    transparent 68%
+  );
 }
 
-.board-thumb img {
+.target-art {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: filter var(--duration-fast) var(--ease-standard);
-}
-
-/* The swatches: a drawn hint of each class, never a photograph. */
-.board-thumb::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-}
-
-.board-thumb-moon::after {
-  background: radial-gradient(circle at 60% 42%, var(--color-text-primary) 0 28%, var(--color-text-tertiary) 34%, transparent 36%);
-}
-
-.board-thumb-planet::after {
-  background: radial-gradient(circle at 50% 50%, var(--color-star-warm) 0 22%, var(--color-text-tertiary) 30%, transparent 32%);
-}
-
-.board-thumb-saturn::after,
-.board-thumb-jupiter::after {
-  background: none;
-}
-
-.board-thumb-star::after {
-  background:
-    radial-gradient(circle at 40% 54%, var(--color-gold) 0 9%, transparent 14%),
-    radial-gradient(circle at 62% 42%, var(--color-sky-blue) 0 6%, transparent 11%);
-}
-
-.board-thumb-cluster::after {
-  background:
-    radial-gradient(circle at 50% 50%, var(--color-text-primary) 0 5%, transparent 8%),
-    radial-gradient(circle at 34% 60%, var(--color-text-secondary) 0 4%, transparent 7%),
-    radial-gradient(circle at 66% 36%, var(--color-text-secondary) 0 4%, transparent 7%),
-    radial-gradient(circle at 60% 66%, var(--color-text-secondary) 0 3%, transparent 6%),
-    radial-gradient(circle at 50% 50%, var(--color-accent-muted), transparent 60%);
-}
-
-.board-thumb-ring::after {
-  background: radial-gradient(circle at 50% 50%, transparent 20%, var(--color-accent-border) 26%, transparent 36%);
-}
-
-.board-thumb-nebula::after {
-  background: radial-gradient(ellipse at 48% 50%, var(--color-accent-muted) 0 30%, transparent 70%);
-}
-
-.board-target-text {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 45%, transparent));
+  transition:
+    transform var(--duration-instrument) var(--ease-sky),
+    filter var(--duration-standard) var(--ease-standard);
 }
 
 .board-target-name {
-  font: var(--font-weight-headline) var(--font-size-body-lg) / 1.1 var(--font-headline);
+  max-width: 100%;
+  font: var(--font-weight-headline) var(--font-size-body) / 1.1 var(--font-headline);
   letter-spacing: var(--tracking-headline);
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .board-target-sub {
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-text-small);
-}
-
-.board-target-about {
   display: -webkit-box;
+  max-width: 100%;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-  line-height: 1.4;
+  color: var(--color-text-small);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-body);
+}
+
+/* The minutes a target takes, in the card's corner. */
+.board-target-time {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  color: var(--color-text-small);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
+}
+
+:lang(ka) .board-target-name {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .board-target-state {
-  grid-column: 2;
-  justify-self: start;
-  margin-bottom: var(--space-1);
-  padding: var(--space-1) var(--space-2);
+  max-width: 100%;
+  margin-top: var(--space-1);
+  padding: 0.1875rem var(--space-2);
+  overflow: hidden;
   border-radius: var(--radius-full);
   font: var(--font-weight-semibold) var(--font-size-hint) / 1.2 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .board-target-state.is-up {
@@ -356,35 +903,140 @@
 }
 
 .board-target-state.is-down {
-  padding-inline: 0;
+  background: var(--color-outline-fill);
   color: var(--color-text-tertiary);
 }
 
+/* The drawn plates are squares of night: feathered to a disc and lit into the card. */
+img.target-art {
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(circle closest-side, var(--color-mask) 72%, transparent 100%);
+}
+
 .board-target:hover:not(:disabled) {
-  border-color: var(--color-line-strong);
-  background: var(--color-overlay-hover);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 14px 34px -22px var(--accent);
+  transform: translateY(-2px);
+}
+
+.board-target:hover:not(:disabled) .target-art {
+  transform: scale(1.06);
 }
 
 .board-target[aria-checked="true"],
 .board-target[aria-checked="true"]:hover:not(:disabled) {
-  border-color: var(--color-accent);
-  background: var(--color-accent-muted);
+  border-color: color-mix(in srgb, var(--accent) 85%, transparent);
   box-shadow:
-    0 0 24px -8px var(--color-accent),
-    inset 0 0 0 1px var(--color-accent-border);
+    0 0 30px -10px var(--accent),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
+    inset 0 -30px 50px -40px var(--accent);
 }
 
-.board-target[aria-checked="true"] .board-target-sub {
-  color: var(--color-accent-ink);
+.board-target[aria-checked="true"] .target-art {
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--accent) 70%, transparent));
+  transform: scale(1.08);
+}
+
+.board-target:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .board-target.is-down {
   cursor: default;
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
-.board-target.is-down .board-thumb img {
-  filter: grayscale(1);
+.board-target.is-down .target-art {
+  filter: grayscale(0.85);
+}
+
+/* The drawn objects' own colours. */
+.art-moon-hi {
+  stop-color: var(--color-moon-lit);
+}
+
+.art-moon-mid {
+  stop-color: var(--color-target-moon);
+}
+
+.art-moon-lo {
+  stop-color: var(--color-moon-dark);
+}
+
+.art-moon-maria {
+  fill: color-mix(in srgb, var(--color-moon-dark) 32%, transparent);
+}
+
+.art-moon-craters {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-moon-dark) 40%, transparent);
+  stroke-width: 0.8;
+}
+
+.art-star-core {
+  stop-color: var(--color-text-primary);
+}
+
+.art-star-gold {
+  stop-color: var(--color-target-star-gold);
+}
+
+.art-star-blue {
+  stop-color: var(--color-target-star-blue);
+}
+
+.art-star-fade {
+  stop-color: var(--color-night);
+  stop-opacity: 0;
+}
+
+.art-star-spikes {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-text-primary) 30%, transparent);
+  stroke-width: 0.6;
+}
+
+.art-cluster-core {
+  stop-color: color-mix(in srgb, var(--color-target-cluster) 55%, transparent);
+}
+
+.art-cluster-stars {
+  fill: var(--color-target-cluster);
+}
+
+.art-nebula {
+  stop-color: var(--color-target-nebula);
+}
+
+/* The chosen target's line, and the art's caption. */
+.board-focus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  min-height: 1.5rem;
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: 1.45;
+}
+
+.board-focus b {
+  color: var(--color-text-primary);
+}
+
+.board-art-note {
+  margin-left: auto;
+  color: var(--color-text-small);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+:lang(ka) .board-art-note {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 /* ── The session: a monolith that stays beside the picks ── */
@@ -498,9 +1150,23 @@
   display: none;
 }
 
+@media (--below-xl) {
+  .board-grid {
+    grid-template-columns: 21rem minmax(0, 1fr);
+  }
+
+  .board-sum {
+    grid-column: 2;
+  }
+}
+
 @media (--below-lg) {
   .board-grid {
     grid-template-columns: 1fr;
+  }
+
+  .board-sum {
+    grid-column: auto;
   }
 
   .board-sum {
@@ -526,20 +1192,31 @@
     text-align: left;
   }
 
-  .board-nights {
-    padding-right: var(--space-6);
+  .board-slots {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
   }
 
-  .board-slots {
+  .board-part-slots {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .board-targets {
-    grid-template-columns: 1fr;
+  .night-moon-key {
+    order: 3;
+    flex-basis: 100%;
   }
 
-  .board-target-about {
+  .night-midnight-mark {
     display: none;
+  }
+
+  .board-targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cal-list ul {
+    grid-template-columns: 1fr;
+    max-height: none;
   }
 
   .board-bar {
@@ -579,9 +1256,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .board-thumb img,
+  .target-art,
+  .board-target,
   .board-slot,
-  .board-night {
+  .cal-day,
+  .cal-nav,
+  .cal-event {
     transition: none;
   }
 }

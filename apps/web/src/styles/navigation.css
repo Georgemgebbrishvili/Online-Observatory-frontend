@@ -243,8 +243,7 @@ html:has(.public-mobile-menu[data-open]) {
     min-width: 0;
   }
 
-  .public-navigation a,
-  .public-sign-in {
+  .public-navigation a {
     position: relative;
     display: inline-flex;
     min-height: 2.75rem;
@@ -257,10 +256,6 @@ html:has(.public-mobile-menu[data-open]) {
     text-transform: uppercase;
     white-space: nowrap;
     transition: color var(--duration-fast) var(--ease-standard);
-  }
-
-  .public-sign-in {
-    padding-inline: var(--space-3);
   }
 
   /* The underline: drawn in on hover, held at .55 on the current page. */
@@ -278,9 +273,7 @@ html:has(.public-mobile-menu[data-open]) {
   }
 
   .public-navigation a:hover,
-  .public-navigation a[aria-current="page"],
-  .public-sign-in:hover,
-  .account-menu-button[aria-expanded="true"] {
+  .public-navigation a[aria-current="page"] {
     color: var(--color-text-primary);
   }
 
@@ -300,7 +293,7 @@ html:has(.public-mobile-menu[data-open]) {
   .public-actions {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-4);
   }
 }
 
@@ -310,29 +303,55 @@ html:has(.public-mobile-menu[data-open]) {
   }
 }
 
-/* The Account menu: a button where "Sign in" sits, opening a small glass list. */
+/* The account: a round profile button beside the language, opening a small glass list.
+   Signed in, its ring takes a red dot. */
 .account-menu {
   position: relative;
 }
 
 .account-menu-button {
-  gap: var(--space-2);
-  border: 0;
-  background: none;
+  position: relative;
+  display: inline-grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 50%;
+  background: var(--color-outline-fill);
+  color: var(--color-text-secondary);
   cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-.account-menu-caret {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-0.15rem) rotate(45deg);
-  transition: transform var(--duration-fast) var(--ease-standard);
+.account-menu-button svg {
+  width: 1.375rem;
+  height: 1.375rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.6;
 }
 
-.account-menu-button[aria-expanded="true"] .account-menu-caret {
-  transform: translateY(0.1rem) rotate(-135deg);
+.account-menu-button:hover,
+.account-menu-button[aria-expanded="true"] {
+  border-color: var(--color-account-ring);
+  color: var(--color-text-primary);
+  box-shadow: var(--glow-account);
+}
+
+.account-menu-button[data-signed-in]::after {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 2px solid var(--color-console);
+  border-radius: 50%;
+  background: var(--color-accent);
+  content: "";
 }
 
 .account-menu-list {
@@ -350,6 +369,21 @@ html:has(.public-mobile-menu[data-open]) {
 
 .account-menu-list[data-open] {
   display: grid;
+  animation: account-menu-in 180ms var(--ease-standard);
+  transform-origin: top right;
+}
+
+@keyframes account-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-menu-list[data-open] {
+    animation: none;
+  }
 }
 
 .account-menu-list nav {
@@ -432,7 +466,6 @@ html:has(.public-mobile-menu[data-open]) {
   font-weight: var(--font-weight-medium);
 }
 
-:lang(ka) .account-menu-button,
 :lang(ka) .public-mobile-menu .mobile-account p {
   letter-spacing: 0;
   text-transform: none;

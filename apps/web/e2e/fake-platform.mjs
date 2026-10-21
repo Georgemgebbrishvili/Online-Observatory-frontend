@@ -59,6 +59,8 @@ import {
   zVerifyEmailRequest,
 } from "@darkview/contracts/zod";
 
+import { fakeNight, fakeNightOf } from "./fake-night.mjs";
+
 const port = Number(process.env.FAKE_PLATFORM_PORT ?? 4100);
 const appOrigin = process.env.FAKE_PLATFORM_APP_URL ?? "http://localhost:3000";
 // Against `next start` (E2E_BUILD=1) the web app reads the production cookie names
@@ -574,20 +576,24 @@ async function changeBooking(request, response, id, action) {
 
 // Phase 3 slices 2 and 4: reserving a slot and the sandbox checkout, as `POST /bookings`
 // and `GET|POST /payments/{id}/sandbox-checkout` answer them. The slots are GET /slots';
-// the ninth is refused as taken a moment ago, standing in for the race the exclusion
+// the night's last is refused as taken a moment ago, standing in for the race the exclusion
 // constraint settles. A booking made here belongs to the session that made it, like the
 // changes above, and is listed with the others.
-const TAKEN_SLOT_INDEX = 8;
 const idempotentBookings = new Map();
 const payments = new Map();
 
-/** Which of GET /slots' nine slots an instant starts, or null for none. */
+/** Which of GET /slots' slots an instant starts, or null for none. */
 function slotAt(startAt) {
   const at = Date.parse(startAt);
-  // Every slot starts within six hours of its night's 14:00 UTC.
-  const night = new Date(at - 14 * 3_600_000).toISOString().slice(0, 10);
-  const index = (at - Date.parse(`${night}T14:00:00.000Z`)) / (40 * 60_000);
-  return Number.isInteger(index) && index >= 0 && index < 9 ? index : null;
+  if (Number.isNaN(at)) return null;
+  const { first, count } = fakeNight(fakeNightOf(at));
+  const index = (at - first) / (40 * 60_000);
+  return Number.isInteger(index) && index >= 0 && index < count ? index : null;
+}
+
+/** Whether a slot is refused as booked: the night's second, or its last "a moment ago". */
+function slotTaken(startAt, index) {
+  return index === 1 || index === fakeNight(fakeNightOf(Date.parse(startAt))).count - 1;
 }
 
 /** A slot judged as the fake's sky judges tonight: the same targets up, the same reasons. */
@@ -630,7 +636,7 @@ async function createBooking(request, response) {
   const index = slotAt(slotStartAt);
   if (index === null || durationMinutes !== 30)
     return error(response, 422, "VALIDATION_FAILED", "That is not an offered slot.");
-  if (index === 1 || index === TAKEN_SLOT_INDEX)
+  if (slotTaken(slotStartAt, index))
     return error(response, 409, "SLOT_UNAVAILABLE", "That slot has just been booked.");
   const judged = slotTargets(slotStartAt, durationMinutes).items.find(
     (item) => item.target.id === targetId,
@@ -713,7 +719,7 @@ async function rescheduleBooking(request, response, id) {
   const index = slotAt(slotStartAt);
   if (index === null)
     return error(response, 422, "VALIDATION_FAILED", "That is not an offered slot.");
-  if (index === 1 || index === TAKEN_SLOT_INDEX)
+  if (slotTaken(slotStartAt, index))
     return error(response, 409, "SLOT_UNAVAILABLE", "That slot has just been taken.");
   const judged = slotTargets(slotStartAt, original.durationMinutes).items.find(
     (item) => item.target.id === targetId,
@@ -1195,9 +1201,10 @@ const routes = {
             items: targets.items.filter((row) => row.enabled),
           }),
         ),
-  // GET /slots. Fixed, so every run and every baseline sees the same night: nine
-  // 30-minute slots from 18:00 Tbilisi (UTC+4, no DST) on the platform's 40-minute
-  // stride, the second one booked. Public, like the platform's.
+  // GET /slots. The platform's night (e2e/fake-night.mjs): every slot of astronomical
+  // darkness at Tbilisi, dusk to dawn, on the 40-minute stride, the second one booked.
+  // Computed, not stored, so a date always gives the same night. Public, like the
+  // platform's.
   "GET /slots": (request, response) => {
     const query = new URL(request.url, "http://fake").searchParams;
     const date = query.get("date") ?? "";
@@ -1207,15 +1214,15 @@ const routes = {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return error(response, 422, "VALIDATION_FAILED", "`date` must be YYYY-MM-DD.");
     }
-    const dusk = Date.parse(`${date}T14:00:00.000Z`);
+    const { first, count } = fakeNight(date);
     send(
       response,
       200,
       zListSlotsResponse.parse({
         observatoryId,
         date,
-        items: Array.from({ length: 9 }, (_, index) => {
-          const startAt = dusk + index * 40 * 60_000;
+        items: Array.from({ length: count }, (_, index) => {
+          const startAt = first + index * 40 * 60_000;
           return {
             observatoryId,
             startAt: new Date(startAt).toISOString(),

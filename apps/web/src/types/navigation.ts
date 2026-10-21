@@ -5,7 +5,9 @@ export type PublicNavigationDictionary = {
   book: string;
   observatory: string;
   pricing: string;
+  explorer: string;
   signIn: string;
+  register: string;
   reserve: string;
   account: string;
   overview: string;
