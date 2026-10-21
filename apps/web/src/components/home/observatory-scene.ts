@@ -184,6 +184,15 @@ export function createObservatoryScene(
     antialias: true,
     powerPreference: "high-performance",
   });
+  // Without a GPU (a software rasteriser) the scene would hold the page's main thread for
+  // seconds a frame: draw nothing, as where WebGL is missing.
+  const gl = renderer.getContext();
+  const info = gl.getExtension("WEBGL_debug_renderer_info");
+  const name = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : "";
+  if (/swiftshader|llvmpipe|software|basic render/i.test(name)) {
+    renderer.dispose();
+    throw new Error("No GPU for the observatory scene.");
+  }
   renderer.setClearColor(palette.black, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
