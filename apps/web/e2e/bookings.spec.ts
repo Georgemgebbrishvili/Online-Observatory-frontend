@@ -63,6 +63,20 @@ test("a confirmed booking opens its observation and says why it cannot be cancel
   );
 });
 
+// #194: the line appears only once the confirmation was sent; a queued one says nothing,
+// since a deployment with no email sender never sends it.
+test("a confirmed booking says when its confirmation was emailed, and only then", async ({
+  page,
+}) => {
+  await page.goto(`/en/app/bookings/${upcoming}`);
+  await expect(page.getByText("The confirmation was emailed to you on")).toContainText(
+    "21 September 2026",
+  );
+  await page.goto(`/en/app/bookings/${lost}`);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByText("The confirmation was emailed")).toHaveCount(0);
+});
+
 test("a booking awaiting payment says how long it is held and offers the checkout", async ({
   page,
 }) => {

@@ -2593,7 +2593,16 @@ http
         (candidate) => candidate.id === ownBooking[1],
       );
       if (!row) return error(response, 404, "NOT_FOUND", "No such booking.");
-      return send(response, 200, zGetBookingResponse.parse(row));
+      // #194: the detail alone says what became of the confirmation. One seeded
+      // booking's was sent; every other confirmed one stays queued, as on a
+      // deployment with no email sender.
+      const confirmationEmail =
+        row.status !== "CONFIRMED"
+          ? null
+          : row.id === "51000000-0000-4000-8000-000000000002"
+            ? { status: "SENT", sentAt: "2026-09-21T09:01:00.000Z" }
+            : { status: "QUEUED", sentAt: null };
+      return send(response, 200, zGetBookingResponse.parse({ ...row, confirmationEmail }));
     }
     if (ownBooking?.[2] && request.method === "POST")
       return await changeBooking(request, response, ownBooking[1], ownBooking[2]);

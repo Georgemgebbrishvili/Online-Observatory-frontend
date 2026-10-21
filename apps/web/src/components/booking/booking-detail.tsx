@@ -168,6 +168,12 @@ export function BookingDetail({ entry, locale, mode, now }: BookingDetailProps) 
         </Link>
       )}
 
+      {booking.confirmationEmail?.status === "SENT" && booking.confirmationEmail.sentAt && (
+        <p className="booking-rule">
+          {copy.confirmationSent(formatDay(booking.confirmationEmail.sentAt, timezone, locale))}
+        </p>
+      )}
+
       {booking.status === "CONFIRMED" && !open && (
         <p className="booking-rule">{copy.paidCannotCancel}</p>
       )}

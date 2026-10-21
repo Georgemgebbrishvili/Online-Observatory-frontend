@@ -45,6 +45,8 @@ type BookingsCopy = {
   continuePayment: string;
   openObservation: string;
   paidCannotCancel: string;
+  /** #194: said only once the confirmation was handed to the sender. */
+  confirmationSent: (on: string) => string;
   cause: Record<BookingLossCause, string>;
   lostSlot: (minutes: number, cause: string, until: string) => string;
   refunded: string;
@@ -127,6 +129,7 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     continuePayment: "Continue to payment",
     openObservation: "Open the observation",
     paidCannotCancel: "A paid booking cannot be cancelled until refunds are available.",
+    confirmationSent: (on) => `The confirmation was emailed to you on ${on}.`,
     cause: { WEATHER: "the weather", OBSERVATORY_FAULT: "an observatory fault" },
     lostSlot: (minutes, cause, until) =>
       `${minutes} minutes of this slot were lost to ${cause}. You can take a refund or a free slot until ${until}.`,
@@ -211,6 +214,7 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     openObservation: "დაკვირვების გახსნა",
     paidCannotCancel:
       "გადახდილი ჯავშნის გაუქმება შეუძლებელია, სანამ თანხის დაბრუნება არ ამოქმედდება.",
+    confirmationSent: (on) => `დადასტურება ელფოსტით გამოგეგზავნა · ${on}`,
     cause: { WEATHER: "ამინდის", OBSERVATORY_FAULT: "ობსერვატორიის ხარვეზის" },
     lostSlot: (minutes, cause, until) =>
       `ამ სეანსიდან ${minutes} წუთი ${cause} გამო დაიკარგა. ${until}-მდე შეგიძლია თანხა დაიბრუნო ან უფასო სეანსი აირჩიო.`,
