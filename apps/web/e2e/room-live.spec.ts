@@ -165,7 +165,8 @@ for (const [locale, heading, reason] of [
     await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByText(reason)).toBeVisible();
+    // Exact: the stage's spoken announcement carries the reason inside a longer sentence.
+    await expect(page.getByText(reason, { exact: true })).toBeVisible();
     await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "hold");
   });
 }
