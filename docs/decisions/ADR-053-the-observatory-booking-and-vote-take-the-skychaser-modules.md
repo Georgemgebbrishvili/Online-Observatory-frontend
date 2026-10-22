@@ -102,3 +102,9 @@ says how each is resolved.
   `/observatory`, `/app/book` and its reschedule, and the new `/vote`, change together;
   `/app/book/reserve` leaves the baseline list, since it redirects.
 - Built in three slices — the console, the board, the vote — each with its gates.
+
+## Amendment — 2026-10-22: the weekly card draw
+
+[ADR-058](ADR-058-a-weekly-card-draw-with-skychaser-cards.md) brings Skychaser's card,
+its back, its rarities and its reveal across for the weekly card draw at `/app/cards`,
+and nowhere else. Capsules, packs, editions and the wallet stay out; a card is never sold.

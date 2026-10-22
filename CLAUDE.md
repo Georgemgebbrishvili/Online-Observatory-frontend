@@ -242,7 +242,8 @@ glass. White text on `#E3482C` fails WCAG AA and is never used.
 Avoid: purple-nebula SaaS gradients, cartoon astronomy, military HUD decoration or
 NASA marks (ADR-055 takes NASA's colour, not its costume), stock space imagery presented as telescope output, any claim of
 Hubble/JWST-class or professional long-exposure results, and "NASA-cosplay" vocabulary.
-Skychaser's cards, capsules, rarities and wallet are its content, not ours.
+Skychaser's capsules and wallet are its content, not ours; its cards and rarities appear
+only in the weekly card draw, never sold (ADR-058).
 
 The real feed and real instrument status are the visual focus. Every rendered or drawn
 object is captioned "Illustration — not telescope output", and a simulated stream is

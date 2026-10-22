@@ -112,3 +112,9 @@ its logo kit (`9038617d`): the comet with a sunset core, and an outlined wordmar
 Archivo Expanded Black. §3 above is written to the new logo. The other changes in those
 commits are Skychaser's own content — wallets, credits, rarities, voting — and change
 nothing copied here.
+
+## Amendment — 2026-10-22: the weekly card draw
+
+[ADR-058](ADR-058-a-weekly-card-draw-with-skychaser-cards.md) brings Skychaser's card,
+its back, its rarities and its reveal across for the weekly card draw at `/app/cards`,
+and nowhere else. Capsules, packs, editions and the wallet stay out; a card is never sold.
