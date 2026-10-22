@@ -126,6 +126,9 @@ async function capture(
     fullPage: true,
     mask: masks(page),
     stylePath: "e2e/visual.css",
+    // The design system is over 34,000 px tall: in Georgian, one capture can take longer
+    // than the default 15 s.
+    timeout: 45_000,
   });
 }
 
