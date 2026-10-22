@@ -1,7 +1,8 @@
 import type { Booking, NativeSession, Target } from "@darkview/contracts";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Link } from "expo-router";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useLocale } from "@/i18n/locale";
 import { platform } from "@/platform/api";
@@ -153,21 +154,30 @@ function Night({ booking, target, timezone }: { booking: Booking; target?: Targe
   const { t, locale } = useLocale();
   const end = new Date(Date.parse(booking.slotStartAt) + booking.durationMinutes * 60_000).toISOString();
   const confirmed = booking.status === "CONFIRMED";
-  return (
+  const row = (
     <View style={styles.night}>
       <View style={{ flex: 1, gap: 2 }}>
         <Text style={type.body(locale, true)}>{target ? targetName(target, locale) : "—"}</Text>
-        <Text style={type.reading()}>
+        <Text style={type.reading(locale)}>
           {`${nightLabel(localDate(Date.parse(booking.slotStartAt), timezone), locale)} · ${clock(booking.slotStartAt, timezone)}–${clock(end, timezone)}`}
         </Text>
       </View>
       <View style={styles.status}>
         <Dot tone={confirmed ? "live" : booking.status === "PENDING_PAYMENT" ? "warn" : "off"} />
-        <Text style={[type.reading(), { color: confirmed ? palette.ink : palette.ink2 }]}>
+        <Text style={[type.reading(locale), { color: confirmed ? palette.ink : palette.ink2 }]}>
           {t.account.status[booking.status]}
         </Text>
       </View>
     </View>
+  );
+  // A confirmed night with a mission opens its live room, as the website's booking does.
+  if (!confirmed || !booking.missionId) return row;
+  return (
+    <Link href={`/missions/${booking.missionId}`} asChild>
+      <Pressable accessibilityRole="link" accessibilityHint={t.room.open}>
+        {row}
+      </Pressable>
+    </Link>
   );
 }
 

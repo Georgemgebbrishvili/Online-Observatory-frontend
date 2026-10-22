@@ -68,13 +68,13 @@ function Night({ observatory }: { observatory: BookableObservatory }) {
               accessibilityLabel={`${clock(slot.startAt, observatory.timezone)}, ${slot.available ? t.book.open : t.book.full}, ${price(slot.priceMinor, locale)}`}
             >
               <Dot tone={slot.available ? "live" : "off"} />
-              <Text style={[type.reading(), styles.time, !slot.available && styles.taken]}>
+              <Text style={[type.reading(locale), styles.time, !slot.available && styles.taken]}>
                 {`${clock(slot.startAt, observatory.timezone)}–${clock(slot.endAt, observatory.timezone)}`}
               </Text>
               <Text style={[type.body(locale), { color: slot.available ? palette.ink : palette.ink3, flex: 1 }]}>
                 {slot.available ? t.book.open : t.book.full}
               </Text>
-              <Text style={type.reading()}>{price(slot.priceMinor, locale)}</Text>
+              <Text style={type.reading(locale)}>{price(slot.priceMinor, locale)}</Text>
             </View>
           ))}
         </View>

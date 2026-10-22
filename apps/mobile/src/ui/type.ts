@@ -44,5 +44,10 @@ export const type = {
           textTransform: "uppercase",
           color: palette.ink,
         },
-  reading: (): TextStyle => ({ fontFamily: face.mono, fontSize: size.hint, color: palette.ink2 }),
+  /** Readings and small print: mono for English and figures; JetBrains Mono has no Georgian letters. */
+  reading: (locale: Locale = "en"): TextStyle => ({
+    fontFamily: locale === "ka" ? face.georgian : face.mono,
+    fontSize: size.hint,
+    color: palette.ink2,
+  }),
 };

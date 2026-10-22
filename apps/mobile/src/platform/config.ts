@@ -5,5 +5,11 @@ export const platformApiBaseUrl =
 
 export const webAppUrl = process.env.EXPO_PUBLIC_APP_URL ?? "http://localhost:3000";
 
+/**
+ * Where /ws/mission and /stream/mission are served. In production the website's host
+ * serves both, as it serves /api; in development it is the realtime service itself.
+ */
+export const realtimeBaseUrl = process.env.EXPO_PUBLIC_DARKVIEW_REALTIME_URL ?? webAppUrl;
+
 /** A screen waits this long for an answer, then shows its unavailable state. */
 export const platformTimeoutMs = 10_000;

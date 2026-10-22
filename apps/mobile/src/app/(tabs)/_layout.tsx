@@ -13,7 +13,8 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: palette.redInk,
         tabBarInactiveTintColor: palette.ink3,
-        tabBarLabelStyle: { ...type.label(locale), marginBottom: 2 },
+        // Four tabs on a 390 pt phone: the label keeps its face but loses most tracking.
+        tabBarLabelStyle: { ...type.label(locale), letterSpacing: locale === "ka" ? 0 : 0.4, marginBottom: 2 },
         tabBarIconStyle: { display: "none" },
         tabBarStyle: {
           backgroundColor: `${palette.bar}e6`,
@@ -25,6 +26,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: t.tabs.tonight }} />
       <Tabs.Screen name="book" options={{ title: t.tabs.book }} />
+      <Tabs.Screen name="collection" options={{ title: t.tabs.collection }} />
       <Tabs.Screen name="account" options={{ title: t.tabs.account }} />
     </Tabs>
   );

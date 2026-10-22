@@ -117,7 +117,7 @@ function Targets({ observatory }: { observatory: BookableObservatory }) {
               <Pressable accessibilityRole="link" style={styles.target}>
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text style={type.body(locale, true)}>{targetName(target, locale)}</Text>
-                  <Text style={type.reading()}>
+                  <Text style={type.reading(locale)}>
                     {visibility.observable
                       ? `${t.visible} · ${t.altitude(visibility.horizontal.altitudeDegrees)}`
                       : reason

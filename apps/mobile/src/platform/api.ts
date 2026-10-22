@@ -1,12 +1,19 @@
 import type {
   ApiError,
   BookingPage,
+  Capture,
+  CaptureDownload,
+  CapturePage,
   GetObservatoryConditionsResponse,
   GetObservatoryStatusResponse,
   GetTargetResponse,
   ListBookableObservatoriesResponse,
   ListSlotsResponse,
   ListTonightTargetsResponse,
+  Mission,
+  MissionCommandAccepted,
+  MissionCommandRequest,
+  MissionSession,
   NativeSession,
   SignInRequest,
   TargetPage,
@@ -78,4 +85,16 @@ export const platform = {
     request<NativeSession>("/auth/native-sign-in", { method: "POST", body }),
   signOut: (token: string) => request<void>("/auth/sign-out", { method: "POST", token }),
   bookings: (token: string) => request<BookingPage>("/bookings", { token }),
+
+  mission: (id: string, token: string) => request<Mission>(`/missions/${q(id)}`, { token }),
+  /** Opens, or reopens, the controller's session; no body (as the website sends it). */
+  startMission: (id: string, token: string) =>
+    request<MissionSession>(`/missions/${q(id)}/start`, { method: "POST", token }),
+  command: (id: string, token: string, body: MissionCommandRequest) =>
+    request<MissionCommandAccepted>(`/missions/${q(id)}/command`, { method: "POST", token, body }),
+
+  captures: (token: string) => request<CapturePage>("/captures?limit=24", { token }),
+  capture: (id: string, token: string) => request<Capture>(`/captures/${q(id)}`, { token }),
+  captureImage: (id: string, token: string) =>
+    request<CaptureDownload>(`/captures/${q(id)}/download?kind=IMAGE`, { token }),
 };
