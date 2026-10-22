@@ -1,10 +1,8 @@
-import type { ObservatoryMode } from "@darkview/contracts";
 import Link from "next/link";
 
 import { BookingActions } from "@/components/booking/booking-actions";
 import { bookingTitle, statusTone } from "@/components/booking/booking-list";
 import { formatPrice } from "@/components/booking/booking-night";
-import { ModeNotice } from "@/components/observatory/mode-notice";
 import { ViewerTime } from "@/components/booking/viewer-time";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import type { BookingEntry } from "@/features/booking/bookings";
@@ -19,18 +17,16 @@ import {
 import type { Locale } from "@/i18n/config";
 import { bookingActionsCopy, bookingsCopy } from "@/i18n/resources/bookings";
 import { rescheduleCopy } from "@/i18n/resources/reschedule";
-import { statusCopy } from "@/i18n/resources/status";
 import { siteUrl } from "@/lib/seo";
 
 type BookingDetailProps = {
   entry: BookingEntry;
-  mode: ObservatoryMode | null;
   locale: Locale;
   /** The request's clock, read by the page. */
   now: number;
 };
 
-export function BookingDetail({ entry, locale, mode, now }: BookingDetailProps) {
+export function BookingDetail({ entry, locale, now }: BookingDetailProps) {
   const copy = bookingsCopy[locale];
   const { booking, observatory, timezone } = entry;
   const entitlement = booking.entitlement ?? null;
@@ -65,13 +61,6 @@ export function BookingDetail({ entry, locale, mode, now }: BookingDetailProps) 
           )}
         </header>
 
-        {mode === "SIMULATED" && (
-          <ModeNotice
-            mode="SIMULATED"
-            label={statusCopy[locale].mode.SIMULATED.banner}
-            detail={statusCopy[locale].mode.SIMULATED.detail}
-          />
-        )}
       </div>
 
       <div className="booking-detail-body">

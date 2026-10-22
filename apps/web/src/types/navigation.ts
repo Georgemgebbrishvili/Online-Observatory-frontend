@@ -22,6 +22,7 @@ export type AppNavigationDictionary = {
   profile: string;
   /** ADR-058: the weekly cards, reached from the profile menu and the signed-in home. */
   cards: string;
+  bookings: string;
   // Reachable and navigable, and honest that they are not built. The phase that
   // fills each one is in features/navigation/navigation-model.ts.
   subscription: string;

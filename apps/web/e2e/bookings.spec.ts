@@ -7,11 +7,11 @@ const pending = "52000000-0000-4000-8000-000000000003";
 const upcoming = "51000000-0000-4000-8000-000000000002";
 const lost = "53000000-0000-4000-8000-000000000004";
 
-test("/app/book lists the nights latest slot first, four to a page", async ({ page }) => {
-  await page.goto("/en/app/book");
+test("/app/bookings lists the nights latest slot first, four to a page", async ({ page }) => {
+  await page.goto("/en/app/bookings");
 
   await expect(
-    page.getByRole("heading", { level: 2, name: "Your nights" }),
+    page.getByRole("heading", { level: 1, name: "Your nights" }),
   ).toBeVisible();
   const rows = page.locator(".booking-row");
   await expect(rows).toHaveCount(4);
@@ -33,12 +33,12 @@ test("/app/book lists the nights latest slot first, four to a page", async ({ pa
   await expect(rows).toHaveCount(4);
 });
 
-test("/app/bookings still lands, on the nights under /app/book", async ({ page }) => {
-  await page.goto("/en/app/bookings");
-  await expect(page).toHaveURL(/\/en\/app\/book$/);
-  await expect(
-    page.getByRole("heading", { level: 2, name: "Your nights" }),
-  ).toBeVisible();
+test("the booking board carries no list: the nights are in the profile menu", async ({ page }) => {
+  await page.goto("/en/app/book");
+  await expect(page.locator(".booking-row")).toHaveCount(0);
+  await page.getByRole("button", { name: /account|profile/i }).first().click();
+  await page.getByRole("link", { name: "Your nights" }).click();
+  await expect(page).toHaveURL(/\/en\/app\/bookings$/);
 });
 
 test("a confirmed booking opens its observation and says why it cannot be cancelled", async ({
@@ -48,7 +48,7 @@ test("a confirmed booking opens its observation and says why it cannot be cancel
 
   await expect(page.getByRole("heading", { level: 1, name: "Saturn" })).toBeVisible();
   await expect(page.getByText("Confirmed", { exact: true })).toBeVisible();
-  await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible();
+  await expect(page.getByText("SIMULATED OBSERVATORY")).toHaveCount(0);
   await expect(page.getByText("Loyalty discount")).toBeVisible();
   await expect(
     page.getByText("A paid booking cannot be cancelled until refunds are available."),
@@ -101,9 +101,9 @@ test("an unknown booking and a malformed id are both not found", async ({ page }
 
 test("the Georgian bookings fit a phone", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/ka/app/book");
+  await page.goto("/ka/app/bookings");
   await expect(
-    page.getByRole("heading", { level: 2, name: "შენი ღამეები" }),
+    page.getByRole("heading", { level: 1, name: "შენი ღამეები" }),
   ).toBeVisible();
   await expect(page.locator(".booking-row").first()).toContainText("გადახდას ელოდება");
   const width = await page.evaluate(() => document.documentElement.scrollWidth);

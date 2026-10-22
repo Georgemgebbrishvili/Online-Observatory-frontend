@@ -74,10 +74,6 @@ export function ObservatoryPanel({
             <h3>
               {locale === "ka" ? panel.observatory.nameKa : panel.observatory.nameEn}
             </h3>
-            <p>{panel.observatory.city}</p>
-            {panel.status.mode === "SIMULATED" && (
-              <strong className="home-simulated">{copy.simulatedObservatory}</strong>
-            )}
           </div>
           <div className="home-observatory-status">
             <StatusIndicator
@@ -254,9 +250,6 @@ export function AuthenticatedHome({
                             {name}
                           </Link>
                         </h3>
-                        {mission.mode === "SIMULATED" && (
-                          <small className="home-simulated">{copy.simulated}</small>
-                        )}
                       </div>
                       <span className="tonight-list-arrow" aria-hidden="true">
                         →

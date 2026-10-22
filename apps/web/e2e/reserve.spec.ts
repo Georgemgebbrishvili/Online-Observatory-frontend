@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 // Reserving from the board (ADR-053 §7, ADR-043), against e2e/fake-platform.mjs: a
-// night's slots from dusk to dawn, the second booked and the last taken "a moment ago"; Albireo
+// night's quarter-hour starts from dusk to dawn, the fifth booked with its neighbours, and the last taken "a moment ago"; Albireo
 // and Saturn up for the whole slot, the Moon, M13 and Venus not. The fake's sandbox
 // checkout answers 303 to the booking's page, as the platform's does.
 //
@@ -22,12 +22,12 @@ async function chooseSlot(page: Page, index: number | "last") {
   await (index === "last" ? slots.last() : slots.nth(index)).click();
   // The sky for the slot has been read when a target can be chosen.
   await expect(
-    page.getByRole("radiogroup", { name: "Target" }).getByRole("radio", { name: /^Saturn, Up/ }),
+    page.getByRole("radiogroup", { name: "Object" }).getByRole("radio", { name: /^Saturn, Up/ }),
   ).toBeEnabled();
 }
 
 const target = (page: Page, name: RegExp) =>
-  page.getByRole("radiogroup", { name: "Target" }).getByRole("radio", { name });
+  page.getByRole("radiogroup", { name: "Object" }).getByRole("radio", { name });
 
 test("a slot is reserved, paid at the sandbox checkout, and confirmed", async ({
   page,
@@ -35,8 +35,9 @@ test("a slot is reserved, paid at the sandbox checkout, and confirmed", async ({
   await signIn(page);
   await chooseSlot(page, 0);
 
+  // The object is optional: a start alone is enough to reserve.
   const reserve = page.getByRole("button", { name: "Reserve and pay" });
-  await expect(reserve).toBeDisabled();
+  await expect(reserve).toBeEnabled();
   await expect(target(page, /Hercules Cluster/)).toContainText("Too low in the sky");
   await expect(target(page, /Venus/)).toContainText("Below the horizon");
   await target(page, /^Saturn/).click();
@@ -63,7 +64,7 @@ test("a customer who left the checkout pays from the booking's own page", async 
   page,
 }) => {
   await signIn(page);
-  await chooseSlot(page, 3);
+  await chooseSlot(page, 7);
   await target(page, /^Saturn/).click();
   // The page navigates to the checkout as soon as the reservation answers, and Chrome
   // drops a response body once its page has navigated away, so the body is read here,
@@ -95,7 +96,7 @@ test("a customer who left the checkout pays from the booking's own page", async 
 
 test("declining at the checkout cancels the booking", async ({ page }) => {
   await signIn(page);
-  await chooseSlot(page, 2);
+  await chooseSlot(page, 8);
   await target(page, /^Albireo/).click();
   await page.getByRole("button", { name: "Reserve and pay" }).click();
 
@@ -124,14 +125,14 @@ test("a booked slot, or no slot at all, cannot be reserved", async ({ page }) =>
   await signIn(page);
   await page.goto("/en/app/book");
   await expect(
-    page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").nth(1),
+    page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").nth(4),
   ).toBeDisabled();
 
   // Ten minutes into a slot is no slot's start; a time that is not a time names none.
   for (const startAt of ["2030-01-15T14:10:00.000Z", "not-a-time"]) {
     await page.goto(`/en/app/book/reserve?startAt=${startAt}`);
     await expect(page).toHaveURL(/\/en\/app\/book\?startAt=/);
-    await expect(page.locator(".board-sum")).toContainText("Pick a half-hour");
+    await expect(page.locator(".board-sum")).toContainText("Pick a start");
     await expect(page.getByRole("button", { name: "Reserve and pay" })).toBeDisabled();
   }
 });

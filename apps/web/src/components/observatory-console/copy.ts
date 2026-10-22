@@ -315,7 +315,7 @@ const en: ConsoleCopy = {
     darkNow: "Dark now",
     twilight: "Twilight",
     daylight: "Daylight",
-    oneOpen: "One telescope, in Tbilisi. More join as partners come online.",
+    oneOpen: "One telescope, in Georgia. More join as partners come online.",
   },
   session: { title: "Session", parkEnd: "Park & end", stop: "Stop observation", confirmStop: "Confirm stop", booked: "Booked target" },
   pointing: {
@@ -634,7 +634,7 @@ const ka: ConsoleCopy = {
     darkNow: "ახლა ბნელა",
     twilight: "ბინდი",
     daylight: "დღეა",
-    oneOpen: "ერთი ტელესკოპი, თბილისში. სხვები პარტნიორების შემოერთებასთან ერთად დაემატება.",
+    oneOpen: "ერთი ტელესკოპი, საქართველოში. სხვები პარტნიორების შემოერთებასთან ერთად დაემატება.",
   },
   session: { title: "სეანსი", parkEnd: "პარკირება და დასრულება", stop: "დაკვირვების შეწყვეტა", confirmStop: "შეწყვეტის დადასტურება", booked: "დაჯავშნილი ობიექტი" },
   pointing: {

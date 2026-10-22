@@ -40,9 +40,6 @@ test.describe("a watcher", () => {
       page.getByRole("heading", { level: 1, name: "Nino is observing Saturn." }),
     ).toBeVisible();
     await expect(page.getByText("2 of 5 seats taken.")).toBeVisible();
-    await expect(
-      page.getByRole("note").filter({ hasText: "Simulated observatory" }),
-    ).toBeVisible();
 
     await payAtCheckout(page, "en", "Buy a seat");
     await expect(

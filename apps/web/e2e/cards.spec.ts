@@ -19,7 +19,6 @@ test("turns one of three cards, shows the prize and its code, and keeps it", asy
   await expect(page).toHaveURL(/\/en\/app\/cards$/, { timeout: firstCompile });
   await expect(page.getByRole("button", { name: /^Turn card/ })).toHaveCount(3);
   await expect(page.getByText("No prizes yet.")).toBeVisible();
-  await expect(page.getByRole("note")).toContainText("Simulated");
 
   await page.getByRole("button", { name: "Turn card 2 of 3" }).click();
   await expect(page.getByRole("heading", { name: "Epic: A free observer seat." })).toBeVisible();
@@ -92,7 +91,7 @@ test("spends a won discount on a booking, through the checkout", async ({ page }
   await expect(page).toHaveURL(/\/en\/app\/book$/, { timeout: firstCompile });
   await page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").first().click();
   await page
-    .getByRole("radiogroup", { name: "Target" })
+    .getByRole("radiogroup", { name: "Object" })
     .getByRole("radio", { name: /^Saturn, Up for the whole slot/ })
     .click();
   const session = page.locator(".board-sum");

@@ -5,7 +5,6 @@ import { FlightPlan } from "@/components/home/flight-plan";
 import { SkyHero } from "@/components/home/sky-hero";
 import { TonightList } from "@/components/home/tonight-list";
 import { PageGuide } from "@/components/guide/page-guide";
-import { ModeNotice } from "@/components/observatory/mode-notice";
 import { linkTone, weatherTone } from "@/components/status/status-page";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -163,10 +162,6 @@ export function HomeShell({ content, locale, panel, tonight }: HomeShellProps) {
             )}
             {panel.kind === "ok" && (
               <>
-                <ModeNotice
-                  mode={panel.status.mode}
-                  label={words.mode[panel.status.mode].banner}
-                />
                 <dl>
                   <div>
                     <dt>{words.now.link}</dt>

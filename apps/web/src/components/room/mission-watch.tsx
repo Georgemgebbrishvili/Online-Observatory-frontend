@@ -10,7 +10,6 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 
 import { checkoutTarget } from "@/features/booking/checkout";
 import { formatPrice } from "@/components/booking/booking-night";
-import { ModeNotice } from "@/components/observatory/mode-notice";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { LoadingState } from "@/components/ui/loading-state";
 import { feedPlates, missionProgress, plateFor } from "@/features/missions/room";
@@ -28,7 +27,6 @@ import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
 import { cardsCopy } from "@/i18n/resources/cards";
 import { roomCopy } from "@/i18n/resources/room";
-import { statusCopy } from "@/i18n/resources/status";
 import { watchCopy, type WatchCopy } from "@/i18n/resources/watch";
 import {
   ApiRequestError,
@@ -73,7 +71,6 @@ type WatchViewProps = {
   headline?: string | null;
   /** "{count} of {capacity} seats taken.", filled. */
   seats?: string | null;
-  simulated?: { label: string; detail: string } | null;
   pending?: WatchPending;
   /** A refusal the caller can act on: try again, or no checkout to pay at. */
   notice?: string | null;
@@ -121,7 +118,6 @@ export function WatchView({
   refund = null,
   roomPath,
   seats,
-  simulated,
   target,
 }: WatchViewProps) {
   const Heading = headingLevel === 2 ? "h2" : "h1";
@@ -235,10 +231,6 @@ export function WatchView({
         {about && seats && <p>{seats}</p>}
       </header>
 
-      {simulated && (
-        <ModeNotice mode="SIMULATED" label={simulated.label} detail={simulated.detail} />
-      )}
-
       <div
         className="watch-grid"
         data-watching={phase === "watching" && feed ? "true" : undefined}
@@ -287,7 +279,6 @@ type MissionWatchProps = {
 export function MissionWatch({ locale, seatCode = null, view }: MissionWatchProps) {
   const copy = watchCopy[locale];
   const room = roomCopy[locale];
-  const status = statusCopy[locale];
   const { mission, target } = view;
   const path = `/missions/${encodeURIComponent(mission.id)}`;
   const signInPath = `/${locale}/sign-in`;
@@ -497,11 +488,6 @@ export function MissionWatch({ locale, seatCode = null, view }: MissionWatchProp
         target: targetName,
       })}
       seats={fill(copy.seats, { count: String(count), capacity: String(capacity) })}
-      simulated={
-        mission.mode === "SIMULATED" || live.stream?.mode === "SIMULATED"
-          ? { label: copy.simulated, detail: status.mode.SIMULATED.detail }
-          : null
-      }
       pending={pending}
       notice={notice}
       refund={refund}

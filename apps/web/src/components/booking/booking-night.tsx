@@ -1,13 +1,8 @@
-import type { Booking, Currency, Slot, SlotUnavailableReason } from "@darkview/contracts";
+import type { Currency, SlotUnavailableReason } from "@darkview/contracts";
 import Link from "next/link";
 
-import { ModeNotice } from "@/components/observatory/mode-notice";
-import { StatePanel } from "@/components/ui/state-panel";
-import type { NightResult } from "@/features/booking/read";
 import type { Locale } from "@/i18n/config";
 import { bookingCopy } from "@/i18n/resources/booking";
-import { rescheduleCopy } from "@/i18n/resources/reschedule";
-import { statusCopy } from "@/i18n/resources/status";
 
 function intlLocale(locale: Locale) {
   return locale === "ka" ? "ka-GE" : "en-GB";
@@ -96,98 +91,5 @@ export function SlotRow({
         )}
       </span>
     </li>
-  );
-}
-
-type BookingNightProps = {
-  locale: Locale;
-  result: NightResult;
-  /** A booking whose lost slot is being replaced: its telescope, its length, for free. */
-  reschedule?: Booking | null;
-};
-
-export function BookingNight({ locale, reschedule, result }: BookingNightProps) {
-  const copy = bookingCopy[locale];
-  const replacing = reschedule ? `&reschedule=${encodeURIComponent(reschedule.id)}` : "";
-  const night = new Intl.DateTimeFormat(intlLocale(locale), {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    timeZone: "UTC",
-  });
-
-  return (
-    <div className="booking-page">
-      <header className="booking-hero">
-        <h1 className="visually-hidden">{copy.title}</h1>
-        {reschedule && <p>{rescheduleCopy[locale].replacing}</p>}
-        <Link className="page-link booking-bookings" href="#booking-nights">
-          {copy.yourBookings}
-        </Link>
-      </header>
-
-      {result.kind === "unreachable" && (
-        <StatePanel variant="error" headingLevel={2} {...copy.unreachable} />
-      )}
-      {result.kind === "no-observatory" && (
-        <StatePanel headingLevel={2} {...copy.noObservatory} />
-      )}
-
-      {result.kind === "ok" && (
-        <>
-          {result.mode === "SIMULATED" && (
-            <ModeNotice
-              mode="SIMULATED"
-              label={statusCopy[locale].mode.SIMULATED.banner}
-              detail={statusCopy[locale].mode.SIMULATED.detail}
-            />
-          )}
-
-          <nav className="booking-nights" aria-label={copy.nights}>
-            <h2>{copy.nights}</h2>
-            <ol>
-              {result.nights.map((date) => (
-                <li key={date}>
-                  <Link
-                    href={`/${locale}/app/book?date=${date}${replacing}`}
-                    aria-current={date === result.date ? "date" : undefined}
-                  >
-                    {/* A calendar date, not an instant: formatted in UTC so it never shifts. */}
-                    <time dateTime={date}>
-                      {night.format(new Date(`${date}T00:00:00Z`))}
-                    </time>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </nav>
-
-          <section className="booking-slots" aria-labelledby="booking-slots-title">
-            <h2 id="booking-slots-title">{copy.slots}</h2>
-            {result.slots.length === 0 ? (
-              <StatePanel {...copy.noSlots} />
-            ) : (
-              <ol className="slot-list">
-                {result.slots.map((slot: Slot) => (
-                  <SlotRow
-                    key={slot.startAt}
-                    {...slot}
-                    // A replacement is for the lost slot's length (rescheduleBooking).
-                    available={
-                      slot.available &&
-                      (!reschedule || slot.durationMinutes === reschedule.durationMinutes)
-                    }
-                    priceLabel={reschedule ? rescheduleCopy[locale].free : undefined}
-                    href={`/${locale}/app/book/reserve?startAt=${encodeURIComponent(slot.startAt)}${replacing}`}
-                    timezone={result.observatory.timezone}
-                    locale={locale}
-                  />
-                ))}
-              </ol>
-            )}
-          </section>
-        </>
-      )}
-    </div>
   );
 }

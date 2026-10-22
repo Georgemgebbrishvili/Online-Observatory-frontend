@@ -3,9 +3,8 @@ import { notFound, redirect } from "next/navigation";
 
 import { CardDraw, type CardTargetNames } from "@/components/cards/card-draw";
 import { CardOdds, PrizeList } from "@/components/cards/prize-list";
-import { ModeNotice } from "@/components/observatory/mode-notice";
 import { StatePanel } from "@/components/ui/state-panel";
-import { readCardDraw, readObservatoryMode, readPrizes } from "@/features/cards/read";
+import { readCardDraw, readPrizes } from "@/features/cards/read";
 import { dayMonth } from "@/features/cards/dates";
 import { readCatalogue, readObservatories } from "@/features/collection/read";
 import { targetName } from "@/features/targets/present";
@@ -57,11 +56,10 @@ export default async function CardsPage({ params }: CardsPageProps) {
     return shell(<StatePanel variant="empty" headingLevel={2} {...copy.states.noObservatory} />);
   }
 
-  const [result, prizes, catalogue, mode] = await Promise.all([
+  const [result, prizes, catalogue] = await Promise.all([
     readCardDraw(observatory.id),
     readPrizes(),
     readCatalogue(),
-    readObservatoryMode(observatory.id),
   ]);
   if (result.kind === "signed-out") redirect(`/${locale}/sign-in`);
   if (result.kind !== "ok") {
@@ -96,9 +94,6 @@ export default async function CardsPage({ params }: CardsPageProps) {
       <header className="cards-head">
         <p className="kicker">{copy.week(range)}</p>
         <p className="cards-lede">{copy.lede}</p>
-        {mode === "SIMULATED" && (
-          <ModeNotice mode="SIMULATED" label={copy.simulated.label} detail={copy.simulated.detail} />
-        )}
       </header>
       <CardDraw
         locale={locale}

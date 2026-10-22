@@ -16,7 +16,7 @@ export type GuideCopy = {
   cta?: { title: string; body: string; action: GuideLink; secondary?: GuideLink };
 };
 
-export type GuideId = "home" | "book" | "pricing" | "observatory";
+export type GuideId = "home" | "pricing" | "observatory";
 
 /**
  * The explaining each landing page carries under its working part. Nothing here
@@ -52,16 +52,16 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
       faq: [
         {
           question: "Is this a real telescope?",
-          answer: `Yes. ${brand.en.name} is one telescope with a colour astronomy camera on a mount in Tbilisi, Georgia. Until the observatory opens it runs on a simulator, and every simulated picture is badged "Simulated".`,
+          answer: `Yes. ${brand.en.name} is one telescope with a colour astronomy camera on a mount in Georgia.`,
           link: { label: "See the observatory", path: "observatory" },
         },
         {
           question: "Do I need any equipment or software?",
-          answer: "No. A browser on a phone or a computer is enough. The telescope is controlled by the observatory's own software; you choose the target and watch.",
+          answer: "No. A browser on a phone or a computer is enough. The telescope is controlled by the observatory's own software; you book the time and watch.",
         },
         {
           question: "When can I observe?",
-          answer: "Slots run through the dark hours of the night, in observatory time (Tbilisi, GMT+4). The booking page shows the next seven nights and what is above the horizon for each slot.",
+          answer: "Slots run through the dark hours of the night, in observatory time (GMT+4). The booking page shows the next seven nights and what is above the horizon for each slot.",
           link: { label: "Open the booking page", path: "app/book" },
         },
         {
@@ -72,50 +72,6 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
         {
           question: "Can I keep the pictures?",
           answer: "Yes. Every capture you take during your slot goes into your Collection, where you can open and download it.",
-        },
-      ],
-    },
-    book: {
-      eyebrow: "How booking works",
-      title: "Four choices, then the sky is yours.",
-      lede: "A slot is half an hour of the telescope, held for you alone. You pick when, the board shows only what is up for the whole slot, and you pay to confirm.",
-      stepsTitle: "Booking, step by step",
-      steps: [
-        {
-          title: "Pick a night",
-          body: "The next seven nights, each with its Moon phase and how many slots are still open.",
-        },
-        {
-          title: "Pick a start",
-          body: "Start times are in observatory time, Tbilisi (GMT+4). A slot that has already begun cannot be booked.",
-        },
-        {
-          title: "Choose a target",
-          body: "Only operator-approved targets that stay above the horizon for the whole slot are offered.",
-        },
-        {
-          title: "Reserve and pay",
-          body: "The slot is held while you pay. If the payment does not complete, the hold lapses and the slot goes back on the board.",
-        },
-      ],
-      faqTitle: "Before you book",
-      faq: [
-        {
-          question: "What do I do when my slot starts?",
-          answer: "Open Live from the Account menu, or the link on your booking. The telescope slews to your target, centres it, and the camera picture appears. You can capture frames while you watch.",
-        },
-        {
-          question: "Can I invite someone to watch with me?",
-          answer: "Yes. From your live session you can share a watch link. Up to ten people can take a seat and see the same picture; the telescope stays under your control.",
-        },
-        {
-          question: "Can I move or cancel a booking?",
-          answer: "Your bookings are listed on this page under the board. Where a booking can still be moved, it offers a new time. Cancellation and refunds follow the refund policy.",
-          link: { label: "Read the refund policy", path: "refunds" },
-        },
-        {
-          question: "Why is a target missing?",
-          answer: "Targets are offered only while they stay high enough for the whole slot. Pick a different start time and the list changes with the sky.",
         },
       ],
     },
@@ -180,8 +136,8 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
     },
     observatory: {
       eyebrow: "About the observatory",
-      title: "One telescope in Tbilisi, run for you remotely.",
-      lede: "The console above is a practice run on a sky model: connect, point and capture exactly as a session works. When you book, the same steps drive the real instrument.",
+      title: "One telescope in Georgia, run for you remotely.",
+      lede: "The console above works the way a session does: connect, point and capture.",
       stepsTitle: "What happens in a real session",
       steps: [
         {
@@ -208,18 +164,14 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
           answer: `No. The observatory accepts no connection from outside. It dials out to the ${brand.en.name} cloud, and checks every command again on its own before the mount moves.`,
         },
         {
-          question: "Is this console the real telescope?",
-          answer: `Not yet. Until the observatory opens, the console runs on a sky model and is badged "Simulated". Everything it draws is an illustration, not telescope output.`,
-        },
-        {
           question: "What is the instrument?",
           answer: "A telescope with a ZWO ASI585MC colour camera on a computerised mount. Its aperture and focal length are on the home page, and its live state on the status page.",
-          link: { label: "Live status", path: "status" },
+          link: { label: "Status", path: "status" },
         },
       ],
       cta: {
         title: "Book the real one.",
-        body: "Time on the telescope, a target of your choice, and the live picture.",
+        body: "Time on the telescope and the camera picture.",
         action: { label: "Reserve a slot", path: "app/book" },
         secondary: { label: "See prices", path: "pricing" },
       },
@@ -253,16 +205,16 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
       faq: [
         {
           question: "ეს ნამდვილი ტელესკოპია?",
-          answer: `დიახ. ${brand.ka.nominative} ერთი ტელესკოპია ფერადი ასტრონომიული კამერით, მონტირებაზე, თბილისში. ობსერვატორიის გახსნამდე ის სიმულატორზე მუშაობს და ყოველი სიმულირებული სურათი მონიშნულია, როგორც „სიმულირებული“.`,
+          answer: `დიახ. ${brand.ka.nominative} ერთი ტელესკოპია ფერადი ასტრონომიული კამერით, მონტირებაზე, საქართველოში.`,
           link: { label: "ობსერვატორიის ნახვა", path: "observatory" },
         },
         {
           question: "მჭირდება რაიმე აღჭურვილობა ან პროგრამა?",
-          answer: "არა. საკმარისია ბრაუზერი ტელეფონზე ან კომპიუტერზე. ტელესკოპს ობსერვატორიის საკუთარი პროგრამა მართავს — შენ ირჩევ ობიექტს და უყურებ.",
+          answer: "არა. საკმარისია ბრაუზერი ტელეფონზე ან კომპიუტერზე. ტელესკოპს ობსერვატორიის საკუთარი პროგრამა მართავს — შენ ჯავშნი დროს და უყურებ.",
         },
         {
           question: "როდის შემიძლია დაკვირვება?",
-          answer: "სეანსები ღამის ბნელ საათებშია, ობსერვატორიის დროით (თბილისი, GMT+4). დაჯავშნის გვერდზე ჩანს მომდევნო შვიდი ღამე და ის, რაც თითოეულ სეანსზე ჰორიზონტს ზემოთაა.",
+          answer: "სეანსები ღამის ბნელ საათებშია, ობსერვატორიის დროით (GMT+4). დაჯავშნის გვერდზე ჩანს მომდევნო შვიდი ღამე და ის, რაც თითოეულ სეანსზე ჰორიზონტს ზემოთაა.",
           link: { label: "დაჯავშნის გვერდის გახსნა", path: "app/book" },
         },
         {
@@ -273,50 +225,6 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
         {
           question: "შემიძლია სურათების შენახვა?",
           answer: "დიახ. ყოველი კადრი, რომელსაც სეანსის დროს გადაიღებ, შენს კოლექციაში ინახება — იქ შეგიძლია გახსნა და ჩამოტვირთვა.",
-        },
-      ],
-    },
-    book: {
-      eyebrow: "როგორ ხდება დაჯავშნა",
-      title: "ოთხი არჩევანი — და ცა შენია.",
-      lede: "სეანსი ტელესკოპთან ნახევარი საათია — მხოლოდ შენთვის. შენ ირჩევ დროს, დაფა მხოლოდ იმას გაჩვენებს, რაც მთელი სეანსის განმავლობაში ჩანს, და დასადასტურებლად იხდი.",
-      stepsTitle: "დაჯავშნა ნაბიჯ-ნაბიჯ",
-      steps: [
-        {
-          title: "აირჩიე ღამე",
-          body: "მომდევნო შვიდი ღამე, თითოეული მთვარის ფაზით და თავისუფალი სეანსების რაოდენობით.",
-        },
-        {
-          title: "აირჩიე დასაწყისი",
-          body: "დაწყების დრო ობსერვატორიის დროითაა — თბილისი (GMT+4). უკვე დაწყებული სეანსის დაჯავშნა შეუძლებელია.",
-        },
-        {
-          title: "აირჩიე ობიექტი",
-          body: "შემოთავაზებულია მხოლოდ ოპერატორის მიერ დამტკიცებული ობიექტები, რომლებიც მთელი სეანსის განმავლობაში ჰორიზონტს ზემოთ რჩება.",
-        },
-        {
-          title: "დაჯავშნე და გადაიხადე",
-          body: "სანამ იხდი, სეანსი შენთვისაა დაკავებული. თუ გადახდა არ დასრულდა, დაკავება იხსნება და სეანსი დაფაზე ბრუნდება.",
-        },
-      ],
-      faqTitle: "დაჯავშნამდე",
-      faq: [
-        {
-          question: "რა ვქნა, როცა სეანსი დაიწყება?",
-          answer: "გახსენი „პირდაპირი დაკვირვება“ ანგარიშის მენიუდან ან ჯავშნის ბმულიდან. ტელესკოპი შენი ობიექტისკენ მობრუნდება, ცენტრში მოაქცევს და კამერის გამოსახულება გამოჩნდება. ყურების დროს შეგიძლია კადრების გადაღება.",
-        },
-        {
-          question: "შემიძლია ვინმე მოვიწვიო საყურებლად?",
-          answer: "დიახ. პირდაპირი ეთერიდან შეგიძლია გააზიარო სანახავი ბმული. ათამდე ადამიანს შეუძლია ადგილის დაკავება და იმავე სურათის ნახვა — ტელესკოპს კი ისევ შენ მართავ.",
-        },
-        {
-          question: "შემიძლია ჯავშნის გადატანა ან გაუქმება?",
-          answer: "შენი ჯავშნები ამ გვერდზე, დაფის ქვემოთაა. სადაც ჯავშნის გადატანა ჯერ კიდევ შესაძლებელია, ის ახალ დროს შემოგთავაზებს. გაუქმება და თანხის დაბრუნება პოლიტიკით რეგულირდება.",
-          link: { label: "თანხის დაბრუნების პოლიტიკა", path: "refunds" },
-        },
-        {
-          question: "რატომ არ ჩანს ობიექტი?",
-          answer: "ობიექტი მხოლოდ მაშინ ჩანს, როცა მთელი სეანსის განმავლობაში საკმარისად მაღლაა. აირჩიე სხვა დასაწყისი და სია ცასთან ერთად შეიცვლება.",
         },
       ],
     },
@@ -381,8 +289,8 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
     },
     observatory: {
       eyebrow: "ობსერვატორიის შესახებ",
-      title: "ერთი ტელესკოპი თბილისში, შენთვის დისტანციურად.",
-      lede: "ზემოთ მოცემული პულტი ცის მოდელზე სავარჯიშოა: დაუკავშირდი, მიმართე და გადაიღე ზუსტად ისე, როგორც ნამდვილ სეანსში. დაჯავშნისას იგივე ნაბიჯები ნამდვილ ინსტრუმენტს მართავს.",
+      title: "ერთი ტელესკოპი საქართველოში, შენთვის დისტანციურად.",
+      lede: "ზემოთ მოცემული პულტი ისე მუშაობს, როგორც სეანსი: დაუკავშირდი, მიმართე და გადაიღე.",
       stepsTitle: "რა ხდება ნამდვილ სეანსში",
       steps: [
         {
@@ -409,10 +317,6 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
           answer: `არა. ობსერვატორია გარედან არცერთ კავშირს არ იღებს. ის თავად უკავშირდება ${brand.ka.genitive} სერვერებს და ყოველ ბრძანებას დგარის ამოძრავებამდე დამოუკიდებლად ამოწმებს.`,
         },
         {
-          question: "ეს პულტი ნამდვილ ტელესკოპს მართავს?",
-          answer: "ჯერ არა. ობსერვატორიის გახსნამდე პულტი ცის მოდელზე მუშაობს და მონიშნულია, როგორც „სიმულირებული“. ყველაფერი, რასაც ხატავს, ილუსტრაციაა და არა ტელესკოპის გამოსახულება.",
-        },
-        {
           question: "რა ინსტრუმენტია?",
           answer: "ტელესკოპი ZWO ASI585MC ფერადი კამერით, კომპიუტერიზებულ მონტირებაზე. მისი აპერტურა და ფოკუსური მანძილი მთავარ გვერდზეა, მიმდინარე მდგომარეობა კი სტატუსის გვერდზე.",
           link: { label: "მიმდინარე სტატუსი", path: "status" },
@@ -420,7 +324,7 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
       ],
       cta: {
         title: "დაჯავშნე ნამდვილი.",
-        body: "დრო ტელესკოპთან, შენი არჩეული ობიექტი და პირდაპირი სურათი.",
+        body: "დრო ტელესკოპთან და კამერის სურათი.",
         action: { label: "დაჯავშნე სეანსი", path: "app/book" },
         secondary: { label: "ფასების ნახვა", path: "pricing" },
       },

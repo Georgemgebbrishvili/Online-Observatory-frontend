@@ -15,7 +15,6 @@ type AuthenticatedHomeCopy = {
   illustration: string;
   observatory: string;
   telescope: string;
-  simulatedObservatory: string;
   fullStatus: string;
   statusUnavailable: StateCopy;
   noObservatory: StateCopy;
@@ -46,7 +45,6 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     illustration: "Illustration — not telescope output",
     observatory: "Observatory",
     telescope: "Telescope",
-    simulatedObservatory: "Simulated observatory",
     fullStatus: "Full status",
     statusUnavailable: {
       title: "Observatory status is unavailable right now.",
@@ -89,7 +87,6 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
     observatory: "ობსერვატორია",
     telescope: "ტელესკოპი",
-    simulatedObservatory: "სიმულირებული ობსერვატორია",
     fullStatus: "სრული სტატუსი",
     statusUnavailable: {
       title: "ობსერვატორიის სტატუსი ახლა მიუწვდომელია.",

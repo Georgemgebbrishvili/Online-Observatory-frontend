@@ -11,7 +11,6 @@ type TargetCopy = {
   reasons: Record<VisibilityBlockReason, string>;
   observable: string;
   window: { between: string; from: string; until: string; none: string };
-  simulated: { label: string };
   unreachable: { title: string; description: string };
   noObservatory: { title: string; description: string };
   noneObservable: { title: string; reason: string };
@@ -56,9 +55,6 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
       from: "From {rises}",
       until: "Until {sets}",
       none: "—",
-    },
-    simulated: {
-      label: "SIMULATED OBSERVATORY",
     },
     unreachable: {
       title: "Tonight's sky could not be read",
@@ -113,9 +109,6 @@ export const targetCopy: Record<"en" | "ka", TargetCopy> = {
       from: "{rises}-დან",
       until: "{sets}-მდე",
       none: "—",
-    },
-    simulated: {
-      label: "სიმულირებული ობსერვატორია",
     },
     unreachable: {
       title: "ამაღამინდელი ცის მონაცემები ვერ მივიღეთ",

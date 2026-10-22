@@ -63,42 +63,18 @@ type BookingListProps = {
   /** True past the first page: a way back to the latest. */
   paged: boolean;
   locale: Locale;
-  /**
-   * ADR-051: the list is a section of /app/book, "Your nights", under a heading of its
-   * own; its pages run on that URL. Without it, the list is a page of its own.
-   */
-  embedded?: boolean;
 };
 
-export function BookingList({
-  embedded = false,
-  locale,
-  paged,
-  result,
-}: BookingListProps) {
+export function BookingList({ locale, paged, result }: BookingListProps) {
   const copy = bookingsCopy[locale];
-  const base = embedded ? `/${locale}/app/book` : `/${locale}/app/bookings`;
-  const detail = `/${locale}/app/bookings`;
-  const hero = embedded ? (
+  const base = `/${locale}/app/bookings`;
+  const hero = (
     <header className="section-heading booking-nights-head">
-      <h2 id="booking-nights-title">{copy.section}</h2>
+      <h1>{copy.section}</h1>
     </header>
-  ) : (
-    <h1 className="visually-hidden">{copy.title}</h1>
   );
-  const stateHeading = embedded ? 3 : 2;
-  const frame = (children: ReactNode) =>
-    embedded ? (
-      <section
-        id="booking-nights"
-        className="booking-page booking-nights-section"
-        aria-labelledby="booking-nights-title"
-      >
-        {children}
-      </section>
-    ) : (
-      <div className="booking-page">{children}</div>
-    );
+  const stateHeading = 2;
+  const frame = (children: ReactNode) => <div className="booking-page">{children}</div>;
 
   if (result.kind === "unreachable") {
     return frame(
@@ -137,7 +113,7 @@ export function BookingList({
         {result.entries.map((entry) => (
           <BookingRow
             key={entry.booking.id}
-            href={`${detail}/${entry.booking.id}`}
+            href={`${base}/${entry.booking.id}`}
             title={bookingTitle(entry, locale)}
             slot={formatSlot(
               entry.booking.slotStartAt,

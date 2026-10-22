@@ -2,14 +2,10 @@ import "server-only";
 
 import type {
   BookableObservatory,
-  ObservatoryMode,
   Slot,
   Target,
 } from "@darkview/contracts";
-import {
-  zGetObservatoryStatusResponse,
-  zListSlotsResponse,
-} from "@darkview/contracts/zod";
+import { zListSlotsResponse } from "@darkview/contracts/zod";
 
 import { formatPrice } from "@/components/booking/booking-night";
 import { localDate, nightsFrom } from "@/features/booking/read";
@@ -26,8 +22,6 @@ export type BoardResult =
   | {
       kind: "ok";
       observatory: BookableObservatory;
-      /** From the observatory's status, for the simulated notice. Null when unreadable. */
-      mode: ObservatoryMode | null;
       /** Today and the six nights after it, each with its slots, in the observatory's calendar. */
       nights: BoardNight[];
       /** The enabled catalogue: what a session may be pointed at. */
@@ -97,23 +91,18 @@ export async function readBoard(
       dates.sort();
     }
 
-    const [slotsByNight, catalogue, mode] = await Promise.all([
+    const [slotsByNight, catalogue] = await Promise.all([
       Promise.all(
         dates.map((date) =>
           inProgress && date === lastNight ? inProgress : readSlots(date),
         ),
       ),
       readCatalogue(),
-      // Only for the simulated notice, so losing it must not lose the board.
-      platformRequest<unknown>(`/observatories/${id}/state`)
-        .then((value) => zGetObservatoryStatusResponse.parse(value).mode)
-        .catch(() => null),
     ]);
 
     return {
       kind: "ok",
       observatory,
-      mode,
       nights: dates.map((date, index) => ({
         date,
         slots: slotsByNight[index].map((slot) => ({

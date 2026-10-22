@@ -3,7 +3,7 @@ import { brand } from "@/brand";
 
 const en = {
   metadataTitle: `Observatory status · ${brand.en.name}`,
-  metadataDescription: `Live status of the ${brand.en.name} observatory in Tbilisi, and tonight's viewing conditions.`,
+  metadataDescription: `Status of the ${brand.en.name} observatory in Georgia, and tonight's viewing conditions.`,
   title: "What the telescope is doing now.",
   updated: "Reported {age} ago",
   age: { seconds: "{value} s", minutes: "{value} min", hours: "{value} h" },
@@ -85,7 +85,7 @@ export const statusCopy = {
   en,
   ka: {
     metadataTitle: `ობსერვატორიის სტატუსი · ${brand.ka.nominative}`,
-    metadataDescription: `${brand.ka.genitive} თბილისის ობსერვატორიის მიმდინარე სტატუსი და ამაღამინდელი დაკვირვების პირობები.`,
+    metadataDescription: `${brand.ka.genitive} ობსერვატორიის მიმდინარე სტატუსი და ამაღამინდელი დაკვირვების პირობები.`,
     title: "რას აკეთებს ტელესკოპი ახლა.",
     updated: "მიღებულია {age} წინ",
     age: { seconds: "{value} წმ", minutes: "{value} წთ", hours: "{value} სთ" },

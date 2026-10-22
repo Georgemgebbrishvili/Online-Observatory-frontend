@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { nightSky, partOfNight } from "@/features/booking/night-sky";
+import { nightSky } from "@/features/booking/night-sky";
 
 const zone = "Asia/Tbilisi";
 const clock = (at: number) =>
@@ -29,14 +29,5 @@ describe("nightSky", () => {
     const night = nightSky("2026-10-21", zone)!;
     expect(night.moonUp.length).toBeGreaterThan(0);
     expect(night.moonUp[0].from).toBe(night.sunset);
-  });
-});
-
-describe("partOfNight", () => {
-  it("splits the night at ten and at two, observatory time", () => {
-    expect(partOfNight("2026-10-21T15:45:00Z", zone)).toBe("evening");
-    expect(partOfNight("2026-10-21T18:25:00Z", zone)).toBe("midnight");
-    expect(partOfNight("2026-10-21T21:45:00Z", zone)).toBe("midnight");
-    expect(partOfNight("2026-10-21T22:25:00Z", zone)).toBe("dawn");
   });
 });

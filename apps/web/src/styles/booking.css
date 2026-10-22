@@ -538,13 +538,6 @@ html[lang="ka"] .booking-hero h1 {
   color: var(--color-text-secondary);
 }
 
-/* On /app/book the list follows the board, so it takes the board's width and edges. */
-.booking-nights-section {
-  width: min(100%, 90rem);
-  margin-inline: auto;
-  padding-top: var(--space-4);
-}
-
 /* A booking's page: its name and state on the left, the facts and what to do on the right. */
 .booking-detail {
   width: min(100%, 90rem);

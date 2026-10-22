@@ -22,7 +22,7 @@ async function signIn(page: Page) {
 const slots = (page: Page) =>
   page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio");
 const target = (page: Page, name: RegExp) =>
-  page.getByRole("radiogroup", { name: "Target" }).getByRole("radio", { name });
+  page.getByRole("radiogroup", { name: "Object" }).getByRole("radio", { name });
 
 test("a lost slot is replaced with a free one, and the offer then closes", async ({
   page,

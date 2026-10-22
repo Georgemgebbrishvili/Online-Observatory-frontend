@@ -6,7 +6,6 @@ import type {
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { ModeNotice } from "@/components/observatory/mode-notice";
 import { Container } from "@/components/ui/container";
 import { StatusIndicator, type StatusTone } from "@/components/ui/status-indicator";
 import type { Locale } from "@/i18n/config";
@@ -138,7 +137,6 @@ export function StatusPage({
   status: PublicObservatoryStatus;
   timezone: string;
 }) {
-  const mode = copy.mode[status.mode];
   const hours = conditions?.items ?? [];
   const hourLabel = (at: string) =>
     new Date(at).toLocaleTimeString(locale === "ka" ? "ka-GE" : "en-GB", {
@@ -161,7 +159,6 @@ export function StatusPage({
                 age: age(now - Date.parse(status.updatedAt), copy.age),
               })}
             </span>
-            <ModeNotice mode={status.mode} label={mode.banner} detail={mode.detail} />
           </div>
         </Container>
       </section>

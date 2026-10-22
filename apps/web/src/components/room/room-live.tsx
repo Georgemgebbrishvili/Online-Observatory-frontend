@@ -9,7 +9,6 @@ import type {
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 
-import { ModeNotice } from "@/components/observatory/mode-notice";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import {
@@ -26,7 +25,6 @@ import type { Locale } from "@/i18n/config";
 import { roomCopy } from "@/i18n/resources/room";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
-import { statusCopy } from "@/i18n/resources/status";
 
 import { LiveFeed } from "./live-feed";
 import { MissionSteps } from "./mission-steps";
@@ -120,7 +118,6 @@ export function RoomLive({
   visibility,
 }: RoomLiveProps) {
   const copy = roomCopy[locale];
-  const status = statusCopy[locale];
   const now = useNow();
   const { live, onStreamError, start } = useLiveSession({
     missionId: mission.id,
@@ -280,14 +277,6 @@ export function RoomLive({
                 {announcement}
               </p>
             </header>
-
-            {mission.mode === "SIMULATED" && (
-              <ModeNotice
-                mode="SIMULATED"
-                label={status.mode.SIMULATED.banner}
-                detail={status.mode.SIMULATED.detail}
-              />
-            )}
           </section>
           {readings}
           <RoomSessionView {...controls} copy={controlsCopy} />

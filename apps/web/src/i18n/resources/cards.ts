@@ -23,7 +23,6 @@ export type CardsCopy = {
     next: (when: string) => string;
   };
   refused: { closed: string; picked: string; failed: string };
-  simulated: { label: string; detail: string };
   odds: {
     title: string;
     rarity: string;
@@ -97,10 +96,6 @@ export const cardsCopy: Record<Locale, CardsCopy> = {
       closed: "This week's cards have closed. Reload for the new week.",
       picked: "A card was already turned this week.",
       failed: "The card could not be turned. Try again.",
-    },
-    simulated: {
-      label: "Simulated",
-      detail: "This is the demo observatory. Prizes work on its simulated sessions.",
     },
     odds: {
       title: "Odds",
@@ -187,10 +182,6 @@ export const cardsCopy: Record<Locale, CardsCopy> = {
       closed: "ამ კვირის ბარათები დაიხურა. განაახლე გვერდი ახალი კვირისთვის.",
       picked: "ამ კვირას ბარათი უკვე გადაბრუნდა.",
       failed: "ბარათი ვერ გადაბრუნდა. სცადე თავიდან.",
-    },
-    simulated: {
-      label: "სიმულაცია",
-      detail: "ეს სადემონსტრაციო ობსერვატორიაა. პრიზები მის სიმულირებულ სეანსებზე მუშაობს.",
     },
     odds: {
       title: "შანსები",

@@ -13,7 +13,7 @@ test("communicates real telescope access in the English sky hero", async ({ page
   ).toBeVisible();
   // ADR-052 §7: the last words in red, as the Skychaser headline sets its own.
   await expect(hero.locator(".sky-hero-title em")).toHaveText("live.");
-  await expect(hero.getByText(/A real telescope in Tbilisi, Georgia/)).toBeVisible();
+  await expect(hero.getByText(/A real telescope in Georgia/)).toBeVisible();
   await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
   await expect(hero.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(
     "href",
@@ -51,7 +51,7 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
   for (const heading of [
     "Four steps. One real observation.",
     "Choose what the telescope sees next.",
-    "One real telescope, in Tbilisi.",
+    "One real telescope, in Georgia.",
     "Your next observation starts here.",
   ]) {
     await expect(page.getByRole("heading", { level: 2, name: heading })).toBeVisible();
@@ -93,7 +93,7 @@ test("renders the complete data-driven public homepage", async ({ page }) => {
   await expect(
     tonight.getByRole("link", { name: "All of tonight's targets" }),
   ).toHaveAttribute("href", "/en/app/missions");
-  await expect(tonight.getByText("SIMULATED OBSERVATORY")).toBeVisible();
+  await expect(tonight.getByText("SIMULATED OBSERVATORY")).toHaveCount(0);
 
   // The instrument is the platform's telescope, not a fixture.
   const instrument = page.locator("#live");
@@ -300,7 +300,7 @@ test("shows a target from the platform, and books rather than starting a fake mi
   await expect(page.getByText("Observable now")).toBeVisible();
   // 14:30Z and 01:40Z, read in the observatory's time zone.
   await expect(page.getByText("18:30 – 05:40")).toBeVisible();
-  await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible();
+  await expect(page.getByText("SIMULATED OBSERVATORY")).toHaveCount(0);
 
   // The sidebar lists booking too; this is the page's own action.
   const book = page.getByRole("main").getByRole("link", { name: "Book an observation" });
@@ -400,7 +400,6 @@ test("the /app dashboard reads the platform, section by section", async ({ page 
   await expect(
     observatory.getByRole("heading", { name: "Stellar Tbilisi" }),
   ).toBeVisible();
-  await expect(observatory.getByText("Simulated observatory")).toBeVisible();
   await expect(
     observatory.getByText("203 mm · 2032 mm"),
   ).toBeVisible();
@@ -408,7 +407,7 @@ test("the /app dashboard reads the platform, section by section", async ({ page 
   const upcoming = page.locator(".home-upcoming");
   await expect(upcoming.getByRole("heading", { name: "Saturn" })).toBeVisible();
   await expect(upcoming.getByText("15 January 2030")).toBeVisible();
-  await expect(upcoming.getByText("Simulated")).toBeVisible();
+  await expect(upcoming.getByText("Simulated")).toHaveCount(0);
 
   await expect(page.getByRole("heading", { name: "Also up tonight" })).toBeVisible();
   await expect(page.locator(".home-recent-captures a")).toHaveCount(2);

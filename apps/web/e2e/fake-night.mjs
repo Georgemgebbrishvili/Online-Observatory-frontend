@@ -2,14 +2,22 @@ import { Body, MakeTime, Observer, SearchAltitude } from "astronomy-engine";
 
 // The fake's nights, by the platform's rule (apps/api/src/lib/slots/darkness.ts and
 // generate.ts in darkview-platform): astronomical darkness at Tbilisi, the first slot on
-// the next five-minute mark after dusk, 30-minute slots on a 40-minute stride, the last
+// the next quarter hour after dusk, 30-minute slots starting every 15 minutes, the last
 // one ending before dawn. Shared by the fake and the specs, so neither hard-codes a time.
 const site = new Observer(41.7151, 44.8271, 490);
 // Tbilisi keeps UTC+4 all year.
 const tbilisiOffsetMs = 4 * 3_600_000;
-const strideMs = 40 * 60_000;
+const strideMs = 15 * 60_000;
 const durationMs = 30 * 60_000;
-const alignMs = 5 * 60_000;
+const alignMs = 15 * 60_000;
+
+/** The fake's one held booking: the night's fifth start. */
+export const fakeBookedIndex = 4;
+
+/** Starts a held booking blocks: its own, and any within its length plus the 10-minute turnaround. */
+export function fakeBlocked(index) {
+  return Math.abs(index - fakeBookedIndex) * 15 < 40;
+}
 
 /** The night that begins on `date` (YYYY-MM-DD, Tbilisi): its first slot and how many. */
 export function fakeNight(date) {

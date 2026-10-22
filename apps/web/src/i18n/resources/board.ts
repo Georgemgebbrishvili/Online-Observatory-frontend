@@ -10,20 +10,18 @@ export type BoardCopy = {
   full: string;
   noSlots: string;
   tooSoon: string;
-  pickSlotFirst: string;
+  optional: string;
+  anyTarget: string;
   up: string;
   needs: (minutes: number) => string;
   loadingTargets: string;
   noTargets: string;
   session: string;
   pickStart: string;
-  pickTarget: string;
   cost: string;
   free: string;
   goToSession: string;
   siteTime: string;
-  /** The start picker's three parts of the night, and the night bar's marks. */
-  parts: { evening: string; midnight: string; dawn: string };
   timeline: {
     label: string;
     sunset: string;
@@ -42,27 +40,26 @@ export type BoardCopy = {
 
 export const boardCopy: Record<"en" | "ka", BoardCopy> = {
   en: {
-    lede: "Pick a night, a start and a target. The telescope is yours for the whole slot.",
+    lede: "Pick a night and a start. The telescope is yours for 30 minutes.",
     night: "Night",
     start: "Start",
-    target: "Target",
+    target: "Object",
     open: (count) => `${count} open`,
     full: "Full",
     noSlots: "No observing time that night.",
     tooSoon: "Already started",
-    pickSlotFirst: "Pick a start to see what is up",
+    optional: "Optional · we point at the best one up",
+    anyTarget: "Best in the sky",
     up: "Up for the whole slot",
     needs: (minutes) => `Needs ${minutes} min`,
     loadingTargets: "Reading the sky for this slot",
     noTargets: "Nothing in the catalogue is up for the whole of this slot.",
     session: "Your session",
-    pickStart: "Pick a half-hour",
-    pickTarget: "Choose a target",
+    pickStart: "Pick a start",
     cost: "Cost",
     free: "Free",
     goToSession: "Go to your session",
     siteTime: "Observatory time",
-    parts: { evening: "Evening", midnight: "Around midnight", dawn: "Before dawn" },
     timeline: {
       label: "The night at the observatory",
       sunset: "Sunset",
@@ -92,7 +89,7 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     illustrations: "Illustrations — not telescope output",
   },
   ka: {
-    lede: "აირჩიე ღამე, დასაწყისი და ობიექტი. მთელი სეანსის განმავლობაში ტელესკოპი შენია.",
+    lede: "აირჩიე ღამე და დასაწყისი. ტელესკოპი 30 წუთით შენია.",
     night: "ღამე",
     start: "დასაწყისი",
     target: "ობიექტი",
@@ -100,19 +97,18 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     full: "სავსეა",
     noSlots: "ამ ღამეს დაკვირვების დრო არ არის.",
     tooSoon: "უკვე დაიწყო",
-    pickSlotFirst: "აირჩიე დასაწყისი, რომ ნახო რა ჩანს",
+    optional: "არასავალდებულო · ავირჩევთ საუკეთესოს",
+    anyTarget: "საუკეთესო ცაზე",
     up: "ჩანს მთელი სეანსის განმავლობაში",
     needs: (minutes) => `სჭირდება ${minutes} წთ`,
     loadingTargets: "ვამოწმებთ, რა ჩანს ამ სეანსზე",
     noTargets: "კატალოგიდან არცერთი ობიექტი არ ჩანს ამ სეანსის მთელი განმავლობაში.",
     session: "შენი სეანსი",
     pickStart: "აირჩიე დაწყების დრო",
-    pickTarget: "აირჩიე ობიექტი",
     cost: "ღირებულება",
     free: "უფასო",
     goToSession: "შენს სეანსზე გადასვლა",
     siteTime: "ობსერვატორიის დრო",
-    parts: { evening: "საღამო", midnight: "შუაღამე", dawn: "განთიადამდე" },
     timeline: {
       label: "ღამე ობსერვატორიაში",
       sunset: "მზის ჩასვლა",

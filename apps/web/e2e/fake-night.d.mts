@@ -3,3 +3,5 @@ export function fakeNight(date: string): { first: number; count: number };
 export function fakeNightOf(at: number): string;
 export function fakeSlotAt(date: string, index: number): string;
 export function fakeLocalTime(iso: string): string;
+export const fakeBookedIndex: number;
+export function fakeBlocked(index: number): boolean;

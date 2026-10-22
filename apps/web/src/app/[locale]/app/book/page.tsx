@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { BookingBoard } from "@/components/booking/booking-board";
-import { PageGuide } from "@/components/guide/page-guide";
-import { BookingList } from "@/components/booking/booking-list";
 import { RescheduleClosed } from "@/components/booking/reschedule-closed";
 import { StatePanel } from "@/components/ui/state-panel";
 import { readBoard } from "@/features/booking/board";
-import { bookingCursorOf, readBookings } from "@/features/booking/bookings";
 import { readReschedule } from "@/features/booking/reschedule";
 import { readPrizes } from "@/features/cards/read";
 import { isLocale } from "@/i18n/config";
@@ -22,7 +19,6 @@ type BookPageProps = {
   searchParams: Promise<{
     startAt?: string | string[];
     reschedule?: string | string[];
-    cursor?: string | string[];
   }>;
 };
 
@@ -33,14 +29,14 @@ export async function generateMetadata({ params }: BookPageProps): Promise<Metad
   return { title: copy.metadataTitle, description: copy.metadataDescription };
 }
 
-/** /app/book is the booking board (ADR-053 §7), with the customer's nights under it (ADR-051). */
+/** /app/book is the booking board (ADR-053 §7), one screen; the customer's nights are /app/bookings. */
 export default async function BookPage({ params, searchParams }: BookPageProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
   await requireUser(locale);
 
-  const { startAt, reschedule: rescheduleParam, cursor: cursorParam } = await searchParams;
+  const { startAt, reschedule: rescheduleParam } = await searchParams;
   const reschedule = await readReschedule(rescheduleParam);
   if (reschedule.kind === "closed") {
     return <RescheduleClosed bookingId={reschedule.bookingId} locale={locale} />;
@@ -86,7 +82,6 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
         prizes={prizes}
         locale={locale}
         observatory={board.observatory}
-        mode={board.mode}
         nights={board.nights}
         targets={board.targets}
         reschedule={booking}
@@ -96,18 +91,5 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
     );
   }
 
-  // A reschedule is one night's business; the list waits.
-  if (booking) return main;
-
-  // ADR-051: the customer's nights live under the night they are booking.
-  const cursor = bookingCursorOf(cursorParam);
-  const nights = await readBookings(cursor);
-  if (nights.kind === "signed-out") redirect(`/${locale}/sign-in`);
-  return (
-    <>
-      {main}
-      <BookingList embedded locale={locale} paged={cursor !== null} result={nights} />
-      <PageGuide id="book" locale={locale} />
-    </>
-  );
+  return main;
 }

@@ -161,7 +161,7 @@ export const almanacCopy: Record<"en" | "ka", AlmanacCopy> = {
     past: "Past",
     moonLit: (lit) => `Moon ${lit}% lit`,
     legendOpen: "Open night",
-    computed: "Computed for Tbilisi",
+    computed: "Computed for the observatory",
     title: (e) => {
       switch (e.kind) {
         case "moon":
@@ -195,11 +195,11 @@ export const almanacCopy: Record<"en" | "ka", AlmanacCopy> = {
         case "season":
           return en.season[e.season][1];
         case "lunarEclipse":
-          return e.visible ? "Visible from Tbilisi." : "Not visible from Tbilisi.";
+          return e.visible ? "Visible from the observatory." : "Not visible from the observatory.";
         case "solarEclipse":
           return e.visible
-            ? "Seen from Tbilisi by day. The telescope never points at the Sun."
-            : "Not visible from Tbilisi.";
+            ? "Seen from the observatory by day. The telescope never points at the Sun."
+            : "Not visible from the observatory.";
         case "meteors":
           return "A meteor shower at its peak: watch by eye after midnight.";
       }
@@ -215,7 +215,7 @@ export const almanacCopy: Record<"en" | "ka", AlmanacCopy> = {
     past: "გასულია",
     moonLit: (lit) => `მთვარე ${lit}%-ით განათებულია`,
     legendOpen: "თავისუფალი ღამე",
-    computed: "გამოთვლილია თბილისისთვის",
+    computed: "გამოთვლილია ობსერვატორიისთვის",
     title: (e) => {
       switch (e.kind) {
         case "moon":
@@ -249,11 +249,11 @@ export const almanacCopy: Record<"en" | "ka", AlmanacCopy> = {
         case "season":
           return ka.season[e.season][1];
         case "lunarEclipse":
-          return e.visible ? "ჩანს თბილისიდან." : "თბილისიდან არ ჩანს.";
+          return e.visible ? "ჩანს ობსერვატორიიდან." : "ობსერვატორიიდან არ ჩანს.";
         case "solarEclipse":
           return e.visible
-            ? "თბილისიდან დღისით ჩანს. ტელესკოპი მზისკენ არასდროს მიიმართება."
-            : "თბილისიდან არ ჩანს.";
+            ? "ობსერვატორიიდან დღისით ჩანს. ტელესკოპი მზისკენ არასდროს მიიმართება."
+            : "ობსერვატორიიდან არ ჩანს.";
         case "meteors":
           return "მეტეორული ნაკადი პიკზეა: შუაღამის შემდეგ შეუიარაღებელი თვალით უყურე.";
       }

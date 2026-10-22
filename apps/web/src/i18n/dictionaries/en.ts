@@ -5,7 +5,7 @@ const dictionary = {
   metadata: {
     title: brand.en.siteName,
     description:
-      "Reserve time on a real telescope in Tbilisi, watch it live, and keep what you capture.",
+      "Reserve time on a real telescope in Georgia, watch what it sees, and keep what you capture.",
   },
   navigation: {
     ariaLabel: "Primary navigation",
@@ -35,6 +35,7 @@ const dictionary = {
       collection: "Collection",
       profile: "Profile",
       cards: "Weekly cards",
+      bookings: "Your nights",
       subscription: "Subscription",
       loyalty: "Loyalty",
       passes: "Observation Pass",
@@ -48,7 +49,7 @@ const dictionary = {
     hero: {
       headline: "The real sky,",
       sunset: "live.",
-      lede: "A real telescope in Tbilisi, Georgia, shows you the sky live. Reserve an observation slot and watch the real camera feed.",
+      lede: "A real telescope in Georgia. Reserve an observation slot and watch its camera feed.",
       cta: "Reserve a slot",
       plates: { saturn: "Saturn", jupiter: "Jupiter", mars: "Mars", venus: "Venus" },
       sky: {
@@ -73,17 +74,17 @@ const dictionary = {
       steps: [
         {
           title: "Reserve",
-          description: "Pick a target and a time.",
+          description: "Pick a night and a time.",
           action: "Book a slot",
         },
         {
           title: "Slew",
-          description: "The telescope in Tbilisi turns to your target.",
+          description: "The telescope turns to your target.",
           action: "Open the observatory",
         },
         {
           title: "Watch",
-          description: "See its camera live as the picture sharpens.",
+          description: "See its camera as the picture sharpens.",
         },
         {
           title: "Keep",
@@ -101,7 +102,7 @@ const dictionary = {
     },
     instrument: {
       eyebrow: "The instrument",
-      title: "One real telescope, in Tbilisi.",
+      title: "One real telescope, in Georgia.",
       description:
         "Commanded only by the observatory's own software, never directly from a browser. What you see is what its camera sees.",
       aperture: "Aperture",
@@ -112,7 +113,7 @@ const dictionary = {
       mode: "Mode",
       modeValue: "Live view",
       location: "Location",
-      locationValue: "Tbilisi, Georgia",
+      locationValue: "Georgia",
       millimetres: "mm",
     },
     finalCta: {
@@ -129,7 +130,7 @@ const dictionary = {
     brandEndorsement: brand.en.endorsement,
     georgianLanguage: "ქართული",
     englishLanguage: "English",
-    statement: "One real telescope in Tbilisi. The real sky, live.",
+    statement: "One real telescope in Georgia.",
     product: "Product",
     legal: "Legal",
     language: "Language",

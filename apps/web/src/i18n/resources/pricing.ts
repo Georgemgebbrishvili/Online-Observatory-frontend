@@ -3,10 +3,10 @@ import { brand } from "@/brand";
 export const pricingPageCopy = {
   en: {
     metadataTitle: `Pricing · ${brand.en.name}`,
-    metadataDescription: `What ${brand.en.name} costs: browsing is free, and an observation slot on the telescope in Tbilisi is priced per slot, shown before you pay.`,
+    metadataDescription: `What ${brand.en.name} costs: browsing is free, and an observation slot on the telescope in Georgia is priced per slot, shown before you pay.`,
     title: "Pricing",
     hero: {
-      eyebrow: "One real telescope in Tbilisi",
+      eyebrow: "One real telescope in Georgia",
       per: (minutes: number) => `for ${minutes} minutes`,
       member: (price: string, percent: number) =>
         `Members pay ${price}, ${percent}% less. Every account is a member.`,
@@ -22,7 +22,7 @@ export const pricingPageCopy = {
     tonight: {
       title: "Open tonight",
       next: "Next open night",
-      time: "Observatory time, Tbilisi",
+      time: "Observatory time",
       more: (count: number) => `${count} open slots in the next seven nights`,
       all: "See every night",
       none: "No slots are open in the next seven nights.",
@@ -50,10 +50,10 @@ export const pricingPageCopy = {
   },
   ka: {
     metadataTitle: `ფასები · ${brand.ka.nominative}`,
-    metadataDescription: `რა ღირს ${brand.ka.nominative}: დათვალიერება უფასოა, თბილისის ტელესკოპზე დაკვირვების სეანსს კი ფასი აქვს, რომელსაც გადახდამდე ხედავ.`,
+    metadataDescription: `რა ღირს ${brand.ka.nominative}: დათვალიერება უფასოა, ტელესკოპზე დაკვირვების სეანსს კი ფასი აქვს, რომელსაც გადახდამდე ხედავ.`,
     title: "ფასები",
     hero: {
-      eyebrow: "ერთი ნამდვილი ტელესკოპი თბილისში",
+      eyebrow: "ერთი ნამდვილი ტელესკოპი საქართველოში",
       per: (minutes: number) => `${minutes} წუთი`,
       member: (price: string, percent: number) =>
         `წევრისთვის ფასია ${price}, ${percent}%-ით ნაკლები. ყველა ანგარიში წევრია.`,
@@ -69,7 +69,7 @@ export const pricingPageCopy = {
     tonight: {
       title: "ამაღამ თავისუფალია",
       next: "უახლოესი თავისუფალი ღამე",
-      time: "ობსერვატორიის დრო, თბილისი",
+      time: "ობსერვატორიის დრო",
       more: (count: number) => `${count} თავისუფალი სეანსი მომდევნო შვიდ ღამეში`,
       all: "ყველა ღამის ნახვა",
       none: "მომდევნო შვიდ ღამეში თავისუფალი სეანსი არ არის.",

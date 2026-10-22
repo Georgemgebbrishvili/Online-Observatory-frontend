@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { TargetAvailability } from "@/components/astronomy/target-availability";
-import { ModeNotice } from "@/components/observatory/mode-notice";
 import { StatePanel } from "@/components/ui/state-panel";
 import {
   formatCoordinates,
@@ -200,9 +199,6 @@ export default async function MissionTargetPage({ params }: MissionTargetPagePro
         <aside className="mission-action-panel plate" id="mission-actions">
           <p className="plate-title">{copy.observatory}</p>
           <h2>{tonight?.observatory.name ?? copy.observatoryName}</h2>
-          {tonight?.observatory.mode === "SIMULATED" && (
-            <ModeNotice mode="SIMULATED" label={words.simulated.label} />
-          )}
           <div>
             {/* Booking is Phase 3; /app/book says so plainly until then. */}
             <Link

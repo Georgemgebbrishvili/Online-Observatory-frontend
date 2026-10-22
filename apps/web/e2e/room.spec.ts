@@ -12,7 +12,7 @@ test("the room reads an observing mission from the platform", async ({ page }) =
   await expect(
     page.getByRole("heading", { level: 1, name: "Observing Hercules Cluster" }),
   ).toBeVisible();
-  await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible();
+  await expect(page.getByText("SIMULATED OBSERVATORY")).toHaveCount(0);
 
   // The steps come from the mission's state: Observe is the fourth.
   const steps = page.getByRole("region", { name: "Progress" });

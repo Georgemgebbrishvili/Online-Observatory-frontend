@@ -77,20 +77,3 @@ function computeNight(date: string, timezone: string): NightSky | null {
     moonUp,
   };
 }
-
-/** Which part of the night a slot starts in, by the observatory's clock. */
-export function partOfNight(
-  startAt: string,
-  timezone: string,
-): "evening" | "midnight" | "dawn" {
-  const hour = Number(
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: timezone,
-      hour: "2-digit",
-      hourCycle: "h23",
-    }).format(new Date(startAt)),
-  );
-  if (hour >= 12 && hour < 22) return "evening";
-  if (hour >= 22 || hour < 2) return "midnight";
-  return "dawn";
-}

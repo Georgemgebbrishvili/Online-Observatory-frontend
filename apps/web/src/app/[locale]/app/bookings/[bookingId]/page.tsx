@@ -56,6 +56,6 @@ export default async function BookingPage({ params }: BookingPageProps) {
   }
 
   return (
-    <BookingDetail entry={result.entry} locale={locale} mode={result.mode} now={readClock()} />
+    <BookingDetail entry={result.entry} locale={locale} now={readClock()} />
   );
 }

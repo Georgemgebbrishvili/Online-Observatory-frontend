@@ -114,20 +114,6 @@
   gap: var(--space-2);
 }
 
-.home-simulated {
-  color: var(--color-simulated);
-  font-family: var(--font-label);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.home-observatory .home-simulated {
-  display: block;
-  margin-top: var(--space-3);
-}
-
 /* UPCOMING — ruled rows, the whole row one link. */
 .home-upcoming-list {
   margin: 0;

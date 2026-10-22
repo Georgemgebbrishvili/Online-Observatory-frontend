@@ -16,7 +16,6 @@ const en = {
     title: "Your nights could not be loaded.",
     description: "The observatory did not answer. Try again in a moment.",
   },
-  simulated: "Simulated",
   retiredTarget: "A target no longer offered",
 };
 
@@ -36,7 +35,6 @@ export const liveCopy = {
       title: "შენი ღამეების ჩატვირთვა ვერ მოხერხდა.",
       description: "ობსერვატორიამ არ უპასუხა. სცადე ცოტა ხანში.",
     },
-    simulated: "სიმულირებული",
     retiredTarget: "ობიექტი, რომელიც კატალოგში აღარ არის",
   },
 } as const satisfies Record<Locale, typeof en>;

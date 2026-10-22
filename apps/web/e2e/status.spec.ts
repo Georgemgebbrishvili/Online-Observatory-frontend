@@ -14,14 +14,14 @@ async function shoot(page: Page, path: string) {
   await style.evaluate((node: Element) => node.remove());
 }
 
-test("reports the observatory, and says the simulator is answering", async ({ page }) => {
+test("reports the observatory, with one feed badge and no simulator banner", async ({ page }) => {
   await page.goto("/en/status");
 
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible({
     timeout: firstCompile,
   });
-  // A page fed by the simulator must say so, unmistakably.
-  await expect(page.getByText("SIMULATED OBSERVATORY")).toBeVisible();
+  // The simulated badge lives on telescope output, not on the status page.
+  await expect(page.getByText("SIMULATED OBSERVATORY")).toHaveCount(0);
   await expect(page.getByText("Stellar Tbilisi")).toBeVisible();
   await expect(page.getByText(/Reported \d+ (s|min|h) ago/)).toBeVisible();
 
@@ -61,7 +61,6 @@ test("renders in Georgian", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible({
     timeout: firstCompile,
   });
-  await expect(page.getByText("სიმულირებული ობსერვატორია")).toBeVisible();
   await expect(page.getByText("ამაღამინდელი პირობები")).toBeVisible();
   await shoot(page, `${evidence}/02-status-georgian.png`);
 });

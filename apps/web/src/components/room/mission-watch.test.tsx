@@ -334,7 +334,6 @@ describe("MissionWatch", () => {
     const feed = document.querySelector(".live-feed")!;
     expect(feed).toHaveAttribute("data-live-status", "live");
     expect(feed.querySelector(".live-feed-badge")).toHaveTextContent(room.live.simulated);
-    expect(screen.getByRole("note")).toHaveTextContent(copy.simulated);
     expect(screen.getByText(copy.watching)).toBeVisible();
     // View only (ADR-007): Leave is the one thing an observer can press.
     expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual([

@@ -63,7 +63,7 @@ import {
   zVerifyEmailRequest,
 } from "@darkview/contracts/zod";
 
-import { fakeNight, fakeNightOf } from "./fake-night.mjs";
+import { fakeBlocked, fakeNight, fakeNightOf } from "./fake-night.mjs";
 
 const port = Number(process.env.FAKE_PLATFORM_PORT ?? 4100);
 const appOrigin = process.env.FAKE_PLATFORM_APP_URL ?? "http://localhost:3000";
@@ -602,13 +602,13 @@ function slotAt(startAt) {
   const at = Date.parse(startAt);
   if (Number.isNaN(at)) return null;
   const { first, count } = fakeNight(fakeNightOf(at));
-  const index = (at - first) / (40 * 60_000);
+  const index = (at - first) / (15 * 60_000);
   return Number.isInteger(index) && index >= 0 && index < count ? index : null;
 }
 
 /** Whether a slot is refused as booked: the night's second, or its last "a moment ago". */
 function slotTaken(startAt, index) {
-  return index === 1 || index === fakeNight(fakeNightOf(Date.parse(startAt))).count - 1;
+  return fakeBlocked(index) || index === fakeNight(fakeNightOf(Date.parse(startAt))).count - 1;
 }
 
 /** A slot judged as the fake's sky judges tonight: the same targets up, the same reasons. */
@@ -1340,7 +1340,8 @@ const routes = {
           }),
         ),
   // GET /slots. The platform's night (e2e/fake-night.mjs): every slot of astronomical
-  // darkness at Tbilisi, dusk to dawn, on the 40-minute stride, the second one booked.
+  // darkness at Tbilisi, dusk to dawn, a start every 15 minutes, the fifth one booked and
+  // the starts its 30 minutes plus turnaround overlap held with it.
   // Computed, not stored, so a date always gives the same night. Public, like the
   // platform's.
   "GET /slots": (request, response) => {
@@ -1360,16 +1361,16 @@ const routes = {
         observatoryId,
         date,
         items: Array.from({ length: count }, (_, index) => {
-          const startAt = first + index * 40 * 60_000;
+          const startAt = first + index * 15 * 60_000;
           return {
             observatoryId,
             startAt: new Date(startAt).toISOString(),
             endAt: new Date(startAt + 30 * 60_000).toISOString(),
             durationMinutes: 30,
-            available: index !== 1,
+            available: !fakeBlocked(index),
             priceMinor: 4500,
             currency: "GEL",
-            unavailableReason: index === 1 ? "ALREADY_BOOKED" : null,
+            unavailableReason: fakeBlocked(index) ? "ALREADY_BOOKED" : null,
           };
         }),
       }),

@@ -711,7 +711,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 boolean,
                 "refunded" | "owed" | null,
               ])[]
-            ).map(([phase, pending, simulated, refund], index) => {
+            ).map(([phase, pending, , refund], index) => {
               const watch = watchCopy[locale];
               const seen =
                 phase !== "loading" && phase !== "error" && phase !== "not-open";
@@ -729,14 +729,6 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                     count: phase === "full" ? "5" : "2",
                     capacity: "5",
                   })}
-                  simulated={
-                    simulated
-                      ? {
-                          label: watch.simulated,
-                          detail: statusCopy[locale].mode.SIMULATED.detail,
-                        }
-                      : null
-                  }
                   pending={pending}
                   refund={
                     refund

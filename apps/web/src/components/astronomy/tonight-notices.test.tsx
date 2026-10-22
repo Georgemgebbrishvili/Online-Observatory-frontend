@@ -58,7 +58,7 @@ describe("TonightNotices", () => {
     ).toBeVisible();
   });
 
-  it("badges a simulated observatory, and stays quiet when something is observable", () => {
+  it("stays quiet when something is observable, simulated or not", () => {
     render(
       <TonightNotices
         locale="ka"
@@ -69,7 +69,7 @@ describe("TonightNotices", () => {
         }}
       />,
     );
-    expect(screen.getByRole("note")).toHaveTextContent("სიმულირებული ობსერვატორია");
+    expect(screen.queryByRole("note")).toBeNull();
     expect(screen.queryByRole("status")).toBeNull();
   });
 

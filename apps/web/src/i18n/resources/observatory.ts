@@ -93,11 +93,11 @@ type ObservatoryPageCopy = {
 
 export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
   en: {
-    metadataTitle: `Tbilisi Observatory · ${brand.en.name}`,
-    metadataDescription: `${brand.en.name}'s live remote telescope in Tbilisi: its status right now, tonight's targets, the instrument, and the rules it keeps.`,
-    eyebrow: "Live remote observatory · Tbilisi",
-    statement: `One real telescope on a Tbilisi rooftop, run by the observatory's own software. You reserve the time; it does the moving.`,
-    liveStatus: "Live status",
+    metadataTitle: `Observatory · ${brand.en.name}`,
+    metadataDescription: `${brand.en.name}'s remote telescope in Georgia: its status right now, tonight's targets, the instrument, and the rules it keeps.`,
+    eyebrow: "Remote observatory · Georgia",
+    statement: `One real telescope on a rooftop in Georgia, run by the observatory's own software. You reserve the time; it does the moving.`,
+    liveStatus: "Status",
     fullStatus: "Full status",
     observingNow: (target) => `Observing now: ${target}`,
     missionInProgress: "An observation is in progress",
@@ -127,8 +127,8 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       firstHour: "First bookable hour",
       noHours: "No bookable hours tonight",
       book: "Book a slot",
-      watch: "Watch live",
-      siteTime: "Site time · Tbilisi",
+      watch: "Watch",
+      siteTime: "Site time",
       plate: {
         aria: "The camera's frame drawn over the Moon, to scale",
         sensor: "Camera frame",
@@ -198,11 +198,6 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       lede: "Every command is checked in the cloud and checked again beside the telescope. A command the observatory considers unsafe is refused, whoever sent it.",
       rules: [
         {
-          title: "The simulator by default",
-          description:
-            "The observatory software starts on a simulated telescope and camera. Pages fed by the simulator say so.",
-        },
-        {
           title: "Real hardware only when attended",
           description:
             "Switching to the real telescope takes a deliberate action by an operator who is physically present.",
@@ -236,10 +231,10 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     },
     siteSection: {
       kicker: "03 · The site",
-      title: "A rooftop in Tbilisi.",
-      lede: "The telescope is installed on a rooftop in Tbilisi, Georgia, on mains power.",
-      city: "City",
-      cityValue: "Tbilisi, Georgia",
+      title: "A rooftop in Georgia.",
+      lede: "The telescope is installed on a rooftop in Georgia, on mains power.",
+      city: "Country",
+      cityValue: "Georgia",
       placement: "Placement",
       placementValue: "Rooftop, mains power",
       precision: "Exact location",
@@ -251,7 +246,7 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       title: "One site today.",
       lede: `${brand.en.name} is built so that more observatories could join later. Today there is exactly one, and it is this one.`,
       today: "Today",
-      todayValue: `One observatory, in Tbilisi, operated by ${brand.en.name}.`,
+      todayValue: `One observatory, in Georgia, operated by ${brand.en.name}.`,
       later: "Later",
       laterValue:
         "Other sites may join, each only after review, technical integration and safety checks. None is connected, and none is shown as if it were.",
@@ -260,12 +255,12 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     },
   },
   ka: {
-    metadataTitle: `თბილისის ობსერვატორია · ${brand.ka.nominative}`,
-    metadataDescription: `${brand.ka.genitive} დისტანციური ტელესკოპი თბილისში: მისი სტატუსი ახლა, ამაღამინდელი ობიექტები, ინსტრუმენტი და წესები, რომლებსაც იცავს.`,
-    eyebrow: "დისტანციური ობსერვატორია · თბილისი",
+    metadataTitle: `ობსერვატორია · ${brand.ka.nominative}`,
+    metadataDescription: `${brand.ka.genitive} დისტანციური ტელესკოპი საქართველოში: მისი სტატუსი ახლა, ამაღამინდელი ობიექტები, ინსტრუმენტი და წესები, რომლებსაც იცავს.`,
+    eyebrow: "დისტანციური ობსერვატორია · საქართველო",
     statement:
-      "ერთი ნამდვილი ტელესკოპი თბილისის სახურავზე, რომელსაც ობსერვატორიის საკუთარი პროგრამა მართავს. შენ დროს ჯავშნი, მოძრაობს კი ის.",
-    liveStatus: "სტატუსი ახლა",
+      "ერთი ნამდვილი ტელესკოპი სახურავზე საქართველოში, რომელსაც ობსერვატორიის საკუთარი პროგრამა მართავს. შენ დროს ჯავშნი, მოძრაობს კი ის.",
+    liveStatus: "სტატუსი",
     fullStatus: "სრული სტატუსი",
     observingNow: (target) => `ახლა დაკვირვება მიმდინარეობს: ${target}`,
     missionInProgress: "დაკვირვება მიმდინარეობს",
@@ -295,8 +290,8 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       firstHour: "პირველი დასაჯავშნი საათი",
       noHours: "ამაღამ დასაჯავშნი საათი არ არის",
       book: "დაჯავშნე სეანსი",
-      watch: "უყურე ეთერს",
-      siteTime: "ადგილობრივი დრო · თბილისი",
+      watch: "უყურე",
+      siteTime: "ადგილობრივი დრო",
       plate: {
         aria: "კამერის კადრი მთვარეზე, მასშტაბით",
         sensor: "კამერის კადრი",
@@ -366,11 +361,6 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       lede: "ყოველი ბრძანება მოწმდება სერვერზე და ხელახლა — ტელესკოპთან. ბრძანებას, რომელსაც ობსერვატორია სახიფათოდ მიიჩნევს, არ შეასრულებს — ვინც არ უნდა გაგზავნოს.",
       rules: [
         {
-          title: "ნაგულისხმევად — სიმულატორი",
-          description:
-            "ობსერვატორიის პროგრამა სიმულირებული ტელესკოპითა და კამერით ირთვება. გვერდები, რომლებიც სიმულატორის მონაცემებს აჩვენებს, ამას მიუთითებს.",
-        },
-        {
           title: "ნამდვილი აპარატურა — მხოლოდ ოპერატორის თანდასწრებით",
           description:
             "ნამდვილ ტელესკოპზე გადართვას სჭირდება ადგილზე ფიზიკურად მყოფი ოპერატორის შეგნებული მოქმედება.",
@@ -404,10 +394,10 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     },
     siteSection: {
       kicker: "03 · ადგილი",
-      title: "სახურავი თბილისში.",
-      lede: "ტელესკოპი დამონტაჟებულია თბილისში, სახურავზე, ქსელის ელექტროკვებით.",
-      city: "ქალაქი",
-      cityValue: "თბილისი, საქართველო",
+      title: "სახურავი საქართველოში.",
+      lede: "ტელესკოპი დამონტაჟებულია საქართველოში, სახურავზე, ქსელის ელექტროკვებით.",
+      city: "ქვეყანა",
+      cityValue: "საქართველო",
       placement: "განთავსება",
       placementValue: "სახურავი, ქსელის ელექტროკვება",
       precision: "ზუსტი მდებარეობა",
@@ -419,7 +409,7 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       title: "დღეს — ერთი ადგილი.",
       lede: `${brand.ka.nominative} ისეა აგებული, რომ მომავალში სხვა ობსერვატორიებიც შეუერთდეს. დღეს მხოლოდ ერთია — ეს.`,
       today: "დღეს",
-      todayValue: `ერთი ობსერვატორია თბილისში, რომელსაც ${brand.ka.nominative} მართავს.`,
+      todayValue: `ერთი ობსერვატორია საქართველოში, რომელსაც ${brand.ka.nominative} მართავს.`,
       later: "მოგვიანებით",
       laterValue:
         "სხვა ადგილები შეიძლება შეუერთდეს, თითოეული მხოლოდ შემოწმების, ტექნიკური ინტეგრაციისა და უსაფრთხოების დადასტურების შემდეგ. არცერთი არ არის დაკავშირებული და არცერთი არ არის ნაჩვენები ისე, თითქოს იყოს.",

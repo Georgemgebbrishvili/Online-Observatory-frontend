@@ -1,4 +1,3 @@
-import { ModeNotice } from "@/components/observatory/mode-notice";
 import { StatePanel } from "@/components/ui/state-panel";
 import { fill } from "@/features/operator/format";
 import { primaryReason } from "@/features/targets/present";
@@ -13,8 +12,8 @@ type TonightNoticesProps = {
 };
 
 /**
- * What a reader must know before tonight's list: that it is the simulator's, that
- * nothing on it can be observed and why, or that there is no list at all.
+ * What a reader must know before tonight's list: that nothing on it can be observed
+ * and why, or that there is no list at all.
  */
 export function TonightNotices({
   headingLevel = 3,
@@ -40,9 +39,6 @@ export function TonightNotices({
 
   return (
     <>
-      {result.observatory.mode === "SIMULATED" && (
-        <ModeNotice mode="SIMULATED" label={copy.simulated.label} />
-      )}
       {blocked && (
         <StatePanel
           headingLevel={headingLevel}

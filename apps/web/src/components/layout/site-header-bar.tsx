@@ -60,6 +60,7 @@ export function SiteHeaderBar({
   const links = publicLinks(locale, publicNavigation);
   const accountLinks = [
     { label: publicNavigation.overview, href: `/${locale}/app` },
+    { label: app.bookings, href: `/${locale}/app/bookings` },
     { label: app.live, href: `/${locale}/app/live` },
     { label: app.collection, href: `/${locale}/app/collection` },
     { label: app.cards, href: `/${locale}/app/cards` },
@@ -70,8 +71,9 @@ export function SiteHeaderBar({
     { label: publicNavigation.register, href: `/${locale}/register` },
     { label: publicNavigation.reserve, href: `/${locale}/app/book` },
   ];
+  const within = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   const isCurrent = (href: string) =>
-    href === `/${locale}/app` ? pathname === href : pathname.startsWith(href);
+    href === `/${locale}/app` ? pathname === href : within(href);
 
   useEffect(() => {
     if (!accountOpen) return;
@@ -103,7 +105,7 @@ export function SiteHeaderBar({
             <Link
               key={link.href}
               href={link.href}
-              aria-current={pathname.startsWith(link.href) ? "page" : undefined}
+              aria-current={within(link.href) ? "page" : undefined}
             >
               {link.label}
             </Link>
@@ -181,7 +183,7 @@ export function SiteHeaderBar({
             <Link
               key={link.href}
               href={link.href}
-              aria-current={pathname.startsWith(link.href) ? "page" : undefined}
+              aria-current={within(link.href) ? "page" : undefined}
               onClick={() => setMenuOpen(false)}
             >
               {link.label}

@@ -75,9 +75,6 @@ export function LiveNext({ locale, panel, upcoming }: LiveNextProps) {
                       {next.target ? targetName(next.target, locale) : copy.retiredTarget}
                     </Link>
                   </h3>
-                  {next.mission.mode === "SIMULATED" && (
-                    <small className="home-simulated">{copy.simulated}</small>
-                  )}
                 </div>
                 <span className="tonight-list-arrow" aria-hidden="true">
                   →
