@@ -66,6 +66,11 @@ function masks(page: Page) {
     page.locator(".board-bar"),
     // The board's night bar: sunset, twilight and the Moon for the server's tonight.
     page.locator(".night"),
+    // The calendar's month, its night note and the month's special nights follow the
+    // server's today: which row is shown, the Moon's line, how many nights are left.
+    page.locator(".cal-month"),
+    page.locator(".cal-note"),
+    page.locator(".cal-list"),
     // The homepage sky's found count: how far its opening drift got before the capture.
     page.locator(".sky-hint p:first-child"),
   ];

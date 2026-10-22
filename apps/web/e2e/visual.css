@@ -117,3 +117,17 @@ nextjs-portal {
 .observatory-dome {
   display: none !important;
 }
+
+/*
+ * The calendar's note and special nights follow the server's today, so their length
+ * changes from day to day. A fixed box, masked (visual.spec.ts), keeps the page's height.
+ */
+.cal-note {
+  height: 9rem;
+  overflow: hidden;
+}
+
+.cal-list {
+  height: 20rem;
+  overflow: hidden;
+}
