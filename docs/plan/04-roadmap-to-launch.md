@@ -29,7 +29,7 @@ which stays the record of Phases 0–4. The decisions behind it:
 | 4.9 Close refund copy                         | Done here   | A5 on platform ADR-045 (#180): the watch view's `myObserverPack`                                  |
 | Console room, three verbs                     | Done        | [`phase-5/`](phase-5/README.md): R1–R4 and N1–N3, last `ac2a9a6` (2026-10-11)                     |
 | 5 Commerce and account                        | Account     | Account done (C4, ADR-044); commerce after launch (ADR-037)                                       |
-| 6 Mobile                                      | Started     | ADR-059: `apps/mobile` (Expo SDK 58), public screens; sign-in waits on `platform-requests/mobile-sign-in.md` |
+| 6 Mobile                                      | Started     | ADR-059: `apps/mobile` (Expo SDK 58): public screens, and sign-in with your nights on ADR-061's bearer session |
 | Hosted demo                                   | Live        | stellar.astroman.ge since 2026-10-08, on the simulator                                            |
 | Skychaser modules (ADR-053)                   | Built       | `/observatory` is the console, `/app/book` the board, `/vote` the ballot (tally on the platform)  |
 | The console's 8SE and its handover (ADR-054)  | Built       | The console drives a modelled NexStar 8SE + ASI585MC as the manual describes them, and the real one through the platform in REAL mode |

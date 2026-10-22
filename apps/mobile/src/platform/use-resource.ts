@@ -6,9 +6,13 @@ export type Resource<T> =
   | { state: "loading" }
   | { state: "ready"; value: T }
   | { state: "not-found" }
+  | { state: "unauthorized" }
   | { state: "unavailable" };
 
-/** One read from the platform, with retry. A 404 is its own state, not a failure. */
+/**
+ * One read from the platform, with retry. A 404 and a 401 are states of their own, not
+ * failures: a missing thing, and a session the platform no longer honours.
+ */
 export function useResource<T>(read: () => Promise<T>, key: string) {
   const [resource, setResource] = useState<Resource<T>>({ state: "loading" });
   const [attempt, setAttempt] = useState(0);
@@ -21,7 +25,12 @@ export function useResource<T>(read: () => Promise<T>, key: string) {
       (error: unknown) =>
         current &&
         setResource({
-          state: error instanceof PlatformError && error.status === 404 ? "not-found" : "unavailable",
+          state:
+            error instanceof PlatformError && error.status === 404
+              ? "not-found"
+              : error instanceof PlatformError && error.status === 401
+                ? "unauthorized"
+                : "unavailable",
         }),
     );
     return () => {

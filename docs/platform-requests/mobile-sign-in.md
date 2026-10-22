@@ -1,6 +1,7 @@
 # Platform request: a native client can sign in
 
-Raised 2026-10-22 when the mobile application started (ADR-059).
+Raised 2026-10-22 when the mobile application started (ADR-059). Delivered the same day:
+platform ADR-061, option 1, merged as 475b1b5 (#198) and synced here as 7e21d0a.
 
 ## What blocks
 

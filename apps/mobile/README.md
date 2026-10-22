@@ -15,6 +15,6 @@ npx expo start            # scan the QR code with Expo Go (SDK 58)
   which a phone cannot reach; give it the Mac's LAN address).
 - `EXPO_PUBLIC_APP_URL`: the website the Book tab hands over to.
 
-Only public reads are used. Signing in waits on
-`docs/platform-requests/mobile-sign-in.md`. No store build exists until Apple enrolment
-clears.
+The Account tab signs in with a native bearer session (platform ADR-061) and keeps the
+token in the keychain (`expo-secure-store`). Booking and payment stay on the website. No
+store build exists until Apple enrolment clears.

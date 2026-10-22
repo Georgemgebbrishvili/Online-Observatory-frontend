@@ -12,6 +12,7 @@ import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { LocaleProvider } from "@/i18n/locale";
+import { SessionProvider } from "@/platform/session";
 import { palette } from "@/theme";
 
 export default function RootLayout() {
@@ -29,13 +30,15 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <LocaleProvider>
-        <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: palette.canvas },
-          }}
-        />
+        <SessionProvider>
+          <StatusBar style="light" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: palette.canvas },
+            }}
+          />
+        </SessionProvider>
       </LocaleProvider>
     </SafeAreaProvider>
   );

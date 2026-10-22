@@ -25,6 +25,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: t.tabs.tonight }} />
       <Tabs.Screen name="book" options={{ title: t.tabs.book }} />
+      <Tabs.Screen name="account" options={{ title: t.tabs.account }} />
     </Tabs>
   );
 }
