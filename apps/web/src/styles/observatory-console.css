@@ -77,15 +77,8 @@
 .sdo-atmo__ring--b { left: auto; right: -460px; top: -560px; width: 1200px; height: 1200px; border: 1px dashed rgba(61, 139, 253, .1); }
 
 /* ── header ─────────────────────────────────────────────────── */
-.sdo-head { position: relative; z-index: 5; height: 64px; padding: 0 22px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 30px;
+.sdo-head { position: relative; z-index: 5; height: 52px; padding: 0 22px; display: flex; justify-content: flex-end; align-items: center;
   border-bottom: 1px solid var(--o-line); background: rgba(4, 9, 20, .82); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); }
-.sdo-head__mark { display: flex; align-items: center; gap: 4px; }
-.sdo-head__mark img { display: block; }
-.sdo-head .sd-bar__links { grid-area: auto; display: flex; gap: 26px; margin: 0; border: 0; }
-.sdo-head .sd-navlink { font: 500 15px/1 var(--o-cond); letter-spacing: .12em; text-transform: uppercase; padding: 8px 0; color: var(--o-ink-3); border-bottom: 2px solid transparent; white-space: nowrap; }
-.sdo-head .sd-navlink:hover { color: var(--o-ink); }
-.sdo-head .sd-navlink[aria-current='page'] { color: #fff; text-shadow: 0 0 14px rgba(255, 255, 255, .35); }
-.sdo-head .sd-navlink::after { display: none; }
 .sdo-head__right { display: flex; align-items: center; gap: 16px; }
 .sdo-clocks { display: flex; gap: 16px; padding: 6px 14px; border-radius: 8px; background: var(--o-ticks), rgba(0, 0, 0, .45); border: 1px solid var(--o-line); }
 .sdo-clocks > span { display: flex; flex-direction: column; gap: 4px; }
@@ -193,7 +186,7 @@
 .sdo-stn.is-soon:hover { background: transparent; }
 .sdo-stn.is-soon:active { transform: none; }
 .sdo-stn.is-soon { grid-template-columns: 8px minmax(0, 1fr); padding-block: 5px; }
-.sdo-stn .sdo-stn__soon { font-family: var(--o-mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: rgba(243, 246, 251, .7); }
+.sdo-stn .sdo-stn__soon { font-family: var(--o-mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: rgba(243, 246, 251, .7); }
 .sdo-stn.is-on { background: linear-gradient(90deg, rgba(61, 139, 253, .14), rgba(61, 139, 253, .02)); border-color: rgba(61, 139, 253, .5); box-shadow: inset 2px 0 0 var(--o-hal); }
 .sdo-stn__name { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .sdo-stn__name b { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -278,7 +271,7 @@
 .sdo-point { padding: 0 16px 14px; display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 14px; align-items: center; }
 .sdo-point__vals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 8px; }
 .sdo-point__vals > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.sdo-point__vals .sdo-lbl { font-size: 12px; letter-spacing: .06em; line-height: 1.2; overflow-wrap: anywhere; }
+.sdo-point__vals .sdo-lbl { font-size: 13px; letter-spacing: .06em; line-height: 1.2; overflow-wrap: anywhere; }
 .sdo-point__vals .sdo-v { font-size: 15px; white-space: nowrap; }
 .sdo-stats { padding: 0 12px 12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .sdo-cam { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
@@ -375,13 +368,11 @@
 .sdo-head { container-type: inline-size; }
 @container (max-width: 1440px) {
   .sdo-head { gap: 20px; padding: 0 18px; }
-  .sdo-head .sd-bar__links { gap: 18px; }
   .sdo-head__right { gap: 10px; }
   .sdo-pill__long { display: none; }
 }
 @container (max-width: 1360px) {
   .sdo-clocks > span:nth-child(3) { display: none; }
-  .sdo-head .sd-navlink { letter-spacing: .12em; }
 }
 /* The side columns give way between 1280 and 1440, where the source narrowed them. */
 .sdo-grid { grid-template-columns: clamp(272px, 18.9vw, 296px) minmax(0, 1fr) clamp(316px, 21.7vw, 336px); }
@@ -409,15 +400,10 @@
   .sdo-pbar { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 2; display: flex; justify-content: space-between; align-items: center; padding: 6px; }
   .sdo-pbar .sdo-seg { border: 0; background: transparent; }
   .sdo-pbar > div:last-child { display: flex; gap: 4px; }
-  .sdo-phead { position: relative; height: 56px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; }
-  .sdo-phead__t { margin: 0; font: 400 19px/1 var(--o-title); letter-spacing: .01em; text-transform: uppercase; }
+  .sdo-phead { position: relative; height: 56px; padding: 0 16px; display: flex; align-items: center; justify-content: flex-end; }
   .sdo-phead > div { display: flex; gap: 8px; align-items: center; }
   .sdo-phead .sdo-pill { height: 28px; font-size: 13px; }
   .sdo-phead .sdo-ib { width: 44px; height: 44px; }
-  .sdo-phead__t { color: var(--o-ink); text-decoration: none; }
-  .sdo-pmenu { position: absolute; top: 56px; left: 16px; right: 16px; z-index: 20; display: grid; padding: 8px; background: #08101e; }
-  .sdo-pmenu a { display: flex; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 8px; color: var(--o-ink); font: 500 16px/1 var(--o-cond); letter-spacing: .08em; text-transform: uppercase; }
-  .sdo-pmenu a[aria-current="page"] { color: #8ab8ff; background: rgba(61, 139, 253, .12); }
   .sdo-hud--tl { display: none; }
   .sdo-pstation { position: relative; margin: 4px 16px 12px; width: calc(100% - 32px); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; color: var(--o-ink); text-align: left; cursor: pointer; }
   .sdo-pstation > span { display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -457,9 +443,10 @@
   .sdo-lbl, .sdo-clocks .sdo-lbl, .sdo-skyrow .sdo-lbl, .sdo-ph__id, .sdo-badge, .sdo-kbd, .sdo-stn__meta > span:first-child, .sdo-note, .sdo-v small { font-size: 13px; }
 }
 
-/* ── One screen on a desktop: the grid fills the window under the header, nothing below it ── */
+/* ── One screen on a desktop: the grid fills the window under the site header (about 77px)
+   and the console's 52px bar; the side columns scroll inside it ── */
 @media (--xl) {
-  .sdo-grid { height: calc(100vh - 64px); min-height: 640px; padding: 12px 18px 14px; gap: 12px; }
+  .sdo-grid { height: calc(100vh - 130px); min-height: 640px; padding: 12px 18px 14px; gap: 12px; }
   .sdo-col.sdo-desk { overflow-y: auto; scrollbar-width: none; gap: 12px; }
   .sdo-col.sdo-desk::-webkit-scrollbar { display: none; }
   /* The steps and their buttons in one strip: five compact steps on the left, the next action on the right. */
@@ -487,7 +474,6 @@
 .sdo-pill--sim .sdo-led { background: #e2b85a; box-shadow: 0 0 0 3px rgba(226, 184, 90, .18), 0 0 10px #e2b85a; }
 .sdo-head .sdo-sec { height: 34px; }
 .sdo-head .sdo-btn { height: 34px; padding: 0 14px; font-size: 13px !important; }
-.sdo-head__mark .brand-lockup { display: inline-flex; align-items: center; gap: 6px; }
 .sdo-stn.is-next { opacity: 1; margin-block: 2px; padding-block: 9px; border: 1px dashed rgba(226, 184, 90, .4); background: rgba(226, 184, 90, .05); }
 .sdo-stn.is-next:hover { background: rgba(226, 184, 90, .05); }
 .sdo-stn.is-next .sdo-led { background: var(--o-teal); box-shadow: 0 0 0 3px rgba(226, 184, 90, .14), 0 0 10px var(--o-teal); }
@@ -516,8 +502,6 @@
   --o-display: var(--font-noto-sans-georgian), sans-serif;
   --o-sans: var(--font-firago), var(--font-geist), system-ui, sans-serif;
 }
-:lang(ka) .sdo :is(.sdo-lbl, .sdo-cond, .sdo-ph__t, .sdo-ph__id, .sdo-btn, .sdo-sec, .sdo-pill, .sdo-seg button, .sdo-fs__nm, .sdo-tab, .sdo-quick__title, .sdo-idle__title, .sdo-idle__note, .sdo-mh__t, .sdo-phead__t, .sd-navlink, .sdo-badge, .sdo-hud, .sdo-targets__foot, .sdo-note, .sdo-pstep, .sdo-stn__soon, .sdo-padb--c) { letter-spacing: 0; }
-:lang(ka) .sdo :is(.sdo-quick__title, .sdo-idle__title, .sdo-phead__t, .sdo-capture__info h2, .sdo-refused h2) { font-weight: 800; }
 
 /* ── ADR-054: the instrument's own controls ─────────────────────── */
 /* The platform's stream keeps its own aspect, centred, and nothing is drawn over it. */

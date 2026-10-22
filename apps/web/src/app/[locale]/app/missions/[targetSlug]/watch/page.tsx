@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { MissionWatch, WatchView } from "@/components/room/mission-watch";
+import { readPrizes } from "@/features/cards/read";
 import { readWatch } from "@/features/missions/read-watch";
 import { fill } from "@/features/operator/format";
 import { isLocale } from "@/i18n/config";
@@ -70,9 +71,17 @@ export default async function WatchPage({ params }: WatchPageProps) {
     );
   }
 
+  // ADR-058: a won observer seat for this observatory takes the seat at no charge.
+  const seat = (await readPrizes())?.find(
+    (prize) =>
+      prize.kind === "OBSERVER_SEAT" &&
+      prize.status === "ACTIVE" &&
+      prize.observatoryId === view.observatory.id,
+  );
+
   return (
     <div className="room">
-      <MissionWatch view={view} locale={locale} />
+      <MissionWatch view={view} locale={locale} seatCode={seat?.voucherCode ?? null} />
     </div>
   );
 }

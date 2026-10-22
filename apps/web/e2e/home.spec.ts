@@ -444,7 +444,9 @@ test("the observatory console stands by on the sky model, badged simulated, with
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory");
 
-  // The console's own header: the lockup, the public destinations, the clocks, the badge.
+  // The site header, as on every page (ADR-057); the console's own bar holds the clocks
+  // and the badge.
+  await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(
     page.getByRole("banner").getByRole("link", { name: "Observatory", exact: true }),
   ).toHaveAttribute(
@@ -452,11 +454,6 @@ test("the observatory console stands by on the sky model, badged simulated, with
     "page",
   );
   await expect(page.locator(".sdo-head .sdo-pill--sim")).toHaveText(/Simulated/);
-  // The suite is signed in: the account link is the profile's.
-  await expect(page.locator(".sdo-head").getByRole("link", { name: "Profile" })).toHaveAttribute(
-    "href",
-    "/en/app/profile",
-  );
 
   // The one open station is the platform's observatory; its forecast is the platform's.
   const telescopes = page.getByRole("region", { name: "Telescopes" });
@@ -541,14 +538,10 @@ test("preserves observatory locale and mobile width", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     /ობსერვატორია — სტელარი თბილისი/,
   );
-  // The phone's own header: the station, the badge, the way to the other language is on
-  // the desk header only, so the account link stands in for the chrome here.
+  // The site header on the phone too; the console's bar keeps the station and the badge.
+  await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(page.locator(".sdo-pstation")).toContainText("სტელარი თბილისი");
   await expect(page.locator(".sdo-phead .sdo-pill--sim")).toHaveText("სიმულირებული");
-  await expect(page.locator(".sdo-phead").getByRole("link", { name: "პროფილი" })).toHaveAttribute(
-    "href",
-    "/ka/app/profile",
-  );
 
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,

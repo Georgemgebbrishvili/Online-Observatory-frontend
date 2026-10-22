@@ -880,8 +880,8 @@
 /* ── captures and history ────────────────────────────────────── */
 
 .room-console .room-capture-grid {
-  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-3);
 }
 
 .room-console .room-history ol {
@@ -1016,7 +1016,7 @@
   }
 
   .room.room-console .room-observatory .room-readings dt {
-    font: 600 12px/1.2 var(--room-font-cond);
+    font: 600 13px/1.2 var(--room-font-cond);
     letter-spacing: 0.12em;
   }
 
@@ -1087,7 +1087,7 @@
 
   .room.room-console .room-stats dt {
     color: var(--room-ink-3);
-    font: 600 12px/1.2 var(--room-font-cond);
+    font: 600 13px/1.2 var(--room-font-cond);
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -1097,11 +1097,6 @@
     color: var(--room-ink);
     font: 500 14px/1 var(--font-mono);
     font-variant-numeric: tabular-nums;
-  }
-
-  /* The captures strip. */
-  .room.room-console .room-capture-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   /* The dock. */

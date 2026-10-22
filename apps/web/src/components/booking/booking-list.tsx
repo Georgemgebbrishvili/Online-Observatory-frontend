@@ -80,7 +80,7 @@ export function BookingList({
   const base = embedded ? `/${locale}/app/book` : `/${locale}/app/bookings`;
   const detail = `/${locale}/app/bookings`;
   const hero = embedded ? (
-    <header className="booking-nights-head">
+    <header className="section-heading booking-nights-head">
       <h2 id="booking-nights-title">{copy.section}</h2>
     </header>
   ) : (

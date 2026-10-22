@@ -200,9 +200,10 @@ export function StatusPage({
               )}
             </Row>
             <Row className="plate" field="mission" label={copy.now.mission}>
-              <span className="status-value">
-                {status.missionInProgress ? copy.now.yes : copy.now.no}
-              </span>
+              <StatusIndicator
+                label={status.missionInProgress ? copy.now.yes : copy.now.no}
+                tone={status.missionInProgress ? "active" : "neutral"}
+              />
             </Row>
           </dl>
           <dl className="ruled-specs status-rows">

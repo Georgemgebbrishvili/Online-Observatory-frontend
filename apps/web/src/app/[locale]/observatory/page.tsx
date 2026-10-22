@@ -5,6 +5,7 @@ import ObservatoryConsole from "@/components/observatory-console/ObservatoryCons
 import type { PlatformMission } from "@/components/observatory-console/platform-console";
 import { PageGuide } from "@/components/guide/page-guide";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { readConditions, readMyMissions, readObservatoryPanel } from "@/features/home/read";
 import { activeMission } from "@/features/missions/active";
@@ -15,7 +16,6 @@ import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { observatoryPageCopy } from "@/i18n/resources/observatory";
-import { publicLinks } from "@/lib/navigation/public-links";
 import { getCurrentUser } from "@/lib/platform/session";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
 import "@/styles/observatory-console.css";
@@ -94,8 +94,6 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
         ? panel.observatory.nameKa
         : panel.observatory.nameEn
       : observatories[0].name[locale];
-  const alternate = locale === "en" ? "ka" : "en";
-  const nav = dictionary.navigation;
 
   return (
     <>
@@ -113,6 +111,7 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
           },
         }}
       />
+      <SiteHeader locale={locale} navigation={dictionary.navigation} />
       <ObservatoryConsole
         locale={locale}
         tonight={tonight.kind === "ok" ? quickStartTarget(tonight.items, locale) : null}
@@ -120,21 +119,6 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
         observatoryName={name}
         simulated={!real}
         mission={mission}
-        brandLabel={nav.brandAriaLabel}
-        links={publicLinks(locale, nav.public).map((link) => ({
-          ...link,
-          current: link.href === `/${locale}/observatory`,
-        }))}
-        language={{
-          label: nav.languageName,
-          href: `/${alternate}/observatory`,
-          hrefLang: alternate,
-        }}
-        account={
-          user
-            ? { label: nav.app.profile, href: `/${locale}/app/profile` }
-            : { label: nav.public.signIn, href: `/${locale}/sign-in` }
-        }
         caption={copy.illustration}
       />
       <PageGuide id="observatory" locale={locale} />

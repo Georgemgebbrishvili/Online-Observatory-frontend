@@ -555,3 +555,28 @@
 .ds-console-stage .sdo-alerts {
   top: var(--space-4);
 }
+
+/* ADR-058: the weekly cards' specimens. */
+.ds-cards {
+  display: grid;
+  gap: var(--space-4);
+  margin-block-end: var(--space-8);
+}
+
+.ds-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: var(--space-6);
+}
+
+.ds-cards-specimen {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+}
+
+.ds-cards-label {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}

@@ -326,14 +326,14 @@ function HandControlBase(p: HandProps) {
             <span className="sdo-lbl">{t.hand.slewRate}</span>
             <Stepper label={t.hand.slewRate} value={`${p.rate} · ${rateLabel}`} onDown={() => p.onRate?.(p.rate - 1)} onUp={() => p.onRate?.(p.rate + 1)} min={!p.onRate || p.rate <= 1} max={!p.onRate || p.rate >= 9} />
           </div>
-          <div>
-            <span className="sdo-lbl">{t.hand.focus}{p.focus !== 0 ? ` ${p.focus > 0 ? '+' : '−'}${Math.abs(p.focus)}` : ''}</span>
-            <div style={{ display: 'flex', gap: 4 }}>
-              <button className="sdo-ib sdo-ib--sm" type="button" aria-label={t.hand.focusIn} disabled={!p.onFocus || p.focusing} onClick={() => p.onFocus?.(-1)}><Icon name="minus" size={14} /></button>
-              <button className="sdo-ib sdo-ib--sm" type="button" aria-label={t.hand.focusOut} disabled={!p.onFocus || p.focusing} onClick={() => p.onFocus?.(1)}><Icon name="plus" size={14} /></button>
-              <button className="sdo-sec" type="button" disabled={!p.onAutofocus || p.focusing} onClick={() => p.onAutofocus?.()}>{p.focusing ? t.hand.focusing : t.hand.autofocus}</button>
-            </div>
-          </div>
+        </div>
+      </div>
+      <div className="sdo-hand__track">
+        <span className="sdo-lbl">{t.hand.focus}{p.focus !== 0 ? ` ${p.focus > 0 ? '+' : '−'}${Math.abs(p.focus)}` : ''}</span>
+        <div style={{ display: 'flex', gap: 4 }}>
+          <button className="sdo-ib sdo-ib--sm" type="button" aria-label={t.hand.focusIn} disabled={!p.onFocus || p.focusing} onClick={() => p.onFocus?.(-1)}><Icon name="minus" size={14} /></button>
+          <button className="sdo-ib sdo-ib--sm" type="button" aria-label={t.hand.focusOut} disabled={!p.onFocus || p.focusing} onClick={() => p.onFocus?.(1)}><Icon name="plus" size={14} /></button>
+          <button className="sdo-sec" type="button" disabled={!p.onAutofocus || p.focusing} onClick={() => p.onAutofocus?.()}>{p.focusing ? t.hand.focusing : t.hand.autofocus}</button>
         </div>
       </div>
       <div className="sdo-hand__track">

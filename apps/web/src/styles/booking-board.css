@@ -862,6 +862,12 @@ button.cal-day {
   overflow-wrap: anywhere;
 }
 
+/* Mkhedruli runs wider: "ჰერკულესის" split mid-word at body size. */
+html[lang="ka"] .board-target-name {
+  font-size: var(--font-size-label);
+  overflow-wrap: normal;
+}
+
 .board-target-sub {
   display: -webkit-box;
   max-width: 100%;
@@ -1139,10 +1145,6 @@ img.target-art {
   grid-column: 1 / -1;
   margin: 0;
   color: var(--color-text-tertiary);
-}
-
-.board-bookings {
-  justify-self: start;
 }
 
 /* The phone's bottom bar: the chosen start, the cost, the way to the session. */

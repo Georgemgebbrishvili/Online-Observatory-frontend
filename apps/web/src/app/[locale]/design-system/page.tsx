@@ -9,10 +9,14 @@ import "@/styles/pages.css";
 import "@/styles/homepage.css";
 import "@/styles/profile.css";
 import "@/styles/observatory-console.css";
+import "@/styles/skychaser-card.css";
+import "@/styles/cards.css";
 import { notFound } from "next/navigation";
 
 import { CalendarSpecimens } from "./calendar-specimens";
+import { CardSpecimens } from "./card-specimens";
 import { ConsoleSpecimens } from "./console-specimens";
+import { CardOdds, PrizeList } from "@/components/cards/prize-list";
 
 import { TargetAvailability } from "@/components/astronomy/target-availability";
 import { BookingActionsView } from "@/components/booking/booking-actions";
@@ -81,6 +85,8 @@ import { palette } from "@/styles/tokens";
 
 import {
   captureSpecimens,
+  oddsSpecimen,
+  prizeSpecimens,
   designSystemCopy,
   dialSpecimens,
   slotSpecimens,
@@ -1211,6 +1217,15 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="console-title">
           <SectionHeader id="console-title" section={copy.sections.console} />
           <ConsoleSpecimens locale={locale} labels={copy.consoleSpecimens} />
+        </section>
+
+        <section className="ds-section" aria-labelledby="cards-title">
+          <SectionHeader id="cards-title" section={copy.sections.cards} />
+          <CardSpecimens locale={locale} labels={copy.cardSpecimens} />
+          <div className="cards-columns">
+            <PrizeList locale={locale} prizes={prizeSpecimens} />
+            <CardOdds locale={locale} odds={oddsSpecimen} />
+          </div>
         </section>
       </Container>
     </main>

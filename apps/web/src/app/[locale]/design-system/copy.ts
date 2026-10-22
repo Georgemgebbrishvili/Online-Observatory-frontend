@@ -1,4 +1,4 @@
-import type { MissionEvent, TonightTarget } from "@darkview/contracts";
+import type { CardDrawOdds, CardPrize, MissionEvent, TonightTarget } from "@darkview/contracts";
 import type { Locale } from "@/i18n/config";
 
 import { brand } from "@/brand";
@@ -96,6 +96,20 @@ export const designSystemCopy = {
         "The observatory console's camera panel with the live frame's histogram, log-scaled, its last bar gold where pixels clip; the panel before a frame and while a stack runs. Over the picture, what the field is going through: red when the target cannot be observed, blue when it is only passing.",
         "ADR-055 console colours · ADR-056 sky model",
       ],
+      cards: [
+        "15",
+        "Weekly cards",
+        "Skychaser's card, face down as a button (hover and focus lift it), turning, and disabled; turned in each rarity, the picked card glowing; a target with no painting; the prizes as a list, and the odds.",
+        "ADR-058 — the weekly card draw",
+      ],
+    },
+    cardSpecimens: {
+      down: "Face down · hover, focus",
+      turning: "Turning",
+      disabled: "Disabled · another card turning",
+      picked: "Picked · Legendary",
+      plain: "No painting",
+      refused: "Error",
     },
     consoleSpecimens: {
       live: "Live frame",
@@ -378,6 +392,20 @@ export const designSystemCopy = {
         "ობსერვატორიის კონსოლის კამერის პანელი პირდაპირი კადრის ჰისტოგრამით, ლოგარითმულ მასშტაბში; ბოლო სვეტი ოქროსფერია, როცა პიქსელები გაჯერებულია. პანელი პირველ კადრამდე და კადრების დაჯამებისას. გამოსახულებაზე — ველის პირობები: წითელი, როცა ობიექტზე დაკვირვება შეუძლებელია, ლურჯი, როცა პირობა დროებითია.",
         "ADR-055 console colours · ADR-056 sky model",
       ],
+      cards: [
+        "15",
+        "კვირის ბარათები",
+        "Skychaser-ის ბარათი: დაფარული, როგორც ღილაკი (მიტანისა და ფოკუსისას იწევა), გადაბრუნებისას და გათიშული; გადაბრუნებული თითოეული იშვიათობით, არჩეული ბარათი ნათებით; ობიექტი ნახატის გარეშე; პრიზების სია და შანსები.",
+        "ADR-058 — კვირის ბარათები",
+      ],
+    },
+    cardSpecimens: {
+      down: "დაფარული · მიტანა, ფოკუსი",
+      turning: "ბრუნდება",
+      disabled: "გათიშული · სხვა ბარათი ბრუნდება",
+      picked: "არჩეული · ლეგენდარული",
+      plain: "ნახატის გარეშე",
+      refused: "შეცდომა",
     },
     consoleSpecimens: {
       live: "პირდაპირი კადრი",
@@ -650,6 +678,34 @@ const specimenFrame = `data:image/svg+xml,${encodeURIComponent(
 )}`;
 
 const specimenTitle = { en: "Hercules Cluster", ka: "ჰერკულესის გროვა" } as const;
+
+/** ADR-058: the weekly cards' prizes in each status, and the approved starting odds. */
+const prize = {
+  observatoryId: "10000000-0000-4000-8000-000000000001",
+  durationMinutes: null,
+  percentOff: null,
+  expiresAt: "2099-10-21T06:00:00.000Z",
+  redeemedBookingId: null,
+  redeemedObserverPackId: null,
+  createdAt: "2099-09-21T06:00:00.000Z",
+};
+export const prizeSpecimens: CardPrize[] = [
+  { ...prize, id: "c0000000-0000-4000-8000-000000000001", kind: "FREE_SLOT", status: "ACTIVE", voucherCode: "STLR7EC7057D", codeLast4: "057D", durationMinutes: 40 },
+  { ...prize, id: "c0000000-0000-4000-8000-000000000002", kind: "DISCOUNT", status: "REDEEMED", voucherCode: null, codeLast4: "A41C", percentOff: 20 },
+  { ...prize, id: "c0000000-0000-4000-8000-000000000003", kind: "OBSERVER_SEAT", status: "EXPIRED", voucherCode: null, codeLast4: "9B20" },
+];
+export const oddsSpecimen: CardDrawOdds = {
+  cards: [
+    { rarity: "LEGENDARY", prizeKind: "FREE_SLOT", chance: 0.01 },
+    { rarity: "EPIC", prizeKind: "OBSERVER_SEAT", chance: 0.1 },
+    { rarity: "RARE", prizeKind: "DISCOUNT", chance: 0.25 },
+    { rarity: "COMMON", prizeKind: null, chance: 0.64 },
+  ],
+  freeSlotsPerWeek: 2,
+  freeSlotDurationMinutes: 40,
+  discountPercentOff: 20,
+  prizeValidDays: 30,
+};
 
 export const captureSpecimens = [
   {

@@ -20,7 +20,7 @@ describe("LegalDocumentPage", () => {
       );
 
       expect(screen.getByRole("note")).toHaveTextContent(
-        "These terms are not yet in force",
+        "This document is not yet in force",
       );
       unmount();
     }

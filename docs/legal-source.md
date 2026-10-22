@@ -28,6 +28,7 @@ Changing a `decided` section's substance means changing the ADR that decided it 
 | Live view, not long-exposure astrophotography; short exposures and live stacking; no Hubble/JWST-class claim | `CLAUDE.md`, Product and Design and brand |
 | An observation slot; one observation at a time; one session owner at a time                                  | `CLAUDE.md`, Mission states; ADR-015      |
 | Visibility is decided by the sky, not the booking; altitude envelope and horizon mask                        | `CLAUDE.md`, Hardware safety              |
+| The weekly cards: free, never sold; three cards a week; odds, cap and 30-day prizes held on the platform     | ADR-058; platform ADR-060                 |
 
 ### Privacy policy
 

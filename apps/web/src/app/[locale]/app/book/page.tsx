@@ -9,6 +9,7 @@ import { StatePanel } from "@/components/ui/state-panel";
 import { readBoard } from "@/features/booking/board";
 import { bookingCursorOf, readBookings } from "@/features/booking/bookings";
 import { readReschedule } from "@/features/booking/reschedule";
+import { readPrizes } from "@/features/cards/read";
 import { isLocale } from "@/i18n/config";
 import { bookingCopy } from "@/i18n/resources/booking";
 import { requireUser } from "@/lib/platform/session";
@@ -71,8 +72,18 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
       </div>
     );
   } else {
+    // ADR-058: the prizes this booking could spend. None for a free replacement.
+    const prizes = booking
+      ? []
+      : ((await readPrizes()) ?? []).filter(
+          (prize) =>
+            prize.status === "ACTIVE" &&
+            prize.kind !== "OBSERVER_SEAT" &&
+            prize.observatoryId === board.observatory.id,
+        );
     main = (
       <BookingBoard
+        prizes={prizes}
         locale={locale}
         observatory={board.observatory}
         mode={board.mode}

@@ -53,7 +53,11 @@ const config = {
     {
       // ADR-053: the Skychaser observatory console, ported as its source wrote it. Its
       // dialogs portal to <body>, outside every token scope, so it carries its own values.
-      files: ["apps/web/src/styles/observatory-console.css"],
+      // ADR-058: Skychaser's card, the same way: its rarity ramp and rim are its own.
+      files: [
+        "apps/web/src/styles/observatory-console.css",
+        "apps/web/src/styles/skychaser-card.css",
+      ],
       rules: {
         "color-no-hex": null,
         "function-disallowed-list": null,
@@ -76,6 +80,7 @@ const config = {
         ...awaitingV3Migration,
         "apps/web/src/styles/tokens.css",
         "apps/web/src/styles/observatory-console.css",
+        "apps/web/src/styles/skychaser-card.css",
       ],
       rules: {
         "declaration-property-value-allowed-list": {

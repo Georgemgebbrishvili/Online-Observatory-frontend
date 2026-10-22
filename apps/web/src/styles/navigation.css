@@ -218,18 +218,6 @@ html:has(.public-mobile-menu[data-open]) {
   padding: var(--space-10) var(--space-page) var(--space-16);
 }
 
-.app-preview h1 {
-  max-width: none;
-  font-size: min(var(--font-size-hero), 14vw);
-}
-
-.app-preview > p:last-of-type {
-  max-width: 52ch;
-  margin: var(--space-5) 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-}
-
 @media (--lg) {
   .public-menu-button,
   .public-mobile-menu {

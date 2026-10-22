@@ -12,7 +12,7 @@ import { consoleCopy } from './copy';
 import { CaptureDialog, type Frame } from './dialogs';
 import type { StationRow } from './panels';
 import { usePlatformDriver } from './platform-driver';
-import { ConsoleShell, degText, hms, type Action, type ConsoleLink } from './shell';
+import { ConsoleShell, degText, hms, type Action } from './shell';
 import { clock } from './sky';
 
 /** The caller's active mission, as the page read it: enough to drive it and to name what it is on. */
@@ -29,10 +29,6 @@ type Props = {
   nodeCloud: number | null;
   simulated: boolean;
   mission: PlatformMission;
-  brandLabel: string;
-  links: ConsoleLink[];
-  language: ConsoleLink & { hrefLang: string };
-  account: ConsoleLink;
   caption: string;
 };
 
@@ -54,7 +50,7 @@ function stepFor(state: MissionState, session: boolean): number {
  * RECENTER; Capture is CAPTURE; the session's end is ABORT. The target is the booked
  * one, the train the mission's, and the mount's own settings are the operator's.
  */
-export function PlatformConsole({ locale, observatoryName, nodeCloud, simulated, mission, brandLabel, links, language, account, caption }: Props) {
+export function PlatformConsole({ locale, observatoryName, nodeCloud, simulated, mission, caption }: Props) {
   const t = consoleCopy[locale];
   const station = useMemo<Station>(() => ({ ...SIM_STATIONS.find((s) => s.id === NODE_ID)!, name: observatoryName, site: 'Tbilisi' }), [observatoryName]);
   const [clockMs, setClockMs] = useState<number | null>(null);
@@ -193,10 +189,6 @@ export function PlatformConsole({ locale, observatoryName, nodeCloud, simulated,
       onNight={toggleNight}
       simulated={simulated}
       observatoryName={observatoryName}
-      brandLabel={brandLabel}
-      links={links}
-      language={language}
-      account={account}
       clocks={{ utc: mounted ? clock(now, 'UTC', true) : '--:--:--', local: mounted ? clock(now, station.timezone, true) : '--:--:--', site: station.site.split(',')[0], dark }}
       quick={null}
       stations={{ rows: stationRows, selectedId: NODE_ID, onPick: () => undefined, sky: [[t.skyLabel, mounted ? t.sky[skyState] : '—'], [t.cloud, nodeCloud !== null ? `${nodeCloud}%` : '—'], [t.seeing, `${DEFAULT_SEEING_ARCSEC.toFixed(1)}″`]], selected: station, skyState }}

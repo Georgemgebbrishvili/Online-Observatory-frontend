@@ -5,8 +5,17 @@
 .profile-page {
   display: grid;
   gap: var(--space-6);
-  width: min(100%, 44rem);
+  width: min(100%, 90rem);
+  margin-inline: auto;
   padding: var(--space-8) var(--space-page) var(--space-16);
+}
+
+/* Two plates a row on a desk; each keeps its own height. */
+@media (--lg) {
+  .profile-page {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
 }
 
 .profile-page > * {
@@ -18,14 +27,14 @@
   gap: var(--space-4);
 }
 
-/* Panel titles are voice, not posters, as the cards' are. */
+/* Panel titles in the panels' Oswald, as the room's and the pricing cards' are. */
 .profile-panel h2 {
   margin: 0;
-  font-family: var(--font-body);
+  font-family: var(--font-label);
   font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.01em;
-  text-transform: none;
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .profile-form {

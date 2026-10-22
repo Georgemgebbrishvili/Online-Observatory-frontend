@@ -1,5 +1,6 @@
 import type { AppDestinationKey } from "@/features/navigation/navigation-model";
 import type { Dictionary } from "@/i18n/types";
+import { StatePanel } from "@/components/ui/state-panel";
 
 type AppDestinationPreviewProps = {
   destination: AppDestinationKey;
@@ -20,14 +21,13 @@ export function AppDestinationPreview({
   return (
     <section
       className="app-preview"
-      aria-labelledby="app-preview-title"
-      data-planned={planned || undefined}
+            data-planned={planned || undefined}
     >
-      <p className="kicker">
-        {planned ? navigation.plannedEyebrow : navigation.previewEyebrow}
-      </p>
-      <h1 id="app-preview-title">{navigation[destination]}</h1>
-      <p>{planned ? navigation.plannedDescription : navigation.previewDescription}</p>
+      <StatePanel
+        headingLevel={1}
+        title={navigation[destination]}
+        description={planned ? navigation.plannedDescription : navigation.previewDescription}
+      />
     </section>
   );
 }

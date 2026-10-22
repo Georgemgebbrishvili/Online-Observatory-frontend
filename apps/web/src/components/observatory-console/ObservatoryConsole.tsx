@@ -21,13 +21,12 @@ import LiveView, { type MountSample } from './LiveView';
 import { MountSettingsPanel, type StationRow } from './panels';
 import { PlatformConsole, type PlatformMission } from './platform-console';
 import { plateFor } from './plates';
-import { ConsoleShell, decShort, degText, duration, hms, raShort, type Action, type ConsoleLink } from './shell';
+import { ConsoleShell, decShort, degText, duration, hms, raShort, type Action } from './shell';
 import { altitudePath, bestOf, clock, nightSpan, settleSkyClock, skyNow } from './sky';
 
 /** What the quick start points at: tonight's best target from the platform's catalogue, as the sky model knows it. */
 export type TonightTarget = { name: string; targetId: string } | null;
 
-export type { ConsoleLink };
 
 export type ObservatoryConsoleProps = {
   locale: Locale;
@@ -40,10 +39,6 @@ export type ObservatoryConsoleProps = {
   simulated: boolean;
   /** The caller's active mission, when the real instrument is theirs to drive (ADR-054 §6). */
   mission: PlatformMission | null;
-  brandLabel: string;
-  links: ConsoleLink[];
-  language: ConsoleLink & { hrefLang: string };
-  account: ConsoleLink;
   /** The caption every drawn frame carries (ADR-052). */
   caption: string;
 };
@@ -108,7 +103,7 @@ export default function ObservatoryConsole(props: ObservatoryConsoleProps) {
   return <SimConsole {...props} />;
 }
 
-function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, brandLabel, links, language, account, caption }: ObservatoryConsoleProps) {
+function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, caption }: ObservatoryConsoleProps) {
   const t = consoleCopy[locale];
   const STATIONS = useMemo(() => stationsFor(observatoryName), [observatoryName]);
   const [clockMs, setClockMs] = useState<number | null>(null);
@@ -835,10 +830,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, br
       onNight={toggleNight}
       simulated={simulated}
       observatoryName={observatoryName}
-      brandLabel={brandLabel}
-      links={links}
-      language={language}
-      account={account}
       clocks={{ utc: mounted ? clock(skyMs, 'UTC', true) : '--:--:--', local: mounted ? clock(skyMs, selected.timezone, true) : '--:--:--', site: selected.site.split(',')[0], dark }}
       quick={{ name: quickName, plate: tonightTarget ? plateFor(tonightTarget.id) : null, onStart: quickStart }}
       stations={{ rows: stationRows, selectedId, onPick: pick, sky: skyRow, selected, skyState }}

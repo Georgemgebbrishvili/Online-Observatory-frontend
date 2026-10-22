@@ -1,0 +1,246 @@
+/* /app/cards (ADR-058): the week's three cards, the result, the prizes and the odds. */
+.cards-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+  width: min(100%, 90rem);
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-page) var(--space-12);
+}
+
+.cards-head {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 44rem;
+}
+
+.cards-lede {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+  line-height: 1.5;
+}
+
+.cards-draw {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.cards-choose,
+.cards-note:empty {
+  margin: 0;
+}
+
+.cards-choose {
+  color: var(--color-text-secondary);
+}
+
+.cards-note {
+  margin: 0;
+  color: var(--color-gold);
+}
+
+/* Three across at every width while they are face down: a choice is seen whole. */
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 17rem));
+  justify-content: center;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (--md) {
+  .cards-row {
+    gap: var(--space-8);
+  }
+}
+
+/* On a phone, once turned, the picked card comes first and large, the other two under it. */
+@media (--below-md) {
+  .cards-row[data-picked] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cards-row[data-picked] > [data-picked] {
+    grid-column: 1 / -1;
+    order: -1;
+    justify-self: center;
+    width: min(100%, 18rem);
+  }
+}
+
+.cards-result {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.cards-result h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.cards-next {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.cards-code {
+  display: grid;
+  justify-items: inherit;
+  gap: var(--space-2);
+}
+
+.cards-code-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.cards-code-row code {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-small);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body-lg);
+  letter-spacing: 0.08em;
+}
+
+.cards-code-label,
+.cards-code-meta {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.cards-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+}
+
+@media (--lg) {
+  .cards-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-12);
+  }
+}
+
+.cards-section {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.cards-section h2 {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+:lang(ka) .cards-section h2 {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.cards-quiet {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.cards-prizes {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cards-prize {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface-raised);
+  justify-items: start;
+}
+
+.cards-prize-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.cards-prize-status {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.cards-prize[data-status="active"] .cards-prize-status {
+  color: var(--color-gold);
+}
+
+/* Fixed columns: a long Georgian word breaks only where its column cannot hold it. */
+.cards-odds {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.cards-odds th:first-child {
+  width: 38%;
+}
+
+.cards-odds th:last-child {
+  width: 22%;
+}
+
+.cards-odds th,
+.cards-odds td {
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: 1px solid var(--color-line);
+  text-align: start;
+  font-size: var(--font-size-body);
+}
+
+.cards-odds th,
+.cards-odds td {
+  overflow-wrap: break-word;
+}
+
+.cards-odds thead th {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+}
+
+.cards-odds td:last-child,
+.cards-odds th:last-child {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.cards-rules {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  color: var(--color-text-secondary);
+}
+
+.cards-terms {
+  justify-self: start;
+  color: var(--color-text-primary);
+}

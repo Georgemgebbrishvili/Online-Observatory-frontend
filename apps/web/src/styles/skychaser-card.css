@@ -1,0 +1,125 @@
+/*
+ * ADR-058 §1: Skychaser's card, ported from ~/Desktop/Skychaser/app/src/components/
+ * skychaser/card/skychaser-card.css as its source wrote it, with three changes for
+ * this product: no price, edition, perk or field-notes back; nothing reads below 13 px
+ * (CLAUDE.md); Georgian is never uppercased or tracked. Like the observatory console
+ * (ADR-053), it carries its own colour values, so stylelint exempts this one file.
+ */
+.sdc { --px: .5; --py: .5; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; margin: 0; }
+.sdc-stage { --px: .5; --py: .5; width: 100%; perspective: 1700px; }
+.sdc-turn { display: block; width: 100%; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; border-radius: 5.5% / 3.9%; -webkit-tap-highlight-color: transparent; }
+.sdc-turn:focus-visible { outline: var(--focus-ring); outline-offset: 4px; }
+.sdc-turn:disabled { cursor: default; }
+.sdc-turn:disabled:not([aria-busy]) .sdc-card { filter: saturate(.5) brightness(.75); }
+/* The lean follows the pointer on a short ease and settles on a longer one. The flip is
+   symmetric, so the faces swap exactly at its midpoint (90deg), never leaving the card blank. */
+.sdc-tilt { transform-style: preserve-3d; transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+.sdc-stage.is-live .sdc-tilt { transform: rotateX(calc((.5 - var(--py)) * 10deg)) rotateY(calc((var(--px) - .5) * 14deg)); transition-duration: .12s; will-change: transform; }
+.sdc-turn:hover .sdc-tilt, .sdc-turn:focus-visible .sdc-tilt { translate: 0 -6px; }
+.sdc-flip { position: relative; width: 100%; aspect-ratio: 630 / 880; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.65,0,.35,1); }
+.sdc-flip.is-over { transform: rotateY(180deg); }
+.sdc-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: visibility 0s linear .35s; }
+.sdc-face--back { transform: rotateY(180deg); visibility: hidden; }
+.sdc-flip.is-over .sdc-face { visibility: hidden; }
+.sdc-flip.is-over .sdc-face--back { visibility: visible; }
+.sdc-card, .sdc-card *, .sdc-card *::before, .sdc-card *::after { box-sizing: border-box; }
+.sdc-card {
+  --card-accent: #939393;
+  position: relative; width: 100%; aspect-ratio: 630 / 880; container-type: inline-size;
+  overflow: hidden; isolation: isolate; border-radius: 5.5% / 3.9%; background: #050505;
+  color: #f5f5f3; text-align: start; box-shadow: 0 0 0 1px #000, 0 0 18px -4px color-mix(in srgb, var(--card-accent) 55%, transparent), 0 10px 30px #0007;
+}
+/* Skychaser's rarity ramp (src/lib/rarity.ts there), and each painted target's colour as
+   Skychaser sampled it from its picture (src/lib/skychaser/accents.json there). */
+[data-rarity='common'] { --rarity: #ff6a4d; }
+[data-rarity='rare'] { --rarity: #ffc94a; }
+[data-rarity='epic'] { --rarity: #8fe3ff; }
+[data-rarity='legendary'] { --rarity: #5b7cff; }
+.sdc-card[data-face='moon-terminator'] { --card-accent: #dfe3ea; }
+.sdc-card[data-face='jupiter'] { --card-accent: #ec8b3c; }
+.sdc-card[data-face='saturn'] { --card-accent: #ecd43c; }
+.sdc-card[data-face='mars'] { --card-accent: #ec533c; }
+.sdc-card[data-face='venus'] { --card-accent: #ec9a3c; }
+.sdc-card[data-face='m13-hercules-cluster'] { --card-accent: #ecba3c; }
+.sdc-card[data-face='m57-ring-nebula'] { --card-accent: #ec483c; }
+.sdc-card[data-face='m42-orion-nebula'] { --card-accent: #ec3c65; }
+.sdc-card[data-face='mizar-alcor'] { --card-accent: #589cee; }
+/* The rim: one hairline in the object's own light, brighter at two corners, with a soft bleed inward. */
+.sdc-card::after { content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none; border-radius: inherit; padding: max(1.5px, .55cqw); background: linear-gradient(155deg, color-mix(in srgb, var(--card-accent) 55%, #fff) 0%, var(--card-accent) 22%, color-mix(in srgb, var(--card-accent) 55%, #000) 50%, var(--card-accent) 78%, color-mix(in srgb, var(--card-accent) 55%, #fff) 100%); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+.sdc-card::before { content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 4cqw -1cqw color-mix(in srgb, var(--card-accent) 45%, transparent); }
+.sdc-card--front { display: flex; flex-direction: column; padding: 4.2% 4.2% 4.6%; background: radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--card-accent) 9%, #070707), #050505 70%); }
+.sdc-top { display: flex; justify-content: space-between; align-items: center; gap: 2cqw; min-height: 10.6cqw; padding: 0 1cqw; flex: none; }
+.sdc-no { color: color-mix(in srgb, var(--card-accent) 70%, #fff); font: 600 max(13px, 3.5cqw)/1 var(--font-mono); letter-spacing: .24em; text-transform: uppercase; }
+.sdc-tier {
+  position: relative; overflow: hidden; isolation: isolate; padding: 1.9cqw 3.8cqw 1.7cqw; border-radius: 1.6cqw;
+  --t-hi: color-mix(in srgb, var(--rarity) 30%, #fff); --t-up: color-mix(in srgb, var(--rarity) 60%, #fff); --t-mid: var(--rarity); --t-lo: color-mix(in srgb, var(--rarity) 70%, #000); --t-edge: color-mix(in srgb, var(--rarity) 45%, #000); --t-ink: color-mix(in srgb, var(--rarity) 20%, #000);
+  background: linear-gradient(180deg, var(--t-hi) 0%, var(--t-up) 34%, var(--t-mid) 72%, var(--t-lo) 100%);
+  color: var(--t-ink); font: 700 max(13px, 4.9cqw)/1 var(--font-label); letter-spacing: .14em; text-transform: uppercase; text-shadow: 0 .25cqw 0 color-mix(in srgb, var(--t-hi) 55%, transparent);
+  box-shadow: inset 0 1px 0 #ffffffcc, inset 0 -1px 0 #0000004d, 0 0 0 1px var(--t-edge), 0 .8cqw 2cqw -.6cqw #000, 0 0 4cqw -.6cqw color-mix(in srgb, var(--rarity) 80%, transparent);
+}
+/* Each rarity is a star's colour by temperature, cool to hot — ember red, solar yellow, white-cyan, blue giant. */
+.sdc-card[data-rarity='common'] .sdc-tier { --t-hi: #fff0eb; --t-up: #ffb3a1; --t-mid: #ff6a4d; --t-lo: #d8432a; --t-edge: #6e1a0c; --t-ink: #2b0803; }
+.sdc-card[data-rarity='rare'] .sdc-tier { --t-hi: #fffbea; --t-up: #ffe59a; --t-mid: #ffc94a; --t-lo: #d99a17; --t-edge: #6e4a05; --t-ink: #2b1c00; }
+.sdc-card[data-rarity='epic'] .sdc-tier { --t-hi: #f4fdff; --t-up: #cbf2ff; --t-mid: #8fe3ff; --t-lo: #4fb6da; --t-edge: #1a5a73; --t-ink: #04222e; }
+/* Legendary: a blue giant, the hottest light, with a white corona. */
+.sdc-card[data-rarity='legendary'] .sdc-tier {
+  --t-hi: #eef2ff; --t-up: #b1c2ff; --t-mid: #5b7cff; --t-lo: #3a55d8; --t-edge: #172670; --t-ink: #040a2c;
+  box-shadow: inset 0 1px 0 #ffffffcc, inset 0 -1px 0 #0000004d, 0 0 0 1px var(--t-edge), 0 .8cqw 2cqw -.6cqw #000, 0 0 3cqw -.4cqw #ffffffb3, 0 0 6cqw -.6cqw color-mix(in srgb, var(--rarity) 90%, transparent);
+}
+.sdc-tier::before { content: ''; position: absolute; inset: 0 0 50%; z-index: -1; border-radius: inherit; background: linear-gradient(180deg, #ffffff59, #ffffff00); }
+.sdc-tier i { position: absolute; top: -50%; bottom: -50%; left: -60%; width: 40%; rotate: 20deg; background: linear-gradient(90deg, transparent, #ffffffd9 50%, transparent); opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .sdc-tier i { animation: sdc-glint 5.5s ease-in-out infinite; }
+  .sdc-card[data-rarity='legendary'] .sdc-tier i { animation-duration: 3.4s; }
+}
+@keyframes sdc-glint { 0%, 72% { translate: 0 0; opacity: 0; } 75% { opacity: 1; } 100% { translate: 440% 0; opacity: 0; } }
+.sdc-panel { position: relative; display: flex; flex-direction: column; flex: 1; min-height: 0; margin-top: 2.2cqw; overflow: hidden; border-radius: 3.6cqw; border: 1px solid color-mix(in srgb, var(--card-accent) 34%, #ffffff14); background: #060606; box-shadow: inset 0 0 0 1px #0009; }
+.sdc-art { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #000; }
+.sdc-art img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+/* A target Skychaser never painted: its colour, as a glow in the dark. */
+.sdc-art--plain { background: radial-gradient(40% 32% at 50% 42%, color-mix(in srgb, var(--rarity) 55%, #fff) 0%, color-mix(in srgb, var(--rarity) 35%, transparent) 30%, transparent 70%), radial-gradient(120% 90% at 50% 30%, #101114, #000); }
+.sdc-art::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, #0004, transparent 14%, transparent 62%, #060606cc 88%, #060606); }
+.sdc-caption { position: relative; display: flex; flex-direction: column; flex: none; margin-top: -9cqw; padding: 0 4.4cqw 4cqw; }
+.sdc-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 3cqw; }
+.sdc-name { min-width: 0; font: 400 var(--card-name-size, 10.5cqw)/1 var(--font-headline); letter-spacing: .015em; text-transform: uppercase; text-wrap: balance; text-shadow: 0 2px 12px #000; }
+.sdc-kind { margin-top: 1.8cqw; color: #e4e3de; font: 500 max(13px, 3.2cqw)/1.3 var(--font-mono); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sdc-foot { display: flex; justify-content: space-between; align-items: baseline; gap: 3cqw; margin-top: 3.6cqw; padding-top: 3.4cqw; border-top: 1px solid #ffffff2b; }
+.sdc-perk { min-width: 0; color: color-mix(in srgb, var(--rarity) 72%, #fff); font: 600 max(13px, 3.2cqw)/1.3 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.sdc-glare { position: absolute; inset: -50%; pointer-events: none; opacity: .4; background: radial-gradient(closest-side, #ffffff15, transparent); translate: calc((var(--px, .5) - .5) * 50%) calc((var(--py, .5) - .5) * 50%); }
+:lang(ka) .sdc-tier, :lang(ka) .sdc-name, :lang(ka) .sdc-kind, :lang(ka) .sdc-perk { text-transform: none; letter-spacing: normal; }
+:lang(ka) .sdc-name { font-family: var(--font-label); font-weight: 600; }
+
+/* Face down: our mark on the plate, in a field of stars, with the rim in warm ink. */
+.sdc-card--down { --card-accent: #e3482c; display: grid; place-items: center; background: radial-gradient(90% 60% at 50% 45%, #1a0f0c, #050505 72%); }
+.sdc-down-sky { position: absolute; inset: 0; opacity: .8; background:
+  radial-gradient(1px 1px at 18% 22%, #fff, transparent), radial-gradient(1px 1px at 72% 14%, #fff, transparent),
+  radial-gradient(1.5px 1.5px at 84% 62%, #fff, transparent), radial-gradient(1px 1px at 30% 78%, #fff, transparent),
+  radial-gradient(1px 1px at 58% 88%, #ffffffb0, transparent), radial-gradient(1px 1px at 10% 55%, #ffffffb0, transparent),
+  radial-gradient(1.5px 1.5px at 44% 8%, #ffffffc0, transparent), radial-gradient(1px 1px at 92% 34%, #ffffffa0, transparent); }
+.sdc-down-mark { position: relative; width: 34%; height: auto; filter: drop-shadow(0 0 4cqw #e3482c80); }
+.sdc-down-word { position: absolute; text-transform: uppercase; bottom: 9%; left: 0; right: 0; text-align: center; color: #f4f4f2; font: 900 max(13px, 5.2cqw)/1 var(--font-archivo), var(--font-headline); font-stretch: 125%; letter-spacing: .32em; }
+.sdc-card--down::before { box-shadow: inset 0 0 0 3.2cqw #050505, inset 0 0 0 calc(3.2cqw + 1px) #e3482c40; }
+@media (prefers-reduced-motion: no-preference) {
+  .sdc-card--down.is-busy .sdc-down-mark { animation: sdc-pulse 1s ease-in-out infinite; }
+}
+/* A small face-down card keeps the mark and drops the word, which would not fit. */
+@container (max-width: 180px) { .sdc-down-word { display: none; } }
+@keyframes sdc-pulse { 50% { scale: 1.08; filter: drop-shadow(0 0 7cqw #e3482cc0); } }
+
+/* The picked card, once turned: a glow in its rarity, and for the two prizes worth most a burst. */
+.sdc--picked .sdc-card--front { box-shadow: 0 0 0 1px #000, 0 0 28px 2px color-mix(in srgb, var(--rarity) 70%, transparent), 0 0 80px -10px var(--rarity), 0 10px 30px #0007; }
+.sdc--picked .sdc-stage { position: relative; }
+/* A shadow, not a larger box: a glow must never widen the page it sits on. */
+.sdc--picked .sdc-stage::before { content: ''; position: absolute; inset: 18%; z-index: -1; border-radius: 50%; pointer-events: none; box-shadow: 0 0 90px 50px color-mix(in srgb, var(--rarity) 30%, transparent); }
+@media (prefers-reduced-motion: no-preference) {
+  .sdc--picked[data-rarity='legendary'] .sdc-stage::before, .sdc--picked[data-rarity='epic'] .sdc-stage::before { animation: sdc-burst 1.6s cubic-bezier(.2,.8,.2,1) .5s both; }
+}
+@keyframes sdc-burst { 0% { opacity: 0; box-shadow: 0 0 0 0 color-mix(in srgb, var(--rarity) 70%, transparent); } 35% { opacity: 1; } 100% { opacity: 1; box-shadow: 0 0 90px 50px color-mix(in srgb, var(--rarity) 30%, transparent); } }
+
+.sdc-caption-line { color: var(--color-text-secondary); font: 400 var(--font-size-caption)/1.4 var(--font-body); text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sdc-flip, .sdc-face, .sdc-tilt { transition: none; }
+  .sdc-stage.is-live .sdc-tilt { transform: none; }
+  .sdc-turn:hover .sdc-tilt { translate: none; }
+}

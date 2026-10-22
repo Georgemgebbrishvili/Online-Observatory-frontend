@@ -14,6 +14,7 @@ import { formatWindow, targetDescription, targetName } from "@/features/targets/
 import type { TonightResult } from "@/features/targets/read";
 import type { Locale } from "@/i18n/config";
 import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
+import { cardsCopy } from "@/i18n/resources/cards";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
 import { statusCopy } from "@/i18n/resources/status";
 import { targetCopy } from "@/i18n/resources/targets";
@@ -115,6 +116,7 @@ export function AuthenticatedHome({
   upcoming,
 }: AuthenticatedHomeProps) {
   const copy = authenticatedHomeCopy[locale];
+  const cards = cardsCopy[locale].homeLink;
   const words = targetCopy[locale];
   const observable =
     tonight.kind === "ok"
@@ -264,6 +266,17 @@ export function AuthenticatedHome({
                 })}
               </ol>
             )}
+          </section>
+
+          {/* A link only: reading the week's cards deals them, so the home never does. */}
+          <section className="home-cards plate" aria-labelledby="home-cards-title">
+            <h2 id="home-cards-title" className="plate-title">
+              {cards.title}
+            </h2>
+            <p>{cards.description}</p>
+            <Link className="button button-secondary" href={`/${locale}/app/cards`}>
+              <span>{cards.action}</span>
+            </Link>
           </section>
         </div>
       </div>

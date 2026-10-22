@@ -324,6 +324,13 @@ h1 {
   font-size: var(--font-size-hero);
 }
 
+/* A state panel that is the page owes it the h1, at the panel's size (components.css is
+   layered, so its rule alone loses to the one above). */
+.state-panel h1 {
+  max-width: none;
+  font-size: var(--font-size-h3);
+}
+
 .site-footer {
   border-top: 1px solid var(--color-border-subtle);
 }

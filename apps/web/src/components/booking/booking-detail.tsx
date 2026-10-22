@@ -41,161 +41,178 @@ export function BookingDetail({ entry, locale, mode, now }: BookingDetailProps) 
 
   return (
     <div className="booking-page booking-detail">
-      <Link className="page-link booking-back" href={base}>
-        {copy.back}
-      </Link>
+      <div className="booking-detail-lead">
+        <Link className="page-link booking-back" href={base}>
+          {copy.back}
+        </Link>
 
-      <header className="booking-hero">
-        <p className="kicker">
-          {observatory
-            ? locale === "ka"
-              ? observatory.nameKa
-              : observatory.nameEn
-            : copy.unknownObservatory}
-        </p>
-        <h1>{bookingTitle(entry, locale)}</h1>
-        <StatusIndicator
-          label={copy.status[booking.status]}
-          tone={statusTone[booking.status]}
-        />
-        <p>{hold.lapsed ? copy.holdLapsed : copy.statement[booking.status]}</p>
-        {hold.deadline && !hold.lapsed && (
-          <p>{copy.heldUntil(formatDeadline(hold.deadline, timezone, locale))}</p>
-        )}
-      </header>
-
-      {mode === "SIMULATED" && (
-        <ModeNotice
-          mode="SIMULATED"
-          label={statusCopy[locale].mode.SIMULATED.banner}
-          detail={statusCopy[locale].mode.SIMULATED.detail}
-        />
-      )}
-
-      <dl className="booking-facts">
-        <div>
-          <dt>{copy.facts.slot}</dt>
-          <dd>
-            <time dateTime={booking.slotStartAt}>
-              {formatSlot(booking.slotStartAt, booking.durationMinutes, timezone, locale)}
-            </time>
-          </dd>
-        </div>
-        <ViewerTime
-          durationMinutes={booking.durationMinutes}
-          label={copy.facts.yourTime}
-          locale={locale}
-          startAt={booking.slotStartAt}
-          timezone={timezone}
-        />
-        <div>
-          <dt>{copy.facts.length}</dt>
-          <dd>{copy.minutes(booking.durationMinutes)}</dd>
-        </div>
-        <div>
-          <dt>{copy.facts.price}</dt>
-          <dd>{formatPrice(booking.priceMinor, booking.currency, locale)}</dd>
-        </div>
-        {!!booking.tierDiscountMinor && (
-          <div>
-            <dt>{copy.facts.tierDiscount}</dt>
-            <dd>{formatPrice(booking.tierDiscountMinor, booking.currency, locale)}</dd>
-          </div>
-        )}
-        {!!booking.loyaltyPointsRedeemed && (
-          <div>
-            <dt>{copy.facts.loyaltyPoints}</dt>
-            <dd>{copy.points(booking.loyaltyPointsRedeemed)}</dd>
-          </div>
-        )}
-        {!!booking.subscriptionMinutesSpent && (
-          <div>
-            <dt>{copy.facts.subscriptionMinutes}</dt>
-            <dd>{copy.minutes(booking.subscriptionMinutesSpent)}</dd>
-          </div>
-        )}
-        <div>
-          <dt>{copy.facts.reference}</dt>
-          <dd>{bookingReference(booking.id)}</dd>
-        </div>
-      </dl>
-
-      {entitlement && (
-        <p className="booking-entitlement">
-          {entitlement.status === "OPEN"
-            ? copy.lostSlot(
-                entitlement.minutesLost,
-                copy.cause[entitlement.cause],
-                formatDay(entitlement.expiresAt, timezone, locale),
-              )
-            : entitlement.status === "REFUNDED"
-              ? copy.refunded
-              : copy.rescheduled}
-          {entitlement.rescheduledBookingId && (
-            <>
-              {" "}
-              <Link href={`${base}/${entitlement.rescheduledBookingId}`}>
-                {copy.rescheduledTo}
-              </Link>
-            </>
+        <header className="booking-hero">
+          <p className="kicker">
+            {observatory
+              ? locale === "ka"
+                ? observatory.nameKa
+                : observatory.nameEn
+              : copy.unknownObservatory}
+          </p>
+          <h1>{bookingTitle(entry, locale)}</h1>
+          <StatusIndicator
+            label={copy.status[booking.status]}
+            tone={statusTone[booking.status]}
+          />
+          <p>{hold.lapsed ? copy.holdLapsed : copy.statement[booking.status]}</p>
+          {hold.deadline && !hold.lapsed && (
+            <p>{copy.heldUntil(formatDeadline(hold.deadline, timezone, locale))}</p>
           )}
-        </p>
-      )}
+        </header>
 
-      {hold.checkout && (
-        // A full navigation, as the reserve step makes it: the checkout is not a page of
-        // this app, and it sets cookies of its own on the way back.
-        <a className="button button-primary button-large booking-observe" href={hold.checkout}>
-          <span>{copy.continuePayment}</span>
-        </a>
-      )}
+        {mode === "SIMULATED" && (
+          <ModeNotice
+            mode="SIMULATED"
+            label={statusCopy[locale].mode.SIMULATED.banner}
+            detail={statusCopy[locale].mode.SIMULATED.detail}
+          />
+        )}
+      </div>
 
-      {booking.status === "CONFIRMED" && booking.missionId && (
-        <Link
-          className="button button-primary button-large booking-observe"
-          href={`/${locale}/app/missions/${booking.missionId}/session`}
-        >
-          <span>{copy.openObservation}</span>
-        </Link>
-      )}
+      <div className="booking-detail-body">
+        <dl className="booking-facts">
+          <div>
+            <dt>{copy.facts.slot}</dt>
+            <dd>
+              <time dateTime={booking.slotStartAt}>
+                {formatSlot(
+                  booking.slotStartAt,
+                  booking.durationMinutes,
+                  timezone,
+                  locale,
+                )}
+              </time>
+            </dd>
+          </div>
+          <ViewerTime
+            durationMinutes={booking.durationMinutes}
+            label={copy.facts.yourTime}
+            locale={locale}
+            startAt={booking.slotStartAt}
+            timezone={timezone}
+          />
+          <div>
+            <dt>{copy.facts.length}</dt>
+            <dd>{copy.minutes(booking.durationMinutes)}</dd>
+          </div>
+          <div>
+            <dt>{copy.facts.price}</dt>
+            <dd>{formatPrice(booking.priceMinor, booking.currency, locale)}</dd>
+          </div>
+          {!!booking.tierDiscountMinor && (
+            <div>
+              <dt>{copy.facts.tierDiscount}</dt>
+              <dd>{formatPrice(booking.tierDiscountMinor, booking.currency, locale)}</dd>
+            </div>
+          )}
+          {!!booking.loyaltyPointsRedeemed && (
+            <div>
+              <dt>{copy.facts.loyaltyPoints}</dt>
+              <dd>{copy.points(booking.loyaltyPointsRedeemed)}</dd>
+            </div>
+          )}
+          {!!booking.subscriptionMinutesSpent && (
+            <div>
+              <dt>{copy.facts.subscriptionMinutes}</dt>
+              <dd>{copy.minutes(booking.subscriptionMinutesSpent)}</dd>
+            </div>
+          )}
+          <div>
+            <dt>{copy.facts.reference}</dt>
+            <dd>{bookingReference(booking.id)}</dd>
+          </div>
+        </dl>
 
-      {open && (
-        <Link
-          className="button button-secondary button-large booking-reschedule"
-          href={`/${locale}/app/book?reschedule=${booking.id}`}
-        >
-          <span>{rescheduleCopy[locale].offer}</span>
-        </Link>
-      )}
+        {entitlement && (
+          <p className="booking-entitlement">
+            {entitlement.status === "OPEN"
+              ? copy.lostSlot(
+                  entitlement.minutesLost,
+                  copy.cause[entitlement.cause],
+                  formatDay(entitlement.expiresAt, timezone, locale),
+                )
+              : entitlement.status === "REFUNDED"
+                ? copy.refunded
+                : copy.rescheduled}
+            {entitlement.rescheduledBookingId && (
+              <>
+                {" "}
+                <Link href={`${base}/${entitlement.rescheduledBookingId}`}>
+                  {copy.rescheduledTo}
+                </Link>
+              </>
+            )}
+          </p>
+        )}
 
-      {booking.confirmationEmail?.status === "SENT" && booking.confirmationEmail.sentAt && (
-        <p className="booking-rule">
-          {copy.confirmationSent(formatDay(booking.confirmationEmail.sentAt, timezone, locale))}
-        </p>
-      )}
+        <div className="booking-buttons">
+          {hold.checkout && (
+            // A full navigation, as the reserve step makes it: the checkout is not a page of
+            // this app, and it sets cookies of its own on the way back.
+            <a
+              className="button button-primary button-large booking-observe"
+              href={hold.checkout}
+            >
+              <span>{copy.continuePayment}</span>
+            </a>
+          )}
 
-      {booking.status === "CONFIRMED" && !open && (
-        <p className="booking-rule">{copy.paidCannotCancel}</p>
-      )}
+          {booking.status === "CONFIRMED" && booking.missionId && (
+            <Link
+              className="button button-primary button-large booking-observe"
+              href={`/${locale}/app/missions/${booking.missionId}/session`}
+            >
+              <span>{copy.openObservation}</span>
+            </Link>
+          )}
 
-      {upcoming && (
-        <section className="booking-next" aria-labelledby="booking-next-title">
-          <h2 id="booking-next-title">{copy.next.title}</h2>
-          <ol>
-            {copy.next.steps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
-        </section>
-      )}
+          {open && (
+            <Link
+              className="button button-secondary button-large booking-reschedule"
+              href={`/${locale}/app/book?reschedule=${booking.id}`}
+            >
+              <span>{rescheduleCopy[locale].offer}</span>
+            </Link>
+          )}
 
-      <BookingActions
-        bookingId={booking.id}
-        cancellable={booking.status === "PENDING_PAYMENT"}
-        refundable={open}
-        signInPath={`/${locale}/sign-in`}
-        copy={bookingActionsCopy(locale)}
-      />
+          <BookingActions
+            bookingId={booking.id}
+            cancellable={booking.status === "PENDING_PAYMENT"}
+            refundable={open}
+            signInPath={`/${locale}/sign-in`}
+            copy={bookingActionsCopy(locale)}
+          />
+        </div>
+
+        {booking.confirmationEmail?.status === "SENT" &&
+          booking.confirmationEmail.sentAt && (
+            <p className="booking-rule">
+              {copy.confirmationSent(
+                formatDay(booking.confirmationEmail.sentAt, timezone, locale),
+              )}
+            </p>
+          )}
+
+        {booking.status === "CONFIRMED" && !open && (
+          <p className="booking-rule">{copy.paidCannotCancel}</p>
+        )}
+
+        {upcoming && (
+          <section className="booking-next" aria-labelledby="booking-next-title">
+            <h2 id="booking-next-title">{copy.next.title}</h2>
+            <ol>
+              {copy.next.steps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

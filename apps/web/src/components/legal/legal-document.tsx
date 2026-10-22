@@ -21,7 +21,7 @@ export function LegalDocumentPage({
 }) {
   const sections = document.sections.map((section, index) => ({
     ...section,
-    id: `section-${index + 1}`,
+    id: section.anchor ?? `section-${index + 1}`,
     number: String(index + 1).padStart(2, "0"),
   }));
   const pending = sections.filter((section) => section.status === "pending").length;

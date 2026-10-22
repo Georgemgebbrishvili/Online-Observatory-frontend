@@ -3,6 +3,7 @@
 import type {
   BookableObservatory,
   Booking,
+  CardPrize,
   Slot,
   SlotTarget,
   Target,
@@ -12,7 +13,6 @@ import {
   zListSlotTargetsResponse,
   zRescheduleBookingResponse,
 } from "@darkview/contracts/zod";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
@@ -20,12 +20,15 @@ import { SkyList, SkyMonth, useSkyCalendar } from "@/components/booking/night-ca
 import { NightTimeline } from "@/components/booking/night-timeline";
 import { TargetArt, targetAccent } from "@/components/booking/target-art";
 import { ModeNotice } from "@/components/observatory/mode-notice";
+import { Dropdown } from "@/components/ui/dropdown";
+import { longDate } from "@/features/cards/dates";
 import { checkoutTarget } from "@/features/booking/checkout";
 import { readRefusal } from "@/features/booking/refusal";
 import { nightSky, partOfNight } from "@/features/booking/night-sky";
 import { targetDescription, targetName } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { boardCopy } from "@/i18n/resources/board";
+import { cardsCopy } from "@/i18n/resources/cards";
 import { bookingCopy } from "@/i18n/resources/booking";
 import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { reserveCopy } from "@/i18n/resources/reserve";
@@ -50,6 +53,8 @@ type BookingBoardProps = {
   /** A slot named in the address (the old reserve page's way in): chosen on arrival. */
   initialStartAt: string | null;
   signInPath: string;
+  /** ADR-058: the account's unspent free-slot and discount prizes for this observatory. */
+  prizes?: CardPrize[];
 };
 
 type Phase = "idle" | "reserving" | "redirecting";
@@ -86,6 +91,7 @@ export function BookingBoard({
   mode,
   nights,
   observatory,
+  prizes = [],
   reschedule,
   signInPath,
   targets,
@@ -95,6 +101,7 @@ export function BookingBoard({
   const reserve = reserveCopy[locale];
   const replacing = rescheduleCopy[locale];
   const words = targetCopy[locale];
+  const cards = cardsCopy[locale];
   const timezone = observatory.timezone;
 
   const time = useMemo(
@@ -191,6 +198,18 @@ export function BookingBoard({
   const target = targets.find((candidate) => candidate.id === targetId) ?? null;
   const ready = !!chosen && !!target && canBook(target);
 
+  // ADR-058: a prize the chosen slot can take. A free slot pays only for its own length.
+  const [prizeId, setPrizeId] = useState("");
+  const usable = reschedule
+    ? []
+    : prizes.filter(
+        (prize) =>
+          prize.voucherCode &&
+          (prize.kind === "DISCOUNT" ||
+            (prize.kind === "FREE_SLOT" && (!chosen || chosen.durationMinutes === prize.durationMinutes))),
+      );
+  const prize = usable.find((candidate) => candidate.id === prizeId) ?? null;
+
   const pickNight = (date: string) => {
     setNight(date);
     setSlotAt(null);
@@ -230,6 +249,7 @@ export function BookingBoard({
           slotStartAt: chosen.startAt,
           durationMinutes: chosen.durationMinutes,
           locale,
+          ...(prize?.voucherCode ? { voucherCode: prize.voucherCode } : {}),
         },
         schema: zCreateBookingResponse,
       });
@@ -254,7 +274,7 @@ export function BookingBoard({
         return;
       }
       const refusal = readRefusal(error, reserve.form, words.reasons);
-      setFeedback(refusal.message);
+      setFeedback(prize && code === "VALIDATION_FAILED" ? cards.board.refused : refusal.message);
       if (refusal.slotGone) {
         setGone((all) => new Set(all).add(chosen.startAt));
         setSlotAt(null);
@@ -283,7 +303,8 @@ export function BookingBoard({
     fullLabel: copy.full,
   });
 
-  const price = (slot: BoardSlot) => (reschedule ? replacing.free : slot.price);
+  const price = (slot: BoardSlot) =>
+    reschedule ? replacing.free : prize?.kind === "FREE_SLOT" ? cards.board.free : slot.price;
   const endOf = (slot: Slot) => new Date(Date.parse(slot.startAt) + slot.durationMinutes * 60_000);
   const buttonLabel =
     phase === "reserving"
@@ -487,10 +508,30 @@ export function BookingBoard({
               <dd>{target ? targetName(target, locale) : copy.pickTarget}</dd>
             </div>
           </dl>
+          {usable.length > 0 && (
+            <Dropdown
+              label={cards.board.label}
+              value={prize?.id ?? ""}
+              onChange={(event) => setPrizeId(event.target.value)}
+              options={[
+                { value: "", label: cards.board.none },
+                ...usable.map((candidate) => ({
+                  value: candidate.id,
+                  label: cards.board.option(
+                    cards.prize(candidate.kind, candidate),
+                    longDate(new Date(candidate.expiresAt), locale),
+                  ),
+                })),
+              ]}
+            />
+          )}
           <div className="board-total">
             <span className="board-label">{copy.cost}</span>
             <strong>{chosen ? price(chosen) : "—"}</strong>
             {chosen && <span>{booking.minutes(chosen.durationMinutes)}</span>}
+            {chosen && prize?.kind === "DISCOUNT" && prize.percentOff && (
+              <span>{cards.board.discount(prize.percentOff)}</span>
+            )}
           </div>
           <button
             type="submit"
@@ -517,9 +558,6 @@ export function BookingBoard({
           <span className="board-bar-go">{reschedule ? replacing.form.book : reserve.form.reserve}</span>
         </a>
       )}
-      <Link className="page-link board-bookings" href="#booking-nights">
-        {booking.yourBookings}
-      </Link>
     </form>
   );
 }

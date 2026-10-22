@@ -237,12 +237,12 @@
 .home-capture-simulated {
   position: absolute;
   z-index: 1;
-  right: var(--space-1);
-  bottom: var(--space-1);
-  left: var(--space-1);
-  padding: 0.1rem var(--space-1);
+  bottom: var(--space-2);
+  left: var(--space-2);
+  padding: 0.15rem var(--space-2);
   border: 1px solid var(--color-simulated-border);
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-full);
+  letter-spacing: var(--tracking-label);
   background: var(--color-scrim-strong);
   color: var(--color-simulated);
   font-family: var(--font-label);
@@ -273,4 +273,16 @@
   .home-tonight-actions .button {
     width: 100%;
   }
+}
+
+/* ADR-058: the weekly cards, a link only. */
+.home-cards {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+}
+
+.home-cards p {
+  margin: 0;
+  color: var(--color-text-secondary);
 }

@@ -20,6 +20,8 @@ export const appRoutes = [
   "app/missions",
   "app/collection",
   "app/profile",
+  // ADR-058: the weekly cards, face down; e2e/cards.spec.ts turns one on its own account.
+  "app/cards",
   // Reachable and honest about not being built yet. Phase 1's Done-when.
   "app/book",
   "app/subscription",

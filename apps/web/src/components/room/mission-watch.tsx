@@ -26,6 +26,7 @@ import {
 } from "@/features/missions/watch";
 import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
+import { cardsCopy } from "@/i18n/resources/cards";
 import { roomCopy } from "@/i18n/resources/room";
 import { statusCopy } from "@/i18n/resources/status";
 import { watchCopy, type WatchCopy } from "@/i18n/resources/watch";
@@ -59,7 +60,7 @@ export type WatchPhase =
   | "over"
   | "error";
 
-export type WatchPending = "buy" | "join" | "leave" | null;
+export type WatchPending = "buy" | "seat" | "join" | "leave" | null;
 
 type WatchViewProps = {
   phase: WatchPhase;
@@ -86,6 +87,9 @@ type WatchViewProps = {
   headingLevel?: 1 | 2;
   label?: string;
   onBuy?: () => void;
+  /** ADR-058: take the seat with a won observer-seat prize, at no charge. */
+  onUseSeat?: () => void;
+  useSeatLabel?: string;
   onJoin?: () => void;
   onLeave?: () => void;
 };
@@ -109,6 +113,8 @@ export function WatchView({
   observatory,
   onBuy,
   onJoin,
+  onUseSeat,
+  useSeatLabel,
   onLeave,
   pending = null,
   phase,
@@ -152,6 +158,16 @@ export function WatchView({
         <Button size="large" loading={pending === "buy"} onClick={() => onBuy?.()}>
           {copy.buy}
         </Button>
+        {onUseSeat && (
+          <Button
+            size="large"
+            variant="secondary"
+            loading={pending === "seat"}
+            onClick={() => onUseSeat()}
+          >
+            {useSeatLabel}
+          </Button>
+        )}
       </div>
     ) : phase === "full" ? (
       <p>{copy.full}</p>
@@ -259,6 +275,8 @@ const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve,
 type MissionWatchProps = {
   view: MissionWatchView;
   locale: Locale;
+  /** ADR-058: an unspent observer-seat prize for this observatory, if the caller holds one. */
+  seatCode?: string | null;
 };
 
 /**
@@ -266,7 +284,7 @@ type MissionWatchProps = {
  * the checkout its intent names, take it with `joinMissionAsObserver`, watch the mission
  * channel, and leave with `leaveMissionAsObserver`. View only: no control, no capture.
  */
-export function MissionWatch({ locale, view }: MissionWatchProps) {
+export function MissionWatch({ locale, seatCode = null, view }: MissionWatchProps) {
   const copy = watchCopy[locale];
   const room = roomCopy[locale];
   const status = statusCopy[locale];
@@ -361,12 +379,13 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
     return () => window.clearTimeout(id);
   }, [arrivedIn, join, mission.id]);
 
-  async function buy() {
-    setPending("buy");
+  async function buy(voucherCode: string | null = null) {
+    setPending(voucherCode ? "seat" : "buy");
     setNotice(null);
     try {
       const { observerPack, paymentIntent } = await apiRequest(`${path}/observer-pack`, {
         method: "POST",
+        ...(voucherCode ? { body: { voucherCode } } : {}),
         schema: zPurchaseObserverPackResponse,
       });
       // Bought earlier and left: the same pack comes back, already paid.
@@ -487,6 +506,8 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
       notice={notice}
       refund={refund}
       onBuy={() => void buy()}
+      onUseSeat={seatCode ? () => void buy(seatCode) : undefined}
+      useSeatLabel={cardsCopy[locale].board.useSeat}
       onJoin={() => void join(phase === "paying")}
       onLeave={() => void leave()}
       feed={

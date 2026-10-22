@@ -367,6 +367,7 @@ export function RoomLive({
               <dd className="data">{captureCount}</dd>
             </div>
           </dl>
+          {captures}
         </div>
 
         <div className="room-col room-col-right room-side">
@@ -388,7 +389,6 @@ export function RoomLive({
             signInPath={`/${locale}/sign-in`}
             copy={roomSharingCopy[locale]}
           />
-          {captures}
         </div>
 
         {children}

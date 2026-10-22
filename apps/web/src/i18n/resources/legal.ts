@@ -7,6 +7,8 @@ import { brand } from "@/brand";
 // a pending section states that it is pending rather than guessing at its content.
 export type LegalSection = {
   heading: string;
+  /** A fixed anchor, for a section another page links to. Otherwise `section-N`. */
+  anchor?: string;
 } & ({ status: "decided"; body: string[] } | { status: "pending" });
 
 export type LegalDocument = {
@@ -42,7 +44,7 @@ export const legalPaths: Record<LegalDocumentId, string> = {
 export const legalCopy: Record<Locale, LegalCopy> = {
   en: {
     noticeMarker: "DRAFT",
-    noticeTitle: "These terms are not yet in force",
+    noticeTitle: "This document is not yet in force",
     notice: `${brand.en.name} has not launched and this document is awaiting legal review. Sections marked as settled record decisions already taken about how the service will work. They are published for transparency and do not yet bind anyone.`,
     decidedLabel: "Settled",
     pendingLabel: "Awaiting legal review",
@@ -76,6 +78,16 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           { heading: "Weather, visibility and a slot we cannot run", status: "pending" },
           { heading: "Acceptable use", status: "pending" },
           { heading: "Availability, liability and limits", status: "pending" },
+          {
+            heading: "The weekly cards",
+            anchor: "card-draw",
+            status: "decided",
+            body: [
+              "A signed-in account with a verified email address is dealt three face-down cards each week, Monday to Sunday in Tbilisi time, and may turn one. Playing is free. Cards are never sold, and nothing is bought to play.",
+              "What each card holds is decided when the cards are dealt, before you choose. A card can hold a free observation slot, a free observer seat on a live session, a discount on one booking, or nothing. The chance of each is shown on the cards page, as the service holds it at that moment, and a limited number of free slots can be won each week.",
+              "A prize belongs to the account that won it, can be used only at the observatory it was won for, and expires 30 days after it is won. It cannot be exchanged for money or transferred. One account per person.",
+            ],
+          },
           { heading: "Changes to these terms", status: "pending" },
           { heading: "Governing law and disputes", status: "pending" },
         ],
@@ -139,7 +151,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
   },
   ka: {
     noticeMarker: "მონახაზი",
-    noticeTitle: "ეს პირობები ჯერ არ მოქმედებს",
+    noticeTitle: "ეს დოკუმენტი ჯერ არ მოქმედებს",
     notice: `${brand.ka.nominative} ჯერ არ გაშვებულა და ეს დოკუმენტი იურიდიულ განხილვას ელოდება. გადაწყვეტილად მონიშნული სექციები ასახავს უკვე მიღებულ გადაწყვეტილებებს სერვისის მუშაობის შესახებ. ისინი გამჭვირვალობისთვისაა გამოქვეყნებული და ჯერ არავის ავალდებულებს.`,
     decidedLabel: "გადაწყვეტილია",
     pendingLabel: "ელოდება იურიდიულ განხილვას",
@@ -173,6 +185,16 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           { heading: "ამინდი, ხილვადობა და სეანსი, რომელსაც ვერ ჩავატარებთ", status: "pending" },
           { heading: "გამოყენების წესები", status: "pending" },
           { heading: "ხელმისაწვდომობა და პასუხისმგებლობის ზღვარი", status: "pending" },
+          {
+            heading: "კვირის ბარათები",
+            anchor: "card-draw",
+            status: "decided",
+            body: [
+              "ავტორიზებულ ანგარიშს დადასტურებული ელფოსტით ყოველ კვირას, ორშაბათიდან კვირამდე თბილისის დროით, ურიგდება სამი დაფარული ბარათი და შეუძლია ერთის გადაბრუნება. თამაში უფასოა. ბარათები არასდროს იყიდება და სათამაშოდ არაფრის ყიდვა არ არის საჭირო.",
+              "რა არის თითოეულ ბარათში, წყდება დარიგებისას, შენს არჩევამდე. ბარათში შეიძლება იყოს უფასო დაკვირვების სეანსი, დამკვირვებლის უფასო ადგილი პირდაპირ ეთერში, ფასდაკლება ერთ ჯავშანზე, ან არაფერი. თითოეულის შანსი ბარათების გვერდზეა ნაჩვენები, როგორც სერვისს ამ მომენტში აქვს დადგენილი, და კვირაში შეზღუდული რაოდენობის უფასო სეანსი გაიცემა.",
+              "პრიზი ეკუთვნის ანგარიშს, რომელმაც ის მოიგო, გამოიყენება მხოლოდ იმ ობსერვატორიაში, რომლისთვისაც მოიგო, და ვადა მოგებიდან 30 დღეში გასდის. ის ფულზე არ იცვლება და სხვას არ გადაეცემა. ერთი ადამიანი — ერთი ანგარიში.",
+            ],
+          },
           { heading: "ცვლილებები ამ პირობებში", status: "pending" },
           { heading: "მოქმედი სამართალი და დავები", status: "pending" },
         ],

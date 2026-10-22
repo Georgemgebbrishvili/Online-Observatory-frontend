@@ -37,6 +37,10 @@ import {
   zListTonightTargetsResponse,
   zCastVoteBody,
   zWeekVote,
+  zCardDraw,
+  zCardDrawOdds,
+  zCardPrizeList,
+  zPickCardBody,
   zMissionChannelMessage,
   zMissionClientMessage,
   zMissionCommandAccepted,
@@ -114,6 +118,17 @@ const fakeAccounts = {
     id: "00000000-0000-4000-8000-000000000008",
     role: "USER",
     displayName: "Leaving",
+  },
+  // ADR-058: turns a weekly card in e2e, so every other account's cards stay face down.
+  "player@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000009",
+    role: "USER",
+    displayName: "Player",
+  },
+  "lucky@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000010",
+    role: "USER",
+    displayName: "Lucky",
   },
   // Account slice 1: resets its password in e2e, so no other test's sign-in depends on it.
   "forgetful@darkview.test": {
@@ -630,9 +645,20 @@ async function createBooking(request, response) {
     slotStartAt,
     durationMinutes,
     locale,
+    voucherCode,
   } = body.data;
   if (requested !== observatoryId)
     return error(response, 404, "NOT_FOUND", "No such observatory.");
+  // ADR-060: a card prize, spendable only by its winner; anything else is unusable.
+  const prize = voucherCode
+    ? (cardPrizes.get(user.id) ?? []).find(
+        (row) => row.status === "ACTIVE" && row.voucherCode === voucherCode,
+      )
+    : null;
+  if (voucherCode && (!prize || prize.kind === "OBSERVER_SEAT"))
+    return error(response, 422, "VALIDATION_FAILED", "That voucher code cannot be used.");
+  if (prize?.kind === "FREE_SLOT" && prize.durationMinutes !== durationMinutes)
+    return error(response, 422, "VALIDATION_FAILED", "This voucher is for another length.");
   const index = slotAt(slotStartAt);
   if (index === null || durationMinutes !== 30)
     return error(response, 422, "VALIDATION_FAILED", "That is not an offered slot.");
@@ -651,15 +677,18 @@ async function createBooking(request, response) {
       { blockReasons: judged.visibility.blockReasons },
     );
 
-  const paymentId = randomUUID();
-  const paymentIntent = {
-    paymentId,
-    provider: "SANDBOX",
-    status: "PENDING",
-    // As the platform: its checkout page, on the web client's origin under /api.
-    redirectUrl: `${appOrigin}/api/payments/${paymentId}/sandbox-checkout`,
-    expiresAt: new Date(Date.now() + 15 * 60_000).toISOString(),
-  };
+  const free = prize?.kind === "FREE_SLOT";
+  const paymentId = free ? null : randomUUID();
+  const paymentIntent = free
+    ? null
+    : {
+        paymentId,
+        provider: "SANDBOX",
+        status: "PENDING",
+        // As the platform: its checkout page, on the web client's origin under /api.
+        redirectUrl: `${appOrigin}/api/payments/${paymentId}/sandbox-checkout`,
+        expiresAt: new Date(Date.now() + 15 * 60_000).toISOString(),
+      };
   const booking = zGetBookingResponse.parse({
     id: randomUUID(),
     userId: user.id,
@@ -667,8 +696,8 @@ async function createBooking(request, response) {
     targetId,
     slotStartAt: new Date(slotStartAt).toISOString(),
     durationMinutes,
-    status: "PENDING_PAYMENT",
-    priceMinor: 4500,
+    status: free ? "CONFIRMED" : "PENDING_PAYMENT",
+    priceMinor: free ? 0 : prize?.kind === "DISCOUNT" ? 4500 * (1 - prize.percentOff / 100) : 4500,
     currency: "GEL",
     paymentId,
     paymentIntent,
@@ -680,9 +709,10 @@ async function createBooking(request, response) {
     createdAt: new Date().toISOString(),
   });
   const answer = zCreateBookingResponse.parse({ booking, paymentIntent });
+  if (prize) Object.assign(prize, { status: "REDEEMED", voucherCode: null, redeemedBookingId: booking.id });
   if (!createdBookings.has(session)) createdBookings.set(session, []);
   createdBookings.get(session).push(booking);
-  payments.set(paymentId, { session, bookingId: booking.id, locale: locale ?? "en" });
+  if (paymentId) payments.set(paymentId, { session, bookingId: booking.id, locale: locale ?? "en" });
   if (key) idempotentBookings.set(`${session}:${key}`, answer);
   send(response, 201, answer);
 }
@@ -1154,7 +1184,115 @@ function weekVote(user) {
   });
 }
 
+// The weekly card draw (platform ADR-060, clients ADR-058). The odds are the platform's
+// approved starting values. Every account is dealt the same three cards, decided at the
+// deal: a discount, an observer seat and nothing, so a test knows what each turn wins.
+// The week is fixed far ahead, as the vote's lock is, so the suite's clock never closes it.
+const CARD_WEEK = "2099-09-21";
+const cardOdds = zCardDrawOdds.parse({
+  cards: [
+    { rarity: "LEGENDARY", prizeKind: "FREE_SLOT", chance: 0.01 },
+    { rarity: "EPIC", prizeKind: "OBSERVER_SEAT", chance: 0.1 },
+    { rarity: "RARE", prizeKind: "DISCOUNT", chance: 0.25 },
+    { rarity: "COMMON", prizeKind: null, chance: 0.64 },
+  ],
+  freeSlotsPerWeek: 2,
+  // The fake's slots are 30 minutes long, so a free slot pays for 30.
+  freeSlotDurationMinutes: 30,
+  discountPercentOff: 20,
+  prizeValidDays: 30,
+});
+const cardDeal = [
+  { rarity: "RARE", targetSlug: "saturn", prizeKind: "DISCOUNT" },
+  { rarity: "EPIC", targetSlug: "m13-hercules-cluster", prizeKind: "OBSERVER_SEAT" },
+  { rarity: "COMMON", targetSlug: "albireo", prizeKind: null },
+];
+const cardDraws = new Map(); // userId -> { id, picked, pickedAt, key, prize }
+const cardPrizes = new Map(); // userId -> CardPrize[]
+
+function cardDrawOf(user) {
+  let deal = cardDraws.get(user.id);
+  if (!deal) {
+    deal = { id: randomUUID(), picked: null, pickedAt: null, key: null, prize: null };
+    cardDraws.set(user.id, deal);
+  }
+  return zCardDraw.parse({
+    id: deal.id,
+    observatoryId,
+    week: CARD_WEEK,
+    dealtAt: "2099-09-21T06:00:00.000Z",
+    opensNextAt: "2099-09-27T20:00:00.000Z",
+    picked: deal.picked,
+    pickedAt: deal.pickedAt,
+    cards: cardDeal.map((card, position) => {
+      const turned = deal.picked !== null;
+      return {
+        position,
+        turned,
+        rarity: turned ? card.rarity : null,
+        targetSlug: turned ? card.targetSlug : null,
+        prize: turned && deal.picked === position ? deal.prize : null,
+      };
+    }),
+    odds: cardOdds,
+  });
+}
+
+function issueCardPrize(user, kind) {
+  if (!kind) return null;
+  const code = `STLR${randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
+  const prize = {
+    id: randomUUID(),
+    kind,
+    status: "ACTIVE",
+    observatoryId,
+    voucherCode: code,
+    codeLast4: code.slice(-4),
+    durationMinutes: kind === "FREE_SLOT" ? cardOdds.freeSlotDurationMinutes : null,
+    percentOff: kind === "DISCOUNT" ? cardOdds.discountPercentOff : null,
+    expiresAt: "2099-10-21T06:00:00.000Z",
+    redeemedBookingId: null,
+    redeemedObserverPackId: null,
+    createdAt: "2099-09-21T06:00:00.000Z",
+  };
+  cardPrizes.set(user.id, [prize, ...(cardPrizes.get(user.id) ?? [])]);
+  return prize;
+}
+
+async function pickCard(request, response, drawId) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const deal = cardDraws.get(user.id);
+  if (!deal || deal.id !== drawId) return error(response, 404, "NOT_FOUND", "No such card draw.");
+  const body = zPickCardBody.safeParse(await json(request));
+  if (!body.success) return error(response, 422, "VALIDATION_FAILED", "PickCardRequest is malformed.");
+  const key = request.headers["idempotency-key"] ?? null;
+  if (deal.picked !== null) {
+    if (key && key === deal.key) return send(response, 200, cardDrawOf(user));
+    return error(response, 409, "CARD_ALREADY_PICKED", "A card has already been turned this week.");
+  }
+  deal.picked = body.data.position;
+  deal.pickedAt = new Date().toISOString();
+  deal.key = key;
+  deal.prize = issueCardPrize(user, cardDeal[body.data.position].prizeKind);
+  send(response, 200, cardDrawOf(user));
+}
+
 const routes = {
+  "GET /card-draws/odds": (_request, response) => send(response, 200, cardOdds),
+  "GET /card-draws/current": (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const query = new URL(request.url, "http://fake").searchParams;
+    if (query.get("observatoryId") !== observatoryId)
+      return error(response, 404, "NOT_FOUND", "No such observatory.");
+    send(response, 200, cardDrawOf(user));
+  },
+  "GET /prizes": (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    send(response, 200, zCardPrizeList.parse({ items: cardPrizes.get(user.id) ?? [] }));
+  },
   "GET /votes": (request, response) => {
     const query = new URL(request.url, "http://fake").searchParams;
     if (query.get("observatoryId") !== observatoryId)
@@ -2203,7 +2341,7 @@ function seatRefusal(response, mission, seat, user) {
   return null;
 }
 
-function purchasePack(request, response, id) {
+async function purchasePack(request, response, id) {
   const user = sessionUser(request);
   if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
   const mission = watchable(id);
@@ -2218,6 +2356,33 @@ function purchasePack(request, response, id) {
       "OBSERVER_CAPACITY_REACHED",
       `All ${mission.observerCapacity} observer seats are taken.`,
     );
+  // ADR-060: an observer-seat prize settles the pack at once, at no charge.
+  const voucherCode = (await json(request))?.voucherCode;
+  if (voucherCode) {
+    const prize = (cardPrizes.get(user.id) ?? []).find(
+      (row) =>
+        row.status === "ACTIVE" && row.kind === "OBSERVER_SEAT" && row.voucherCode === voucherCode,
+    );
+    if (!prize) return error(response, 422, "VALIDATION_FAILED", "That voucher code cannot be used.");
+    seat.pack = zPurchaseObserverPackResponse.parse({
+      observerPack: {
+        id: randomUUID(),
+        missionId: id,
+        userId: user.id,
+        status: "PAID",
+        priceMinor: 0,
+        currency: "GEL",
+        paymentId: null,
+        holdExpiresAt: null,
+        refundedMinor: null,
+        refundOwedMinor: null,
+        createdAt: new Date().toISOString(),
+      },
+      paymentIntent: null,
+    });
+    Object.assign(prize, { status: "REDEEMED", voucherCode: null, redeemedObserverPackId: seat.pack.observerPack.id });
+    return send(response, 201, seat.pack);
+  }
   const paymentId = randomUUID();
   const holdExpiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
   seat.pack = zPurchaseObserverPackResponse.parse({
@@ -2527,6 +2692,8 @@ http
     const route = routes[`${request.method} ${path}`];
     if (route) return await route(request, response);
 
+    const pick = path.match(/^\/card-draws\/([0-9a-f-]+)\/pick$/);
+    if (pick && request.method === "POST") return await pickCard(request, response, pick[1]);
     const cancel = path.match(/^\/admin\/missions\/([0-9a-f-]+)\/cancel$/);
     if (cancel && request.method === "POST") {
       return await cancelMission(request, response, cancel[1]);
@@ -2569,7 +2736,7 @@ http
       return getWatchView(request, response, watch[1]);
     const pack = path.match(/^\/missions\/([0-9a-f-]+)\/observer-pack$/);
     if (pack && request.method === "POST")
-      return purchasePack(request, response, pack[1]);
+      return await purchasePack(request, response, pack[1]);
     const observers = path.match(/^\/missions\/([0-9a-f-]+)\/observers$/);
     if (observers && request.method === "POST")
       return joinSeat(request, response, observers[1]);

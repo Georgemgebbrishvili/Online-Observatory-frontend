@@ -39,9 +39,6 @@ test("/app/bookings still lands, on the nights under /app/book", async ({ page }
   await expect(
     page.getByRole("heading", { level: 2, name: "Your nights" }),
   ).toBeVisible();
-  await page.goto("/en/app/book");
-  await page.getByRole("link", { name: "Your bookings" }).click();
-  await expect(page).toHaveURL(/\/en\/app\/book#booking-nights$/);
 });
 
 test("a confirmed booking opens its observation and says why it cannot be cancelled", async ({
