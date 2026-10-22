@@ -664,9 +664,20 @@ async function createBooking(request, response) {
     return error(response, 422, "VALIDATION_FAILED", "That is not an offered slot.");
   if (slotTaken(slotStartAt, index))
     return error(response, 409, "SLOT_UNAVAILABLE", "That slot has just been booked.");
-  const judged = slotTargets(slotStartAt, durationMinutes).items.find(
-    (item) => item.target.id === targetId,
-  );
+  const judgedAll = slotTargets(slotStartAt, durationMinutes).items;
+  // As the platform: without a target, the observable one highest up, ties to the earlier slug.
+  const judged = targetId
+    ? judgedAll.find((item) => item.target.id === targetId)
+    : judgedAll
+        .filter((item) => item.visibility.observable)
+        .sort(
+          (a, b) =>
+            b.visibility.atStart.horizontal.altitudeDegrees -
+              a.visibility.atStart.horizontal.altitudeDegrees ||
+            a.target.slug.localeCompare(b.target.slug),
+        )[0];
+  if (!targetId && !judged)
+    return error(response, 422, "VALIDATION_FAILED", "Nothing is observable across that slot.");
   if (!judged) return error(response, 404, "NOT_FOUND", "No such target.");
   if (!judged.visibility.observable)
     return error(
@@ -693,7 +704,7 @@ async function createBooking(request, response) {
     id: randomUUID(),
     userId: user.id,
     observatoryId,
-    targetId,
+    targetId: judged.target.id,
     slotStartAt: new Date(slotStartAt).toISOString(),
     durationMinutes,
     status: free ? "CONFIRMED" : "PENDING_PAYMENT",

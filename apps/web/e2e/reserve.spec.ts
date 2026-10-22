@@ -60,6 +60,24 @@ test("a slot is reserved, paid at the sandbox checkout, and confirmed", async ({
   await expect(page.locator(".booking-row", { hasText: "Saturn" }).first()).toBeVisible();
 });
 
+test("a start without an object is booked on the best one up", async ({ page }) => {
+  await signIn(page);
+  await chooseSlot(page, 1);
+  await expect(page.locator(".board-sum")).toContainText("Best in the sky");
+
+  const request = page.waitForRequest(
+    (sent) => sent.url().endsWith("/api/bookings") && sent.method() === "POST",
+  );
+  await page.getByRole("button", { name: "Reserve and pay" }).click();
+  expect((await request).postDataJSON()).not.toHaveProperty("targetId");
+
+  await expect(page).toHaveURL(/\/api\/payments\/[0-9a-f-]+\/sandbox-checkout$/);
+  await page.getByRole("button", { name: "Pay" }).click();
+  await expect(page).toHaveURL(/\/en\/app\/bookings\/[0-9a-f-]+$/);
+  // Albireo is the highest of the fake's observable targets.
+  await expect(page.getByRole("heading", { level: 1, name: "Albireo" })).toBeVisible();
+});
+
 test("a customer who left the checkout pays from the booking's own page", async ({
   page,
 }) => {
