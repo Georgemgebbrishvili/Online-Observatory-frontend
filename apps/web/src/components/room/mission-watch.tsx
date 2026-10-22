@@ -371,7 +371,7 @@ export function MissionWatch({ locale, view }: MissionWatchProps) {
       });
       // Bought earlier and left: the same pack comes back, already paid.
       if (observerPack.status === "PAID") return void (await join(false));
-      const checkout = paymentIntent.redirectUrl
+      const checkout = paymentIntent?.redirectUrl
         ? checkoutTarget(paymentIntent.redirectUrl, window.location.origin)
         : null;
       if (!checkout) {

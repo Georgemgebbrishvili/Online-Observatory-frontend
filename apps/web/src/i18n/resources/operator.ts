@@ -181,6 +181,7 @@ const en = {
     OPERATOR_OVERRIDE: "Operator override",
     AGENT_LINK: "Agent link",
     LOYALTY: "Loyalty",
+    CARD_DRAW: "Card draw",
     SUBSCRIPTION: "Subscription",
   },
   table: {
@@ -447,6 +448,7 @@ export const operatorCopy = {
       OPERATOR_OVERRIDE: "ოპერატორის ჩარევა",
       AGENT_LINK: "აგენტის კავშირი",
       LOYALTY: "ლოიალობა",
+      CARD_DRAW: "ბარათების გათამაშება",
       SUBSCRIPTION: "გამოწერა",
     },
     table: {
