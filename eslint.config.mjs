@@ -56,5 +56,7 @@ export default defineConfig([
     "**/playwright-report/**",
     "**/test-results/**",
     "packages/contracts/generated/**",
+    // ADR-059: the Expo app installs and checks on its own (typecheck, tests, export).
+    "apps/mobile/**",
   ]),
 ]);

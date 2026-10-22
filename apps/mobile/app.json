@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Stellar",
+    "slug": "stellar",
+    "scheme": "stellar",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0d0d0d",
+    "ios": { "bundleIdentifier": "ge.astroman.stellar", "supportsTablet": false },
+    "android": { "package": "ge.astroman.stellar" },
+    "web": { "bundler": "metro", "output": "single" },
+    "plugins": ["expo-router", "expo-font", "expo-localization", "expo-web-browser"],
+    "experiments": { "typedRoutes": false }
+  }
+}

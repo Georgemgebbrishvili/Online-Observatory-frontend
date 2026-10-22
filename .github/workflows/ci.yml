@@ -45,6 +45,35 @@ jobs:
       - name: Breakpoints resolved
         run: npm run css:check
 
+  # ADR-059: the Expo app has its own install, outside the npm workspaces.
+  mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Web export bundles every route
+        run: npx expo export --platform web --output-dir dist
+        env:
+          EXPO_NO_TELEMETRY: "1"
+
   # packages/contracts/SOURCE.json names the platform commit the pinned spec was
   # copied from. This fetches exactly that commit and fails unless the spec is
   # byte-for-byte the same, so the pin cannot claim a release it is not.

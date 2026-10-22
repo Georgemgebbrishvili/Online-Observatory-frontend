@@ -1,0 +1,137 @@
+import type { ObservatoryLinkState, VisibilityBlockReason, WeatherStatus } from "@darkview/contracts";
+
+// Wording follows the website's (apps/web/src/i18n/resources/status.ts and board.ts),
+// so the two clients say the same thing. Georgian is never uppercased or tracked.
+export type Locale = "en" | "ka";
+
+const en = {
+  name: "Stellar",
+  tagline: "The real sky, live.",
+  language: "ქართული",
+  tabs: { tonight: "Tonight", book: "Book" },
+  simulated: "Simulated",
+  simulatedDetail: "The simulator is answering. No real telescope is moving.",
+  real: "Real hardware",
+  headline: {
+    offline: "The observatory is not connected, so nothing here is current.",
+    hold: "Observing is held for the weather.",
+    degraded: "The observatory is connected, but a check is late.",
+  },
+  link: { ONLINE: "Online", DEGRADED: "Degraded", OFFLINE: "Offline" } satisfies Record<
+    ObservatoryLinkState,
+    string
+  >,
+  weather: { CLEAR: "Clear", CLOUDY: "Cloudy", UNSAFE: "Unsafe", UNKNOWN: "Unknown" } satisfies Record<
+    WeatherStatus,
+    string
+  >,
+  weatherLine: (weather: string) => `Weather: ${weather}`,
+  missionInProgress: "Observation in progress",
+  conditions: "Tonight's conditions",
+  cloud: (median: number, known: number, hours: number) =>
+    `Cloud ${median}% (median of ${known} of ${hours} hours)`,
+  noForecast: "No forecast is stored for tonight.",
+  noHours: "Tonight offers no bookable hours.",
+  advisory: "Advisory only: the operator's hold decides whether observing runs.",
+  targets: "What the telescope can reach",
+  noTargets: "No target in the catalogue is up tonight.",
+  visible: "Up now",
+  altitude: (degrees: number) => `${Math.round(degrees)}° up`,
+  reasons: {
+    SAFETY_ENVELOPE_UNMEASURED: "Limits unmeasured",
+    TARGET_DISABLED: "Not offered",
+    OBSERVATORY_OFFLINE: "Offline",
+    WEATHER_HOLD: "Weather hold",
+    BELOW_HORIZON: "Below horizon",
+    BELOW_MIN_ALTITUDE: "Too low",
+    ABOVE_MAX_ALTITUDE: "Too high",
+    BEHIND_HORIZON_MASK: "Behind horizon",
+    IN_FORBIDDEN_AZIMUTH: "Out of reach",
+    SUN_TOO_HIGH: "Not dark yet",
+    TOO_CLOSE_TO_SUN: "Near the Sun",
+    TOO_CLOSE_TO_MOON: "Near the Moon",
+    DOES_NOT_FIT_FIELD: "Too large",
+  } satisfies Record<VisibilityBlockReason, string>,
+  magnitude: (value: number) => `Magnitude ${value}`,
+  minutes: (value: number) => `About ${value} min at the telescope`,
+  book: {
+    title: "Tonight's slots",
+    open: "Open",
+    full: "Taken",
+    noSlots: "This night has no observing time.",
+    siteTime: (zone: string) => `Observatory time, ${zone}`,
+    handover:
+      "Signing in from the app is not ready yet, so a booking is made on the website.",
+    cta: "Book on the website",
+  },
+  loading: "Asking the observatory",
+  unavailable: "The servers did not answer, so there is nothing current to show.",
+  retry: "Try again",
+  noObservatory: "No bookable observatory is listed.",
+  notFound: "This target is not in the catalogue.",
+  back: "Back",
+};
+
+export type Copy = typeof en;
+
+const ka: Copy = {
+  name: "სტელარი",
+  tagline: "შენი დრო ნამდვილ ცასთან.",
+  language: "English",
+  tabs: { tonight: "ამაღამ", book: "დაჯავშნა" },
+  simulated: "სიმულირებული",
+  simulatedDetail: "პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.",
+  real: "ნამდვილი აპარატურა",
+  headline: {
+    offline: "ობსერვატორია დაკავშირებული არ არის, ამიტომ აქ არცერთი მონაცემი არ არის მიმდინარე.",
+    hold: "დაკვირვება ამინდის გამო შეჩერებულია.",
+    degraded: "ობსერვატორია დაკავშირებულია, მაგრამ შემოწმება იგვიანებს.",
+  },
+  link: { ONLINE: "ონლაინ", DEGRADED: "არასტაბილური", OFFLINE: "კავშირგარეშეა" },
+  weather: { CLEAR: "მოწმენდილი", CLOUDY: "მოღრუბლული", UNSAFE: "სახიფათო", UNKNOWN: "უცნობია" },
+  weatherLine: (weather) => `ამინდი: ${weather}`,
+  missionInProgress: "მიმდინარე დაკვირვება",
+  conditions: "ამაღამინდელი პირობები",
+  cloud: (median, known, hours) => `ღრუბლიანობა ${median}% (${hours}-დან ${known} საათის მედიანა)`,
+  noForecast: "ამაღამისთვის პროგნოზი შენახული არ არის.",
+  noHours: "ამაღამ დასაჯავშნი საათები არ არის.",
+  advisory: "მხოლოდ საინფორმაციოა: დაკვირვებას ოპერატორის შეჩერება წყვეტს.",
+  targets: "რას სწვდება ტელესკოპი",
+  noTargets: "კატალოგიდან არცერთი ობიექტი ამაღამ ცაზე არ არის.",
+  visible: "ახლა ჩანს",
+  altitude: (degrees) => `${Math.round(degrees)}° სიმაღლეზე`,
+  reasons: {
+    SAFETY_ENVELOPE_UNMEASURED: "გაუზომავია",
+    TARGET_DISABLED: "მიუწვდომელია",
+    OBSERVATORY_OFFLINE: "კავშირგარეშეა",
+    WEATHER_HOLD: "ამინდის პაუზა",
+    BELOW_HORIZON: "ჩასულია",
+    BELOW_MIN_ALTITUDE: "დაბლაა",
+    ABOVE_MAX_ALTITUDE: "მაღლაა",
+    BEHIND_HORIZON_MASK: "დაფარულია",
+    IN_FORBIDDEN_AZIMUTH: "მიუწვდომელია",
+    SUN_TOO_HIGH: "ჯერ ნათელია",
+    TOO_CLOSE_TO_SUN: "მზის მახლობლად",
+    TOO_CLOSE_TO_MOON: "მთვარესთან ახლოს",
+    DOES_NOT_FIT_FIELD: "დიდია",
+  },
+  magnitude: (value) => `სიკაშკაშე ${value}`,
+  minutes: (value) => `ტელესკოპთან დაახლოებით ${value} წთ`,
+  book: {
+    title: "ამაღამინდელი სეანსები",
+    open: "თავისუფალია",
+    full: "დაკავებულია",
+    noSlots: "ამ ღამეს დაკვირვების დრო არ არის.",
+    siteTime: (zone) => `ობსერვატორიის დრო, ${zone}`,
+    handover: "აპლიკაციიდან შესვლა ჯერ მზად არ არის, ამიტომ დაჯავშნა ვებსაიტზე ხდება.",
+    cta: "დაჯავშნა ვებსაიტზე",
+  },
+  loading: "ვეკითხებით ობსერვატორიას",
+  unavailable: "სერვერებმა არ უპასუხა, ამიტომ მიმდინარე მონაცემი არ გვაქვს.",
+  retry: "თავიდან ცდა",
+  noObservatory: "დასაჯავშნი ობსერვატორია არ არის.",
+  notFound: "ეს ობიექტი კატალოგში არ არის.",
+  back: "უკან",
+};
+
+export const copy: Record<Locale, Copy> = { en, ka };
