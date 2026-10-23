@@ -30,11 +30,11 @@ the status table (state, commits, date) and stop. Do not start a second slice.
 | 6.3 | Shareable captures                     | 6.0                         | Done 2026-10-23 | platform e2e3694 (#206); clients 230743a 1673ec9 3eab8a7 (ADR-065) |
 | 6.4 | Public "Tonight, live" page            | 6.1, 6.3                    | Done 2026-10-23 | platform 960ba41 (#207); clients 1d6db74 2584448 446d7f1 0f60057 a57944a 972811f (ADR-066) |
 | 6.5 | Gift a night                           | 6.0                         | Done 2026-10-23 | platform ba88985 (#208); clients 1ebdec3 45263a2 1a98c9c d5bc14f + baselines (ADR-067) |
-| 6.6 | Weather-aware booking and push         | 6.0                         | Not started |     |
-| 6.7 | Target guide, frame labels, stack clip | 6.1                         | Not started |     |
-| 6.8 | Schools, observer log, Astroman tie-in | 6.3, 6.5                    | Not started |     |
-| 6.9 | Video transport upgrade                | 6.1, 6.4, hardware measured | Not started |     |
-| 6.10| Front-end quality and engineering upkeep | —                         | Not started |     |
+| 6.6 | Weather-aware booking and push         | 6.0                         | Done 2026-10-23, push deferred | platform f2bb15b (#209); clients 4520948 49a6e39 8340db2 (ADR-068) |
+| 6.7 | Target guide, frame labels, stack clip | 6.1                         | Guide done 2026-10-23; labels and clip deferred | clients 75f585a (ADR-069) |
+| 6.8 | Schools, observer log, Astroman tie-in | 6.3, 6.5                    | Done 2026-10-23, lean | clients ad8570a (ADR-070) |
+| 6.9 | Video transport upgrade                | 6.1, 6.4, hardware measured | Waits for the camera | clients da9f803 (ADR-071, what to measure) |
+| 6.10| Front-end quality and engineering upkeep | —                         | Mostly done 2026-10-23 | clients c815fb3 a1fc8e3 bea51ad 8d63efe e57d732 |
 
 Also on 2026-10-23, outside the slices: Next.js 16.4.0 → 16.4.2 in both repositories for
 three advisories, one a critical unauthenticated remote code execution (clients f78fa62,
@@ -45,6 +45,14 @@ re-measured in 6.9; site-wide, an unknown page answers 200 with a not-found body
 observers. 6.5 found the platform already sold gift vouchers (DV-112); it added only the
 sandbox checkout for them and the buyer's view of the code. The phone app sells no gift:
 its Book tab hands over to the website, where the code is redeemed.
+
+From 6.6 on, the maintainer asked for a lean product ("simple and sophisticated, less
+code"), so each slice built its smallest useful part and deferred the rest in its ADR:
+push notifications (ADR-068 §4); frame labels and the stack clip (ADR-069 §2); group
+booking, worksheets and prints (ADR-070); a new video transport until the camera is
+measured (ADR-071). In 6.10, still open: the offline Collection (a service worker), the
+manual screen-reader and Safari pass, and formatting the 243 files with Prettier plus its
+CI check -- left until no other session is editing the tree, since it touches most files.
 
 ## Shared rules
 
