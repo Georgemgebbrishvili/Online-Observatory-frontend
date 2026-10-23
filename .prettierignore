@@ -16,3 +16,9 @@ DARKVIEW — Codex Website Build Prompts.md
 ___1Main FIles
 .venv
 logs
+
+# Recorded evidence is kept exactly as captured.
+docs/evidence
+# Build output.
+apps/mobile/dist
+apps/mobile/.expo
