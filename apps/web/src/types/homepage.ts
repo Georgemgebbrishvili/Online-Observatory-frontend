@@ -1,4 +1,4 @@
-import type { SkyPlate } from "@/features/targets/homepage-data";
+import type { SkyKind, SkyPlate } from "@/features/targets/homepage-data";
 
 type HomepageSectionHeading = {
   eyebrow: string;
@@ -14,6 +14,8 @@ export type HomepageDictionary = {
     lede: string;
     cta: string;
     plates: Record<SkyPlate, string>;
+    /** What each plate is, written small above its name. */
+    kinds: Record<SkyKind, string>;
     sky: {
       label: string;
       explore: string;

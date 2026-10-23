@@ -12,9 +12,8 @@ import { observatoryArt as art, palette, withAlpha } from "@/styles/tokens";
  * red-dot finder, on a single fork arm over a pier.
  *
  * The mount is alt-azimuth, and moves like one: each axis accelerates and brakes within
- * its limits and settles with the slight give of a fork arm. The dome turns only once
- * the telescope has drifted a few degrees off the middle of the slit, then catches up at
- * its own, slower pace — the way a dome controller follows a mount.
+ * its limits and settles with the slight give of a fork arm. The dome turns with it,
+ * keeping the slit on the tube.
  */
 
 // The building.
@@ -24,18 +23,23 @@ const PLINTH_H = 0.28;
 const DRUM_H = 1.9;
 const DRUM_TOP = PLINTH_H + DRUM_H;
 const DOME_Y = DRUM_TOP + 0.06;
-const SLIT_HALF = 0.5;
+const SLIT_HALF = 0.6;
 const FLOOR_Y = 1.0;
-// The telescope: an 8SE's proportions (203 mm aperture, 432 mm tube), enlarged.
+// The telescope: an 8SE's proportions (203 mm aperture, 432 mm tube), enlarged, on a pier
+// tall enough that its front stands out of the slit, so its aim reads from afar.
 const OTA_R = 0.36;
-const OTA_L = 1.32;
-const PIVOT_Y = DOME_Y + 0.42;
-const ARM_H = 0.62;
+const OTA_L = 1.45;
+const PIVOT_Y = DOME_Y + 1.08;
+const ARM_H = 0.9;
 const ARM_X = OTA_R + 0.13;
-// Where a pointer on the sky is taken to lie: a plane before the dome, toward the viewer.
-const AIM_PLANE_Z = 13;
-const MIN_ALT = (6 * Math.PI) / 180;
-const MAX_ALT = (87 * Math.PI) / 180;
+// How far the tube leans out of the picture plane, toward the viewer, as it points: a
+// little when it points up, more as it points aside, so the slit, which follows the
+// tube, keeps facing us enough to show it.
+const LEAN_UP = (12 * Math.PI) / 180;
+const LEAN_ASIDE = (30 * Math.PI) / 180;
+const MIN_ALT = (2 * Math.PI) / 180;
+// A fork-mounted tube's diagonal meets the base short of the zenith.
+const MAX_ALT = (84 * Math.PI) / 180;
 
 const colour = (hex: string) => new THREE.Color(hex);
 
@@ -79,9 +83,12 @@ function grainTexture(seed: number) {
  * A sphere's upper half, keeping only the quads `keep` accepts: the dome less its slit,
  * or the shutter alone. Fine enough that the cut edges read straight.
  */
-function hemisphere(radius: number, keep: (x: number, y: number, z: number) => boolean) {
-  const latSeg = 96;
-  const lonSeg = 384;
+function hemisphere(
+  radius: number,
+  keep: (x: number, y: number, z: number) => boolean,
+  lonSeg = 320,
+  latSeg = 64,
+) {
   const positions: number[] = [];
   const normals: number[] = [];
   const uvs: number[] = [];
@@ -157,8 +164,8 @@ function stepAxis(axis: Axis, dt: number) {
   let err = axis.goal - axis.pos;
   if (axis.wrap) err = Math.atan2(Math.sin(err), Math.cos(err));
   // ω and ζ: a firm slew that stops with a whisper of overshoot.
-  const omega = 7.5;
-  const zeta = 0.78;
+  const omega = 10;
+  const zeta = 0.8;
   let acc = omega * omega * err - 2 * zeta * omega * axis.vel;
   acc = Math.max(-axis.maxA, Math.min(axis.maxA, acc));
   axis.vel = Math.max(-axis.maxV, Math.min(axis.maxV, axis.vel + acc * dt));
@@ -174,10 +181,17 @@ export type ObservatoryScene = {
   dispose: () => void;
 };
 
-export function createObservatoryScene(
+/** Hands the main thread back to the browser between the steps of building the scene. */
+const pause = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
+/**
+ * Builds the scene in short steps, then its shaders off the main thread: no step holds
+ * the page for long. Rejects where there is no GPU.
+ */
+export async function createObservatoryScene(
   canvas: HTMLCanvasElement,
   options: { reduced: boolean },
-): ObservatoryScene {
+): Promise<ObservatoryScene> {
   const renderer = new THREE.WebGLRenderer({
     canvas,
     alpha: true,
@@ -199,6 +213,8 @@ export function createObservatoryScene(
   renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
+  // Only the fixed building casts shadows, so the map is drawn once per layout, not per frame.
+  renderer.shadowMap.autoUpdate = false;
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(colour(palette.canvas), 60, 520);
@@ -316,8 +332,8 @@ export function createObservatoryScene(
   });
   const ota = new THREE.MeshPhysicalMaterial({
     color: colour(art.otaOrange),
-    metalness: 0.55,
-    roughness: 0.34,
+    metalness: 0.3,
+    roughness: 0.3,
     clearcoat: 1,
     clearcoatRoughness: 0.05,
     envMapIntensity: 1.6,
@@ -382,7 +398,7 @@ export function createObservatoryScene(
   const windowGlass = new THREE.MeshStandardMaterial({
     color: colour(art.windowGlass),
     emissive: colour(art.windowGlass),
-    emissiveIntensity: 2.4,
+    emissiveIntensity: 0.85,
     roughness: 0.4,
   });
 
@@ -396,19 +412,22 @@ export function createObservatoryScene(
     return o;
   };
 
+  await pause();
+
   // The hill.
-  const groundGeo = new THREE.PlaneGeometry(420, 420, 260, 260);
+  const groundGeo = new THREE.PlaneGeometry(420, 420, 150, 150);
   groundGeo.rotateX(-Math.PI / 2);
   const gp = groundGeo.getAttribute("position");
   const groundColours: number[] = [];
   const dark = colour(art.ground);
   const lit = colour(art.groundLit);
+  const c = new THREE.Color();
   for (let i = 0; i < gp.count; i++) {
     const x = gp.getX(i);
     const z = gp.getZ(i);
     gp.setY(i, hillHeight(x, z));
     const t = 0.5 + 0.5 * Math.sin(x * 1.7 + Math.cos(z * 1.3) * 2);
-    const c = dark.clone().lerp(lit, t * 0.6 * Math.max(0, 1 - Math.hypot(x, z) / 40));
+    c.copy(dark).lerp(lit, t * 0.6 * Math.max(0, 1 - Math.hypot(x, z) / 40));
     groundColours.push(c.r, c.g, c.b);
   }
   groundGeo.setAttribute("color", new THREE.Float32BufferAttribute(groundColours, 3));
@@ -468,6 +487,8 @@ export function createObservatoryScene(
       }),
     ),
   );
+
+  await pause();
 
   // The building.
   const building = new THREE.Group();
@@ -566,20 +587,20 @@ export function createObservatoryScene(
     new THREE.MeshStandardMaterial({
       color: colour(art.lamp),
       emissive: colour(art.lamp),
-      emissiveIntensity: 4,
+      emissiveIntensity: 1.6,
     }),
   );
   bulb.position.set(0, 1.62, 0.17);
   door.add(bulb);
-  const lampGlow = glowSprite(art.lamp, 0.9, 0.55);
+  const lampGlow = glowSprite(art.lamp, 0.55, 0.22);
   lampGlow.position.set(0, 1.62, 0.22);
   door.add(lampGlow);
-  const lampLight = new THREE.PointLight(colour(art.lamp), 2.6, 4.5, 2);
+  const lampLight = new THREE.PointLight(colour(art.lamp), 0.75, 2.6, 2);
   lampLight.position.set(0, 1.55, 0.45);
   door.add(lampLight);
   building.add(door);
 
-  // Two windows, lit from inside, and their light on the ground.
+  // Two windows, lit from inside.
   for (const [angle, y] of [
     [0.38, 1.05],
     [0.98, 1.05],
@@ -598,15 +619,14 @@ export function createObservatoryScene(
     const sill = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 0.12), stone);
     sill.position.set(0, -0.3, 0.04);
     w.add(sill);
-    const g = glowSprite(art.windowGlass, 1.1, 0.4);
+    const g = glowSprite(art.windowGlass, 0.6, 0.14);
     g.position.z = 0.12;
     w.add(g);
-    const spill = new THREE.PointLight(colour(art.windowGlass), 1.4, 3.2, 2);
-    spill.position.set(0, -0.2, 0.55);
-    w.add(spill);
     building.add(w);
   }
   shadowed(building);
+
+  await pause();
 
   // The dome: its shell less the slit, the inside, rails along the slit, ribs, the base
   // ring, and the shutter run back over the top.
@@ -619,7 +639,8 @@ export function createObservatoryScene(
   );
   dome.add(shell);
   const innerShell = new THREE.Mesh(
-    hemisphere(DOME_R * 0.975, (x, _y, z) => !inSlit(x / 0.975, z / 0.975)),
+    // Dark and seen only through the slit: a coarser mesh does.
+    hemisphere(DOME_R * 0.975, (x, _y, z) => !inSlit(x / 0.975, z / 0.975), 192, 40),
     domeInside,
   );
   dome.add(innerShell);
@@ -665,15 +686,16 @@ export function createObservatoryScene(
   );
   baseRing.rotation.x = Math.PI / 2;
   dome.add(baseRing);
-  shadowed(dome);
+  dome.traverse((m) => (m.receiveShadow = true));
   // Moonlight through the slit onto the telescope, turning with the dome.
   const slitLight = new THREE.SpotLight(colour(art.moonlight), 9, 9, 0.42, 0.7, 1.6);
   slitLight.position.set(0, DOME_R * 1.6, DOME_R * 2.4);
   slitLight.target.position.set(0, PIVOT_Y - DOME_Y, 0);
   dome.add(slitLight, slitLight.target);
-  // The shells cast no shadow, so the Moon still finds the telescope inside: on screen
-  // it reads as moonlight through the slit.
-  for (const m of [shell, innerShell, shutter]) m.castShadow = false;
+  // The dome casts no shadow, so the Moon still finds the telescope inside: on screen it
+  // reads as moonlight through the slit.
+
+  await pause();
 
   // The telescope: pier, base, arm, and the tube on its altitude axis.
   const mount = new THREE.Group();
@@ -725,8 +747,9 @@ export function createObservatoryScene(
   const altitude = new THREE.Group();
   altitude.position.y = ARM_H;
   azimuth.add(altitude);
+  // The arm holds the tube near its back, as the 8SE's does, so the front reaches out.
   const optics = new THREE.Group();
-  optics.position.z = 0.1;
+  optics.position.z = 0.42;
   altitude.add(optics);
   const along = (geometry: THREE.BufferGeometry) => geometry.rotateX(Math.PI / 2);
   const body = new THREE.Mesh(
@@ -811,14 +834,14 @@ export function createObservatoryScene(
   dovetail.position.set(OTA_R + 0.03, 0, 0);
   optics.add(dovetail);
   const clamp = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.17, 0.3), fork);
-  clamp.position.set(ARM_X - 0.1, 0, -0.1);
+  clamp.position.set(ARM_X - 0.1, 0, 0.12);
   altitude.add(clamp);
-  shadowed(mount);
+  // The moving parts receive the building's shadow but cast none: the map stays still.
+  mount.traverse((m) => (m.receiveShadow = true));
 
   // Mount and dome state. Azimuth 0 faces the viewer; the slit starts there too.
-  const az: Axis = { pos: 0.35, vel: 0, goal: 0.35, maxV: 2.6, maxA: 9, wrap: true };
-  const alt: Axis = { pos: 0.5, vel: 0, goal: 0.5, maxV: 1.8, maxA: 7, wrap: false };
-  const domeAxis = { pos: 0.35, vel: 0, chasing: false };
+  const az: Axis = { pos: 0.2, vel: 0, goal: 0.2, maxV: 3.6, maxA: 22, wrap: true };
+  const alt: Axis = { pos: 1.05, vel: 0, goal: 1.05, maxV: 2.8, maxA: 18, wrap: false };
 
   let width = 1;
   let height = 1;
@@ -829,27 +852,9 @@ export function createObservatoryScene(
   function render() {
     azimuth.rotation.y = az.pos;
     altitude.rotation.x = -alt.pos;
-    dome.rotation.y = domeAxis.pos;
+    // The dome is slaved to the mount: the tube stands out of the slit, so it never lags.
+    dome.rotation.y = az.pos;
     renderer.render(scene, camera);
-  }
-
-  function stepDome(dt: number) {
-    let err = az.pos - domeAxis.pos;
-    err = Math.atan2(Math.sin(err), Math.cos(err));
-    // A dome controller's dead band: start beyond ~4°, stop within half a degree.
-    if (!domeAxis.chasing && Math.abs(err) > 0.07) domeAxis.chasing = true;
-    if (domeAxis.chasing && Math.abs(err) < 0.008 && Math.abs(domeAxis.vel) < 0.05) {
-      domeAxis.chasing = false;
-    }
-    const maxV = 1.1;
-    const maxA = 2.4;
-    const want = domeAxis.chasing
-      ? Math.sign(err) * Math.min(maxV, Math.sqrt(2 * maxA * Math.abs(err)) * 0.9)
-      : 0;
-    const dv = Math.max(-maxA * dt, Math.min(maxA * dt, want - domeAxis.vel));
-    domeAxis.vel += dv;
-    domeAxis.pos += domeAxis.vel * dt;
-    return domeAxis.chasing || Math.abs(domeAxis.vel) > 1e-3;
   }
 
   function frame(now: number) {
@@ -861,7 +866,6 @@ export function createObservatoryScene(
     if (options.reduced) {
       az.pos = az.goal;
       alt.pos = alt.goal;
-      domeAxis.pos = az.goal;
     } else {
       // Fixed small steps, so the motion is the same at any frame rate.
       const steps = Math.max(1, Math.ceil(elapsed / (1 / 240)));
@@ -869,8 +873,7 @@ export function createObservatoryScene(
         const dt = elapsed / steps;
         const a = stepAxis(az, dt);
         const b = stepAxis(alt, dt);
-        const c = stepDome(dt);
-        moving = a || b || c;
+        moving = a || b;
       }
     }
     render();
@@ -884,14 +887,19 @@ export function createObservatoryScene(
     }
   }
 
-  const unprojector = new THREE.Vector3();
+  const ray = new THREE.Vector3();
+  const across = new THREE.Vector3();
   const pivot = new THREE.Vector3(0, PIVOT_Y, 0);
+
+  // Every shader, built off the main thread where the browser can, before the first frame.
+  await renderer.compileAsync(scene, camera);
 
   return {
     resize(w, h, buildingPx, footPx) {
       width = Math.max(1, w);
       height = Math.max(1, h);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      // 1.5x is sharp for a small building and a fraction of a retina canvas's pixels.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
       // Distance from the building's height on screen; then height and pitch so its
@@ -925,17 +933,23 @@ export function createObservatoryScene(
         else lo = y;
       }
       place((lo + hi) / 2);
+      renderer.shadowMap.needsUpdate = true;
       render();
     },
     aim(x, y) {
-      // The pointer's ray from the eye, met on a plane before the dome: the telescope
-      // turns toward that point, so on screen it points through the pointer.
-      unprojector.set((x / width) * 2 - 1, -(y / height) * 2 + 1, 0.5).unproject(camera);
-      const ray = unprojector.sub(camera.position).normalize();
-      if (Math.abs(ray.z) < 1e-4) return;
-      const t = (AIM_PLANE_Z - camera.position.z) / ray.z;
-      const target = camera.position.clone().addScaledVector(ray, Math.max(t, 0.1));
-      const dir = target.sub(pivot).normalize();
+      // Every point on the eye's ray through (x, y) lands on (x, y), so a tube aimed at
+      // any of them points, on screen, exactly through the spot. Of those, take the one
+      // that lays the tube across the picture, leaned toward the viewer: it shows its
+      // whole length, and the slit that follows it faces us.
+      ray.set((x / width) * 2 - 1, -(y / height) * 2 + 1, 0.5).unproject(camera);
+      ray.sub(camera.position).normalize();
+      const t = across.copy(pivot).sub(camera.position).dot(ray);
+      across.copy(camera.position).addScaledVector(ray, t).sub(pivot);
+      const reach = across.length();
+      if (reach < 1e-3) return;
+      const aside = across.x / reach;
+      const lean = LEAN_UP + (LEAN_ASIDE - LEAN_UP) * aside * aside;
+      const dir = across.addScaledVector(ray, -reach * Math.tan(lean)).normalize();
       az.goal = Math.atan2(dir.x, dir.z);
       alt.goal = Math.max(MIN_ALT, Math.min(MAX_ALT, Math.asin(dir.y)));
       // The azimuth goal continues from where the axis is, never the long way round.

@@ -21,7 +21,12 @@ export function SkyHero({ content, headingLevel = 1, locale }: SkyHeroProps) {
   const titleId = headingLevel === 1 ? "home-title" : "ds-home-title";
   return (
     <section className="sky-hero" aria-labelledby={titleId}>
-      <SkyReveal locale={locale} names={content.plates} copy={content.sky} />
+      <SkyReveal
+        locale={locale}
+        names={content.plates}
+        kinds={content.kinds}
+        copy={content.sky}
+      />
       <ObservatoryDome />
       <div className="sky-hero-copy">
         <Heading id={titleId} className="sky-hero-title">

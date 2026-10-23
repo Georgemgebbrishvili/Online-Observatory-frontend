@@ -29,6 +29,7 @@ export function ObservatoryDome() {
     let idleTimer = 0;
     let idleStep = 0;
     let size = { w: 1, h: 1 };
+    let pending: SkyAim | null = null;
 
     const layout = () => {
       const rect = hero.getBoundingClientRect();
@@ -41,7 +42,8 @@ export function ObservatoryDome() {
     const onAim = (event: Event) => {
       const { x, y } = (event as CustomEvent<SkyAim>).detail;
       heard = true;
-      scene?.aim(x, y);
+      if (scene) scene.aim(x, y);
+      else pending = { x, y };
     };
 
     const idle = () => {
@@ -60,24 +62,35 @@ export function ObservatoryDome() {
 
     const ro = new ResizeObserver(layout);
 
-    import("@/components/home/observatory-scene")
-      .then(({ createObservatoryScene }) => {
-        if (dead) return;
-        try {
-          scene = createObservatoryScene(canvas, { reduced });
-        } catch {
-          return;
-        }
-        canvas.dataset.ready = "";
-        layout();
-        ro.observe(hero);
-        hero.addEventListener(skyAimEvent, onAim);
-        idleTimer = window.setTimeout(idle, 1800);
-      })
-      .catch(() => {});
+    // The scene waits for the page: three.js loads once the browser is idle, the scene is
+    // built in short steps and its shaders off the main thread, and it shows only once it
+    // can draw without a stall. Where it cannot be built (no GPU), nothing is drawn.
+    hero.addEventListener(skyAimEvent, onAim);
+    const start = () =>
+      import("@/components/home/observatory-scene")
+        .then(async ({ createObservatoryScene }) => {
+          if (dead) return;
+          const made = await createObservatoryScene(canvas, { reduced });
+          if (dead) return made.dispose();
+          scene = made;
+          layout();
+          if (pending) scene.aim(pending.x, pending.y);
+          ro.observe(hero);
+          canvas.dataset.ready = "";
+          idleTimer = window.setTimeout(idle, 1800);
+        })
+        .catch(() => {});
+    const whenIdle = () => {
+      if (typeof requestIdleCallback === "function")
+        requestIdleCallback(start, { timeout: 1200 });
+      else setTimeout(start, 200);
+    };
+    if (document.readyState === "complete") whenIdle();
+    else addEventListener("load", whenIdle, { once: true });
 
     return () => {
       dead = true;
+      removeEventListener("load", whenIdle);
       clearTimeout(idleTimer);
       ro.disconnect();
       hero.removeEventListener(skyAimEvent, onAim);

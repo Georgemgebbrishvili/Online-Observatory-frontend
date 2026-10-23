@@ -1,6 +1,7 @@
+import { existsSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
-import { plateFor } from "@/features/missions/room";
 import { privateSessionDurations } from "@/features/observatory/homepage-data";
 
 import { skyPlates } from "./homepage-data";
@@ -15,8 +16,16 @@ describe("homepage data", () => {
       "saturn",
       "jupiter",
       "mars",
+      "moon-terminator",
+      "m42-orion-nebula",
       "venus",
+      "m57-ring-nebula",
+      "m13-hercules-cluster",
+      "albireo",
+      "m27-dumbbell-nebula",
+      "mizar-alcor",
     ]);
-    for (const plate of skyPlates) expect(plateFor(plate.slug)).not.toBeNull();
+    for (const plate of skyPlates)
+      expect(existsSync(`public/sky/${plate.slug}.webp`), plate.slug).toBe(true);
   });
 });

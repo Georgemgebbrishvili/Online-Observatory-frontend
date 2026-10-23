@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { skyAimEvent, type SkyAim } from "@/components/home/observatory-dome";
-import { skyPlates, type SkyPlate } from "@/features/targets/homepage-data";
+import { skyPlates, type SkyKind, type SkyPlate } from "@/features/targets/homepage-data";
 import type { Locale } from "@/i18n/config";
 import { palette, withAlpha } from "@/styles/tokens";
 
 type SkyRevealProps = {
   locale: Locale;
   names: Record<SkyPlate, string>;
+  kinds: Record<SkyKind, string>;
   copy: {
     label: string;
     explore: string;
@@ -24,11 +25,14 @@ type SkyRevealProps = {
 type Live = {
   slug: SkyPlate;
   name: string;
+  kindName: string;
   x: number;
   y: number;
   s: number;
   feather: number;
   bmp?: HTMLCanvasElement;
+  /** The plate out of focus, blurred once, so focusing is a cross-fade, not a filter. */
+  soft?: HTMLCanvasElement;
   ar: number;
   cx: number;
   cy: number;
@@ -40,6 +44,8 @@ type Live = {
 };
 
 const smooth = (t: number) => t * t * (3 - 2 * t);
+/** The eyepiece ring's radius once it has closed round a plate. */
+const ringFor = (o: { r: number }) => o.r * 0.9 + 12;
 
 /**
  * The black sky behind the homepage words, as the Skychaser site draws its own: our drawn
@@ -48,7 +54,7 @@ const smooth = (t: number) => t * t * (3 - 2 * t);
  * sky tours its plates on its own. A phone has no sky: the hero is the words and the
  * button. Every plate is an illustration, and the sky says so beneath it.
  */
-export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
+export function SkyReveal({ copy, kinds, locale, names }: SkyRevealProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const starsRef = useRef<HTMLCanvasElement>(null);
@@ -79,6 +85,7 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
     const objects: Live[] = skyPlates.map((plate) => ({
       ...plate,
       name: names[plate.slug],
+      kindName: kinds[plate.kind],
       ar: 1,
       cx: 0,
       cy: 0,
@@ -94,6 +101,9 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
     let dpr = 1;
     let R = 120;
     let labelFont = "300 24px sans-serif";
+    let kindFont = "500 13px sans-serif";
+    // Georgian is never uppercased or tracked.
+    const tracked = locale !== "ka";
     // The live layer only clears what it drew last frame.
     let dirty: number[] = [];
     let wasDirty: number[] = [];
@@ -105,6 +115,12 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
     let gain = 0;
     let gainTgt = 0;
     let found = 0;
+    // The light's hold on the plate under it: 0 roaming, 1 centred on it. The telescope
+    // and the eyepiece ring follow the plate's centre as the hold tightens.
+    let lock = 0;
+    let lockTgt = 0;
+    let locked: Live | null = null;
+    const aimAt = { x: 0, y: 0 };
     let raf = 0;
     let last = 0;
     let activeUntil = 0;
@@ -114,13 +130,12 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
     let tourIdx = 0;
     let tourTimer = 0;
     let rectCache: DOMRect | null = null;
-    // The headline's band, so a planet's name is never written across it.
-    let titleTop = -1;
-    let titleBottom = -1;
+    // The words' box (headline, lede, button), so a name is never written across them.
+    const words = { top: 0, bottom: 0, left: 0, right: 0 };
     let target = "";
     let swallowClick = false;
 
-    // Each plate feathered into the black once, kept as a bitmap.
+    // Each plate feathered into the black once, kept as a bitmap, with a blurred copy.
     for (const o of objects) {
       const img = new Image();
       img.decoding = "async";
@@ -145,6 +160,15 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
         g.restore();
         o.bmp = c;
         o.ar = c.width / c.height;
+        const soft = document.createElement("canvas");
+        soft.width = c.width;
+        soft.height = c.height;
+        const sg = soft.getContext("2d");
+        if (sg && "filter" in sg) {
+          sg.filter = `blur(${Math.round(c.width * 0.035)}px)`;
+          sg.drawImage(c, 0, 0);
+          o.soft = soft;
+        }
         wake();
       };
       img.src = `/sky/${o.slug}.webp`;
@@ -182,6 +206,18 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
           g.stroke();
         }
       }
+      for (const o of objects) if (o.found) ghost(o, g);
+    }
+
+    // A found plate stays faintly in the sky, drawn once into the still layer.
+    function ghost(o: Live, g = starsCanvas!.getContext("2d")) {
+      if (!g || !o.bmp) return;
+      const w = o.ar >= 1 ? o.r * 2 : o.r * 2 * o.ar;
+      const h = o.ar >= 1 ? (o.r * 2) / o.ar : o.r * 2;
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      g.globalAlpha = 0.035;
+      g.drawImage(o.bmp, o.cx - w / 2, o.cy - h / 2, w, h);
+      g.globalAlpha = 1;
     }
 
     function layout() {
@@ -193,12 +229,18 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
       canvas!.width = W * dpr;
       canvas!.height = H * dpr;
       wasDirty = [0, 0, W, H];
-      labelFont = `300 24px ${getComputedStyle(root!).getPropertyValue("--font-label").trim() || "sans-serif"}`;
-      const title = hero!.querySelector(".sky-hero-title");
-      if (title) {
-        const t = title.getBoundingClientRect();
-        titleTop = t.top - rect.top;
-        titleBottom = t.bottom - rect.top;
+      const family =
+        getComputedStyle(root!).getPropertyValue("--font-label").trim() || "sans-serif";
+      labelFont = `300 24px ${family}`;
+      kindFont = `500 13px ${family}`;
+      words.top = words.left = Infinity;
+      words.bottom = words.right = -Infinity;
+      for (const el of hero!.querySelectorAll(".sky-hero-copy > *")) {
+        const t = el.getBoundingClientRect();
+        words.top = Math.min(words.top, t.top - rect.top);
+        words.bottom = Math.max(words.bottom, t.bottom - rect.top);
+        words.left = Math.min(words.left, t.left - rect.left);
+        words.right = Math.max(words.right, t.right - rect.left);
       }
       // The reach of the light: wide enough that pointing near a plate shows most of it.
       R = Math.max(170, Math.min(300, W * 0.17));
@@ -227,15 +269,20 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
       cur.x += (tgt.x - cur.x) * k;
       cur.y += (tgt.y - cur.y) * k;
       gain += (gainTgt - gain) * (reduced ? 1 : 1 - Math.exp(-dt / 90));
+      lock += (lockTgt - lock) * (reduced ? 1 : 1 - Math.exp(-dt / 110));
+      aimAt.x = locked ? cur.x + (locked.cx - cur.x) * lock : cur.x;
+      aimAt.y = locked ? cur.y + (locked.cy - cur.y) * lock : cur.y;
       draw(now);
-      // The observatory below turns its telescope to wherever the light is.
+      // The observatory below turns its telescope to wherever the light is, and onto the
+      // plate's centre once the light holds one.
       if (gainTgt > 0)
         hero!.dispatchEvent(
-          new CustomEvent<SkyAim>(skyAimEvent, { detail: { x: cur.x, y: cur.y } }),
+          new CustomEvent<SkyAim>(skyAimEvent, { detail: { x: aimAt.x, y: aimAt.y } }),
         );
       const moving =
         Math.abs(tgt.x - cur.x) + Math.abs(tgt.y - cur.y) > 0.25 ||
         Math.abs(gainTgt - gain) > 0.004 ||
+        Math.abs(lockTgt - lock) > 0.004 ||
         now < activeUntil;
       if (moving) raf = requestAnimationFrame(frame);
     }
@@ -260,12 +307,15 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
         c.fillStyle = lg;
         c.fillRect(cur.x - R * 1.4, cur.y - R * 1.4, R * 2.8, R * 2.8);
         mark(cur.x - R * 1.4, cur.y - R * 1.4, R * 2.8, R * 2.8);
-        // The eyepiece's field: one faint ring where the telescope is looking.
-        c.strokeStyle = withAlpha(palette.cream, 0.09 * gain);
+        // The eyepiece's field: one faint ring where the telescope is looking, closing
+        // round a plate as the light holds it.
+        const ringR = locked ? R * 0.7 + (ringFor(locked) - R * 0.7) * lock : R * 0.7;
+        c.strokeStyle = withAlpha(palette.cream, (0.09 + 0.07 * lock) * gain);
         c.lineWidth = 1;
         c.beginPath();
-        c.arc(cur.x, cur.y, R * 0.7, 0, 6.2832);
+        c.arc(aimAt.x, aimAt.y, ringR, 0, 6.2832);
         c.stroke();
+        mark(aimAt.x - ringR - 2, aimAt.y - ringR - 2, ringR * 2 + 4, ringR * 2 + 4);
       }
 
       let nearest: Live | null = null;
@@ -278,31 +328,35 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
         a = a <= 0 ? 0 : Math.pow(smooth(Math.min(1, a)), 0.7) * gain;
         if (a > 0.9 && !o.found) {
           o.found = true;
+          ghost(o);
           found++;
           foundEl!.textContent = String(found);
         }
         if (a > 0.3 && !o.lit) {
           o.lit = true;
           o.litAt = now;
-          activeUntil = Math.max(activeUntil, now + 1200);
+          activeUntil = Math.max(activeUntil, now + 950);
         }
         if (a < 0.08) o.lit = false;
-        const alpha = Math.max(o.found ? 0.035 : 0, a);
+        const alpha = a;
         if (alpha < 0.004) continue;
         // A plate comes into focus as the light reaches it: soft, then sharp, settling
         // from a touch smaller, the way an image does when the focuser finds it.
-        const t = o.lit ? Math.min(1, (now - o.litAt) / 1100) : 1;
+        const t = o.lit ? Math.min(1, (now - o.litAt) / 850) : 1;
         const pop = 1 - Math.pow(1 - t, 3);
         const sc = (0.965 + 0.035 * pop) * (0.985 + 0.015 * a);
         const w = (o.ar >= 1 ? o.r * 2 : o.r * 2 * o.ar) * sc;
         const h = (o.ar >= 1 ? (o.r * 2) / o.ar : o.r * 2) * sc;
-        const blur = reduced ? 0 : (1 - pop) * o.r * 0.06 + (1 - a) * o.r * 0.03;
-        c.globalAlpha = alpha * (0.55 + 0.45 * pop);
-        if (blur > 0.3) c.filter = `blur(${blur.toFixed(1)}px)`;
+        const blur =
+          reduced || !o.soft ? 0 : Math.min(1, (1 - pop) * 0.7 + (1 - a) * 0.4);
+        const fade = alpha * (0.55 + 0.45 * pop);
+        if (blur > 0.02) {
+          c.globalAlpha = fade * blur;
+          c.drawImage(o.soft!, o.cx - w / 2, o.cy - h / 2, w, h);
+        }
+        c.globalAlpha = fade * (1 - blur * 0.85);
         c.drawImage(o.bmp, o.cx - w / 2, o.cy - h / 2, w, h);
-        c.filter = "none";
-        const pad = blur * 2;
-        mark(o.cx - w / 2 - pad, o.cy - h / 2 - pad, w + pad * 2, h + pad * 2);
+        mark(o.cx - w / 2, o.cy - h / 2, w, h);
         if (o.lit && t < 1) {
           // A faint warmth around it while it settles, never a flash.
           const br = o.r * 1.5;
@@ -322,6 +376,14 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
         }
       }
 
+      // The light holds the plate it mostly reveals; a new plate is taken from roaming.
+      if (nearest && nearestA > 0.6) {
+        if (locked !== nearest) {
+          locked = nearest;
+          lock = 0;
+        }
+        lockTgt = smooth(Math.min(1, (nearestA - 0.6) / 0.35));
+      } else lockTgt = 0;
       const next = nearest && nearestA > 0.85 ? nearest.slug : "";
       if (next !== target) {
         target = next;
@@ -330,19 +392,68 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
       if (nearest && nearestA > 0.35) {
         const o: Live = nearest;
         const la = (nearestA - 0.35) / 0.65;
-        const underY = o.cy + o.h / 2 + 26;
-        const clearsTitle = underY + 14 < titleTop || underY - 14 > titleBottom;
-        const below = o.cy + o.h / 2 + 30 < H - 12 && clearsTitle;
-        const ty = below ? underY : Math.max(22, o.cy - o.h / 2 - 22);
-        c.textAlign = "center";
-        c.textBaseline = "middle";
-        c.letterSpacing = "0.04em";
+        // Two lines: what it is, small and gold, then its name. Under the plate and its
+        // ring; over them where that would cross the words or sink behind the hill;
+        // beside them where neither fits.
+        const edge = Math.max(o.h / 2, ringFor(o));
+        const below = o.cy + edge + 14;
+        const above = o.cy - edge - 62;
+        const kind = tracked ? o.kindName.toUpperCase() : o.kindName;
+        c.font = kindFont;
+        c.letterSpacing = tracked ? "0.2em" : "0px";
+        const kindW = c.measureText(kind).width;
         c.font = labelFont;
+        c.letterSpacing = tracked ? "0.04em" : "0px";
+        const nameW = c.measureText(o.name).width;
+        // A label box fits in the sky above the hill, off the words and the other plates.
+        const fits = (x: number, y: number, w: number) =>
+          y >= 10 &&
+          y + 56 < H * 0.8 &&
+          x >= 12 &&
+          x + w <= W - 12 &&
+          (y + 56 < words.top ||
+            y > words.bottom ||
+            x + w < words.left - 12 ||
+            x > words.right + 12) &&
+          objects.every((p) => {
+            if (p === o) return true;
+            const nx = Math.max(x, Math.min(p.cx, x + w));
+            const ny = Math.max(y, Math.min(p.cy, y + 56));
+            return Math.hypot(p.cx - nx, p.cy - ny) > p.r * 0.7;
+          });
+        const w = Math.max(nameW, kindW) + 8;
+        let lx = Math.min(W - 12 - w / 2, Math.max(12 + w / 2, o.cx));
+        let top = below;
+        let align: CanvasTextAlign = "center";
+        if (!fits(lx - w / 2, below, w)) {
+          if (fits(lx - w / 2, above, w)) top = above;
+          else {
+            // Beside the ring, on the side away from the middle when there is room.
+            top = o.cy - 30;
+            const outRight = o.cx + ringFor(o) + 18;
+            const outLeft = o.cx - ringFor(o) - 18;
+            const right =
+              o.cx > W / 2
+                ? fits(outRight, top, w) || !fits(outLeft - w, top, w)
+                : !fits(outLeft - w, top, w);
+            align = right ? "left" : "right";
+            lx = right ? outRight : outLeft;
+          }
+        }
+        // Rises a few pixels into place as it appears.
+        const rise = (1 - la) * 6;
+        c.textAlign = align;
+        c.textBaseline = "middle";
+        c.font = kindFont;
+        c.letterSpacing = tracked ? "0.2em" : "0px";
+        c.fillStyle = withAlpha(palette.gold, 0.9 * la);
+        c.fillText(kind, lx, top + 8 + rise);
+        c.font = labelFont;
+        c.letterSpacing = tracked ? "0.04em" : "0px";
         c.fillStyle = withAlpha(palette.cream, 0.96 * la);
-        const lx = Math.min(W - 80, Math.max(80, o.cx));
-        c.fillText(o.name, lx, ty);
-        const tw = c.measureText(o.name).width;
-        mark(lx - tw / 2 - 8, ty - 18, tw + 16, 36);
+        c.fillText(o.name, lx, top + 34 + rise);
+        const left = align === "center" ? lx - w / 2 : align === "left" ? lx : lx - w;
+        mark(left - 10, top - 4, w + 20, 66);
         c.letterSpacing = "0px";
       }
       wasDirty = dirty;
@@ -495,7 +606,7 @@ export function SkyReveal({ copy, locale, names }: SkyRevealProps) {
       removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [copy.tap, locale, names, router]);
+  }, [copy.tap, kinds, locale, names, router]);
 
   return (
     <div className="sky" ref={rootRef}>
