@@ -7,6 +7,7 @@ import type {
   GetObservatoryConditionsResponse,
   GetObservatoryStatusResponse,
   GetTargetResponse,
+  GetTonightResponse,
   ListBookableObservatoriesResponse,
   ListSlotsResponse,
   ListTonightTargetsResponse,
@@ -80,6 +81,8 @@ export const platform = {
   slots: (observatoryId: string, date: string) =>
     get<ListSlotsResponse>(`/slots?observatoryId=${q(observatoryId)}&date=${q(date)}`),
   catalogue: () => get<TargetPage>("/targets?limit=100"),
+  /** ADR-066: the session its owner opened to anyone, or none. */
+  tonight: () => get<GetTonightResponse>("/tonight"),
 
   signIn: (body: SignInRequest) =>
     request<NativeSession>("/auth/native-sign-in", { method: "POST", body }),

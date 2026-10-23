@@ -117,7 +117,7 @@ export function sortTonight(items: readonly TonightTarget[]) {
   );
 }
 
-export function targetName(target: Target, locale: Locale) {
+export function targetName(target: Pick<Target, "nameEn" | "nameKa">, locale: Locale) {
   return locale === "ka" ? target.nameKa : target.nameEn;
 }
 

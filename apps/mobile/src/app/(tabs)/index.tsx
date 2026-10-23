@@ -1,15 +1,28 @@
-import type { BookableObservatory } from "@darkview/contracts";
+import type { BookableObservatory, TonightSession } from "@darkview/contracts";
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useLocale } from "@/i18n/locale";
+import { useSpectate } from "@/live/use-spectate";
 import { platform } from "@/platform/api";
 import { useObservatory } from "@/platform/use-observatory";
 import { useResource } from "@/platform/use-resource";
 import { cloudSummary, sortTonight, statusHeadline, targetName } from "@/present";
-import { line, space } from "@/theme";
+import { line, palette, radius, space } from "@/theme";
 import { Header } from "@/ui/header";
-import { Body, Card, Dot, Label, Loading, SimulatedBadge, Screen, Title, Unavailable } from "@/ui/kit";
+import {
+  Body,
+  Card,
+  Dot,
+  Label,
+  Loading,
+  QuietButton,
+  SimulatedBadge,
+  Screen,
+  Title,
+  Unavailable,
+} from "@/ui/kit";
 import { type } from "@/ui/type";
 
 export default function Tonight() {
@@ -19,6 +32,7 @@ export default function Tonight() {
   return (
     <Screen>
       <Header />
+      <LiveTonight />
       {resource.state === "loading" && <Loading />}
       {(resource.state === "unavailable" || resource.state === "not-found") && (
         <Unavailable retry={retry} />
@@ -39,6 +53,53 @@ export default function Tonight() {
         </>
       )}
     </Screen>
+  );
+}
+
+/** Clients ADR-066: the session its owner opened to anyone; nothing when there is none. */
+function LiveTonight() {
+  const { resource } = useResource(() => platform.tonight(), "tonight");
+  if (resource.state !== "ready" || !resource.value.live) return null;
+  return <Spectator session={resource.value.live} />;
+}
+
+function Spectator({ session }: { session: TonightSession }) {
+  const { t, locale } = useLocale();
+  const [attempt, setAttempt] = useState(0);
+  const view = useSpectate(session.streamPath, attempt);
+  const target = targetName(session.target, locale);
+
+  return (
+    <View style={{ gap: space[3] }}>
+      <Label>{t.spectate.liveNow}</Label>
+      <Title>{t.spectate.watching(target)}</Title>
+      <Body tone="secondary">{t.room.states[session.state]}</Body>
+      <View style={styles.feed}>
+        {view.status === "frame" ? (
+          <Image
+            source={{ uri: view.uri }}
+            style={styles.frame}
+            resizeMode="contain"
+            accessibilityLabel={t.spectate.watching(target)}
+          />
+        ) : (
+          <View style={[styles.frame, styles.empty]}>
+            <Text style={[type.reading(locale), { color: palette.ink3, textAlign: "center" }]}>
+              {view.status === "full" ? t.spectate.full : t.spectate.waiting}
+            </Text>
+            {view.status === "full" && (
+              <QuietButton label={t.retry} onPress={() => setAttempt((value) => value + 1)} />
+            )}
+          </View>
+        )}
+        {session.mode === "SIMULATED" && (
+          <View style={styles.badge}>
+            <SimulatedBadge />
+          </View>
+        )}
+      </View>
+      <Body tone="tertiary">{t.spectate.rate}</Body>
+    </View>
   );
 }
 
@@ -135,6 +196,16 @@ function Targets({ observatory }: { observatory: BookableObservatory }) {
 }
 
 const styles = StyleSheet.create({
+  feed: {
+    borderRadius: radius.medium,
+    overflow: "hidden",
+    backgroundColor: palette.bar,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: line,
+  },
+  frame: { width: "100%", aspectRatio: 16 / 9 },
+  empty: { alignItems: "center", justifyContent: "center", gap: space[2], padding: space[4] },
+  badge: { position: "absolute", top: space[3], left: space[3] },
   statusRow: { flexDirection: "row", alignItems: "center", gap: space[2] },
   target: {
     flexDirection: "row",

@@ -181,6 +181,14 @@ const en = {
   noObservatory: "No bookable observatory is listed.",
   notFound: "This target is not in the catalogue.",
   back: "Back",
+  // Clients ADR-066, as the website's /tonight says it.
+  spectate: {
+    liveNow: "Live now",
+    watching: (target: string) => `${target}, from the observatory in Georgia`,
+    rate: "A frame every four seconds. Book a night for the full live view and the controls.",
+    waiting: "Waiting for the first frame",
+    full: "The view is full or the session has just ended. Up to twenty people can watch at once.",
+  },
 };
 
 export type Copy = typeof en;
@@ -347,6 +355,13 @@ const ka: Copy = {
   noObservatory: "დასაჯავშნი ობსერვატორია არ არის.",
   notFound: "ეს ობიექტი კატალოგში არ არის.",
   back: "უკან",
+  spectate: {
+    liveNow: "ახლა პირდაპირ",
+    watching: (target) => `${target}, ობსერვატორიიდან საქართველოში`,
+    rate: "ერთი კადრი ყოველ ოთხ წამში. დაჯავშნე სეანსი სრული პირდაპირი გამოსახულებისა და მართვისთვის.",
+    waiting: "პირველი კადრის მოლოდინი",
+    full: "ადგილი აღარ არის ან სეანსი ახლახან დასრულდა. ერთდროულად ოც კაცამდე შეუძლია ყურება.",
+  },
 };
 
 export const copy: Record<Locale, Copy> = { en, ka };
