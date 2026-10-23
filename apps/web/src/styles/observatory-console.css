@@ -422,7 +422,8 @@
   .sdo-pcap__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .sdo-pcap__add { aspect-ratio: 1; border-radius: 10px; border: 1px dashed rgba(61, 139, 253, .5); background: rgba(61, 139, 253, .05); color: var(--o-amber-ink); display: grid; place-items: center; cursor: pointer; }
   .sdo-pcap__add:disabled { opacity: .4; cursor: not-allowed; }
-  .sdo-pdock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 18px 16px 26px; background: linear-gradient(180deg, rgba(4, 9, 20, 0), rgba(4, 9, 20, .96) 32%); display: flex; gap: 8px; }
+  .sdo-pdock { position: fixed; left: 0; right: 0; bottom: calc(var(--tab-bar-space, 0rem) + env(safe-area-inset-bottom)); z-index: 30; padding: 18px 16px 26px; background: linear-gradient(180deg, rgba(4, 9, 20, 0), rgba(4, 9, 20, .96) 32%); display: flex; gap: 8px; }
+  body:has(.phone-tab-bar) .sdo-pdock { padding-bottom: 12px; }
   .sdo-pdock > .sdo-btn:first-child { width: 56px; height: 56px; padding: 0; border-radius: 14px; flex-shrink: 0; }
   .sdo-pdock > .sdo-btn--primary { flex-grow: 1; height: 56px; border-radius: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .sdo-psheet { padding: 16px; display: flex; flex-direction: column; gap: 14px; }

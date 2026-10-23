@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandLockup } from "@/components/brand/brand-lockup";
+import { PhoneTabBar } from "@/components/layout/phone-tab-bar";
 import { Container } from "@/components/ui/container";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -89,178 +90,182 @@ export function SiteHeaderBar({
   }, [accountOpen]);
 
   return (
-    <header
-      className="site-header"
-      onKeyDownCapture={(event) => {
-        if (event.key !== "Escape") return;
-        if (menuOpen) {
-          setMenuOpen(false);
-          menuButtonRef.current?.focus();
-        }
-        setAccountOpen(false);
-      }}
-    >
-      <Container className="header-inner">
-        <Link className="brand-link" href={`/${locale}`} prefetch={false}>
-          <BrandLockup ariaLabel={navigation.brandAriaLabel} />
-        </Link>
-        <nav className="public-navigation" aria-label={publicNavigation.ariaLabel}>
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={within(link.href) ? "page" : undefined}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="public-actions">
-          <Link
-            className="language-link"
-            href={alternatePathname}
-            hrefLang={alternateLocale}
-            lang={alternateLocale}
-            aria-label={`${navigation.language}: ${navigation.languageName}`}
-          >
-            {navigation.languageName}
+    <>
+      <header
+        className="site-header"
+        onKeyDownCapture={(event) => {
+          if (event.key !== "Escape") return;
+          if (menuOpen) {
+            setMenuOpen(false);
+            menuButtonRef.current?.focus();
+          }
+          setAccountOpen(false);
+        }}
+      >
+        <Container className="header-inner">
+          <Link className="brand-link" href={`/${locale}`} prefetch={false}>
+            <BrandLockup ariaLabel={navigation.brandAriaLabel} />
           </Link>
-          <div className="account-menu" ref={accountRef}>
-            <button
-              className="account-menu-button"
-              type="button"
-              aria-expanded={accountOpen}
-              aria-controls="account-menu-list"
-              aria-label={publicNavigation.account}
-              data-signed-in={account ? "" : undefined}
-              onClick={() => setAccountOpen((current) => !current)}
+          <nav className="public-navigation" aria-label={publicNavigation.ariaLabel}>
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={within(link.href) ? "page" : undefined}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="public-actions">
+            <Link
+              className="language-link"
+              href={alternatePathname}
+              hrefLang={alternateLocale}
+              lang={alternateLocale}
+              aria-label={`${navigation.language}: ${navigation.languageName}`}
             >
+              {navigation.languageName}
+            </Link>
+            <div className="account-menu" ref={accountRef}>
+              <button
+                className="account-menu-button"
+                type="button"
+                aria-expanded={accountOpen}
+                aria-controls="account-menu-list"
+                aria-label={publicNavigation.account}
+                data-signed-in={account ? "" : undefined}
+                onClick={() => setAccountOpen((current) => !current)}
+              >
+                <ProfileIcon />
+              </button>
+              <div
+                className="account-menu-list"
+                id="account-menu-list"
+                data-open={accountOpen || undefined}
+              >
+                <p className="account-menu-head" aria-hidden="true">
+                  {publicNavigation.account}
+                </p>
+                <nav aria-label={publicNavigation.account}>
+                  {(account ? accountLinks : guestLinks).map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      aria-current={isCurrent(link.href) ? "page" : undefined}
+                      onClick={() => setAccountOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </nav>
+                {account && (
+                  <SignOutButton
+                    className="account-menu-sign-out"
+                    label={account.signOut}
+                    locale={locale}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+          <button
+            ref={menuButtonRef}
+            className="public-menu-button"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="public-mobile-menu"
+            aria-label={menuOpen ? publicNavigation.closeMenu : publicNavigation.menu}
+            onClick={() => setMenuOpen((current) => !current)}
+          >
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+          </button>
+        </Container>
+        {/* On a phone: a profile sheet. Who you are first, then the pages and your own,
+          as small grouped lists; the language and signing out at its foot. */}
+        <div
+          className="public-mobile-menu"
+          id="public-mobile-menu"
+          data-open={menuOpen || undefined}
+        >
+          <div className="sheet-head">
+            <span className="sheet-avatar" data-signed-in={account ? "" : undefined}>
               <ProfileIcon />
-            </button>
-            <div
-              className="account-menu-list"
-              id="account-menu-list"
-              data-open={accountOpen || undefined}
-            >
-              <p className="account-menu-head" aria-hidden="true">
+            </span>
+            {account ? (
+              <Link
+                className="sheet-head-name"
+                href={`/${locale}/app/profile`}
+                onClick={() => setMenuOpen(false)}
+              >
                 {publicNavigation.account}
-              </p>
-              <nav aria-label={publicNavigation.account}>
-                {(account ? accountLinks : guestLinks).map((link) => (
+                <small>{app.profile}</small>
+              </Link>
+            ) : (
+              <div className="sheet-head-actions">
+                <Link
+                  className="button button-primary button-small"
+                  href={`/${locale}/sign-in`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {publicNavigation.signIn}
+                </Link>
+                <Link href={`/${locale}/register`} onClick={() => setMenuOpen(false)}>
+                  {publicNavigation.register}
+                </Link>
+              </div>
+            )}
+          </div>
+          <nav className="sheet-group" aria-label={publicNavigation.ariaLabel}>
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={within(link.href) ? "page" : undefined}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          {account && (
+            <nav className="sheet-group" aria-label={publicNavigation.account}>
+              {accountLinks
+                .filter((link) => !link.href.endsWith("/app/profile"))
+                .map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     aria-current={isCurrent(link.href) ? "page" : undefined}
-                    onClick={() => setAccountOpen(false)}
+                    onClick={() => setMenuOpen(false)}
                   >
                     {link.label}
                   </Link>
                 ))}
-              </nav>
-              {account && (
-                <SignOutButton
-                  className="account-menu-sign-out"
-                  label={account.signOut}
-                  locale={locale}
-                />
-              )}
-            </div>
+            </nav>
+          )}
+          <div className="sheet-foot">
+            <Link
+              href={alternatePathname}
+              hrefLang={alternateLocale}
+              lang={alternateLocale}
+              aria-label={`${navigation.language}: ${navigation.languageName}`}
+            >
+              {navigation.languageName}
+            </Link>
+            {account && (
+              <SignOutButton
+                className="sheet-sign-out"
+                label={account.signOut}
+                locale={locale}
+              />
+            )}
           </div>
         </div>
-        <button
-          ref={menuButtonRef}
-          className="public-menu-button"
-          type="button"
-          aria-expanded={menuOpen}
-          aria-controls="public-mobile-menu"
-          aria-label={menuOpen ? publicNavigation.closeMenu : publicNavigation.menu}
-          onClick={() => setMenuOpen((current) => !current)}
-        >
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-        </button>
-      </Container>
-      {/* On a phone: a profile sheet. Who you are first, then the pages and your own,
-          as small grouped lists; the language and signing out at its foot. */}
-      <div
-        className="public-mobile-menu"
-        id="public-mobile-menu"
-        data-open={menuOpen || undefined}
-      >
-        <div className="sheet-head">
-          <span className="sheet-avatar" data-signed-in={account ? "" : undefined}>
-            <ProfileIcon />
-          </span>
-          {account ? (
-            <Link
-              className="sheet-head-name"
-              href={`/${locale}/app/profile`}
-              onClick={() => setMenuOpen(false)}
-            >
-              {publicNavigation.account}
-              <small>{app.profile}</small>
-            </Link>
-          ) : (
-            <div className="sheet-head-actions">
-              <Link
-                className="button button-primary button-small"
-                href={`/${locale}/sign-in`}
-                onClick={() => setMenuOpen(false)}
-              >
-                {publicNavigation.signIn}
-              </Link>
-              <Link href={`/${locale}/register`} onClick={() => setMenuOpen(false)}>
-                {publicNavigation.register}
-              </Link>
-            </div>
-          )}
-        </div>
-        <nav className="sheet-group" aria-label={publicNavigation.ariaLabel}>
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={within(link.href) ? "page" : undefined}
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        {account && (
-          <nav className="sheet-group" aria-label={publicNavigation.account}>
-            {accountLinks
-              .filter((link) => !link.href.endsWith("/app/profile"))
-              .map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-current={isCurrent(link.href) ? "page" : undefined}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-          </nav>
-        )}
-        <div className="sheet-foot">
-          <Link
-            href={alternatePathname}
-            hrefLang={alternateLocale}
-            lang={alternateLocale}
-            aria-label={`${navigation.language}: ${navigation.languageName}`}
-          >
-            {navigation.languageName}
-          </Link>
-          {account && (
-            <SignOutButton
-              className="sheet-sign-out"
-              label={account.signOut}
-              locale={locale}
-            />
-          )}
-        </div>
-      </div>
-    </header>
+      </header>
+      {/* Outside the header: its backdrop blur would hold a fixed child to the header's box. */}
+      <PhoneTabBar locale={locale} navigation={navigation} signedIn={account !== null} />
+    </>
   );
 }
