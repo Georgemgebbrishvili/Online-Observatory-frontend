@@ -23,6 +23,7 @@ import {
   zGetMissionResponse,
   zGetMissionWatchViewResponse,
   zGetObservatoryConditionsResponse,
+  zGetObservatoryUptimeResponse,
   zGetObservatoryStatusResponse,
   zGetTargetResponse,
   zJoinMissionAsObserverResponse,
@@ -608,7 +609,9 @@ function slotAt(startAt) {
 
 /** Whether a slot is refused as booked: the night's second, or its last "a moment ago". */
 function slotTaken(startAt, index) {
-  return fakeBlocked(index) || index === fakeNight(fakeNightOf(Date.parse(startAt))).count - 1;
+  return (
+    fakeBlocked(index) || index === fakeNight(fakeNightOf(Date.parse(startAt))).count - 1
+  );
 }
 
 /** A slot judged as the fake's sky judges tonight: the same targets up, the same reasons. */
@@ -658,7 +661,12 @@ async function createBooking(request, response) {
   if (voucherCode && (!prize || prize.kind === "OBSERVER_SEAT"))
     return error(response, 422, "VALIDATION_FAILED", "That voucher code cannot be used.");
   if (prize?.kind === "FREE_SLOT" && prize.durationMinutes !== durationMinutes)
-    return error(response, 422, "VALIDATION_FAILED", "This voucher is for another length.");
+    return error(
+      response,
+      422,
+      "VALIDATION_FAILED",
+      "This voucher is for another length.",
+    );
   const index = slotAt(slotStartAt);
   if (index === null || durationMinutes !== 30)
     return error(response, 422, "VALIDATION_FAILED", "That is not an offered slot.");
@@ -677,7 +685,12 @@ async function createBooking(request, response) {
             a.target.slug.localeCompare(b.target.slug),
         )[0];
   if (!targetId && !judged)
-    return error(response, 422, "VALIDATION_FAILED", "Nothing is observable across that slot.");
+    return error(
+      response,
+      422,
+      "VALIDATION_FAILED",
+      "Nothing is observable across that slot.",
+    );
   if (!judged) return error(response, 404, "NOT_FOUND", "No such target.");
   if (!judged.visibility.observable)
     return error(
@@ -708,7 +721,11 @@ async function createBooking(request, response) {
     slotStartAt: new Date(slotStartAt).toISOString(),
     durationMinutes,
     status: free ? "CONFIRMED" : "PENDING_PAYMENT",
-    priceMinor: free ? 0 : prize?.kind === "DISCOUNT" ? 4500 * (1 - prize.percentOff / 100) : 4500,
+    priceMinor: free
+      ? 0
+      : prize?.kind === "DISCOUNT"
+        ? 4500 * (1 - prize.percentOff / 100)
+        : 4500,
     currency: "GEL",
     paymentId,
     paymentIntent,
@@ -720,10 +737,16 @@ async function createBooking(request, response) {
     createdAt: new Date().toISOString(),
   });
   const answer = zCreateBookingResponse.parse({ booking, paymentIntent });
-  if (prize) Object.assign(prize, { status: "REDEEMED", voucherCode: null, redeemedBookingId: booking.id });
+  if (prize)
+    Object.assign(prize, {
+      status: "REDEEMED",
+      voucherCode: null,
+      redeemedBookingId: booking.id,
+    });
   if (!createdBookings.has(session)) createdBookings.set(session, []);
   createdBookings.get(session).push(booking);
-  if (paymentId) payments.set(paymentId, { session, bookingId: booking.id, locale: locale ?? "en" });
+  if (paymentId)
+    payments.set(paymentId, { session, bookingId: booking.id, locale: locale ?? "en" });
   if (key) idempotentBookings.set(`${session}:${key}`, answer);
   send(response, 201, answer);
 }
@@ -1018,6 +1041,44 @@ function publicStatus() {
 
 // Three bookable hours, the last of which has no stored forecast, so the page has to
 // show an UNKNOWN hour rather than quietly implying it is clear.
+/**
+ * Phase 6.0: thirty days of the link, ending on the fake's fixed night. Dates are
+ * fixed so the visual baseline does not move with the calendar. History begins on
+ * the fifth day; one interruption of twelve minutes on 2026-09-19.
+ */
+function observatoryUptime() {
+  const day = 86_400;
+  const start = Date.parse("2026-08-24T20:00:00.000Z");
+  const days = Array.from({ length: 30 }, (_, index) => {
+    const date = new Date(start + (index + 1) * day * 1000 - 20 * 3600_000)
+      .toISOString()
+      .slice(0, 10);
+    if (index < 4)
+      return { date, measuredSeconds: 0, onlineSeconds: 0, uptimePercent: null };
+    const measured = index === 29 ? 23 * 3600 : day;
+    const online = date === "2026-09-19" ? measured - 12 * 60 : measured;
+    return {
+      date,
+      measuredSeconds: measured,
+      onlineSeconds: online,
+      uptimePercent: Math.round((online / measured) * 10_000) / 100,
+    };
+  });
+  const measured = days.reduce((sum, item) => sum + item.measuredSeconds, 0);
+  const online = days.reduce((sum, item) => sum + item.onlineSeconds, 0);
+  return zGetObservatoryUptimeResponse.parse({
+    observatoryId,
+    timezone: "Asia/Tbilisi",
+    from: new Date(start).toISOString(),
+    to: "2026-09-23T19:00:00.000Z",
+    uptimePercent: Math.round((online / measured) * 10_000) / 100,
+    days,
+    incidents: [
+      { lostAt: "2026-09-19T18:40:00.000Z", restoredAt: "2026-09-19T18:52:00.000Z" },
+    ],
+  });
+}
+
 function viewingConditions() {
   const fetchedAt = new Date(Date.now() - 20 * 60_000).toISOString();
   const known = (at, cloud, seeing) => ({
@@ -1180,7 +1241,8 @@ const votes = new Map();
 const VOTE_WEEK = "2026-09-21";
 function weekVote(user) {
   const tally = new Map();
-  for (const targetId of votes.values()) tally.set(targetId, (tally.get(targetId) ?? 0) + 1);
+  for (const targetId of votes.values())
+    tally.set(targetId, (tally.get(targetId) ?? 0) + 1);
   const candidates = tonightTargets()
     .items.filter((item) => item.visibility.observable)
     .map((item) => ({ targetId: item.target.id, votes: tally.get(item.target.id) ?? 0 }))
@@ -1274,13 +1336,20 @@ async function pickCard(request, response, drawId) {
   const user = sessionUser(request);
   if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
   const deal = cardDraws.get(user.id);
-  if (!deal || deal.id !== drawId) return error(response, 404, "NOT_FOUND", "No such card draw.");
+  if (!deal || deal.id !== drawId)
+    return error(response, 404, "NOT_FOUND", "No such card draw.");
   const body = zPickCardBody.safeParse(await json(request));
-  if (!body.success) return error(response, 422, "VALIDATION_FAILED", "PickCardRequest is malformed.");
+  if (!body.success)
+    return error(response, 422, "VALIDATION_FAILED", "PickCardRequest is malformed.");
   const key = request.headers["idempotency-key"] ?? null;
   if (deal.picked !== null) {
     if (key && key === deal.key) return send(response, 200, cardDrawOf(user));
-    return error(response, 409, "CARD_ALREADY_PICKED", "A card has already been turned this week.");
+    return error(
+      response,
+      409,
+      "CARD_ALREADY_PICKED",
+      "A card has already been turned this week.",
+    );
   }
   deal.picked = body.data.position;
   deal.pickedAt = new Date().toISOString();
@@ -1314,7 +1383,8 @@ const routes = {
     const user = sessionUser(request);
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
     const body = zCastVoteBody.safeParse(await json(request));
-    if (!body.success) return error(response, 422, "VALIDATION_FAILED", "Malformed vote.");
+    if (!body.success)
+      return error(response, 422, "VALIDATION_FAILED", "Malformed vote.");
     if (body.data.observatoryId !== observatoryId)
       return error(response, 404, "NOT_FOUND", "No such observatory.");
     const ballot = weekVote(user);
@@ -1334,8 +1404,20 @@ const routes = {
       minimumPayableMinor: 100,
       progressMarkers: [5000],
       tiers: [
-        { code: "MEMBER", nameEn: "Member", nameKa: "წევრი", thresholdPoints: 0, discountPercent: 10 },
-        { code: "VIP", nameEn: "VIP", nameKa: "VIP", thresholdPoints: 20000, discountPercent: 20 },
+        {
+          code: "MEMBER",
+          nameEn: "Member",
+          nameKa: "წევრი",
+          thresholdPoints: 0,
+          discountPercent: 10,
+        },
+        {
+          code: "VIP",
+          nameEn: "VIP",
+          nameKa: "VIP",
+          thresholdPoints: 20000,
+          discountPercent: 20,
+        },
       ],
     }),
   // Enabled only, as the platform answers (features/targets/catalogue.ts).
@@ -1546,6 +1628,8 @@ const routes = {
     send(response, 200, { ...publicStatus(), mode: modeOf(request) }),
   [`GET /observatories/${observatoryId}/conditions`]: (_request, response) =>
     send(response, 200, viewingConditions()),
+  [`GET /observatories/${observatoryId}/uptime`]: (_request, response) =>
+    send(response, 200, observatoryUptime()),
   "GET /me": (request, response) => {
     const user = sessionUser(request);
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
@@ -1590,7 +1674,8 @@ const routes = {
       const pending = [...pendingVerifications.values()].find(
         (entry) => entry.user.email === body?.email && entry.password === body?.password,
       );
-      if (pending) return error(response, 403, "EMAIL_UNVERIFIED", "Verify your email first.");
+      if (pending)
+        return error(response, 403, "EMAIL_UNVERIFIED", "Verify your email first.");
       return error(response, 401, "UNAUTHENTICATED", "Email or password is incorrect.");
     }
     const token = randomUUID();
@@ -2373,9 +2458,17 @@ async function purchasePack(request, response, id) {
   if (voucherCode) {
     const prize = (cardPrizes.get(user.id) ?? []).find(
       (row) =>
-        row.status === "ACTIVE" && row.kind === "OBSERVER_SEAT" && row.voucherCode === voucherCode,
+        row.status === "ACTIVE" &&
+        row.kind === "OBSERVER_SEAT" &&
+        row.voucherCode === voucherCode,
     );
-    if (!prize) return error(response, 422, "VALIDATION_FAILED", "That voucher code cannot be used.");
+    if (!prize)
+      return error(
+        response,
+        422,
+        "VALIDATION_FAILED",
+        "That voucher code cannot be used.",
+      );
     seat.pack = zPurchaseObserverPackResponse.parse({
       observerPack: {
         id: randomUUID(),
@@ -2392,7 +2485,11 @@ async function purchasePack(request, response, id) {
       },
       paymentIntent: null,
     });
-    Object.assign(prize, { status: "REDEEMED", voucherCode: null, redeemedObserverPackId: seat.pack.observerPack.id });
+    Object.assign(prize, {
+      status: "REDEEMED",
+      voucherCode: null,
+      redeemedObserverPackId: seat.pack.observerPack.id,
+    });
     return send(response, 201, seat.pack);
   }
   const paymentId = randomUUID();
@@ -2705,7 +2802,8 @@ http
     if (route) return await route(request, response);
 
     const pick = path.match(/^\/card-draws\/([0-9a-f-]+)\/pick$/);
-    if (pick && request.method === "POST") return await pickCard(request, response, pick[1]);
+    if (pick && request.method === "POST")
+      return await pickCard(request, response, pick[1]);
     const cancel = path.match(/^\/admin\/missions\/([0-9a-f-]+)\/cancel$/);
     if (cancel && request.method === "POST") {
       return await cancelMission(request, response, cancel[1]);
@@ -2788,7 +2886,11 @@ http
           : row.id === "51000000-0000-4000-8000-000000000002"
             ? { status: "SENT", sentAt: "2026-09-21T09:01:00.000Z" }
             : { status: "QUEUED", sentAt: null };
-      return send(response, 200, zGetBookingResponse.parse({ ...row, confirmationEmail }));
+      return send(
+        response,
+        200,
+        zGetBookingResponse.parse({ ...row, confirmationEmail }),
+      );
     }
     if (ownBooking?.[2] && request.method === "POST")
       return await changeBooking(request, response, ownBooking[1], ownBooking[2]);

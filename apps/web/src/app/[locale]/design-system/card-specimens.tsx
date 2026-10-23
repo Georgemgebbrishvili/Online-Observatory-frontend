@@ -29,7 +29,13 @@ const prizeOf: Record<CardRarity, CardPrizeKind | null> = {
  */
 export function CardSpecimens({ labels, locale }: { labels: Labels; locale: Locale }) {
   const copy = cardsCopy[locale];
-  const face = (rarity: CardRarity, slug: string | null, name: string, kind: string, position = 0): CardFaceProps => ({
+  const face = (
+    rarity: CardRarity,
+    slug: string | null,
+    name: string,
+    kind: string,
+    position = 0,
+  ): CardFaceProps => ({
     rarity,
     rarityLabel: copy.rarity[rarity],
     slug,
@@ -40,14 +46,100 @@ export function CardSpecimens({ labels, locale }: { labels: Labels; locale: Loca
   });
   const ka = locale === "ka";
   const specimens: { label: string; node: React.ReactNode }[] = [
-    { label: labels.down, node: <SkychaserCard face={null} onTurn={noop} turnLabel={copy.turn(0)} /> },
-    { label: labels.turning, node: <SkychaserCard face={null} onTurn={noop} turnLabel={copy.turn(1)} busy caption={copy.turning} /> },
-    { label: labels.disabled, node: <SkychaserCard face={null} onTurn={noop} turnLabel={copy.turn(2)} disabled /> },
-    { label: labels.picked, node: <SkychaserCard face={face("LEGENDARY", "m42-orion-nebula", ka ? "ორიონის ნისლეული" : "Orion Nebula", ka ? "ნისლეული" : "Nebula")} picked caption={copy.illustration} /> },
-    { label: copy.rarity.EPIC, node: <SkychaserCard face={face("EPIC", "saturn", ka ? "სატურნი" : "Saturn", ka ? "პლანეტა" : "Planet", 1)} caption={copy.illustration} /> },
-    { label: copy.rarity.RARE, node: <SkychaserCard face={face("RARE", "moon-terminator", ka ? "მთვარის ტერმინატორი" : "Moon terminator", ka ? "მთვარე" : "Moon", 2)} caption={copy.illustration} /> },
-    { label: copy.rarity.COMMON, node: <SkychaserCard face={face("COMMON", "jupiter", ka ? "იუპიტერი" : "Jupiter", ka ? "პლანეტა" : "Planet")} caption={copy.illustration} /> },
-    { label: labels.plain, node: <SkychaserCard face={face("COMMON", "albireo", ka ? "ალბირეო" : "Albireo", ka ? "ორმაგი ვარსკვლავი" : "Double star", 2)} caption={copy.illustration} /> },
+    {
+      label: labels.down,
+      node: <SkychaserCard face={null} onTurn={noop} turnLabel={copy.turn(0)} />,
+    },
+    {
+      label: labels.turning,
+      node: (
+        <SkychaserCard
+          face={null}
+          onTurn={noop}
+          turnLabel={copy.turn(1)}
+          busy
+          caption={copy.turning}
+        />
+      ),
+    },
+    {
+      label: labels.disabled,
+      node: <SkychaserCard face={null} onTurn={noop} turnLabel={copy.turn(2)} disabled />,
+    },
+    {
+      label: labels.picked,
+      node: (
+        <SkychaserCard
+          face={face(
+            "LEGENDARY",
+            "m42-orion-nebula",
+            ka ? "ორიონის ნისლეული" : "Orion Nebula",
+            ka ? "ნისლეული" : "Nebula",
+          )}
+          picked
+          caption={copy.illustration}
+        />
+      ),
+    },
+    {
+      label: copy.rarity.EPIC,
+      node: (
+        <SkychaserCard
+          face={face(
+            "EPIC",
+            "saturn",
+            ka ? "სატურნი" : "Saturn",
+            ka ? "პლანეტა" : "Planet",
+            1,
+          )}
+          caption={copy.illustration}
+        />
+      ),
+    },
+    {
+      label: copy.rarity.RARE,
+      node: (
+        <SkychaserCard
+          face={face(
+            "RARE",
+            "moon-terminator",
+            ka ? "მთვარის ტერმინატორი" : "Moon terminator",
+            ka ? "მთვარე" : "Moon",
+            2,
+          )}
+          caption={copy.illustration}
+        />
+      ),
+    },
+    {
+      label: copy.rarity.COMMON,
+      node: (
+        <SkychaserCard
+          face={face(
+            "COMMON",
+            "jupiter",
+            ka ? "იუპიტერი" : "Jupiter",
+            ka ? "პლანეტა" : "Planet",
+          )}
+          caption={copy.illustration}
+        />
+      ),
+    },
+    {
+      label: labels.plain,
+      node: (
+        <SkychaserCard
+          face={face(
+            "COMMON",
+            "albireo",
+            ka ? "ალბირეო" : "Albireo",
+            ka ? "ორმაგი ვარსკვლავი" : "Double star",
+            2,
+          )}
+          caption={copy.illustration}
+        />
+      ),
+    },
   ];
   return (
     <div className="ds-cards">

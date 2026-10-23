@@ -56,6 +56,31 @@ test("calls the forecast advisory and keeps the operator's hold authoritative", 
   await expect(page.getByText(/never starts or clears a weather hold/)).toBeVisible();
 });
 
+test("shows thirty days of the link, with unmeasured days never drawn as up", async ({
+  page,
+}) => {
+  await page.goto("/en/status");
+  const history = page.locator(".uptime");
+  await expect(page.getByRole("heading", { name: "The last 30 days" })).toBeVisible({
+    timeout: firstCompile,
+  });
+
+  await expect(history.locator(".uptime-summary")).toHaveText(
+    "99.97% connected over the last 30 days",
+  );
+  await expect(history.locator(".uptime-day")).toHaveCount(30);
+  // The fake's history begins on the fifth day.
+  await expect(history.locator('.uptime-day[data-tone="unmeasured"]')).toHaveCount(4);
+  await expect(history.locator('.uptime-day[data-tone="partial"]')).toHaveCount(1);
+  await expect(history.getByText("19 Sept, 22:40, for 12 min")).toBeVisible();
+  await shoot(page, "../../docs/evidence/status-uptime-2026-10-23/01-status-en.png");
+
+  await page.goto("/ka/status");
+  await expect(page.getByRole("heading", { name: "ბოლო 30 დღე" })).toBeVisible();
+  await expect(page.locator(".uptime-incidents li")).toHaveCount(1);
+  await shoot(page, "../../docs/evidence/status-uptime-2026-10-23/02-status-ka.png");
+});
+
 test("renders in Georgian", async ({ page }) => {
   await page.goto("/ka/status");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible({

@@ -70,6 +70,29 @@ const en = {
     source: "Forecast from {source}, fetched {age} ago.",
     sources: { METEOBLUE: "meteoblue", OPEN_METEO: "Open-Meteo" },
   },
+  uptime: {
+    title: "The last 30 days",
+    summary: "connected over the last 30 days",
+    notMeasured:
+      "Nothing measured yet. History starts the first time the observatory connects.",
+    daysLabel: "Connection by day, oldest first",
+    dayLabel: "{date}: {value}",
+    today: "Today",
+    legendLabel: "Key",
+    legend: {
+      up: "Connected",
+      partial: "Some interruption",
+      down: "Mostly offline",
+      unmeasured: "Not measured",
+    },
+    incidentsTitle: "Recent interruptions",
+    noIncidents: "No interruption in the last 30 days.",
+    incident: "{from}, for {minutes} min",
+    ongoing: "Since {from}, still offline",
+    detail:
+      "Measured from the observatory's connection to our servers. A connected observatory can still be closed by weather.",
+    unavailable: "The connection history could not be read just now.",
+  },
   unavailable: {
     title: "Status is unavailable",
     detail: `${brand.en.name}'s servers did not answer, so this page has nothing current to show. It shows no older reading rather than presenting a stale one as live.`,
@@ -124,7 +147,8 @@ export const statusCopy = {
     linkDetail: {
       ONLINE: "ობსერვატორია დაკავშირებულია და მონაცემებს აგზავნის.",
       DEGRADED: "ობსერვატორია დაკავშირებულია, მაგრამ შემოწმება იგვიანებს.",
-      OFFLINE: "ობსერვატორია დაკავშირებული არ არის, ამიტომ აქ არცერთი მონაცემი არ არის მიმდინარე.",
+      OFFLINE:
+        "ობსერვატორია დაკავშირებული არ არის, ამიტომ აქ არცერთი მონაცემი არ არის მიმდინარე.",
     },
     weather: {
       CLEAR: "მოწმენდილი",
@@ -151,6 +175,29 @@ export const statusCopy = {
       unknownHour: "ამ საათისთვის პროგნოზი შენახული არ არის.",
       source: "პროგნოზი: {source}, მიღებულია {age} წინ.",
       sources: { METEOBLUE: "meteoblue", OPEN_METEO: "Open-Meteo" },
+    },
+    uptime: {
+      title: "ბოლო 30 დღე",
+      summary: "დაკავშირებული ბოლო 30 დღის განმავლობაში",
+      notMeasured:
+        "ჯერ არაფერია გაზომილი. ისტორია იწყება ობსერვატორიის პირველი დაკავშირებიდან.",
+      daysLabel: "კავშირი დღეების მიხედვით, უძველესიდან",
+      dayLabel: "{date}: {value}",
+      today: "დღეს",
+      legendLabel: "აღნიშვნები",
+      legend: {
+        up: "დაკავშირებული",
+        partial: "მცირე შეფერხება",
+        down: "ძირითადად კავშირგარეშე",
+        unmeasured: "არ გაზომილა",
+      },
+      incidentsTitle: "ბოლო შეფერხებები",
+      noIncidents: "ბოლო 30 დღის განმავლობაში შეფერხება არ ყოფილა.",
+      incident: "{from}, {minutes} წთ",
+      ongoing: "{from}-დან, კავშირი ჯერ არ აღდგენილა",
+      detail:
+        "ითვლება ობსერვატორიის ჩვენს სერვერებთან კავშირის მიხედვით. დაკავშირებული ობსერვატორია შეიძლება მაინც დაიხუროს ამინდის გამო.",
+      unavailable: "კავშირის ისტორიის წაკითხვა ახლა ვერ მოხერხდა.",
     },
     unavailable: {
       title: "სტატუსი მიუწვდომელია",

@@ -1,4 +1,5 @@
 import type {
+  ObservatoryUptime,
   PublicObservatoryStatus,
   ViewingConditions,
   ViewingConditionsHour,
@@ -6,6 +7,7 @@ import type {
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { UptimeHistory } from "@/components/status/uptime-history";
 import { Container } from "@/components/ui/container";
 import { StatusIndicator, type StatusTone } from "@/components/ui/status-indicator";
 import type { Locale } from "@/i18n/config";
@@ -127,6 +129,7 @@ export function StatusPage({
   observatoryName,
   status,
   timezone,
+  uptime,
 }: {
   conditions: ViewingConditions | null;
   copy: StatusCopy;
@@ -136,6 +139,7 @@ export function StatusPage({
   observatoryName: string;
   status: PublicObservatoryStatus;
   timezone: string;
+  uptime: ObservatoryUptime | null;
 }) {
   const hours = conditions?.items ?? [];
   const hourLabel = (at: string) =>
@@ -221,6 +225,20 @@ export function StatusPage({
               )}
             </Row>
           </dl>
+        </Container>
+      </section>
+
+      <section className="page-section" aria-labelledby="status-uptime">
+        <Container>
+          <h2 id="status-uptime" className="status-heading">
+            {copy.uptime.title}
+          </h2>
+          <UptimeHistory
+            copy={copy.uptime}
+            locale={locale}
+            timezone={timezone}
+            uptime={uptime}
+          />
         </Container>
       </section>
 

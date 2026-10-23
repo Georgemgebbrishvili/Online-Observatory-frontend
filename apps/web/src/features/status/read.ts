@@ -1,9 +1,14 @@
 import "server-only";
 
-import type { PublicObservatoryStatus, ViewingConditions } from "@darkview/contracts";
+import type {
+  ObservatoryUptime,
+  PublicObservatoryStatus,
+  ViewingConditions,
+} from "@darkview/contracts";
 import {
   zGetObservatoryConditionsResponse,
   zGetObservatoryStatusResponse,
+  zGetObservatoryUptimeResponse,
   zListBookableObservatoriesResponse,
 } from "@darkview/contracts/zod";
 
@@ -16,6 +21,8 @@ export type StatusReading = {
   status: PublicObservatoryStatus;
   /** Null when the forecast could not be read. It is advisory, so the page still works. */
   conditions: ViewingConditions | null;
+  /** Null when the history could not be read. Like conditions, losing it keeps the page. */
+  uptime: ObservatoryUptime | null;
   /** When the reading was taken, so every age on the page is measured from it. */
   readAt: number;
 };
@@ -44,9 +51,14 @@ export async function readStatus(locale: Locale): Promise<StatusResult> {
       await platformRequest<unknown>(`/observatories/${id}/state`),
     );
     // DV-110: conditions are advisory, so losing them must not lose the page.
-    const conditions = await platformRequest<unknown>(`/observatories/${id}/conditions`)
-      .then((value) => zGetObservatoryConditionsResponse.parse(value))
-      .catch(() => null);
+    const [conditions, uptime] = await Promise.all([
+      platformRequest<unknown>(`/observatories/${id}/conditions`)
+        .then((value) => zGetObservatoryConditionsResponse.parse(value))
+        .catch(() => null),
+      platformRequest<unknown>(`/observatories/${id}/uptime`)
+        .then((value) => zGetObservatoryUptimeResponse.parse(value))
+        .catch(() => null),
+    ]);
 
     return {
       kind: "ok",
@@ -55,6 +67,7 @@ export async function readStatus(locale: Locale): Promise<StatusResult> {
         timezone: observatory.timezone,
         status,
         conditions,
+        uptime,
         readAt: Date.now(),
       },
     };

@@ -49,12 +49,30 @@ const status = {
 
 const conditions = { observatoryId, date: "2026-09-23", items: [] };
 
+const uptime = {
+  observatoryId,
+  timezone: "Asia/Tbilisi",
+  from: "2026-08-24T20:00:00.000Z",
+  to: "2026-09-23T19:00:00.000Z",
+  uptimePercent: 99.5,
+  days: [
+    {
+      date: "2026-09-23",
+      measuredSeconds: 3600,
+      onlineSeconds: 3582,
+      uptimePercent: 99.5,
+    },
+  ],
+  incidents: [],
+};
+
 describe("readStatus", () => {
   it("reads the first-party observatory, its status and tonight's conditions", async () => {
     platformRequest.mockImplementation((path: string) => {
       if (path === "/observatories") return Promise.resolve(observatories);
       if (path.endsWith("/state")) return Promise.resolve(status);
       if (path.endsWith("/conditions")) return Promise.resolve(conditions);
+      if (path.endsWith("/uptime")) return Promise.resolve(uptime);
       throw new Error(`unexpected path ${path}`);
     });
 
@@ -65,6 +83,7 @@ describe("readStatus", () => {
     expect(result.reading.observatoryName).toBe("Stellar Tbilisi");
     expect(result.reading.timezone).toBe("Asia/Tbilisi");
     expect(result.reading.conditions).not.toBeNull();
+    expect(result.reading.uptime?.uptimePercent).toBe(99.5);
   });
 
   it("keeps the page when only the advisory forecast fails", async () => {
@@ -80,6 +99,8 @@ describe("readStatus", () => {
     if (result.kind !== "ok") return;
     // Conditions are advisory, so losing them must not lose the status itself.
     expect(result.reading.conditions).toBeNull();
+    // So is the uptime history.
+    expect(result.reading.uptime).toBeNull();
     expect(result.reading.status.link).toBe("ONLINE");
   });
 

@@ -1,3 +1,4 @@
+import type { ObservatoryUptime } from "@darkview/contracts";
 import type { Metadata } from "next";
 import "@/styles/booking.css";
 import "@/styles/booking-board.css";
@@ -11,6 +12,7 @@ import "@/styles/profile.css";
 import "@/styles/observatory-console.css";
 import "@/styles/skychaser-card.css";
 import "@/styles/cards.css";
+import "@/styles/status.css";
 import { notFound } from "next/navigation";
 
 import { CalendarSpecimens } from "./calendar-specimens";
@@ -69,6 +71,7 @@ import { IconButton } from "@/components/ui/icon-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatePanel } from "@/components/ui/state-panel";
 import { StatusIndicator } from "@/components/ui/status-indicator";
+import { UptimeHistory } from "@/components/status/uptime-history";
 import { Tabs } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Container } from "@/components/ui/container";
@@ -187,6 +190,31 @@ export async function generateMetadata({
     robots: { index: false, follow: false },
   };
 }
+
+/** Thirty fixed days for the UptimeHistory specimen: three unmeasured, one interrupted. */
+const uptimeSpecimen: ObservatoryUptime = {
+  observatoryId: "10000000-0000-4000-8000-000000000001",
+  timezone: "Asia/Tbilisi",
+  from: "2026-08-24T20:00:00.000Z",
+  to: "2026-09-23T19:00:00.000Z",
+  uptimePercent: 98.6,
+  days: Array.from({ length: 30 }, (_, index) => {
+    const date = new Date(Date.UTC(2026, 7, 25 + index)).toISOString().slice(0, 10);
+    const uptimePercent =
+      index < 3 ? null : index === 20 ? 99.17 : index === 24 ? 71.4 : 100;
+    return {
+      date,
+      measuredSeconds: uptimePercent === null ? 0 : 86_400,
+      onlineSeconds:
+        uptimePercent === null ? 0 : Math.round(86_400 * (uptimePercent / 100)),
+      uptimePercent,
+    };
+  }),
+  incidents: [
+    { lostAt: "2026-09-18T14:10:00.000Z", restoredAt: "2026-09-18T21:00:00.000Z" },
+    { lostAt: "2026-09-14T18:40:00.000Z", restoredAt: "2026-09-14T18:52:00.000Z" },
+  ],
+};
 
 const bookingStatusSpecimens = [
   "PENDING_PAYMENT",
@@ -434,6 +462,37 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                   />
                 ))}
               </div>
+            </SurfacePanel>
+            <SurfacePanel className="ds-status-panel-wide">
+              <h3>{copy.statusGroups.uptime}</h3>
+              <UptimeHistory
+                copy={statusCopy[locale].uptime}
+                locale={locale}
+                timezone="Asia/Tbilisi"
+                uptime={uptimeSpecimen}
+              />
+              <UptimeHistory
+                copy={statusCopy[locale].uptime}
+                locale={locale}
+                timezone="Asia/Tbilisi"
+                uptime={{
+                  ...uptimeSpecimen,
+                  uptimePercent: null,
+                  days: uptimeSpecimen.days.map((day) => ({
+                    ...day,
+                    measuredSeconds: 0,
+                    onlineSeconds: 0,
+                    uptimePercent: null,
+                  })),
+                  incidents: [],
+                }}
+              />
+              <UptimeHistory
+                copy={statusCopy[locale].uptime}
+                locale={locale}
+                timezone="Asia/Tbilisi"
+                uptime={null}
+              />
             </SurfacePanel>
           </div>
         </section>

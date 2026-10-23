@@ -59,6 +59,7 @@ export default async function StatusRoute({ params }: StatusRouteProps) {
           observatoryName={result.reading.observatoryName}
           status={result.reading.status}
           timezone={result.reading.timezone}
+          uptime={result.reading.uptime}
         />
       ) : (
         <main className="status-page status-page-unavailable" id="main-content">

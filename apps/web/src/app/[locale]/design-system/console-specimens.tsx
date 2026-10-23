@@ -11,7 +11,9 @@ import { EXPOSURES_S, GAIN, STACK_SIZES } from "@/lib/observatory-sim/camera";
 
 /** A frame of a star field: the sky's peak low, a tail of stars, a few pixels clipped. */
 const sampleHistogram = Array.from({ length: 32 }, (_, i) =>
-  i === 31 ? 40 : Math.round(9000 * Math.exp(-((i - 5) ** 2) / 6) + 600 * Math.exp(-i / 6)),
+  i === 31
+    ? 40
+    : Math.round(9000 * Math.exp(-((i - 5) ** 2) / 6) + 600 * Math.exp(-i / 6)),
 );
 
 type Labels = { live: string; noFrame: string; stacking: string; conditions: string };
@@ -57,7 +59,9 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
               nameId={`${id}-live`}
               histogram={sampleHistogram}
             />
-            <figcaption id={`${id}-live`}>{labels.live} · {t.provenanceSimulated}</figcaption>
+            <figcaption id={`${id}-live`}>
+              {labels.live} · {t.provenanceSimulated}
+            </figcaption>
           </figure>
           <figure>
             <Camera

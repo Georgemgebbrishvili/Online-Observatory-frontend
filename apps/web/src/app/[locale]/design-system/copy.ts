@@ -1,4 +1,9 @@
-import type { CardDrawOdds, CardPrize, MissionEvent, TonightTarget } from "@darkview/contracts";
+import type {
+  CardDrawOdds,
+  CardPrize,
+  MissionEvent,
+  TonightTarget,
+} from "@darkview/contracts";
 import type { Locale } from "@/i18n/config";
 
 import { brand } from "@/brand";
@@ -210,6 +215,7 @@ export const designSystemCopy = {
       availability: "TargetAvailability",
       mode: "ModeNotice",
       mission: "MissionStatus",
+      uptime: "UptimeHistory",
     },
     cards: {
       eyebrow: "Tonight · 22:40",
@@ -506,6 +512,7 @@ export const designSystemCopy = {
       availability: "TargetAvailability",
       mode: "ModeNotice",
       mission: "MissionStatus",
+      uptime: "UptimeHistory",
     },
     cards: {
       eyebrow: "ამაღამ · 22:40",
@@ -690,9 +697,32 @@ const prize = {
   createdAt: "2099-09-21T06:00:00.000Z",
 };
 export const prizeSpecimens: CardPrize[] = [
-  { ...prize, id: "c0000000-0000-4000-8000-000000000001", kind: "FREE_SLOT", status: "ACTIVE", voucherCode: "STLR7EC7057D", codeLast4: "057D", durationMinutes: 40 },
-  { ...prize, id: "c0000000-0000-4000-8000-000000000002", kind: "DISCOUNT", status: "REDEEMED", voucherCode: null, codeLast4: "A41C", percentOff: 20 },
-  { ...prize, id: "c0000000-0000-4000-8000-000000000003", kind: "OBSERVER_SEAT", status: "EXPIRED", voucherCode: null, codeLast4: "9B20" },
+  {
+    ...prize,
+    id: "c0000000-0000-4000-8000-000000000001",
+    kind: "FREE_SLOT",
+    status: "ACTIVE",
+    voucherCode: "STLR7EC7057D",
+    codeLast4: "057D",
+    durationMinutes: 40,
+  },
+  {
+    ...prize,
+    id: "c0000000-0000-4000-8000-000000000002",
+    kind: "DISCOUNT",
+    status: "REDEEMED",
+    voucherCode: null,
+    codeLast4: "A41C",
+    percentOff: 20,
+  },
+  {
+    ...prize,
+    id: "c0000000-0000-4000-8000-000000000003",
+    kind: "OBSERVER_SEAT",
+    status: "EXPIRED",
+    voucherCode: null,
+    codeLast4: "9B20",
+  },
 ];
 export const oddsSpecimen: CardDrawOdds = {
   cards: [

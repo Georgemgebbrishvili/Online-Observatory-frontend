@@ -31,19 +31,60 @@ const week: CalendarNight[] = [21, 22, 23, 24, 25, 26, 27].map((d, i) => ({
 const base = targetSpecimens[0].target;
 const cards: Target[] = [
   base,
-  { ...base, id: "d511", slug: "s-jupiter", nameEn: "Jupiter", nameKa: "იუპიტერი", solarSystemBody: "JUPITER" },
-  { ...base, id: "d512", slug: "s-mars", nameEn: "Mars", nameKa: "მარსი", solarSystemBody: "MARS" },
-  { ...base, id: "d513", slug: "s-moon", type: "MOON", nameEn: "Moon", nameKa: "მთვარე", solarSystemBody: "MOON" },
-  { ...base, id: "d514", slug: "s-albireo", type: "DOUBLE_STAR", nameEn: "Albireo", nameKa: "ალბირეო", solarSystemBody: null },
-  { ...base, id: "d515", slug: "s-m13", type: "GLOBULAR_CLUSTER", nameEn: "Hercules Cluster", nameKa: "ჰერკულესის გროვა", solarSystemBody: null },
+  {
+    ...base,
+    id: "d511",
+    slug: "s-jupiter",
+    nameEn: "Jupiter",
+    nameKa: "იუპიტერი",
+    solarSystemBody: "JUPITER",
+  },
+  {
+    ...base,
+    id: "d512",
+    slug: "s-mars",
+    nameEn: "Mars",
+    nameKa: "მარსი",
+    solarSystemBody: "MARS",
+  },
+  {
+    ...base,
+    id: "d513",
+    slug: "s-moon",
+    type: "MOON",
+    nameEn: "Moon",
+    nameKa: "მთვარე",
+    solarSystemBody: "MOON",
+  },
+  {
+    ...base,
+    id: "d514",
+    slug: "s-albireo",
+    type: "DOUBLE_STAR",
+    nameEn: "Albireo",
+    nameKa: "ალბირეო",
+    solarSystemBody: null,
+  },
+  {
+    ...base,
+    id: "d515",
+    slug: "s-m13",
+    type: "GLOBULAR_CLUSTER",
+    nameEn: "Hercules Cluster",
+    nameKa: "ჰერკულესის გროვა",
+    solarSystemBody: null,
+  },
 ];
 
 // A fixed late-October night and its slots, so the bar never moves with the clock.
 const barNight = "2026-10-21";
 const barSlots = Array.from({ length: 15 }, (_, index) => ({
-  startAt: new Date(Date.parse("2026-10-21T15:45:00Z") + index * 40 * 60_000).toISOString(),
+  startAt: new Date(
+    Date.parse("2026-10-21T15:45:00Z") + index * 40 * 60_000,
+  ).toISOString(),
   durationMinutes: 30,
-  state: (index === 1 ? "taken" : index === 4 ? "chosen" : "open") as "taken" | "chosen" | "open",
+  state: (index === 1 ? "taken" : index === 4 ? "chosen" : "open") as
+    "taken" | "chosen" | "open",
 }));
 
 /** The booking board's calendar (ADR-053 §7) in its states; every control works. */
@@ -79,7 +120,12 @@ export function CalendarSpecimens({ locale }: { locale: Locale }) {
       </div>
       <div className="ds-calendar-wide">
         {darkness && (
-          <NightTimeline sky={darkness} slots={barSlots} copy={copy.timeline} clock={clock} />
+          <NightTimeline
+            sky={darkness}
+            slots={barSlots}
+            copy={copy.timeline}
+            clock={clock}
+          />
         )}
         <div className="board-targets" role="radiogroup" aria-label={copy.target}>
           {cards.map((card, index) => {
