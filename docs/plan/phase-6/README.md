@@ -28,8 +28,8 @@ the status table (state, commits, date) and stop. Do not start a second slice.
 | 6.1 | Live frames while OBSERVING (#199)     | 6.0                         | Done 2026-10-23 | platform 460c0c5 (#203); clients 28c32ab 912cc1c f9424d2 2c3fb8d |
 | 6.2 | Reconnect states and the live sky chart| 6.1                         | Done 2026-10-23 | platform 46ef178 (#205); clients cf4d2a8 7d81f80 86618b8 |
 | 6.3 | Shareable captures                     | 6.0                         | Done 2026-10-23 | platform e2e3694 (#206); clients 230743a 1673ec9 3eab8a7 (ADR-065) |
-| 6.4 | Public "Tonight, live" page            | 6.1, 6.3                    | Not started |     |
-| 6.5 | Gift a night                           | 6.0                         | Not started |     |
+| 6.4 | Public "Tonight, live" page            | 6.1, 6.3                    | Done 2026-10-23 | platform 960ba41 (#207); clients 1d6db74 2584448 446d7f1 0f60057 a57944a 972811f (ADR-066) |
+| 6.5 | Gift a night                           | 6.0                         | Done 2026-10-23 | platform ba88985 (#208); clients 1ebdec3 45263a2 1a98c9c d5bc14f + baselines (ADR-067) |
 | 6.6 | Weather-aware booking and push         | 6.0                         | Not started |     |
 | 6.7 | Target guide, frame labels, stack clip | 6.1                         | Not started |     |
 | 6.8 | Schools, observer log, Astroman tie-in | 6.3, 6.5                    | Not started |     |
@@ -41,6 +41,10 @@ three advisories, one a critical unauthenticated remote code execution (clients 
 platform 1a4dc42 #204). Notes from the run: 6.0's DB move had already been done on
 2026-10-22 (Neon); 6.1's live cadence on an overloaded laptop missed the bar and is
 re-measured in 6.9; site-wide, an unknown page answers 200 with a not-found body (6.10).
+6.4's spectator view caps at twenty and was fan-out tested on the realtime service with ten
+observers. 6.5 found the platform already sold gift vouchers (DV-112); it added only the
+sandbox checkout for them and the buyer's view of the code. The phone app sells no gift:
+its Book tab hands over to the website, where the code is redeemed.
 
 ## Shared rules
 
