@@ -162,8 +162,15 @@ for (const [locale, reconnecting] of [
   ["ka", "კავშირი აღდგება"],
 ] as const) {
   test(`${locale}: a dropped channel dims the last frame and recovers without a reload`, async ({
-    page,
+    browser,
   }) => {
+    // Reduced motion: the dim applies at once instead of fading in, so it can be read
+    // inside a reconnect that takes about a second, however busy the machine is.
+    const context = await browser.newContext({
+      storageState: "e2e/.auth/observer.json",
+      reducedMotion: "reduce",
+    });
+    const page = await context.newPage();
     await scenario(page, "blip");
     await page.goto(`/${locale}/app/missions/${observing}/session`);
     const feed = page.locator(".live-feed");
@@ -174,7 +181,6 @@ for (const [locale, reconnecting] of [
     await expect(feed).toHaveAttribute("data-live-status", "reconnecting");
     await expect(stream).toBeVisible();
     await expect(feedStatus(page)).toContainText(reconnecting);
-    // It fades, so read it until the fade is done.
     await expect
       .poll(() => stream.evaluate((image) => Number(getComputedStyle(image).opacity)))
       .toBeLessThan(0.5);
@@ -182,6 +188,7 @@ for (const [locale, reconnecting] of [
     // The channel comes back on its own, the stream is re-offered, the picture is bright.
     await expect(feed).toHaveAttribute("data-live-status", "live", { timeout: 15_000 });
     await expect(stream).toHaveCSS("opacity", "1");
+    await context.close();
   });
 }
 
