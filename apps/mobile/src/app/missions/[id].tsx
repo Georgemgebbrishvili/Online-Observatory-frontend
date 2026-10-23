@@ -183,7 +183,13 @@ function Feed({ live }: { live: ReturnType<typeof useLive> }) {
   return (
     <View style={styles.feed}>
       {frame ? (
-        <Image source={{ uri: frame }} style={styles.frame} resizeMode="contain" accessibilityLabel={t.room.states[room.state]} />
+        <Image
+          source={{ uri: frame }}
+          // Phase 6.2: while the channel reconnects the last frame stays, dimmed.
+          style={[styles.frame, session && !connected ? styles.stale : null]}
+          resizeMode="contain"
+          accessibilityLabel={t.room.states[room.state]}
+        />
       ) : (
         <View style={[styles.frame, styles.empty]}>
           <Text style={[type.reading(locale), { color: palette.ink3 }]}>{status}</Text>
@@ -305,6 +311,7 @@ const styles = StyleSheet.create({
   stepBar: { height: 4, borderRadius: 2, backgroundColor: line },
   feed: { borderRadius: radius.medium, overflow: "hidden", backgroundColor: palette.bar, borderWidth: StyleSheet.hairlineWidth, borderColor: line },
   frame: { width: "100%", aspectRatio: 16 / 9 },
+  stale: { opacity: 0.4 },
   empty: { alignItems: "center", justifyContent: "center" },
   badge: { position: "absolute", top: space[3], left: space[3] },
   livePill: { flexDirection: "row", alignItems: "center", gap: space[2], paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.pill, backgroundColor: `${palette.bar}cc` },
