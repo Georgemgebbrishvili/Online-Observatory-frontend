@@ -48,22 +48,44 @@ export type BoardCopy = {
     yours: (time: string) => string;
   };
   nextClear: string;
+  /** ADR-072: how long the session runs, any quarter hour from 15 minutes to 4 hours. */
+  length: string;
+  lengthAside: string;
+  duration: (minutes: number) => string;
+  shorter: string;
+  longer: string;
+  /** The object tile chosen when none is: the platform points at the best one up. */
+  anySub: string;
 };
 
 export const boardCopy: Record<"en" | "ka", BoardCopy> = {
   en: {
-    lede: "Pick a night and a start. The telescope is yours for 30 minutes.",
+    lede: "Pick a night, how long, and a start. The telescope is yours for that time.",
+    length: "Length",
+    lengthAside: "15 min to 4 h",
+    duration: (minutes) => {
+      const hours = Math.floor(minutes / 60);
+      const rest = minutes % 60;
+      if (!hours) return `${rest} min`;
+      return rest ? `${hours} h ${rest} min` : `${hours} h`;
+    },
+    shorter: "Shorter",
+    longer: "Longer",
+    anySub: "We choose",
     forecast: {
       label: "Forecast",
       cloud: (percent) => `${percent}% cloud`,
       unknown: "No forecast yet",
     },
     waitlist: {
-      taken: "Someone holds this start. Wait for it, and if it frees you will be emailed and it is held for you for 15 minutes.",
+      taken:
+        "Someone holds this start. Wait for it, and if it frees you will be emailed and it is held for you for 15 minutes.",
       join: "Join the waitlist",
       joining: "Joining…",
-      joined: (position) => `You are number ${position} in line. We will email you if it frees.`,
-      refused: "You cannot wait for this start: you hold it, already wait for it, or wait for three already.",
+      joined: (position) =>
+        `You are number ${position} in line. We will email you if it frees.`,
+      refused:
+        "You cannot wait for this start: you hold it, already wait for it, or wait for three already.",
       yours: (time) => `Freed and held for you until ${time}.`,
     },
     nextClear: "The next clear start is chosen for you.",
@@ -115,18 +137,31 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     illustrations: "Illustrations — not telescope output",
   },
   ka: {
-    lede: "აირჩიე ღამე და დასაწყისი. ტელესკოპი 30 წუთით შენია.",
+    lede: "აირჩიე ღამე, ხანგრძლივობა და დასაწყისი. ტელესკოპი ამ დროით შენია.",
+    length: "ხანგრძლივობა",
+    lengthAside: "15 წთ-დან 4 სთ-მდე",
+    duration: (minutes) => {
+      const hours = Math.floor(minutes / 60);
+      const rest = minutes % 60;
+      if (!hours) return `${rest} წთ`;
+      return rest ? `${hours} სთ ${rest} წთ` : `${hours} სთ`;
+    },
+    shorter: "უფრო მოკლე",
+    longer: "უფრო გრძელი",
+    anySub: "ჩვენ ავარჩევთ",
     forecast: {
       label: "პროგნოზი",
       cloud: (percent) => `${percent}% ღრუბელი`,
       unknown: "პროგნოზი ჯერ არ არის",
     },
     waitlist: {
-      taken: "ეს დასაწყისი სხვას უკავია. დაელოდე: თუ გათავისუფლდება, მოგწერთ და 15 წუთით შენთვის დავაკავებთ.",
+      taken:
+        "ეს დასაწყისი სხვას უკავია. დაელოდე: თუ გათავისუფლდება, მოგწერთ და 15 წუთით შენთვის დავაკავებთ.",
       join: "რიგში ჩადგომა",
       joining: "რიგში დგები…",
       joined: (position) => `რიგში ${position}-ე ხარ. თუ გათავისუფლდება, მოგწერთ.`,
-      refused: "ამ დასაწყისს ვერ დაელოდები: უკვე შენია, უკვე ელოდები ან სამს უკვე ელოდები.",
+      refused:
+        "ამ დასაწყისს ვერ დაელოდები: უკვე შენია, უკვე ელოდები ან სამს უკვე ელოდები.",
       yours: (time) => `გათავისუფლდა და ${time}-მდე შენთვისაა დაკავებული.`,
     },
     nextClear: "შენთვის არჩეულია შემდეგი მოწმენდილი დასაწყისი.",

@@ -16,7 +16,15 @@ import {
   zRescheduleBookingResponse,
 } from "@darkview/contracts/zod";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
 
 import { SkyMonth, useSkyCalendar } from "@/components/booking/night-calendar";
 import { NightTimeline } from "@/components/booking/night-timeline";
@@ -50,6 +58,8 @@ type BookingBoardProps = {
   targets: Target[];
   /** A booking whose lost slot is being replaced: its length, for free (ADR-043). */
   reschedule: Booking | null;
+  /** ADR-072: how long every slot on the board runs, as the address asked. */
+  durationMinutes: number;
   /** A slot named in the address (the old reserve page's way in): chosen on arrival. */
   initialStartAt: string | null;
   signInPath: string;
@@ -62,6 +72,12 @@ type Phase = "idle" | "reserving" | "redirecting";
 function intlLocale(locale: Locale) {
   return locale === "ka" ? "ka-GE" : "en-GB";
 }
+
+/** ADR-072: the lengths offered at a tap; the stepper reaches every quarter hour between. */
+const QUICK_LENGTHS = [15, 30, 45, 60, 90, 120, 180, 240];
+const MIN_LENGTH = 15;
+const MAX_LENGTH = 240;
+const LENGTH_STEP = 15;
 
 /** ADR-068: a forecast clear enough to call a start "clear". */
 const CLEAR_CLOUD_PERCENT = 30;
@@ -96,6 +112,7 @@ function Step({ title, aside }: { title: string; aside?: ReactNode }) {
  * the checkout redirect (ADR-043), or the free replacement of a lost slot.
  */
 export function BookingBoard({
+  durationMinutes,
   initialStartAt,
   locale,
   nights,
@@ -167,7 +184,8 @@ export function BookingBoard({
       gone.has(slot.startAt));
   const openCount = (night: BoardNight) => night.slots.filter(offered).length;
   const nightOf = (startAt: string | null) =>
-    nights.find((night) => night.slots.some((slot) => slot.startAt === startAt))?.date ?? null;
+    nights.find((night) => night.slots.some((slot) => slot.startAt === startAt))?.date ??
+    null;
 
   // ADR-068: a replacement for a weather loss opens on the next clear start.
   const [nextClear] = useState<string | null>(() =>
@@ -214,17 +232,19 @@ export function BookingBoard({
 
   // What is up for a slot, read once per slot: when it is picked, and for the slot the
   // address named, on arrival.
+  // Keyed by start and length: what fits a 15-minute session is not what fits 4 hours.
+  const skyKey = (slot: Slot) => `${slot.startAt}|${slot.durationMinutes}`;
   const readSky = useCallback(
     (slot: Slot) => {
-      const { startAt } = slot;
-      if (reading.current.has(startAt)) return;
-      reading.current.add(startAt);
+      const key = `${slot.startAt}|${slot.durationMinutes}`;
+      if (reading.current.has(key)) return;
+      reading.current.add(key);
       apiRequest(
-        `/targets/visibility?observatoryId=${encodeURIComponent(observatory.id)}&startAt=${encodeURIComponent(startAt)}&durationMinutes=${slot.durationMinutes}`,
+        `/targets/visibility?observatoryId=${encodeURIComponent(observatory.id)}&startAt=${encodeURIComponent(slot.startAt)}&durationMinutes=${slot.durationMinutes}`,
         { schema: zListSlotTargetsResponse },
       )
-        .then((list) => setSkies((all) => ({ ...all, [startAt]: list.items })))
-        .catch(() => setSkies((all) => ({ ...all, [startAt]: [] })));
+        .then((list) => setSkies((all) => ({ ...all, [key]: list.items })))
+        .catch(() => setSkies((all) => ({ ...all, [key]: [] })));
     },
     [observatory.id],
   );
@@ -234,7 +254,7 @@ export function BookingBoard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const judged = chosen ? (skies[chosen.startAt] ?? null) : null;
+  const judged = chosen ? (skies[skyKey(chosen)] ?? null) : null;
   const loading = !!chosen && judged === null;
   const judgement = (target: Target) =>
     judged?.find((item) => item.target.id === target.id) ?? null;
@@ -243,6 +263,11 @@ export function BookingBoard({
     return !!chosen && !!item && bookable(item, chosen.durationMinutes);
   };
   const target = targets.find((candidate) => candidate.id === targetId) ?? null;
+  // Once a start is chosen, what can be booked for it comes first; the rest keep order.
+  const ordered =
+    chosen && judged
+      ? [...targets].sort((a, b) => Number(canBook(b)) - Number(canBook(a)))
+      : targets;
   // The object is optional: without one, the platform assigns the best one up.
   const ready = !!chosen && (!target || canBook(target));
 
@@ -254,17 +279,39 @@ export function BookingBoard({
         (prize) =>
           prize.voucherCode &&
           (prize.kind === "DISCOUNT" ||
-            (prize.kind === "FREE_SLOT" && (!chosen || chosen.durationMinutes === prize.durationMinutes))),
+            (prize.kind === "FREE_SLOT" &&
+              (!chosen || chosen.durationMinutes === prize.durationMinutes))),
       );
   // ADR-067: a gift code typed in takes the place of any prize; a booking takes one.
   const [giftCode, setGiftCode] = useState("");
   const gift = reschedule ? "" : giftCode.trim();
-  const prize = gift ? null : (usable.find((candidate) => candidate.id === prizeId) ?? null);
+  const prize = gift
+    ? null
+    : (usable.find((candidate) => candidate.id === prizeId) ?? null);
 
   const pickNight = (date: string) => {
     setNight(date);
     setSlotAt(null);
     setFeedback(null);
+  };
+  // ADR-072: a new length is a new board -- the platform's slots, starts and prices for
+  // it, read on the server through the address, so the back button keeps it.
+  const [switching, startSwitch] = useTransition();
+  // The length asked for shows at once; the board catches up when the server answers.
+  const [asked, setAsked] = useState(durationMinutes);
+  const length = switching ? asked : durationMinutes;
+  const pickLength = (minutes: number) => {
+    const next = Math.min(MAX_LENGTH, Math.max(MIN_LENGTH, minutes));
+    if (reschedule || next === length) return;
+    setAsked(next);
+    setSlotAt(null);
+    setFeedback(null);
+    setNotice(null);
+    setGone(new Set());
+    const params = new URLSearchParams(window.location.search);
+    params.delete("startAt");
+    params.set("length", String(next));
+    startSwitch(() => router.replace(`?${params}`, { scroll: false }));
   };
   const pickSlot = (slot: Slot) => {
     setSlotAt(slot.startAt);
@@ -315,7 +362,10 @@ export function BookingBoard({
           `/bookings/${encodeURIComponent(reschedule.id)}/reschedule`,
           {
             method: "POST",
-            body: { slotStartAt: chosen.startAt, targetId: target?.id ?? reschedule.targetId },
+            body: {
+              slotStartAt: chosen.startAt,
+              targetId: target?.id ?? reschedule.targetId,
+            },
             schema: zRescheduleBookingResponse,
           },
         );
@@ -365,10 +415,10 @@ export function BookingBoard({
         gift && code === "VALIDATION_FAILED"
           ? gifts.refused
           : prize && code === "VALIDATION_FAILED"
-          ? cards.board.refused
-          : !target && code === "VALIDATION_FAILED"
-            ? copy.noTargets
-            : refusal.message,
+            ? cards.board.refused
+            : !target && code === "VALIDATION_FAILED"
+              ? copy.noTargets
+              : refusal.message,
       );
       if (refusal.slotGone) {
         setGone((all) => new Set(all).add(chosen.startAt));
@@ -377,10 +427,10 @@ export function BookingBoard({
       }
       if (refusal.skyChanged) {
         setTargetId(null);
-        reading.current.delete(chosen.startAt);
+        reading.current.delete(skyKey(chosen));
         setSkies((all) => {
           const rest = { ...all };
-          delete rest[chosen.startAt];
+          delete rest[skyKey(chosen)];
           return rest;
         });
         readSky(chosen);
@@ -391,7 +441,10 @@ export function BookingBoard({
   const sky = useSkyCalendar({
     locale,
     timezone,
-    nights: nights.map((candidate) => ({ date: candidate.date, open: openCount(candidate) })),
+    nights: nights.map((candidate) => ({
+      date: candidate.date,
+      open: openCount(candidate),
+    })),
     selected: night,
     onPick: pickNight,
     openLabel: copy.open,
@@ -406,7 +459,8 @@ export function BookingBoard({
         : prize?.kind === "FREE_SLOT"
           ? cards.board.free
           : slot.price;
-  const endOf = (slot: Slot) => new Date(Date.parse(slot.startAt) + slot.durationMinutes * 60_000);
+  const endOf = (slot: Slot) =>
+    new Date(Date.parse(slot.startAt) + slot.durationMinutes * 60_000);
   const buttonLabel = waiting
     ? phase === "reserving"
       ? copy.waitlist.joining
@@ -437,6 +491,51 @@ export function BookingBoard({
         </div>
 
         <div className="board-pick">
+          <Step title={copy.length} aside={reschedule ? undefined : copy.lengthAside} />
+          {reschedule ? (
+            <p className="board-length-fixed">{copy.duration(durationMinutes)}</p>
+          ) : (
+            <div className="board-length">
+              <div
+                className="board-length-quick"
+                role="radiogroup"
+                aria-label={copy.length}
+              >
+                {QUICK_LENGTHS.map((minutes) => (
+                  <button
+                    key={minutes}
+                    type="button"
+                    role="radio"
+                    aria-checked={minutes === length}
+                    className="board-length-chip"
+                    onClick={() => pickLength(minutes)}
+                  >
+                    {copy.duration(minutes)}
+                  </button>
+                ))}
+              </div>
+              <div className="board-length-step">
+                <button
+                  type="button"
+                  aria-label={copy.shorter}
+                  disabled={length <= MIN_LENGTH}
+                  onClick={() => pickLength(length - LENGTH_STEP)}
+                >
+                  <span aria-hidden="true">−</span>
+                </button>
+                <output aria-live="polite">{copy.duration(length)}</output>
+                <button
+                  type="button"
+                  aria-label={copy.longer}
+                  disabled={length >= MAX_LENGTH}
+                  onClick={() => pickLength(length + LENGTH_STEP)}
+                >
+                  <span aria-hidden="true">+</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           <Step
             title={copy.start}
             aside={zone ? `${copy.siteTime} · ${zone}` : copy.siteTime}
@@ -450,7 +549,11 @@ export function BookingBoard({
                 startAt: slot.startAt,
                 durationMinutes: slot.durationMinutes,
                 state:
-                  chosen?.startAt === slot.startAt ? "chosen" : offered(slot) ? "open" : "taken",
+                  chosen?.startAt === slot.startAt
+                    ? "chosen"
+                    : offered(slot)
+                      ? "open"
+                      : "taken",
               }))}
             />
           )}
@@ -459,11 +562,14 @@ export function BookingBoard({
               className="board-slots"
               role="radiogroup"
               aria-label={`${booking.slots}, ${current.label.long}`}
+              aria-busy={switching || undefined}
             >
               {slots.map((slot) => {
                 const ok = offered(slot);
                 const reason =
-                  ok || !slot.unavailableReason ? null : booking.reasons[slot.unavailableReason];
+                  ok || !slot.unavailableReason
+                    ? null
+                    : booking.reasons[slot.unavailableReason];
                 const cloud = forecastText(slot, copy.forecast);
                 const start = time.format(new Date(slot.startAt));
                 return (
@@ -487,11 +593,12 @@ export function BookingBoard({
                     aria-label={`${start}–${time.format(endOf(slot))}${reason ? `, ${reason}` : ""}, ${copy.forecast.label}: ${cloud}`}
                   >
                     <time dateTime={slot.startAt}>{start}</time>
-                    {slot.forecast.status === "KNOWN" && slot.forecast.cloudCoverPercent !== null && (
-                      <small className="board-slot-cloud" aria-hidden="true">
-                        {Math.round(slot.forecast.cloudCoverPercent)}%
-                      </small>
-                    )}
+                    {slot.forecast.status === "KNOWN" &&
+                      slot.forecast.cloudCoverPercent !== null && (
+                        <small className="board-slot-cloud" aria-hidden="true">
+                          {Math.round(slot.forecast.cloudCoverPercent)}%
+                        </small>
+                      )}
                   </button>
                 );
               })}
@@ -506,7 +613,8 @@ export function BookingBoard({
                 ? copy.optional
                 : loading
                   ? copy.loadingTargets
-                  : judged && judged.every((item) => !bookable(item, chosen.durationMinutes))
+                  : judged &&
+                      judged.every((item) => !bookable(item, chosen.durationMinutes))
                     ? copy.noTargets
                     : copy.optional
             }
@@ -517,7 +625,24 @@ export function BookingBoard({
             aria-label={copy.target}
             aria-busy={loading || undefined}
           >
-            {targets.map((candidate) => {
+            <button
+              type="button"
+              role="radio"
+              aria-checked={targetId === null}
+              className="board-target board-target-any"
+              onClick={() => setTargetId(null)}
+            >
+              <span className="board-thumb" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 2.5l2.2 6.8 7.3.2-5.8 4.4 2.1 7-5.8-4.2-5.8 4.2 2.1-7L2.5 9.5l7.3-.2z" />
+                </svg>
+              </span>
+              <span className="board-target-text">
+                <span className="board-target-name">{copy.anyTarget}</span>
+                <span className="board-target-sub">{copy.anySub}</span>
+              </span>
+            </button>
+            {ordered.map((candidate) => {
               const item = judgement(candidate);
               const down = !!chosen && !!judged && !canBook(candidate);
               const reasons = item?.visibility.blockReasons ?? [];
@@ -538,7 +663,9 @@ export function BookingBoard({
                           text:
                             reasons.map((reason) => words.reasons[reason]).join(" · ") ||
                             booking.unavailable,
-                          short: reasons[0] ? copy.reasonsShort[reasons[0]] : booking.unavailable,
+                          short: reasons[0]
+                            ? copy.reasonsShort[reasons[0]]
+                            : booking.unavailable,
                         };
               return (
                 <button
@@ -549,21 +676,30 @@ export function BookingBoard({
                   className={`board-target${down ? " is-down" : ""}`}
                   data-accent={targetAccent(candidate)}
                   disabled={down}
-                  onClick={() => setTargetId(targetId === candidate.id ? null : candidate.id)}
+                  onClick={() =>
+                    setTargetId(targetId === candidate.id ? null : candidate.id)
+                  }
                   aria-label={`${targetName(candidate, locale)}, ${state?.text ?? words.types[candidate.type]}`}
                 >
                   <span className="board-thumb" aria-hidden="true">
                     <TargetArt target={candidate} />
                   </span>
                   <span className="board-target-text">
-                    <span className="board-target-name">{targetName(candidate, locale)}</span>
+                    <span className="board-target-name">
+                      {targetName(candidate, locale)}
+                    </span>
                     {state ? (
-                      <span className={`board-target-state is-${state.tone}`} title={state.text}>
+                      <span
+                        className={`board-target-state is-${state.tone}`}
+                        title={state.text}
+                      >
                         <span aria-hidden="true">{state.short}</span>
                         <span className="visually-hidden">{state.text}</span>
                       </span>
                     ) : (
-                      <span className="board-target-sub">{words.types[candidate.type]}</span>
+                      <span className="board-target-sub">
+                        {words.types[candidate.type]}
+                      </span>
                     )}
                   </span>
                 </button>
@@ -580,7 +716,12 @@ export function BookingBoard({
           </p>
         </div>
 
-        <aside className="board-sum" id="session" aria-live="polite" aria-label={copy.session}>
+        <aside
+          className="board-sum"
+          id="session"
+          aria-live="polite"
+          aria-label={copy.session}
+        >
           <div className="board-sumhead">
             <span className="kicker">{copy.session}</span>
           </div>
@@ -613,7 +754,9 @@ export function BookingBoard({
               {copy.waitlist.yours(time.format(new Date(held.get(chosen.startAt)!)))}
             </p>
           )}
-          {chosen && chosen.startAt === nextClear && <p className="board-caption">{copy.nextClear}</p>}
+          {chosen && chosen.startAt === nextClear && (
+            <p className="board-caption">{copy.nextClear}</p>
+          )}
           {waiting && <p className="board-caption">{copy.waitlist.taken}</p>}
           {usable.length > 0 && (
             <Dropdown
@@ -657,7 +800,7 @@ export function BookingBoard({
           <div className="board-total">
             <span className="board-label">{copy.cost}</span>
             <strong>{chosen ? price(chosen) : "—"}</strong>
-            {chosen && <span>{booking.minutes(chosen.durationMinutes)}</span>}
+            {chosen && <span>{copy.duration(chosen.durationMinutes)}</span>}
             {chosen && prize?.kind === "DISCOUNT" && prize.percentOff && (
               <span>{cards.board.discount(prize.percentOff)}</span>
             )}
@@ -686,13 +829,15 @@ export function BookingBoard({
       {chosen && (
         <a href="#session" className="board-bar" aria-label={copy.goToSession}>
           <span>
-            {time.format(new Date(chosen.startAt))} · {booking.minutes(chosen.durationMinutes)}
+            {time.format(new Date(chosen.startAt))} ·{" "}
+            {copy.duration(chosen.durationMinutes)}
           </span>
           <b>{price(chosen)}</b>
-          <span className="board-bar-go">{reschedule ? replacing.form.book : reserve.form.reserve}</span>
+          <span className="board-bar-go">
+            {reschedule ? replacing.form.book : reserve.form.reserve}
+          </span>
         </a>
       )}
     </form>
   );
 }
-

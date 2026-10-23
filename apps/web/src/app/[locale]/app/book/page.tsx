@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BookingBoard } from "@/components/booking/booking-board";
 import { RescheduleClosed } from "@/components/booking/reschedule-closed";
 import { StatePanel } from "@/components/ui/state-panel";
-import { readBoard } from "@/features/booking/board";
+import { readBoard, sessionMinutes } from "@/features/booking/board";
 import { readReschedule } from "@/features/booking/reschedule";
 import { readPrizes } from "@/features/cards/read";
 import { isLocale } from "@/i18n/config";
@@ -19,6 +19,7 @@ type BookPageProps = {
   searchParams: Promise<{
     startAt?: string | string[];
     reschedule?: string | string[];
+    length?: string | string[];
   }>;
 };
 
@@ -36,13 +37,15 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
 
   await requireUser(locale);
 
-  const { startAt, reschedule: rescheduleParam } = await searchParams;
+  const { startAt, reschedule: rescheduleParam, length } = await searchParams;
   const reschedule = await readReschedule(rescheduleParam);
   if (reschedule.kind === "closed") {
     return <RescheduleClosed bookingId={reschedule.bookingId} locale={locale} />;
   }
 
   const booking = reschedule.kind === "open" ? reschedule.booking : null;
+  // ADR-072: the length the address asks for; a replacement keeps its booking's own.
+  const minutes = booking ? booking.durationMinutes : sessionMinutes(length);
   const board =
     reschedule.kind === "unreachable"
       ? ({ kind: "unreachable" } as const)
@@ -51,6 +54,7 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
           undefined,
           booking?.observatoryId,
           typeof startAt === "string" ? startAt : undefined,
+          minutes,
         );
   const copy = bookingCopy[locale];
 
@@ -85,6 +89,7 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
         nights={board.nights}
         targets={board.targets}
         reschedule={booking}
+        durationMinutes={minutes}
         initialStartAt={typeof startAt === "string" ? startAt : null}
         signInPath={`/${locale}/sign-in`}
       />

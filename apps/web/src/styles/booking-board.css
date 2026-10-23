@@ -650,6 +650,101 @@ button.cal-day {
   text-transform: none;
 }
 
+/* ── 02b The length (ADR-070): quick lengths, and a stepper for every quarter hour ── */
+.board-length {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.board-length-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.board-length-chip {
+  min-height: 2.25rem;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  background: var(--color-outline-fill);
+  color: var(--color-text-secondary);
+  font: var(--font-weight-medium) var(--font-size-label) / 1 var(--font-body);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.board-length-chip:hover {
+  border-color: var(--color-outline-hover);
+  color: var(--color-text-primary);
+}
+
+.board-length-chip[aria-checked="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-action);
+  color: var(--color-on-action);
+}
+
+.board-length-step {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+}
+
+.board-length-step button {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-text-primary);
+  font: var(--font-weight-medium) var(--font-size-body-lg) / 1 var(--font-body);
+  cursor: pointer;
+}
+
+.board-length-step button:hover:not(:disabled) {
+  background: var(--color-overlay-hover);
+}
+
+.board-length-step button:disabled {
+  color: var(--color-text-disabled);
+  cursor: default;
+}
+
+.board-length-step output {
+  min-width: 5.5rem;
+  color: var(--color-text-primary);
+  font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-mono);
+  text-align: center;
+}
+
+.board-length-fixed {
+  margin: 0;
+  color: var(--color-text-primary);
+  font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-mono);
+}
+
+.board-length-chip:focus-visible,
+.board-length-step button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.board-slots[aria-busy] {
+  opacity: 0.5;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
 /* ── 03 The starts: every free quarter hour, one compact grid ── */
 .board-slots {
   display: grid;
@@ -732,120 +827,115 @@ button.cal-day {
   color: var(--color-text-tertiary);
 }
 
-/* ── 04 The objects: optional, small chips, each washed in its object's colour ── */
+/* ── 04 The objects: optional; quiet tiles, the best-one-up tile first ── */
 .board-targets {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   gap: var(--space-2);
+}
+
+.board-targets[aria-busy] {
+  opacity: 0.6;
 }
 
 .board-target[data-accent="saturn"] {
   --accent: var(--color-target-saturn);
-  --accent-2: var(--color-target-saturn);
 }
 
 .board-target[data-accent="jupiter"] {
   --accent: var(--color-target-jupiter);
-  --accent-2: var(--color-target-jupiter);
 }
 
 .board-target[data-accent="mars"] {
   --accent: var(--color-target-mars);
-  --accent-2: var(--color-target-mars);
 }
 
 .board-target[data-accent="venus"] {
   --accent: var(--color-target-venus);
-  --accent-2: var(--color-target-venus);
 }
 
 .board-target[data-accent="moon"] {
   --accent: var(--color-target-moon);
-  --accent-2: var(--color-target-moon);
 }
 
 .board-target[data-accent="star"] {
   --accent: var(--color-target-star-gold);
-  --accent-2: var(--color-target-star-blue);
 }
 
 .board-target[data-accent="cluster"] {
   --accent: var(--color-target-cluster);
-  --accent-2: var(--color-target-cluster);
 }
 
 .board-target[data-accent="nebula"] {
   --accent: var(--color-target-nebula);
-  --accent-2: var(--color-target-nebula);
 }
 
 .board-target {
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   min-width: 0;
-  min-height: var(--size-touch);
-  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
-  overflow: hidden;
-  isolation: isolate;
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-  border-radius: var(--radius-medium);
-  background:
-    radial-gradient(
-      120% 70% at 30% 0%,
-      color-mix(in srgb, var(--accent) 20%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      90% 60% at 90% 10%,
-      color-mix(in srgb, var(--accent-2) 14%, transparent),
-      transparent 70%
-    ),
-    var(--color-surface-raised);
+  min-height: 3.25rem;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
   color: var(--color-text-primary);
   text-align: left;
   cursor: pointer;
   transition:
     border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-standard) var(--ease-standard),
-    transform var(--duration-standard) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
     opacity var(--duration-standard) var(--ease-standard);
 }
 
-/* The glass: a soft highlight across the top of every card. */
-.board-target::before {
+.board-target:hover:not(:disabled) {
+  border-color: var(--color-line-strong);
+  background: var(--color-surface-hover);
+}
+
+/* Chosen: the accent ring and a check in the corner. */
+.board-target[aria-checked="true"],
+.board-target[aria-checked="true"]:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface-raised));
+}
+
+.board-target[aria-checked="true"]::after {
   position: absolute;
-  z-index: -1;
-  inset: 0 0 55%;
-  background: linear-gradient(180deg, var(--color-target-glass), transparent);
+  top: calc(50% - 0.5rem);
+  right: var(--space-2);
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2l2.2 2.2 4.8-4.8' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / 100% no-repeat,
+    var(--color-action);
   content: "";
-  pointer-events: none;
 }
 
 .board-thumb {
-  position: relative;
   display: grid;
   flex: none;
   width: 2.25rem;
   aspect-ratio: 1;
   place-items: center;
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--accent) 26%, transparent) 0,
-    transparent 68%
-  );
+  background: var(--color-outline-fill);
+}
+
+.board-target-any .board-thumb svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: var(--color-accent-ink);
 }
 
 .target-art {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 45%, transparent));
-  transition:
-    transform var(--duration-instrument) var(--ease-sky),
-    filter var(--duration-standard) var(--ease-standard);
 }
 
 .board-target-text {
@@ -854,74 +944,48 @@ button.cal-day {
   min-width: 0;
 }
 
+.board-target[aria-checked="true"] .board-target-text {
+  padding-right: var(--space-4);
+}
+
 .board-target-name,
-.board-target-sub {
+.board-target-sub,
+.board-target-state {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .board-target-name {
-  font: var(--font-weight-semibold) var(--font-size-label) / 1.2 var(--font-label);
+  font: var(--font-weight-medium) var(--font-size-label) / 1.25 var(--font-body);
 }
 
-.board-target-sub {
-  color: var(--color-text-small);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-body);
-}
-
-:lang(ka) .board-target-name {
-  letter-spacing: 0;
-  text-transform: none;
-}
-
+.board-target-sub,
 .board-target-state {
-  justify-self: start;
-  max-width: 100%;
-  padding: 0 var(--space-2);
-  overflow: hidden;
-  border-radius: var(--radius-full);
-  font: var(--font-weight-semibold) var(--font-size-hint) / 1.35 var(--font-label);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--color-text-tertiary);
+  font: var(--font-weight-regular) var(--font-size-hint) / 1.3 var(--font-body);
 }
 
+/* Up for the chosen start: a green dot before the words. */
 .board-target-state.is-up {
-  background: var(--color-success-muted);
   color: var(--color-success);
 }
 
-.board-target-state.is-down {
-  background: var(--color-outline-fill);
-  color: var(--color-text-tertiary);
+.board-target-state.is-up::before {
+  display: inline-block;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-inline-end: var(--space-2);
+  border-radius: 50%;
+  background: var(--color-success);
+  content: "";
+  vertical-align: 0.0625rem;
 }
 
-/* The drawn plates are squares of night: feathered to a disc and lit into the card. */
+/* The drawn plates are squares of night: feathered to a disc. */
 img.target-art {
   mix-blend-mode: screen;
   mask-image: radial-gradient(circle closest-side, var(--color-mask) 72%, transparent 100%);
-}
-
-.board-target:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-}
-
-.board-target:hover:not(:disabled) .target-art {
-  transform: scale(1.06);
-}
-
-.board-target[aria-checked="true"],
-.board-target[aria-checked="true"]:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--accent) 85%, transparent);
-  box-shadow:
-    0 0 30px -10px var(--accent),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
-    inset 0 -30px 50px -40px var(--accent);
-}
-
-.board-target[aria-checked="true"] .target-art {
-  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--accent) 70%, transparent));
-  transform: scale(1.08);
 }
 
 .board-target:focus-visible {
@@ -931,7 +995,7 @@ img.target-art {
 
 .board-target.is-down {
   cursor: default;
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 .board-target.is-down .target-art {

@@ -1,10 +1,6 @@
 import "server-only";
 
-import type {
-  BookableObservatory,
-  Slot,
-  Target,
-} from "@darkview/contracts";
+import type { BookableObservatory, Slot, Target } from "@darkview/contracts";
 import { zListSlotsResponse } from "@darkview/contracts/zod";
 
 import { formatPrice } from "@/components/booking/booking-night";
@@ -13,7 +9,13 @@ import { readCatalogue, readObservatories } from "@/features/collection/read";
 import type { Locale } from "@/i18n/config";
 import { platformRequest } from "@/lib/platform/client";
 
-export type NightLabel = { weekday: string; day: string; month: string; long: string; short: string };
+export type NightLabel = {
+  weekday: string;
+  day: string;
+  month: string;
+  long: string;
+  short: string;
+};
 /** A slot with its price worded, on the server, in its currency and the page's language. */
 export type BoardSlot = Slot & { price: string };
 export type BoardNight = { date: string; slots: BoardSlot[]; label: NightLabel };
@@ -32,17 +34,30 @@ export type BoardResult =
 
 const halfDay = 12 * 60 * 60_000;
 
+/** ADR-072: a session runs any quarter hour from 15 minutes to 4 hours; 30 by default. */
+export const defaultSessionMinutes = 30;
+
+/** The length the address asks for, when it is one a session may run; else the default. */
+export function sessionMinutes(value: unknown): number {
+  const minutes = typeof value === "string" && /^\d+$/.test(value) ? Number(value) : NaN;
+  return minutes >= 15 && minutes <= 240 && minutes % 15 === 0
+    ? minutes
+    : defaultSessionMinutes;
+}
+
 /**
  * The booking board (ADR-053): every night the customer may book, with its slots, read
  * in one go so the board switches nights without a round trip. The nights are the same
  * seven `readNight` offers, by the same rule: after midnight the night still in progress
- * comes first while it has a slot yet to start.
+ * comes first while it has a slot yet to start. Every slot is `durationMinutes` long
+ * (ADR-072).
  */
 export async function readBoard(
   locale: Locale,
   now = Date.now(),
   observatoryId?: string,
   startAt?: string,
+  durationMinutes = defaultSessionMinutes,
 ): Promise<BoardResult> {
   // A calendar date, not an instant: formatted in UTC so it never shifts. Worded here, on
   // the server, so the board hydrates to the same text in both languages.
@@ -67,9 +82,9 @@ export async function readBoard(
 
   const id = encodeURIComponent(observatory.id);
   const readSlots = (date: string) =>
-    platformRequest<unknown>(`/slots?observatoryId=${id}&date=${date}`).then(
-      (value) => zListSlotsResponse.parse(value).items,
-    );
+    platformRequest<unknown>(
+      `/slots?observatoryId=${id}&date=${date}&durationMinutes=${durationMinutes}`,
+    ).then((value) => zListSlotsResponse.parse(value).items);
 
   try {
     const today = localDate(now, observatory.timezone);
@@ -111,7 +126,9 @@ export async function readBoard(
         })),
         label: labelOf(date),
       })),
-      targets: catalogue ? [...catalogue.values()].filter((target) => target.enabled) : [],
+      targets: catalogue
+        ? [...catalogue.values()].filter((target) => target.enabled)
+        : [],
     };
   } catch {
     return { kind: "unreachable" };

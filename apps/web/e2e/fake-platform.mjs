@@ -76,7 +76,13 @@ import {
   zVerifyEmailRequest,
 } from "@darkview/contracts/zod";
 
-import { fakeBlocked, fakeNight, fakeNightOf } from "./fake-night.mjs";
+import {
+  fakeBlocked,
+  fakeNight,
+  fakeNightOf,
+  fakeSessionLength,
+  fakeStarts,
+} from "./fake-night.mjs";
 
 const port = Number(process.env.FAKE_PLATFORM_PORT ?? 4100);
 const appOrigin = process.env.FAKE_PLATFORM_APP_URL ?? "http://localhost:3000";
@@ -617,19 +623,23 @@ async function changeBooking(request, response, id, action) {
 const idempotentBookings = new Map();
 const payments = new Map();
 
-/** Which of GET /slots' slots an instant starts, or null for none. */
-function slotAt(startAt) {
+/** Which of GET /slots' slots of `minutes` an instant starts, or null for none. */
+function slotAt(startAt, minutes = 30) {
   const at = Date.parse(startAt);
   if (Number.isNaN(at)) return null;
-  const { first, count } = fakeNight(fakeNightOf(at));
+  const date = fakeNightOf(at);
+  const { first } = fakeNight(date);
   const index = (at - first) / (15 * 60_000);
-  return Number.isInteger(index) && index >= 0 && index < count ? index : null;
+  return Number.isInteger(index) && index >= 0 && index < fakeStarts(date, minutes)
+    ? index
+    : null;
 }
 
-/** Whether a slot is refused as booked: the night's second, or its last "a moment ago". */
-function slotTaken(startAt, index) {
+/** Whether a slot is refused as booked: the night's held one, or its last "a moment ago". */
+function slotTaken(startAt, index, minutes = 30) {
   return (
-    fakeBlocked(index) || index === fakeNight(fakeNightOf(Date.parse(startAt))).count - 1
+    fakeBlocked(index, minutes) ||
+    index === fakeStarts(fakeNightOf(Date.parse(startAt)), minutes) - 1
   );
 }
 
@@ -797,10 +807,12 @@ async function createBooking(request, response) {
       "VALIDATION_FAILED",
       "This voucher is for another length.",
     );
-  const index = slotAt(slotStartAt);
-  if (index === null || durationMinutes !== 30)
+  const index = fakeSessionLength(durationMinutes)
+    ? slotAt(slotStartAt, durationMinutes)
+    : null;
+  if (index === null)
     return error(response, 422, "VALIDATION_FAILED", "That is not an offered slot.");
-  if (slotTaken(slotStartAt, index))
+  if (slotTaken(slotStartAt, index, durationMinutes))
     return error(response, 409, "SLOT_UNAVAILABLE", "That slot has just been booked.");
   const judgedAll = slotTargets(slotStartAt, durationMinutes).items;
   // As the platform: without a target, the observable one highest up, ties to the earlier slug.
@@ -854,8 +866,8 @@ async function createBooking(request, response) {
     priceMinor: free
       ? 0
       : prize?.kind === "DISCOUNT"
-        ? 4500 * (1 - prize.percentOff / 100)
-        : 4500,
+        ? 150 * durationMinutes * (1 - prize.percentOff / 100)
+        : 150 * durationMinutes,
     currency: "GEL",
     paymentId,
     paymentIntent,
@@ -1619,7 +1631,8 @@ const routes = {
         ),
   // GET /slots. The platform's night (e2e/fake-night.mjs): every slot of astronomical
   // darkness at Tbilisi, dusk to dawn, a start every 15 minutes, the fifth one booked and
-  // the starts its 30 minutes plus turnaround overlap held with it.
+  // the starts its 30 minutes plus turnaround overlap held with it. ADR-072: as long as
+  // `durationMinutes` asks (30 by default), at 150 tetri a minute.
   // Computed, not stored, so a date always gives the same night. Public, like the
   // platform's.
   "GET /slots": (request, response) => {
@@ -1631,24 +1644,34 @@ const routes = {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return error(response, 422, "VALIDATION_FAILED", "`date` must be YYYY-MM-DD.");
     }
+    const minutes = Number(query.get("durationMinutes") ?? 30);
+    if (!fakeSessionLength(minutes)) {
+      return error(
+        response,
+        422,
+        "VALIDATION_FAILED",
+        "`durationMinutes` is not a session length.",
+      );
+    }
     const { first, count } = fakeNight(date);
+    const starts = fakeStarts(date, minutes);
     send(
       response,
       200,
       zListSlotsResponse.parse({
         observatoryId,
         date,
-        items: Array.from({ length: count }, (_, index) => {
+        items: Array.from({ length: starts }, (_, index) => {
           const startAt = first + index * 15 * 60_000;
           return {
             observatoryId,
             startAt: new Date(startAt).toISOString(),
-            endAt: new Date(startAt + 30 * 60_000).toISOString(),
-            durationMinutes: 30,
-            available: !fakeBlocked(index),
-            priceMinor: 4500,
+            endAt: new Date(startAt + minutes * 60_000).toISOString(),
+            durationMinutes: minutes,
+            available: !fakeBlocked(index, minutes),
+            priceMinor: 150 * minutes,
             currency: "GEL",
-            unavailableReason: fakeBlocked(index) ? "ALREADY_BOOKED" : null,
+            unavailableReason: fakeBlocked(index, minutes) ? "ALREADY_BOOKED" : null,
             // ADR-068: cloudy early, clear after, and nothing stored for the last three.
             forecast:
               index >= count - 3
@@ -1679,10 +1702,13 @@ const routes = {
     const body = zJoinWaitlistBody.safeParse(await json(request));
     if (!body.success)
       return error(response, 422, "VALIDATION_FAILED", "Malformed place.");
-    const index = slotAt(body.data.slotStartAt);
+    const minutes = body.data.durationMinutes;
+    const index = fakeSessionLength(minutes)
+      ? slotAt(body.data.slotStartAt, minutes)
+      : null;
     if (index === null)
       return error(response, 422, "VALIDATION_FAILED", "Not an offered slot.");
-    if (!fakeBlocked(index))
+    if (!fakeBlocked(index, minutes))
       return error(response, 409, "CONFLICT", "Nobody holds that slot: book it instead.");
     const mine = waitlist.filter(
       (row) => row.userId === user.id && ["WAITING", "OFFERED"].includes(row.status),

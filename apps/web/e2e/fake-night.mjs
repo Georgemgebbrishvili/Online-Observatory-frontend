@@ -14,9 +14,26 @@ const alignMs = 15 * 60_000;
 /** The fake's one held booking: the night's fifth start. */
 export const fakeBookedIndex = 4;
 
-/** Starts a held booking blocks: its own, and any within its length plus the 10-minute turnaround. */
-export function fakeBlocked(index) {
-  return Math.abs(index - fakeBookedIndex) * 15 < 40;
+/**
+ * Starts a held booking blocks: its own, and any whose session of `minutes` would reach
+ * it or its 10-minute turnaround (ADR-072: a session may run any quarter hour to 4 h).
+ */
+export function fakeBlocked(index, minutes = 30) {
+  const start = index * 15;
+  const held = fakeBookedIndex * 15;
+  return start < held + 30 + 10 && held < start + minutes + 10;
+}
+
+/** ADR-072: whether a session may run this long -- a quarter hour from 15 to 240. */
+export function fakeSessionLength(minutes) {
+  return (
+    Number.isInteger(minutes) && minutes >= 15 && minutes <= 240 && minutes % 15 === 0
+  );
+}
+
+/** ADR-072: how many starts a night has for a session this long, ending before dawn. */
+export function fakeStarts(date, minutes = 30) {
+  return Math.max(0, fakeNight(date).count - (minutes - 30) / 15);
 }
 
 /** The night that begins on `date` (YYYY-MM-DD, Tbilisi): its first slot and how many. */
