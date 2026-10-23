@@ -262,7 +262,7 @@
 
 .flight-plan {
   display: grid;
-  max-width: 52rem;
+  max-width: 64rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
   margin: var(--space-6) auto 0;
@@ -356,5 +356,323 @@
 
   .home-band {
     padding-block: var(--space-10);
+  }
+}
+
+/*
+ * NOW — four small cards under the steps: tonight and the observatory now, then the
+ * telescope and the price. One column on a phone, two by two from --md, and from --lg a
+ * staggered pair of rows (wide and narrow, then narrow and wide).
+ */
+.home-now-band {
+  padding-top: 0;
+}
+
+.home-now {
+  display: grid;
+  max-width: 64rem;
+  gap: var(--space-4);
+  margin-inline: auto;
+}
+
+.home-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+}
+
+.home-card-head {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.home-card-head .kicker {
+  margin: 0;
+}
+
+.home-card-more {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-accent-ink);
+  font-size: var(--font-size-kicker);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.home-card-more:hover {
+  color: var(--color-text-primary);
+}
+
+.home-card-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+  line-height: 1.3;
+  text-transform: none;
+}
+
+.home-card-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-text-tertiary);
+}
+
+/* Tonight: three rows, a dot that is green when the target is up. */
+.home-tonight-list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0 calc(var(--space-2) * -1);
+  padding: 0;
+  list-style: none;
+}
+
+.home-tonight-list a {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-small);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.home-tonight-list a:hover {
+  background: var(--color-surface-hover);
+}
+
+.home-tonight-list a[data-observable] .home-dot {
+  background: var(--color-live);
+  box-shadow: 0 0 0 3px var(--color-live-muted);
+}
+
+.home-tonight-name {
+  display: grid;
+  font-size: var(--font-size-body);
+  line-height: 1.3;
+}
+
+.home-tonight-name small {
+  overflow: hidden;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-kicker);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-tonight-when {
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-kicker);
+  white-space: nowrap;
+}
+
+/* Live now: three facts, each with its dot, and the observation in progress below. */
+.home-facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.home-facts > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.home-facts dt {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-facts dd {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--font-size-label);
+}
+
+.home-facts [data-tone="good"] .home-dot {
+  background: var(--color-live);
+}
+
+.home-facts [data-tone="bad"] .home-dot {
+  background: var(--color-accent);
+}
+
+.home-live-now {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-live-border);
+  border-radius: var(--radius-small);
+  background: var(--color-live-muted);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-label);
+  text-decoration: none;
+}
+
+.home-live-now span:not(.home-live-pulse) {
+  min-width: 0;
+  flex: 1;
+}
+
+.home-live-now b {
+  color: var(--color-live);
+  font-weight: var(--font-weight-medium);
+}
+
+.home-live-pulse {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-live);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-live-pulse {
+    animation: home-pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes home-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* The telescope: its numbers as small tiles. */
+.home-specs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.home-specs > div {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-small);
+  background: var(--color-outline-fill);
+}
+
+.home-specs dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-kicker);
+}
+
+.home-specs dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body);
+}
+
+.home-specs dd small {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-kicker);
+}
+
+/* The price: one figure, one line, and the way to book. */
+.home-price {
+  display: grid;
+  flex: 1;
+  align-content: space-between;
+  gap: var(--space-4);
+}
+
+.home-price p {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.home-price strong {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-headline);
+  line-height: 1.1;
+}
+
+.home-price span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-price-cta {
+  justify-self: start;
+}
+
+.home-card-more:focus-visible,
+.home-tonight-list a:focus-visible,
+.home-live-now:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (--md) {
+  .home-now {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (--lg) {
+  .home-now {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .home-card {
+    padding: var(--space-6);
+  }
+
+  .home-card-tonight,
+  .home-card-pricing {
+    grid-column: span 7;
+  }
+
+  .home-card-live,
+  .home-card-telescope {
+    grid-column: span 5;
+  }
+
+  .home-card-telescope {
+    grid-row: 2;
+    grid-column: 1 / span 5;
+  }
+
+  .home-card-pricing {
+    grid-row: 2;
+    grid-column: 6 / span 7;
+  }
+
+  .home-specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

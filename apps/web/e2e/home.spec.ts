@@ -45,7 +45,7 @@ test("renders the Georgian sky hero and switches locale", async ({ page }) => {
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("the public homepage is the sky and four small doors, nothing more", async ({
+test("the public homepage: the sky, four small doors, and four cards", async ({
   page,
 }) => {
   await page.goto("/en");
@@ -53,11 +53,7 @@ test("the public homepage is the sky and four small doors, nothing more", async 
   await expect(
     page.getByRole("heading", { level: 2, name: "Four steps. One real observation." }),
   ).toBeVisible();
-  // The other sections are gone until the maintainer chooses what joins them.
-  for (const gone of ["#tonight", "#live", "#final-cta"]) {
-    await expect(page.locator(gone)).toHaveCount(0);
-  }
-  await expect(page.locator("main section")).toHaveCount(2);
+  await expect(page.locator("main section")).toHaveCount(3);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
   // How a session works: four tiles, each the door to the page where it happens.
@@ -71,6 +67,36 @@ test("the public homepage is the sky and four small doors, nothing more", async 
   ]) {
     await expect(steps.filter({ hasText: name })).toHaveAttribute("href", href);
   }
+
+  // Tonight: the platform's first three targets (GET /targets/tonight on the fake).
+  const tonight = page.getByRole("article", { name: "What the telescope can see" });
+  await expect(tonight.locator(".home-tonight-list li")).toHaveCount(3);
+  await expect(tonight.getByRole("link", { name: /Saturn/ })).toHaveAttribute(
+    "href",
+    "/en/app/missions/saturn",
+  );
+  await expect(tonight.getByRole("link", { name: /All targets/ })).toHaveAttribute(
+    "href",
+    "/en/app/missions",
+  );
+
+  // Live now: the observatory's public state.
+  const live = page.getByRole("article", { name: "The observatory" });
+  await expect(live.getByText("Online", { exact: true })).toBeVisible();
+  await expect(live.getByText("Clear", { exact: true })).toBeVisible();
+
+  // The telescope is the platform's, not a fixture.
+  const telescope = page.getByRole("article", { name: "One real telescope in Georgia" });
+  await expect(telescope.getByText("203", { exact: false }).first()).toBeVisible();
+  await expect(telescope.getByText("f/10", { exact: true })).toBeVisible();
+
+  // The price is the platform's next open slot; the page states no amount of its own.
+  const pricing = page.getByRole("article", { name: "A night on the telescope" });
+  await expect(pricing.getByText(/^From /)).toBeVisible();
+  await expect(pricing.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(
+    "href",
+    "/en/app/book",
+  );
 });
 
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {

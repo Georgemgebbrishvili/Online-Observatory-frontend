@@ -30,6 +30,44 @@ export type HomepageDictionary = {
     title: string;
     steps: readonly { title: string; description: string }[];
   };
+  /** The four small cards under the steps: tonight, now, the telescope, the price. */
+  tonight: {
+    kicker: string;
+    title: string;
+    all: string;
+    empty: string;
+    unavailable: string;
+  };
+  live: {
+    kicker: string;
+    title: string;
+    observing: string;
+    inProgress: string;
+    watch: string;
+    fullStatus: string;
+    unavailable: string;
+  };
+  telescope: {
+    kicker: string;
+    title: string;
+    aperture: string;
+    focalLength: string;
+    focalRatio: string;
+    camera: string;
+    cameraValue: string;
+    millimetres: string;
+    more: string;
+  };
+  pricing: {
+    kicker: string;
+    title: string;
+    from: string;
+    session: string;
+    open: string;
+    none: string;
+    reserve: string;
+    all: string;
+  };
 };
 
 export type FooterDictionary = {
