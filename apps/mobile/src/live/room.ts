@@ -38,6 +38,8 @@ export type Room = {
   link: ObservatoryLinkState | null;
   pointing: HorizontalCoordinates | null;
   stream: { url: string; mode: ObservatoryMode; expiresAt: string } | null;
+  /** What the frame on screen is, from MISSION_FRAME (platform #199). */
+  frame: { exposureMilliseconds: number; gain: number; stackedFrames: number | null } | null;
   verdicts: Record<string, { status: CommandAcceptanceStatus; rejectionReason: CommandRejectionReason | null }>;
   channelError: ErrorCode | null;
   capturesArrived: number;
@@ -50,6 +52,7 @@ export function initialRoom(state: MissionState, failureReason: MissionFailureRe
     link: null,
     pointing: null,
     stream: null,
+    frame: null,
     verdicts: {},
     channelError: null,
     capturesArrived: 0,
@@ -66,6 +69,7 @@ export function reduce(room: Room, message: MissionChannelMessage): Room {
         state: message.state,
         failureReason: message.failureReason ?? null,
         stream: ended ? null : room.stream,
+        frame: ended ? null : room.frame,
         pointing: ended ? null : room.pointing,
       };
     }
@@ -75,6 +79,15 @@ export function reduce(room: Room, message: MissionChannelMessage): Room {
       return {
         ...room,
         stream: { url: message.streamUrl, mode: message.mode, expiresAt: message.expiresAt },
+      };
+    case "MISSION_FRAME":
+      return {
+        ...room,
+        frame: {
+          exposureMilliseconds: message.exposureMilliseconds,
+          gain: message.gain,
+          stackedFrames: message.stackedFrames ?? null,
+        },
       };
     case "MISSION_CAPTURE_READY":
       return { ...room, capturesArrived: room.capturesArrived + 1 };
@@ -90,7 +103,7 @@ export function reduce(room: Room, message: MissionChannelMessage): Room {
         },
       };
     case "MISSION_ERROR":
-      return { ...room, channelError: message.code, stream: null };
+      return { ...room, channelError: message.code, stream: null, frame: null };
   }
 }
 
@@ -143,4 +156,24 @@ export function onRealtime(url: string, realtimeBase: string, protocol: "http" |
   const secure = base.protocol === "https:";
   const scheme = protocol === "ws" ? (secure ? "wss:" : "ws:") : base.protocol;
   return `${scheme}//${base.host}${target.pathname}${target.search}`;
+}
+
+/** "12 × 2 s stacked · gain 200", in the reader's language. */
+export function frameNote(
+  frame: NonNullable<Room["frame"]>,
+  copy: {
+    frame: (stacked: number | null, exposure: string, gain: number) => string;
+    milliseconds: (value: string) => string;
+    seconds: (value: string) => string;
+  },
+  locale: "en" | "ka",
+): string {
+  const number = new Intl.NumberFormat(locale === "ka" ? "ka-GE" : "en-GB", {
+    maximumFractionDigits: frame.exposureMilliseconds < 1000 ? 0 : 1,
+  });
+  const exposure =
+    frame.exposureMilliseconds < 1000
+      ? copy.milliseconds(number.format(frame.exposureMilliseconds))
+      : copy.seconds(number.format(frame.exposureMilliseconds / 1000));
+  return copy.frame(frame.stackedFrames, exposure, frame.gain);
 }

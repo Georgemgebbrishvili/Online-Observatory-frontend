@@ -1,7 +1,9 @@
 import type { MissionChannelMessage } from "@darkview/contracts";
 import { describe, expect, it } from "vitest";
 
-import { initialRoom, onRealtime, reduce, remaining, stepOf, verdictOutcome } from "./room";
+import { copy } from "@/i18n/copy";
+
+import { frameNote, initialRoom, onRealtime, reduce, remaining, stepOf, verdictOutcome } from "./room";
 
 const base = { messageId: "m", sentAt: "2026-10-22T14:00:00Z", missionId: "mission" };
 
@@ -57,5 +59,16 @@ describe("rules", () => {
     expect(onRealtime("http://localhost:3000/stream/mission/m?t=abc", "http://127.0.0.1:4021", "http")).toBe(
       "http://127.0.0.1:4021/stream/mission/m?t=abc",
     );
+  });
+
+  it("says what the live picture is made of, and forgets it when the mission ends", () => {
+    let room = reduce(initialRoom("OBSERVING"), { ...base, type: "MISSION_STREAM", streamUrl: "/stream/mission/x?t=1", encoding: "JPEG", mode: "SIMULATED", expiresAt: "2026-10-22T14:05:00Z" } as MissionChannelMessage);
+    room = reduce(room, { ...base, type: "MISSION_FRAME", sequence: 12, capturedAt: "2026-10-22T14:00:00Z", exposureMilliseconds: 2500, gain: 200, stackedFrames: 12, mode: "SIMULATED" } as MissionChannelMessage);
+    expect(frameNote(room.frame!, copy.en.room, "en")).toBe("12 × 2.5 s stacked · gain 200");
+    expect(frameNote(room.frame!, copy.ka.room, "ka")).toBe("12 × 2,5 წმ დაჯამებული · გაძლიერება 200");
+    expect(frameNote({ ...room.frame!, exposureMilliseconds: 250, stackedFrames: null }, copy.en.room, "en")).toBe("250 ms exposure · gain 200");
+
+    room = reduce(room, { ...base, type: "MISSION_STATE", state: "COMPLETE" } as MissionChannelMessage);
+    expect(room.frame).toBeNull();
   });
 });

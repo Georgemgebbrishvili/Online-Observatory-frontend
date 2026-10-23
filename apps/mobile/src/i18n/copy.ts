@@ -128,6 +128,11 @@ const en = {
     left: (time: string) => `${time} left`,
     timeUp: "Your time is up.",
     live: "LIVE",
+    /** What the picture is made of (platform #199): "12 × 2 s stacked · gain 200". */
+    frame: (stacked: number | null, exposure: string, gain: number) =>
+      `${stacked === null ? `${exposure} exposure` : `${stacked} × ${exposure} stacked`} · gain ${gain}`,
+    milliseconds: (value: string) => `${value} ms`,
+    seconds: (value: string) => `${value} s`,
     waitingForFrame: "Waiting for the first frame",
     controls: "Controls",
     up: "Higher",
@@ -288,6 +293,10 @@ const ka: Copy = {
     left: (time) => `დარჩა ${time}`,
     timeUp: "შენი დრო ამოიწურა.",
     live: "LIVE",
+    frame: (stacked, exposure, gain) =>
+      `${stacked === null ? `${exposure} ექსპოზიცია` : `${stacked} × ${exposure} დაჯამებული`} · გაძლიერება ${gain}`,
+    milliseconds: (value) => `${value} მწმ`,
+    seconds: (value) => `${value} წმ`,
     waitingForFrame: "ველოდებით პირველ კადრს",
     controls: "მართვა",
     up: "მაღლა",

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useLocale } from "@/i18n/locale";
-import { isLive, remaining, stepOf, stoppedStates } from "@/live/room";
+import { frameNote, isLive, remaining, stepOf, stoppedStates } from "@/live/room";
 import { useLive, type CommandOutcome } from "@/live/use-live";
 import { platform } from "@/platform/api";
 import { useResource } from "@/platform/use-resource";
@@ -201,6 +201,9 @@ function Feed({ live }: { live: ReturnType<typeof useLive> }) {
           )}
         </View>
       )}
+      {room.stream && room.frame && (
+        <Text style={[type.label(locale), styles.frameNote]}>{frameNote(room.frame, t.room, locale)}</Text>
+      )}
       {frame && status && <Text style={[type.reading(locale), styles.overlay]}>{status}</Text>}
     </View>
   );
@@ -306,6 +309,7 @@ const styles = StyleSheet.create({
   badge: { position: "absolute", top: space[3], left: space[3] },
   livePill: { flexDirection: "row", alignItems: "center", gap: space[2], paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.pill, backgroundColor: `${palette.bar}cc` },
   overlay: { position: "absolute", bottom: space[2], left: space[3], color: palette.ink2 },
+  frameNote: { position: "absolute", top: space[3], right: space[3], maxWidth: "55%", color: palette.ink2, textAlign: "right" },
   pad: { alignItems: "center", gap: space[2] },
   padRow: { flexDirection: "row", gap: space[2], alignItems: "center" },
   padButton: { minWidth: 96, minHeight: 48, alignItems: "center", justifyContent: "center", paddingHorizontal: space[3], borderRadius: radius.small, borderWidth: 1, borderColor: line, backgroundColor: palette.deep },
