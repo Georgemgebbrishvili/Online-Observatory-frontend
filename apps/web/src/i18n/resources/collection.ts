@@ -126,7 +126,8 @@ export const collectionGalleryCopy: Record<"en" | "ka", CollectionCopy> = {
     olderCaptures: "ძველი კადრები",
     newestCaptures: "უახლესებზე დაბრუნება",
     nights: "წარსული ღამეები",
-    nightsDescription: "ყველა შენი დაკვირვება, უახლესი პირველად, თითოეული თავისი კადრებით.",
+    nightsDescription:
+      "ყველა შენი დაკვირვება, უახლესი პირველად, თითოეული თავისი კადრებით.",
     noNights: "ღამეები ჯერ არ არის. პირველი დაკვირვება აქ გამოჩნდება, როცა დასრულდება.",
     openNight: "ღამის გახსნა",
     nightCaptures: (count: number) => `${count} კადრი`,
@@ -231,3 +232,78 @@ export const captureDetailCopy: Record<"en" | "ka", CaptureDetailCopy> = {
     },
   },
 };
+
+/** ADR-065: the owner's sharing controls on a capture. */
+export const captureSharingCopy = {
+  en: {
+    title: "Share",
+    private: "Only you can see this capture.",
+    public: "Anyone with the link can see this capture. Your name is never shown.",
+    makePublic: "Make public",
+    makePrivate: "Make private",
+    saving: "Saving…",
+    copyLink: "Copy link",
+    copied: "Link copied.",
+    share: "Share",
+    linkLabel: "Public link",
+    simulated: "Simulated captures cannot be shared — they are not telescope output.",
+    failed: "That did not save. Try again.",
+  },
+  ka: {
+    title: "გაზიარება",
+    private: "ამ კადრს მხოლოდ შენ ხედავ.",
+    public: "ამ კადრს ხედავს ყველა, ვისაც ბმული აქვს. შენი სახელი არსად ჩანს.",
+    makePublic: "საჯაროდ გახდომა",
+    makePrivate: "პირადად დაბრუნება",
+    saving: "ინახება…",
+    copyLink: "ბმულის კოპირება",
+    copied: "ბმული დაკოპირდა.",
+    share: "გაზიარება",
+    linkLabel: "საჯარო ბმული",
+    simulated:
+      "სიმულირებული კადრის გაზიარება შეუძლებელია — ის ტელესკოპის გამოსახულება არ არის.",
+    failed: "ვერ შეინახა. სცადე თავიდან.",
+  },
+} as const;
+
+/** ADR-065: the public page of a shared capture. */
+export const galleryPageCopy = {
+  en: {
+    metadataTitle: "{target}, through the telescope",
+    metadataDescription: "{target} on {date}, live from the observatory in Georgia.",
+    kicker: "Seen through a real telescope",
+    taken: "Taken",
+    place: "Where",
+    placeValue: "Georgia",
+    instrument: "Telescope",
+    instrumentValue: "{aperture} mm aperture · {focal} mm focal length",
+    exposure: "Exposure",
+    stack: "Stack",
+    integration: "Total light",
+    frames: "{count} frames",
+    imageAlt: "{target}, captured live through the telescope",
+    callTitle: "See it yourself",
+    callBody:
+      "Book a night and the telescope turns to the object you choose. You watch it live and keep what you capture.",
+    call: "Book your own night",
+  },
+  ka: {
+    metadataTitle: "{target} — ტელესკოპით",
+    metadataDescription: "{target}, {date}, პირდაპირ ობსერვატორიიდან, საქართველო.",
+    kicker: "დანახული ნამდვილი ტელესკოპით",
+    taken: "გადაღებულია",
+    place: "სად",
+    placeValue: "საქართველო",
+    instrument: "ტელესკოპი",
+    instrumentValue: "აპერტურა {aperture} მმ · ფოკუსური მანძილი {focal} მმ",
+    exposure: "ექსპოზიცია",
+    stack: "დაჯამება",
+    integration: "სულ სინათლე",
+    frames: "{count} კადრი",
+    imageAlt: "{target}, გადაღებული პირდაპირ ტელესკოპით",
+    callTitle: "ნახე შენ თვითონ",
+    callBody:
+      "დაჯავშნე სეანსი და ტელესკოპი შენ მიერ არჩეულ ობიექტზე მოტრიალდება. უყურებ პირდაპირ ეთერში და გადაღებულს ინახავ.",
+    call: "დაჯავშნე სეანსი",
+  },
+} as const;

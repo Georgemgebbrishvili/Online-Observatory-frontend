@@ -1,0 +1,51 @@
+/* ADR-065: a shared capture, for anyone with the link. The picture first. */
+.gallery-page {
+  padding-block: var(--space-10) var(--space-16);
+}
+
+.gallery-header {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.gallery-header h1 {
+  margin: 0;
+}
+
+.gallery-image {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+}
+
+.gallery-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.gallery-lower {
+  display: grid;
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+}
+
+.gallery-call {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.gallery-call h2,
+.gallery-call p {
+  margin: 0;
+}
+
+@media (--md) {
+  .gallery-lower {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}

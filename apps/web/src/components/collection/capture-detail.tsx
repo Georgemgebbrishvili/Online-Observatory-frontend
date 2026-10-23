@@ -15,6 +15,7 @@ import { captureDetailCopy, collectionGalleryCopy } from "@/i18n/resources/colle
 
 import { CaptureBadges, CaptureImage } from "./capture-card";
 import { CaptureDownloads } from "./capture-downloads";
+import { CaptureSharing } from "./capture-sharing";
 
 type CaptureDetailProps = {
   result: Extract<CaptureResult, { kind: "ok" }>;
@@ -121,6 +122,12 @@ export function CaptureDetail({ locale, result }: CaptureDetailProps) {
               downloadFailed: copy.downloadFailed,
               downloadNote: copy.downloadNote,
             }}
+          />
+          <CaptureSharing
+            captureId={capture.id}
+            locale={locale}
+            mode={capture.mode}
+            visibility={capture.visibility}
           />
         </div>
 

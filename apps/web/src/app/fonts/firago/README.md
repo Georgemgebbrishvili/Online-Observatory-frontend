@@ -21,3 +21,5 @@ SHA-256 of the unsubsetted upstream files:
 | FiraGO-SemiBold.woff2 | `e95ee22a90196bac9d8abee81fab0df53e86cc29246789962fe9d2df38d41569` |
 
 FiraGO has no prime glyphs (′ ″). Coordinates are set in the data face, `--font-mono` (JetBrains Mono since ADR-039).
+
+- `../og/firago-600.ttf`: FiraGO SemiBold, subset to Latin and Georgian and converted to TrueType with fontTools `pyftsubset` (2026-10-23), because the Open Graph renderer reads no woff2. Same licence.

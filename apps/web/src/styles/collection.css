@@ -463,3 +463,36 @@
     grid-column: auto;
   }
 }
+
+/* ADR-065: the owner's sharing controls, under the downloads. */
+.capture-sharing {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.capture-sharing-note,
+.capture-sharing-notice {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.capture-sharing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.capture-sharing-link {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+}
+
+.capture-sharing-link a {
+  color: var(--color-text-secondary);
+}

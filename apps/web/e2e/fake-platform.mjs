@@ -20,6 +20,8 @@ import {
   zGetBookingResponse,
   zGetCaptureDownloadResponse,
   zGetCaptureResponse,
+  zGetGalleryCaptureResponse,
+  zSetCaptureVisibilityRequest,
   zGetMissionResponse,
   zGetMissionWatchViewResponse,
   zGetObservatoryConditionsResponse,
@@ -131,6 +133,13 @@ const fakeAccounts = {
     id: "00000000-0000-4000-8000-000000000010",
     role: "USER",
     displayName: "Lucky",
+  },
+  // ADR-065: owns two REAL captures, one shared and one not, so sharing is exercised
+  // where the demo cannot (it has only simulated captures) and no other Collection moves.
+  "sharer@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000011",
+    role: "USER",
+    displayName: "Sharer",
   },
   // Account slice 1: resets its password in e2e, so no other test's sign-in depends on it.
   "forgetful@darkview.test": {
@@ -946,6 +955,37 @@ const captures = [
     thumbnailUrl: null,
   }),
 }));
+
+// ADR-065: the sharer's two REAL captures of Saturn. One is in the gallery from the start,
+// so a stranger can open it; the other is private until the e2e shares it.
+for (const [n, visibility] of [
+  [4, "GALLERY"],
+  [5, "PRIVATE"],
+]) {
+  captures.push({
+    assets: ["THUMBNAIL", "IMAGE"],
+    capture: zGetCaptureResponse.parse({
+      id: `60000000-0000-4000-8000-00000000000${n}`,
+      missionId: "22000000-0000-4000-8000-000000000003",
+      userId: fakeAccounts["sharer@darkview.test"].id,
+      targetId: "30000000-0000-4000-8000-000000000006",
+      capturedAt: "2026-09-21T19:30:00.000Z",
+      imagingProfile: "PLANETARY",
+      opticalConfig: "F10_NATIVE",
+      exposureMilliseconds: 15,
+      gain: 120,
+      framesStacked: 60,
+      integrationSeconds: 0.9,
+      widthPx: 3840,
+      heightPx: 2160,
+      solvedFocalLengthMm: null,
+      fitsAvailable: false,
+      visibility,
+      mode: "REAL",
+      thumbnailUrl: null,
+    }),
+  });
+}
 
 // A stand-in for a presigned GET: the bucket's origin, a key, a signature that means nothing.
 function signed(id, kind) {
@@ -2933,6 +2973,64 @@ http
     }
     if (ownBooking?.[2] && request.method === "POST")
       return await changeBooking(request, response, ownBooking[1], ownBooking[2]);
+
+    // ADR-065: the owner publishes or takes back; a simulated capture is refused.
+    const visibility = path.match(/^\/captures\/([0-9a-f-]+)$/);
+    if (visibility && request.method === "PATCH") {
+      const user = sessionUser(request);
+      if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+      const row = captures.find(
+        (c) => c.capture.id === visibility[1] && c.capture.userId === user.id,
+      );
+      if (!row) return error(response, 404, "NOT_FOUND", "No such capture.");
+      const body = zSetCaptureVisibilityRequest.safeParse(await json(request));
+      if (!body.success)
+        return error(response, 422, "VALIDATION_FAILED", "Bad visibility.");
+      if (body.data.visibility === "GALLERY" && row.capture.mode !== "REAL") {
+        return error(
+          response,
+          409,
+          "CONFLICT",
+          "A simulated capture cannot be published.",
+        );
+      }
+      row.capture = { ...row.capture, visibility: body.data.visibility };
+      return send(response, 200, zGetCaptureResponse.parse(withThumbnail(row)));
+    }
+    // ADR-065: anyone, no session; private, simulated and unknown are one 404.
+    const gallery = path.match(/^\/gallery\/([^/]+)$/);
+    if (gallery && request.method === "GET") {
+      const row = captures.find(
+        (c) =>
+          c.capture.id === gallery[1] &&
+          c.capture.visibility === "GALLERY" &&
+          c.capture.mode === "REAL" &&
+          c.assets.includes("IMAGE"),
+      );
+      if (!row) return error(response, 404, "NOT_FOUND", "No such capture.");
+      const { capture } = row;
+      return send(
+        response,
+        200,
+        zGetGalleryCaptureResponse.parse({
+          id: capture.id,
+          target: { slug: "saturn", nameEn: "Saturn", nameKa: "სატურნი", type: "PLANET" },
+          place: { city: "Tbilisi", countryCode: "GE", timezone: "Asia/Tbilisi" },
+          telescope: { apertureMm: 203, focalLengthMm: 2032 },
+          capturedAt: capture.capturedAt,
+          imagingProfile: capture.imagingProfile,
+          exposureMilliseconds: capture.exposureMilliseconds,
+          gain: capture.gain,
+          framesStacked: capture.framesStacked,
+          integrationSeconds: capture.integrationSeconds,
+          widthPx: capture.widthPx,
+          heightPx: capture.heightPx,
+          imageUrl: signed(capture.id, "IMAGE"),
+          imageExpiresAt: new Date(Date.now() + 5 * 60_000).toISOString(),
+          mode: capture.mode,
+        }),
+      );
+    }
 
     const owned = path.match(/^\/(captures|missions)\/([0-9a-f-]+)(\/download)?$/);
     if (owned && request.method === "GET") {
