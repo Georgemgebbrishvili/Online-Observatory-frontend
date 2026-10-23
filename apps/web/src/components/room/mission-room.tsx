@@ -21,9 +21,17 @@ import { PanelHead } from "./panel-head";
 import { RoomLive } from "./room-live";
 import { TargetGuide } from "./target-guide";
 
+/** ADR-070: the presenter view, for a class watching on a projector. */
+const presenter = {
+  en: { open: "Presenter view", leave: "Leave presenter view" },
+  ka: { open: "პრეზენტაციის ხედი", leave: "პრეზენტაციის ხედიდან გასვლა" },
+} as const;
+
 type MissionRoomProps = {
   room: Room;
   locale: Locale;
+  /** ADR-070: the presenter view -- the state and the feed, large, for a projector. */
+  present?: boolean;
 };
 
 const linkTone: Record<string, StatusTone> = {
@@ -41,7 +49,7 @@ function currentHour(conditions: ViewingConditions | null, now: number) {
   return hour && hour.status !== "UNKNOWN" ? hour : null;
 }
 
-export function MissionRoom({ locale, room }: MissionRoomProps) {
+export function MissionRoom({ locale, present = false, room }: MissionRoomProps) {
   const copy = roomCopy[locale];
   const status = statusCopy[locale];
   const captureCopy = collectionGalleryCopy[locale];
@@ -62,7 +70,7 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
   const hour = currentHour(conditions, room.readAt);
 
   return (
-    <div className="room room-console">
+    <div className={`room room-console${present ? " room-present" : ""}`}>
       <RoomLive
         locale={locale}
         mission={mission}
@@ -70,6 +78,14 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
         targetName={name}
         targetSlug={target?.slug ?? null}
         plate={target ? plateFor(target.slug) : null}
+        headerAction={
+          <Link
+            className="room-present-switch"
+            href={`/${locale}/app/missions/${mission.id}/session${present ? "" : "?present"}`}
+          >
+            {present ? presenter[locale].leave : presenter[locale].open}
+          </Link>
+        }
         guide={
           target && (
             <TargetGuide

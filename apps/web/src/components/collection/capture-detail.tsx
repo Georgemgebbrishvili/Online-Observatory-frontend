@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { AstromanLine } from "@/components/astroman-line";
+
 import {
   captureReference,
   captureTitle,
@@ -147,6 +149,7 @@ export function CaptureDetail({ locale, result }: CaptureDetailProps) {
           </dl>
         </aside>
       </div>
+      {observatory && <AstromanLine locale={locale} telescope={observatory.telescope} />}
     </article>
   );
 }

@@ -334,3 +334,9 @@
 .not-found-action {
   margin-top: var(--space-8);
 }
+
+/* ADR-070: the instrument behind the view, and where to find one. */
+.astroman-line {
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-tertiary);
+}

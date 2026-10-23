@@ -1214,3 +1214,32 @@
   background: color-mix(in srgb, var(--room-gold) 8%, transparent);
   color: var(--room-ink);
 }
+
+/* ADR-070: the presenter view -- what is happening and the feed, large, for a projector.
+   Everything else in the room steps aside; the switch back stays. */
+.room.room-console.room-present .room-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.room.room-console.room-present .room-col {
+  display: contents;
+}
+
+.room.room-console.room-present .room-col > :not(.room-tonight, .room-feed),
+.room.room-console.room-present .room-grid > :not(.room-col, .room-feed) {
+  display: none;
+}
+
+.room.room-console.room-present .room-tonight {
+  order: 1;
+}
+
+.room.room-console.room-present .room-feed {
+  order: 2;
+  grid-column: 1 / -1;
+}
+
+.room-present-switch {
+  color: var(--room-ink-2, var(--color-text-secondary));
+  font-size: var(--font-size-caption);
+}

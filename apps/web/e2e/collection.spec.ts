@@ -131,3 +131,25 @@ test("the Georgian capture page fits a phone", async ({ page }) => {
   }));
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
+
+test("the Collection keeps a log by kind, and says it counts simulated sessions (ADR-070)", async ({
+  page,
+}) => {
+  await page.goto("/en/app/collection");
+  const log = page.getByRole("region", { name: "Your log" });
+  await expect(log.locator("div", { hasText: "Globular clusters" })).toContainText(
+    /1 of \d+/,
+  );
+  await expect(log.locator("div", { hasText: "Planets" })).toContainText(/0 of \d+/);
+  await expect(log).toContainText("Counts simulated sessions too");
+});
+
+test("a capture names the telescope behind it, with a link to Astroman (ADR-070)", async ({
+  page,
+}) => {
+  await page.goto(`/en/app/collection/${first}`);
+  await expect(page.getByText("Seen through a Celestron NexStar 8SE.")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Telescopes at Astroman/ }),
+  ).toHaveAttribute("href", "https://astroman.ge");
+});

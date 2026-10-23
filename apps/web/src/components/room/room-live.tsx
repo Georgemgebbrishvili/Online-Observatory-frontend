@@ -68,6 +68,8 @@ type RoomLiveProps = {
   readings: ReactNode;
   /** ADR-069: what the customer is looking at, rendered on the server. */
   guide?: ReactNode;
+  /** ADR-070: the presenter view's switch, beside the way back. */
+  headerAction?: ReactNode;
   /** The captures panel, in the right column of the desk (ADR-050). */
   captures?: ReactNode;
   /** How many captures the mission has, for the phone's stats. */
@@ -128,6 +130,7 @@ export function RoomLive({
   plates,
   readings,
   guide,
+  headerAction,
   captures,
   captureCount = 0,
   targetName,
@@ -283,6 +286,7 @@ export function RoomLive({
                   <span aria-hidden="true">←</span> {named(copy.back)}
                 </Link>
               )}
+              {headerAction}
               <p className="eyebrow">
                 <span aria-hidden="true" />
                 {named(copy.eyebrow)}

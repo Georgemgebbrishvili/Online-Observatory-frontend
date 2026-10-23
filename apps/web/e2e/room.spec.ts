@@ -135,3 +135,17 @@ test("the room and the target page say what the live view can show (ADR-069)", a
   await page.goto("/ka/app/missions/m13-hercules-cluster");
   await expect(page.getByText("რას აჩვენებს პირდაპირი გამოსახულება")).toBeVisible();
 });
+
+test("the presenter view shows the state and the feed alone, and goes back (ADR-070)", async ({
+  page,
+}) => {
+  await page.goto(`/en/app/missions/${observing}/session`);
+  await page.getByRole("link", { name: "Presenter view" }).click();
+  await expect(page).toHaveURL(/\/session\?present/);
+  await page.screenshot({ path: "test-results/presenter-view.png" });
+  await expect(page.locator(".room-feed")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Sharing" })).toBeHidden();
+  await expect(page.getByRole("region", { name: "About Hercules Cluster" })).toBeHidden();
+  await page.getByRole("link", { name: "Leave presenter view" }).click();
+  await expect(page.getByRole("region", { name: "Sharing" })).toBeVisible();
+});

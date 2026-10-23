@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { CollectionGallery } from "@/components/collection/collection-gallery";
+import { ObserverLog, type LogRow } from "@/components/collection/observer-log";
 import { cursorOf, readCatalogue, readCollection } from "@/features/collection/read";
 import { readMyMissions } from "@/features/home/read";
 import { targetName } from "@/features/targets/present";
@@ -46,15 +47,54 @@ export default async function CollectionPage({
     cursor === null && result.kind === "ok"
       ? await readPastNights(locale, result.timezone)
       : null;
+  const log = cursor === null && result.kind === "ok" ? await readLog(locale) : null;
   return (
     <CollectionGallery
       locale={locale}
       nights={nights}
       paged={cursor !== null}
+      log={log}
       result={result}
     />
   );
 }
+
+/**
+ * ADR-070: each kind the catalogue offers, and how many of its targets the customer has a
+ * capture of, from their missions' captures. Null when either read fails.
+ */
+async function readLog(locale: "en" | "ka") {
+  const [mine, catalogue] = await Promise.all([readMyMissions(), readCatalogue()]);
+  if (mine.kind !== "ok" || !catalogue) return null;
+  const captured = mine.missions.filter((mission) => (mission.captureIds?.length ?? 0) > 0);
+  const seen = new Set(captured.map((mission) => mission.targetId));
+  const offered = [...catalogue.values()].filter((target) => target.enabled);
+  const rows: LogRow[] = [];
+  for (const target of offered) {
+    let row = rows.find((candidate) => candidate.type === target.type);
+    if (!row) rows.push((row = { type: target.type, seen: 0, of: 0 }));
+    row.of += 1;
+    if (seen.has(target.id)) row.seen += 1;
+  }
+  if (rows.length === 0) return null;
+  rows.sort((a, b) => KINDS.indexOf(a.type) - KINDS.indexOf(b.type));
+  return (
+    <ObserverLog
+      locale={locale}
+      rows={rows}
+      simulated={captured.some((mission) => mission.mode === "SIMULATED")}
+    />
+  );
+}
+
+const KINDS = [
+  "MOON",
+  "PLANET",
+  "DOUBLE_STAR",
+  "GLOBULAR_CLUSTER",
+  "PLANETARY_NEBULA",
+  "BRIGHT_NEBULA",
+] as const satisfies readonly LogRow["type"][];
 
 const ENDED = new Set([
   "COMPLETE",

@@ -496,3 +496,41 @@
 .capture-sharing-link a {
   color: var(--color-text-secondary);
 }
+
+/* ADR-070: the observer log -- a quiet tally, never a badge. */
+.observer-log {
+  display: grid;
+  gap: var(--space-4);
+  margin-block: var(--space-12);
+}
+
+.observer-log-rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.observer-log-rows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  color: var(--color-text-tertiary);
+}
+
+.observer-log-rows > div[data-seen] {
+  color: var(--color-text-primary);
+}
+
+.observer-log-rows dt,
+.observer-log-rows dd {
+  margin: 0;
+}
+
+.observer-log-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+}

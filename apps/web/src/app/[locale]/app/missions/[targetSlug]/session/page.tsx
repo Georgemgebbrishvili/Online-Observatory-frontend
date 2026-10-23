@@ -15,6 +15,8 @@ import "@/styles/room-console.css";
 // the mission's id (ADR-027 §1).
 type MissionRoomPageProps = {
   params: Promise<{ locale: string; targetSlug: string }>;
+  /** ADR-070: `?present` is the presenter view, for a projector. */
+  searchParams?: Promise<{ present?: string | string[] }>;
 };
 
 export async function generateMetadata({
@@ -31,7 +33,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function MissionRoomPage({ params }: MissionRoomPageProps) {
+export default async function MissionRoomPage({
+  params,
+  searchParams,
+}: MissionRoomPageProps) {
   const { locale, targetSlug: missionId } = await params;
   if (!isLocale(locale)) notFound();
 
@@ -52,5 +57,6 @@ export default async function MissionRoomPage({ params }: MissionRoomPageProps) 
     );
   }
 
-  return <MissionRoom room={result.room} locale={locale} />;
+  const present = (await searchParams)?.present !== undefined;
+  return <MissionRoom room={result.room} locale={locale} present={present} />;
 }

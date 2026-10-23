@@ -30,6 +30,8 @@ type CollectionGalleryProps = {
   locale: Locale;
   /** ADR-051: the past nights under the captures, on the first page. */
   nights?: PastNight[] | null;
+  /** ADR-070: the observer log, on the first page. */
+  log?: React.ReactNode;
 };
 
 function Featured({
@@ -88,6 +90,7 @@ function Featured({
 
 export function CollectionGallery({
   locale,
+  log = null,
   nights = null,
   paged,
   result,
@@ -174,6 +177,8 @@ export function CollectionGallery({
           </div>
         </section>
       )}
+
+      {!paged && log}
 
       {!paged && nights && (
         <section className="collection-nights" aria-labelledby="collection-nights-title">
