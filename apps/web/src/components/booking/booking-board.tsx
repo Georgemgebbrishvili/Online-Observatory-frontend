@@ -10,6 +10,8 @@ import type {
 } from "@darkview/contracts";
 import {
   zCreateBookingResponse,
+  zJoinWaitlistResponse,
+  zListMyWaitlistEntriesResponse,
   zListSlotTargetsResponse,
   zRescheduleBookingResponse,
 } from "@darkview/contracts/zod";
@@ -26,7 +28,7 @@ import { readRefusal } from "@/features/booking/refusal";
 import { nightSky } from "@/features/booking/night-sky";
 import { targetDescription, targetName } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
-import { boardCopy } from "@/i18n/resources/board";
+import { boardCopy, type BoardCopy } from "@/i18n/resources/board";
 import { cardsCopy } from "@/i18n/resources/cards";
 import { giftCopy } from "@/i18n/resources/gift";
 import { bookingCopy } from "@/i18n/resources/booking";
@@ -59,6 +61,16 @@ type Phase = "idle" | "reserving" | "redirecting";
 
 function intlLocale(locale: Locale) {
   return locale === "ka" ? "ka-GE" : "en-GB";
+}
+
+/** ADR-068: a forecast clear enough to call a start "clear". */
+const CLEAR_CLOUD_PERCENT = 30;
+
+function forecastText(slot: Slot, words: BoardCopy["forecast"]) {
+  const { status, cloudCoverPercent } = slot.forecast;
+  return status === "KNOWN" && cloudCoverPercent !== null
+    ? words.cloud(Math.round(cloudCoverPercent))
+    : words.unknown;
 }
 
 /** Whether a target can be booked for a slot, by the two rules `createBooking` applies. */
@@ -124,26 +136,68 @@ export function BookingBoard({
   // Slots refused as taken on this visit, struck out until the night is read again.
   const [gone, setGone] = useState<ReadonlySet<string>>(() => new Set());
 
+  // ADR-068: starts freed and held for this customer by their waitlist, read in the browser.
+  const [held, setHeld] = useState<ReadonlyMap<string, string>>(() => new Map());
+  useEffect(() => {
+    apiRequest("/waitlist", { schema: zListMyWaitlistEntriesResponse })
+      .then(({ items }) =>
+        setHeld(
+          new Map(
+            items
+              .filter((item) => item.status === "OFFERED" && item.offerExpiresAt)
+              .map((item) => [item.slotStartAt, item.offerExpiresAt!]),
+          ),
+        ),
+      )
+      .catch(() => {});
+  }, []);
+
   // A replacement is for the lost slot's length (rescheduleBooking); otherwise any open slot.
   const offered = (slot: Slot) =>
-    slot.available &&
+    (slot.available ||
+      (slot.unavailableReason === "HELD_FOR_WAITLIST" && held.has(slot.startAt))) &&
     !gone.has(slot.startAt) &&
     (!reschedule || slot.durationMinutes === reschedule.durationMinutes);
+  // ADR-068: a start somebody else holds can be waited for, never on a replacement.
+  const waitable = (slot: Slot) =>
+    !reschedule &&
+    !offered(slot) &&
+    (slot.unavailableReason === "ALREADY_BOOKED" ||
+      slot.unavailableReason === "HELD_FOR_WAITLIST" ||
+      gone.has(slot.startAt));
   const openCount = (night: BoardNight) => night.slots.filter(offered).length;
   const nightOf = (startAt: string | null) =>
     nights.find((night) => night.slots.some((slot) => slot.startAt === startAt))?.date ?? null;
 
+  // ADR-068: a replacement for a weather loss opens on the next clear start.
+  const [nextClear] = useState<string | null>(() =>
+    reschedule && !initialStartAt
+      ? (nights
+          .flatMap((n) => n.slots)
+          .find(
+            (s) =>
+              offered(s) &&
+              s.forecast.status === "KNOWN" &&
+              s.forecast.cloudCoverPercent !== null &&
+              s.forecast.cloudCoverPercent <= CLEAR_CLOUD_PERCENT,
+          )?.startAt ?? null)
+      : null,
+  );
   const [night, setNight] = useState(
     () =>
       nightOf(initialStartAt) ??
+      nightOf(nextClear) ??
       nights.find((candidate) => openCount(candidate) > 0)?.date ??
       nights[0]?.date ??
       "",
   );
   const [slotAt, setSlotAt] = useState<string | null>(() => {
-    const slot = nights.flatMap((n) => n.slots).find((s) => s.startAt === initialStartAt);
+    const slot = nights
+      .flatMap((n) => n.slots)
+      .find((s) => s.startAt === (initialStartAt ?? nextClear));
     return slot && offered(slot) ? slot.startAt : null;
   });
+  const [notice, setNotice] = useState<string | null>(null);
   const [targetId, setTargetId] = useState<string | null>(reschedule?.targetId ?? null);
   const [skies, setSkies] = useState<Record<string, SlotTarget[]>>({});
   const reading = useRef(new Set<string>());
@@ -156,6 +210,7 @@ export function BookingBoard({
   // The night's light, on the observatory's clock and from its site.
   const darkness = current ? nightSky(current.date, timezone) : null;
   const chosen = slots.find((slot) => slot.startAt === slotAt && offered(slot)) ?? null;
+  const waiting = slots.find((slot) => slot.startAt === slotAt && waitable(slot)) ?? null;
 
   // What is up for a slot, read once per slot: when it is picked, and for the slot the
   // address named, on arrival.
@@ -214,11 +269,43 @@ export function BookingBoard({
   const pickSlot = (slot: Slot) => {
     setSlotAt(slot.startAt);
     setFeedback(null);
-    readSky(slot);
+    setNotice(null);
+    if (offered(slot)) readSky(slot);
   };
+
+  async function joinWaitlist() {
+    if (!waiting || phase !== "idle") return;
+    setPhase("reserving");
+    setFeedback(null);
+    try {
+      const entry = await apiRequest("/waitlist", {
+        method: "POST",
+        body: {
+          observatoryId: observatory.id,
+          slotStartAt: waiting.startAt,
+          durationMinutes: waiting.durationMinutes,
+        },
+        schema: zJoinWaitlistResponse,
+      });
+      setNotice(copy.waitlist.joined(entry.position ?? 1));
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 401) {
+        navigateWithFreshSession(signInPath);
+        return;
+      }
+      setFeedback(
+        error instanceof ApiRequestError && (error.status === 409 || error.status === 422)
+          ? copy.waitlist.refused
+          : reserve.form.failed,
+      );
+    } finally {
+      setPhase("idle");
+    }
+  }
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    if (waiting) return void joinWaitlist();
     if (!chosen || !ready || phase !== "idle") return;
     setPhase("reserving");
     setFeedback(null);
@@ -320,8 +407,11 @@ export function BookingBoard({
           ? cards.board.free
           : slot.price;
   const endOf = (slot: Slot) => new Date(Date.parse(slot.startAt) + slot.durationMinutes * 60_000);
-  const buttonLabel =
-    phase === "reserving"
+  const buttonLabel = waiting
+    ? phase === "reserving"
+      ? copy.waitlist.joining
+      : copy.waitlist.join
+    : phase === "reserving"
       ? reschedule
         ? replacing.form.booking
         : reserve.form.reserving
@@ -372,18 +462,18 @@ export function BookingBoard({
             >
               {slots.map((slot) => {
                 const ok = offered(slot);
-                const reason = slot.unavailableReason
-                  ? booking.reasons[slot.unavailableReason]
-                  : null;
+                const reason =
+                  ok || !slot.unavailableReason ? null : booking.reasons[slot.unavailableReason];
+                const cloud = forecastText(slot, copy.forecast);
                 const start = time.format(new Date(slot.startAt));
                 return (
                   <button
                     key={slot.startAt}
                     type="button"
                     role="radio"
-                    aria-checked={chosen?.startAt === slot.startAt}
+                    aria-checked={(chosen ?? waiting)?.startAt === slot.startAt}
                     className={`board-slot${
-                      slot.unavailableReason === "ALREADY_BOOKED"
+                      waitable(slot)
                         ? " is-taken"
                         : slot.unavailableReason === "IN_THE_PAST"
                           ? " is-past"
@@ -391,12 +481,17 @@ export function BookingBoard({
                             ? " is-short"
                             : ""
                     }`}
-                    disabled={!ok}
+                    disabled={!ok && !waitable(slot)}
                     onClick={() => pickSlot(slot)}
                     title={reason ?? undefined}
-                    aria-label={`${start}–${time.format(endOf(slot))}${reason ? `, ${reason}` : ""}`}
+                    aria-label={`${start}–${time.format(endOf(slot))}${reason ? `, ${reason}` : ""}, ${copy.forecast.label}: ${cloud}`}
                   >
                     <time dateTime={slot.startAt}>{start}</time>
+                    {slot.forecast.status === "KNOWN" && slot.forecast.cloudCoverPercent !== null && (
+                      <small className="board-slot-cloud" aria-hidden="true">
+                        {Math.round(slot.forecast.cloudCoverPercent)}%
+                      </small>
+                    )}
                   </button>
                 );
               })}
@@ -506,7 +601,20 @@ export function BookingBoard({
               <dt>{copy.target}</dt>
               <dd>{target ? targetName(target, locale) : copy.anyTarget}</dd>
             </div>
+            {(chosen ?? waiting) && (
+              <div>
+                <dt>{copy.forecast.label}</dt>
+                <dd>{forecastText((chosen ?? waiting)!, copy.forecast)}</dd>
+              </div>
+            )}
           </dl>
+          {chosen && held.has(chosen.startAt) && (
+            <p className="board-caption">
+              {copy.waitlist.yours(time.format(new Date(held.get(chosen.startAt)!)))}
+            </p>
+          )}
+          {chosen && chosen.startAt === nextClear && <p className="board-caption">{copy.nextClear}</p>}
+          {waiting && <p className="board-caption">{copy.waitlist.taken}</p>}
           {usable.length > 0 && (
             <Dropdown
               label={cards.board.label}
@@ -557,11 +665,16 @@ export function BookingBoard({
           <button
             type="submit"
             className="button button-primary button-large board-book"
-            disabled={!ready || phase !== "idle"}
+            disabled={(!ready && !waiting) || phase !== "idle"}
           >
             <span>{buttonLabel}</span>
           </button>
           <p className="board-caption">{reschedule ? replacing.note : reserve.note}</p>
+          {notice && (
+            <p className="board-caption" role="status">
+              {notice}
+            </p>
+          )}
           {feedback && (
             <p className="booking-feedback" role="alert">
               {feedback}

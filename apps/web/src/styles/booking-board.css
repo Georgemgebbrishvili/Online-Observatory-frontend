@@ -700,6 +700,27 @@ button.cal-day {
   text-decoration: line-through;
 }
 
+/* ADR-068: a taken start chosen to wait for -- outlined, never filled as a booking is. */
+.board-slot.is-taken[aria-checked="true"] {
+  border-color: var(--color-accent);
+  box-shadow: none;
+  color: var(--color-text-primary);
+}
+
+/* ADR-068: the start's cloud forecast, under its time. */
+.board-slot-cloud {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-regular);
+  text-decoration: none;
+}
+
+.board-slot[aria-checked="true"]:not(.is-taken) .board-slot-cloud {
+  color: inherit;
+}
+
 .board-slot.is-past {
   border-color: transparent;
   color: var(--color-text-disabled);

@@ -40,6 +40,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
       OBSERVATORY_OFFLINE: "Observatory offline",
       MAINTENANCE: "Maintenance",
       IN_THE_PAST: "Already started",
+      HELD_FOR_WAITLIST: "Held for its waitlist",
     },
     noSlots: {
       title: "No observing time this night.",
@@ -72,6 +73,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
       OBSERVATORY_OFFLINE: "ობსერვატორია კავშირგარეშეა",
       MAINTENANCE: "ტექნიკური სამუშაოები",
       IN_THE_PAST: "უკვე დაიწყო",
+      HELD_FOR_WAITLIST: "რიგისთვის დაკავებულია",
     },
     noSlots: {
       title: "ამ ღამეს დაკვირვების დრო არ არის.",

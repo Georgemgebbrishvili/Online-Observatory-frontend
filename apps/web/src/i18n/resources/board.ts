@@ -36,11 +36,37 @@ export type BoardCopy = {
   needsShort: (minutes: number) => string;
   reasonsShort: Record<VisibilityBlockReason, string>;
   illustrations: string;
+  /** ADR-068: a slot's forecast, plainly a forecast. */
+  forecast: { label: string; cloud: (percent: number) => string; unknown: string };
+  /** ADR-068: the waitlist for a taken start, and the start a weather loss is offered. */
+  waitlist: {
+    taken: string;
+    join: string;
+    joining: string;
+    joined: (position: number) => string;
+    refused: string;
+    yours: (time: string) => string;
+  };
+  nextClear: string;
 };
 
 export const boardCopy: Record<"en" | "ka", BoardCopy> = {
   en: {
     lede: "Pick a night and a start. The telescope is yours for 30 minutes.",
+    forecast: {
+      label: "Forecast",
+      cloud: (percent) => `${percent}% cloud`,
+      unknown: "No forecast yet",
+    },
+    waitlist: {
+      taken: "Someone holds this start. Wait for it, and if it frees you will be emailed and it is held for you for 15 minutes.",
+      join: "Join the waitlist",
+      joining: "Joining…",
+      joined: (position) => `You are number ${position} in line. We will email you if it frees.`,
+      refused: "You cannot wait for this start: you hold it, already wait for it, or wait for three already.",
+      yours: (time) => `Freed and held for you until ${time}.`,
+    },
+    nextClear: "The next clear start is chosen for you.",
     night: "Night",
     start: "Start",
     target: "Object",
@@ -90,6 +116,20 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
   },
   ka: {
     lede: "აირჩიე ღამე და დასაწყისი. ტელესკოპი 30 წუთით შენია.",
+    forecast: {
+      label: "პროგნოზი",
+      cloud: (percent) => `${percent}% ღრუბელი`,
+      unknown: "პროგნოზი ჯერ არ არის",
+    },
+    waitlist: {
+      taken: "ეს დასაწყისი სხვას უკავია. დაელოდე: თუ გათავისუფლდება, მოგწერთ და 15 წუთით შენთვის დავაკავებთ.",
+      join: "რიგში ჩადგომა",
+      joining: "რიგში დგები…",
+      joined: (position) => `რიგში ${position}-ე ხარ. თუ გათავისუფლდება, მოგწერთ.`,
+      refused: "ამ დასაწყისს ვერ დაელოდები: უკვე შენია, უკვე ელოდები ან სამს უკვე ელოდები.",
+      yours: (time) => `გათავისუფლდა და ${time}-მდე შენთვისაა დაკავებული.`,
+    },
+    nextClear: "შენთვის არჩეულია შემდეგი მოწმენდილი დასაწყისი.",
     night: "ღამე",
     start: "დასაწყისი",
     target: "ობიექტი",

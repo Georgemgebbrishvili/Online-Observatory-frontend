@@ -35,6 +35,13 @@ test("a lost slot is replaced with a free one, and the offer then closes", async
   await expect(
     page.getByText("Choosing a free slot to replace the one that was lost."),
   ).toBeVisible();
+  // ADR-068: it opens on the next clear start, the first whose forecast is known and low.
+  await expect(page.getByText("The next clear start is chosen for you.")).toBeVisible();
+  await expect(
+    page
+      .getByRole("radiogroup", { name: /^Observing time/ })
+      .locator('[aria-checked="true"]'),
+  ).toHaveAccessibleName(/Forecast: 15% cloud$/);
   // The board prices the replacement at nothing, and keeps the lost booking's target.
   await slots(page).first().click();
   await expect(page.locator(".board-total")).toContainText("Free");

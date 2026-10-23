@@ -57,6 +57,9 @@ import {
   zPasswordResetRequest,
   zPurchaseObserverPackResponse,
   zPurchaseGiftVoucherBody,
+  zJoinWaitlistBody,
+  zJoinWaitlistResponse,
+  zListMyWaitlistEntriesResponse,
   zPurchaseGiftVoucherResponse,
   zListMyGiftVouchersResponse,
   zRegisterRequest,
@@ -646,6 +649,9 @@ function slotTargets(startAt, durationMinutes) {
     })),
   });
 }
+
+// ADR-068: places in line, per account.
+const waitlist = [];
 
 // ADR-067: gift vouchers. Anyone holding an ACTIVE gift's code may spend it; only its
 // buyer reads the code, and only while it can be spent. One gift is seeded for the
@@ -1643,12 +1649,73 @@ const routes = {
             priceMinor: 4500,
             currency: "GEL",
             unavailableReason: fakeBlocked(index) ? "ALREADY_BOOKED" : null,
+            // ADR-068: cloudy early, clear after, and nothing stored for the last three.
+            forecast:
+              index >= count - 3
+                ? { status: "UNKNOWN", cloudCoverPercent: null }
+                : { status: "KNOWN", cloudCoverPercent: index < 6 ? 75 : 15 },
           };
         }),
       }),
     );
   },
   "POST /bookings": createBooking,
+  // ADR-068: a place in line for a taken start (the fake's blocked ones).
+  "GET /waitlist": (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const items = waitlist
+      .filter((row) => row.userId === user.id)
+      .map((row) => {
+        const entry = { ...row };
+        delete entry.userId;
+        return entry;
+      });
+    send(response, 200, zListMyWaitlistEntriesResponse.parse({ items }));
+  },
+  "POST /waitlist": async (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const body = zJoinWaitlistBody.safeParse(await json(request));
+    if (!body.success)
+      return error(response, 422, "VALIDATION_FAILED", "Malformed place.");
+    const index = slotAt(body.data.slotStartAt);
+    if (index === null)
+      return error(response, 422, "VALIDATION_FAILED", "Not an offered slot.");
+    if (!fakeBlocked(index))
+      return error(response, 409, "CONFLICT", "Nobody holds that slot: book it instead.");
+    const mine = waitlist.filter(
+      (row) => row.userId === user.id && ["WAITING", "OFFERED"].includes(row.status),
+    );
+    if (
+      mine.some(
+        (row) => row.slotStartAt === new Date(body.data.slotStartAt).toISOString(),
+      )
+    )
+      return error(response, 409, "CONFLICT", "You already wait for that slot.");
+    if (mine.length >= 3)
+      return error(
+        response,
+        422,
+        "VALIDATION_FAILED",
+        "You can wait for at most 3 slots at once.",
+      );
+    const row = {
+      id: randomUUID(),
+      userId: user.id,
+      observatoryId,
+      slotStartAt: new Date(body.data.slotStartAt).toISOString(),
+      durationMinutes: body.data.durationMinutes,
+      status: "WAITING",
+      position: 1,
+      offerExpiresAt: null,
+      createdAt: new Date().toISOString(),
+    };
+    waitlist.push(row);
+    const entry = { ...row };
+    delete entry.userId;
+    send(response, 201, zJoinWaitlistResponse.parse(entry));
+  },
   "POST /vouchers": purchaseGift,
   "GET /vouchers": (request, response) => {
     const user = sessionUser(request);

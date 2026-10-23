@@ -133,18 +133,20 @@ test("a slot taken a moment ago is refused, struck out, and the board stays", as
     "Somebody booked this slot a moment ago. Choose another.",
   );
   await expect(page).toHaveURL(/\/en\/app\/book$/);
+  // Struck out; it can now only be waited for (ADR-068).
   await expect(
     page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").last(),
-  ).toBeDisabled();
+  ).toHaveClass(/is-taken/);
   await expect(page.getByRole("button", { name: "Reserve and pay" })).toBeDisabled();
 });
 
 test("a booked slot, or no slot at all, cannot be reserved", async ({ page }) => {
   await signIn(page);
   await page.goto("/en/app/book");
-  await expect(
-    page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").nth(4),
-  ).toBeDisabled();
+  // A booked start can only be waited for (ADR-068), never reserved.
+  await page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").nth(4).click();
+  await expect(page.getByRole("button", { name: "Join the waitlist" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Reserve and pay" })).toHaveCount(0);
 
   // Ten minutes into a slot is no slot's start; a time that is not a time names none.
   for (const startAt of ["2030-01-15T14:10:00.000Z", "not-a-time"]) {
