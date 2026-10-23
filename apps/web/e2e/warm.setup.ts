@@ -39,10 +39,18 @@ test("warm every route so the parallel run is not racing the compiler", async ({
       // already run by the time a timing-sensitive test asks for the page.
       // A signed-in visit to a signed-out page commits, then redirects in the browser;
       // the next visit can land in the middle of that and be interrupted. Go again.
-      await page.goto(path, { waitUntil: "commit" }).catch((error: Error) => {
-        if (!error.message.includes("interrupted by another navigation")) throw error;
-        return page.goto(path, { waitUntil: "commit" });
-      });
+      for (let attempt = 1; ; attempt += 1) {
+        try {
+          await page.goto(path, { waitUntil: "commit" });
+          break;
+        } catch (error) {
+          const interrupted = (error as Error).message.includes(
+            "interrupted by another navigation",
+          );
+          if (!interrupted || attempt === 3) throw error;
+          await page.waitForLoadState("load").catch(() => {});
+        }
+      }
     }
   }
 });
