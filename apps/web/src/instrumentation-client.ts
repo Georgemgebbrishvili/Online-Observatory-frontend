@@ -16,7 +16,16 @@ if (dsn) {
         dsn,
         process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
       );
-      if (monitoring) Sentry.init({ ...monitoring, tunnel: "/monitoring" });
+      if (!monitoring) return;
+      Sentry.init({
+        ...monitoring,
+        tunnel: "/monitoring",
+        // Phase 6.10: real-user Web Vitals (LCP, INP, CLS) from a tenth of page loads,
+        // carried by the page-load trace. No trace header goes to any other origin.
+        integrations: [Sentry.browserTracingIntegration()],
+        tracesSampleRate: 0.1,
+        tracePropagationTargets: [],
+      });
     },
   );
 }
