@@ -38,6 +38,7 @@ import {
   useRoomControls,
 } from "./room-controls";
 import { RoomSharing } from "./room-sharing";
+import { RoomTonight } from "./room-tonight";
 import { RoomPointing } from "./room-pointing";
 import { SkyChart } from "./sky-chart";
 import { TargetPreview } from "./target-preview";
@@ -412,6 +413,12 @@ export function RoomLive({
             watchPath={`/${locale}/app/missions/${mission.id}/watch`}
             signInPath={`/${locale}/sign-in`}
             copy={roomSharingCopy[locale]}
+          />
+          <RoomTonight
+            broadcast={mission.broadcast ?? false}
+            locale={locale}
+            missionId={mission.id}
+            missionState={state}
           />
         </div>
 

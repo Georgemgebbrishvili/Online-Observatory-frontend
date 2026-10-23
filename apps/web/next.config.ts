@@ -85,6 +85,11 @@ const nextConfig: NextConfig = {
         source: "/stream/mission/:id",
         destination: `${platformRealtimeUrl}/stream/mission/:id`,
       },
+      // ADR-066: the spectator view, under the same path, so the demo's front needs nothing.
+      {
+        source: "/stream/mission/:id/spectate",
+        destination: `${platformRealtimeUrl}/stream/mission/:id/spectate`,
+      },
     ];
   },
   turbopack: {

@@ -9,6 +9,8 @@ export const publicRoutes = [
   "observatory",
   "vote",
   "status",
+  // ADR-066: what the fake shows a signed-in visitor: nothing live.
+  "tonight",
   "terms",
   "privacy",
   "refunds",

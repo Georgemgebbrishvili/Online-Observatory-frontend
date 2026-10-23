@@ -1,0 +1,111 @@
+/* Clients ADR-066: Tonight, live. The feed first; everything else says what it is. */
+.tonight-page {
+  padding-block: var(--space-10) var(--space-16);
+}
+
+.tonight-live {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.tonight-live-header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.tonight-live-header h2,
+.tonight-live-header p {
+  margin: 0;
+}
+
+.tonight-state,
+.tonight-rate {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.tonight-ends {
+  color: var(--color-text-tertiary);
+}
+
+.tonight-feed {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+}
+
+.tonight-feed img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tonight-badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+}
+
+.tonight-unavailable {
+  display: grid;
+  place-content: center;
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-6);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.tonight-unavailable p {
+  max-width: 32rem;
+  margin: 0;
+}
+
+.tonight-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.tonight-quiet {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: start;
+}
+
+/* The home page's banner while a session is open to everyone, under the header. */
+.tonight-banner-wrap {
+  padding-block-start: var(--space-4);
+}
+
+.tonight-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-live-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-live-muted);
+}
+
+.tonight-banner p {
+  margin: 0;
+}
+
+/* The room's switch. */
+.room-tonight-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.ds-tonight-specimens {
+  display: grid;
+  gap: var(--space-6);
+}

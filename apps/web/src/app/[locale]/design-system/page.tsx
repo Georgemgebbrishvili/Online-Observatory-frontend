@@ -1,4 +1,8 @@
-import type { ObservatoryHorizon, ObservatoryUptime } from "@darkview/contracts";
+import type {
+  ObservatoryHorizon,
+  ObservatoryUptime,
+  TonightSession,
+} from "@darkview/contracts";
 import type { Metadata } from "next";
 import "@/styles/booking.css";
 import "@/styles/booking-board.css";
@@ -13,6 +17,7 @@ import "@/styles/observatory-console.css";
 import "@/styles/skychaser-card.css";
 import "@/styles/cards.css";
 import "@/styles/status.css";
+import "@/styles/tonight.css";
 import { notFound } from "next/navigation";
 
 import { CalendarSpecimens } from "./calendar-specimens";
@@ -41,6 +46,10 @@ import {
   RoomSessionView,
 } from "@/components/room/room-controls";
 import { RoomSharingView } from "@/components/room/room-sharing";
+import { RoomTonightView } from "@/components/room/room-tonight";
+import { TonightBannerView } from "@/components/tonight/tonight-banner";
+import { TonightLive } from "@/components/tonight/tonight-live";
+import { tonightCopy } from "@/i18n/resources/tonight";
 import { WatchView, type WatchPhase } from "@/components/room/mission-watch";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
@@ -191,6 +200,23 @@ export async function generateMetadata({
     robots: { index: false, follow: false },
   };
 }
+
+/**
+ * The Tonight specimens' session. The frame is empty: nothing here stands for telescope
+ * output.
+ */
+const tonightSpecimen: TonightSession = {
+  missionId: "20000000-0000-4000-8000-000000000001",
+  observatoryId: "10000000-0000-4000-8000-000000000001",
+  target: { slug: "saturn", nameEn: "Saturn", nameKa: "სატურნი", type: "PLANET" },
+  state: "OBSERVING",
+  mode: "SIMULATED",
+  endsAt: "2026-10-23T18:30:00.000Z",
+  spectatorCapacity: 20,
+  streamPath: `data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10"><rect width="16" height="10" fill="${palette.black}"/></svg>`,
+  )}`,
+};
 
 /** A Tbilisi horizon for the SkyChart specimens: higher to the east, the city's hills. */
 const skyHorizonSpecimen: ObservatoryHorizon = {
@@ -849,6 +875,51 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 />
               );
             })}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.tonight}</h3>
+          <div className="ds-tonight-specimens">
+            {(["SIMULATED", "REAL"] as const).map((mode, index) => (
+              <TonightBannerView
+                key={mode}
+                label={`${tonightCopy[locale].title} ${index + 1}`}
+                locale={locale}
+                live={{ ...tonightSpecimen, mode }}
+              />
+            ))}
+            {(
+              [
+                ["SIMULATED", false],
+                ["REAL", false],
+                ["SIMULATED", true],
+              ] as const
+            ).map(([mode, failed], index) => (
+              <TonightLive
+                key={index}
+                locale={locale}
+                initiallyFailed={failed}
+                label={`TonightLive ${index + 1}`}
+                session={{ ...tonightSpecimen, mode }}
+              />
+            ))}
+            <div className="room-console ds-room-specimens">
+              {(
+                [
+                  [false, false, false],
+                  [false, true, false],
+                  [true, false, false],
+                  [true, false, true],
+                ] as const
+              ).map(([open, saving, failed], index) => (
+                <RoomTonightView
+                  key={index}
+                  copy={tonightCopy[locale].room}
+                  open={open}
+                  saving={saving}
+                  failed={failed}
+                  label={`${tonightCopy[locale].room.title} ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
           <h3 className="ds-subheading">{copy.cards.roomControls}</h3>
           <div className="room-console ds-room-specimens">

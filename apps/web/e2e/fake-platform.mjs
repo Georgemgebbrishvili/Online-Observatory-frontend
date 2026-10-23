@@ -29,6 +29,9 @@ import {
   zGetObservatoryHorizonResponse,
   zGetObservatoryStatusResponse,
   zGetTargetResponse,
+  zGetTonightResponse,
+  zSetMissionBroadcastBody,
+  zSetMissionBroadcastResponse,
   zJoinMissionAsObserverResponse,
   zListBookableObservatoriesResponse,
   zListBookingsResponse,
@@ -1399,6 +1402,17 @@ async function pickCard(request, response, drawId) {
   send(response, 200, cardDrawOf(user));
 }
 
+// ADR-066: Tonight, live. A browser picks a scenario with the `fake_tonight` cookie --
+// live, live-real, full (the spectator view answers 503), none, offline, hold. A read
+// with no such cookie and no session takes the one set through PUT /__test/tonight; a
+// signed-in read without the cookie is always none, so no other spec ever sees it.
+let tonightScenario = "none";
+function tonightOf(request) {
+  const cookies = cookiesOf(request);
+  if (cookies.fake_tonight) return cookies.fake_tonight;
+  return cookies[sessionCookie] ? "none" : tonightScenario;
+}
+
 const routes = {
   "GET /card-draws/odds": (_request, response) => send(response, 200, cardOdds),
   "GET /card-draws/current": (request, response) => {
@@ -1665,8 +1679,50 @@ const routes = {
     }
     send(response, 200, tonightTargets());
   },
-  [`GET /observatories/${observatoryId}/state`]: (request, response) =>
-    send(response, 200, { ...publicStatus(), mode: modeOf(request) }),
+  [`GET /observatories/${observatoryId}/state`]: (request, response) => {
+    const status = { ...publicStatus(), mode: modeOf(request) };
+    const scenario = tonightOf(request);
+    if (scenario === "offline") status.link = "OFFLINE";
+    if (scenario === "hold")
+      status.weather = { ...status.weather, status: "CLOUDY", holdActive: true };
+    send(response, 200, status);
+  },
+  // ADR-066: the session open to anyone, or none.
+  "GET /tonight": (request, response) => {
+    const scenario = tonightOf(request);
+    const live = ["live", "live-real", "full"].includes(scenario);
+    send(
+      response,
+      200,
+      zGetTonightResponse.parse({
+        live: live
+          ? {
+              missionId,
+              observatoryId,
+              target: {
+                slug: "saturn",
+                nameEn: "Saturn",
+                nameKa: "სატურნი",
+                type: "PLANET",
+              },
+              state: "OBSERVING",
+              mode: scenario === "live-real" ? "REAL" : "SIMULATED",
+              // Fixed, so the visual baseline does not move with the clock: 00:30 in Tbilisi.
+              endsAt: "2026-09-23T20:30:00.000Z",
+              spectatorCapacity: 20,
+              streamPath: `/stream/mission/${missionId}/spectate`,
+            }
+          : null,
+      }),
+    );
+  },
+  // Test-only: the scenario for reads that carry no cookie of the test's own -- a
+  // signed-out page's server-side reads forward only the session cookies.
+  "PUT /__test/tonight": async (request, response) => {
+    const body = await json(request);
+    tonightScenario = body?.scenario ?? "none";
+    send(response, 200, { scenario: tonightScenario });
+  },
   [`GET /observatories/${observatoryId}/conditions`]: (_request, response) =>
     send(response, 200, viewingConditions()),
   [`GET /observatories/${observatoryId}/uptime`]: (_request, response) =>
@@ -2830,6 +2886,11 @@ function serveStream(request, response, missionId) {
     response.writeHead(404, { "cache-control": "no-store" });
     return response.end();
   }
+  writeMjpeg(response, 1000, grant.expiresAt.getTime());
+}
+
+// MJPEG of the simulated frame, one every `everyMs`, until `untilMs`.
+function writeMjpeg(response, everyMs, untilMs) {
   const boundary = `fake-${randomUUID()}`;
   response.writeHead(200, {
     "content-type": `multipart/x-mixed-replace; boundary=${boundary}`,
@@ -2846,11 +2907,8 @@ function serveStream(request, response, missionId) {
       ]),
     );
   write();
-  const every = setInterval(write, 1000);
-  const deadline = setTimeout(
-    () => response.end(),
-    grant.expiresAt.getTime() - Date.now(),
-  );
+  const every = setInterval(write, everyMs);
+  const deadline = setTimeout(() => response.end(), untilMs - Date.now());
   response.on("close", () => {
     clearInterval(every);
     clearTimeout(deadline);
@@ -2937,6 +2995,35 @@ http
     const start = path.match(/^\/missions\/([0-9a-f-]+)\/start$/);
     if (start && request.method === "POST")
       return await startSession(request, response, start[1]);
+    const broadcast = path.match(/^\/missions\/([0-9a-f-]+)\/broadcast$/);
+    if (broadcast && request.method === "PATCH") {
+      const user = sessionUser(request);
+      if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+      // Somebody else's mission and none are the same 404.
+      const mission = missions.find(
+        (row) => row.id === broadcast[1] && row.userId === user.id,
+      );
+      if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+      const body = zSetMissionBroadcastBody.safeParse(await json(request));
+      if (!body.success)
+        return error(response, 422, "VALIDATION_FAILED", "Bad broadcast.");
+      mission.broadcast = body.data.broadcast;
+      return send(response, 200, zSetMissionBroadcastResponse.parse(mission));
+    }
+    // ADR-066: no session; refused when nothing is open, 503 at the cap.
+    const spectate = path.match(/^\/stream\/mission\/([0-9a-f-]+)\/spectate$/);
+    if (spectate && request.method === "GET") {
+      const scenario = tonightOf(request);
+      if (scenario === "full") {
+        response.writeHead(503, { "cache-control": "no-store" });
+        return response.end();
+      }
+      if (spectate[1] !== missionId || !["live", "live-real"].includes(scenario)) {
+        response.writeHead(404, { "cache-control": "no-store" });
+        return response.end();
+      }
+      return writeMjpeg(response, 4000, Date.now() + SESSION_MINUTES * 60_000);
+    }
     const stream = path.match(/^\/stream\/mission\/([0-9a-f-]+)$/);
     if (stream && request.method === "GET")
       return serveStream(request, response, stream[1]);

@@ -4,6 +4,7 @@ import { HomeShell } from "@/components/layout/home-shell";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
+import { TonightBanner } from "@/components/tonight/tonight-banner";
 import { readObservatoryPanel } from "@/features/home/read";
 import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
@@ -11,6 +12,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { siteUrl } from "@/lib/seo";
 import "@/styles/pages.css";
 import "@/styles/homepage.css";
+import "@/styles/tonight.css";
 import { brand } from "@/brand";
 
 type HomePageProps = {
@@ -50,6 +52,7 @@ export default async function HomePage({ params }: HomePageProps) {
         ]}
       />
       <SiteHeader locale={locale} navigation={dictionary.navigation} />
+      <TonightBanner locale={locale} />
       <HomeShell
         content={dictionary.home}
         locale={locale}
