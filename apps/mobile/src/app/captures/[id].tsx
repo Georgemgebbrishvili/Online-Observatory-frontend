@@ -1,15 +1,16 @@
 import type { NativeSession } from "@darkview/contracts";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Share, StyleSheet, Text, View } from "react-native";
 
 import { useLocale } from "@/i18n/locale";
 import { platform, PlatformError } from "@/platform/api";
+import { webAppUrl } from "@/platform/config";
 import { useResource } from "@/platform/use-resource";
 import { useSession } from "@/platform/session";
 import { clock, localDate, nightLabel, targetName } from "@/present";
 import { line, palette, radius, space } from "@/theme";
-import { Body, Label, Loading, QuietButton, Screen, SimulatedBadge, Title, Unavailable } from "@/ui/kit";
+import { Body, Label, Loading, PrimaryButton, QuietButton, Screen, SimulatedBadge, Title, Unavailable } from "@/ui/kit";
 import { type } from "@/ui/type";
 
 export default function CapturePage() {
@@ -78,6 +79,16 @@ function Detail({ id, session }: { id: string; session: NativeSession }) {
         <Image source={{ uri: image.url }} style={styles.image} resizeMode="contain" onError={() => setFailed(true)} accessibilityLabel={target ? targetName(target, locale) : capture.imagingProfile} />
       ) : (
         <Body tone="tertiary">{t.collection.noPreview}</Body>
+      )}
+      {/* ADR-065: publishing is done on the website; a shared capture is handed on from here. */}
+      {capture.visibility === "GALLERY" && capture.mode === "REAL" && (
+        <View style={{ gap: space[2] }}>
+          <Body tone="secondary">{t.collection.shared}</Body>
+          <PrimaryButton
+            label={t.collection.share}
+            onPress={() => void Share.share({ url: `${webAppUrl}/${locale}/c/${capture.id}`, message: `${webAppUrl}/${locale}/c/${capture.id}` })}
+          />
+        </View>
       )}
       <View>
         {rows.map(([label, value]) => (

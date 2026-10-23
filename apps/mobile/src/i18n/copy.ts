@@ -159,6 +159,9 @@ const en = {
   },
   collection: {
     title: "Collection",
+    /** ADR-065: a capture its owner made public, handed to the system share sheet. */
+    share: "Share",
+    shared: "Anyone with the link can see this capture.",
     signIn: "Sign in to see what you have captured.",
     empty: "Your Collection is empty.",
     emptyDetail: "What you capture in a live observation is kept here.",
@@ -323,6 +326,8 @@ const ka: Copy = {
   },
   collection: {
     title: "კოლექცია",
+    share: "გაზიარება",
+    shared: "ამ კადრს ხედავს ყველა, ვისაც ბმული აქვს.",
     signIn: "შედი, რომ ნახო შენი გადაღებები.",
     empty: "შენი კოლექცია ცარიელია.",
     emptyDetail: "ცოცხალ დაკვირვებაზე გადაღებული კადრები აქ ინახება.",
