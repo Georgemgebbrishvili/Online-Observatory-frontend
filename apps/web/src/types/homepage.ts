@@ -1,11 +1,5 @@
 import type { SkyKind, SkyPlate } from "@/features/targets/homepage-data";
 
-type HomepageSectionHeading = {
-  eyebrow: string;
-  title: string;
-  description: string;
-};
-
 export type HomepageDictionary = {
   hero: {
     /** The headline, then its last words in red. */
@@ -31,31 +25,10 @@ export type HomepageDictionary = {
     window: string;
     altitude: string;
   };
-  howItWorks: HomepageSectionHeading & {
-    steps: readonly { title: string; description: string; action?: string }[];
-  };
-  tonight: HomepageSectionHeading & {
-    all: string;
-  };
-  instrument: HomepageSectionHeading & {
-    aperture: string;
-    focalLength: string;
-    focalRatio: string;
-    camera: string;
-    cameraValue: string;
-    mode: string;
-    modeValue: string;
-    location: string;
-    locationValue: string;
-    millimetres: string;
-  };
-  finalCta: {
+  howItWorks: {
     eyebrow: string;
     title: string;
-    description: string;
-    action: string;
-    secondary: string;
-    privateTitle: string;
+    steps: readonly { title: string; description: string }[];
   };
 };
 

@@ -90,59 +90,24 @@ const dictionary = {
     howItWorks: {
       eyebrow: `How ${brand.en.name} works`,
       title: "Four steps. One real observation.",
-      description: `${brand.en.name} turns time on a real telescope into one clear mission, from reserving a slot to keeping what you captured.`,
       steps: [
         {
           title: "Reserve",
-          description: "Pick a night and a time.",
-          action: "Book a slot",
+          description: "Pick a night.",
         },
         {
           title: "Slew",
-          description: "The telescope turns to your target.",
-          action: "Open the observatory",
+          description: "Turns to your target.",
         },
         {
           title: "Watch",
-          description: "See its camera as the picture sharpens.",
+          description: "See it live.",
         },
         {
           title: "Keep",
-          description: "Save the picture to your collection.",
-          action: "Your collection",
+          description: "Keep the picture.",
         },
       ],
-    },
-    tonight: {
-      eyebrow: "Tonight's sky",
-      title: "Choose what the telescope sees next.",
-      description:
-        "What the observatory can see tonight, and why it cannot see the rest.",
-      all: "All of tonight's targets",
-    },
-    instrument: {
-      eyebrow: "The instrument",
-      title: "One real telescope, in Georgia.",
-      description:
-        "Commanded only by the observatory's own software, never directly from a browser. What you see is what its camera sees.",
-      aperture: "Aperture",
-      focalLength: "Focal length",
-      focalRatio: "Focal ratio",
-      camera: "Camera",
-      cameraValue: "ZWO ASI585MC",
-      mode: "Mode",
-      modeValue: "Live view",
-      location: "Location",
-      locationValue: "Georgia",
-      millimetres: "mm",
-    },
-    finalCta: {
-      eyebrow: "Begin with tonight",
-      title: "Your next observation starts here.",
-      description: `Choose an observable target and shape your first ${brand.en.name} mission.`,
-      action: "Reserve a slot",
-      secondary: "Explore tonight's sky",
-      privateTitle: "Private sessions",
     },
   },
   footer: {

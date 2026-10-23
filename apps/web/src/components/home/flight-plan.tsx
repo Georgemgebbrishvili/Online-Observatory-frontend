@@ -4,9 +4,8 @@ import type { ReactNode } from "react";
 export type FlightStep = {
   title: string;
   description: string;
-  /** The page where this step happens, and the words on its link; a step can have none. */
-  href?: string;
-  action?: string;
+  /** The page where this step happens: the whole tile opens it. */
+  href: string;
 };
 
 // Line drawings of the instrument at each step. No reticle, no crosshair (ADR-039).
@@ -33,31 +32,28 @@ const icons: ReactNode[] = [
   </>,
 ];
 
-/** How a session works, in four steps, most a door to the page where it happens. */
+/** How a session works, in four small tiles, each a door to the page where it happens. */
 export function FlightPlan({ steps }: { steps: readonly FlightStep[] }) {
   return (
     <ol className="flight-plan">
       {steps.map((step, index) => (
-        <li key={step.title} className="flight-plan-step">
-          <span className="flight-plan-icon" aria-hidden="true">
-            <svg
-              viewBox="0 0 48 48"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {icons[index % icons.length]}
-            </svg>
-          </span>
-          <h3>{step.title}</h3>
-          <p>{step.description}</p>
-          {step.href && step.action && (
-            <Link className="flight-plan-link" href={step.href}>
-              {step.action} <span aria-hidden="true">→</span>
-            </Link>
-          )}
+        <li key={step.title}>
+          <Link className="flight-plan-step" href={step.href}>
+            <span className="flight-plan-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 48 48"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {icons[index % icons.length]}
+              </svg>
+            </span>
+            <span className="flight-plan-title">{step.title}</span>
+            <span className="flight-plan-text">{step.description}</span>
+          </Link>
         </li>
       ))}
     </ol>

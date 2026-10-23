@@ -12,8 +12,9 @@ export const skyAimEvent = "sky-aim";
  * The observatory at the foot of the homepage sky (ADR-057): a 3D dome on a hill above
  * Tbilisi whose NexStar 8SE turns to wherever the sky's light rests, so the instrument
  * looks at what the pointer reveals. The scene loads after the page, renders only while
- * something moves, and draws nothing where WebGL is unavailable. With no sky to follow
- * (a phone), the telescope looks around on its own.
+ * something moves, and draws nothing where WebGL is unavailable. On a touch screen it
+ * ignores taps: from time to time it turns right, back to the middle, then left, on its
+ * own, as a telescope at work does.
  */
 export function ObservatoryDome() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,23 +24,34 @@ export function ObservatoryDome() {
     const hero = canvas?.parentElement;
     if (!canvas || !hero) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const touch =
+      matchMedia("(hover: none)").matches || matchMedia("(max-width: 29.999rem)").matches;
     let scene: ObservatoryScene | null = null;
     let dead = false;
     let heard = false;
     let idleTimer = 0;
     let idleStep = 0;
+    // Its rounds on its own: the middle, right, the middle, left, each held a while.
+    const poses = [
+      { az: 4, alt: 70, hold: 3600 },
+      { az: 52, alt: 36, hold: 4400 },
+      { az: -3, alt: 64, hold: 3400 },
+      { az: -50, alt: 44, hold: 4800 },
+    ];
     let size = { w: 1, h: 1 };
     let pending: SkyAim | null = null;
 
     const layout = () => {
       const rect = hero.getBoundingClientRect();
       size = { w: Math.max(1, rect.width), h: Math.max(1, rect.height) };
-      // The building's height on screen, and its foot above the hero's bottom edge.
+      // The building's height on screen, and its foot above the hero's bottom edge: on a
+      // phone it stands at the very foot, clear of the button.
       const r = Math.max(52, Math.min(118, size.w * 0.075, size.h * 0.13));
-      scene?.resize(size.w, size.h, r * 2.35, r * 0.35);
+      scene?.resize(size.w, size.h, r * 2.35, size.w < 480 ? r * 0.04 : r * 0.35);
     };
 
     const onAim = (event: Event) => {
+      if (touch) return;
       const { x, y } = (event as CustomEvent<SkyAim>).detail;
       heard = true;
       if (scene) scene.aim(x, y);
@@ -47,17 +59,10 @@ export function ObservatoryDome() {
     };
 
     const idle = () => {
-      if (!heard && !reduced && scene) {
-        const spots = [
-          [0.3, 0.2],
-          [0.64, 0.14],
-          [0.8, 0.32],
-          [0.42, 0.3],
-        ];
-        const [sx, sy] = spots[idleStep++ % spots.length];
-        scene.aim(sx * size.w, sy * size.h);
-      }
-      idleTimer = window.setTimeout(idle, 4600);
+      const next = poses[idleStep++ % poses.length];
+      if (!heard && !reduced && scene) scene.pose(next.az, next.alt);
+      // A little unevenness, so the rounds never feel like a metronome.
+      idleTimer = window.setTimeout(idle, next.hold + Math.random() * 1200);
     };
 
     const ro = new ResizeObserver(layout);

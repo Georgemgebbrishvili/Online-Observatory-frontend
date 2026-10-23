@@ -43,6 +43,3 @@ export const skyPlates = [
 
 export type SkyPlate = (typeof skyPlates)[number]["slug"];
 export type SkyKind = (typeof skyPlates)[number]["kind"];
-
-/** How many of tonight's targets the homepage lists; the full list is /app/missions. */
-export const homeTonightLimit = 6;

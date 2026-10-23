@@ -45,71 +45,32 @@ test("renders the Georgian sky hero and switches locale", async ({ page }) => {
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("renders the complete data-driven public homepage", async ({ page }) => {
+test("the public homepage is the sky and four small doors, nothing more", async ({
+  page,
+}) => {
   await page.goto("/en");
 
-  for (const heading of [
-    "Four steps. One real observation.",
-    "Choose what the telescope sees next.",
-    "One real telescope, in Georgia.",
-    "Your next observation starts here.",
-  ]) {
-    await expect(page.getByRole("heading", { level: 2, name: heading })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Four steps. One real observation." }),
+  ).toBeVisible();
+  // The other sections are gone until the maintainer chooses what joins them.
+  for (const gone of ["#tonight", "#live", "#final-cta"]) {
+    await expect(page.locator(gone)).toHaveCount(0);
   }
-  for (const gone of [
-    "Three steps. One real observation.",
-    "A real observatory, in motion.",
-    "A visual record of where you looked.",
-  ]) {
-    await expect(page.getByRole("heading", { name: gone })).toHaveCount(0);
-  }
+  await expect(page.locator("main section")).toHaveCount(2);
+  await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
-  // How a session works: four steps; all but Watch link to the page where it happens.
+  // How a session works: four tiles, each the door to the page where it happens.
   const steps = page.locator("#about .flight-plan-step");
   await expect(steps).toHaveCount(4);
-  for (const step of ["Reserve", "Slew", "Watch", "Keep"]) {
-    await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
-  }
-  await expect(page.locator("#about .flight-plan-link")).toHaveCount(3);
   for (const [name, href] of [
-    ["Book a slot", "/en/app/book"],
-    ["Open the observatory", "/en/observatory"],
-    ["Your collection", "/en/app/collection"],
+    ["Reserve", "/en/app/book"],
+    ["Slew", "/en/observatory"],
+    ["Watch", "/en/tonight"],
+    ["Keep", "/en/app/collection"],
   ]) {
-    await expect(steps.getByRole("link", { name })).toHaveAttribute("href", href);
+    await expect(steps.filter({ hasText: name })).toHaveAttribute("href", href);
   }
-
-  // Tonight's list comes from GET /targets/tonight on the fake platform.
-  const tonight = page.locator("#tonight");
-  for (const target of ["Saturn", "Albireo", "Moon", "Hercules Cluster", "Venus"]) {
-    await expect(
-      tonight.getByRole("heading", { name: target, exact: true }),
-    ).toBeVisible();
-  }
-  await expect(tonight.getByRole("link", { name: "Saturn" })).toHaveAttribute(
-    "href",
-    "/en/app/missions/saturn",
-  );
-  await expect(
-    tonight.getByRole("link", { name: "All of tonight's targets" }),
-  ).toHaveAttribute("href", "/en/app/missions");
-  await expect(tonight.getByText("SIMULATED OBSERVATORY")).toHaveCount(0);
-
-  // The instrument is the platform's telescope, not a fixture.
-  const instrument = page.locator("#live");
-  await expect(page.getByText(/Celestron/)).toHaveCount(0);
-  await expect(instrument.getByText("203", { exact: true })).toBeVisible();
-  await expect(instrument.getByText("2032", { exact: true })).toBeVisible();
-  await expect(instrument.getByText("f/10", { exact: true })).toBeVisible();
-  await expect(instrument.getByText("ZWO ASI585MC")).toBeVisible();
-  await expect(instrument.getByText("Live view", { exact: true })).toBeVisible();
-  await expect(instrument.getByText("Online", { exact: true })).toBeVisible();
-
-  await expect(page.getByText("30 min", { exact: true })).toBeVisible();
-  await expect(page.getByText("120 min", { exact: true })).toBeVisible();
-  await expect(
-    page.locator("#final-cta").getByRole("link", { name: "Reserve a slot" }),
-  ).toHaveAttribute("href", "/en/app/book");
 });
 
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {
@@ -148,10 +109,9 @@ test("provides the complete public navigation on desktop and mobile", async ({
     ["Book", "/en/app/book"],
     ["Stellar Explorer", "/en/explorer"],
   ]) {
-    await expect(publicNavigation.getByRole("link", { name: item, exact: true })).toHaveAttribute(
-      "href",
-      href,
-    );
+    await expect(
+      publicNavigation.getByRole("link", { name: item, exact: true }),
+    ).toHaveAttribute("href", href);
   }
   await expect(publicNavigation.getByRole("link")).toHaveCount(3);
 
@@ -400,9 +360,7 @@ test("the /app dashboard reads the platform, section by section", async ({ page 
   await expect(
     observatory.getByRole("heading", { name: "Stellar Tbilisi" }),
   ).toBeVisible();
-  await expect(
-    observatory.getByText("203 mm · 2032 mm"),
-  ).toBeVisible();
+  await expect(observatory.getByText("203 mm · 2032 mm")).toBeVisible();
 
   const upcoming = page.locator(".home-upcoming");
   await expect(upcoming.getByRole("heading", { name: "Saturn" })).toBeVisible();
@@ -448,27 +406,21 @@ test("the observatory console stands by on the sky model, badged simulated, with
   await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(
     page.getByRole("banner").getByRole("link", { name: "Observatory", exact: true }),
-  ).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
+  ).toHaveAttribute("aria-current", "page");
   await expect(page.locator(".sdo-head .sdo-pill--sim")).toHaveText(/Simulated/);
 
   // The one open station is the platform's observatory; its forecast is the platform's.
   const telescopes = page.getByRole("region", { name: "Telescopes" });
-  await expect(telescopes.getByRole("button", { name: /Stellar Tbilisi/ })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  await expect(
+    telescopes.getByRole("button", { name: /Stellar Tbilisi/ }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(telescopes.getByText("12%")).toBeVisible();
   // ADR-053 §6 as amended: no stations the product has no plan behind.
   await expect(telescopes.getByText("Coming soon")).toHaveCount(0);
   await expect(telescopes.getByRole("button", { name: /Station$/ })).toHaveCount(0);
 
   // The quick start points at tonight's highest observable target from the catalogue.
-  await expect(
-    page.getByRole("button", { name: /Start · Albireo/ }),
-  ).toBeEnabled();
+  await expect(page.getByRole("button", { name: /Start · Albireo/ })).toBeEnabled();
 
   // Nothing is drawn as the telescope's output: standby, captioned, step one of five.
   const view = page.getByRole("region", { name: "Telescope view" });
@@ -507,11 +459,15 @@ test("the console connects, aligns and points at the quick start's target", asyn
     timeout: 15_000,
   });
   const view = page.getByRole("region", { name: "Telescope view" });
-  await expect(view.getByRole("img", { name: "Simulated telescope camera view" })).toBeVisible({
+  await expect(
+    view.getByRole("img", { name: "Simulated telescope camera view" }),
+  ).toBeVisible({
     timeout: 20_000,
   });
   await expect(view.getByText(/Simulated feed/)).toBeVisible();
-  await expect(view.getByRole("status")).toHaveText(/On target · tracking/, { timeout: 60_000 });
+  await expect(view.getByRole("status")).toHaveText(/On target · tracking/, {
+    timeout: 60_000,
+  });
   await expect(view.getByText(/^Albireo/)).toBeVisible();
   await expect(page.getByRole("button", { name: /^Capture \d+ × \d+ s/ })).toBeEnabled();
 
@@ -587,9 +543,7 @@ test("keeps localized pricing inside the mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/pricing");
 
-  await expect(
-    page.getByRole("heading", { level: 1, name: "ფასები" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "ფასები" })).toBeVisible();
   await page.getByRole("button", { name: "ნავიგაციის გახსნა" }).click();
   await expect(page.getByRole("link", { name: "ენა: English" })).toHaveAttribute(
     "href",

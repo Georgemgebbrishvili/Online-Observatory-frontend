@@ -33,7 +33,6 @@ describe("Georgian localization", () => {
     expect(ka.navigation.app.live).toBe("პირდაპირი დაკვირვება");
     expect(ka.navigation.app.collection).toBe("კოლექცია");
     expect(ka.navigation.public.observatory).toBe("ობსერვატორია");
-    expect(ka.home.tonight.eyebrow).toBe("ამაღამინდელი ცა");
     expect(roomCopy.ka.states.CENTERING.title).toBe("ობიექტი ცენტრდება");
   });
 

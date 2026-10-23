@@ -46,7 +46,11 @@ export function SiteHeaderBar({
   signedIn = false,
   signOutLabel,
 }: SiteHeaderBarProps) {
-  const sessionCookie = useSyncExternalStore(noSubscription, hasSessionCookie, () => false);
+  const sessionCookie = useSyncExternalStore(
+    noSubscription,
+    hasSessionCookie,
+    () => false,
+  );
   const account = signedIn || sessionCookie ? { signOut: signOutLabel } : null;
   const alternateLocale = locale === "en" ? "ka" : "en";
   const pathname = usePathname();
@@ -138,6 +142,9 @@ export function SiteHeaderBar({
               id="account-menu-list"
               data-open={accountOpen || undefined}
             >
+              <p className="account-menu-head" aria-hidden="true">
+                {publicNavigation.account}
+              </p>
               <nav aria-label={publicNavigation.account}>
                 {(account ? accountLinks : guestLinks).map((link) => (
                   <Link
@@ -173,12 +180,42 @@ export function SiteHeaderBar({
           <span aria-hidden="true" />
         </button>
       </Container>
+      {/* On a phone: a profile sheet. Who you are first, then the pages and your own,
+          as small grouped lists; the language and signing out at its foot. */}
       <div
         className="public-mobile-menu"
         id="public-mobile-menu"
         data-open={menuOpen || undefined}
       >
-        <nav aria-label={publicNavigation.ariaLabel}>
+        <div className="sheet-head">
+          <span className="sheet-avatar" data-signed-in={account ? "" : undefined}>
+            <ProfileIcon />
+          </span>
+          {account ? (
+            <Link
+              className="sheet-head-name"
+              href={`/${locale}/app/profile`}
+              onClick={() => setMenuOpen(false)}
+            >
+              {publicNavigation.account}
+              <small>{app.profile}</small>
+            </Link>
+          ) : (
+            <div className="sheet-head-actions">
+              <Link
+                className="button button-primary button-small"
+                href={`/${locale}/sign-in`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {publicNavigation.signIn}
+              </Link>
+              <Link href={`/${locale}/register`} onClick={() => setMenuOpen(false)}>
+                {publicNavigation.register}
+              </Link>
+            </div>
+          )}
+        </div>
+        <nav className="sheet-group" aria-label={publicNavigation.ariaLabel}>
           {links.map((link) => (
             <Link
               key={link.href}
@@ -191,30 +228,22 @@ export function SiteHeaderBar({
           ))}
         </nav>
         {account && (
-          <nav className="mobile-account" aria-label={publicNavigation.account}>
-            <p>{publicNavigation.account}</p>
-            {accountLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={isCurrent(link.href) ? "page" : undefined}
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="sheet-group" aria-label={publicNavigation.account}>
+            {accountLinks
+              .filter((link) => !link.href.endsWith("/app/profile"))
+              .map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isCurrent(link.href) ? "page" : undefined}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
           </nav>
         )}
-        <div>
-          {account ? (
-            <SignOutButton
-              className="mobile-sign-out"
-              label={account.signOut}
-              locale={locale}
-            />
-          ) : (
-            <Link href={`/${locale}/sign-in`}>{publicNavigation.signIn}</Link>
-          )}
+        <div className="sheet-foot">
           <Link
             href={alternatePathname}
             hrefLang={alternateLocale}
@@ -223,6 +252,13 @@ export function SiteHeaderBar({
           >
             {navigation.languageName}
           </Link>
+          {account && (
+            <SignOutButton
+              className="sheet-sign-out"
+              label={account.signOut}
+              locale={locale}
+            />
+          )}
         </div>
       </div>
     </header>

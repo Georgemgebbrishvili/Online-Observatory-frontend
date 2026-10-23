@@ -178,6 +178,8 @@ export type ObservatoryScene = {
   resize: (width: number, height: number, buildingPx: number, footPx: number) => void;
   /** Point the telescope at a spot in the hero, in its pixels. */
   aim: (x: number, y: number) => void;
+  /** Turn the telescope to an azimuth and altitude, in degrees; 0 azimuth faces us. */
+  pose: (azimuthDeg: number, altitudeDeg: number) => void;
   dispose: () => void;
 };
 
@@ -955,6 +957,15 @@ export async function createObservatoryScene(
       // The azimuth goal continues from where the axis is, never the long way round.
       const diff = Math.atan2(Math.sin(az.goal - az.pos), Math.cos(az.goal - az.pos));
       az.goal = az.pos + diff;
+      wake();
+    },
+    pose(azimuthDeg, altitudeDeg) {
+      const goal = THREE.MathUtils.degToRad(azimuthDeg);
+      az.goal = az.pos + Math.atan2(Math.sin(goal - az.pos), Math.cos(goal - az.pos));
+      alt.goal = Math.max(
+        MIN_ALT,
+        Math.min(MAX_ALT, THREE.MathUtils.degToRad(altitudeDeg)),
+      );
       wake();
     },
     dispose() {

@@ -185,20 +185,6 @@
   margin-top: 2.125rem;
 }
 
-.home-status > header a {
-  border-radius: var(--radius-small);
-  color: var(--color-accent-ink);
-  font-family: var(--font-label);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.home-status > header a:hover {
-  color: var(--color-accent-hover);
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .sky-hero::after {
     animation: sky-breathe 5s ease-in-out infinite;
@@ -250,76 +236,76 @@
   }
 }
 
-/* SECTIONS */
+/*
+ * HOW IT WORKS — a small heading over four small tiles, each a door to where that step
+ * happens: two by two on a phone, one row of four from --md.
+ */
 .home-band {
-  padding-block: var(--space-16);
+  padding-block: var(--space-12);
 }
 
-.home-band + .home-band {
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.home-heading {
-  max-width: 46rem;
-}
-
-.home-heading h2,
-.home-final h2 {
-  max-width: 20ch;
-  margin: 0;
-  font-size: var(--font-size-h1);
-}
-
-.home-lede {
-  max-width: 52ch;
-  margin: var(--space-5) 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-}
-
-.home-split {
+.home-steps-heading {
   display: grid;
-  gap: var(--space-10);
+  justify-items: center;
+  gap: var(--space-2);
+  text-align: center;
 }
 
-@media (--lg) {
-  .home-band {
-    padding-block: var(--space-20);
-  }
-
-  .home-split {
-    align-items: start;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    gap: var(--space-16);
-  }
+.home-steps-heading .kicker {
+  margin: 0;
 }
 
-/* HOW IT WORKS — four steps between hairlines, under a thin sunset rule. */
+.home-steps-heading h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
 .flight-plan {
   display: grid;
-  margin: var(--space-10) 0 0;
+  max-width: 52rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-6) auto 0;
   padding: 0;
-  border-top: 1px solid var(--color-accent-border);
   list-style: none;
+}
+
+.flight-plan > li {
+  display: grid;
+  min-width: 0;
 }
 
 .flight-plan-step {
   display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr);
+  grid-template-columns: 1.5rem minmax(0, 1fr);
   align-content: start;
-  gap: var(--space-2) var(--space-4);
-  min-width: 0;
-  padding-block: var(--space-6);
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
 }
 
-.flight-plan-step + .flight-plan-step {
-  border-top: 1px solid var(--color-border-subtle);
+.flight-plan-step:hover {
+  border-color: var(--color-accent-border);
+  background: var(--color-surface-hover);
+}
+
+.flight-plan-step:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .flight-plan-icon {
-  grid-row: span 3;
-  width: 2.5rem;
-  height: 2.5rem;
+  grid-row: span 2;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.125rem;
   color: var(--color-accent-ink);
 }
 
@@ -329,383 +315,46 @@
   height: 100%;
 }
 
-.flight-plan-step h3 {
-  margin: 0;
-  font-size: var(--font-size-h2);
-}
-
-.flight-plan-step p {
-  max-width: 30ch;
-  margin: 0;
-  color: var(--color-text-secondary);
-}
-
-.flight-plan-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: var(--size-touch);
-  margin-top: var(--space-2);
-  color: var(--color-accent-ink);
+.flight-plan-title {
   font-family: var(--font-label);
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-label);
   letter-spacing: var(--tracking-label);
-  text-decoration: none;
+  line-height: 1.5;
   text-transform: uppercase;
 }
 
-.flight-plan-link:hover {
-  color: var(--color-text-primary);
+.flight-plan-text {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-kicker);
+  line-height: 1.4;
 }
 
-.flight-plan-link:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
+/* Georgian is never uppercased or tracked. */
+.flight-plan-title:lang(ka) {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 @media (--md) {
   .flight-plan {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .flight-plan-step {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    padding: var(--space-8) var(--space-6);
-    text-align: center;
-  }
-
-  .flight-plan-step + .flight-plan-step {
-    border-top: 0;
-  }
-
-  .flight-plan-step:nth-child(even) {
-    border-left: 1px solid var(--color-border-subtle);
-  }
-
-  .flight-plan-step:nth-child(n + 3) {
-    border-top: 1px solid var(--color-border-subtle);
-  }
-
-  .flight-plan-icon {
-    grid-row: auto;
-    width: 2.75rem;
-    height: 2.75rem;
-    margin-bottom: var(--space-2);
-  }
-}
-
-@media (--lg) {
-  .flight-plan {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-
-  .flight-plan-step:nth-child(n) {
-    border-top: 0;
-  }
-
-  .flight-plan-step + .flight-plan-step {
-    border-left: 1px solid var(--color-border-subtle);
-  }
-}
-
-/* TONIGHT — the platform's list as ruled rows. */
-.home-tonight-body {
-  display: grid;
-  gap: var(--space-6);
-  min-width: 0;
-}
-
-.home-notices {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.home-notices:empty {
-  display: none;
-}
-
-.home-tonight-all {
-  justify-self: start;
-}
-
-/* THE INSTRUMENT — specs as ruled rows, the live status beside them. */
-.home-specs {
-  margin: var(--space-10) 0 0;
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.home-specs > div {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: var(--space-4);
-  padding-block: var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.home-specs dt {
-  color: var(--color-text-tertiary);
-  font-family: var(--font-label);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
-  line-height: var(--leading-body);
-  text-transform: uppercase;
-}
-
-.home-specs dd {
-  display: grid;
-  gap: var(--space-1);
-  margin: 0;
-  color: var(--color-text-primary);
-}
-
-.home-specs dd small {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-}
-
-.home-specs .home-spec-number {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.home-status {
-  display: grid;
-  gap: var(--space-5);
-  padding: var(--space-6);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-raised);
-}
-
-.home-status > header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.home-status h3 {
-  margin: 0;
-  font-size: var(--font-size-h3);
-}
-
-.home-status dl {
-  display: grid;
-  margin: 0;
-}
-
-.home-status dl > div {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  padding-block: var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.home-status dl > div:last-child {
-  border-bottom: 0;
-}
-
-.home-status dt {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
-.home-status dd {
-  min-width: 0;
-  margin: 0;
-}
-
-.home-status-mission {
-  margin: 0;
-}
-
-/* THE CLOSING CALL — centred, and the private sessions as ruled rows. */
-.home-final {
-  padding-block: var(--space-16) var(--space-20);
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.home-final-inner {
-  display: grid;
-  justify-items: center;
-  text-align: center;
-}
-
-.home-final h2 {
-  margin-inline: auto;
-}
-
-.home-final .kicker {
-  justify-content: center;
-}
-
-.home-final-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-}
-
-.home-private {
-  width: min(100%, 28rem);
-  margin-top: var(--space-16);
-  text-align: left;
-}
-
-.home-private h3 {
-  margin: 0 0 var(--space-4);
-  font-size: var(--font-size-h3);
-}
-
-.home-private ul {
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--color-border-subtle);
-  list-style: none;
-}
-
-.home-private li {
-  padding-block: var(--space-3);
-  border-bottom: 1px solid var(--color-border-subtle);
-  color: var(--color-text-secondary);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-mono);
-}
-
-.poster-hero-link:focus-visible,
-.home-status > header a:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 4px;
 }
 
 @media (--lg) {
-  .home-final {
-    padding-block: var(--space-20);
+  .home-band {
+    padding-block: var(--space-16);
   }
 }
 
-/*
- * PHONE — one short scroll: the hero is two thirds of a screen, the steps a two-by-two
- * grid of doors, three of tonight's targets, the specs as tiles, and no lede under a
- * heading that already says it.
- */
+/* PHONE — the hero is two thirds of a screen. */
 @media (--below-md) {
   .sky-hero {
     min-height: min(68svh, 34rem);
   }
 
-  .home-band,
-  .home-final {
+  .home-band {
     padding-block: var(--space-10);
-  }
-
-  .home-lede {
-    display: none;
-  }
-
-  .home-heading h2,
-  .home-final h2 {
-    font-size: var(--font-size-h2);
-  }
-
-  .home-split {
-    gap: var(--space-6);
-  }
-
-  .flight-plan {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-3);
-    margin-top: var(--space-6);
-    border-top: 0;
-  }
-
-  .flight-plan-step,
-  .flight-plan-step + .flight-plan-step {
-    grid-template-columns: 1fr;
-    gap: var(--space-2);
-    padding: var(--space-4);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-panel);
-    background: var(--color-surface-raised);
-  }
-
-  .flight-plan-icon {
-    grid-row: auto;
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .flight-plan-step h3 {
-    font-size: var(--font-size-h3);
-    overflow-wrap: anywhere;
-  }
-
-  .flight-plan-step p {
-    font-size: var(--font-size-label);
-  }
-
-  .flight-plan-link {
-    margin-top: auto;
-  }
-
-  .home-tonight-body .tonight-list > li:nth-child(n + 4) {
-    display: none;
-  }
-
-  .home-tonight-all {
-    justify-self: stretch;
-  }
-
-  .home-specs {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-3);
-    margin-top: var(--space-6);
-    border-top: 0;
-  }
-
-  .home-specs > div {
-    grid-template-columns: 1fr;
-    gap: var(--space-1);
-    padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-panel);
-  }
-
-  .home-status {
-    padding: var(--space-5);
-  }
-
-  .home-final-actions {
-    display: grid;
-    width: 100%;
-    margin-top: var(--space-6);
-  }
-
-  .home-private {
-    margin-top: var(--space-10);
-  }
-}
-
-@media (--below-sm) {
-  .flight-plan-step,
-  .flight-plan-step + .flight-plan-step {
-    padding: var(--space-3);
-  }
-
-  .flight-plan-step p,
-  .flight-plan-link {
-    overflow-wrap: anywhere;
   }
 }
