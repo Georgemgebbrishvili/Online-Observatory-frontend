@@ -32,7 +32,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 70% 100%;
+  object-position: 70% 30%;
   animation: explorer-drift 40s var(--ease-standard) infinite alternate;
   transform-origin: 70% 90%;
 }

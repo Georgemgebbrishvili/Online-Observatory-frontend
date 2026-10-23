@@ -26,7 +26,7 @@ export function ExplorerLaunch({ locale }: { locale: Locale }) {
     <main id="main-content" className="explorer" data-launching={launching || undefined}>
       <div className="explorer-scene" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/sky/voyage-earth.webp" alt="" decoding="async" fetchPriority="high" />
+        <img src="/sky/voyage-ship.webp" alt="" decoding="async" fetchPriority="high" />
         <div className="explorer-warp" />
       </div>
 
