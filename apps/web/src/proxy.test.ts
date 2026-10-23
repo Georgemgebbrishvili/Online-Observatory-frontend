@@ -73,3 +73,39 @@ describe("a shared capture's page (ADR-065)", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe("a page that does not exist", () => {
+  it("is a real 404, in either language", async () => {
+    for (const path of ["/en/no-such-page", "/ka/nope/deeper"]) {
+      expect((await proxy(new NextRequest(`https://darkview.ge${path}`))).status).toBe(
+        404,
+      );
+    }
+  });
+
+  it("leaves every real section to its page", async () => {
+    for (const path of ["/en", "/en/pricing", "/ka/tonight", "/en/gift/abc"]) {
+      expect((await proxy(new NextRequest(`https://darkview.ge${path}`))).status).toBe(
+        200,
+      );
+    }
+  });
+
+  it("knows every section the app has, and no other", async () => {
+    const { readdirSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const folders = readdirSync(join(process.cwd(), "src/app/[locale]"), {
+      withFileTypes: true,
+    })
+      .map((entry) =>
+        entry.isDirectory() ? entry.name : entry.name.replace(/\.tsx$/, ""),
+      )
+      .filter(
+        (name) =>
+          !name.startsWith("[") &&
+          !["error", "layout", "loading", "not-found", "page"].includes(name),
+      );
+    const { SECTIONS } = await import("@/proxy");
+    expect([...SECTIONS].sort()).toEqual(folders.sort());
+  });
+});

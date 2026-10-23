@@ -8,6 +8,34 @@ function preferredLocale(request: NextRequest) {
   return language?.startsWith("ka") ? "ka" : defaultLocale;
 }
 
+/**
+ * The site's sections under a locale: the folders in `app/[locale]`, which a unit test
+ * holds this list to. Anything else is a page that does not exist, and is told so with a
+ * real 404 here, because the catch-all streams under a loading boundary and could only
+ * answer 200.
+ */
+export const SECTIONS = [
+  "admin",
+  "app",
+  "c",
+  "design-system",
+  "explorer",
+  "gift",
+  "observatory",
+  "opengraph-image",
+  "pricing",
+  "privacy",
+  "refunds",
+  "register",
+  "reset-password",
+  "sign-in",
+  "status",
+  "terms",
+  "tonight",
+  "verify-email",
+  "vote",
+];
+
 /** `/{locale}/c/{captureId}`: a shared capture's page (ADR-065), not its image. */
 const galleryPage = /^\/(en|ka)\/c\/([A-Za-z0-9-]{1,64})$/;
 
@@ -49,6 +77,11 @@ export async function proxy(request: NextRequest) {
     // not-found.tsx receives no params, so this is how it learns the language.
     const headers = new Headers(request.headers);
     headers.set(localeHeader, locale);
+    const section = pathname.split("/")[2];
+    if (section && !SECTIONS.includes(section)) {
+      // The catch-all renders the not-found page; the status is set here.
+      return NextResponse.rewrite(request.nextUrl, { request: { headers }, status: 404 });
+    }
     const gallery = pathname.match(galleryPage);
     if (gallery && (await galleryIsMissing(gallery[2]))) {
       // A path no route has, so the catch-all renders the not-found page; the status is
@@ -67,6 +100,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|ws/mission/|stream/mission/|_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|robots.txt|sitemap.xml|brand|captures|cards/art|plates|sky|monitoring).*)",
+    "/((?!api|ws/mission/|stream/mission/|_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|robots.txt|sitemap.xml|manifest.webmanifest|brand|captures|cards/art|plates|sky|monitoring).*)",
   ],
 };
