@@ -32,9 +32,10 @@ test("/app/book is one board: the nights, a night's slots, and what is up for a 
 
   const slots = page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio");
   await expect(slots).toHaveCount(open + 5);
-  const first = (await slots.first().textContent())?.trim() ?? "";
+  const first = (await slots.first().locator("time").textContent())?.trim() ?? "";
   expect(first).toMatch(/^\d{2}:\d{2}$/);
-  for (const index of [2, 3, 4, 5, 6]) await expect(slots.nth(index)).toBeDisabled();
+  // Taken starts are struck out; they can be waited for, never reserved (ADR-068).
+  for (const index of [2, 3, 4, 5, 6]) await expect(slots.nth(index)).toHaveClass(/is-taken/);
   await expect(slots.nth(4)).toHaveAccessibleName(/Booked/);
   await expect(slots.nth(7)).toBeEnabled();
   // Quarter-hour starts.
