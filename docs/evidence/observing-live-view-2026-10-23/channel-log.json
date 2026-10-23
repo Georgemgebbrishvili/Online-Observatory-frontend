@@ -1,0 +1,1196 @@
+[
+ {
+  "t": 19.904,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 19.904,
+  "who": "en",
+  "type": "turbopack-connected"
+ },
+ {
+  "t": 20.155,
+  "who": "en",
+  "type": "sync"
+ },
+ {
+  "t": 20.383,
+  "who": "en",
+  "type": "building"
+ },
+ {
+  "t": 20.869,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 32.648,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 41.951,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "PREPARING"
+ },
+ {
+  "t": 42.278,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 42.281,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 42.669,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 42.841,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 42.883,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 42.883,
+  "who": "en",
+  "type": "MISSION_COMMAND_RESULT"
+ },
+ {
+  "t": 43.172,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 43.202,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "PREPARING"
+ },
+ {
+  "t": 43.207,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "SLEWING"
+ },
+ {
+  "t": 43.419,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 43.946,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 43.946,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 45.386,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 45.464,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 45.479,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 45.479,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 45.479,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 46.112,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 46.528,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 46.963,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 47.528,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 48.031,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 48.495,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 48.994,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 49.5,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 50.172,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 50.183,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 50.547,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 51.466,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 51.668,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 51.785,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 52.414,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 52.668,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 53.083,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 53.582,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 54.086,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 54.593,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 55.139,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 55.618,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 56.143,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 56.708,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 57.197,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 57.708,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 58.25,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 58.724,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 59.28,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 59.777,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 60.325,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 60.811,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 61.321,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 61.866,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 62.515,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 62.913,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 63.469,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 63.966,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 64.475,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 64.984,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 65.485,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 65.993,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 66.556,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 67.026,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 67.525,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 68.053,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 68.558,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 69.069,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 69.594,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 70.108,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 70.602,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 70.834,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "VERIFYING"
+ },
+ {
+  "t": 70.99,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 71.131,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 74.502,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 76.523,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "CENTERING"
+ },
+ {
+  "t": 76.618,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 77.276,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 77.299,
+  "who": "en",
+  "type": "MISSION_STREAM"
+ },
+ {
+  "t": 77.342,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": null,
+  "exposure": 2000,
+  "seq": 0
+ },
+ {
+  "t": 77.342,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 77.342,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 77.342,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "SLEWING"
+ },
+ {
+  "t": 77.594,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 78.342,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 78.732,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 79.076,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 79.139,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 79.768,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 81.628,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 82.168,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "VERIFYING"
+ },
+ {
+  "t": 82.248,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 82.769,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 83.628,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "OBSERVING"
+ },
+ {
+  "t": 83.859,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": null,
+  "exposure": 2000,
+  "seq": 1
+ },
+ {
+  "t": 83.859,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 85.059,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 85.204,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 85.677,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 88.662,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 90.024,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 90.379,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 1,
+  "exposure": 2000,
+  "seq": 2
+ },
+ {
+  "t": 90.379,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 90.39,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 96.512,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 2,
+  "exposure": 2000,
+  "seq": 3
+ },
+ {
+  "t": 96.79,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 101.551,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 3,
+  "exposure": 2000,
+  "seq": 4
+ },
+ {
+  "t": 101.862,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 110.324,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 4,
+  "exposure": 2000,
+  "seq": 5
+ },
+ {
+  "t": 117.28,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 5,
+  "exposure": 2000,
+  "seq": 6
+ },
+ {
+  "t": 117.349,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 117.581,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 123.746,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 6,
+  "exposure": 2000,
+  "seq": 7
+ },
+ {
+  "t": 123.989,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 130.675,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 7,
+  "exposure": 2000,
+  "seq": 8
+ },
+ {
+  "t": 130.982,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 136.645,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 137.485,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 142.367,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 8,
+  "exposure": 2000,
+  "seq": 9
+ },
+ {
+  "t": 146.599,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 146.6,
+  "who": "ka",
+  "type": "turbopack-connected"
+ },
+ {
+  "t": 146.664,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 147.043,
+  "who": "ka",
+  "type": "sync"
+ },
+ {
+  "t": 147.045,
+  "who": "ka",
+  "type": "built"
+ },
+ {
+  "t": 152.362,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 152.363,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 154.365,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 9,
+  "exposure": 2000,
+  "seq": 10
+ },
+ {
+  "t": 154.377,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 159.499,
+  "who": "ka",
+  "type": "MISSION_STATE",
+  "state": "OBSERVING"
+ },
+ {
+  "t": 159.76,
+  "who": "ka",
+  "type": "MISSION_STREAM"
+ },
+ {
+  "t": 162.952,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 10,
+  "exposure": 2000,
+  "seq": 11
+ },
+ {
+  "t": 162.952,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 10,
+  "exposure": 2000,
+  "seq": 11
+ },
+ {
+  "t": 163.003,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 163.011,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 163.276,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 163.276,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 166.943,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 11,
+  "exposure": 2000,
+  "seq": 12
+ },
+ {
+  "t": 166.943,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 11,
+  "exposure": 2000,
+  "seq": 12
+ },
+ {
+  "t": 170.18,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 12,
+  "exposure": 2000,
+  "seq": 13
+ },
+ {
+  "t": 170.18,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 12,
+  "exposure": 2000,
+  "seq": 13
+ },
+ {
+  "t": 170.465,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 170.465,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 174.32,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "CAPTURING"
+ },
+ {
+  "t": 174.321,
+  "who": "ka",
+  "type": "MISSION_STATE",
+  "state": "CAPTURING"
+ },
+ {
+  "t": 174.417,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 174.417,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 174.801,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 174.803,
+  "who": "ka",
+  "type": "built"
+ },
+ {
+  "t": 174.824,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 174.825,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 176.519,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 13,
+  "exposure": 2000,
+  "seq": 14
+ },
+ {
+  "t": 176.529,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 13,
+  "exposure": 2000,
+  "seq": 14
+ },
+ {
+  "t": 176.541,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 176.548,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 176.78,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 176.809,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 186.434,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 186.484,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 187.242,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 187.253,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 189.15,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 14,
+  "exposure": 2000,
+  "seq": 15
+ },
+ {
+  "t": 189.151,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 14,
+  "exposure": 2000,
+  "seq": 15
+ },
+ {
+  "t": 189.436,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 189.437,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 201.312,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 15,
+  "exposure": 2000,
+  "seq": 16
+ },
+ {
+  "t": 201.312,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 15,
+  "exposure": 2000,
+  "seq": 16
+ },
+ {
+  "t": 201.605,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 201.605,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 211.211,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 16,
+  "exposure": 2000,
+  "seq": 17
+ },
+ {
+  "t": 211.211,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 16,
+  "exposure": 2000,
+  "seq": 17
+ },
+ {
+  "t": 211.491,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 211.492,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 223.336,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 17,
+  "exposure": 2000,
+  "seq": 18
+ },
+ {
+  "t": 223.349,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 17,
+  "exposure": 2000,
+  "seq": 18
+ },
+ {
+  "t": 223.659,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 223.694,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 229.963,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 18,
+  "exposure": 2000,
+  "seq": 19
+ },
+ {
+  "t": 229.963,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 18,
+  "exposure": 2000,
+  "seq": 19
+ },
+ {
+  "t": 230.336,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 230.336,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 234.87,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 19,
+  "exposure": 2000,
+  "seq": 20
+ },
+ {
+  "t": 234.871,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 19,
+  "exposure": 2000,
+  "seq": 20
+ },
+ {
+  "t": 235.664,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 235.664,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 241.702,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 20,
+  "exposure": 2000,
+  "seq": 21
+ },
+ {
+  "t": 241.702,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 20,
+  "exposure": 2000,
+  "seq": 21
+ },
+ {
+  "t": 242.064,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 242.064,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 246.734,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 21,
+  "exposure": 2000,
+  "seq": 22
+ },
+ {
+  "t": 246.734,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 21,
+  "exposure": 2000,
+  "seq": 22
+ },
+ {
+  "t": 247.531,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 247.531,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 252.324,
+  "who": "en",
+  "type": "MISSION_FRAME",
+  "stacked": 22,
+  "exposure": 2000,
+  "seq": 23
+ },
+ {
+  "t": 252.324,
+  "who": "ka",
+  "type": "MISSION_FRAME",
+  "stacked": 22,
+  "exposure": 2000,
+  "seq": 23
+ },
+ {
+  "t": 252.558,
+  "who": "en",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 252.558,
+  "who": "ka",
+  "type": "MISSION_TELEMETRY"
+ },
+ {
+  "t": 256.186,
+  "who": "en",
+  "type": "MISSION_STATE",
+  "state": "PROCESSING"
+ },
+ {
+  "t": 256.186,
+  "who": "ka",
+  "type": "MISSION_STATE",
+  "state": "PROCESSING"
+ },
+ {
+  "t": 256.292,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 256.292,
+  "who": "ka",
+  "type": "built"
+ },
+ {
+  "t": 256.294,
+  "who": "en",
+  "type": "built"
+ },
+ {
+  "t": 256.296,
+  "who": "ka",
+  "type": "built"
+ },
+ {
+  "t": 256.335,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 256.336,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 256.786,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 256.786,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 263.494,
+  "who": "ka",
+  "type": "isrManifest"
+ },
+ {
+  "t": 263.555,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 264.796,
+  "who": "en",
+  "type": "isrManifest"
+ },
+ {
+  "t": 264.855,
+  "who": "ka",
+  "type": "isrManifest"
+ }
+]

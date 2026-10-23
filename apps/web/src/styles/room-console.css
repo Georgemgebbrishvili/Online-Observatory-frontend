@@ -539,6 +539,14 @@
   text-align: right;
 }
 
+/* Under the status pill: what the picture is made of (platform issue 199). */
+.room-console .live-feed-frame {
+  top: 56px;
+  right: 16px;
+  max-width: calc(100% - 32px);
+  text-align: right;
+}
+
 .room-console
   .live-feed-well
   .target-preview[data-plate="true"]
