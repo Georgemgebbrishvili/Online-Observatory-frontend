@@ -1099,6 +1099,7 @@
   fill: none;
   stroke: var(--color-photon);
   stroke-width: 1.5;
+  stroke-dasharray: 3 2;
 }
 
 .sky-chart-telescope {
