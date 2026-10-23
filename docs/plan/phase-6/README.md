@@ -34,7 +34,7 @@ the status table (state, commits, date) and stop. Do not start a second slice.
 | 6.7 | Target guide, frame labels, stack clip | 6.1                         | Guide done 2026-10-23; labels and clip deferred | clients 75f585a (ADR-069) |
 | 6.8 | Schools, observer log, Astroman tie-in | 6.3, 6.5                    | Done 2026-10-23, lean | clients ad8570a (ADR-070) |
 | 6.9 | Video transport upgrade                | 6.1, 6.4, hardware measured | Waits for the camera | clients da9f803 (ADR-071, what to measure) |
-| 6.10| Front-end quality and engineering upkeep | —                         | Mostly done 2026-10-23 | clients c815fb3 a1fc8e3 bea51ad 8d63efe e57d732 |
+| 6.10| Front-end quality and engineering upkeep | —                         | Mostly done 2026-10-23 | clients c815fb3 a1fc8e3 bea51ad 8d63efe e57d732 529c561 |
 
 Also on 2026-10-23, outside the slices: Next.js 16.4.0 → 16.4.2 in both repositories for
 three advisories, one a critical unauthenticated remote code execution (clients f78fa62,
@@ -50,8 +50,9 @@ From 6.6 on, the maintainer asked for a lean product ("simple and sophisticated,
 code"), so each slice built its smallest useful part and deferred the rest in its ADR:
 push notifications (ADR-068 §4); frame labels and the stack clip (ADR-069 §2); group
 booking, worksheets and prints (ADR-070); a new video transport until the camera is
-measured (ADR-071). In 6.10, still open: the offline Collection (a service worker), the
-manual screen-reader and Safari pass, and formatting the 243 files with Prettier plus its
+measured (ADR-071). In 6.10 the keyboard pass is automated (e2e/keyboard.spec.ts) and found one real fault,
+fixed: the booking board's choices were one Tab stop per option. Still open: the offline
+Collection (a service worker, left out for leanness), a manual Safari and VoiceOver pass, and formatting the 243 files with Prettier plus its
 CI check -- left until no other session is editing the tree, since it touches most files.
 
 ## Shared rules
