@@ -1059,6 +1059,24 @@ img.target-art {
   color: var(--color-text-primary);
 }
 
+/* ADR-067: a gift code, folded away until it is wanted. */
+.board-gift {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.board-gift summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.board-gift[open] summary {
+  color: var(--color-text-primary);
+}
+
 .board-total {
   display: grid;
   grid-template-columns: 1fr auto;

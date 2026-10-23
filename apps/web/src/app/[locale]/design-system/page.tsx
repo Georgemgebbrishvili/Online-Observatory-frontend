@@ -18,6 +18,7 @@ import "@/styles/skychaser-card.css";
 import "@/styles/cards.css";
 import "@/styles/status.css";
 import "@/styles/tonight.css";
+import "@/styles/gift.css";
 import { notFound } from "next/navigation";
 
 import { CalendarSpecimens } from "./calendar-specimens";
@@ -49,6 +50,8 @@ import { RoomSharingView } from "@/components/room/room-sharing";
 import { RoomTonightView } from "@/components/room/room-tonight";
 import { TonightBannerView } from "@/components/tonight/tonight-banner";
 import { TonightLive } from "@/components/tonight/tonight-live";
+import { GiftCard } from "@/components/gift/gift-card";
+import { GiftFormView } from "@/components/gift/gift-form";
 import { tonightCopy } from "@/i18n/resources/tonight";
 import { WatchView, type WatchPhase } from "@/components/room/mission-watch";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
@@ -200,6 +203,23 @@ export async function generateMetadata({
     robots: { index: false, follow: false },
   };
 }
+
+/** ADR-067: a paid gift, as its buyer reads it. The code is a specimen, not a real one. */
+const giftSpecimen = {
+  id: "70000000-0000-4000-8000-000000000001",
+  status: "ACTIVE" as const,
+  durationMinutes: 30,
+  priceMinor: 4500,
+  currency: "GEL" as const,
+  code: "STLR-GIFT-7K2Q",
+  codeLast4: "7K2Q",
+  recipientEmail: null,
+  recipientName: "Nino",
+  message: "For the clearest night of the year.",
+  expiresAt: "2027-09-21T20:00:00.000Z",
+  redeemedBookingId: null,
+  createdAt: "2026-09-21T20:00:00.000Z",
+};
 
 /**
  * The Tonight specimens' session. The frame is empty: nothing here stands for telescope
@@ -875,6 +895,26 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 />
               );
             })}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.gift}</h3>
+          <div className="ds-gift-specimens">
+            {(
+              [
+                ["idle", null],
+                ["buying", null],
+                ["idle", "notConfigured"],
+                ["idle", "invalid"],
+                ["idle", "failed"],
+              ] as const
+            ).map(([phase, refusal], index) => (
+              <GiftFormView key={index} locale={locale} phase={phase} refusal={refusal} />
+            ))}
+            <GiftCard gift={giftSpecimen} label="GiftCard 1" locale={locale} />
+            <GiftCard
+              gift={{ ...giftSpecimen, recipientName: null, message: null }}
+              label="GiftCard 2"
+              locale={locale}
+            />
           </div>
           <h3 className="ds-subheading">{copy.cards.tonight}</h3>
           <div className="ds-tonight-specimens">

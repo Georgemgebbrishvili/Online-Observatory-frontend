@@ -1,0 +1,188 @@
+/* Clients ADR-067: Gift a night. The page, the buyer's list, and the printable card. */
+.gift-page {
+  padding-block: var(--space-10) var(--space-16);
+}
+
+.gift-grid {
+  display: grid;
+  gap: var(--space-8);
+}
+
+@media (--lg) {
+  .gift-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
+    align-items: start;
+  }
+}
+
+.gift-intro {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.gift-intro h2,
+.gift-mine h2 {
+  margin: 0;
+}
+
+.gift-lede {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+}
+
+.gift-facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  color: var(--color-text-secondary);
+}
+
+.gift-price {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.gift-price strong {
+  font-size: var(--font-size-h3);
+}
+
+.gift-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.gift-buy,
+.gift-form,
+.gift-form fieldset {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.gift-form fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.gift-form legend {
+  margin-block-end: var(--space-2);
+  font-weight: 600;
+}
+
+.gift-mine {
+  display: grid;
+  gap: var(--space-4);
+  margin-block-start: var(--space-12);
+}
+
+.gift-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gift-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+@media (--md) {
+  .gift-list li {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    align-items: center;
+  }
+}
+
+.gift-status {
+  color: var(--color-text-secondary);
+}
+
+.gift-detail {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: start;
+  max-width: 40rem;
+}
+
+.gift-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* The card itself: quiet, and legible on paper. */
+.gift-card {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-8) var(--space-6);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-base);
+}
+
+.gift-card p,
+.gift-card h2 {
+  margin: 0;
+}
+
+.gift-card-heading {
+  font-size: var(--font-size-h2);
+}
+
+.gift-card-note {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+  border-inline-start: 2px solid var(--color-border-strong);
+  color: var(--color-text-secondary);
+  white-space: pre-line;
+}
+
+.gift-card-length,
+.gift-card-until,
+.gift-card-redeem {
+  color: var(--color-text-secondary);
+}
+
+.gift-card-code {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.gift-card-code strong {
+  font-size: var(--font-size-h3);
+  letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
+}
+
+.ds-gift-specimens {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .gift-card,
+  .gift-card * {
+    visibility: visible;
+    color: #000;
+  }
+
+  .gift-card {
+    position: absolute;
+    inset: 0 0 auto;
+    border-color: #000;
+    background: #fff;
+  }
+}

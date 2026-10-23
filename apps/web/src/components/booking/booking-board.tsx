@@ -28,6 +28,7 @@ import { targetDescription, targetName } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { boardCopy } from "@/i18n/resources/board";
 import { cardsCopy } from "@/i18n/resources/cards";
+import { giftCopy } from "@/i18n/resources/gift";
 import { bookingCopy } from "@/i18n/resources/booking";
 import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { reserveCopy } from "@/i18n/resources/reserve";
@@ -98,6 +99,7 @@ export function BookingBoard({
   const replacing = rescheduleCopy[locale];
   const words = targetCopy[locale];
   const cards = cardsCopy[locale];
+  const gifts = giftCopy[locale].board;
   const timezone = observatory.timezone;
 
   const time = useMemo(
@@ -199,7 +201,10 @@ export function BookingBoard({
           (prize.kind === "DISCOUNT" ||
             (prize.kind === "FREE_SLOT" && (!chosen || chosen.durationMinutes === prize.durationMinutes))),
       );
-  const prize = usable.find((candidate) => candidate.id === prizeId) ?? null;
+  // ADR-067: a gift code typed in takes the place of any prize; a booking takes one.
+  const [giftCode, setGiftCode] = useState("");
+  const gift = reschedule ? "" : giftCode.trim();
+  const prize = gift ? null : (usable.find((candidate) => candidate.id === prizeId) ?? null);
 
   const pickNight = (date: string) => {
     setNight(date);
@@ -240,7 +245,11 @@ export function BookingBoard({
           slotStartAt: chosen.startAt,
           durationMinutes: chosen.durationMinutes,
           locale,
-          ...(prize?.voucherCode ? { voucherCode: prize.voucherCode } : {}),
+          ...(gift
+            ? { voucherCode: gift }
+            : prize?.voucherCode
+              ? { voucherCode: prize.voucherCode }
+              : {}),
         },
         schema: zCreateBookingResponse,
       });
@@ -266,7 +275,9 @@ export function BookingBoard({
       }
       const refusal = readRefusal(error, reserve.form, words.reasons);
       setFeedback(
-        prize && code === "VALIDATION_FAILED"
+        gift && code === "VALIDATION_FAILED"
+          ? gifts.refused
+          : prize && code === "VALIDATION_FAILED"
           ? cards.board.refused
           : !target && code === "VALIDATION_FAILED"
             ? copy.noTargets
@@ -301,7 +312,13 @@ export function BookingBoard({
   });
 
   const price = (slot: BoardSlot) =>
-    reschedule ? replacing.free : prize?.kind === "FREE_SLOT" ? cards.board.free : slot.price;
+    reschedule
+      ? replacing.free
+      : gift
+        ? gifts.paid
+        : prize?.kind === "FREE_SLOT"
+          ? cards.board.free
+          : slot.price;
   const endOf = (slot: Slot) => new Date(Date.parse(slot.startAt) + slot.durationMinutes * 60_000);
   const buttonLabel =
     phase === "reserving"
@@ -506,6 +523,28 @@ export function BookingBoard({
                 })),
               ]}
             />
+          )}
+          {!reschedule && (
+            <details className="board-gift" open={giftCode !== "" || undefined}>
+              <summary>{gifts.label}</summary>
+              <label className="field">
+                <span className="field-label">{gifts.field}</span>
+                <input
+                  className="field-input data"
+                  name="giftCode"
+                  value={giftCode}
+                  onChange={(event) => {
+                    setGiftCode(event.target.value);
+                    setFeedback(null);
+                  }}
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  maxLength={40}
+                />
+                {gift && <span className="field-hint">{gifts.note}</span>}
+              </label>
+            </details>
           )}
           <div className="board-total">
             <span className="board-label">{copy.cost}</span>

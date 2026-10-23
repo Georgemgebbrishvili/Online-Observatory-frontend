@@ -11,6 +11,8 @@ export const publicRoutes = [
   "status",
   // ADR-066: what the fake shows a signed-in visitor: nothing live.
   "tonight",
+  // ADR-067: the form and the observer's gifts.
+  "gift",
   "terms",
   "privacy",
   "refunds",
@@ -38,6 +40,8 @@ export const appRoutes = [
  */
 export const parameterisedRoutes = [
   "app/missions/saturn",
+  // ADR-067: the fake platform's gift the observer bought, ready to give.
+  "gift/70000000-0000-4000-8000-000000000001",
   // The fake platform's three missions: observing, scheduled, complete.
   "app/missions/20000000-0000-4000-8000-000000000001/session",
   "app/missions/21000000-0000-4000-8000-000000000002/session",

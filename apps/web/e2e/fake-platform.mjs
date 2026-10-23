@@ -56,6 +56,9 @@ import {
   zPasswordResetConfirmRequest,
   zPasswordResetRequest,
   zPurchaseObserverPackResponse,
+  zPurchaseGiftVoucherBody,
+  zPurchaseGiftVoucherResponse,
+  zListMyGiftVouchersResponse,
   zRegisterRequest,
   zRescheduleBookingBody,
   zRescheduleBookingResponse,
@@ -644,6 +647,105 @@ function slotTargets(startAt, durationMinutes) {
   });
 }
 
+// ADR-067: gift vouchers. Anyone holding an ACTIVE gift's code may spend it; only its
+// buyer reads the code, and only while it can be spent. One gift is seeded for the
+// observer, with fixed dates, so its page has a stable baseline.
+const gifts = [
+  {
+    id: "70000000-0000-4000-8000-000000000001",
+    buyerUserId: userId,
+    status: "ACTIVE",
+    durationMinutes: 30,
+    priceMinor: 4500,
+    currency: "GEL",
+    code: "STLR-GIFT-7K2Q",
+    recipientEmail: null,
+    recipientName: "Nino",
+    message: "For the clearest night of the year.",
+    expiresAt: "2027-09-21T20:00:00.000Z",
+    redeemedBookingId: null,
+    createdAt: "2026-09-21T20:00:00.000Z",
+  },
+];
+
+function giftView(gift) {
+  return {
+    id: gift.id,
+    status: gift.status,
+    durationMinutes: gift.durationMinutes,
+    priceMinor: gift.priceMinor,
+    currency: gift.currency,
+    code: gift.status === "ACTIVE" ? gift.code : null,
+    codeLast4:
+      gift.status === "PENDING_PAYMENT" || gift.status === "CANCELLED"
+        ? null
+        : gift.code.replace(/-/g, "").slice(-4),
+    recipientEmail: gift.recipientEmail,
+    recipientName: gift.recipientName,
+    message: gift.message,
+    expiresAt: gift.expiresAt,
+    redeemedBookingId: gift.redeemedBookingId,
+    createdAt: gift.createdAt,
+  };
+}
+
+async function purchaseGift(request, response) {
+  const user = sessionUser(request);
+  if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  if (cookiesOf(request).fake_gift === "unconfigured")
+    return error(
+      response,
+      503,
+      "INTERNAL",
+      "Gift vouchers are not available on this deployment.",
+    );
+  const body = zPurchaseGiftVoucherBody.safeParse(await json(request));
+  if (!body.success) return error(response, 422, "VALIDATION_FAILED", "Malformed gift.");
+  if (body.data.durationMinutes !== 30)
+    return error(
+      response,
+      422,
+      "VALIDATION_FAILED",
+      "Vouchers are sold for 30-minute observations.",
+    );
+  const paymentId = randomUUID();
+  const gift = {
+    id: randomUUID(),
+    buyerUserId: user.id,
+    status: "PENDING_PAYMENT",
+    durationMinutes: 30,
+    priceMinor: 4500,
+    currency: "GEL",
+    code: `STLR-${randomUUID().slice(0, 4).toUpperCase()}-${randomUUID().slice(0, 4).toUpperCase()}`,
+    recipientEmail: body.data.recipientEmail ?? null,
+    recipientName: body.data.recipientName ?? null,
+    message: body.data.message ?? null,
+    expiresAt: null,
+    redeemedBookingId: null,
+    createdAt: new Date().toISOString(),
+  };
+  gifts.push(gift);
+  payments.set(paymentId, {
+    session: cookiesOf(request)[sessionCookie],
+    giftId: gift.id,
+    locale: user.locale ?? "en",
+  });
+  send(
+    response,
+    201,
+    zPurchaseGiftVoucherResponse.parse({
+      voucher: giftView(gift),
+      paymentIntent: {
+        paymentId,
+        provider: "SANDBOX",
+        status: "PENDING",
+        redirectUrl: `${appOrigin}/api/payments/${paymentId}/sandbox-checkout`,
+        expiresAt: null,
+      },
+    }),
+  );
+}
+
 async function createBooking(request, response) {
   const user = sessionUser(request);
   if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
@@ -665,13 +767,22 @@ async function createBooking(request, response) {
   } = body.data;
   if (requested !== observatoryId)
     return error(response, 404, "NOT_FOUND", "No such observatory.");
-  // ADR-060: a card prize, spendable only by its winner; anything else is unusable.
-  const prize = voucherCode
-    ? (cardPrizes.get(user.id) ?? []).find(
-        (row) => row.status === "ACTIVE" && row.voucherCode === voucherCode,
+  // ADR-067: a gift, spendable by whoever holds its code.
+  const gift = voucherCode
+    ? gifts.find(
+        (row) =>
+          row.status === "ACTIVE" &&
+          row.code.replace(/-/g, "") === voucherCode.replace(/[-\s]/g, "").toUpperCase(),
       )
     : null;
-  if (voucherCode && (!prize || prize.kind === "OBSERVER_SEAT"))
+  // ADR-060: a card prize, spendable only by its winner; anything else is unusable.
+  const prize =
+    voucherCode && !gift
+      ? (cardPrizes.get(user.id) ?? []).find(
+          (row) => row.status === "ACTIVE" && row.voucherCode === voucherCode,
+        )
+      : null;
+  if (voucherCode && !gift && (!prize || prize.kind === "OBSERVER_SEAT"))
     return error(response, 422, "VALIDATION_FAILED", "That voucher code cannot be used.");
   if (prize?.kind === "FREE_SLOT" && prize.durationMinutes !== durationMinutes)
     return error(
@@ -714,7 +825,7 @@ async function createBooking(request, response) {
       { blockReasons: judged.visibility.blockReasons },
     );
 
-  const free = prize?.kind === "FREE_SLOT";
+  const free = prize?.kind === "FREE_SLOT" || Boolean(gift);
   const paymentId = free ? null : randomUUID();
   const paymentIntent = free
     ? null
@@ -750,6 +861,7 @@ async function createBooking(request, response) {
     createdAt: new Date().toISOString(),
   });
   const answer = zCreateBookingResponse.parse({ booking, paymentIntent });
+  if (gift) Object.assign(gift, { status: "REDEEMED", redeemedBookingId: booking.id });
   if (prize)
     Object.assign(prize, {
       status: "REDEEMED",
@@ -866,6 +978,18 @@ async function sandboxCheckout(request, response, paymentId) {
   const result = new URLSearchParams(raw).get("result");
   if (result !== "PAID" && result !== "DECLINED")
     return error(response, 422, "VALIDATION_FAILED", "Pay or decline.");
+  if (payment.giftId) {
+    const gift = gifts.find((row) => row.id === payment.giftId);
+    if (gift.status === "PENDING_PAYMENT") {
+      gift.status = result === "PAID" ? "ACTIVE" : "CANCELLED";
+      if (result === "PAID")
+        gift.expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60_000).toISOString();
+    }
+    response.writeHead(303, {
+      location: `${appOrigin}/${payment.locale}/gift/${payment.giftId}`,
+    });
+    return response.end();
+  }
   if (payment.missionId) {
     settlePack(payment, result);
     response.writeHead(303, {
@@ -1525,6 +1649,16 @@ const routes = {
     );
   },
   "POST /bookings": createBooking,
+  "POST /gift-vouchers": purchaseGift,
+  "GET /gift-vouchers": (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    const items = gifts
+      .filter((gift) => gift.buyerUserId === user.id)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map(giftView);
+    send(response, 200, zListMyGiftVouchersResponse.parse({ items }));
+  },
   // As the platform: public, and 404 for an observatory it does not list.
   "GET /targets/visibility": (request, response) => {
     const query = new URL(request.url, "http://fake").searchParams;

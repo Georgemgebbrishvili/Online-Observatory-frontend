@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/container";
 import { pricingOfferings, type PricingOffering } from "@/features/pricing/plans";
 import type { PricingFacts } from "@/features/pricing/read";
 import type { Locale } from "@/i18n/config";
+import { giftCopy } from "@/i18n/resources/gift";
 import { pricingPageCopy } from "@/i18n/resources/pricing";
 
 type Copy = (typeof pricingPageCopy)[Locale];
@@ -46,6 +47,9 @@ function Hero({ copy, facts, locale }: { copy: Copy; facts: PricingFacts; locale
         </ButtonLink>
         <ButtonLink href={`/${locale}/app/missions`} variant="secondary" size="large">
           {copy.hero.explore}
+        </ButtonLink>
+        <ButtonLink href={`/${locale}/gift`} variant="ghost" size="large">
+          {giftCopy[locale].title}
         </ButtonLink>
       </div>
       <ul className="pricing-specs">
