@@ -78,6 +78,8 @@ type RoomCopy = {
     titleTelescope: string;
     noPosition: string;
     telescopeNote: string;
+    /** The sky chart's name for a screen reader (Phase 6.2). */
+    sky: string;
   };
   readings: { title: string; cloud: string; cloudUnknown: string };
   /** The phone's stats and dock (ADR-050 §1). */
@@ -134,6 +136,7 @@ const en: RoomCopy = {
     noPosition: "The telescope has not reported a position.",
     telescopeNote:
       "The telescope's position as the observatory reports it, to a tenth of a degree. The dashed ring is {target}.",
+    sky: "Sky chart over the observatory: the bright stars, the horizon the telescope cannot see below shaded, {target} as a ring and the telescope as a cross.",
   },
   phone: {
     stats: "Right now",
@@ -403,6 +406,7 @@ const ka: RoomCopy = {
     noPosition: "ტელესკოპს მდებარეობა ჯერ არ გადმოუცია.",
     telescopeNote:
       "ტელესკოპის მდებარეობა, როგორც ობსერვატორია აცნობებს, გრადუსის მეათედამდე. წყვეტილი რგოლი ობიექტია: {target}.",
+    sky: "ცის რუკა ობსერვატორიის თავზე: კაშკაშა ვარსკვლავები, დაჩრდილული ჰორიზონტი, რომლის ქვემოთაც ტელესკოპი ვერ ხედავს, {target} — რგოლით, ტელესკოპი — ჯვრით.",
   },
   phone: {
     stats: "ახლა",

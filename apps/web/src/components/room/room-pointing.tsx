@@ -1,4 +1,8 @@
-import type { HorizontalCoordinates, TargetVisibility } from "@darkview/contracts";
+import type {
+  HorizontalCoordinates,
+  ObservatoryHorizon,
+  TargetVisibility,
+} from "@darkview/contracts";
 
 import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
@@ -6,6 +10,7 @@ import { roomCopy } from "@/i18n/resources/room";
 
 import { PanelHead } from "./panel-head";
 import { PointingDial } from "./pointing-dial";
+import { SkyChart } from "./sky-chart";
 
 type RoomPointingProps = {
   locale: Locale;
@@ -15,6 +20,9 @@ type RoomPointingProps = {
   visibility: TargetVisibility | null;
   /** `MissionTelemetryUpdate.pointing`, as `PointingDial` reads it. */
   telescope: HorizontalCoordinates | null | undefined;
+  /** With a horizon and a clock the dial becomes the sky chart (Phase 6.2). */
+  horizon?: ObservatoryHorizon | null;
+  now?: number | null;
 };
 
 function time(iso: string, timezone: string, locale: Locale) {
@@ -36,6 +44,8 @@ export function RoomPointing({
   telescope,
   timezone,
   visibility,
+  horizon = null,
+  now = null,
 }: RoomPointingProps) {
   const copy = roomCopy[locale].pointing;
   const named = (template: string) => fill(template, { target: targetName });
@@ -52,12 +62,24 @@ export function RoomPointing({
         meta={`${copy.altitude} · ${copy.azimuth}`}
       />
       <div className="room-pointing-body">
-        <PointingDial
-          position={visibility?.horizontal ?? null}
-          telescope={telescope}
-          label={copy.dial}
-          cardinals={copy.cardinals}
-        />
+        {horizon && now !== null ? (
+          <SkyChart
+            at={now}
+            horizon={horizon}
+            target={visibility?.horizontal ?? null}
+            telescope={telescope}
+            label={named(copy.sky)}
+            caption={roomCopy[locale].feed.illustration}
+            cardinals={copy.cardinals}
+          />
+        ) : (
+          <PointingDial
+            position={visibility?.horizontal ?? null}
+            telescope={telescope}
+            label={copy.dial}
+            cardinals={copy.cardinals}
+          />
+        )}
         {visibility || live ? (
           <dl className="room-values">
             <div className="room-value-main">

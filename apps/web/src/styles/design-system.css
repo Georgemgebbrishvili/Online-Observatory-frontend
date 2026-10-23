@@ -518,7 +518,6 @@
   gap: var(--space-4);
 }
 
-
 /* The observatory console's camera and conditions (ADR-056), on the console's ground. */
 .ds-console.sdo {
   min-height: 0;
@@ -579,4 +578,10 @@
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-label);
+}
+
+.ds-sky-specimens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--space-6);
 }

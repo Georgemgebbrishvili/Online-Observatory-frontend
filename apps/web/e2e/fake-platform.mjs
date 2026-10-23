@@ -24,6 +24,7 @@ import {
   zGetMissionWatchViewResponse,
   zGetObservatoryConditionsResponse,
   zGetObservatoryUptimeResponse,
+  zGetObservatoryHorizonResponse,
   zGetObservatoryStatusResponse,
   zGetTargetResponse,
   zJoinMissionAsObserverResponse,
@@ -1630,6 +1631,25 @@ const routes = {
     send(response, 200, viewingConditions()),
   [`GET /observatories/${observatoryId}/uptime`]: (_request, response) =>
     send(response, 200, observatoryUptime()),
+  // Phase 6.2: the site to a tenth of a degree, and a horizon higher to the east where
+  // the city's hills are. Fixture data, as the platform's development seed is.
+  [`GET /observatories/${observatoryId}/horizon`]: (_request, response) =>
+    send(
+      response,
+      200,
+      zGetObservatoryHorizonResponse.parse({
+        observatoryId,
+        latitudeDegrees: 41.7,
+        longitudeDegrees: 44.8,
+        minAltitudeDegrees: 20,
+        mask: [
+          { azimuthDegrees: 0, minAltitudeDegrees: 22 },
+          { azimuthDegrees: 60, minAltitudeDegrees: 30 },
+          { azimuthDegrees: 120, minAltitudeDegrees: 26 },
+          { azimuthDegrees: 240, minAltitudeDegrees: 20 },
+        ],
+      }),
+    ),
   "GET /me": (request, response) => {
     const user = sessionUser(request);
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
@@ -2155,6 +2175,15 @@ function subscribed(socket, mission, session) {
       const timers = steps.map((step, index) => setTimeout(step, 800 + index * 400));
       return socket.on("close", () => timers.forEach(clearTimeout));
     }
+    // Phase 6.2: a live session whose channel drops once, two seconds after its stream
+    // is offered, and then comes back as usual.
+    case "blip":
+      if (!session.blipped) {
+        session.blipped = true;
+        const timer = setTimeout(() => socket.destroy(), 2500);
+        socket.on("close", () => clearTimeout(timer));
+      }
+    // falls through
     default: {
       state(mission.state);
       telemetry("ONLINE", at(18, 290));

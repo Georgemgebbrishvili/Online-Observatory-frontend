@@ -139,6 +139,7 @@ describe("readRoom", () => {
         tonight: "unreadable",
         status: null,
         conditions: null,
+        horizon: null,
         captures: [],
         timezone: "UTC",
       },

@@ -252,6 +252,8 @@ export const designSystemCopy = {
         "RoomControls — hand control observing, waiting for the telescope, capture started, refused, no answer, before centring, while capturing, no capture; then Capture, and the session panel's Stop, asking to stop and stopping",
       pointingDial:
         "PointingDial — high in the south, low in the west, below the horizon, the telescope slewing to the target, the telescope with no position",
+      skyChart:
+        "SkyChart — the sky with the horizon shaded and the target, the telescope on its way, and an observatory with no horizon recorded",
       targetPreview: "TargetPreview — a planet's plate, and a target with none",
       liveFeed:
         "LiveFeed — not started, starting, connecting, live (simulated), reconnecting, offline, weather hold, expired, closed, refused, error",
@@ -548,6 +550,8 @@ export const designSystemCopy = {
         "RoomControls — მართვა დაკვირვებისას, ტელესკოპის მოლოდინი, გადაღება დაიწყო, უარი, პასუხი არ არის, ცენტრირებამდე, გადაღებისას, გადაღების გარეშე; შემდეგ გადაღება და სესიის პანელის დასრულება, დასრულების კითხვა და დასრულება",
       pointingDial:
         "PointingDial — მაღლა სამხრეთით, დაბლა დასავლეთით, ჰორიზონტს ქვემოთ, ტელესკოპი ობიექტისკენ მიიწევს, ტელესკოპი მდებარეობის გარეშე",
+      skyChart:
+        "SkyChart — ცა დაჩრდილული ჰორიზონტითა და ობიექტით, ტელესკოპი გზაში, და ობსერვატორია ჩაწერილი ჰორიზონტის გარეშე",
       targetPreview: "TargetPreview — პლანეტის ილუსტრაცია და ობიექტი ილუსტრაციის გარეშე",
       liveFeed:
         "LiveFeed — დაუწყებელი, იწყება, კავშირი მყარდება, პირდაპირი (სიმულირებული), კავშირი აღდგება, კავშირგარეშე, ამინდის გამო შეჩერებული, დრო ამოწურული, დახურული, უარყოფილი, შეცდომა",

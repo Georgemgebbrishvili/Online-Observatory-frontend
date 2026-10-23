@@ -4,6 +4,8 @@ import type {
   ImagingProfile,
   Mission,
   MissionEvent,
+  MissionState,
+  ObservatoryHorizon,
   TargetVisibility,
 } from "@darkview/contracts";
 import Link from "next/link";
@@ -37,6 +39,7 @@ import {
 } from "./room-controls";
 import { RoomSharing } from "./room-sharing";
 import { RoomPointing } from "./room-pointing";
+import { SkyChart } from "./sky-chart";
 import { TargetPreview } from "./target-preview";
 
 type RoomLiveProps = {
@@ -56,6 +59,8 @@ type RoomLiveProps = {
   imagingProfile: ImagingProfile | null;
   /** The target tonight, for the pointing dial; null when it could not be read. */
   visibility: TargetVisibility | null;
+  /** The horizon and the site, for the sky chart; null when unread (the dial is shown). */
+  horizon?: ObservatoryHorizon | null;
   /** The instrument and the target, for the feed's corner plates. */
   plates?: FeedPlates | null;
   /** The observatory's readings, rendered on the server, beside the pointing dial. */
@@ -69,6 +74,14 @@ type RoomLiveProps = {
 };
 
 type Copy = (typeof roomCopy)["en"];
+
+/** The states the sky chart fills the feed in: the telescope is on its way. */
+const travelling: readonly MissionState[] = [
+  "PREPARING",
+  "SLEWING",
+  "VERIFYING",
+  "CENTERING",
+];
 
 /** Clock skew between this browser and the platform, at most. */
 const slotEndedMarginMs = 5 * 60_000;
@@ -117,6 +130,7 @@ export function RoomLive({
   targetSlug,
   timezone,
   visibility,
+  horizon = null,
 }: RoomLiveProps) {
   const copy = roomCopy[locale];
   const now = useNow();
@@ -302,11 +316,24 @@ export function RoomLive({
                 }
               }
               preview={
-                <TargetPreview
-                  plate={plate}
-                  name={targetName}
-                  caption={copy.feed.illustration}
-                />
+                // While the telescope gets ready and travels, the sky it travels across.
+                horizon && now !== null && travelling.includes(live.missionState) ? (
+                  <SkyChart
+                    at={now}
+                    horizon={horizon}
+                    target={visibility?.horizontal ?? null}
+                    telescope={live.pointing}
+                    label={named(copy.pointing.sky)}
+                    caption={copy.feed.illustration}
+                    cardinals={copy.pointing.cardinals}
+                  />
+                ) : (
+                  <TargetPreview
+                    plate={plate}
+                    name={targetName}
+                    caption={copy.feed.illustration}
+                  />
+                )
               }
               plates={plates}
               frameNote={
@@ -372,6 +399,8 @@ export function RoomLive({
             timezone={timezone}
             visibility={visibility}
             telescope={live.pointing}
+            horizon={horizon}
+            now={now}
           />
           <RoomControlsView {...controls} copy={controlsCopy} />
           <RoomSharing

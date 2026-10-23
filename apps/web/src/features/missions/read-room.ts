@@ -4,6 +4,7 @@ import type {
   BookableObservatory,
   Mission,
   MissionEvent,
+  ObservatoryHorizon,
   PublicObservatoryStatus,
   Target,
   TonightTarget,
@@ -13,6 +14,7 @@ import {
   zGetCaptureResponse,
   zGetMissionResponse,
   zGetObservatoryConditionsResponse,
+  zGetObservatoryHorizonResponse,
   zGetObservatoryStatusResponse,
   zListMissionEventsResponse,
   zListTonightTargetsResponse,
@@ -38,6 +40,8 @@ export type Room = {
   tonight: TonightTarget | null | "unreadable";
   status: PublicObservatoryStatus | null;
   conditions: ViewingConditions | null;
+  /** The horizon and the site, for the sky chart (Phase 6.2); null when unread. */
+  horizon: ObservatoryHorizon | null;
   captures: CollectionEntry[];
   /** The mission's observatory, from `listBookableObservatories`; null when unread. */
   observatory: BookableObservatory | null;
@@ -107,23 +111,34 @@ export const readRoom = cache(async (missionId: string): Promise<RoomResult> => 
   }
 
   const observatoryId = encodeURIComponent(mission.observatoryId);
-  const [catalogue, observatories, events, tonight, status, conditions, captures] =
-    await Promise.all([
-      readCatalogue(),
-      readObservatories(),
-      readEvents(id).catch(() => null),
-      // The mission's own observatory: another site has another sky.
-      platformRequest<unknown>(`/targets/tonight?observatoryId=${observatoryId}`)
-        .then((value) => zListTonightTargetsResponse.parse(value).items)
-        .catch(() => null),
-      platformRequest<unknown>(`/observatories/${observatoryId}/state`)
-        .then((value) => zGetObservatoryStatusResponse.parse(value))
-        .catch(() => null),
-      platformRequest<unknown>(`/observatories/${observatoryId}/conditions`)
-        .then((value) => zGetObservatoryConditionsResponse.parse(value))
-        .catch(() => null),
-      readCaptures(mission.captureIds ?? []),
-    ]);
+  const [
+    catalogue,
+    observatories,
+    events,
+    tonight,
+    status,
+    conditions,
+    horizon,
+    captures,
+  ] = await Promise.all([
+    readCatalogue(),
+    readObservatories(),
+    readEvents(id).catch(() => null),
+    // The mission's own observatory: another site has another sky.
+    platformRequest<unknown>(`/targets/tonight?observatoryId=${observatoryId}`)
+      .then((value) => zListTonightTargetsResponse.parse(value).items)
+      .catch(() => null),
+    platformRequest<unknown>(`/observatories/${observatoryId}/state`)
+      .then((value) => zGetObservatoryStatusResponse.parse(value))
+      .catch(() => null),
+    platformRequest<unknown>(`/observatories/${observatoryId}/conditions`)
+      .then((value) => zGetObservatoryConditionsResponse.parse(value))
+      .catch(() => null),
+    platformRequest<unknown>(`/observatories/${observatoryId}/horizon`)
+      .then((value) => zGetObservatoryHorizonResponse.parse(value))
+      .catch(() => null),
+    readCaptures(mission.captureIds ?? []),
+  ]);
 
   const observatory =
     observatories?.find((candidate) => candidate.id === mission.observatoryId) ?? null;
@@ -139,6 +154,7 @@ export const readRoom = cache(async (missionId: string): Promise<RoomResult> => 
         : "unreadable",
       status,
       conditions,
+      horizon,
       captures,
       observatory,
       timezone: observatory?.timezone ?? "UTC",

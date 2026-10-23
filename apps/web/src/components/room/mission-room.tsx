@@ -76,6 +76,7 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
             : null
         }
         visibility={visibility ?? null}
+        horizon={room.horizon}
         plates={feedPlates(observatory, target, locale, copy.feed)}
         readings={
           <section

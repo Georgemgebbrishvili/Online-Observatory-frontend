@@ -47,7 +47,8 @@ test("an observing mission opens its session and shows the simulated stream", as
   await expect(feed.locator("[data-live-frame]")).toHaveText(
     "12 × 2 s stacked · gain 200",
   );
-  await expect(page.getByText("Illustration — not telescope output")).toHaveCount(0);
+  // The feed is the telescope's picture; only the drawn sky chart beside it is captioned.
+  await expect(feed.getByText("Illustration — not telescope output")).toHaveCount(0);
 });
 
 test("the Georgian live room fits a phone", async ({ page }) => {
@@ -122,16 +123,27 @@ test("the customer starts a scheduled mission once its slot is open", async ({
   await expect(feedStatus(page)).toContainText("Connecting");
   await expect(page.getByRole("button", { name: "Start observation" })).toHaveCount(0);
 
-  // The dial follows the mount from the channel: it travels while slewing and settles
-  // on Saturn's position once centring.
+  // Phase 6.2: while the telescope travels the feed is the sky over the observatory,
+  // drawn and captioned so, with the horizon it cannot see below shaded.
+  const feedSky = page.locator(".live-feed .sky-chart");
+  await expect(feedSky).toBeVisible();
+  await expect(feedSky.getByText("Illustration — not telescope output")).toBeVisible();
+  await expect(feedSky.locator("[data-sky-horizon]")).toBeVisible();
+  expect(await feedSky.locator(".sky-chart-star").count()).toBeGreaterThan(5);
+
+  // The chart follows the mount from the channel: the cross travels while slewing and
+  // settles on Saturn's position once centring.
   const pointing = page.getByRole("region", { name: "Where the telescope points" });
-  await expect(pointing.locator(".pointing-dial-telescope")).toBeVisible();
+  const cross = pointing.locator("[data-sky-telescope]");
+  await expect(cross).toBeVisible();
+  const travelling = await cross.getAttribute("style");
   await expect(
     page.getByRole("heading", { level: 1, name: "Centring the target" }),
   ).toBeVisible();
   await expect(pointing.locator('[data-pointing="altitude"]')).toHaveText("38.0°");
   await expect(pointing.locator('[data-pointing="azimuth"]')).toHaveText("160.0°");
-  await expect(pointing.locator(".pointing-dial-reference")).toBeVisible();
+  await expect(cross).not.toHaveAttribute("style", travelling ?? "");
+  await expect(pointing.locator("[data-sky-target]")).toBeVisible();
 });
 
 for (const [locale, text] of [
@@ -142,6 +154,34 @@ for (const [locale, text] of [
     await scenario(page, "drop");
     await page.goto(`/${locale}/app/missions/${observing}/session`);
     await expect(feedStatus(page)).toContainText(text);
+  });
+}
+
+for (const [locale, reconnecting] of [
+  ["en", "Reconnecting"],
+  ["ka", "კავშირი აღდგება"],
+] as const) {
+  test(`${locale}: a dropped channel dims the last frame and recovers without a reload`, async ({
+    page,
+  }) => {
+    await scenario(page, "blip");
+    await page.goto(`/${locale}/app/missions/${observing}/session`);
+    const feed = page.locator(".live-feed");
+    const stream = feed.locator("[data-live-stream]");
+    await expect(feed).toHaveAttribute("data-live-status", "live");
+
+    // The socket is killed: the picture stays, dimmed, and the room says so.
+    await expect(feed).toHaveAttribute("data-live-status", "reconnecting");
+    await expect(stream).toBeVisible();
+    await expect(feedStatus(page)).toContainText(reconnecting);
+    // It fades, so read it until the fade is done.
+    await expect
+      .poll(() => stream.evaluate((image) => Number(getComputedStyle(image).opacity)))
+      .toBeLessThan(0.5);
+
+    // The channel comes back on its own, the stream is re-offered, the picture is bright.
+    await expect(feed).toHaveAttribute("data-live-status", "live", { timeout: 15_000 });
+    await expect(stream).toHaveCSS("opacity", "1");
   });
 }
 
@@ -158,7 +198,7 @@ for (const [locale, text, noPosition] of [
     await expect(feedStatus(page)).toContainText(text, { timeout: 15_000 });
     await expect(page.locator(".live-feed [data-live-stream]")).toHaveCount(0);
     await expect(page.getByText(noPosition)).toBeVisible();
-    await expect(page.locator(".pointing-dial-telescope")).toHaveCount(0);
+    await expect(page.locator("[data-sky-telescope]")).toHaveCount(0);
   });
 }
 

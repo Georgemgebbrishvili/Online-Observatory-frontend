@@ -1,4 +1,4 @@
-import type { ObservatoryUptime } from "@darkview/contracts";
+import type { ObservatoryHorizon, ObservatoryUptime } from "@darkview/contracts";
 import type { Metadata } from "next";
 import "@/styles/booking.css";
 import "@/styles/booking-board.css";
@@ -33,6 +33,7 @@ import { LiveFeed } from "@/components/room/live-feed";
 import { MissionSteps } from "@/components/room/mission-steps";
 import { PanelHead } from "@/components/room/panel-head";
 import { PointingDial } from "@/components/room/pointing-dial";
+import { SkyChart } from "@/components/room/sky-chart";
 import { RoomPointing } from "@/components/room/room-pointing";
 import {
   RoomCaptureAction,
@@ -190,6 +191,20 @@ export async function generateMetadata({
     robots: { index: false, follow: false },
   };
 }
+
+/** A Tbilisi horizon for the SkyChart specimens: higher to the east, the city's hills. */
+const skyHorizonSpecimen: ObservatoryHorizon = {
+  observatoryId: "10000000-0000-4000-8000-000000000001",
+  latitudeDegrees: 41.7,
+  longitudeDegrees: 44.8,
+  minAltitudeDegrees: 20,
+  mask: [
+    { azimuthDegrees: 0, minAltitudeDegrees: 22 },
+    { azimuthDegrees: 60, minAltitudeDegrees: 30 },
+    { azimuthDegrees: 120, minAltitudeDegrees: 26 },
+    { azimuthDegrees: 240, minAltitudeDegrees: 20 },
+  ],
+};
 
 /** Thirty fixed days for the UptimeHistory specimen: three unmeasured, one interrupted. */
 const uptimeSpecimen: ObservatoryUptime = {
@@ -988,6 +1003,36 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               position={dialSpecimens[0]}
               telescope={null}
               label={room.pointing.dial}
+              cardinals={room.pointing.cardinals}
+            />
+          </div>
+          <h3 className="ds-subheading">{copy.cards.skyChart}</h3>
+          <div className="room-console ds-room-specimens ds-sky-specimens">
+            {/* A fixed instant, so the stars stand still for the visual gate. */}
+            <SkyChart
+              at={Date.parse("2026-10-23T18:00:00.000Z")}
+              horizon={skyHorizonSpecimen}
+              target={dialSpecimens[0]}
+              label={fill(room.pointing.sky, { target: "Saturn" })}
+              caption={room.feed.illustration}
+              cardinals={room.pointing.cardinals}
+            />
+            <SkyChart
+              at={Date.parse("2026-10-23T18:00:00.000Z")}
+              horizon={skyHorizonSpecimen}
+              target={dialSpecimens[0]}
+              telescope={{ altitudeDegrees: 30, azimuthDegrees: 120 }}
+              label={fill(room.pointing.sky, { target: "Saturn" })}
+              caption={room.feed.illustration}
+              cardinals={room.pointing.cardinals}
+            />
+            <SkyChart
+              at={Date.parse("2026-10-23T18:00:00.000Z")}
+              horizon={{ ...skyHorizonSpecimen, minAltitudeDegrees: null, mask: [] }}
+              target={null}
+              telescope={null}
+              label={fill(room.pointing.sky, { target: "Saturn" })}
+              caption={room.feed.illustration}
               cardinals={room.pointing.cardinals}
             />
           </div>

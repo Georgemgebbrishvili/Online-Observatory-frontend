@@ -362,7 +362,7 @@
     bottom: var(--space-4);
   }
 
-  /* Under the stream's badge: what the picture is made of (#199). */
+  /* Under the stream's badge: what the picture is made of (platform issue 199). */
   .live-feed-frame {
     top: calc(var(--space-4) + 2.75rem);
     right: var(--space-4);
@@ -1034,5 +1034,107 @@
 
   .watch-grid[data-watching] .watch-panel {
     max-width: none;
+  }
+}
+
+/* Phase 6.2: the sky over the observatory, drawn. The telescope glides where it was
+   told to go; the horizon it cannot see below is shaded. */
+.sky-chart {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.sky-chart svg {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+  margin-inline: auto;
+}
+
+.sky-chart figcaption {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+  text-align: center;
+}
+
+.sky-chart-sky {
+  fill: var(--color-surface-base);
+}
+
+.sky-chart-ring {
+  fill: none;
+  stroke: var(--color-border-strong);
+  stroke-dasharray: 2 4;
+}
+
+.sky-chart-rim {
+  fill: none;
+  stroke: var(--color-border-strong);
+}
+
+.sky-chart-figure {
+  stroke: var(--color-border-strong);
+  stroke-width: 0.6;
+}
+
+.sky-chart-star {
+  fill: var(--color-text-primary);
+}
+
+.sky-chart-horizon {
+  fill: var(--color-scrim-strong);
+  stroke: var(--color-accent-border);
+  stroke-width: 0.8;
+}
+
+.sky-chart-cardinal {
+  fill: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+}
+
+.sky-chart-target {
+  fill: none;
+  stroke: var(--color-photon);
+  stroke-width: 1.5;
+}
+
+.sky-chart-telescope {
+  transition: transform var(--duration-instrument) var(--ease-standard);
+}
+
+.sky-chart-telescope circle {
+  fill: var(--color-accent);
+}
+
+.sky-chart-telescope line {
+  stroke: var(--color-accent);
+  stroke-width: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-chart-telescope {
+    transition: none;
+  }
+}
+
+/* Phase 6.2: while the channel reconnects, the last frame stays, dimmed, so the room
+   never looks live when it is not. It brightens again when the stream is re-offered. */
+.live-feed[data-live-status="reconnecting"] [data-live-stream] {
+  opacity: 0.4;
+  filter: grayscale(0.6);
+}
+
+[data-live-stream] {
+  transition:
+    opacity var(--duration-instrument) var(--ease-standard),
+    filter var(--duration-instrument) var(--ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-live-stream] {
+    transition: none;
   }
 }
