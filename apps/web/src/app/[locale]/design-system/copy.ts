@@ -248,6 +248,7 @@ export const designSystemCopy = {
         "RoomSharing — private, opening, open with two watching, asking to stop, link copied, session ended",
       watch:
         "WatchView — a seat for sale, buying, loading, error, simulated, full, paying, watching, left, closed by the owner, closed with a refund, ended with a refund owed, ended, the owner, not open",
+      targetGuide: "TargetGuide — a planet with its description, and a nebula without one",
       gift:
         "Gift — the form, buying, each refusal; the printable card with a name and a note, and without",
       tonight:
@@ -550,6 +551,7 @@ export const designSystemCopy = {
         "RoomSharing — პირადი, იხსნება, ღიაა ორი მაყურებლით, შეწყვეტის კითხვა, ბმული დაკოპირდა, სესია დასრულდა",
       watch:
         "WatchView — ადგილი იყიდება, იყიდება, იტვირთება, შეცდომა, სიმულირებული, სავსეა, გადახდის მოლოდინი, ყურება, გასული, მფლობელმა დახურა, დახურულია თანხის დაბრუნებით, დასრულდა დასაბრუნებელი თანხით, დასრულდა, მფლობელი, არ არის ღია",
+      targetGuide: "TargetGuide — პლანეტა აღწერით და ნისლეული აღწერის გარეშე",
       gift:
         "Gift — ფორმა, ყიდვა, ყოველი უარი; დასაბეჭდი ბარათი სახელითა და მინაწერით და მათ გარეშე",
       tonight:

@@ -337,6 +337,13 @@
   min-width: 0;
 }
 
+/* ADR-069: what the live view can and cannot show. */
+.mission-detail-view {
+  max-width: 40rem;
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-secondary);
+}
+
 .mission-detail-copy h1 {
   max-width: 12ch;
   font-size: min(var(--font-size-hero), 14vw);

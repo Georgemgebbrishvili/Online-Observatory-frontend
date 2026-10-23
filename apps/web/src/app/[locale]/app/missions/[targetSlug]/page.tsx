@@ -14,6 +14,7 @@ import {
 } from "@/features/targets/present";
 import { readTarget } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
+import { targetGuideCopy } from "@/i18n/resources/target-guide";
 import { missionDetailCopy } from "@/i18n/resources/missions";
 import { targetCopy } from "@/i18n/resources/targets";
 import { requireUser } from "@/lib/platform/session";
@@ -85,6 +86,11 @@ export default async function MissionTargetPage({ params }: MissionTargetPagePro
           </p>
           <h1>{name}</h1>
           <p className="page-lede">{targetDescription(target, locale)}</p>
+          {/* ADR-069: what the live view can and cannot show. */}
+          <p className="mission-detail-view">
+            <span className="board-label">{targetGuideCopy[locale].view}</span>{" "}
+            {targetGuideCopy[locale].classes[target.type]}
+          </p>
         </div>
         <figure className="mission-detail-figure">
           <div

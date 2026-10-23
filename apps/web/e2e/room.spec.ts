@@ -123,3 +123,15 @@ test("the Georgian room fits a phone", async ({ page }) => {
     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(390 - 16);
   }
 });
+
+test("the room and the target page say what the live view can show (ADR-069)", async ({
+  page,
+}) => {
+  await page.goto(`/en/app/missions/${observing}/session`);
+  const guide = page.getByRole("region", { name: "About Hercules Cluster" });
+  await expect(guide).toContainText("What the live view shows");
+  await expect(guide).toContainText("resolves into points as frames stack");
+
+  await page.goto("/ka/app/missions/m13-hercules-cluster");
+  await expect(page.getByText("რას აჩვენებს პირდაპირი გამოსახულება")).toBeVisible();
+});

@@ -951,6 +951,17 @@
   font-size: var(--font-size-label);
 }
 
+/* ADR-069: what the customer is looking at. */
+.room-guide {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.room-guide p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
 /* ADR-066: the owner's switch for Tonight, live. */
 .room-broadcast {
   display: grid;

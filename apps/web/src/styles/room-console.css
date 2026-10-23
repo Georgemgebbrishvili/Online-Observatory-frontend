@@ -219,7 +219,8 @@
     order: 2;
   }
 
-  .room-console .room-pointing {
+  .room-console .room-pointing,
+  .room-console .room-guide {
     order: 3;
   }
 
@@ -930,7 +931,8 @@
 }
 
 .room-console .room-sharing > p,
-.room-console .room-broadcast > p {
+.room-console .room-broadcast > p,
+.room-console .room-guide p {
   color: var(--room-ink-2);
   font-size: var(--font-size-caption);
 }
@@ -999,7 +1001,8 @@
     order: 7;
   }
 
-  .room.room-console .room-pointing {
+  .room.room-console .room-pointing,
+  .room.room-console .room-guide {
     order: 8;
   }
 

@@ -66,6 +66,8 @@ type RoomLiveProps = {
   plates?: FeedPlates | null;
   /** The observatory's readings, rendered on the server, beside the pointing dial. */
   readings: ReactNode;
+  /** ADR-069: what the customer is looking at, rendered on the server. */
+  guide?: ReactNode;
   /** The captures panel, in the right column of the desk (ADR-050). */
   captures?: ReactNode;
   /** How many captures the mission has, for the phone's stats. */
@@ -125,6 +127,7 @@ export function RoomLive({
   plate,
   plates,
   readings,
+  guide,
   captures,
   captureCount = 0,
   targetName,
@@ -403,6 +406,7 @@ export function RoomLive({
             horizon={horizon}
             now={now}
           />
+          {guide}
           <RoomControlsView {...controls} copy={controlsCopy} />
           <RoomSharing
             missionId={mission.id}

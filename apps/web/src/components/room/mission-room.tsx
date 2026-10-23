@@ -11,6 +11,7 @@ import {
 import type { Room } from "@/features/missions/read-room";
 import { feedPlates, plateFor } from "@/features/missions/room";
 import { fill } from "@/features/operator/format";
+import { targetDescription } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
 import { roomCopy } from "@/i18n/resources/room";
@@ -18,6 +19,7 @@ import { statusCopy } from "@/i18n/resources/status";
 
 import { PanelHead } from "./panel-head";
 import { RoomLive } from "./room-live";
+import { TargetGuide } from "./target-guide";
 
 type MissionRoomProps = {
   room: Room;
@@ -68,6 +70,16 @@ export function MissionRoom({ locale, room }: MissionRoomProps) {
         targetName={name}
         targetSlug={target?.slug ?? null}
         plate={target ? plateFor(target.slug) : null}
+        guide={
+          target && (
+            <TargetGuide
+              name={name}
+              type={target.type}
+              description={targetDescription(target, locale)}
+              locale={locale}
+            />
+          )
+        }
         imagingProfile={target?.imagingProfile ?? null}
         timezone={timezone}
         opensAtText={

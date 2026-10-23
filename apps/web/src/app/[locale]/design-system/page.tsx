@@ -51,6 +51,7 @@ import { RoomTonightView } from "@/components/room/room-tonight";
 import { TonightBannerView } from "@/components/tonight/tonight-banner";
 import { TonightLive } from "@/components/tonight/tonight-live";
 import { GiftCard } from "@/components/gift/gift-card";
+import { TargetGuide } from "@/components/room/target-guide";
 import { GiftFormView } from "@/components/gift/gift-form";
 import { tonightCopy } from "@/i18n/resources/tonight";
 import { WatchView, type WatchPhase } from "@/components/room/mission-watch";
@@ -895,6 +896,25 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 />
               );
             })}
+          </div>
+          <h3 className="ds-subheading">{copy.cards.targetGuide}</h3>
+          <div className="room-console ds-room-specimens">
+            <TargetGuide
+              name={locale === "ka" ? "სატურნი" : "Saturn"}
+              type="PLANET"
+              description={
+                locale === "ka"
+                  ? "მზის სისტემის რგოლებიანი გიგანტი."
+                  : "The ringed giant of the solar system."
+              }
+              locale={locale}
+            />
+            <TargetGuide
+              name={locale === "ka" ? "რგოლისებრი ნისლეული" : "Ring Nebula"}
+              type="PLANETARY_NEBULA"
+              description={null}
+              locale={locale}
+            />
           </div>
           <h3 className="ds-subheading">{copy.cards.gift}</h3>
           <div className="ds-gift-specimens">
