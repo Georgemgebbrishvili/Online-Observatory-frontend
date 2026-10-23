@@ -24,10 +24,10 @@ the status table (state, commits, date) and stop. Do not start a second slice.
 
 | #   | Slice                                  | Waits on                    | State   | Commits |
 | --- | -------------------------------------- | --------------------------- | ------- | ------- |
-| 6.0 | Stabilise the demo and see errors      | —                           | Not started |     |
-| 6.1 | Live frames while OBSERVING (#199)     | 6.0                         | Not started |     |
-| 6.2 | Reconnect states and the live sky chart| 6.1                         | Not started |     |
-| 6.3 | Shareable captures                     | 6.0                         | Not started |     |
+| 6.0 | Stabilise the demo and see errors      | —                           | Done 2026-10-23 | platform 9f61cbb (#202); clients 7650a1d 6516c2e 0f7c938 |
+| 6.1 | Live frames while OBSERVING (#199)     | 6.0                         | Done 2026-10-23 | platform 460c0c5 (#203); clients 28c32ab 912cc1c f9424d2 2c3fb8d |
+| 6.2 | Reconnect states and the live sky chart| 6.1                         | Done 2026-10-23 | platform 46ef178 (#205); clients cf4d2a8 7d81f80 86618b8 |
+| 6.3 | Shareable captures                     | 6.0                         | Done 2026-10-23 | platform e2e3694 (#206); clients 230743a 1673ec9 3eab8a7 (ADR-065) |
 | 6.4 | Public "Tonight, live" page            | 6.1, 6.3                    | Not started |     |
 | 6.5 | Gift a night                           | 6.0                         | Not started |     |
 | 6.6 | Weather-aware booking and push         | 6.0                         | Not started |     |
@@ -35,6 +35,12 @@ the status table (state, commits, date) and stop. Do not start a second slice.
 | 6.8 | Schools, observer log, Astroman tie-in | 6.3, 6.5                    | Not started |     |
 | 6.9 | Video transport upgrade                | 6.1, 6.4, hardware measured | Not started |     |
 | 6.10| Front-end quality and engineering upkeep | —                         | Not started |     |
+
+Also on 2026-10-23, outside the slices: Next.js 16.4.0 → 16.4.2 in both repositories for
+three advisories, one a critical unauthenticated remote code execution (clients f78fa62,
+platform 1a4dc42 #204). Notes from the run: 6.0's DB move had already been done on
+2026-10-22 (Neon); 6.1's live cadence on an overloaded laptop missed the bar and is
+re-measured in 6.9; site-wide, an unknown page answers 200 with a not-found body (6.10).
 
 ## Shared rules
 

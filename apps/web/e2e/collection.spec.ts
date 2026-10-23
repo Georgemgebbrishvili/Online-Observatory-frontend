@@ -124,7 +124,7 @@ test("the Georgian capture page fits a phone", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1, name: "ჰერკულესის გროვა" }),
   ).toBeVisible();
-  await expect(page.getByText("სიმულირებული კადრი")).toBeVisible();
+  await expect(page.getByText("სიმულირებული კადრი", { exact: true })).toBeVisible();
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,

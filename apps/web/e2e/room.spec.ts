@@ -19,8 +19,10 @@ test("the room reads an observing mission from the platform", async ({ page }) =
   await expect(steps.getByText("Step 4 of 5")).toBeVisible();
   await expect(steps.locator('[aria-current="step"]')).toContainText("Observe");
 
-  // The dial says whose position it shows.
-  await expect(page.getByRole("img", { name: /Sky dial/ })).toBeVisible();
+  // The chart says whose position it shows (Phase 6.2: the dial became a sky chart).
+  await expect(
+    page.getByRole("img", { name: /Sky chart over the observatory/ }),
+  ).toBeVisible();
   await expect(
     page.getByText(/The target's position, not the telescope's/),
   ).toBeVisible();
@@ -31,8 +33,14 @@ test("the room reads an observing mission from the platform", async ({ page }) =
   await expect(history.first()).toContainText("Live observation started");
   await expect(history.last()).toContainText("Mission request created");
 
-  // M13 has no plate: nothing on the page is presented as an illustration.
-  await expect(page.getByText("Illustration — not telescope output")).toHaveCount(0);
+  // M13 has no plate, so the feed presents nothing as an illustration; the drawn sky
+  // chart beside it is the one thing captioned so.
+  await expect(
+    page.locator(".live-feed").getByText("Illustration — not telescope output"),
+  ).toHaveCount(0);
+  await expect(
+    page.locator(".sky-chart").getByText("Illustration — not telescope output"),
+  ).toBeVisible();
 });
 
 test("a scheduled planet shows its plate, captioned as an illustration", async ({
