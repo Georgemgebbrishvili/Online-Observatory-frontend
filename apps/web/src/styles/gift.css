@@ -176,13 +176,13 @@
   .gift-card,
   .gift-card * {
     visibility: visible;
-    color: #000;
+    color: CanvasText;
   }
 
   .gift-card {
     position: absolute;
     inset: 0 0 auto;
-    border-color: #000;
-    background: #fff;
+    border-color: CanvasText;
+    background: Canvas;
   }
 }
