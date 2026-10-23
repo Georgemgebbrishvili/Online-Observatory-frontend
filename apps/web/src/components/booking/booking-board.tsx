@@ -30,6 +30,7 @@ import { SkyMonth, useSkyCalendar } from "@/components/booking/night-calendar";
 import { NightTimeline } from "@/components/booking/night-timeline";
 import { TargetArt, targetAccent } from "@/components/booking/target-art";
 import { Dropdown } from "@/components/ui/dropdown";
+import { useRovingRadios } from "@/components/ui/roving-radios";
 import { longDate } from "@/features/cards/dates";
 import { checkoutTarget } from "@/features/booking/checkout";
 import { readRefusal } from "@/features/booking/refusal";
@@ -129,6 +130,10 @@ export function BookingBoard({
   const words = targetCopy[locale];
   const cards = cardsCopy[locale];
   const gifts = giftCopy[locale].board;
+  // Phase 6.10: each choice below is one Tab stop, moved through with the arrow keys.
+  const { ref: lengthRef, onKeyDown: onLengthKey } = useRovingRadios<HTMLDivElement>();
+  const { ref: slotRef, onKeyDown: onSlotKey } = useRovingRadios<HTMLDivElement>();
+  const { ref: targetRef, onKeyDown: onTargetKey } = useRovingRadios<HTMLDivElement>();
   const timezone = observatory.timezone;
 
   const time = useMemo(
@@ -498,6 +503,8 @@ export function BookingBoard({
             <div className="board-length">
               <div
                 className="board-length-quick"
+                ref={lengthRef}
+                onKeyDown={onLengthKey}
                 role="radiogroup"
                 aria-label={copy.length}
               >
@@ -560,6 +567,8 @@ export function BookingBoard({
           {current && (
             <div
               className="board-slots"
+              ref={slotRef}
+              onKeyDown={onSlotKey}
               role="radiogroup"
               aria-label={`${booking.slots}, ${current.label.long}`}
               aria-busy={switching || undefined}
@@ -621,6 +630,8 @@ export function BookingBoard({
           />
           <div
             className="board-targets"
+            ref={targetRef}
+            onKeyDown={onTargetKey}
             role="radiogroup"
             aria-label={copy.target}
             aria-busy={loading || undefined}
