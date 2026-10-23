@@ -49,6 +49,7 @@ function slot(startAt: string, available = true) {
     priceMinor: 4500,
     currency: "GEL",
     unavailableReason: available ? null : "ALREADY_BOOKED",
+    forecast: { status: "UNKNOWN", cloudCoverPercent: null },
   };
 }
 

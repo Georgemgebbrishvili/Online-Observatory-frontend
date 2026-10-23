@@ -57,6 +57,7 @@ function slots(date: string, startAt = `${date}T14:00:00Z`) {
         priceMinor: 4500,
         currency: "GEL",
         unavailableReason: null,
+        forecast: { status: "UNKNOWN", cloudCoverPercent: null },
       },
     ],
   };
