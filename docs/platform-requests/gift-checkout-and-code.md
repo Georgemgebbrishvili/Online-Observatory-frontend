@@ -5,7 +5,7 @@ Against `darkview-platform` at `960ba4135e41dc0535c1a9050cb82a8777c92e05`.
 
 ## What blocks
 
-Gift vouchers exist (DV-112): `POST /gift-vouchers`, `GET /gift-vouchers`, and a
+Gift vouchers exist (DV-112): `POST /vouchers`, `GET /vouchers`, and a
 `voucherCode` on `POST /bookings`. Two gaps stop buy -> redeem -> book:
 
 1. The voucher's payment intent has no `redirectUrl`, and the sandbox checkout refuses

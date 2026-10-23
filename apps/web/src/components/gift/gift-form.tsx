@@ -41,7 +41,7 @@ export function GiftForm({
     setPhase("buying");
     setRefusal(null);
     try {
-      const { voucher, paymentIntent } = await apiRequest("/gift-vouchers", {
+      const { voucher, paymentIntent } = await apiRequest("/vouchers", {
         method: "POST",
         body: {
           durationMinutes,

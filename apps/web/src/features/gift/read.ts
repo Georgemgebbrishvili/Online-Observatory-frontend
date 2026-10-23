@@ -8,11 +8,11 @@ import { PlatformError, platformRequest } from "@/lib/platform/client";
 export type GiftsResult =
   { kind: "ok"; items: GiftVoucher[] } | { kind: "signed-out" } | { kind: "unreachable" };
 
-/** GET /gift-vouchers (DV-112, ADR-067): the gifts the signed-in customer bought. */
+/** GET /vouchers (DV-112, ADR-067): the gifts the signed-in customer bought. */
 export async function readGifts(): Promise<GiftsResult> {
   try {
     const list = zListMyGiftVouchersResponse.parse(
-      await platformRequest<unknown>("/gift-vouchers"),
+      await platformRequest<unknown>("/vouchers"),
     );
     return { kind: "ok", items: list.items };
   } catch (error) {

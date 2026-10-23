@@ -1649,8 +1649,8 @@ const routes = {
     );
   },
   "POST /bookings": createBooking,
-  "POST /gift-vouchers": purchaseGift,
-  "GET /gift-vouchers": (request, response) => {
+  "POST /vouchers": purchaseGift,
+  "GET /vouchers": (request, response) => {
     const user = sessionUser(request);
     if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
     const items = gifts
