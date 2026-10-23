@@ -231,7 +231,8 @@
     order: 5;
   }
 
-  .room-console .room-sharing {
+  .room-console .room-sharing,
+  .room-console .room-broadcast {
     order: 6;
   }
 
@@ -928,7 +929,8 @@
   background: color-mix(in srgb, var(--room-gold) 8%, transparent);
 }
 
-.room-console .room-sharing > p {
+.room-console .room-sharing > p,
+.room-console .room-broadcast > p {
   color: var(--room-ink-2);
   font-size: var(--font-size-caption);
 }
@@ -992,7 +994,8 @@
     order: 6;
   }
 
-  .room.room-console .room-sharing {
+  .room.room-console .room-sharing,
+  .room.room-console .room-broadcast {
     order: 7;
   }
 

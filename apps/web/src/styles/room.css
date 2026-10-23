@@ -951,6 +951,23 @@
   font-size: var(--font-size-label);
 }
 
+/* ADR-066: the owner's switch for Tonight, live. */
+.room-broadcast {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+
+.room-broadcast .panel-head {
+  margin-bottom: var(--space-1);
+  justify-self: stretch;
+}
+
+.room-broadcast-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
 /* Slice 4: the owner's sharing panel. */
 .room-sharing {
   display: grid;

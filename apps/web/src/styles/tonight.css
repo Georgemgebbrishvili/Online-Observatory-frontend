@@ -99,12 +99,6 @@
   margin: 0;
 }
 
-/* The room's switch. */
-.room-tonight-note {
-  margin: 0;
-  color: var(--color-text-secondary);
-}
-
 .ds-tonight-specimens {
   display: grid;
   gap: var(--space-6);

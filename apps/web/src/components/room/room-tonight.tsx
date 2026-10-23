@@ -92,23 +92,19 @@ export function RoomTonightView({
   const titleId = useId();
   return (
     <section
-      className="room-panel room-tonight"
+      className="room-panel room-broadcast"
       aria-labelledby={label ? undefined : titleId}
       aria-label={label}
     >
       <PanelHead id={titleId} icon="share" title={copy.title} />
-      <p className="room-tonight-note" data-tonight-room={open ? "on" : "off"}>
+      <p className="room-broadcast-note" data-tonight-room={open ? "on" : "off"}>
         {open ? copy.on : copy.off}
       </p>
-      <Button
-        variant={open ? "secondary" : "primary"}
-        disabled={saving}
-        onClick={onToggle}
-      >
+      <Button variant="secondary" disabled={saving} onClick={onToggle}>
         {saving ? copy.saving : open ? copy.close : copy.open}
       </Button>
       {failed && (
-        <p className="room-tonight-note" role="alert">
+        <p className="room-broadcast-note" role="alert">
           {copy.failed}
         </p>
       )}
