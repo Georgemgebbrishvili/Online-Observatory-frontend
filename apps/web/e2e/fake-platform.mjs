@@ -2174,6 +2174,16 @@ function subscribed(socket, mission, session) {
         mode: session.mode ?? "SIMULATED",
         expiresAt: expiresAt.toISOString(),
       });
+      // #199: what the frame now at the URL is. Fixed, so the room's baseline holds.
+      say({
+        type: "MISSION_FRAME",
+        sequence: 12,
+        capturedAt: new Date().toISOString(),
+        exposureMilliseconds: 2000,
+        gain: 200,
+        stackedFrames: 12,
+        mode: session.mode ?? "SIMULATED",
+      });
     }
   }
 }

@@ -308,3 +308,38 @@ describe("where the telescope points", () => {
     ).toBeUndefined();
   });
 });
+
+describe("what the live frame is (platform issue 199)", () => {
+  const frameInfo = message({
+    type: "MISSION_FRAME",
+    sequence: 12,
+    capturedAt: "2026-09-28T10:00:12.000Z",
+    exposureMilliseconds: 2000,
+    gain: 200,
+    stackedFrames: 12,
+    mode: "SIMULATED",
+  });
+
+  it("keeps the latest frame's exposure, gain and stack, and forgets them when the mission ends", () => {
+    const streaming = run(
+      observing,
+      { type: "start" },
+      { type: "started", session },
+      { type: "socket-open" },
+      streamOffer,
+      frameInfo,
+    );
+    expect(streaming.frame).toEqual({
+      exposureMilliseconds: 2000,
+      gain: 200,
+      stackedFrames: 12,
+    });
+
+    const ended = run(
+      streaming,
+      message({ type: "MISSION_STATE", state: "COMPLETE", failureReason: null }),
+    );
+    expect(ended.frame).toBeNull();
+    expect(run(streaming, { type: "stream-failed" }).frame).toBeNull();
+  });
+});

@@ -362,6 +362,12 @@
     bottom: var(--space-4);
   }
 
+  /* Under the stream's badge: what the picture is made of (#199). */
+  .live-feed-frame {
+    top: calc(var(--space-4) + 2.75rem);
+    right: var(--space-4);
+  }
+
   /* Before a stream, the top right is free: the illustration's caption sits there. */
   .live-feed-well .target-preview figcaption {
     position: absolute;

@@ -17,6 +17,8 @@ type LiveFeedProps = {
   timeLeft: { text: string; iso: string } | null;
   /** The instrument and the target, in small plates at the well's corners. */
   plates?: FeedPlates | null;
+  /** What the picture is made of, "12 × 2 s stacked · gain 200" (#199), while streaming. */
+  frameNote?: string | null;
   /** The step tracker, at the head of the panel under the well. */
   steps?: ReactNode;
   /** The one action, at the right of the status line. */
@@ -36,6 +38,7 @@ const busy: readonly LiveStatus[] = ["starting", "connecting", "reconnecting"];
 export function LiveFeed({
   action,
   description,
+  frameNote,
   labels,
   onStreamError,
   plates,
@@ -78,7 +81,7 @@ export function LiveFeed({
           ) : (
             preview
           )}
-          {(instrument || subject || timeLeft) && (
+          {(instrument || subject || timeLeft || (stream && frameNote)) && (
             <div className="live-feed-plates">
               {instrument && (
                 <p className="live-feed-plate live-feed-plate-instrument">
@@ -93,6 +96,11 @@ export function LiveFeed({
                   {subject.coordinates && (
                     <span className="live-feed-plate-data">{subject.coordinates}</span>
                   )}
+                </p>
+              )}
+              {stream && frameNote && (
+                <p className="live-feed-plate live-feed-frame data" data-live-frame="">
+                  {frameNote}
                 </p>
               )}
               {timeLeft && (

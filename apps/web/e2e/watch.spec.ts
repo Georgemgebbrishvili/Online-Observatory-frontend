@@ -48,6 +48,9 @@ test.describe("a watcher", () => {
     await expect(page.getByText("3 of 5 seats taken.")).toBeVisible();
     await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "live");
     await expect(page.locator(".live-feed-badge")).toHaveText("Simulated");
+    await expect(page.locator(".live-feed [data-live-frame]")).toHaveText(
+      "12 × 2 s stacked · gain 200",
+    );
     // View only: nothing that moves the telescope or keeps a capture.
     await expect(
       page.getByRole("button", { name: /Capture|^Stop$|Re-centre/ }),

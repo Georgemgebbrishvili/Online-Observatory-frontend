@@ -38,6 +38,8 @@ type LiveCopy = {
   timeLeft: string;
   streamAlt: string;
   streamAltSimulated: string;
+  /** What the frame on screen is (#199): "{count}" frames of "{exposure}" each, and "{gain}". */
+  frame: { stacked: string; single: string; gain: string; ms: string; s: string };
 };
 
 type RoomCopy = {
@@ -250,6 +252,13 @@ const en: RoomCopy = {
     timeLeft: "Time left",
     streamAlt: "Live view of {target}",
     streamAltSimulated: "Simulated live view of {target}",
+    frame: {
+      stacked: "{count} × {exposure} stacked",
+      single: "{exposure} exposure",
+      gain: "gain {gain}",
+      ms: "{value} ms",
+      s: "{value} s",
+    },
   },
   states: {
     REQUESTED: {
@@ -508,6 +517,13 @@ const ka: RoomCopy = {
     timeLeft: "დარჩენილი დრო",
     streamAlt: "პირდაპირი ეთერი: {target}",
     streamAltSimulated: "სიმულირებული პირდაპირი ეთერი: {target}",
+    frame: {
+      stacked: "{count} × {exposure} დაჯამებული",
+      single: "{exposure} ექსპოზიცია",
+      gain: "გაძლიერება {gain}",
+      ms: "{value} მწმ",
+      s: "{value} წმ",
+    },
   },
   states: {
     REQUESTED: {

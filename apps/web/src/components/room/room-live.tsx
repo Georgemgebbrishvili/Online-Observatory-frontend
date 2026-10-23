@@ -19,6 +19,7 @@ import {
   type LiveState,
 } from "@/features/missions/live";
 import { missionProgress, type FeedPlates } from "@/features/missions/room";
+import { frameNote } from "@/features/missions/frame-note";
 import { useLiveSession, useNow } from "@/features/missions/use-live-session";
 import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
@@ -308,6 +309,11 @@ export function RoomLive({
                 />
               }
               plates={plates}
+              frameNote={
+                live.stream && live.frame
+                  ? frameNote(live.frame, copy.live.frame, locale)
+                  : null
+              }
               title={text.title}
               description={text.description}
               labels={{

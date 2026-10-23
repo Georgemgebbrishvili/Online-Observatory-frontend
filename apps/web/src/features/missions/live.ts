@@ -43,6 +43,13 @@ export type LiveStatus =
 
 export type LiveStream = { url: string; mode: ObservatoryMode; expiresAt: string };
 
+/** What the frame on screen is, from MISSION_FRAME (#199). */
+export type LiveFrameInfo = {
+  exposureMilliseconds: number;
+  gain: number;
+  stackedFrames: number | null;
+};
+
 export type LiveState = {
   missionState: MissionState;
   failureReason: MissionFailureReason | null;
@@ -50,6 +57,8 @@ export type LiveState = {
   seen: MissionState[];
   session: MissionSession | null;
   stream: LiveStream | null;
+  /** Null until the first MISSION_FRAME, and again whenever the stream ends. */
+  frame: LiveFrameInfo | null;
   link: ObservatoryLinkState | null;
   /**
    * Where the mount points, from `MissionTelemetryUpdate.pointing`: undefined until the
@@ -121,6 +130,7 @@ export function initialLive(
     seen: [],
     session: null,
     stream: null,
+    frame: null,
     link: null,
     pointing: undefined,
     start: "idle",
@@ -142,6 +152,7 @@ export function liveReducer(state: LiveState, event: LiveEvent): LiveState {
         start: "idle",
         session: event.session,
         stream: null,
+        frame: null,
         pointing: undefined,
         socket: "closed",
         expired: false,
@@ -160,12 +171,13 @@ export function liveReducer(state: LiveState, event: LiveEvent): LiveState {
             pointing: state.pointing === undefined ? undefined : null,
           };
     case "stream-failed":
-      return { ...state, stream: null };
+      return { ...state, stream: null, frame: null };
     case "expired":
       return {
         ...state,
         expired: true,
         stream: null,
+        frame: null,
         pointing: undefined,
         socket: "closed",
       };
@@ -188,6 +200,7 @@ function onMessage(state: LiveState, message: MissionChannelMessage): LiveState 
             : [...state.seen, message.state],
         // No live view outlives the live states; the stream and the position end with them.
         stream: ended ? null : state.stream,
+        frame: ended ? null : state.frame,
         pointing: ended ? undefined : state.pointing,
       };
     }
@@ -204,12 +217,23 @@ function onMessage(state: LiveState, message: MissionChannelMessage): LiveState 
           expiresAt: message.expiresAt,
         },
       };
+    case "MISSION_FRAME":
+      if (state.expired) return state;
+      return {
+        ...state,
+        frame: {
+          exposureMilliseconds: message.exposureMilliseconds,
+          gain: message.gain,
+          stackedFrames: message.stackedFrames ?? null,
+        },
+      };
     case "MISSION_ERROR":
       return {
         ...state,
         channelError: message.code,
         socket: "closed",
         stream: null,
+        frame: null,
         pointing: undefined,
       };
     case "MISSION_COMMAND_RESULT":

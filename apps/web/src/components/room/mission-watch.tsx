@@ -13,6 +13,7 @@ import { formatPrice } from "@/components/booking/booking-night";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { LoadingState } from "@/components/ui/loading-state";
 import { feedPlates, missionProgress, plateFor } from "@/features/missions/room";
+import { frameNote } from "@/features/missions/frame-note";
 import { useWatchChannel } from "@/features/missions/use-watch-channel";
 import {
   clearCheckout,
@@ -522,6 +523,11 @@ export function MissionWatch({ locale, seatCode = null, view }: MissionWatchProp
               />
             }
             plates={feedPlates(view.observatory, target, locale, room.feed)}
+            frameNote={
+              live.stream && live.frame
+                ? frameNote(live.frame, room.live.frame, locale)
+                : null
+            }
             title={text.title}
             description={text.description}
             labels={{

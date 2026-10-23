@@ -43,6 +43,10 @@ test("an observing mission opens its session and shows the simulated stream", as
   // The red LIVE dot is a real camera's only.
   await expect(feed.locator(".live-indicator-active")).toHaveCount(0);
   await expect(feed.getByText(/Time left/)).toBeVisible();
+  // #199: what the picture is made of, from MISSION_FRAME.
+  await expect(feed.locator("[data-live-frame]")).toHaveText(
+    "12 × 2 s stacked · gain 200",
+  );
   await expect(page.getByText("Illustration — not telescope output")).toHaveCount(0);
 });
 
@@ -55,6 +59,9 @@ test("the Georgian live room fits a phone", async ({ page }) => {
   ).toBeVisible();
   await expect(page.locator(".live-feed").getByText("სიმულირებული")).toBeVisible();
   await expect(page.locator(".live-feed").getByText(/დარჩენილი დრო/)).toBeVisible();
+  await expect(page.locator(".live-feed [data-live-frame]")).toHaveText(
+    "12 × 2 წმ დაჯამებული · გაძლიერება 200",
+  );
 
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
