@@ -36,6 +36,8 @@ const halfDay = 12 * 60 * 60_000;
 
 /** ADR-072: a session runs any quarter hour from 15 minutes to 4 hours; 30 by default. */
 export const defaultSessionMinutes = 30;
+/** ADR-074: the board reads each night as its 15-minute slots, the cells a run is made of. */
+export const quarterHour = 15;
 
 /** The length the address asks for, when it is one a session may run; else the default. */
 export function sessionMinutes(value: unknown): number {

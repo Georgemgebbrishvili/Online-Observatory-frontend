@@ -16,10 +16,12 @@ async function signIn(page: Page) {
   await expect(page).toHaveURL(/\/en\/app$/);
 }
 
+// A tap on a quarter hour starts a half-hour run there; "last" is the night's last
+// half-hour start, the quarter hour before the last.
 async function chooseSlot(page: Page, index: number | "last") {
   await page.goto("/en/app/book");
-  const slots = page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio");
-  await (index === "last" ? slots.last() : slots.nth(index)).click();
+  const slots = page.getByRole("group", { name: /^Observing time/ }).getByRole("button");
+  await slots.nth(index === "last" ? (await slots.count()) - 2 : index).click();
   // The sky for the slot has been read when a target can be chosen.
   await expect(
     page.getByRole("radiogroup", { name: "Object" }).getByRole("radio", { name: /^Saturn, Up/ }),
@@ -134,9 +136,8 @@ test("a slot taken a moment ago is refused, struck out, and the board stays", as
   );
   await expect(page).toHaveURL(/\/en\/app\/book$/);
   // Struck out; it can now only be waited for (ADR-068).
-  await expect(
-    page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").last(),
-  ).toHaveClass(/is-taken/);
+  const cells = page.getByRole("group", { name: /^Observing time/ }).getByRole("button");
+  await expect(cells.nth((await cells.count()) - 2)).toHaveClass(/is-taken/);
   await expect(page.getByRole("button", { name: "Reserve and pay" })).toBeDisabled();
 });
 
@@ -144,7 +145,7 @@ test("a booked slot, or no slot at all, cannot be reserved", async ({ page }) =>
   await signIn(page);
   await page.goto("/en/app/book");
   // A booked start can only be waited for (ADR-068), never reserved.
-  await page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").nth(4).click();
+  await page.getByRole("group", { name: /^Observing time/ }).getByRole("button").nth(4).click();
   await expect(page.getByRole("button", { name: "Join the waitlist" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Reserve and pay" })).toHaveCount(0);
 
@@ -162,8 +163,8 @@ test("the Georgian board reserves from a phone", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/app/book");
   await page
-    .getByRole("radiogroup", { name: /დაკვირვების დრო/ })
-    .getByRole("radio")
+    .getByRole("group", { name: /დაკვირვების დრო/ })
+    .getByRole("button")
     .first()
     .click();
   await expect(page.getByRole("button", { name: "დაჯავშნა და გადახდა" })).toBeVisible();

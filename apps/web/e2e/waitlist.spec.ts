@@ -14,7 +14,7 @@ async function signIn(page: Page, locale: "en" | "ka" = "en") {
 }
 
 const starts = (page: Page) =>
-  page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio");
+  page.getByRole("group", { name: /^Observing time/ }).getByRole("button");
 
 test("each start says its cloud forecast, plainly as a forecast", async ({ page }) => {
   await signIn(page);
@@ -31,9 +31,9 @@ test("each start says its cloud forecast, plainly as a forecast", async ({ page 
 test("a booked start can be waited for, once", async ({ page }) => {
   await signIn(page);
   await page.goto("/en/app/book");
-  const taken = page.locator(".board-slot.is-taken").first();
+  const taken = page.locator(".time-cell.is-taken").first();
   await taken.click();
-  await expect(taken).toHaveAttribute("aria-checked", "true");
+  await expect(taken).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByText(/Someone holds this start/)).toBeVisible();
 
   const request = page.waitForRequest(
@@ -56,6 +56,6 @@ test("a booked start can be waited for, once", async ({ page }) => {
 test("the waitlist in Georgian", async ({ page }) => {
   await signIn(page, "ka");
   await page.goto("/ka/app/book");
-  await page.locator(".board-slot.is-taken").first().click();
+  await page.locator(".time-cell.is-taken").first().click();
   await expect(page.getByRole("button", { name: "რიგში ჩადგომა" })).toBeVisible();
 });

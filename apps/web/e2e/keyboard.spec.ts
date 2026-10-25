@@ -75,11 +75,11 @@ test("a taken start is waited for by keyboard, and the answer is spoken", async 
 }) => {
   await page.goto("/en/app/book");
   // Not the first: e2e/waitlist.spec.ts waits for that one as the same account.
-  const taken = page.locator(".board-slot.is-taken").nth(2);
+  const taken = page.locator(".time-cell.is-taken").nth(2);
   await taken.focus();
   await expect(taken).toHaveAccessibleName(/Booked, Forecast: /);
   await page.keyboard.press("Enter");
-  await expect(taken).toHaveAttribute("aria-checked", "true");
+  await expect(taken).toHaveAttribute("aria-pressed", "true");
   const join = await tabTo(page, /Join the waitlist/, 20);
   await join.press("Enter");
   // A role=status region: a screen reader says it without moving focus.
@@ -96,20 +96,24 @@ test("the presenter view is switched on and off by keyboard", async ({ page }) =
   await expect(page).not.toHaveURL(/\?present/);
 });
 
-test("the starts are one Tab stop, and the arrow keys move between them", async ({
+test("the quarter hours are one Tab stop: the arrow keys move, Enter sets the start and the end", async ({
   page,
 }) => {
   await page.goto("/en/app/book");
   const starts = page
-    .getByRole("radiogroup", { name: /^Observing time/ })
-    .getByRole("radio");
+    .getByRole("group", { name: /^Observing time/ })
+    .getByRole("button");
   // One start takes Tab; the rest wait for the arrow keys.
   await expect(starts.and(page.locator('[tabindex="0"]'))).toHaveCount(1);
-  const open = page.locator(".board-slot:not(.is-taken):not([disabled])").first();
+  const open = page.locator(".time-cell.is-open").first();
   await open.focus();
   await open.press("Enter");
-  await expect(open).toHaveAttribute("aria-checked", "true");
+  await expect(open).toHaveAttribute("aria-pressed", "true");
+  // The arrows move focus without choosing; Enter on a later quarter hour is the end.
   await page.keyboard.press("ArrowRight");
-  await expect(open).toHaveAttribute("aria-checked", "false");
-  await expect(page.locator(".board-slot:focus")).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator(".time-cell:focus")).toHaveAttribute("aria-pressed", "false");
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".time-cell:focus")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".board-sum output")).toHaveText("45 min");
 });

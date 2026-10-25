@@ -29,8 +29,8 @@ async function buy(page: Page, answer: "Pay" | "Decline") {
 /** The night's first start nobody holds. */
 const openSlot = (page: Page) =>
   page
-    .getByRole("radiogroup", { name: /^Observing time/ })
-    .locator('[role="radio"]:not([disabled])')
+    .getByRole("group", { name: /^Observing time/ })
+    .locator(".time-cell.is-open")
     .first();
 
 async function stranger(browser: Browser) {

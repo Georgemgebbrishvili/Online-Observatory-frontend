@@ -70,7 +70,6 @@
   font-family: var(--font-headline);
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-headline);
-  text-transform: uppercase;
 }
 
 .guide-steps p,

@@ -89,7 +89,7 @@ test("spends a won discount on a booking, through the checkout", async ({ page }
 
   await page.getByRole("link", { name: "Book with it" }).first().click();
   await expect(page).toHaveURL(/\/en\/app\/book$/, { timeout: firstCompile });
-  await page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio").first().click();
+  await page.getByRole("group", { name: /^Observing time/ }).getByRole("button").first().click();
   await page
     .getByRole("radiogroup", { name: "Object" })
     .getByRole("radio", { name: /^Saturn, Up for the whole slot/ })

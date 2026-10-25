@@ -233,7 +233,7 @@ export const designSystemCopy = {
         "CaptureCard — a simulated capture with a drawn frame, one with no preview, and the download states",
       slotRow: "SlotRow — available, booked, and held for weather",
       skyCalendar:
-        "SkyMonth and SkyList — the board's open week, a fully booked night, a day under the pointer, and the month's special nights",
+        "NightStrip, TimeGrid and the object cards — the board's open week, a full night, a chosen run of quarter hours, taken and past quarter hours",
       bookingRow:
         "BookingRow — awaiting payment, confirmed, cancelled, expired, refunded",
       bookingActions:
@@ -248,9 +248,9 @@ export const designSystemCopy = {
         "RoomSharing — private, opening, open with two watching, asking to stop, link copied, session ended",
       watch:
         "WatchView — a seat for sale, buying, loading, error, simulated, full, paying, watching, left, closed by the owner, closed with a refund, ended with a refund owed, ended, the owner, not open",
-      targetGuide: "TargetGuide — a planet with its description, and a nebula without one",
-      gift:
-        "Gift — the form, buying, each refusal; the printable card with a name and a note, and without",
+      targetGuide:
+        "TargetGuide — a planet with its description, and a nebula without one",
+      gift: "Gift — the form, buying, each refusal; the printable card with a name and a note, and without",
       tonight:
         "Tonight — the home banner, simulated and real; the spectator view, simulated and real, full or ended; the room switch off, saving, on and failed",
       roomControls:
@@ -537,7 +537,7 @@ export const designSystemCopy = {
         "CaptureCard — სიმულირებული კადრი დახატული გამოსახულებით, კადრი მინიატურის გარეშე და ჩამოტვირთვის მდგომარეობები",
       slotRow: "SlotRow — თავისუფალი, დაჯავშნილი და ამინდის გამო შეჩერებული",
       skyCalendar:
-        "SkyMonth და SkyList — დაფის ღია კვირა, სრულად დაჯავშნილი ღამე, მაჩვენებლის ქვეშ მყოფი დღე და თვის განსაკუთრებული ღამეები",
+        "NightStrip, TimeGrid და ობიექტის ბარათები — დაფის ღია კვირა, სავსე ღამე, არჩეული მეოთხედსაათები, დაკავებული და გასული დრო",
       bookingRow:
         "BookingRow — გადახდას ელოდება, დადასტურებული, გაუქმებული, ვადაგასული, თანხა დაბრუნებული",
       bookingActions:
@@ -552,8 +552,7 @@ export const designSystemCopy = {
       watch:
         "WatchView — ადგილი იყიდება, იყიდება, იტვირთება, შეცდომა, სიმულირებული, სავსეა, გადახდის მოლოდინი, ყურება, გასული, მფლობელმა დახურა, დახურულია თანხის დაბრუნებით, დასრულდა დასაბრუნებელი თანხით, დასრულდა, მფლობელი, არ არის ღია",
       targetGuide: "TargetGuide — პლანეტა აღწერით და ნისლეული აღწერის გარეშე",
-      gift:
-        "Gift — ფორმა, ყიდვა, ყოველი უარი; დასაბეჭდი ბარათი სახელითა და მინაწერით და მათ გარეშე",
+      gift: "Gift — ფორმა, ყიდვა, ყოველი უარი; დასაბეჭდი ბარათი სახელითა და მინაწერით და მათ გარეშე",
       tonight:
         "Tonight — მთავარი გვერდის ზოლი, სიმულირებული და ნამდვილი; მაყურებლის ხედი, სიმულირებული და ნამდვილი, სავსე ან დასრულებული; ოთახის გადამრთველი გამორთული, ინახება, ჩართული და შეცდომით",
       roomControls:

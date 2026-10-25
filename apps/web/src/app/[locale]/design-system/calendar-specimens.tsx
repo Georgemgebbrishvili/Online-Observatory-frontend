@@ -4,15 +4,9 @@ import { useState } from "react";
 
 import type { Target } from "@darkview/contracts";
 
-import {
-  SkyList,
-  SkyMonth,
-  useSkyCalendar,
-  type CalendarNight,
-} from "@/components/booking/night-calendar";
-import { NightTimeline } from "@/components/booking/night-timeline";
+import { NightStrip, type StripNight } from "@/components/booking/night-strip";
 import { TargetArt, targetAccent } from "@/components/booking/target-art";
-import { nightSky } from "@/features/booking/night-sky";
+import { TimeGrid, type GridCell } from "@/components/booking/time-grid";
 import { targetName } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { boardCopy } from "@/i18n/resources/board";
@@ -21,11 +15,41 @@ import { targetCopy } from "@/i18n/resources/targets";
 
 import { targetSpecimens } from "./copy";
 
-/** A fixed week, so the specimen never moves with the clock: the third night is full. */
-const week: CalendarNight[] = [21, 22, 23, 24, 25, 26, 27].map((d, i) => ({
-  date: `2026-10-${d}`,
-  open: i === 2 ? 0 : 8 - (i % 3),
+// A fixed week, worded here so the specimen never moves with the clock or the browser's
+// Georgian data: the third night is full.
+const weekdays = {
+  en: ["Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Tue"],
+  ka: ["ოთხ", "ხუთ", "პარ", "შაბ", "კვი", "ორშ", "სამ"],
+};
+const month = { en: "Oct", ka: "ოქტ" };
+const week = (locale: Locale): StripNight[] =>
+  [21, 22, 23, 24, 25, 26, 27].map((d, i) => ({
+    date: `2026-10-${d}`,
+    open: i === 2 ? 0 : 30 - i * 2,
+    label: {
+      weekday: weekdays[locale][i],
+      day: String(d),
+      month: month[locale],
+      long: `${weekdays[locale][i]} ${d} ${month[locale]}`,
+      short: `${weekdays[locale][i]} ${d} ${month[locale]}`,
+    },
+  }));
+
+// A fixed evening of quarter hours from 19:45 (Tbilisi, UTC+4): two taken, one past.
+const cells: GridCell[] = Array.from({ length: 14 }, (_, i) => ({
+  startAt: new Date(Date.parse("2026-10-21T15:45:00Z") + i * 15 * 60_000).toISOString(),
+  state: i === 0 ? "off" : i === 3 || i === 4 ? "taken" : "open",
+  cloud: i < 6 ? 60 : 10,
+  forecast: i < 6 ? "60%" : "10%",
+  reason: null,
 }));
+const clock = (at: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZone: "Asia/Tbilisi",
+  }).format(new Date(at));
 
 // One of each kind of card art, from the contract's shape; nothing here reads the sky.
 const base = targetSpecimens[0].target;
@@ -76,57 +100,54 @@ const cards: Target[] = [
   },
 ];
 
-// A fixed late-October night and its slots, so the bar never moves with the clock.
-const barNight = "2026-10-21";
-const barSlots = Array.from({ length: 15 }, (_, index) => ({
-  startAt: new Date(
-    Date.parse("2026-10-21T15:45:00Z") + index * 40 * 60_000,
-  ).toISOString(),
-  durationMinutes: 30,
-  state: (index === 1 ? "taken" : index === 4 ? "chosen" : "open") as
-    "taken" | "chosen" | "open",
-}));
-
-/** The booking board's calendar (ADR-053 §7) in its states; every control works. */
+/** The booking board's pieces (ADR-074) in their states; every control works. */
 export function CalendarSpecimens({ locale }: { locale: Locale }) {
   const copy = boardCopy[locale];
-  const [night, setNight] = useState(week[0].date);
+  const [night, setNight] = useState("2026-10-21");
+  const [run, setRun] = useState<{ from: number; to: number; pending: boolean }>({
+    from: 6,
+    to: 9,
+    pending: false,
+  });
   const [chosen, setChosen] = useState(cards[0].id);
   const words = targetCopy[locale];
-  const darkness = nightSky(barNight, "Asia/Tbilisi");
-  const clock = (at: number) =>
-    new Intl.DateTimeFormat("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23",
-      timeZone: "Asia/Tbilisi",
-    }).format(at);
-  const sky = useSkyCalendar({
-    locale,
-    timezone: "Asia/Tbilisi",
-    nights: week,
-    selected: night,
-    onPick: setNight,
-    openLabel: copy.open,
-    fullLabel: copy.full,
-  });
   return (
     <div className="ds-calendar">
-      <div>
-        <SkyMonth groupLabel={bookingCopy[locale].nights} sky={sky} />
-      </div>
-      <div>
-        <SkyList sky={sky} />
+      <div className="ds-calendar-wide">
+        <NightStrip
+          nights={week(locale)}
+          selected={night}
+          onPick={setNight}
+          timezone="Asia/Tbilisi"
+          groupLabel={bookingCopy[locale].nights}
+          openLabel={copy.open}
+          fullLabel={copy.full}
+        />
       </div>
       <div className="ds-calendar-wide">
-        {darkness && (
-          <NightTimeline
-            sky={darkness}
-            slots={barSlots}
-            copy={copy.timeline}
-            clock={clock}
-          />
-        )}
+        <TimeGrid
+          cells={cells}
+          from={run.from}
+          to={run.to}
+          waiting={null}
+          pending={run.pending}
+          onCell={(index) =>
+            setRun(
+              run.pending && index >= run.from
+                ? { from: run.from, to: index, pending: false }
+                : { from: index, to: index, pending: true },
+            )
+          }
+          onDrag={(index) =>
+            setRun({ from: run.from, to: Math.max(run.from, index), pending: false })
+          }
+          clock={clock}
+          minuteOf={(at) => Number(clock(at).slice(-2))}
+          label={copy.grid}
+          cloudLabel={copy.forecast.label}
+        />
+      </div>
+      <div className="ds-calendar-wide">
         <div className="board-targets" role="radiogroup" aria-label={copy.target}>
           {cards.map((card, index) => {
             const down = index === cards.length - 1;

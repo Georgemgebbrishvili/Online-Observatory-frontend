@@ -25,7 +25,7 @@ export function Spark({ values, color, w = 124, h = 26, lo, hi }: { values: numb
 }
 
 /** Altitude from dusk to dawn, the horizon dashed, now as an amber line. */
-export function AltCurve({ path, span, now, color = '#8ab8ff', w = 150, h = 34 }: { path: PathPoint[]; span: Span; now: number; color?: string; w?: number; h?: number }) {
+export function AltCurve({ path, span, now, color = '#ff8090', w = 150, h = 34 }: { path: PathPoint[]; span: Span; now: number; color?: string; w?: number; h?: number }) {
   const x = (t: number) => ((t - span.start) / (span.end - span.start)) * w;
   const y = (alt: number) => h - 3 - (Math.max(-8, alt) / 90) * (h - 6);
   const nowX = Math.min(w, Math.max(0, x(now)));
@@ -60,7 +60,7 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
     <svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="Pointing: altitude and azimuth">
       <defs>
         <radialGradient id="sdo-dg" cx=".5" cy=".5" r=".5">
-          <stop offset="0" stopColor="#111d36" />
+          <stop offset="0" stopColor="#2a0c14" />
           <stop offset="1" stopColor="#050b18" />
         </radialGradient>
       </defs>
@@ -78,7 +78,7 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
         );
       })}
       {up.length > 1 && (
-        <polyline points={up.map((p) => polar(p.altitude, p.azimuth).map((v) => v.toFixed(1)).join(',')).join(' ')} fill="none" stroke="#8ab8ff" strokeWidth="1.3" strokeDasharray="3 3" />
+        <polyline points={up.map((p) => polar(p.altitude, p.azimuth).map((v) => v.toFixed(1)).join(',')).join(' ')} fill="none" stroke="#ff8090" strokeWidth="1.3" strokeDasharray="3 3" />
       )}
       {at && (
         <>

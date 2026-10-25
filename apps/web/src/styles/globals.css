@@ -32,9 +32,9 @@ body {
 }
 
 /*
- * Deep space behind every page, fixed so scrolling never repaints it (ADR-052 §1): the
- * star tile at three scales, blue and violet light above, red below, the grain and the
- * vignette over it.
+ * Deep space behind every page, fixed so scrolling never repaints it: the star tile at
+ * three scales over ADR-074's wine night, crimson light above and below, the grain and
+ * the vignette over it.
  */
 body::before,
 body::after {
@@ -51,9 +51,9 @@ body::before {
     var(--gradient-stars) 0 0 / 340px 300px,
     var(--gradient-stars) 170px 120px / 520px 460px,
     var(--gradient-stars) 60px 40px / 820px 700px,
-    radial-gradient(70% 45% at 85% -5%, var(--color-sky-blue), transparent 70%),
-    radial-gradient(60% 40% at 5% 20%, var(--color-sky-violet), transparent 70%),
-    radial-gradient(120% 55% at 50% 112%, var(--color-sky-red), transparent 62%),
+    radial-gradient(70% 50% at 85% -10%, var(--color-sky-blue), transparent 70%),
+    radial-gradient(70% 60% at 0% 30%, var(--color-sky-violet), transparent 70%),
+    radial-gradient(120% 60% at 50% 115%, var(--color-sky-red), transparent 62%),
     var(--color-console);
 }
 
@@ -87,26 +87,23 @@ html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow, .kicker) {
 }
 
 /*
- * ADR-052 headlines: Anton for h1 and h2, uppercase, tight; Oswald for h3 and h4, as the
- * Skychaser site sets them. :where keeps the specificity at zero, so a page or component
- * that sets its own heading face still wins. font-synthesis: none stops a page weight
- * from faking a bold Anton.
+ * ADR-074 headlines: Geist, bold, tight, in sentence case. :where keeps the specificity at
+ * zero, so a page or component that sets its own heading face still wins.
  */
 :where(h1, h2, .display, .headline) {
   font-family: var(--font-headline);
   font-weight: var(--font-weight-headline);
   letter-spacing: var(--tracking-headline);
   line-height: var(--leading-display);
-  text-transform: uppercase;
-  font-synthesis: none;
+  text-transform: none;
 }
 
 :where(h3, h4) {
   font-family: var(--font-label);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 0.06em;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
   line-height: var(--leading-heading);
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .display {
@@ -124,8 +121,6 @@ html[lang="ka"] :is(h1, h2, h3, h4, .button, .eyebrow, .kicker) {
   font-weight: var(--font-weight-title);
   letter-spacing: var(--tracking-headline);
   line-height: var(--leading-display);
-  text-transform: uppercase;
-  font-synthesis: none;
 }
 
 :where(h1, h2, h3, h4, .display, .headline, .title-sunset):lang(ka) {

@@ -149,8 +149,6 @@
   font-family: var(--font-label);
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
   transition: color var(--duration-fast) var(--ease-standard);
 }
 

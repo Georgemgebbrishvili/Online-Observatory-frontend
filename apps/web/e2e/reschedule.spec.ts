@@ -20,7 +20,7 @@ async function signIn(page: Page) {
 }
 
 const slots = (page: Page) =>
-  page.getByRole("radiogroup", { name: /^Observing time/ }).getByRole("radio");
+  page.getByRole("group", { name: /^Observing time/ }).getByRole("button");
 const target = (page: Page, name: RegExp) =>
   page.getByRole("radiogroup", { name: "Object" }).getByRole("radio", { name });
 
@@ -39,8 +39,9 @@ test("a lost slot is replaced with a free one, and the offer then closes", async
   await expect(page.getByText("The next clear start is chosen for you.")).toBeVisible();
   await expect(
     page
-      .getByRole("radiogroup", { name: /^Observing time/ })
-      .locator('[aria-checked="true"]'),
+      .getByRole("group", { name: /^Observing time/ })
+      .locator('[aria-pressed="true"]')
+      .first(),
   ).toHaveAccessibleName(/Forecast: 15% cloud$/);
   // The board prices the replacement at nothing, and keeps the lost booking's target.
   await slots(page).first().click();
@@ -83,7 +84,8 @@ test("a slot taken a moment ago is refused, and the free slot stays open", async
 }) => {
   await signIn(page);
   await page.goto(`/en/app/book?reschedule=${lostId}`);
-  await slots(page).last().click();
+  // The night's last half-hour start: the quarter hour before the last.
+  await slots(page).nth((await slots(page).count()) - 2).click();
   await target(page, /^Saturn/).click();
   await page.getByRole("button", { name: "Book this slot free" }).click();
 
@@ -119,8 +121,8 @@ test("the Georgian reschedule fits a phone", async ({ page }) => {
   await page.goto(`/ka/app/bookings/${lostId}`);
   await page.getByRole("link", { name: "აირჩიე უფასო სეანსი" }).click();
   await page
-    .getByRole("radiogroup", { name: /დაკვირვების დრო/ })
-    .getByRole("radio")
+    .getByRole("group", { name: /დაკვირვების დრო/ })
+    .getByRole("button")
     .first()
     .click();
   await expect(

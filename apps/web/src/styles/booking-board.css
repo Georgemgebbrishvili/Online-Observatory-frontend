@@ -1,29 +1,17 @@
 /*
- * The booking board (ADR-053 §7): the Skychaser site's /book — a night, a start, a
- * target, the session beside them — on our tokens. Monolith panels and the red action
- * from ADR-052; the night strip and the half-hours are the board's own.
+ * The booking board (ADR-074): a strip of nights, the night's quarter hours in wine
+ * panels, the objects, and a cream card with the session, its cost and one crimson button.
  */
 .board {
   display: grid;
-  gap: var(--space-4);
-  width: min(100%, 90rem);
+  gap: var(--space-5);
+  width: min(100%, 80rem);
   margin-inline: auto;
-  padding: var(--space-5) var(--space-page) var(--space-8);
+  padding: var(--space-6) var(--space-page) var(--space-12);
 }
 
 .board > * {
   min-width: 0;
-}
-
-/* ── The head: one line of lede; the board begins at once ── */
-.board-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3) var(--space-6);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--color-line);
 }
 
 .board-head > * {
@@ -31,492 +19,87 @@
 }
 
 .board-lede {
+  max-width: 46rem;
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-body-lg);
+  line-height: 1.5;
 }
 
-/* ── The grid: the month, the picks, the session — one screen on a desktop ── */
-.board-grid {
+/* ── The nights: one row of tiles ── */
+.night-strip {
   display: grid;
-  grid-template-columns: 23rem minmax(0, 1fr) 20rem;
-  gap: var(--space-6) var(--space-8);
-  align-items: start;
-}
-
-.board-cal {
-  min-width: 0;
-}
-
-.board-pick {
-  min-width: 0;
-}
-
-.board-step {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin: var(--space-5) 0 var(--space-3);
-}
-
-.board-step:first-child {
-  margin-top: 0;
-}
-
-.board-step h2 {
-  margin: 0;
-  font-family: var(--font-headline);
-  font-weight: var(--font-weight-headline);
-  font-size: var(--font-size-h3);
-  line-height: 1;
-  letter-spacing: var(--tracking-headline);
-  text-transform: uppercase;
-  color: var(--color-text-primary);
-}
-
-.board-rule {
-  flex: 1 1 auto;
-  min-width: var(--space-4);
-  height: 1px;
-  background: linear-gradient(90deg, var(--color-line-strong), transparent);
-}
-
-.board-aside {
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-  text-align: right;
-}
-
-/* ── 01 The month: a calendar of the sky; the board's nights are the days that can be chosen ── */
-.cal {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.cal-head {
-  display: grid;
-  grid-template-columns: 2rem 1fr 2rem;
-  align-items: center;
+  /* Its own width never widens the page: it scrolls inside whatever holds it. */
+  contain: inline-size;
+  grid-auto-columns: minmax(4.75rem, 1fr);
+  grid-auto-flow: column;
   gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-1) var(--space-1) var(--space-3);
+  margin: 0 calc(-1 * var(--space-1));
+  scrollbar-width: none;
 }
 
-.cal-month {
-  margin: 0;
-  text-align: center;
-  font: var(--font-weight-headline) var(--font-size-h3) / 1 var(--font-headline);
-  letter-spacing: var(--tracking-headline);
-  text-transform: uppercase;
-  color: var(--color-text-primary);
-}
-
-.cal-month span {
-  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
-  letter-spacing: 0.08em;
-  color: var(--color-text-tertiary);
-  vertical-align: middle;
-}
-
-.cal-nav {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-control);
-  background: var(--color-outline-fill);
-  color: var(--color-text-secondary);
-  font: var(--font-weight-medium) var(--font-size-body-lg) / 1 var(--font-body);
-  cursor: pointer;
-  transition:
-    border-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
-}
-
-.cal-nav:hover:not(:disabled) {
-  border-color: var(--color-outline-hover);
-  color: var(--color-text-primary);
-}
-
-.cal-nav:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.cal-week,
-.cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: var(--space-1);
-}
-
-.cal-week span {
-  text-align: center;
-  font: var(--font-weight-semibold) var(--font-size-hint) / 1 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-}
-
-.cal-day {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  min-width: 0;
-  height: 2.75rem;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: var(--radius-small);
-  background: none;
-  color: var(--color-text-secondary);
-  transition:
-    border-color var(--duration-fast) var(--ease-standard),
-    background var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
-}
-
-.cal-day b {
-  font: var(--font-weight-semibold) var(--font-size-body) / 1 var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.cal-day .board-moon {
-  width: 11px;
-  height: 11px;
-  opacity: 0.7;
-}
-
-.cal-mark {
-  position: absolute;
-  top: 5px;
-  right: 6px;
-  width: 5px;
-  height: 5px;
-  border-radius: var(--radius-full);
-  background: var(--color-accent);
-  box-shadow: 0 0 8px var(--color-accent);
-}
-
-button.cal-day {
-  cursor: pointer;
-}
-
-.cal-day.is-info.has-event {
-  color: var(--color-text-primary);
-}
-
-.cal-day.is-info:hover,
-.cal-day.is-info.is-shown {
-  border-color: var(--color-line-strong);
-  background: var(--color-overlay-hover);
-}
-
-/* Past days and the neighbouring months' recede by colour, never below the AA ink. */
-.cal-day.is-past,
-.cal-day.is-outside {
-  color: var(--color-text-tertiary);
-}
-
-.cal-day.is-past .board-moon,
-.cal-day.is-outside .board-moon {
-  opacity: 0.35;
-}
-
-/* The nights the board offers: lifted out of the month, with a line beneath for the open slots. */
-.cal-day.is-open {
-  border-color: var(--color-line-strong);
-  background: var(--color-outline-fill-hover);
-  color: var(--color-text-primary);
-}
-
-.cal-day.is-open::after {
-  content: "";
-  position: absolute;
-  bottom: 4px;
-  left: 30%;
-  right: 30%;
-  height: 2px;
-  border-radius: var(--radius-full);
-  background: var(--color-success);
-  opacity: 0.7;
-}
-
-.cal-day.is-open .board-moon {
-  opacity: 1;
-}
-
-.cal-day.is-open:hover {
-  border-color: var(--color-outline-hover);
-  background: var(--color-overlay-hover);
-}
-
-.cal-day.is-open[aria-checked="true"],
-.cal-day.is-open[aria-checked="true"]:hover {
-  border-color: var(--color-accent);
-  background: var(--color-accent-muted);
-  box-shadow:
-    0 0 22px -6px var(--color-accent),
-    inset 0 0 0 1px var(--color-accent-border);
-}
-
-.cal-day.is-open[aria-checked="true"]::after {
-  background: var(--color-accent);
-  opacity: 1;
-}
-
-.cal-day.is-open.is-full {
-  color: var(--color-text-tertiary);
-}
-
-.cal-day.is-open.is-full b {
-  text-decoration: line-through;
-}
-
-.cal-day.is-open.is-full::after {
-  background: var(--color-text-disabled);
-}
-
-.cal-day.is-today b {
-  color: var(--color-accent-ink);
-}
-
-/* The day under the pointer, or the one chosen: its Moon and its events, in words. */
-.cal-note {
-  display: grid;
-  gap: var(--space-2);
-  min-height: 7.5rem;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-medium);
-  background: var(--gradient-monolith);
-}
-
-.cal-note header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
-.cal-note-date {
-  margin: 0;
-  font: var(--font-weight-semibold) var(--font-size-caption) / 1.2 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-text-primary);
-}
-
-.cal-chip {
-  flex: none;
-  padding: 3px var(--space-2);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-full);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-mono);
-  color: var(--color-text-tertiary);
-}
-
-.cal-chip.is-open {
-  border-color: var(--color-success-border);
-  background: var(--color-success-muted);
-  color: var(--color-success);
-}
-
-.cal-note-moon {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-mono);
-  color: var(--color-text-tertiary);
-}
-
-.cal-note ul,
-.cal-list ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.cal-note ul {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.cal-note li {
-  display: grid;
-  grid-template-columns: 14px 1fr;
-  gap: var(--space-2);
-  align-items: start;
-  font-size: var(--font-size-caption);
-  line-height: 1.4;
-  color: var(--color-text-secondary);
-}
-
-.cal-note li > svg {
-  margin-top: 3px;
-}
-
-.cal-note li b {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
-}
-
-.cal-note-none {
-  margin: 0;
-  font-size: var(--font-size-caption);
-  color: var(--color-text-tertiary);
-}
-
-/* The month's special nights: a short list under the targets, each a way to its day. */
-.cal-list {
-  display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-6);
-}
-
-.cal-list header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
-.cal-list h3 {
-  margin: 0;
-  font: var(--font-weight-semibold) var(--font-size-hint) / 1.2 var(--font-label);
-  letter-spacing: var(--tracking-kicker);
-  text-transform: uppercase;
-  color: var(--color-accent-ink);
-}
-
-.cal-list header span {
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-}
-
-.cal-list ul {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: var(--space-4);
-  max-height: 11.5rem;
-  overflow-y: auto;
-  border-top: 1px solid var(--color-line);
-  scrollbar-width: thin;
-}
-
-.cal-event {
-  display: grid;
-  grid-template-columns: 2.25rem 14px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--space-3);
-  width: 100%;
-  padding: var(--space-2) var(--space-1);
-  border: 0;
-  border-bottom: 1px solid var(--color-line);
-  background: none;
-  color: var(--color-text-secondary);
-  text-align: left;
-  cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-standard);
-}
-
-.cal-event:hover,
-.cal-event.is-shown {
-  background: var(--color-overlay-hover);
-}
-
-.cal-event-date {
+.night-tile {
   display: grid;
   justify-items: center;
   gap: 2px;
-}
-
-.cal-event-date b {
-  font: var(--font-weight-headline) var(--font-size-h3) / 1 var(--font-headline);
+  padding: var(--space-3) var(--space-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-medium);
+  background: var(--gradient-panel);
+  box-shadow: var(--shadow-raised);
   color: var(--color-text-primary);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    translate var(--duration-fast) var(--ease-standard);
 }
 
-.cal-event-date small {
-  font: var(--font-weight-semibold) var(--font-size-hint) / 1 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+.night-tile:hover {
+  border-color: var(--color-line-strong);
+  translate: 0 -1px;
+}
+
+.night-tile-weekday,
+.night-tile-month {
   color: var(--color-text-tertiary);
+  font: var(--font-weight-semibold) var(--font-size-hint) / 1.2 var(--font-label);
 }
 
-.cal-event-text {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
+.night-tile-day {
+  font: var(--font-weight-bold) var(--font-size-h2) / 1.1 var(--font-headline);
+  letter-spacing: var(--tracking-headline);
 }
 
-.cal-event-text b {
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-caption);
-  line-height: 1.3;
-  color: var(--color-text-primary);
+.night-tile-foot {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  color: var(--color-text-secondary);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
 }
 
-.cal-event-text small {
-  overflow: hidden;
-  font-size: var(--font-size-hint);
-  line-height: 1.35;
-  color: var(--color-text-tertiary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.night-tile[aria-checked="true"] {
+  border-color: transparent;
+  background: var(--gradient-crimson);
+  box-shadow: var(--shadow-crimson);
 }
 
-.cal-event-open {
-  width: 7px;
-  height: 7px;
-  margin-right: var(--space-2);
-  border-radius: var(--radius-full);
-  background: var(--color-success);
-  box-shadow: var(--glow-live);
+.night-tile[aria-checked="true"]
+  :is(.night-tile-weekday, .night-tile-month, .night-tile-foot) {
+  color: var(--color-on-action);
 }
 
-/* The drawn signs: one glyph per kind of event. */
-.cal-sign {
-  flex: none;
-  fill: var(--color-text-secondary);
-  stroke: none;
+.night-tile.is-full:not([aria-checked="true"]) {
+  opacity: 0.5;
 }
 
-.cal-sign path {
-  stroke: var(--color-text-secondary);
-  stroke-width: 1.4;
-  stroke-linecap: round;
-}
-
-.cal-sign-season path {
-  stroke: none;
-  fill: var(--color-gold);
-}
-
-.cal-sign-ring {
-  fill: none;
-  stroke: var(--color-text-tertiary);
-  stroke-width: 1;
-}
-
-.cal-sign-lunarEclipse,
-.cal-sign-solarEclipse {
-  fill: var(--color-accent);
-}
-
-.cal-sign-shade {
-  fill: var(--color-night);
-}
-
-.cal-sign-opposition,
-.cal-sign-moonNear,
-.cal-sign-pair {
-  fill: var(--color-star-warm);
+.night-tile:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .board-moon-dark {
@@ -529,305 +112,167 @@ button.cal-day {
   fill: var(--color-moon-lit);
 }
 
-/* ── 02 The night bar: sunset to sunrise, the dark between dusk and dawn, every slot a tick ── */
-.night {
+/* ── The grid: the picks, and the session beside them ── */
+.board-grid {
   display: grid;
-  gap: var(--space-2);
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.board-main {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.board-section {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--gradient-panel);
+  box-shadow: var(--shadow-raised);
+}
+
+.board-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
   margin-bottom: var(--space-4);
 }
 
-.night-sun,
-.night-marks {
-  position: relative;
-  color: var(--color-text-tertiary);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.2 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+.board-step h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
 }
 
-.night-sun {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-1) var(--space-3);
-}
-
-.night time {
-  color: var(--color-text-secondary);
-  font-family: var(--font-mono);
-  letter-spacing: 0;
-}
-
-.night-bar {
-  position: relative;
-  height: 0.875rem;
-  border-radius: var(--radius-full);
-  background: linear-gradient(
-    90deg,
-    var(--color-night-sun) 0%,
-    var(--color-night-twilight) var(--tl-sunset),
-    var(--color-night-dark) var(--tl-dusk),
-    var(--color-night-dark) var(--tl-dawn),
-    var(--color-night-twilight) var(--tl-sunrise),
-    var(--color-night-sun) 100%
-  );
-  box-shadow: inset 0 0 0 1px var(--color-line);
-}
-
-.night-moon {
-  position: absolute;
-  top: -0.3125rem;
-  height: 2px;
-  border-radius: var(--radius-full);
-  background: var(--color-target-moon);
-  opacity: 0.7;
-}
-
-.night-midnight {
-  position: absolute;
-  top: -0.125rem;
-  bottom: -0.125rem;
-  width: 1px;
-  background: var(--color-line-strong);
-}
-
-.night-tick {
-  position: absolute;
-  top: 0.25rem;
-  bottom: 0.25rem;
-  min-width: 2px;
-  border-radius: 1px;
-  background: var(--color-text-tertiary);
-}
-
-.night-tick.is-taken {
-  background: var(--color-text-disabled);
-  opacity: 0.5;
-}
-
-.night-tick.is-chosen {
-  top: 0.0625rem;
-  bottom: 0.0625rem;
-  background: var(--color-accent);
-  box-shadow: 0 0 10px var(--color-accent);
-}
-
-.night-marks {
-  height: 1.125rem;
-}
-
-.night-marks > span {
-  position: absolute;
-  top: 0;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-
-.night-marks > .is-start {
-  transform: translateX(-0.5rem);
-}
-
-.night-marks > .is-end {
-  transform: translateX(calc(-100% + 0.5rem));
-}
-
-.night-moon-key {
+.board-aside {
   display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-}
-
-.night-moon-key i {
-  width: 0.75rem;
-  height: 2px;
-  border-radius: var(--radius-full);
-  background: var(--color-target-moon);
-}
-
-:lang(ka) .night-sun,
-:lang(ka) .night-marks {
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-/* ── 02b The length (ADR-070): quick lengths, and a stepper for every quarter hour ── */
-.board-length {
-  display: flex;
   flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.board-hint {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+/* ── The quarter hours: an hour to a row ── */
+.time-grid {
+  display: grid;
+  gap: var(--space-2);
+  user-select: none;
+}
+
+.time-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.75rem;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
 }
 
-.board-length-quick {
-  display: flex;
-  flex-wrap: wrap;
+.time-cloud {
+  color: var(--color-text-tertiary);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
+  text-align: right;
+}
+
+.time-cells {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-1);
 }
 
-.board-length-chip {
-  min-height: 2.25rem;
-  padding-inline: var(--space-3);
-  border: 1px solid var(--color-line-strong);
-  border-radius: var(--radius-full);
-  background: var(--color-outline-fill);
+.time-cell {
+  min-height: var(--size-touch);
+  padding: 0;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-small);
+  background: var(--color-overlay-hover);
   color: var(--color-text-secondary);
-  font: var(--font-weight-medium) var(--font-size-label) / 1 var(--font-body);
-  white-space: nowrap;
+  font: var(--font-weight-medium) var(--font-size-caption) / 1 var(--font-mono);
   cursor: pointer;
+  touch-action: manipulation;
   transition:
-    border-color var(--duration-fast) var(--ease-standard),
     background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-.board-length-chip:hover {
-  border-color: var(--color-outline-hover);
+.time-cell time {
+  font: inherit;
+}
+
+.time-cell.is-none {
+  visibility: hidden;
+}
+
+.time-cell.is-open:not(.is-in):hover {
+  border-color: var(--color-line-strong);
+  background: var(--color-overlay-active);
   color: var(--color-text-primary);
 }
 
-.board-length-chip[aria-checked="true"] {
-  border-color: var(--color-accent);
+/* Someone holds it: struck through and hatched, still tappable for the waitlist. */
+.time-cell.is-taken {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 5px,
+    var(--color-line) 5px 6px
+  );
+  color: var(--color-text-tertiary);
+  text-decoration: line-through;
+}
+
+.time-cell.is-off {
+  cursor: default;
+  opacity: 0.35;
+}
+
+/* The chosen run: glossy crimson end to end, its two ends a shade brighter. */
+.time-cell.is-in {
+  border-color: transparent;
   background: var(--color-action);
   color: var(--color-on-action);
+  text-decoration: none;
 }
 
-.board-length-step {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--color-line-strong);
-  border-radius: var(--radius-full);
+.time-cell.is-from,
+.time-cell.is-to {
+  background: var(--gradient-crimson);
+  box-shadow: var(--shadow-crimson);
 }
 
-.board-length-step button {
-  display: grid;
-  width: 2.25rem;
-  height: 2.25rem;
-  place-items: center;
-  border: 0;
-  border-radius: 50%;
-  background: none;
+.is-pending .time-cell.is-from {
+  animation: cell-pulse 1.4s var(--ease-standard) infinite alternate;
+}
+
+@keyframes cell-pulse {
+  from {
+    box-shadow: var(--glow-pulse-low);
+  }
+
+  to {
+    box-shadow: var(--glow-pulse-high);
+  }
+}
+
+.time-cell.is-waiting {
+  border: 1px dashed var(--color-gold);
   color: var(--color-text-primary);
-  font: var(--font-weight-medium) var(--font-size-body-lg) / 1 var(--font-body);
-  cursor: pointer;
 }
 
-.board-length-step button:hover:not(:disabled) {
-  background: var(--color-overlay-hover);
-}
-
-.board-length-step button:disabled {
-  color: var(--color-text-disabled);
-  cursor: default;
-}
-
-.board-length-step output {
-  min-width: 5.5rem;
-  color: var(--color-text-primary);
-  font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-mono);
-  text-align: center;
-}
-
-.board-length-fixed {
-  margin: 0;
-  color: var(--color-text-primary);
-  font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-mono);
-}
-
-.board-length-chip:focus-visible,
-.board-length-step button:focus-visible {
+.time-cell:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
-.board-slots[aria-busy] {
-  opacity: 0.5;
-  transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-/* ── 03 The starts: every free quarter hour, one compact grid ── */
-.board-slots {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(4.25rem, 1fr));
-  gap: var(--space-1);
-}
-
-.board-slot {
-  min-height: 2.25rem;
-  border: 1px solid var(--color-line-strong);
-  border-radius: var(--radius-small);
-  background: var(--color-outline-fill);
-  color: var(--color-text-primary);
-  font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  cursor: pointer;
-  transition:
-    border-color var(--duration-fast) var(--ease-standard),
-    background var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
-}
-
-.board-slot:hover:not(:disabled) {
-  border-color: var(--color-outline-hover);
-  background: var(--color-overlay-hover);
-}
-
-.board-slot[aria-checked="true"],
-.board-slot[aria-checked="true"]:hover:not(:disabled) {
-  color: var(--color-on-action);
-  border-color: var(--color-accent);
-  background: var(--color-action);
-  box-shadow: var(--glow-action);
-}
-
-.board-slot:disabled {
-  cursor: default;
-}
-
-.board-slot.is-taken {
-  border-color: transparent;
-  background: repeating-linear-gradient(
-    135deg,
-    var(--color-overlay-hover) 0 6px,
-    transparent 6px 12px
-  );
-  color: var(--color-text-disabled);
-  text-decoration: line-through;
-}
-
-/* ADR-068: a taken start chosen to wait for -- outlined, never filled as a booking is. */
-.board-slot.is-taken[aria-checked="true"] {
-  border-color: var(--color-accent);
-  box-shadow: none;
-  color: var(--color-text-primary);
-}
-
-/* ADR-068: the start's cloud forecast, under its time. */
-.board-slot-cloud {
-  display: block;
-  margin-top: 2px;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-regular);
-  text-decoration: none;
-}
-
-.board-slot[aria-checked="true"]:not(.is-taken) .board-slot-cloud {
-  color: inherit;
-}
-
-.board-slot.is-past {
-  border-color: transparent;
-  color: var(--color-text-disabled);
-}
-
-.board-slot.is-short {
-  border-style: dashed;
-  border-color: var(--color-line);
-  color: var(--color-text-tertiary);
-}
-
-/* ── 04 The objects: optional; quiet tiles, the best-one-up tile first ── */
+/* ── The objects ── */
 .board-targets {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
@@ -985,7 +430,11 @@ button.cal-day {
 /* The drawn plates are squares of night: feathered to a disc. */
 img.target-art {
   mix-blend-mode: screen;
-  mask-image: radial-gradient(circle closest-side, var(--color-mask) 72%, transparent 100%);
+  mask-image: radial-gradient(
+    circle closest-side,
+    var(--color-mask) 72%,
+    transparent 100%
+  );
 }
 
 .board-target:focus-visible {
@@ -1090,31 +539,7 @@ img.target-art {
   text-transform: none;
 }
 
-/* ── The session: a monolith that stays beside the picks ── */
-.board-sum {
-  position: sticky;
-  top: calc(var(--size-bar) + var(--space-4));
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-panel);
-  background: var(--gradient-ticks), var(--gradient-monolith);
-  box-shadow: 0 30px 80px -40px var(--color-accent-border);
-}
-
-.board-sumhead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.board-sumhead .kicker {
-  margin: 0;
-}
-
+/* Rows, labels and captions on the dark, as the gift card and the target guide use them. */
 .board-rows {
   display: flex;
   flex-direction: column;
@@ -1123,115 +548,245 @@ img.target-art {
 
 .board-rows > div {
   display: grid;
-  grid-template-columns: 4.5rem 1fr;
+  grid-template-columns: 5.5rem 1fr;
   align-items: baseline;
   gap: var(--space-3);
   padding: var(--space-2) 0;
   border-top: 1px solid var(--color-line);
 }
 
-.board-rows dt {
-  font: var(--font-weight-semibold) var(--font-size-hint) / 1.3 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+.board-rows dt,
+.board-label {
   color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
 }
 
 .board-rows dd {
   margin: 0;
-  font: var(--font-weight-semibold) var(--font-size-body) / 1.3 var(--font-mono);
-  font-variant-numeric: tabular-nums;
   color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.board-caption {
+  margin: 0;
+  color: var(--color-text-small);
+  font-size: var(--font-size-caption);
+  line-height: 1.5;
+}
+
+.board-total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.board-total strong {
+  font: var(--font-weight-bold) var(--font-size-h2) / 1 var(--font-headline);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── The session: a cream card beside the picks ── */
+.board-sum {
+  position: sticky;
+  top: calc(var(--size-bar) + var(--space-4));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-radius: var(--radius-large);
+  background: var(--color-paper);
+  box-shadow: var(--shadow-paper);
+  color: var(--color-on-paper);
+}
+
+.board-sum-kicker {
+  color: var(--color-action);
+  font: var(--font-weight-semibold) var(--font-size-kicker) / 1.2 var(--font-label);
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+}
+
+.board-sum-time {
+  margin: calc(-1 * var(--space-2)) 0 0;
+  font: var(--font-weight-bold) var(--font-size-h1) / 1.1 var(--font-headline);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-headline);
+}
+
+.board-sum-meta {
+  margin: calc(-1 * var(--space-3)) 0 0;
+  color: var(--color-on-paper-2);
+  font-size: var(--font-size-caption);
+}
+
+.board-length {
+  display: grid;
+  grid-template-columns: var(--size-touch) 1fr var(--size-touch);
+  align-items: center;
+  padding: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-paper-rule);
+}
+
+.board-length button {
+  width: var(--size-touch);
+  height: var(--size-touch);
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-on-paper);
+  color: var(--color-paper);
+  font-size: var(--font-size-h3);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.board-length button:hover:not(:disabled) {
+  background: var(--color-action);
+  color: var(--color-on-action);
+}
+
+.board-length button:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.board-length output {
+  font: var(--font-weight-bold) var(--font-size-body) / 1 var(--font-label);
+  text-align: center;
+}
+
+.board-length-fixed {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.board-sum .board-rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.board-sum .board-rows > div {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-paper-rule);
+}
+
+.board-sum .board-rows dt {
+  color: var(--color-on-paper-2);
+  font-size: var(--font-size-caption);
+}
+
+.board-sum .board-rows dd {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
 }
 
 /* ADR-067: a gift code, folded away until it is wanted. */
-.board-gift {
+.board-sum .board-gift {
   display: grid;
   gap: var(--space-3);
 }
 
-.board-gift summary {
-  min-height: 44px;
+.board-sum .board-gift summary {
   display: flex;
+  min-height: var(--size-touch);
   align-items: center;
+  color: var(--color-on-paper-2);
   cursor: pointer;
-  color: var(--color-text-secondary);
 }
 
-.board-gift[open] summary {
-  color: var(--color-text-primary);
+.board-sum .board-gift[open] summary {
+  color: var(--color-on-paper);
 }
 
-.board-total {
-  display: grid;
-  grid-template-columns: 1fr auto;
+.board-sum :is(.field-label, .field-hint) {
+  color: var(--color-on-paper-2);
+}
+
+.board-sum :is(.field-input, select) {
+  border-color: var(--color-paper-rule);
+  background: var(--color-text-primary);
+  color: var(--color-on-paper);
+}
+
+.board-sum .board-total {
+  display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-line-strong);
-  border-radius: var(--radius-medium);
-  background: var(--color-scrim-soft);
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-paper-rule);
 }
 
-.board-label {
-  font: var(--font-weight-semibold) var(--font-size-hint) / 1.3 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
+.board-sum .board-label {
+  color: var(--color-on-paper-2);
+  font-size: var(--font-size-caption);
 }
 
-.board-total strong {
-  grid-row: span 2;
-  align-self: center;
-  font: var(--font-weight-bold) var(--font-size-h3) / 1 var(--font-mono);
+.board-sum .board-total strong {
+  font: var(--font-weight-bold) var(--font-size-h2) / 1 var(--font-headline);
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-headline);
 }
 
-.board-total > span:last-child {
-  font: var(--font-weight-medium) var(--font-size-caption) / 1.3 var(--font-mono);
-  color: var(--color-text-tertiary);
+.board-sum .board-total > span:last-child:not(.board-label) {
+  flex-basis: 100%;
+  color: var(--color-on-paper-2);
+  font-size: var(--font-size-caption);
+  text-align: right;
 }
 
 .board-book {
   width: 100%;
 }
 
-.board-caption {
+.board-sum .board-book:disabled:not([aria-busy]) {
+  border-color: transparent;
+  background: var(--color-paper-rule);
+  color: var(--color-on-paper-2);
+}
+
+.board-sum :is(button, summary, input, select):focus-visible {
+  outline: 2px solid var(--color-action);
+  outline-offset: 2px;
+}
+
+.board-sum .board-caption {
   margin: 0;
+  color: var(--color-on-paper-2);
   font-size: var(--font-size-caption);
   line-height: 1.5;
-  color: var(--color-text-small);
+}
+
+.board-sum .board-notice {
+  color: var(--color-on-paper);
+  font-weight: var(--font-weight-semibold);
+}
+
+.board-sum .booking-feedback {
+  color: var(--color-action);
 }
 
 .board-note {
-  grid-column: 1 / -1;
   margin: 0;
   color: var(--color-text-tertiary);
 }
 
-/* The phone's bottom bar: the chosen start, the cost, the way to the session. */
+/* The phone's bottom bar: the chosen run, the cost, the way to the session. */
 .board-bar {
   display: none;
-}
-
-@media (--below-xl) {
-  .board-grid {
-    grid-template-columns: 21rem minmax(0, 1fr);
-  }
-
-  .board-sum {
-    grid-column: 2;
-  }
 }
 
 @media (--below-lg) {
   .board-grid {
     grid-template-columns: 1fr;
-  }
-
-  .board-sum {
-    grid-column: auto;
   }
 
   .board-sum {
@@ -1241,33 +796,17 @@ img.target-art {
 
 @media (--below-md) {
   .board {
+    gap: var(--space-4);
     padding-top: var(--space-4);
   }
 
-  .board-head {
-    padding-bottom: var(--space-3);
+  .board-section {
+    padding: var(--space-4);
   }
 
-  .board-step {
-    flex-wrap: wrap;
-    margin-top: var(--space-6);
-  }
-
-  .board-aside {
-    text-align: left;
-  }
-
-  .board-slot {
-    min-height: var(--size-touch);
-  }
-
-  .night-moon-key {
-    order: 3;
-    flex-basis: 100%;
-  }
-
-  .night-midnight-mark {
-    display: none;
+  .time-row {
+    grid-template-columns: minmax(0, 1fr) 2.25rem;
+    gap: var(--space-2);
   }
 
   .board-targets {
@@ -1276,49 +815,48 @@ img.target-art {
 
   .board-bar {
     position: fixed;
-    left: var(--space-3);
     right: var(--space-3);
     bottom: calc(
       env(safe-area-inset-bottom) + var(--tab-bar-space, 0rem) + var(--space-2)
     );
+    left: var(--space-3);
     z-index: 44;
     display: flex;
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-    border: 1px solid var(--color-line-strong);
-    border-radius: var(--radius-console);
-    background: var(--color-bar);
-    backdrop-filter: blur(14px);
-    color: var(--color-text-secondary);
+    border-radius: var(--radius-full);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-paper);
+    color: var(--color-on-paper-2);
+    font: var(--font-weight-semibold) var(--font-size-caption) / 1 var(--font-mono);
     text-decoration: none;
-    font: var(--font-weight-medium) var(--font-size-caption) / 1 var(--font-mono);
-    box-shadow: var(--shadow-small);
   }
 
   .board-bar b {
     margin-left: auto;
-    color: var(--color-text-primary);
+    color: var(--color-on-paper);
   }
 
   .board-bar-go {
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-control);
-    background: var(--color-action);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-full);
+    background: var(--gradient-crimson);
+    box-shadow: var(--shadow-gloss);
     color: var(--color-on-action);
-    font: var(--font-weight-semibold) var(--font-size-tab) / 1 var(--font-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
+    font: var(--font-weight-semibold) var(--font-size-caption) / 1 var(--font-label);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .target-art,
   .board-target,
-  .board-slot,
-  .cal-day,
-  .cal-nav,
-  .cal-event {
+  .time-cell,
+  .night-tile {
     transition: none;
+  }
+
+  .is-pending .time-cell.is-from {
+    animation: none;
   }
 }

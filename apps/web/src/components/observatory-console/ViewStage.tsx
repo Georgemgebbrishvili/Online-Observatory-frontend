@@ -117,9 +117,9 @@ function ViewStage(p: ViewStageProps) {
         )}
       </div>
       <ConditionAlerts alerts={p.alerts} />
-      <div className="sdo-hud sdo-glass sdo-hud--tl"><span style={{ color: '#8ab8ff' }}>{p.hudLive[0]}</span> · {p.hudLive[1]}<br />{p.hudLive[2]}</div>
+      <div className="sdo-hud sdo-glass sdo-hud--tl"><span style={{ color: '#ff8090' }}>{p.hudLive[0]}</span> · {p.hudLive[1]}<br />{p.hudLive[2]}</div>
       {p.hudTarget && (
-        <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#8ab8ff' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}{p.hudTarget[2] && <><br />{p.hudTarget[2]}</>}</div>
+        <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#ff8090' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}{p.hudTarget[2] && <><br />{p.hudTarget[2]}</>}</div>
       )}
       <div className="sdo-hud sdo-glass sdo-hud--br"><span>{p.hudField[0]}</span><span className="sdo-hud__more"><br />{p.hudField[1]}</span></div>
       <p className="sdo-hud sdo-glass sdo-hud--bc sdo-caption">{p.caption}</p>

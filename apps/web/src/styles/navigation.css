@@ -313,8 +313,6 @@ html:has(.public-mobile-menu[data-open]) {
     font-family: var(--font-label);
     font-size: var(--font-size-nav);
     font-weight: var(--font-weight-medium);
-    letter-spacing: var(--tracking-nav);
-    text-transform: uppercase;
     white-space: nowrap;
     transition: color var(--duration-fast) var(--ease-standard);
   }
@@ -566,10 +564,8 @@ html:has(.public-mobile-menu[data-open]) {
     font-family: var(--font-label);
     font-size: var(--font-size-tab);
     font-weight: var(--font-weight-medium);
-    letter-spacing: 0.04em;
     line-height: 1;
     text-decoration: none;
-    text-transform: uppercase;
     -webkit-tap-highlight-color: transparent;
     transition:
       color var(--duration-fast) var(--ease-standard),

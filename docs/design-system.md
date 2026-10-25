@@ -2,11 +2,11 @@
 
 ## Direction
 
-Since ADR-052 (2026-10-11) every surface takes the maintainer's Skychaser visuals
-(`https://skychaser.io`, code in `~/Desktop/Skychaser/app`); the name stays Stellar. Deep
-space behind every page, white ink, Anton headlines, red for highlights and filled buttons,
-glass bars, glowing buttons and LIVE pills. Still never: purple-nebula imagery, HUD
-decoration, stock space imagery presented as telescope output.
+Since ADR-074 (2026-10-25) every surface is Crimson: a deep wine night behind every page,
+wine-gradient panels at 24px, glossy crimson for what is chosen or primary, cream paper for
+a summary and its one button, pill buttons, and Geist headlines in sentence case. ADR-052's
+roles stay — glass bars, glowing buttons and LIVE pills. Still never: purple-nebula
+imagery, HUD decoration, stock space imagery presented as telescope output.
 
 ## Foundations
 
@@ -53,7 +53,7 @@ decoration, stock space imagery presented as telescope output.
 - Spacing: `--space-1` … `--space-20` with a fluid `--space-page` gutter
 - Motion: UI 160–220ms, instrument 500–1200ms; Skychaser's `--ease-sky` and `--ease-spring`
 
-`src/styles/tokens.css` is the only file that holds a colour literal. `src/styles/tokens.ts` mirrors the palette for `next/og` and the homepage sky's canvas, which cannot read CSS variables, and offers `withAlpha` for a canvas colour at an opacity; `tokens.test.ts` keeps the two equal and asserts ADR-052's roles exactly. The `--st-*` palette is private to `tokens.css`: everything else uses the semantic `--color-*` tokens.
+`src/styles/tokens.css` is the only file that holds a colour literal. `src/styles/tokens.ts` mirrors the palette for `next/og` and the homepage sky's canvas, which cannot read CSS variables, and offers `withAlpha` for a canvas colour at an opacity; `tokens.test.ts` keeps the two equal and asserts ADR-074's roles exactly. The `--st-*` palette is private to `tokens.css`: everything else uses the semantic `--color-*` tokens.
 
 `npm run lint` enforces this. Stylelint rejects hex, named colours, colour functions and `--st-*` references in any stylesheet except `tokens.css`; since ADR-052 it allows `backdrop-filter` and `text-shadow`. Since v3 it also rejects a `font-size` that does not come from the scale in **every** stylesheet, not only the library four — the permitted shapes are `var(--font-size-*)` and `min(var(--font-size-*), Nvw)`, the measured cap that stops a long Georgian compound breaking mid-word. Five stylesheets are exempt while they await the Phase 1 migration and are named in `stylelint.config.mjs`; that list only shrinks. Raw font weights and spacing lengths are still rejected in the library stylesheets (`components.css`, `globals.css`, `navigation.css`, `footer.css`, `design-system.css`). ESLint rejects hex literals and colour-function strings in TypeScript outside `tokens.ts`.
 

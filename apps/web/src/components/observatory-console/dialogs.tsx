@@ -33,7 +33,7 @@ export type Frame = {
   provenance: string;
 };
 
-function Modal({ width, head, tone = '#8ab8ff', night, onClose, labelledBy, children }: {
+function Modal({ width, head, tone = '#ff8090', night, onClose, labelledBy, children }: {
   width: number; head: ReactNode; tone?: string; night: boolean; onClose: () => void; labelledBy: string; children: ReactNode;
 }) {
   const t = useCopy();
@@ -157,7 +157,7 @@ export function TargetsDialog({ night, station, tonightId, onPoint, onClose }: {
                   </span>
                   <span className="sdo-tgt__col sdo-tgt__curve">
                     <span className="sdo-lbl">{t.targets.tonight}</span>
-                    <AltCurve path={paths.get(target.id) ?? []} span={span} now={at} color={low ? '#ff7a6b' : '#8ab8ff'} />
+                    <AltCurve path={paths.get(target.id) ?? []} span={span} now={at} color={low ? '#ff7a6b' : '#ff8090'} />
                   </span>
                   <span className="sdo-tgt__now">
                     <span className="sdo-lbl">{t.targets.now}</span>
@@ -272,7 +272,7 @@ export function CaptureDialog({ night, frame, onClose }: { night: boolean; frame
         </div>
         <div className="sdo-capture__info">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span className="sdo-lbl" style={{ color: '#8ab8ff' }}>{frame.stationName}</span>
+            <span className="sdo-lbl" style={{ color: '#ff8090' }}>{frame.stationName}</span>
             <h2 id="sdo-capture-t">{frame.targetName}</h2>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -285,7 +285,7 @@ export function CaptureDialog({ night, frame, onClose }: { night: boolean; frame
           <svg width="100%" height="54" viewBox="0 0 400 54" preserveAspectRatio="none" role="img" aria-label={t.capture.histogram}>
             <defs>
               <linearGradient id="sdo-hg" x1="0" x2="1">
-                <stop offset="0" stopColor="#3d8bfd" />
+                <stop offset="0" stopColor="#e1263f" />
                 <stop offset="1" stopColor="#e2b85a" />
               </linearGradient>
             </defs>

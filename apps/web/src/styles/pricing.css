@@ -33,9 +33,7 @@
   font-family: var(--font-headline);
   font-size: var(--font-size-hero);
   font-weight: var(--font-weight-headline);
-  letter-spacing: var(--tracking-headline);
   line-height: var(--leading-display);
-  text-transform: uppercase;
   font-synthesis: none;
 }
 
@@ -109,8 +107,6 @@
   font-family: var(--font-headline);
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-headline);
-  letter-spacing: var(--tracking-headline);
-  text-transform: uppercase;
 }
 
 .pricing-times {
@@ -221,9 +217,7 @@
   /* A card is a third of the page: the display size ran past its edge. */
   font-size: var(--font-size-hero);
   font-weight: var(--font-weight-headline);
-  letter-spacing: var(--tracking-headline);
   line-height: var(--leading-display);
-  text-transform: uppercase;
   font-synthesis: none;
 }
 
@@ -326,8 +320,6 @@
   font-family: var(--font-headline);
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-headline);
-  letter-spacing: var(--tracking-headline);
-  text-transform: uppercase;
 }
 
 .pricing-tiers small {

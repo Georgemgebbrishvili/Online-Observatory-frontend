@@ -22,15 +22,19 @@ export type BoardCopy = {
   free: string;
   goToSession: string;
   siteTime: string;
-  timeline: {
-    label: string;
-    sunset: string;
-    dusk: string;
-    midnight: string;
-    dawn: string;
-    sunrise: string;
-    moon: string;
-  };
+  /** ADR-074: the time grid's prompt, as the run is chosen. */
+  hint: { start: string; end: string; again: string };
+  /** The night's dark hours, above the grid. */
+  dark: (from: string, to: string) => string;
+  grid: string;
+  /** Why a run stopped short of the tap. */
+  clipped: (time: string) => string;
+  longest: string;
+  /** A replacement keeps its length: a start without room for it. */
+  noRoom: (length: string) => string;
+  checking: string;
+  stretchGone: string;
+  quoteFailed: string;
   /** The target card's chip: one short line; the full reason stays in its name. */
   upShort: string;
   needsShort: (minutes: number) => string;
@@ -50,7 +54,6 @@ export type BoardCopy = {
   nextClear: string;
   /** ADR-072: how long the session runs, any quarter hour from 15 minutes to 4 hours. */
   length: string;
-  lengthAside: string;
   duration: (minutes: number) => string;
   shorter: string;
   longer: string;
@@ -60,9 +63,8 @@ export type BoardCopy = {
 
 export const boardCopy: Record<"en" | "ka", BoardCopy> = {
   en: {
-    lede: "Pick a night, how long, and a start. The telescope is yours for that time.",
+    lede: "Pick a night, tap a start, then tap where it ends. The telescope is yours for that time.",
     length: "Length",
-    lengthAside: "15 min to 4 h",
     duration: (minutes) => {
       const hours = Math.floor(minutes / 60);
       const rest = minutes % 60;
@@ -108,15 +110,19 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     free: "Free",
     goToSession: "Go to your session",
     siteTime: "Observatory time",
-    timeline: {
-      label: "The night at the observatory",
-      sunset: "Sunset",
-      dusk: "Dark",
-      midnight: "Midnight",
-      dawn: "Dawn",
-      sunrise: "Sunrise",
-      moon: "Moon up",
+    hint: {
+      start: "Tap a start time.",
+      end: "Now tap where it ends, up to 4 hours later.",
+      again: "Tap a new start to change it, or use − and +.",
     },
+    dark: (from, to) => `Dark ${from} – ${to}`,
+    grid: "Observing time",
+    clipped: (time) => `It ends at ${time}: the time after it is taken.`,
+    longest: "4 hours is the longest session.",
+    noRoom: (length) => `There is no free ${length} from that start.`,
+    checking: "Checking…",
+    stretchGone: "That time is no longer free. Pick another start.",
+    quoteFailed: "Could not check that time. Try again.",
     upShort: "Up all slot",
     needsShort: (minutes) => `Needs ${minutes} min`,
     reasonsShort: {
@@ -137,9 +143,8 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     illustrations: "Illustrations — not telescope output",
   },
   ka: {
-    lede: "აირჩიე ღამე, ხანგრძლივობა და დასაწყისი. ტელესკოპი ამ დროით შენია.",
+    lede: "აირჩიე ღამე, მონიშნე დასაწყისი, შემდეგ — დასასრული. ტელესკოპი ამ დროით შენია.",
     length: "ხანგრძლივობა",
-    lengthAside: "15 წთ-დან 4 სთ-მდე",
     duration: (minutes) => {
       const hours = Math.floor(minutes / 60);
       const rest = minutes % 60;
@@ -184,15 +189,19 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     free: "უფასო",
     goToSession: "შენს სეანსზე გადასვლა",
     siteTime: "ობსერვატორიის დრო",
-    timeline: {
-      label: "ღამე ობსერვატორიაში",
-      sunset: "მზის ჩასვლა",
-      dusk: "სიბნელე",
-      midnight: "შუაღამე",
-      dawn: "განთიადი",
-      sunrise: "მზის ამოსვლა",
-      moon: "მთვარე ცაზეა",
+    hint: {
+      start: "მონიშნე დაწყების დრო.",
+      end: "ახლა მონიშნე, სად მთავრდება — 4 საათამდე.",
+      again: "შესაცვლელად მონიშნე ახალი დასაწყისი, ან გამოიყენე − და +.",
     },
+    dark: (from, to) => `სიბნელე ${from} – ${to}`,
+    grid: "დაკვირვების დრო",
+    clipped: (time) => `მთავრდება ${time}-ზე: შემდეგი დრო დაკავებულია.`,
+    longest: "ყველაზე გრძელი სეანსი 4 საათია.",
+    noRoom: (length) => `ამ დასაწყისიდან თავისუფალი ${length} არ არის.`,
+    checking: "ვამოწმებთ…",
+    stretchGone: "ეს დრო უკვე დაკავებულია. აირჩიე სხვა დასაწყისი.",
+    quoteFailed: "დროის შემოწმება ვერ მოხერხდა. სცადე თავიდან.",
     upShort: "ჩანს",
     needsShort: (minutes) => `${minutes} წთ სჭირდება`,
     reasonsShort: {

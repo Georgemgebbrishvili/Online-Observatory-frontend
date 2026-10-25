@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BookingBoard } from "@/components/booking/booking-board";
 import { RescheduleClosed } from "@/components/booking/reschedule-closed";
 import { StatePanel } from "@/components/ui/state-panel";
-import { readBoard, sessionMinutes } from "@/features/booking/board";
+import { quarterHour, readBoard, sessionMinutes } from "@/features/booking/board";
 import { readReschedule } from "@/features/booking/reschedule";
 import { readPrizes } from "@/features/cards/read";
 import { isLocale } from "@/i18n/config";
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: BookPageProps): Promise<Metad
   return { title: copy.metadataTitle, description: copy.metadataDescription };
 }
 
-/** /app/book is the booking board (ADR-053 §7), one screen; the customer's nights are /app/bookings. */
+/** /app/book is the booking board (ADR-074), one screen; the customer's nights are /app/bookings. */
 export default async function BookPage({ params, searchParams }: BookPageProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
@@ -44,7 +44,8 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
   }
 
   const booking = reschedule.kind === "open" ? reschedule.booking : null;
-  // ADR-072: the length the address asks for; a replacement keeps its booking's own.
+  // ADR-072: the length the address asks for; a replacement keeps its booking's own. It
+  // sets what a first tap chooses; the board itself is the night's quarter hours (ADR-074).
   const minutes = booking ? booking.durationMinutes : sessionMinutes(length);
   const board =
     reschedule.kind === "unreachable"
@@ -54,7 +55,7 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
           undefined,
           booking?.observatoryId,
           typeof startAt === "string" ? startAt : undefined,
-          minutes,
+          quarterHour,
         );
   const copy = bookingCopy[locale];
 

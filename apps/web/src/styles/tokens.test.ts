@@ -143,21 +143,21 @@ function table() {
 }
 
 describe("design tokens", () => {
-  it("uses the ADR-052 ground, ink and colour roles, exactly", () => {
-    expect(token("night")).toEqual(parseHex("#0d0d0d"));
-    expect(token("surface-base")).toEqual(parseHex("#131313"));
-    expect(token("text-primary")).toEqual(parseHex("#f4f4f2"));
-    expect(token("text-secondary")).toEqual(parseHex("#b8b8b4"));
-    expect(token("text-tertiary")).toEqual(parseHex("#969692"));
-    expect(token("accent")).toEqual(parseHex("#e3482c"));
-    expect(token("accent-hover")).toEqual(parseHex("#f06a45"));
-    expect(token("accent-ink")).toEqual(parseHex("#f0785a"));
-    expect(token("action")).toEqual(parseHex("#c8392a"));
+  it("uses the ADR-074 ground, ink and colour roles, exactly", () => {
+    expect(token("night")).toEqual(parseHex("#14070b"));
+    expect(token("surface-base")).toEqual(parseHex("#0f0408"));
+    expect(token("text-primary")).toEqual(parseHex("#fbf3f2"));
+    expect(token("text-secondary")).toEqual(parseHex("#dcc4c7"));
+    expect(token("text-tertiary")).toEqual(parseHex("#b89ea2"));
+    expect(token("accent")).toEqual(parseHex("#e1263f"));
+    expect(token("accent-hover")).toEqual(parseHex("#f2475d"));
+    expect(token("accent-ink")).toEqual(parseHex("#ff8090"));
+    expect(token("action")).toEqual(parseHex("#c81d36"));
     expect(token("on-action")).toEqual(parseHex("#ffffff"));
     expect(token("live")).toEqual(parseHex("#2ecc71"));
     expect(token("simulated")).toEqual(parseHex("#e2b85a"));
     expect(declarations.get("--color-surface-raised")).toBe(
-      "color-mix(in srgb, var(--st-cream) 6%, var(--st-canvas))",
+      "color-mix(in srgb, var(--st-red) 9%, var(--st-canvas))",
     );
     expect(declarations.get("--color-border-subtle")).toBe(
       "color-mix(in srgb, var(--st-rule) 12%, transparent)",
