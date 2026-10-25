@@ -27,7 +27,7 @@ async function forwardedCookies() {
 }
 
 /** A page waits this long for an answer, then renders its unavailable state. */
-export const platformTimeoutMs = 10_000;
+export const platformTimeoutMs = 4_000;
 
 /**
  * Server-side reads from the platform API, on the visitor's session. Mutations go
