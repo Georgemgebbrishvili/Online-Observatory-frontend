@@ -59,7 +59,8 @@
   align-content: start;
   gap: var(--space-5);
   overflow-y: auto;
-  padding: var(--space-4) var(--space-page) calc(var(--space-8) + env(safe-area-inset-bottom));
+  padding: var(--space-4) var(--space-page)
+    calc(var(--space-8) + env(safe-area-inset-bottom));
   background: var(--color-surface-base);
 }
 
