@@ -684,6 +684,7 @@ img.target-art {
 
 .board-sum .board-rows dd {
   margin: 0;
+  color: var(--color-on-paper);
   font-weight: var(--font-weight-semibold);
 }
 
