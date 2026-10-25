@@ -17,8 +17,9 @@
 }
 
 /*
- * ADR-074: pills. Geist 600 in sentence case, 50px tall; the filled one glossy crimson
- * with its halo, a lift on hover, a sheen across it, a press to .97.
+ * ADR-075: Skychaser's buttons. Oswald 600, 10px, 50px tall; the filled one the poster's
+ * vermilion with cream letters and a hard print shadow, a lift on hover, a sheen across
+ * it, a press to .97.
  */
 .button {
   position: relative;
@@ -33,11 +34,12 @@
   border-radius: var(--radius-control);
   cursor: pointer;
   font-family: var(--font-label);
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-label);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.005em;
+  letter-spacing: var(--tracking-label);
   line-height: 1.2;
   text-align: center;
+  text-transform: uppercase;
   transition:
     background-color var(--duration-state) var(--ease-sky),
     border-color var(--duration-state) var(--ease-sky),
@@ -85,9 +87,15 @@
 .button-primary {
   overflow: hidden;
   isolation: isolate;
-  background: var(--gradient-crimson);
-  box-shadow: var(--glow-action);
+  border-color: color-mix(in srgb, var(--color-gold) 45%, transparent);
+  background: var(--gradient-poster);
+  box-shadow: var(--shadow-poster);
   color: var(--color-on-action);
+  text-shadow: var(--text-shadow-poster);
+}
+
+.button-primary:hover:not(:disabled) {
+  background: var(--gradient-poster-hover);
 }
 
 .button-primary::after {
@@ -121,17 +129,7 @@
 
 .button-primary:disabled:not([aria-busy]) {
   background: var(--color-surface-raised);
-}
-
-/* ADR-074: the cream pill, for the second choice beside a crimson one. */
-.button-paper {
-  background: var(--color-paper);
-  box-shadow: var(--shadow-gloss);
-  color: var(--color-on-paper);
-}
-
-.button-paper:hover:not(:disabled) {
-  background: var(--color-text-primary);
+  text-shadow: none;
 }
 
 .button-secondary {
@@ -252,13 +250,14 @@
   font-family: var(--font-label);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .chip-selected {
-  border-color: transparent;
-  background: var(--gradient-crimson);
-  box-shadow: var(--shadow-crimson);
-  color: var(--color-on-action);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-muted);
+  color: var(--color-accent-ink);
 }
 
 .status-indicator {
@@ -395,13 +394,12 @@
   text-transform: uppercase;
 }
 
-/* ADR-074 panels: a wine gradient, a hairline, 24px, a soft drop and a lit top edge. */
+/* ADR-039 panels: plate, strong rule, 14px. Depth from the plate and the border only. */
 .card,
 .surface-panel {
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
-  background: var(--gradient-panel);
-  box-shadow: var(--shadow-raised);
+  background: var(--color-surface-raised);
 }
 
 .card {
@@ -820,6 +818,8 @@
   font-family: var(--font-label);
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .tab:hover {

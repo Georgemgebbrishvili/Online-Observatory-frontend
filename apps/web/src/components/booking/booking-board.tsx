@@ -72,6 +72,9 @@ const QUARTER_MS = QUARTER * 60_000;
 /** ADR-072: a session runs 15 minutes to 4 hours. */
 const MAX_CELLS = 240 / QUARTER;
 
+/** ADR-075: the lengths a session card offers at a tap, beside the stepper. */
+const QUICK_LENGTHS = [30, 60, 120, 240];
+
 /** ADR-068: a forecast clear enough to call a start "clear". */
 const CLEAR_CLOUD_PERCENT = 30;
 
@@ -84,11 +87,25 @@ function bookable({ target, visibility }: SlotTarget, durationMinutes: number) {
   return visibility.observable && target.expectedMissionMinutes <= durationMinutes;
 }
 
+/** A step's heading, numbered as the poster numbers its chapters: 01, 02, 03. */
+function StepTitle({ step, title }: { step: number; title: string }) {
+  return (
+    <h2>
+      <span className="board-step-no" aria-hidden="true">
+        {String(step).padStart(2, "0")}
+      </span>
+      {title}
+    </h2>
+  );
+}
+
 function Section({
+  step,
   title,
   aside,
   children,
 }: {
+  step: number;
   title: string;
   aside?: ReactNode;
   children: ReactNode;
@@ -96,7 +113,7 @@ function Section({
   return (
     <section className="board-section">
       <header className="board-step">
-        <h2>{title}</h2>
+        <StepTitle step={step} title={title} />
         {aside && <span className="board-aside">{aside}</span>}
       </header>
       {children}
@@ -212,25 +229,40 @@ export function BookingBoard({
     return last;
   };
 
-  // The run chosen on arrival: the address's start, or (replacing a weather loss) the
-  // next clear start with room for the booking's length (ADR-068).
-  const [arrival] = useState<{ night: string; run: Run | null }>(() => {
-    for (const night of nights) {
-      for (let index = 0; index < night.slots.length; index += 1) {
-        const slot = night.slots[index];
-        const named = initialStartAt
-          ? slot.startAt === initialStartAt
-          : !!reschedule &&
-            slot.forecast.status === "KNOWN" &&
-            slot.forecast.cloudCoverPercent !== null &&
-            slot.forecast.cloudCoverPercent <= CLEAR_CLOUD_PERCENT;
-        if (!named || !open(slot)) continue;
-        const to = index + firstCells - 1;
-        if (reach(night.slots, index) < to) {
-          if (initialStartAt) break;
-          continue;
+  // The run chosen on arrival (ADR-075: a board that opens ready to book): the address's
+  // start; else the next clear start with room for the length (ADR-068), else the next
+  // free one. One press books it; any tap changes it.
+  const [arrival] = useState<{
+    night: string;
+    run: Run | null;
+    kind: "named" | "clear" | "free" | null;
+  }>(() => {
+    const fits = (slots: Slot[], index: number) =>
+      open(slots[index]) && reach(slots, index) >= index + firstCells - 1;
+    const runAt = (index: number): Run => ({
+      from: index,
+      to: index + firstCells - 1,
+      pending: false,
+    });
+    if (initialStartAt) {
+      for (const night of nights) {
+        const index = night.slots.findIndex((slot) => slot.startAt === initialStartAt);
+        if (index >= 0 && fits(night.slots, index)) {
+          return { night: night.date, run: runAt(index), kind: "named" };
         }
-        return { night: night.date, run: { from: index, to, pending: false } };
+      }
+    } else {
+      const clear = (slot: Slot) =>
+        slot.forecast.status === "KNOWN" &&
+        slot.forecast.cloudCoverPercent !== null &&
+        slot.forecast.cloudCoverPercent <= CLEAR_CLOUD_PERCENT;
+      for (const kind of ["clear", "free"] as const) {
+        for (const night of nights) {
+          const index = night.slots.findIndex(
+            (slot, at) => (kind === "free" || clear(slot)) && fits(night.slots, at),
+          );
+          if (index >= 0) return { night: night.date, run: runAt(index), kind };
+        }
       }
     }
     return {
@@ -239,9 +271,9 @@ export function BookingBoard({
         nights[0]?.date ??
         "",
       run: null,
+      kind: null,
     };
   });
-  const nextClear = reschedule && !initialStartAt && arrival.run ? arrival.night : null;
 
   const [night, setNight] = useState(arrival.night);
   const [run, setRun] = useState<Run | null>(arrival.run);
@@ -421,17 +453,19 @@ export function BookingBoard({
     const to = Math.min(index, reach(slots, run.from));
     if (to !== run.to || run.pending) setRun({ from: run.from, to, pending: false });
   };
+  // Moves the end by quarter hours; past what is free it stops there and says why.
   const nudge = (cells: number) => {
     if (!run || fixedCells !== null) return;
     settle();
-    const to = Math.max(run.from, run.to + cells);
-    if (to > run.to && to > reach(slots, run.from)) {
+    const wanted = Math.max(run.from, run.to + cells);
+    const last = reach(slots, run.from);
+    const to = Math.min(wanted, last);
+    if (wanted > last) {
       setNotice(
-        to - run.from >= MAX_CELLS
+        wanted - run.from >= MAX_CELLS
           ? copy.longest
-          : copy.clipped(clock(Date.parse(slots[run.to].startAt) + QUARTER_MS)),
+          : copy.clipped(clock(Date.parse(slots[last].startAt) + QUARTER_MS)),
       );
-      return;
     }
     setRun({ from: run.from, to, pending: false });
   };
@@ -590,6 +624,9 @@ export function BookingBoard({
         <p className="board-lede">{reschedule ? replacing.replacing : copy.lede}</p>
       </header>
 
+      <header className="board-step board-step-bare">
+        <StepTitle step={1} title={copy.night} />
+      </header>
       <NightStrip
         nights={nights.map((candidate) => ({
           date: candidate.date,
@@ -607,6 +644,7 @@ export function BookingBoard({
       <div className="board-grid">
         <div className="board-main">
           <Section
+            step={2}
             title={current ? current.label.long : copy.start}
             aside={
               <>
@@ -640,6 +678,7 @@ export function BookingBoard({
           </Section>
 
           <Section
+            step={3}
             title={copy.target}
             aside={
               !chosen
@@ -786,6 +825,20 @@ export function BookingBoard({
           ) : (
             run && <p className="board-length-fixed">{copy.duration(minutes)}</p>
           )}
+          {run && fixedCells === null && (
+            <div className="board-quick" role="group" aria-label={copy.quickLengths}>
+              {QUICK_LENGTHS.map((length) => (
+                <button
+                  key={length}
+                  type="button"
+                  aria-pressed={minutes === length}
+                  onClick={() => nudge(run.from + length / QUARTER - 1 - run.to)}
+                >
+                  {copy.duration(length)}
+                </button>
+              ))}
+            </div>
+          )}
 
           <dl className="board-rows">
             <div>
@@ -812,9 +865,20 @@ export function BookingBoard({
               {copy.waitlist.yours(clock(held.get(chosen.startAt)!))}
             </p>
           )}
-          {nextClear && run && night === nextClear && arrival.run?.from === run.from && (
-            <p className="board-caption">{copy.nextClear}</p>
-          )}
+          {(arrival.kind === "clear" || arrival.kind === "free") &&
+            run &&
+            night === arrival.night &&
+            arrival.run?.from === run.from &&
+            arrival.run.to === run.to && (
+              <p className="board-caption">
+                {reschedule && arrival.kind === "clear"
+                  ? copy.nextClear
+                  : copy.picked(
+                      arrival.kind === "clear",
+                      copy.duration(firstCells * QUARTER),
+                    )}
+              </p>
+            )}
           {waiting && <p className="board-caption">{copy.waitlist.taken}</p>}
           {stale && <p className="board-caption">{copy.stretchGone}</p>}
           {quoteFailed && <p className="board-caption">{copy.quoteFailed}</p>}

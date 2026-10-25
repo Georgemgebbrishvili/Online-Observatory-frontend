@@ -25,7 +25,7 @@ export function Spark({ values, color, w = 124, h = 26, lo, hi }: { values: numb
 }
 
 /** Altitude from dusk to dawn, the horizon dashed, now as an amber line. */
-export function AltCurve({ path, span, now, color = '#ff8090', w = 150, h = 34 }: { path: PathPoint[]; span: Span; now: number; color?: string; w?: number; h?: number }) {
+export function AltCurve({ path, span, now, color = '#f0785a', w = 150, h = 34 }: { path: PathPoint[]; span: Span; now: number; color?: string; w?: number; h?: number }) {
   const x = (t: number) => ((t - span.start) / (span.end - span.start)) * w;
   const y = (alt: number) => h - 3 - (Math.max(-8, alt) / 90) * (h - 6);
   const nowX = Math.min(w, Math.max(0, x(now)));
@@ -52,7 +52,7 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
   const ticks = Array.from({ length: 72 }, (_, i) => {
     const a = (i * 5 * Math.PI) / 180;
     const L = i % 18 === 0 ? 6 : 3;
-    return <line key={i} x1={px(70 + R * Math.sin(a))} y1={px(70 - R * Math.cos(a))} x2={px(70 + (R - L) * Math.sin(a))} y2={px(70 - (R - L) * Math.cos(a))} stroke="rgba(243, 246, 251, .35)" strokeWidth=".7" />;
+    return <line key={i} x1={px(70 + R * Math.sin(a))} y1={px(70 - R * Math.cos(a))} x2={px(70 + (R - L) * Math.sin(a))} y2={px(70 - (R - L) * Math.cos(a))} stroke="rgba(244, 244, 242, .35)" strokeWidth=".7" />;
   });
   const up = path?.filter((p) => p.altitude > 0) ?? [];
   const at = pointing ? polar(pointing.altitude, pointing.azimuth) : null;
@@ -60,7 +60,7 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
     <svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="Pointing: altitude and azimuth">
       <defs>
         <radialGradient id="sdo-dg" cx=".5" cy=".5" r=".5">
-          <stop offset="0" stopColor="#2a0c14" />
+          <stop offset="0" stopColor="#141418" />
           <stop offset="1" stopColor="#050b18" />
         </radialGradient>
       </defs>
@@ -72,13 +72,13 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
       {(['N', 'E', 'S', 'W'] as const).map((t, i) => {
         const a = (i * 90 * Math.PI) / 180;
         return (
-          <text key={t} x={px(70 + (R - 13) * Math.sin(a))} y={px(70 - (R - 13) * Math.cos(a))} textAnchor="middle" dominantBaseline="middle" fill={t === 'N' ? '#fc3d21' : 'rgba(243, 246, 251, .6)'} style={{ font: '600 10px var(--o-cond)' }}>
+          <text key={t} x={px(70 + (R - 13) * Math.sin(a))} y={px(70 - (R - 13) * Math.cos(a))} textAnchor="middle" dominantBaseline="middle" fill={t === 'N' ? '#fc3d21' : 'rgba(244, 244, 242, .6)'} style={{ font: '600 10px var(--o-cond)' }}>
             {t}
           </text>
         );
       })}
       {up.length > 1 && (
-        <polyline points={up.map((p) => polar(p.altitude, p.azimuth).map((v) => v.toFixed(1)).join(',')).join(' ')} fill="none" stroke="#ff8090" strokeWidth="1.3" strokeDasharray="3 3" />
+        <polyline points={up.map((p) => polar(p.altitude, p.azimuth).map((v) => v.toFixed(1)).join(',')).join(' ')} fill="none" stroke="#f0785a" strokeWidth="1.3" strokeDasharray="3 3" />
       )}
       {at && (
         <>
@@ -87,7 +87,7 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
           <circle cx={at[0]} cy={at[1]} r="1.8" fill="#e2b85a" />
         </>
       )}
-      <circle cx="70" cy="70" r="1.6" fill="rgba(243, 246, 251, .8)" />
+      <circle cx="70" cy="70" r="1.6" fill="rgba(244, 244, 242, .8)" />
     </svg>
   );
 }

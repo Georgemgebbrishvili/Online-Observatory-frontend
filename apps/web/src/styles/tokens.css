@@ -1,5 +1,5 @@
 /*
- * Design tokens — ADR-074 Crimson (2026-10-25) over ADR-052's roles, and the spacing,
+ * Design tokens — the Skychaser visuals, ADR-052 (2026-10-11), over the spacing,
  * breakpoint and motion rules of docs/plan/03-design-system.md.
  * The only file in apps/web/src allowed to hold a colour literal (stylelint enforces it).
  * tokens.ts mirrors the palette for surfaces CSS cannot reach; a test keeps them equal.
@@ -8,26 +8,26 @@
   /* ADR-052 palette, from the Skychaser site's skychaser-theme.css and its console. */
   --st-black: #000000;
   --st-white: #ffffff;
-  --st-canvas: #14070b;
-  --st-deep: #0f0408;
-  --st-bar: #0b0306;
-  --st-monolith-top: #2c0c15;
-  --st-monolith-bottom: #13050a;
-  --st-cream: #f7ece4;
-  --st-rule: #f5d9de;
-  --st-ink: #fbf3f2;
-  --st-ink-2: #dcc4c7;
-  --st-ink-3: #b89ea2;
-  --st-ink-4: #7d6468;
-  --st-ink-small: #c7aeb2;
-  --st-red: #e1263f;
-  --st-red-hi: #f2475d;
-  --st-red-ink: #ff8090;
-  --st-red-fill: #c81d36;
-  --st-red-deep: #7a0b1e;
+  --st-canvas: #0d0d0d;
+  --st-deep: #131313;
+  --st-bar: #050507;
+  --st-monolith-top: #121218;
+  --st-monolith-bottom: #060609;
+  --st-cream: #f4e8cc;
+  --st-rule: #f1e6cf;
+  --st-ink: #f4f4f2;
+  --st-ink-2: #b8b8b4;
+  --st-ink-3: #969692;
+  --st-ink-4: #73736f;
+  --st-ink-small: #adada8;
+  --st-red: #e3482c;
+  --st-red-hi: #f06a45;
+  --st-red-ink: #f0785a;
+  --st-red-fill: #c8392a;
+  --st-red-deep: #8f1f16;
   --st-gold: #e2b85a;
   --st-green: #2ecc71;
-  --st-error: #ffa07a;
+  --st-error: #ff7a6b;
   --st-sun-1: #fff4d8;
   --st-sun-2: #f0c75e;
   --st-sun-3: #e8893a;
@@ -35,10 +35,15 @@
   --st-sun-5: #8f1f16;
   --st-sky-blue: #4c8dff;
   --st-sky-violet: #a66bff;
-  --st-paper-ink: #2a0d14;
-  /* ADR-074: the wine of a raised card, and the paper card's quiet ink. */
-  --st-wine: #3d0e19;
-  --st-paper-ink-2: #6b4850;
+  --st-paper-ink: #2b1b12;
+  /* ADR-075: the Skychaser poster's vermilion button, cream letters on it, its print
+     shadow; and the card stock the session ticket is printed on. */
+  --st-gd-hi: #ee6a3c;
+  --st-gd-mid: #b8321f;
+  --st-gd-deep: #7d1d12;
+  --st-gd-ink: #fff1d6;
+  --st-paper: #efe3c4;
+  --st-paper-muted: #7a5a44;
   /* The mark's cream (the wordmark takes it too); its core is drawn in logo-mark.svg. */
   --st-mark: #f6f1e7;
   /* The core's sunset, as the kit's logo-mark.svg draws it (the social card redraws it). */
@@ -72,8 +77,8 @@
    */
   --color-night: var(--st-canvas);
   --color-surface-base: var(--st-deep);
-  --color-surface-raised: color-mix(in srgb, var(--st-red) 9%, var(--st-canvas));
-  --color-surface-hover: color-mix(in srgb, var(--st-red) 15%, var(--st-canvas));
+  --color-surface-raised: color-mix(in srgb, var(--st-cream) 6%, var(--st-canvas));
+  --color-surface-hover: color-mix(in srgb, var(--st-cream) 11%, var(--st-canvas));
   /* The glass of the header and the phone tab bar, and the console's ground. */
   --color-bar: color-mix(in srgb, var(--st-bar) 82%, transparent);
   --color-glass: color-mix(in srgb, var(--st-bar) 78%, transparent);
@@ -107,7 +112,7 @@
   --color-accent-ink: var(--st-red-ink);
   --color-on-accent: var(--st-white);
   --color-action: var(--st-red-fill);
-  --color-on-action: var(--st-white);
+  --color-on-action: var(--st-gd-ink);
   --gradient-accent: radial-gradient(
     circle at 50% 38%,
     var(--st-red-hi),
@@ -116,33 +121,35 @@
   );
 
   /*
-   * ADR-074 Crimson: the glossy red of a chosen or primary thing, the wine of a raised
-   * card, and the cream paper card that carries a summary and its one button.
+   * ADR-075: Skychaser's poster button — vermilion, cream letters, a hard print shadow
+   * beneath — for a filled button and whatever is chosen; and the cream ticket a session
+   * is summed up on.
    */
-  --gradient-crimson: linear-gradient(
-    160deg,
-    var(--st-red-hi) 0%,
-    var(--st-red-fill) 48%,
-    var(--st-red-deep) 100%
+  --gradient-poster: linear-gradient(
+    180deg,
+    var(--st-sun-4) 0%,
+    var(--st-red-fill) 50%,
+    var(--st-gd-mid) 100%
   );
-  --gradient-panel: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--st-wine) 78%, var(--st-canvas)) 0%,
-    color-mix(in srgb, var(--st-wine) 34%, var(--st-canvas)) 100%
+  --gradient-poster-hover: linear-gradient(
+    180deg,
+    var(--st-gd-hi) 0%,
+    var(--st-sun-4) 50%,
+    var(--st-red-fill) 100%
   );
-  --color-paper: var(--st-cream);
-  --color-on-paper-2: var(--st-paper-ink-2);
-  --color-paper-rule: color-mix(in srgb, var(--st-paper-ink) 12%, transparent);
-  --shadow-raised:
-    0 24px 48px -28px color-mix(in srgb, var(--st-black) 85%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--st-white) 7%, transparent);
-  --shadow-gloss:
-    inset 0 1px 0 color-mix(in srgb, var(--st-white) 38%, transparent),
-    inset 0 -10px 18px color-mix(in srgb, var(--st-black) 16%, transparent);
-  --shadow-crimson:
-    0 14px 30px -14px color-mix(in srgb, var(--st-red) 80%, transparent),
-    var(--shadow-gloss);
+  --shadow-poster:
+    0 3px 0 var(--st-gd-deep),
+    0 12px 30px -8px color-mix(in srgb, var(--st-sun-4) 60%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--st-sun-1) 40%, transparent);
+  --shadow-gloss: inset 0 1px 0 color-mix(in srgb, var(--st-sun-1) 40%, transparent);
+  --shadow-raised: var(--shadow-monolith);
   --shadow-paper: 0 30px 60px -30px color-mix(in srgb, var(--st-black) 90%, transparent);
+  --text-shadow-poster: 0 1px 1px color-mix(in srgb, var(--st-gd-deep) 60%, transparent);
+  --color-paper: var(--st-paper);
+  --color-on-paper-2: var(--st-paper-muted);
+  /* Red words on the cream stock: the poster's deeper red, which reads there (4.7:1). */
+  --color-paper-accent: var(--st-gd-mid);
+  --color-paper-rule: color-mix(in srgb, var(--st-paper-ink) 14%, transparent);
 
   /* Green for LIVE; gold for simulated, done and "go". */
   --color-live: var(--st-green);
@@ -235,31 +242,23 @@
   --color-scene-star: var(--st-ink);
   /* A monolith's four corner ticks (the Skychaser console's), for any panel to wear. */
   --gradient-ticks:
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 14px 1px
-      no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 1px 14px
-      no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 14px 1px
-      no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 1px 14px
-      no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 14px 1px
-      no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 1px 14px
-      no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 14px
-      1px no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 1px
-      14px no-repeat;
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 14px 1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 1px 14px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 14px 1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 1px 14px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 14px 1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 1px 14px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 14px 1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 1px 14px no-repeat;
   --gradient-monolith: linear-gradient(
     180deg,
     color-mix(in srgb, var(--st-monolith-top) 90%, transparent),
     color-mix(in srgb, var(--st-monolith-bottom) 94%, transparent)
   );
   /* The site backdrop's three lights: blue and violet above, red below. */
-  --color-sky-blue: color-mix(in srgb, var(--st-red) 16%, transparent);
-  --color-sky-violet: color-mix(in srgb, var(--st-wine) 60%, transparent);
-  --color-sky-red: color-mix(in srgb, var(--st-red) 26%, transparent);
+  --color-sky-blue: color-mix(in srgb, var(--st-sky-blue) 10%, transparent);
+  --color-sky-violet: color-mix(in srgb, var(--st-sky-violet) 7%, transparent);
+  --color-sky-red: color-mix(in srgb, var(--st-red) 20%, transparent);
   --color-star-warm: color-mix(in srgb, var(--st-sun-1) 75%, transparent);
   --color-star-cool: color-mix(in srgb, var(--st-white) 75%, transparent);
   /*
@@ -268,49 +267,17 @@
    * grain's alpha (.55 × the source's .06 layer opacity) is baked into its matrix.
    */
   --gradient-stars:
-    radial-gradient(
-      1.2px 1.2px at 23px 41px,
-      color-mix(in srgb, var(--st-white) 90%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      1px 1px at 131px 187px,
-      color-mix(in srgb, var(--st-white) 70%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      1.5px 1.5px at 207px 73px,
-      color-mix(in srgb, var(--st-sun-1) 75%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      1px 1px at 61px 223px,
-      color-mix(in srgb, var(--st-blush) 75%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      1px 1px at 283px 131px,
-      color-mix(in srgb, var(--st-white) 60%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      1px 1px at 167px 17px,
-      color-mix(in srgb, var(--st-white) 60%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      1.5px 1.5px at 311px 263px,
-      color-mix(in srgb, var(--st-blush) 60%, transparent),
-      transparent 60%
-    );
+    radial-gradient(1.2px 1.2px at 23px 41px, color-mix(in srgb, var(--st-white) 90%, transparent), transparent 60%),
+    radial-gradient(1px 1px at 131px 187px, color-mix(in srgb, var(--st-white) 70%, transparent), transparent 60%),
+    radial-gradient(1.5px 1.5px at 207px 73px, color-mix(in srgb, var(--st-sun-1) 75%, transparent), transparent 60%),
+    radial-gradient(1px 1px at 61px 223px, color-mix(in srgb, var(--st-blush) 75%, transparent), transparent 60%),
+    radial-gradient(1px 1px at 283px 131px, color-mix(in srgb, var(--st-white) 60%, transparent), transparent 60%),
+    radial-gradient(1px 1px at 167px 17px, color-mix(in srgb, var(--st-white) 60%, transparent), transparent 60%),
+    radial-gradient(1.5px 1.5px at 311px 263px, color-mix(in srgb, var(--st-blush) 60%, transparent), transparent 60%);
   --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.93 0 0 0 0 0.8 0 0 0 0.033 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   /* The homepage sky's own vignette and grain, darker at its top and foot. */
   --gradient-sky-vignette:
-    radial-gradient(
-      90% 80% at 50% 50%,
-      transparent 50%,
-      color-mix(in srgb, var(--st-black) 50%, transparent) 100%
-    ),
+    radial-gradient(90% 80% at 50% 50%, transparent 50%, color-mix(in srgb, var(--st-black) 50%, transparent) 100%),
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--st-black) 25%, transparent),
@@ -327,42 +294,42 @@
   );
 
   /*
-   * The live room's console (ADR-052 §8, recoloured by ADR-074): wine monoliths with
-   * corner ticks, crimson for the call to action and the current step, gold for anything
-   * done or live. Read by room-console.css and nothing else.
+   * The live room's console (ADR-052 §8): the Skychaser site's /node console — near-black
+   * monoliths with corner ticks, red for the call to action and the current step, gold
+   * for anything done or live. Read by room-console.css and nothing else.
    */
-  --room-ground: #0b0306;
-  --room-ink: #fbf3f2;
-  --room-ink-2: #dcc4c7;
-  --room-ink-3: #c7aeb2;
-  --room-copper: #e1263f;
-  --room-copper-ink: #ff8090;
-  --room-amber: #e1263f;
+  --room-ground: #050507;
+  --room-ink: #f4f4f2;
+  --room-ink-2: #b8b8b4;
+  --room-ink-3: #adada8;
+  --room-copper: #e3482c;
+  --room-copper-ink: #f0785a;
+  --room-amber: #e3482c;
   --room-gold: #e2b85a;
-  --room-red: #ffa07a;
+  --room-red: #ff7a6b;
   --room-warm: #ffffff;
-  --room-blue: #e1263f;
-  --room-violet: #7a0b1e;
-  --room-panel: color-mix(in srgb, #2c0c15 90%, transparent);
-  --room-glass: color-mix(in srgb, #0b0306 78%, transparent);
-  --room-well: color-mix(in srgb, #0f0408 60%, transparent);
+  --room-blue: #4c8dff;
+  --room-violet: #a66bff;
+  --room-panel: color-mix(in srgb, #121218 90%, transparent);
+  --room-glass: color-mix(in srgb, #08080c 78%, transparent);
+  --room-well: color-mix(in srgb, #0b0b0b 60%, transparent);
   --room-border: color-mix(in srgb, var(--room-warm) 9%, transparent);
   --room-border-faint: color-mix(in srgb, var(--room-warm) 6%, transparent);
   --room-black: #000000;
   --room-white: #ffffff;
-  --room-stage: #080204;
-  --room-panel-top: #2c0c15;
-  --room-panel-bottom: #13050a;
-  --room-raise: #2a0d14;
-  --room-pad: #1f080e;
-  --room-pad-hi: #3a1019;
-  --room-dot: #1a070c;
-  --room-dot-done: #2a0d14;
-  --room-dial: #12050a;
-  --room-ink-warm: #fbf3f2;
-  --room-red-ink: #ffc2ca;
-  --room-core-hi: #f2475d;
-  --room-core-deep: #7a0b1e;
+  --room-stage: #040404;
+  --room-panel-top: #121218;
+  --room-panel-bottom: #060609;
+  --room-raise: #1f1f1f;
+  --room-pad: #161616;
+  --room-pad-hi: #2c2c34;
+  --room-dot: #121212;
+  --room-dot-done: #212121;
+  --room-dial: #0c0c10;
+  --room-ink-warm: #f4f4f2;
+  --room-red-ink: #ffb4aa;
+  --room-core-hi: #ff8f73;
+  --room-core-deep: #7a160c;
   --room-font-cond: var(--font-oswald), var(--font-noto-sans-georgian), sans-serif;
   /* A monolith's four corner ticks, drawn as backgrounds so any panel can wear them. */
   --room-ticks:
@@ -383,26 +350,25 @@
    * FiraGO for body and for the words in a data line. Families load in
    * app/[locale]/layout.tsx.
    */
-  --font-headline:
-    var(--font-geist), var(--font-noto-sans-georgian), system-ui, sans-serif;
+  --font-headline: var(--font-anton), var(--font-noto-sans-georgian), Impact, sans-serif;
   --font-title: var(--font-headline);
-  --font-label: var(--font-geist), var(--font-noto-sans-georgian), system-ui, sans-serif;
+  --font-label: var(--font-oswald), var(--font-noto-sans-georgian), sans-serif;
   --font-body: var(--font-geist), var(--font-firago), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), var(--font-firago), ui-monospace, monospace;
   /* The name every page stylesheet already uses for its headings. */
   --font-display: var(--font-headline);
 
-  /* ADR-074: Geist, bold and tight, in sentence case. Georgian takes 800 and 900. */
-  --font-weight-headline: var(--font-weight-bold);
-  --font-weight-title: var(--font-weight-bold);
-  --font-weight-label: var(--font-weight-semibold);
+  /* Anton has one weight. Georgian takes 800 and 900. */
+  --font-weight-headline: var(--font-weight-regular);
+  --font-weight-title: var(--font-weight-regular);
+  --font-weight-label: var(--font-weight-medium);
 
   /* Type scale. Anton is condensed, so the display steps run larger than a serif's. */
-  --font-size-display: clamp(2.5rem, 1.5rem + 4.2vw, 5.25rem);
-  --font-size-hero: clamp(2.25rem, 1.6rem + 2.6vw, 3.75rem);
-  --font-size-h1: clamp(1.75rem, 1.4rem + 1.2vw, 2.5rem);
-  --font-size-h2: 1.75rem;
-  --font-size-h3: 1.25rem;
+  --font-size-display: clamp(2.875rem, 1.6rem + 5.4vw, 6.75rem);
+  --font-size-hero: clamp(2.75rem, 1.9rem + 3.4vw, 4.5rem);
+  --font-size-h1: clamp(2rem, 1.6rem + 1.4vw, 2.75rem);
+  --font-size-h2: 2rem;
+  --font-size-h3: 1.375rem;
   --font-size-stat: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
   --font-size-body-lg: 1.125rem;
   --font-size-body: 1rem;
@@ -429,14 +395,14 @@
   --font-weight-bold: 700;
   --font-weight-heavy: 800;
   --font-weight-black: 900;
-  --leading-display: 1.08;
+  --leading-display: 1.02;
   --leading-heading: 1.25;
   --leading-body: 1.6;
   --leading-body-georgian: 1.7;
-  --tracking-headline: -0.025em;
-  --tracking-label: 0.06em;
-  --tracking-kicker: 0.14em;
-  --tracking-nav: 0;
+  --tracking-headline: 0.012em;
+  --tracking-label: 0.14em;
+  --tracking-kicker: 0.2em;
+  --tracking-nav: 0.12em;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -458,13 +424,13 @@
   --size-bar: 4.75rem;
 
   /* Panels 14px on pages, 12px in the console. */
-  --radius-small: 0.75rem;
-  /* ADR-074: buttons and chips are pills; panels 24px. */
-  --radius-control: 9999px;
-  --radius-medium: 1rem;
-  --radius-panel: 1.5rem;
+  --radius-small: 0.5rem;
+  /* ADR-075: buttons and chips 10px, as the Skychaser site has them now. */
+  --radius-control: 0.625rem;
+  --radius-medium: 0.625rem;
+  --radius-panel: 0.875rem;
   --radius-console: 0.75rem;
-  --radius-large: 2rem;
+  --radius-large: 1.5rem;
   --radius-full: 9999px;
   --icon-stroke: 1.5;
 
@@ -479,11 +445,10 @@
    * ADR-052 §4: the glows are Skychaser's, copied. The filled button's halo, the LIVE
    * pill and its LED, the red badge, the current step's pulse, the active tab's icon.
    */
-  --glow-action: var(--shadow-crimson);
+  --glow-action: var(--shadow-poster);
   --glow-live: 0 0 18px -6px color-mix(in srgb, var(--st-green) 60%, transparent);
   --glow-live-led:
-    0 0 0 3px color-mix(in srgb, var(--st-green) 20%, transparent),
-    0 0 10px var(--st-green);
+    0 0 0 3px color-mix(in srgb, var(--st-green) 20%, transparent), 0 0 10px var(--st-green);
   --glow-hold-led:
     0 0 0 3px color-mix(in srgb, var(--st-red) 14%, transparent), 0 0 12px var(--st-red);
   --glow-gold-led:
@@ -498,9 +463,7 @@
   --glow-pulse-high:
     0 0 0 9px color-mix(in srgb, var(--st-red) 6%, transparent),
     0 0 34px color-mix(in srgb, var(--st-red) 75%, transparent);
-  --glow-tab-icon: drop-shadow(
-    0 0 6px color-mix(in srgb, var(--st-red) 55%, transparent)
-  );
+  --glow-tab-icon: drop-shadow(0 0 6px color-mix(in srgb, var(--st-red) 55%, transparent));
   --glow-nav-current: 0 0 14px color-mix(in srgb, var(--st-white) 35%, transparent);
   --glow-sky: radial-gradient(
     circle,

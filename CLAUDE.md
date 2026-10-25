@@ -217,32 +217,31 @@ rejected after `expiresAt`, and rejected if the session is not the current owner
 
 ## Design and brand
 
-Source: ADR-074 (Crimson, 2026-10-25) over ADR-052's roles — the maintainer's crimson
-reference boards; the name stays Stellar (ADR-025). Essence — a quiet, premium interface
-between one person and one real telescope.
+Source: ADR-052, brought up to date by ADR-075 — every surface takes the maintainer's Skychaser visuals
+(`https://skychaser.io`, code in `~/Desktop/Skychaser/app`); the name stays Stellar
+(ADR-025). Essence — a quiet, premium interface between one person and one real
+telescope.
 
 Tagline: *The real sky, live.*
 Georgian: *შენი დრო ნამდვილ ცასთან.*
 
-Core colors (ADR-074): canvas `#14070b`, wells `#0f0408`, bars `#0b0306` · ink `#FBF3F2`,
-`#DCC4C7`, `#B89EA2` · crimson `#E1263F` for highlights, edges and glows · action fill
-`#C81D36` under white text · crimson text `#FF8090` · cream paper `#F7ECE4` with ink
-`#2A0D14` for a summary card · gold `#E2B85A` for simulated and done · green `#2ECC71` for
-LIVE. Panels are wine gradients at 24px; what is chosen or primary is glossy crimson;
-buttons and chips are pills. The observatory console and the live room take the same
-palette. Nothing reads below 13 px; pages carry no title block, and the header carries
+Core colors (ADR-052, restored by ADR-056): canvas `#0d0d0d`, bars `#050507` · ink
+`#F4F4F2`, `#B8B8B4`, `#969692` · accent red `#E3482C` for highlights and glows · action
+fill: Skychaser's poster button, vermilion `#D9442A`→`#B8321F` with cream `#FFF1D6` letters and a
+hard print shadow, buttons and chips at 10px; the session ticket on cream stock `#EFE3C4` · gold `#E2B85A` for simulated and done · green `#2ECC71`
+for LIVE · focus ring `#F0785A`. The observatory console and the live room take Skychaser's own console red on near-black
+(ADR-075). Nothing reads below 13 px; pages carry no title block, and the header carries
 Observatory, Book, Stellar Explorer, with only the language and a profile menu on its
-right (ADR-057). The lockup is the Skychaser kit's comet mark beside STELLAR in Archivo
-Expanded Black. Type: Geist for headings (bold, tight, sentence case) and body, JetBrains
-Mono for data; Oswald only for the console's condensed labels; Georgian in Noto Sans
-Georgian and FiraGO, never uppercased or tracked.
+right (ADR-057). The lockup is the Skychaser kit's comet mark beside
+STELLAR in Archivo Expanded Black. Type: Anton, Oswald, Geist, JetBrains Mono; Georgian in
+Noto Sans Georgian and FiraGO, never uppercased or tracked.
 
 The glow is Skychaser's (ADR-052 §4): filled buttons, the LIVE pill, the camera badge,
 the console's current step and the active tab glow; the header and phone tab bar are
-glass. Crimson text on the dark is `#FF8090`, never the edge crimson.
+glass. White text on `#E3482C` fails WCAG AA and is never used.
 
 Avoid: purple-nebula SaaS gradients, cartoon astronomy, military HUD decoration or
-NASA marks, stock space imagery presented as telescope output, any claim of
+NASA marks (ADR-055 takes NASA's colour, not its costume), stock space imagery presented as telescope output, any claim of
 Hubble/JWST-class or professional long-exposure results, and "NASA-cosplay" vocabulary.
 Skychaser's capsules and wallet are its content, not ours; its cards and rarities appear
 only in the weekly card draw, never sold (ADR-058).

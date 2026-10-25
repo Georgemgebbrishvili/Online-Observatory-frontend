@@ -24,7 +24,9 @@
   font-family: var(--font-headline);
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-headline);
+  letter-spacing: var(--tracking-headline);
   line-height: var(--leading-display);
+  text-transform: uppercase;
   font-synthesis: none;
 }
 

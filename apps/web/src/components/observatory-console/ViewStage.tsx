@@ -23,8 +23,8 @@ function Reticle() {
   return (
     <svg className="sdo-overlay" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <g fill="none">
-        <path d="M450 40v160M450 400v160M120 300h200M580 300h200" stroke="rgba(243, 246, 251, .22)" vectorEffect="non-scaling-stroke" />
-        <circle cx="450" cy="300" r="60" stroke="rgba(243, 246, 251, .16)" vectorEffect="non-scaling-stroke" />
+        <path d="M450 40v160M450 400v160M120 300h200M580 300h200" stroke="rgba(244, 244, 242, .22)" vectorEffect="non-scaling-stroke" />
+        <circle cx="450" cy="300" r="60" stroke="rgba(244, 244, 242, .16)" vectorEffect="non-scaling-stroke" />
       </g>
     </svg>
   );
@@ -92,7 +92,7 @@ function ViewStage(p: ViewStageProps) {
       <div className={`sdo-view__feed${p.stream ? ' is-stream' : ''}`} ref={p.viewRef}>{p.feed}</div>
       {p.reticle && p.feed && <Reticle />}
       <svg className="sdo-overlay" viewBox="0 0 900 600" preserveAspectRatio="none" aria-hidden="true">
-        <path d={RULER} stroke="rgba(243, 246, 251, .35)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <path d={RULER} stroke="rgba(244, 244, 242, .35)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
       </svg>
       {!p.stream && <div className="sdo-scan" />}
       <div className="sdo-vignette" />
@@ -117,9 +117,9 @@ function ViewStage(p: ViewStageProps) {
         )}
       </div>
       <ConditionAlerts alerts={p.alerts} />
-      <div className="sdo-hud sdo-glass sdo-hud--tl"><span style={{ color: '#ff8090' }}>{p.hudLive[0]}</span> · {p.hudLive[1]}<br />{p.hudLive[2]}</div>
+      <div className="sdo-hud sdo-glass sdo-hud--tl"><span style={{ color: '#f0785a' }}>{p.hudLive[0]}</span> · {p.hudLive[1]}<br />{p.hudLive[2]}</div>
       {p.hudTarget && (
-        <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#ff8090' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}{p.hudTarget[2] && <><br />{p.hudTarget[2]}</>}</div>
+        <div className="sdo-hud sdo-glass sdo-hud--bl"><span style={{ color: '#f0785a' }}>{p.hudTarget[0]}</span><br />{p.hudTarget[1]}{p.hudTarget[2] && <><br />{p.hudTarget[2]}</>}</div>
       )}
       <div className="sdo-hud sdo-glass sdo-hud--br"><span>{p.hudField[0]}</span><span className="sdo-hud__more"><br />{p.hudField[1]}</span></div>
       <p className="sdo-hud sdo-glass sdo-hud--bc sdo-caption">{p.caption}</p>

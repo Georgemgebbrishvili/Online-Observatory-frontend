@@ -676,3 +676,382 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/*
+ * ADR-075: the chapters under the cards, as Skychaser sets its own — a red kicker over an
+ * Anton title, plates on the dark, dotted data rows, and a last call in the poster red.
+ */
+.home-chapter {
+  border-top: 1px solid var(--color-line);
+}
+
+.home-chapter > * {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.home-chapter-head {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.home-chapter-head .kicker {
+  margin: 0;
+}
+
+.home-chapter-head h2 {
+  max-width: 22ch;
+  margin: 0;
+  font-size: var(--font-size-h1);
+}
+
+.home-chapter-lede {
+  max-width: 44rem;
+  margin: calc(-1 * var(--space-2)) 0 var(--space-6);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+  line-height: 1.55;
+}
+
+.home-chapter-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+}
+
+.home-caption {
+  margin: 0;
+  color: var(--color-text-small);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.4 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/* Tonight's targets: one plate each, the drawn object, its kind, its name, tonight. */
+.home-sky-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-sky-card {
+  display: grid;
+  gap: var(--space-1);
+  height: 100%;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    translate var(--duration-fast) var(--ease-standard);
+}
+
+.home-sky-card:hover {
+  border-color: var(--color-line-strong);
+  translate: 0 -2px;
+}
+
+.home-sky-card:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.home-sky-art {
+  display: grid;
+  width: 4.5rem;
+  aspect-ratio: 1;
+  margin-bottom: var(--space-2);
+  place-items: center;
+}
+
+.home-sky-type {
+  color: var(--color-text-small);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.home-sky-name {
+  font: var(--font-weight-headline) var(--font-size-h3) / 1.1 var(--font-headline);
+  letter-spacing: var(--tracking-headline);
+  text-transform: uppercase;
+}
+
+.home-sky-state {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.home-sky-card[data-up] .home-sky-state {
+  color: var(--color-live);
+}
+
+.home-sky-card:not([data-up]) .home-sky-art {
+  opacity: 0.55;
+}
+
+/* Booking: three numbered steps beside what lengths cost. */
+.home-book {
+  display: grid;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.home-book-steps {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.home-book-steps li {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.home-book-steps b {
+  display: block;
+  color: var(--color-text-primary);
+  font: var(--font-weight-label) var(--font-size-body) / 1.4 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.home-book-no {
+  color: var(--color-accent-ink);
+  font: var(--font-weight-regular) var(--font-size-h3) / 1.1 var(--font-headline);
+}
+
+.home-lengths {
+  padding: var(--space-6);
+  border-radius: var(--radius-large);
+  background: var(--color-paper);
+  box-shadow: var(--shadow-paper);
+  color: var(--color-on-paper);
+}
+
+.home-lengths .kicker {
+  margin: 0 0 var(--space-3);
+  color: var(--color-paper-accent);
+}
+
+.home-lengths dl {
+  margin: 0 0 var(--space-3);
+}
+
+.home-lengths dl > div {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.home-lengths dl > div::after {
+  order: 1;
+  flex: 1 1 auto;
+  border-bottom: 1px dotted color-mix(in srgb, var(--color-on-paper) 40%, transparent);
+  content: "";
+  transform: translateY(-4px);
+}
+
+.home-lengths dt {
+  font: var(--font-weight-label) var(--font-size-label) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.home-lengths dd {
+  order: 2;
+  margin: 0;
+  font: var(--font-weight-regular) var(--font-size-h3) / 1 var(--font-headline);
+}
+
+.home-lengths .home-caption {
+  color: var(--color-on-paper-2);
+}
+
+/* What a session shows: three plain plates. */
+.home-see {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-see li {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--gradient-ticks), var(--gradient-monolith);
+}
+
+.home-see h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-body);
+}
+
+.home-see p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+/* The other ways in: four doors. */
+.home-ways {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-ways a {
+  position: relative;
+  display: grid;
+  gap: var(--space-1);
+  height: 100%;
+  padding: var(--space-5) var(--space-10) var(--space-5) var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.home-ways a:hover {
+  border-color: var(--color-accent-border);
+}
+
+.home-ways a:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.home-ways b {
+  color: var(--color-text-primary);
+  font: var(--font-weight-label) var(--font-size-body) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.home-ways-go {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  color: var(--color-accent-ink);
+}
+
+/* Questions: one rule between each, a plus that turns. */
+.home-faq details {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.home-faq summary {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: var(--font-size-body-lg);
+  list-style: none;
+}
+
+.home-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.home-faq summary::after {
+  color: var(--color-accent-ink);
+  content: "+";
+  font-size: var(--font-size-h3);
+  transition: rotate var(--duration-fast) var(--ease-standard);
+}
+
+.home-faq details[open] summary::after {
+  rotate: 45deg;
+}
+
+.home-faq summary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.home-faq p {
+  max-width: 44rem;
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* The last call: the headline with its last word in red, and two buttons. */
+.home-closer {
+  border-top: 1px solid var(--color-line);
+  background: radial-gradient(70% 90% at 50% 120%, var(--color-sky-red), transparent 70%);
+  text-align: center;
+}
+
+.home-closer h2 {
+  max-width: none;
+  margin: 0 auto var(--space-3);
+  font-size: var(--font-size-hero);
+}
+
+.home-closer h2 span {
+  color: var(--color-accent);
+}
+
+.home-closer p {
+  margin: 0 0 var(--space-6);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+}
+
+.home-closer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+@media (--md) {
+  .home-book {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+
+  .home-see {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-ways {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (--lg) {
+  .home-ways {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-sky-card,
+  .home-faq summary::after {
+    transition: none;
+  }
+}

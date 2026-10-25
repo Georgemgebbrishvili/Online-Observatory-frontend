@@ -1,0 +1,76 @@
+/* The drawn objects (TargetArt): their colours and the plates feathered to a disc, for
+   every page that draws one. */
+
+.target-art {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* The drawn plates are squares of night: feathered to a disc. */
+img.target-art {
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(
+    circle closest-side,
+    var(--color-mask) 72%,
+    transparent 100%
+  );
+}
+
+/* The drawn objects' own colours. */
+.art-moon-hi {
+  stop-color: var(--color-moon-lit);
+}
+
+.art-moon-mid {
+  stop-color: var(--color-target-moon);
+}
+
+.art-moon-lo {
+  stop-color: var(--color-moon-dark);
+}
+
+.art-moon-maria {
+  fill: color-mix(in srgb, var(--color-moon-dark) 32%, transparent);
+}
+
+.art-moon-craters {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-moon-dark) 40%, transparent);
+  stroke-width: 0.8;
+}
+
+.art-star-core {
+  stop-color: var(--color-text-primary);
+}
+
+.art-star-gold {
+  stop-color: var(--color-target-star-gold);
+}
+
+.art-star-blue {
+  stop-color: var(--color-target-star-blue);
+}
+
+.art-star-fade {
+  stop-color: var(--color-night);
+  stop-opacity: 0;
+}
+
+.art-star-spikes {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-text-primary) 30%, transparent);
+  stroke-width: 0.6;
+}
+
+.art-cluster-core {
+  stop-color: color-mix(in srgb, var(--color-target-cluster) 55%, transparent);
+}
+
+.art-cluster-stars {
+  fill: var(--color-target-cluster);
+}
+
+.art-nebula {
+  stop-color: var(--color-target-nebula);
+}

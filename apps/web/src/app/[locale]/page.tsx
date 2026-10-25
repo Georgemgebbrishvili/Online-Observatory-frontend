@@ -13,6 +13,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { siteUrl } from "@/lib/seo";
 import "@/styles/pages.css";
 import "@/styles/homepage.css";
+import "@/styles/target-art.css";
 import "@/styles/tonight.css";
 import { brand } from "@/brand";
 

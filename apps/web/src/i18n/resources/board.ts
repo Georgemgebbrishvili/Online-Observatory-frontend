@@ -33,6 +33,9 @@ export type BoardCopy = {
   /** A replacement keeps its length: a start without room for it. */
   noRoom: (length: string) => string;
   checking: string;
+  /** ADR-075: the run the board opens with, and the quick lengths beside the stepper. */
+  picked: (clear: boolean, length: string) => string;
+  quickLengths: string;
   stretchGone: string;
   quoteFailed: string;
   /** The target card's chip: one short line; the full reason stays in its name. */
@@ -121,6 +124,9 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     longest: "4 hours is the longest session.",
     noRoom: (length) => `There is no free ${length} from that start.`,
     checking: "Checking…",
+    picked: (clear, length) =>
+      `We picked the next ${clear ? "clear" : "free"} ${length}. Tap any time to change it.`,
+    quickLengths: "Quick lengths",
     stretchGone: "That time is no longer free. Pick another start.",
     quoteFailed: "Could not check that time. Try again.",
     upShort: "Up all slot",
@@ -200,6 +206,9 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     longest: "ყველაზე გრძელი სეანსი 4 საათია.",
     noRoom: (length) => `ამ დასაწყისიდან თავისუფალი ${length} არ არის.`,
     checking: "ვამოწმებთ…",
+    picked: (clear, length) =>
+      `ავირჩიეთ შემდეგი ${clear ? "მოწმენდილი" : "თავისუფალი"} ${length}. შესაცვლელად მონიშნე ნებისმიერი დრო.`,
+    quickLengths: "სწრაფი ხანგრძლივობა",
     stretchGone: "ეს დრო უკვე დაკავებულია. აირჩიე სხვა დასაწყისი.",
     quoteFailed: "დროის შემოწმება ვერ მოხერხდა. სცადე თავიდან.",
     upShort: "ჩანს",

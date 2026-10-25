@@ -45,7 +45,7 @@ test("renders the Georgian sky hero and switches locale", async ({ page }) => {
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("the public homepage: the sky, four small doors, and four cards", async ({
+test("the public homepage: the sky, four small doors, four cards, and the chapters", async ({
   page,
 }) => {
   await page.goto("/en");
@@ -53,7 +53,18 @@ test("the public homepage: the sky, four small doors, and four cards", async ({
   await expect(
     page.getByRole("heading", { level: 2, name: "Four steps. One real observation." }),
   ).toBeVisible();
-  await expect(page.locator("main section")).toHaveCount(3);
+  // The sky, the steps, the cards, then ADR-075's six chapters.
+  await expect(page.locator("main section")).toHaveCount(9);
+  await expect(page.locator(".home-sky-grid li")).toHaveCount(5);
+  // What lengths cost, at the platform's rate by the minute (150 tetri on the fake).
+  const lengths = page.getByRole("complementary", { name: "Any length, one rate" });
+  await expect(lengths.locator("dd")).toHaveText([
+    "GEL 22.50",
+    "GEL 45.00",
+    "GEL 90.00",
+    "GEL 180.00",
+  ]);
+  await expect(page.locator(".home-faq details")).toHaveCount(4);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
   // How a session works: four tiles, each the door to the page where it happens.

@@ -1,21 +1,21 @@
-// The website's palette (apps/web/src/styles/tokens.ts, ADR-074), the subset this
+// The website's palette (apps/web/src/styles/tokens.ts, ADR-052/056), the subset this
 // app paints with. theme.test.ts fails if a value drifts from the website's.
 export const palette = {
-  canvas: "#14070b",
-  deep: "#0f0408",
-  bar: "#0b0306",
-  ink: "#fbf3f2",
-  ink2: "#dcc4c7",
-  ink3: "#b89ea2",
-  red: "#e1263f",
-  redInk: "#ff8090",
-  redFill: "#c81d36",
+  canvas: "#0d0d0d",
+  deep: "#131313",
+  bar: "#050507",
+  ink: "#f4f4f2",
+  ink2: "#b8b8b4",
+  ink3: "#969692",
+  red: "#e3482c",
+  redInk: "#f0785a",
+  redFill: "#c8392a",
   gold: "#e2b85a",
   green: "#2ecc71",
-  error: "#ffa07a",
+  error: "#ff7a6b",
 } as const;
 
-export const line = "rgba(251, 243, 242, 0.12)";
+export const line = "rgba(244, 244, 242, 0.12)";
 
 // Nothing reads below 13 px (CLAUDE.md).
 export const size = { hint: 13, body: 15, lead: 17, title: 30, display: 44 } as const;

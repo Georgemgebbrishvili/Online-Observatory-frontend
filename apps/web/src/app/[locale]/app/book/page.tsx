@@ -13,6 +13,7 @@ import { requireUser } from "@/lib/platform/session";
 import "@/styles/pages.css";
 import "@/styles/booking.css";
 import "@/styles/booking-board.css";
+import "@/styles/target-art.css";
 
 type BookPageProps = {
   params: Promise<{ locale: string }>;

@@ -145,7 +145,7 @@ function PointingBase({ path, pointing, rows, rms, rmsHistory, seeing, seeingHis
         </div>
         <div className="sdo-stat">
           <div className="sdo-stat__row"><span className="sdo-lbl">{t.seeing}</span><span className="sdo-v sdo-v--sm">{seeing}</span></div>
-          <Spark values={seeingHistory} color="#ff8090" lo={1} hi={5} />
+          <Spark values={seeingHistory} color="#f0785a" lo={1} hi={5} />
         </div>
         <div className="sdo-stat">
           <span className="sdo-lbl">{t.pointing.battery}</span>
@@ -202,7 +202,7 @@ function Histogram({ bins, label }: { bins: number[]; label: string }) {
     <svg className="sdo-cam__hist" width="100%" height="40" viewBox="0 0 256 40" preserveAspectRatio="none" role="img" aria-label={label}>
       {logs.map((v, i) => {
         const h = v > 0 ? 2 + (v / max) * 38 : 0;
-        return <rect key={i} x={i * 8} y={40 - h} width="7" height={h} fill={i >= 31 ? '#e2b85a' : '#e1263f'} opacity=".85" />;
+        return <rect key={i} x={i * 8} y={40 - h} width="7" height={h} fill={i >= 31 ? '#e2b85a' : '#e3482c'} opacity=".85" />;
       })}
     </svg>
   );

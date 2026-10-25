@@ -1,6 +1,6 @@
 /*
- * The booking board (ADR-074): a strip of nights, the night's quarter hours in wine
- * panels, the objects, and a cream card with the session, its cost and one crimson button.
+ * The booking board (ADR-074, in ADR-075's Skychaser dress): a strip of nights, the night's
+ * quarter hours, the objects, and a cream ticket with the session, its cost and one button.
  */
 .board {
   display: grid;
@@ -47,7 +47,7 @@
   padding: var(--space-3) var(--space-2);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-medium);
-  background: var(--gradient-panel);
+  background: var(--color-surface-raised);
   box-shadow: var(--shadow-raised);
   color: var(--color-text-primary);
   cursor: pointer;
@@ -84,8 +84,8 @@
 
 .night-tile[aria-checked="true"] {
   border-color: transparent;
-  background: var(--gradient-crimson);
-  box-shadow: var(--shadow-crimson);
+  background: var(--gradient-poster);
+  box-shadow: var(--shadow-poster);
 }
 
 .night-tile[aria-checked="true"]
@@ -93,8 +93,13 @@
   color: var(--color-on-action);
 }
 
+/* A full night: a dashed edge and a quiet date, still legible. */
 .night-tile.is-full:not([aria-checked="true"]) {
-  opacity: 0.5;
+  border-style: dashed;
+}
+
+.night-tile.is-full:not([aria-checked="true"]) .night-tile-day {
+  color: var(--color-text-tertiary);
 }
 
 .night-tile:focus-visible {
@@ -130,7 +135,7 @@
   padding: var(--space-6);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-panel);
-  background: var(--gradient-panel);
+  background: var(--color-surface-raised);
   box-shadow: var(--shadow-raised);
 }
 
@@ -144,8 +149,22 @@
 }
 
 .board-step h2 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
   margin: 0;
   font-size: var(--font-size-h3);
+}
+
+/* The step's number: the poster's red, in the label face. */
+.board-step-no {
+  color: var(--color-accent-ink);
+  font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-label);
+  letter-spacing: var(--tracking-label);
+}
+
+.board-step-bare {
+  margin-bottom: calc(-1 * var(--space-2));
 }
 
 .board-aside {
@@ -234,7 +253,7 @@
   opacity: 0.35;
 }
 
-/* The chosen run: glossy crimson end to end, its two ends a shade brighter. */
+/* The chosen run: the poster red end to end, its two ends printed with the button's shadow. */
 .time-cell.is-in {
   border-color: transparent;
   background: var(--color-action);
@@ -244,8 +263,8 @@
 
 .time-cell.is-from,
 .time-cell.is-to {
-  background: var(--gradient-crimson);
-  box-shadow: var(--shadow-crimson);
+  background: var(--gradient-poster);
+  box-shadow: var(--shadow-poster);
 }
 
 .is-pending .time-cell.is-from {
@@ -377,12 +396,6 @@
   fill: var(--color-accent-ink);
 }
 
-.target-art {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
 .board-target-text {
   display: grid;
   gap: 2px;
@@ -427,16 +440,6 @@
   vertical-align: 0.0625rem;
 }
 
-/* The drawn plates are squares of night: feathered to a disc. */
-img.target-art {
-  mix-blend-mode: screen;
-  mask-image: radial-gradient(
-    circle closest-side,
-    var(--color-mask) 72%,
-    transparent 100%
-  );
-}
-
 .board-target:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
@@ -449,64 +452,6 @@ img.target-art {
 
 .board-target.is-down .target-art {
   filter: grayscale(0.85);
-}
-
-/* The drawn objects' own colours. */
-.art-moon-hi {
-  stop-color: var(--color-moon-lit);
-}
-
-.art-moon-mid {
-  stop-color: var(--color-target-moon);
-}
-
-.art-moon-lo {
-  stop-color: var(--color-moon-dark);
-}
-
-.art-moon-maria {
-  fill: color-mix(in srgb, var(--color-moon-dark) 32%, transparent);
-}
-
-.art-moon-craters {
-  fill: none;
-  stroke: color-mix(in srgb, var(--color-moon-dark) 40%, transparent);
-  stroke-width: 0.8;
-}
-
-.art-star-core {
-  stop-color: var(--color-text-primary);
-}
-
-.art-star-gold {
-  stop-color: var(--color-target-star-gold);
-}
-
-.art-star-blue {
-  stop-color: var(--color-target-star-blue);
-}
-
-.art-star-fade {
-  stop-color: var(--color-night);
-  stop-opacity: 0;
-}
-
-.art-star-spikes {
-  fill: none;
-  stroke: color-mix(in srgb, var(--color-text-primary) 30%, transparent);
-  stroke-width: 0.6;
-}
-
-.art-cluster-core {
-  stop-color: color-mix(in srgb, var(--color-target-cluster) 55%, transparent);
-}
-
-.art-cluster-stars {
-  fill: var(--color-target-cluster);
-}
-
-.art-nebula {
-  stop-color: var(--color-target-nebula);
 }
 
 /* The chosen target's line, and the art's caption. */
@@ -547,24 +492,37 @@ img.target-art {
 }
 
 .board-rows > div {
-  display: grid;
-  grid-template-columns: 5.5rem 1fr;
+  display: flex;
   align-items: baseline;
   gap: var(--space-3);
   padding: var(--space-2) 0;
-  border-top: 1px solid var(--color-line);
+}
+
+/* Skychaser's data rows: a dotted leader runs from the label to the value. */
+.board-rows > div::after {
+  order: 1;
+  flex: 1 1 auto;
+  min-width: var(--space-6);
+  border-bottom: 1px dotted var(--color-text-disabled);
+  content: "";
+  transform: translateY(-4px);
 }
 
 .board-rows dt,
 .board-label {
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
+  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .board-rows dd {
+  order: 2;
   margin: 0;
   color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
+  font: var(--font-weight-medium) var(--font-size-label) / 1.3 var(--font-mono);
+  text-align: right;
 }
 
 .board-caption {
@@ -602,7 +560,7 @@ img.target-art {
 }
 
 .board-sum-kicker {
-  color: var(--color-action);
+  color: var(--color-paper-accent);
   font: var(--font-weight-semibold) var(--font-size-kicker) / 1.2 var(--font-label);
   letter-spacing: var(--tracking-kicker);
   text-transform: uppercase;
@@ -657,35 +615,57 @@ img.target-art {
   text-align: center;
 }
 
+/* ADR-075: the quick lengths, a tap from 30 minutes to 4 hours. */
+.board-quick {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.board-quick button {
+  min-height: var(--size-touch);
+  border: 1px solid var(--color-paper-rule);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-on-paper);
+  font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.board-quick button:hover {
+  border-color: var(--color-on-paper-2);
+}
+
+.board-quick button[aria-pressed="true"] {
+  border-color: transparent;
+  background: var(--gradient-poster);
+  box-shadow: var(--shadow-poster);
+  color: var(--color-on-action);
+  text-shadow: var(--text-shadow-poster);
+}
+
+:lang(ka) .board-quick button {
+  font-size: var(--font-size-hint);
+}
+
 .board-length-fixed {
   margin: 0;
   font-weight: var(--font-weight-semibold);
 }
 
-.board-sum .board-rows {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-}
-
-.board-sum .board-rows > div {
-  display: grid;
-  grid-template-columns: 5.5rem 1fr;
-  align-items: baseline;
-  gap: var(--space-3);
-  padding: var(--space-2) 0;
-  border-top: 1px solid var(--color-paper-rule);
+.board-sum .board-rows > div::after {
+  border-bottom-color: color-mix(in srgb, var(--color-on-paper) 40%, transparent);
 }
 
 .board-sum .board-rows dt {
   color: var(--color-on-paper-2);
-  font-size: var(--font-size-caption);
 }
 
 .board-sum .board-rows dd {
-  margin: 0;
   color: var(--color-on-paper);
-  font-weight: var(--font-weight-semibold);
 }
 
 /* ADR-067: a gift code, folded away until it is wanted. */
@@ -772,7 +752,7 @@ img.target-art {
 }
 
 .board-sum .booking-feedback {
-  color: var(--color-action);
+  color: var(--color-paper-accent);
 }
 
 .board-note {
@@ -842,7 +822,7 @@ img.target-art {
   .board-bar-go {
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-full);
-    background: var(--gradient-crimson);
+    background: var(--gradient-poster);
     box-shadow: var(--shadow-gloss);
     color: var(--color-on-action);
     font: var(--font-weight-semibold) var(--font-size-caption) / 1 var(--font-label);

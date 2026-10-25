@@ -8,6 +8,7 @@
   also", with two reference boards: glossy crimson panels on deep wine, and cream cards
   with crimson accents)
 - **Decided by:** project maintainer
+- **Superseded in part:** §1–5 (Crimson) by ADR-075 on the same day; §6–10 stand.
 - **Supersedes:** ADR-052's colour, type and button shape (its glow roles stay); ADR-055's
   NASA blue for the observatory console; ADR-056's restoration of ADR-052's red;
   ADR-072 §4 (the length picker)

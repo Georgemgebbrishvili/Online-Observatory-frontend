@@ -18,6 +18,8 @@ export type PricingFacts = {
     /** The price with the entry tier's discount, which every account starts in. */
     memberPrice: string | null;
     perMinute: string;
+    /** ADR-075: what a few lengths cost at the same rate per minute (ADR-072). */
+    lengths: { minutes: number; price: string }[];
   } | null;
   /** Open slots tonight (or the next night with any), for the "tonight" panel. */
   tonight: {
@@ -78,6 +80,15 @@ export async function readPricing(locale: Locale, now = Date.now()): Promise<Pri
             first.currency,
             locale,
           ),
+          // The platform's rule (ADR-072): whole tetri, rounded down, by the minute.
+          lengths: [15, 30, 60, 120].map((minutes) => ({
+            minutes,
+            price: formatPrice(
+              Math.floor((first.priceMinor * minutes) / first.durationMinutes),
+              first.currency,
+              locale,
+            ),
+          })),
         }
       : null,
     tonight: night
