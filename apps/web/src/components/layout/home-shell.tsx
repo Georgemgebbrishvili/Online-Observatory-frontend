@@ -19,9 +19,8 @@ type HomeShellProps = {
 
 /**
  * The public homepage: the sky with its observatory, how a night works in four small
- * doors, four small cards — tonight, the observatory now, the telescope, the price — then
- * ADR-075's chapters: tonight's targets, booking and its lengths, what a session shows,
- * the other ways in, questions, and a last call.
+ * doors, two small cards — tonight and the observatory now — then booking and its
+ * lengths, the other ways in, questions, and a last call.
  */
 export function HomeShell({ content, locale, panel, pricing, tonight }: HomeShellProps) {
   // Each step opens the page where it happens.
@@ -51,23 +50,11 @@ export function HomeShell({ content, locale, panel, pricing, tonight }: HomeShel
         aria-label={content.live.title}
       >
         <Container>
-          <HomeNow
-            content={content}
-            locale={locale}
-            tonight={tonight}
-            panel={panel}
-            pricing={pricing}
-          />
+          <HomeNow content={content} locale={locale} tonight={tonight} panel={panel} />
         </Container>
       </section>
 
-      <HomeMore
-        content={content.more}
-        illustration={content.hero.sky.illustration}
-        locale={locale}
-        tonight={tonight}
-        pricing={pricing}
-      />
+      <HomeMore content={content.more} locale={locale} pricing={pricing} />
     </main>
   );
 }

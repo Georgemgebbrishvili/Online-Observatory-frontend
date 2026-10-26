@@ -44,8 +44,8 @@ type Live = {
 };
 
 const smooth = (t: number) => t * t * (3 - 2 * t);
-/** The eyepiece ring's radius once it has closed round a plate. */
-const ringFor = (o: { r: number }) => o.r * 0.9 + 12;
+/** How far a plate's label keeps from its centre. */
+const labelGap = (o: { r: number }) => o.r * 0.9 + 12;
 
 /**
  * The black sky behind the homepage words, as the Skychaser site draws its own: our drawn
@@ -116,7 +116,7 @@ export function SkyReveal({ copy, kinds, locale, names }: SkyRevealProps) {
     let gainTgt = 0;
     let found = 0;
     // The light's hold on the plate under it: 0 roaming, 1 centred on it. The telescope
-    // and the eyepiece ring follow the plate's centre as the hold tightens.
+    // follows the plate's centre as the hold tightens.
     let lock = 0;
     let lockTgt = 0;
     let locked: Live | null = null;
@@ -307,15 +307,6 @@ export function SkyReveal({ copy, kinds, locale, names }: SkyRevealProps) {
         c.fillStyle = lg;
         c.fillRect(cur.x - R * 1.4, cur.y - R * 1.4, R * 2.8, R * 2.8);
         mark(cur.x - R * 1.4, cur.y - R * 1.4, R * 2.8, R * 2.8);
-        // The eyepiece's field: one faint ring where the telescope is looking, closing
-        // round a plate as the light holds it.
-        const ringR = locked ? R * 0.7 + (ringFor(locked) - R * 0.7) * lock : R * 0.7;
-        c.strokeStyle = withAlpha(palette.cream, (0.09 + 0.07 * lock) * gain);
-        c.lineWidth = 1;
-        c.beginPath();
-        c.arc(aimAt.x, aimAt.y, ringR, 0, 6.2832);
-        c.stroke();
-        mark(aimAt.x - ringR - 2, aimAt.y - ringR - 2, ringR * 2 + 4, ringR * 2 + 4);
       }
 
       let nearest: Live | null = null;
@@ -392,10 +383,10 @@ export function SkyReveal({ copy, kinds, locale, names }: SkyRevealProps) {
       if (nearest && nearestA > 0.35) {
         const o: Live = nearest;
         const la = (nearestA - 0.35) / 0.65;
-        // Two lines: what it is, small and gold, then its name. Under the plate and its
-        // ring; over them where that would cross the words or sink behind the hill;
-        // beside them where neither fits.
-        const edge = Math.max(o.h / 2, ringFor(o));
+        // Two lines: what it is, small and gold, then its name. Under the plate; over it
+        // where that would cross the words or sink behind the hill; beside it where
+        // neither fits.
+        const edge = Math.max(o.h / 2, labelGap(o));
         const below = o.cy + edge + 14;
         const above = o.cy - edge - 62;
         const kind = tracked ? o.kindName.toUpperCase() : o.kindName;
@@ -428,10 +419,10 @@ export function SkyReveal({ copy, kinds, locale, names }: SkyRevealProps) {
         if (!fits(lx - w / 2, below, w)) {
           if (fits(lx - w / 2, above, w)) top = above;
           else {
-            // Beside the ring, on the side away from the middle when there is room.
+            // Beside the plate, on the side away from the middle when there is room.
             top = o.cy - 30;
-            const outRight = o.cx + ringFor(o) + 18;
-            const outLeft = o.cx - ringFor(o) - 18;
+            const outRight = o.cx + labelGap(o) + 18;
+            const outLeft = o.cx - labelGap(o) - 18;
             const right =
               o.cx > W / 2
                 ? fits(outRight, top, w) || !fits(outLeft - w, top, w)

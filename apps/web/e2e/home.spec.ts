@@ -45,7 +45,7 @@ test("renders the Georgian sky hero and switches locale", async ({ page }) => {
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("the public homepage: the sky, four small doors, four cards, and the chapters", async ({
+test("the public homepage: the sky, four small doors, two cards, and the chapters", async ({
   page,
 }) => {
   await page.goto("/en");
@@ -53,9 +53,8 @@ test("the public homepage: the sky, four small doors, four cards, and the chapte
   await expect(
     page.getByRole("heading", { level: 2, name: "Four steps. One real observation." }),
   ).toBeVisible();
-  // The sky, the steps, the cards, then ADR-075's six chapters.
-  await expect(page.locator("main section")).toHaveCount(9);
-  await expect(page.locator(".home-sky-grid li")).toHaveCount(5);
+  // The sky, the steps, the cards, then booking, the ways in, questions and a last call.
+  await expect(page.locator("main section")).toHaveCount(7);
   // What lengths cost, at the platform's rate by the minute (150 tetri on the fake).
   const lengths = page.getByRole("complementary", { name: "Any length, one rate" });
   await expect(lengths.locator("dd")).toHaveText([
@@ -95,19 +94,6 @@ test("the public homepage: the sky, four small doors, four cards, and the chapte
   const live = page.getByRole("article", { name: "The observatory" });
   await expect(live.getByText("Online", { exact: true })).toBeVisible();
   await expect(live.getByText("Clear", { exact: true })).toBeVisible();
-
-  // The telescope is the platform's, not a fixture.
-  const telescope = page.getByRole("article", { name: "One real telescope in Georgia" });
-  await expect(telescope.getByText("203", { exact: false }).first()).toBeVisible();
-  await expect(telescope.getByText("f/10", { exact: true })).toBeVisible();
-
-  // The price is the platform's next open slot; the page states no amount of its own.
-  const pricing = page.getByRole("article", { name: "A night on the telescope" });
-  await expect(pricing.getByText(/^From /)).toBeVisible();
-  await expect(pricing.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(
-    "href",
-    "/en/app/book",
-  );
 });
 
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {

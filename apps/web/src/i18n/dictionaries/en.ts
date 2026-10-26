@@ -125,26 +125,7 @@ const dictionary = {
       fullStatus: "Full status",
       unavailable: "The status can't be read right now.",
     },
-    telescope: {
-      kicker: "The telescope",
-      title: "One real telescope in Georgia",
-      aperture: "Aperture",
-      focalLength: "Focal length",
-      focalRatio: "Focal ratio",
-      camera: "Camera",
-      cameraValue: "ZWO ASI585MC",
-      millimetres: "mm",
-      more: "The observatory",
-    },
     more: {
-      sky: {
-        kicker: "Tonight's sky",
-        title: "Every night, a different sky",
-        lede: "What the telescope can reach tonight. Choose one when you book, or let us point at the best one up.",
-        up: "Up tonight",
-        down: "Not tonight",
-        all: "Every target",
-      },
       book: {
         kicker: "Booking",
         title: "Three taps to the telescope",
@@ -166,32 +147,21 @@ const dictionary = {
         perMinute: "{price} a minute",
         cta: "Book a session",
       },
-      see: {
-        kicker: "What you see",
-        title: "A live picture, not a photo album",
-        lede: `${brand.en.name} is live-view astronomy: the camera takes short exposures and stacks them as they arrive, so the picture deepens while you watch. It is not long-exposure astrophotography.`,
-        points: [
-          {
-            title: "The real camera",
-            text: "The picture comes from the camera on the telescope in Tbilisi, as it happens.",
-          },
-          {
-            title: "Captures you keep",
-            text: "Save the frames you like. They go into your Collection with their time and target.",
-          },
-          {
-            title: "Friends can watch",
-            text: "Share a watch link, and up to ten people see what you see.",
-          },
-        ],
-      },
       ways: {
         kicker: "More",
         title: "More ways in",
         items: [
           { title: "Weekly vote", text: "Vote for the week's target.", href: "vote" },
-          { title: "Gift a night", text: "A session at the telescope, for someone else.", href: "gift" },
-          { title: brand.en.game, text: "Fly the solar system in your browser.", href: "explorer" },
+          {
+            title: "Gift a night",
+            text: "A session at the telescope, for someone else.",
+            href: "gift",
+          },
+          {
+            title: brand.en.game,
+            text: "Fly the solar system in your browser.",
+            href: "explorer",
+          },
           {
             title: "Weekly cards",
             text: "Turn a card each week for a free session, a seat or a discount.",
@@ -228,16 +198,6 @@ const dictionary = {
         cta: "Reserve a slot",
         secondary: "Try the observatory",
       },
-    },
-    pricing: {
-      kicker: "Pricing",
-      title: "A night on the telescope",
-      from: "From {price}",
-      session: "{minutes}-minute session",
-      open: "{count} open this week",
-      none: "New nights open every week.",
-      reserve: "Reserve a slot",
-      all: "Pricing",
     },
   },
   footer: {

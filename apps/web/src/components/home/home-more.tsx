@@ -1,22 +1,16 @@
 import Link from "next/link";
 
-import { TargetArt, targetAccent } from "@/components/booking/target-art";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { fill } from "@/features/operator/format";
 import type { PricingFacts } from "@/features/pricing/read";
-import { primaryReason, targetName } from "@/features/targets/present";
-import type { TonightResult } from "@/features/targets/read";
 import type { Locale } from "@/i18n/config";
 import { boardCopy } from "@/i18n/resources/board";
-import { targetCopy } from "@/i18n/resources/targets";
 import type { HomepageDictionary } from "@/types/homepage";
 
 type HomeMoreProps = {
   content: HomepageDictionary["more"];
-  illustration: string;
   locale: Locale;
-  tonight: TonightResult;
   pricing: PricingFacts;
 };
 
@@ -31,71 +25,15 @@ function Head({ id, kicker, title }: { id: string; kicker: string; title: string
 }
 
 /**
- * ADR-075: the homepage's chapters under its cards — tonight's targets, how booking
- * goes and what it costs, what a session shows, the other ways in, questions, and a
- * last call. Every target and price is the platform's; a chapter whose data cannot be
- * read is left out.
+ * ADR-075: the homepage's chapters under its cards — how booking goes and what it
+ * costs, the other ways in, questions, and a last call. Every price is the platform's;
+ * the price list is left out when it cannot be read.
  */
-export function HomeMore({
-  content,
-  illustration,
-  locale,
-  pricing,
-  tonight,
-}: HomeMoreProps) {
-  const words = targetCopy[locale];
+export function HomeMore({ content, locale, pricing }: HomeMoreProps) {
   const board = boardCopy[locale];
-  const items = tonight.kind === "ok" ? tonight.items : [];
 
   return (
     <>
-      {items.length > 0 && (
-        <section className="home-band home-chapter" aria-labelledby="home-sky-title">
-          <Container>
-            <Head
-              id="home-sky-title"
-              kicker={content.sky.kicker}
-              title={content.sky.title}
-            />
-            <p className="home-chapter-lede">{content.sky.lede}</p>
-            <ul className="home-sky-grid">
-              {items.map(({ target, visibility }) => {
-                const reason = primaryReason(visibility);
-                return (
-                  <li key={target.id}>
-                    <Link
-                      className="home-sky-card"
-                      href={`/${locale}/app/missions/${target.slug}`}
-                      data-accent={targetAccent(target)}
-                      data-up={visibility.observable || undefined}
-                    >
-                      <span className="home-sky-art" aria-hidden="true">
-                        <TargetArt target={target} />
-                      </span>
-                      <span className="home-sky-type">{words.types[target.type]}</span>
-                      <span className="home-sky-name">{targetName(target, locale)}</span>
-                      <span className="home-sky-state">
-                        {visibility.observable
-                          ? content.sky.up
-                          : reason
-                            ? words.reasons[reason]
-                            : content.sky.down}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-            <p className="home-chapter-foot">
-              <span className="home-caption">{illustration}</span>
-              <Link className="page-link" href={`/${locale}/app/missions`}>
-                {content.sky.all} <span aria-hidden="true">→</span>
-              </Link>
-            </p>
-          </Container>
-        </section>
-      )}
-
       <section className="home-band home-chapter" aria-labelledby="home-book-title">
         <Container>
           <div className="home-book">
@@ -139,25 +77,6 @@ export function HomeMore({
               </aside>
             )}
           </div>
-        </Container>
-      </section>
-
-      <section className="home-band home-chapter" aria-labelledby="home-see-title">
-        <Container>
-          <Head
-            id="home-see-title"
-            kicker={content.see.kicker}
-            title={content.see.title}
-          />
-          <p className="home-chapter-lede">{content.see.lede}</p>
-          <ul className="home-see">
-            {content.see.points.map((point) => (
-              <li key={point.title}>
-                <h3>{point.title}</h3>
-                <p>{point.text}</p>
-              </li>
-            ))}
-          </ul>
         </Container>
       </section>
 

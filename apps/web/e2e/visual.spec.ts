@@ -69,8 +69,7 @@ function masks(page: Page) {
     page.locator(".night-strip"),
     page.locator(".board-step:has(.board-aside) h2"),
     page.locator(".board-sum-meta"),
-    // How many slots are open this week, on the homepage's price card and /pricing.
-    page.locator(".home-price span"),
+    // How many slots are open this week, on /pricing.
     page.locator(".pricing-tonight footer small"),
     // The board's night bar: sunset, twilight and the Moon for the server's tonight.
     page.locator(".night"),

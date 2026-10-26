@@ -86,8 +86,8 @@ function grainTexture(seed: number) {
 function hemisphere(
   radius: number,
   keep: (x: number, y: number, z: number) => boolean,
-  lonSeg = 320,
-  latSeg = 64,
+  lonSeg = 240,
+  latSeg = 48,
 ) {
   const positions: number[] = [];
   const normals: number[] = [];
@@ -224,7 +224,7 @@ export async function createObservatoryScene(
 
   // Reflections: a night sky with the Moon in it and the city's red glow low behind.
   const env = new THREE.Scene();
-  const skyGeo = new THREE.SphereGeometry(50, 48, 24);
+  const skyGeo = new THREE.SphereGeometry(50, 24, 12);
   const skyColours: number[] = [];
   const pos = skyGeo.getAttribute("position");
   const high = colour(art.skyHigh);
@@ -263,7 +263,7 @@ export async function createObservatoryScene(
   moon.position.set(-9, 13, 11);
   moon.target.position.set(0, 1.6, 0);
   moon.castShadow = true;
-  moon.shadow.mapSize.set(2048, 2048);
+  moon.shadow.mapSize.set(1024, 1024);
   moon.shadow.camera.left = -7;
   moon.shadow.camera.right = 7;
   moon.shadow.camera.top = 7;
@@ -314,12 +314,12 @@ export async function createObservatoryScene(
     bumpMap: concreteBump,
     bumpScale: 0.9,
   });
-  const domePaint = new THREE.MeshPhysicalMaterial({
+  // Standard materials only: the physical ones' clearcoat and iridescence cost seconds of
+  // shader compiling for a few highlights. A lower roughness stands in for the varnish.
+  const domePaint = new THREE.MeshStandardMaterial({
     color: colour(art.domePaint),
-    roughness: 0.3,
+    roughness: 0.24,
     metalness: 0.12,
-    clearcoat: 0.7,
-    clearcoatRoughness: 0.18,
     envMapIntensity: 1.3,
   });
   const domeInside = new THREE.MeshStandardMaterial({
@@ -332,46 +332,34 @@ export async function createObservatoryScene(
     metalness: 0.85,
     roughness: 0.32,
   });
-  const ota = new THREE.MeshPhysicalMaterial({
+  const ota = new THREE.MeshStandardMaterial({
     color: colour(art.otaOrange),
     metalness: 0.3,
-    roughness: 0.3,
-    clearcoat: 1,
-    clearcoatRoughness: 0.05,
+    roughness: 0.2,
     envMapIntensity: 1.6,
   });
-  const cell = new THREE.MeshPhysicalMaterial({
+  const cell = new THREE.MeshStandardMaterial({
     color: colour(art.otaCell),
     metalness: 0.35,
-    roughness: 0.42,
-    clearcoat: 0.5,
-    clearcoatRoughness: 0.2,
+    roughness: 0.36,
   });
-  const corrector = new THREE.MeshPhysicalMaterial({
+  const corrector = new THREE.MeshStandardMaterial({
     color: colour(art.corrector),
     metalness: 0.1,
     roughness: 0.03,
-    clearcoat: 1,
-    clearcoatRoughness: 0,
     envMapIntensity: 1.8,
-    iridescence: 0.75,
-    iridescenceIOR: 1.45,
-    iridescenceThicknessRange: [260, 420],
-    sheen: 0.4,
-    sheenColor: colour(art.coating),
     emissive: colour(art.coating),
-    emissiveIntensity: 0.22,
+    emissiveIntensity: 0.3,
   });
   const chrome = new THREE.MeshStandardMaterial({
     color: colour(art.chrome),
     metalness: 1,
     roughness: 0.18,
   });
-  const fork = new THREE.MeshPhysicalMaterial({
+  const fork = new THREE.MeshStandardMaterial({
     color: colour(art.fork),
     metalness: 0.45,
-    roughness: 0.5,
-    clearcoat: 0.35,
+    roughness: 0.45,
   });
   const blackMetal = new THREE.MeshStandardMaterial({
     color: colour(art.mountBlack),
@@ -417,7 +405,7 @@ export async function createObservatoryScene(
   await pause();
 
   // The hill.
-  const groundGeo = new THREE.PlaneGeometry(420, 420, 150, 150);
+  const groundGeo = new THREE.PlaneGeometry(420, 420, 64, 64);
   groundGeo.rotateX(-Math.PI / 2);
   const gp = groundGeo.getAttribute("position");
   const groundColours: number[] = [];
@@ -496,32 +484,32 @@ export async function createObservatoryScene(
   const building = new THREE.Group();
   scene.add(building);
   const plinth = new THREE.Mesh(
-    new THREE.CylinderGeometry(1.86, 1.96, PLINTH_H, 160),
+    new THREE.CylinderGeometry(1.86, 1.96, PLINTH_H, 96),
     concrete,
   );
   plinth.position.y = PLINTH_H / 2;
   building.add(plinth);
   const drum = new THREE.Mesh(
-    new THREE.CylinderGeometry(DRUM_R, DRUM_R, DRUM_H, 192, 1, true),
+    new THREE.CylinderGeometry(DRUM_R, DRUM_R, DRUM_H, 96, 1, true),
     plaster,
   );
   drum.position.y = PLINTH_H + DRUM_H / 2;
   building.add(drum);
   const skirt = new THREE.Mesh(
-    new THREE.CylinderGeometry(DRUM_R + 0.025, DRUM_R + 0.025, 0.2, 192, 1, true),
+    new THREE.CylinderGeometry(DRUM_R + 0.025, DRUM_R + 0.025, 0.2, 96, 1, true),
     concrete,
   );
   skirt.position.y = PLINTH_H + 0.1;
   building.add(skirt);
   // The lip the dome rides on, and the floor inside.
   const lip = new THREE.Mesh(
-    new THREE.CylinderGeometry(DOME_R + 0.08, DOME_R + 0.08, 0.13, 192, 1, true),
+    new THREE.CylinderGeometry(DOME_R + 0.08, DOME_R + 0.08, 0.13, 96, 1, true),
     domePaint,
   );
   lip.position.y = DRUM_TOP + 0.005;
   building.add(lip);
   const under = new THREE.Mesh(
-    new THREE.RingGeometry(DRUM_R, DOME_R + 0.08, 192),
+    new THREE.RingGeometry(DRUM_R, DOME_R + 0.08, 96),
     concrete,
   );
   under.rotation.x = Math.PI / 2;
@@ -642,7 +630,7 @@ export async function createObservatoryScene(
   dome.add(shell);
   const innerShell = new THREE.Mesh(
     // Dark and seen only through the slit: a coarser mesh does.
-    hemisphere(DOME_R * 0.975, (x, _y, z) => !inSlit(x / 0.975, z / 0.975), 192, 40),
+    hemisphere(DOME_R * 0.975, (x, _y, z) => !inSlit(x / 0.975, z / 0.975), 128, 32),
     domeInside,
   );
   dome.add(innerShell);
@@ -683,7 +671,7 @@ export async function createObservatoryScene(
     if (points.length > 3) dome.add(new THREE.Mesh(tube(points, 0.011), domePaint));
   }
   const baseRing = new THREE.Mesh(
-    new THREE.TorusGeometry(DOME_R + 0.015, 0.045, 14, 192),
+    new THREE.TorusGeometry(DOME_R + 0.015, 0.045, 14, 96),
     domePaint,
   );
   baseRing.rotation.x = Math.PI / 2;

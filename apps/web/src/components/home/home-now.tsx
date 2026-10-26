@@ -1,10 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { ButtonLink } from "@/components/ui/button";
 import type { ObservatoryPanelResult } from "@/features/home/read";
 import { fill } from "@/features/operator/format";
-import type { PricingFacts } from "@/features/pricing/read";
 import { formatWindow, primaryReason, targetName } from "@/features/targets/present";
 import type { TonightResult } from "@/features/targets/read";
 import type { Locale } from "@/i18n/config";
@@ -13,11 +11,10 @@ import { targetCopy } from "@/i18n/resources/targets";
 import type { HomepageDictionary } from "@/types/homepage";
 
 type HomeNowProps = {
-  content: Pick<HomepageDictionary, "tonight" | "live" | "telescope" | "pricing">;
+  content: Pick<HomepageDictionary, "tonight" | "live">;
   locale: Locale;
   tonight: TonightResult;
   panel: ObservatoryPanelResult;
-  pricing: PricingFacts;
 };
 
 /** How many of tonight's targets the card lists; the rest are a tap away. */
@@ -58,14 +55,13 @@ function Card({
 }
 
 /**
- * Under the steps, four small cards in one grid: what is up tonight, the observatory
- * right now, the telescope, and the price. Every value is the platform's; a card whose
- * data cannot be read says so in one line.
+ * Under the steps, two small cards side by side: what is up tonight and the observatory
+ * right now. Every value is the platform's; a card whose data cannot be read says so in
+ * one line.
  */
-export function HomeNow({ content, locale, panel, pricing, tonight }: HomeNowProps) {
+export function HomeNow({ content, locale, panel, tonight }: HomeNowProps) {
   const targets = targetCopy[locale];
   const words = statusCopy[locale];
-  const telescope = panel.kind === "ok" ? panel.observatory.telescope : null;
   const { live } = content;
 
   return (
@@ -170,73 +166,6 @@ export function HomeNow({ content, locale, panel, pricing, tonight }: HomeNowPro
             )}
           </>
         )}
-      </Card>
-
-      <Card
-        area="telescope"
-        id="home-telescope-title"
-        kicker={content.telescope.kicker}
-        title={content.telescope.title}
-        more={{ href: `/${locale}/observatory`, label: content.telescope.more }}
-      >
-        <dl className="home-specs">
-          {telescope && (
-            <>
-              <div>
-                <dt>{content.telescope.aperture}</dt>
-                <dd>
-                  {telescope.apertureMm} <small>{content.telescope.millimetres}</small>
-                </dd>
-              </div>
-              <div>
-                <dt>{content.telescope.focalLength}</dt>
-                <dd>
-                  {telescope.focalLengthMm} <small>{content.telescope.millimetres}</small>
-                </dd>
-              </div>
-              <div>
-                <dt>{content.telescope.focalRatio}</dt>
-                <dd>{`f/${Math.round(telescope.focalLengthMm / telescope.apertureMm)}`}</dd>
-              </div>
-            </>
-          )}
-          <div>
-            <dt>{content.telescope.camera}</dt>
-            <dd>{content.telescope.cameraValue}</dd>
-          </div>
-        </dl>
-      </Card>
-
-      <Card
-        area="pricing"
-        id="home-pricing-title"
-        kicker={content.pricing.kicker}
-        title={content.pricing.title}
-        more={{ href: `/${locale}/pricing`, label: content.pricing.all }}
-      >
-        <div className="home-price">
-          {pricing.slot ? (
-            <p>
-              <strong>{fill(content.pricing.from, { price: pricing.slot.price })}</strong>
-              <span>
-                {fill(content.pricing.session, {
-                  minutes: String(pricing.slot.durationMinutes),
-                })}
-                {pricing.openThisWeek > 0 &&
-                  ` · ${fill(content.pricing.open, { count: String(pricing.openThisWeek) })}`}
-              </span>
-            </p>
-          ) : (
-            <p className="home-card-note">{content.pricing.none}</p>
-          )}
-          <ButtonLink
-            href={`/${locale}/app/book`}
-            size="small"
-            className="home-price-cta"
-          >
-            {content.pricing.reserve}
-          </ButtonLink>
-        </div>
       </Card>
     </div>
   );

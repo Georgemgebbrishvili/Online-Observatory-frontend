@@ -25,6 +25,8 @@ const firaGO = localFont({
   ],
   variable: "--font-firago",
   display: "swap",
+  // Loaded where Georgian is set, not preloaded on every English page.
+  preload: false,
 });
 
 // ADR-052 type, as the Skychaser site sets it: Anton for headlines,
@@ -36,12 +38,14 @@ const anton = Anton({
   display: "swap",
 });
 
-// The wordmark only: Archivo Expanded Black, as the Skychaser kit sets its own (ADR-052 §3).
+// Archivo Expanded Black, as the Skychaser kit sets its wordmark (ADR-052 §3). The
+// lockup draws it as outlines; only the weekly card's face still sets it as text.
 const archivo = Archivo({
   subsets: ["latin"],
   axes: ["wdth"],
   variable: "--font-archivo",
   display: "swap",
+  preload: false,
 });
 
 const oswald = Oswald({

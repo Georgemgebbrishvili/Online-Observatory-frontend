@@ -67,12 +67,15 @@ export function ObservatoryDome() {
 
     const ro = new ResizeObserver(layout);
 
-    // The scene waits for the page: three.js loads once the browser is idle, the scene is
-    // built in short steps and its shaders off the main thread, and it shows only once it
-    // can draw without a stall. Where it cannot be built (no GPU), nothing is drawn.
+    // three.js downloads at once, beside the page; the scene is built once the page has
+    // loaded and the browser is idle, in short steps with its shaders off the main thread,
+    // and shows only once it can draw without a stall. Where it cannot be built (no GPU),
+    // nothing is drawn.
     hero.addEventListener(skyAimEvent, onAim);
+    const loading = import("@/components/home/observatory-scene");
+    loading.catch(() => {});
     const start = () =>
-      import("@/components/home/observatory-scene")
+      loading
         .then(async ({ createObservatoryScene }) => {
           if (dead) return;
           const made = await createObservatoryScene(canvas, { reduced });
@@ -87,7 +90,7 @@ export function ObservatoryDome() {
         .catch(() => {});
     const whenIdle = () => {
       if (typeof requestIdleCallback === "function")
-        requestIdleCallback(start, { timeout: 1200 });
+        requestIdleCallback(start, { timeout: 400 });
       else setTimeout(start, 200);
     };
     if (document.readyState === "complete") whenIdle();

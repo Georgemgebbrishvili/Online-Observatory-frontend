@@ -255,13 +255,17 @@ a {
 
 .brand-wordmark {
   color: var(--color-mark);
-  font-family: var(--font-archivo), sans-serif;
   font-size: var(--font-size-wordmark);
-  font-stretch: 125%;
-  font-weight: var(--font-weight-black);
-  letter-spacing: 0;
   line-height: 1;
-  text-transform: uppercase;
+}
+
+/* The outlined word: cap height plus overshoot, sitting on the text's baseline. */
+.brand-wordmark svg {
+  display: inline-block;
+  width: auto;
+  height: 0.712em;
+  vertical-align: -0.012em;
+  fill: currentColor;
 }
 
 .brand-endorsement {
@@ -352,4 +356,12 @@ h1 {
     animation-delay: 0s !important;
     animation-duration: 0s !important;
   }
+}
+
+/*
+ * On an English page the only Georgian is the language switch's own name: set in the
+ * system's Georgian face, so English visitors download no Georgian fonts for one word.
+ */
+:root:lang(en) a[lang="ka"] {
+  font-family: system-ui, sans-serif;
 }

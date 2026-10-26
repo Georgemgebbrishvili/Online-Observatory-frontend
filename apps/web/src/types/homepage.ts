@@ -47,20 +47,8 @@ export type HomepageDictionary = {
     fullStatus: string;
     unavailable: string;
   };
-  telescope: {
-    kicker: string;
-    title: string;
-    aperture: string;
-    focalLength: string;
-    focalRatio: string;
-    camera: string;
-    cameraValue: string;
-    millimetres: string;
-    more: string;
-  };
   /** ADR-075: the sections below the cards, Skychaser's chapters. */
   more: {
-    sky: { kicker: string; title: string; lede: string; up: string; down: string; all: string };
     book: {
       kicker: string;
       title: string;
@@ -69,29 +57,19 @@ export type HomepageDictionary = {
       perMinute: string;
       cta: string;
     };
-    see: {
-      kicker: string;
-      title: string;
-      lede: string;
-      points: readonly { title: string; text: string }[];
-    };
     ways: {
       kicker: string;
       title: string;
       items: readonly { title: string; text: string; href: string }[];
     };
     faq: { kicker: string; title: string; items: readonly { q: string; a: string }[] };
-    closer: { title: string; sunset: string; lede: string; cta: string; secondary: string };
-  };
-  pricing: {
-    kicker: string;
-    title: string;
-    from: string;
-    session: string;
-    open: string;
-    none: string;
-    reserve: string;
-    all: string;
+    closer: {
+      title: string;
+      sunset: string;
+      lede: string;
+      cta: string;
+      secondary: string;
+    };
   };
 };
 
