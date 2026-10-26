@@ -131,3 +131,22 @@ nextjs-portal {
   height: 20rem;
   overflow: hidden;
 }
+
+/*
+ * ADR-074's board: the chosen night's name and its dusk-to-dawn note follow the server's
+ * today, and in Georgian a long name wraps the header to a second line, which moves the
+ * whole grid. The name kept to one line (masked) and the note hidden.
+ */
+.board-step:has(.board-aside) {
+  flex-wrap: nowrap;
+}
+
+.board-step:has(.board-aside) h2 {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.board-step .board-aside {
+  display: none !important;
+}

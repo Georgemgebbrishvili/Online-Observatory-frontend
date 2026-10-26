@@ -64,6 +64,14 @@ function masks(page: Page) {
     page.locator(".board-nights"),
     page.locator(".board-rows"),
     page.locator(".board-bar"),
+    // ADR-074's board: the strip's seven nights, the chosen night's name and the
+    // session card's date line (visual.css keeps the name to one line).
+    page.locator(".night-strip"),
+    page.locator(".board-step:has(.board-aside) h2"),
+    page.locator(".board-sum-meta"),
+    // How many slots are open this week, on the homepage's price card and /pricing.
+    page.locator(".home-price span"),
+    page.locator(".pricing-tonight footer small"),
     // The board's night bar: sunset, twilight and the Moon for the server's tonight.
     page.locator(".night"),
     // The calendar's month, its night note and the month's special nights follow the
@@ -94,9 +102,7 @@ async function capture(
   // The operator's lists and console are fetched by the browser: loaded, not mid-way.
   await page.waitForFunction(
     () =>
-      !document.querySelector(
-        ':is(.operator-list, .operator-manual)[aria-busy="true"]',
-      ),
+      !document.querySelector(':is(.operator-list, .operator-manual)[aria-busy="true"]'),
   );
   await page.waitForFunction(() =>
     [...document.images].every(
