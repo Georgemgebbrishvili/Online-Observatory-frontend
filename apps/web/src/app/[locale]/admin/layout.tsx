@@ -1,5 +1,6 @@
-import { zListBookableObservatoriesResponse } from "@darkview/contracts/zod";
+import { zAdminListObservatoriesResponse } from "@darkview/contracts/zod";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -7,6 +8,10 @@ import { BrandLockup } from "@/components/brand/brand-lockup";
 import { OperatorConsoleProvider } from "@/components/operator/console-provider";
 import { EmergencyPark } from "@/components/operator/emergency-park";
 import { ModeBanner } from "@/components/operator/mode-banner";
+import {
+  ObservatoryPicker,
+  operatorObservatoryCookie,
+} from "@/components/operator/observatory-picker";
 import { OperatorNavigation } from "@/components/operator/operator-navigation";
 import { StatePanel } from "@/components/ui/state-panel";
 import { isLocale } from "@/i18n/config";
@@ -31,11 +36,17 @@ export default async function OperatorLayout({ children, params }: OperatorLayou
   await requireOperator(locale);
   const copy = operatorCopy[locale];
   const dictionary = await getDictionary(locale);
-  const { items } = zListBookableObservatoriesResponse.parse(
-    await platformRequest<unknown>("/observatories"),
+  const { items } = zAdminListObservatoriesResponse.parse(
+    await platformRequest<unknown>("/admin/observatories"),
   );
-  // Phase 1 is one first-party telescope (ADR-003); a partner node is not operated here.
-  const observatory = items.find((candidate) => candidate.kind === "FIRST_PARTY");
+  // First-party observatories only (ADR-003): the demo, and the hardware test one
+  // no customer can book (platform ADR-074). The operator's choice is a cookie,
+  // honoured only when it names one of them.
+  const operated = items.filter(
+    (candidate) => candidate.kind === "FIRST_PARTY" || candidate.hardwareTest,
+  );
+  const chosen = (await cookies()).get(operatorObservatoryCookie)?.value;
+  const observatory = operated.find((candidate) => candidate.id === chosen) ?? operated[0];
 
   if (!observatory) {
     return (
@@ -66,6 +77,18 @@ export default async function OperatorLayout({ children, params }: OperatorLayou
               <h1>{copy.title}</h1>
             </div>
             <OperatorNavigation copy={copy.navigation} locale={locale} />
+            {operated.length > 1 && (
+              <ObservatoryPicker
+                label={copy.observatory}
+                hardwareTest={copy.hardwareTest}
+                selected={observatory.id}
+                options={operated.map((candidate) => ({
+                  id: candidate.id,
+                  name: locale === "ka" ? candidate.nameKa : candidate.nameEn,
+                  hardwareTest: candidate.hardwareTest,
+                }))}
+              />
+            )}
           </div>
           <ModeBanner copy={copy.mode} />
           <EmergencyPark copy={copy.park} />

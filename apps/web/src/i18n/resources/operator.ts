@@ -6,6 +6,7 @@ const en = {
   title: "Operator console",
   observatory: "Observatory",
   noObservatory: "No observatory is listed by the platform.",
+  hardwareTest: "hardware test",
   navigation: {
     label: "Operator console",
     overview: "Overview",
@@ -269,6 +270,7 @@ export const operatorCopy = {
     title: "ოპერატორის პანელი",
     observatory: "ობსერვატორია",
     noObservatory: "პლატფორმა არცერთ ობსერვატორიას არ აბრუნებს.",
+    hardwareTest: "აპარატურის ტესტი",
     navigation: {
       label: "ოპერატორის პანელი",
       overview: "მიმოხილვა",

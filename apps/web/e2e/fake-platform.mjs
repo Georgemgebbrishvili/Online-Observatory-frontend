@@ -9,6 +9,7 @@ import {
   zAdminCancelMissionRequest,
   zAdminListAuditEventsResponse,
   zAdminListMissionsResponse,
+  zAdminListObservatoriesResponse,
   zAdminUpdateTargetRequest,
   zAdminUpdateTargetResponse,
   zApiError,
@@ -1825,6 +1826,30 @@ const routes = {
       zListCapturesResponse.parse({
         items: rows.map(withThumbnail),
         page: { hasMore, nextCursor: hasMore ? rows.at(-1).capture.id : null },
+      }),
+    );
+  },
+  // GET /admin/observatories (platform ADR-074): every observatory, for the console's
+  // picker. The fake has the one, so the picker stays hidden.
+  "GET /admin/observatories": (request, response) => {
+    if (!operator(request, response)) return;
+    send(
+      response,
+      200,
+      zAdminListObservatoriesResponse.parse({
+        items: [
+          {
+            id: observatoryId,
+            slug: "tbilisi",
+            nameEn: "Stellar Tbilisi",
+            nameKa: "სტელარი თბილისი",
+            mode: "SIMULATED",
+            isDemo: false,
+            hardwareTest: false,
+            kind: "FIRST_PARTY",
+            approvalStatus: "APPROVED",
+          },
+        ],
       }),
     );
   },
