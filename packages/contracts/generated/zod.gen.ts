@@ -1731,6 +1731,22 @@ export const zNetworkNodeApprovalStatus = z.enum([
     'SUSPENDED'
 ]);
 
+export const zAdminObservatory = z.strictObject({
+    id: z.uuid(),
+    slug: z.string(),
+    nameEn: z.string(),
+    nameKa: z.string(),
+    mode: zObservatoryMode,
+    isDemo: z.boolean(),
+    hardwareTest: z.boolean(),
+    kind: zNetworkNodeKind.nullable(),
+    approvalStatus: zNetworkNodeApprovalStatus.nullable()
+});
+
+export const zAdminObservatoryList = z.strictObject({
+    items: z.array(zAdminObservatory)
+});
+
 /**
  * One observatory in the network, and the terms on which it may be used.
  *
@@ -2862,6 +2878,15 @@ export const zConfirmSandboxCheckoutPath = z.object({
     paymentId: z.uuid()
 });
 
+export const zGetPaymentCheckoutPath = z.object({
+    paymentId: z.uuid()
+});
+
+/**
+ * The bank's callback body, opaque to this contract.
+ */
+export const zReceiveBogCallbackBody = z.record(z.string(), z.unknown());
+
 export const zListMissionsQuery = z.object({
     cursor: z.string().optional(),
     limit: z.int().gte(1).lte(100).optional().default(20)
@@ -3040,6 +3065,11 @@ export const zGetCaptureDownloadQuery = z.object({
  * Signed URL.
  */
 export const zGetCaptureDownloadResponse = zCaptureDownload;
+
+/**
+ * Every observatory.
+ */
+export const zAdminListObservatoriesResponse = zAdminObservatoryList;
 
 export const zAdminGetObservatoryStatePath = z.object({
     observatoryId: z.uuid()
