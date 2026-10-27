@@ -125,6 +125,12 @@ async function capture(
   }, bodyFace);
   expect(bodyLoaded, `${bodyFace} must be loaded before capture`).toBe(true);
 
+  // No page is wider than the screen: nothing scrolls sideways on a phone.
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow, `/${locale}/${route} at ${width} scrolls sideways`).toBe(0);
+
   // A query string is part of some routes; a file name keeps letters, digits and dashes.
   const name = `${locale}-${(label || "home").replace(/[^a-z0-9-]+/gi, "-")}-${width}.png`;
   await expect(page).toHaveScreenshot(name, {

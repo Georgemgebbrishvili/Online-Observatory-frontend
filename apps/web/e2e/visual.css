@@ -142,6 +142,10 @@ nextjs-portal {
 }
 
 .board-step:has(.board-aside) h2 {
+  /* Sized by the room it has, not its one-line text: otherwise the long Georgian name
+     widened the section and the 390 px capture came out 396 px wide. */
+  contain: inline-size;
+  flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
