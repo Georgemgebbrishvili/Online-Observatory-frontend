@@ -201,7 +201,9 @@ function Histogram({ bins, label }: { bins: number[]; label: string }) {
   return (
     <svg className="sdo-cam__hist" width="100%" height="40" viewBox="0 0 256 40" preserveAspectRatio="none" role="img" aria-label={label}>
       {logs.map((v, i) => {
-        const h = v > 0 ? 2 + (v / max) * 38 : 0;
+        // Rounded: Math.log1p differs in its last digit between Node and the browser,
+        // and an unrounded height is a hydration mismatch.
+        const h = v > 0 ? Math.round((2 + (v / max) * 38) * 100) / 100 : 0;
         return <rect key={i} x={i * 8} y={40 - h} width="7" height={h} fill={i >= 31 ? '#e2b85a' : '#e3482c'} opacity=".85" />;
       })}
     </svg>
