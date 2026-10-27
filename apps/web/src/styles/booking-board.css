@@ -766,8 +766,10 @@
 }
 
 @media (--below-lg) {
+  /* minmax(0, …): a plain 1fr lets the widest content stretch the page past the screen
+     (Georgian at 390 px rendered 396 px wide in CI). */
   .board-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .board-sum {
