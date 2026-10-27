@@ -1,6 +1,4 @@
-import { zAdminListObservatoriesResponse } from "@darkview/contracts/zod";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -8,16 +6,13 @@ import { BrandLockup } from "@/components/brand/brand-lockup";
 import { OperatorConsoleProvider } from "@/components/operator/console-provider";
 import { EmergencyPark } from "@/components/operator/emergency-park";
 import { ModeBanner } from "@/components/operator/mode-banner";
-import {
-  ObservatoryPicker,
-  operatorObservatoryCookie,
-} from "@/components/operator/observatory-picker";
+import { ObservatoryPicker } from "@/components/operator/observatory-picker";
 import { OperatorNavigation } from "@/components/operator/operator-navigation";
 import { StatePanel } from "@/components/ui/state-panel";
+import { readOperatedObservatories } from "@/features/operator/observatories";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { operatorCopy } from "@/i18n/resources/operator";
-import { platformRequest } from "@/lib/platform/client";
 import { requireOperator } from "@/lib/platform/session";
 import { privatePageMetadata } from "@/lib/seo";
 import "@/styles/operator.css";
@@ -36,17 +31,7 @@ export default async function OperatorLayout({ children, params }: OperatorLayou
   await requireOperator(locale);
   const copy = operatorCopy[locale];
   const dictionary = await getDictionary(locale);
-  const { items } = zAdminListObservatoriesResponse.parse(
-    await platformRequest<unknown>("/admin/observatories"),
-  );
-  // First-party observatories only (ADR-003): the demo, and the hardware test one
-  // no customer can book (platform ADR-074). The operator's choice is a cookie,
-  // honoured only when it names one of them.
-  const operated = items.filter(
-    (candidate) => candidate.kind === "FIRST_PARTY" || candidate.hardwareTest,
-  );
-  const chosen = (await cookies()).get(operatorObservatoryCookie)?.value;
-  const observatory = operated.find((candidate) => candidate.id === chosen) ?? operated[0];
+  const { operated, observatory } = await readOperatedObservatories();
 
   if (!observatory) {
     return (

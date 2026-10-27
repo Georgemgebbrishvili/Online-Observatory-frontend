@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export const operatorObservatoryCookie = "stellar-operator-observatory";
+import { operatorObservatoryCookie } from "@/features/operator/observatory-cookie";
 
 type PickerProps = {
   label: string;
@@ -16,7 +16,12 @@ type PickerProps = {
  * the hardware test observatory no customer can book. Remembered in a cookie; the
  * layout checks it against the platform's list on every request.
  */
-export function ObservatoryPicker({ hardwareTest, label, options, selected }: PickerProps) {
+export function ObservatoryPicker({
+  hardwareTest,
+  label,
+  options,
+  selected,
+}: PickerProps) {
   const router = useRouter();
   return (
     <label className="operator-picker">

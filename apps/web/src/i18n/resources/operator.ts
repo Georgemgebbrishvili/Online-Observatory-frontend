@@ -117,6 +117,18 @@ const en = {
     changed: "Mode changed to {mode}.",
     close: "Close",
   },
+  testMission: {
+    title: "Test mission",
+    detail:
+      "No customer can book this observatory. Schedule your own mission here, starting now, then start it in its room. Every safety check still applies.",
+    target: "Target",
+    length: "Length",
+    minutes: "{minutes} min",
+    submit: "Schedule test mission",
+    scheduled: "Scheduled from {time} for {minutes} min.",
+    open: "Open the mission room",
+    failed: "The test mission was not scheduled: {message}",
+  },
   manual: {
     title: "Manual control",
     detail:
@@ -375,7 +387,8 @@ export const operatorCopy = {
         "საჭიროა ფიზიკურად დამსწრე ოპერატორი. REAL ჩართე მხოლოდ მაშინ, როცა ობსერვატორიაში ხარ, ტელესკოპს ხედავ და მის კვებას მისწვდები.",
       attended: "ფიზიკურად ვიმყოფები ობსერვატორიაში",
       simulatedTitle: "სიმულატორზე დაბრუნება",
-      simulatedDetail: "ობსერვატორია ისევ სიმულატორიდან უპასუხებს. მონტირება არ მოძრაობს.",
+      simulatedDetail:
+        "ობსერვატორია ისევ სიმულატორიდან უპასუხებს. მონტირება არ მოძრაობს.",
       reason: "მიზეზი",
       reasonHint: "მინიმუმ 8 სიმბოლო. აუდიტის ჟურნალში სიტყვასიტყვით ჩაიწერება.",
       submitReal: "REAL-ზე გადართვა",
@@ -383,6 +396,18 @@ export const operatorCopy = {
       failed: "რეჟიმი არ შეიცვალა: {message}",
       changed: "რეჟიმი შეიცვალა: {mode}.",
       close: "დახურვა",
+    },
+    testMission: {
+      title: "სატესტო მისია",
+      detail:
+        "ამ ობსერვატორიას მომხმარებელი ვერ დაჯავშნის. აქ დაგეგმე შენი მისია ახლავე, შემდეგ კი გაუშვი მის ოთახში. უსაფრთხოების ყველა შემოწმება მოქმედებს.",
+      target: "ობიექტი",
+      length: "ხანგრძლივობა",
+      minutes: "{minutes} წთ",
+      submit: "სატესტო მისიის დაგეგმვა",
+      scheduled: "დაიგეგმა {time}-დან, {minutes} წთ.",
+      open: "მისიის ოთახის გახსნა",
+      failed: "სატესტო მისია არ დაიგეგმა: {message}",
     },
     manual: {
       title: "ხელით მართვა",

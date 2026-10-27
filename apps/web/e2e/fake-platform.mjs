@@ -10,6 +10,7 @@ import {
   zAdminListAuditEventsResponse,
   zAdminListMissionsResponse,
   zAdminListObservatoriesResponse,
+  zAdminScheduleTestMissionResponse,
   zAdminUpdateTargetRequest,
   zAdminUpdateTargetResponse,
   zApiError,
@@ -68,6 +69,7 @@ import {
   zRescheduleBookingResponse,
   zSetMissionObservationBody,
   zSetMissionObservationResponse,
+  zScheduleTestMissionRequest,
   zSetObservatoryModeRequest,
   zStartMissionSessionResponse,
   zSubmitMissionCommandBody,
@@ -1397,6 +1399,16 @@ function modeOf(request) {
   return cookies.fake_mode === "real" || session?.mode === "REAL" ? "REAL" : "SIMULATED";
 }
 
+// Platform ADR-074/075: a session that has once called with `fake_hardware_test=1` also
+// lists the hardware test observatory, so no other test's console shows the picker.
+const hardwareTestObservatoryId = "10000000-0000-4000-8000-000000000074";
+function seesHardwareTest(request) {
+  const cookies = cookiesOf(request);
+  const session = sessions.get(cookies[sessionCookie]);
+  if (cookies.fake_hardware_test === "1" && session) session.hardwareTest = true;
+  return cookies.fake_hardware_test === "1" || session?.hardwareTest === true;
+}
+
 function cookiesOf(request) {
   return Object.fromEntries(
     (request.headers.cookie ?? "")
@@ -1849,7 +1861,50 @@ const routes = {
             kind: "FIRST_PARTY",
             approvalStatus: "APPROVED",
           },
+          ...(seesHardwareTest(request)
+            ? [
+                {
+                  id: hardwareTestObservatoryId,
+                  slug: "stellar-tbilisi-hardware",
+                  nameEn: "Stellar Tbilisi — hardware test",
+                  nameKa: "სტელარი თბილისი — აპარატურის ტესტი",
+                  mode: "SIMULATED",
+                  isDemo: false,
+                  hardwareTest: true,
+                  kind: null,
+                  approvalStatus: null,
+                },
+              ]
+            : []),
         ],
+      }),
+    );
+  },
+  [`GET /admin/observatories/${hardwareTestObservatoryId}/state`]: (
+    request,
+    response,
+  ) => {
+    if (operator(request, response)) send(response, 200, observatoryState());
+  },
+  [`POST /admin/observatories/${hardwareTestObservatoryId}/test-mission`]: async (
+    request,
+    response,
+  ) => {
+    if (!operator(request, response)) return;
+    const body = zScheduleTestMissionRequest.safeParse(await json(request));
+    if (!body.success)
+      return error(response, 422, "VALIDATION_FAILED", "A target and a length.");
+    send(
+      response,
+      201,
+      zAdminScheduleTestMissionResponse.parse({
+        bookingId: randomUUID(),
+        missionId: randomUUID(),
+        observatoryId: hardwareTestObservatoryId,
+        targetId: body.data.targetId,
+        slotStartAt: new Date(Math.floor(Date.now() / 60_000) * 60_000).toISOString(),
+        durationMinutes: body.data.durationMinutes,
+        mode: "SIMULATED",
       }),
     );
   },

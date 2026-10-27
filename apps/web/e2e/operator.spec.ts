@@ -121,3 +121,45 @@ test.describe("non-operator", () => {
     expect(response.status()).toBe(403);
   });
 });
+
+test.describe("the hardware test observatory (platform ADR-075)", () => {
+  // Its own session: the fake lists the test observatory per session, so the shared
+  // operator's console keeps one observatory and no picker.
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test("schedules the operator's own mission and links its room", async ({
+    page,
+    context,
+  }) => {
+    await context.addCookies([
+      { name: "fake_hardware_test", value: "1", url: "http://localhost:3100" },
+    ]);
+    await page.goto("/en/sign-in");
+    await page.getByLabel("Email").fill("operator@darkview.test");
+    await page.getByLabel("Password").fill("correct horse battery");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
+    // One call through /api carries the cookie and the new session together.
+    expect((await page.request.get("/api/admin/observatories")).ok()).toBe(true);
+
+    await page.goto("/en/admin/control");
+    await expect(page.getByRole("heading", { name: "Hardware mode" })).toBeVisible({
+      timeout: firstCompile,
+    });
+    // The demo first: no test mission there.
+    await expect(page.getByRole("heading", { name: "Test mission" })).toHaveCount(0);
+
+    await page
+      .locator(".operator-picker select")
+      .selectOption({ label: "Stellar Tbilisi — hardware test · hardware test" });
+    const panel = page.getByRole("region", { name: "Test mission" });
+    await expect(panel).toBeVisible({ timeout: firstCompile });
+    await panel.getByLabel("Length").selectOption("60");
+    await panel.getByRole("button", { name: "Schedule test mission" }).click();
+
+    await expect(panel.getByRole("status")).toContainText("for 60 min");
+    await expect(
+      panel.getByRole("link", { name: "Open the mission room" }),
+    ).toHaveAttribute("href", /^\/en\/app\/missions\/[0-9a-f-]{36}\/session$/);
+  });
+});

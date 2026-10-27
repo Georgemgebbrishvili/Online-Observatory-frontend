@@ -7,6 +7,7 @@ import type {
   MissionState,
   OperatorObservatoryState,
   OperatorOverrideRequest,
+  ScheduleTestMissionRequest,
   SetObservatoryModeRequest,
 } from "@darkview/contracts";
 import {
@@ -15,6 +16,7 @@ import {
   zAdminListAuditEventsResponse,
   zAdminListMissionsResponse,
   zAdminOverrideCommandResponse,
+  zAdminScheduleTestMissionResponse,
   zAdminSetObservatoryModeResponse,
   zAdminUpdateTargetResponse,
 } from "@darkview/contracts/zod";
@@ -49,6 +51,17 @@ export function setObservatoryMode(
     body,
     schema: zAdminSetObservatoryModeResponse,
   });
+}
+
+/** Platform ADR-075: the operator's own mission on the hardware test observatory. */
+export function scheduleTestMission(
+  observatoryId: string,
+  body: ScheduleTestMissionRequest,
+) {
+  return apiRequest(
+    `/admin/observatories/${encodeURIComponent(observatoryId)}/test-mission`,
+    { method: "POST", body, schema: zAdminScheduleTestMissionResponse },
+  );
 }
 
 function query(params: Record<string, string | undefined>) {
