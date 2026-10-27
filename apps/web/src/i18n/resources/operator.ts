@@ -120,7 +120,7 @@ const en = {
   testMission: {
     title: "Test mission",
     detail:
-      "No customer can book this observatory. Schedule your own mission here, starting now, then start it in its room. Every safety check still applies.",
+      "No customer can book this observatory. Schedule your own mission here, starting now, then start it in its room. Every safety check still applies; scheduling again replaces one you have not started.",
     target: "Target",
     length: "Length",
     minutes: "{minutes} min",
@@ -400,7 +400,7 @@ export const operatorCopy = {
     testMission: {
       title: "სატესტო მისია",
       detail:
-        "ამ ობსერვატორიას მომხმარებელი ვერ დაჯავშნის. აქ დაგეგმე შენი მისია ახლავე, შემდეგ კი გაუშვი მის ოთახში. უსაფრთხოების ყველა შემოწმება მოქმედებს.",
+        "ამ ობსერვატორიას მომხმარებელი ვერ დაჯავშნის. აქ დაგეგმე შენი მისია ახლავე, შემდეგ კი გაუშვი მის ოთახში. უსაფრთხოების ყველა შემოწმება მოქმედებს; ხელახლა დაგეგმვა ჩაანაცვლებს გაუშვებელ მისიას.",
       target: "ობიექტი",
       length: "ხანგრძლივობა",
       minutes: "{minutes} წთ",
