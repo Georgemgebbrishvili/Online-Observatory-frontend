@@ -61,6 +61,10 @@ import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { TargetPreview } from "@/components/room/target-preview";
 import { FlightPlan } from "@/components/home/flight-plan";
 import { PageGuide } from "@/components/guide/page-guide";
+import { brand } from "@/brand";
+import { HomeQuick } from "@/components/home/home-quick";
+import type { ObservatoryPanelResult } from "@/features/home/read";
+import type { PricingFacts } from "@/features/pricing/read";
 import { SkyHero } from "@/components/home/sky-hero";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
@@ -111,6 +115,57 @@ import {
   stepSpecimenHistory,
   targetSpecimens,
 } from "./copy";
+
+// The phone homepage's first panel (HomeQuick), with a live observation and four open
+// times, then unreadable. Fixed values, so the specimen never follows the clock.
+const quickPanelSpecimen: ObservatoryPanelResult = {
+  kind: "ok",
+  observatory: {
+    id: "specimen",
+    slug: "stellar-tbilisi",
+    kind: "FIRST_PARTY",
+    nameEn: `${brand.en.name} Tbilisi`,
+    nameKa: `${brand.ka.nominative} თბილისი`,
+    city: "Tbilisi",
+    countryCode: "GE",
+    timezone: "Asia/Tbilisi",
+    telescope: { manufacturer: "", model: "", apertureMm: 203, focalLengthMm: 2032 },
+  },
+  status: {
+    observatoryId: "specimen",
+    mode: "SIMULATED",
+    link: "ONLINE",
+    weather: {
+      status: "CLEAR",
+      source: "OPERATOR",
+      holdActive: false,
+      updatedAt: "2026-10-28T16:00:00Z",
+    },
+    missionInProgress: true,
+    currentTargetName: "Saturn",
+    updatedAt: "2026-10-28T16:00:00Z",
+  },
+};
+
+const quickPricingSpecimen = (unreadable: boolean): PricingFacts => ({
+  slot: null,
+  tonight: unreadable
+    ? null
+    : {
+        date: "2026-10-28",
+        label: "Wednesday 28 October",
+        isToday: true,
+        timezone: "Asia/Tbilisi",
+        slots: ["15:45", "16:00", "17:30", "17:45"].map((time) => ({
+          startAt: `2026-10-28T${time}:00Z`,
+          price: "GEL 45.00",
+          durationMinutes: 30,
+        })),
+      },
+  openThisWeek: unreadable ? 0 : 4,
+  reachable: !unreadable,
+  loyalty: null,
+});
 
 type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
@@ -1423,6 +1478,24 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
 
         <section className="ds-section" aria-labelledby="homepage-title">
           <SectionHeader id="homepage-title" section={copy.sections.homepage} />
+          <div className="ds-home-specimen ds-quick-specimens">
+            <HomeQuick
+              live={dictionary.home.live}
+              locale={locale}
+              id="ds-quick-title"
+              specimen
+              panel={quickPanelSpecimen}
+              pricing={quickPricingSpecimen(false)}
+            />
+            <HomeQuick
+              live={dictionary.home.live}
+              locale={locale}
+              id="ds-quick-unreachable"
+              specimen
+              panel={{ kind: "unreachable" }}
+              pricing={quickPricingSpecimen(true)}
+            />
+          </div>
           <div className="ds-home-specimen">
             <FlightPlan
               steps={dictionary.home.howItWorks.steps.map((step) => ({

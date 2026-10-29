@@ -10,9 +10,18 @@
   box-sizing: border-box;
 }
 
+/*
+ * A phone page never moves sideways: nothing may widen the page, Chrome may not
+ * enlarge text past its box, and a sideways swipe never drags or bounces the page.
+ * clip (not hidden) keeps position: sticky working.
+ */
 html {
+  overflow-x: clip;
   background: var(--color-console);
   color-scheme: dark;
+  overscroll-behavior-x: none;
+  -webkit-tap-highlight-color: transparent;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -20,6 +29,7 @@ body {
   isolation: isolate;
   min-width: 20rem;
   min-height: 100vh;
+  overflow-x: clip;
   margin: 0;
   background: transparent;
   color: var(--color-text-primary);

@@ -325,6 +325,7 @@
      placed against the page, outside this clip, and widen it on a phone. */
   position: relative;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .operator-table {
@@ -419,6 +420,7 @@
   margin: var(--space-3) 0 0;
   padding: var(--space-3);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   border-radius: var(--radius-small);
   background: var(--color-surface-raised);
   color: var(--color-text-secondary);

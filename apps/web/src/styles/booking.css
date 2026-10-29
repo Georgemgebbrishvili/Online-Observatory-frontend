@@ -76,6 +76,7 @@ html[lang="ka"] .booking-hero h1 {
   margin: 0;
   padding: 0 0 var(--space-2);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   list-style: none;
   scroll-snap-type: x proximity;
 }

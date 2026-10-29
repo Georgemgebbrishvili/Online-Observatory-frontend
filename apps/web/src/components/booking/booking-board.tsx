@@ -617,6 +617,25 @@ export function BookingBoard({
           : reserve.form.reserve;
   const hint = run?.pending ? copy.hint.end : run ? copy.hint.again : copy.hint.start;
 
+  // The quick lengths sit in the ticket; on a phone they move above the grid, beside the
+  // times they stretch, and the ticket's copy is hidden (booking-board.css).
+  const quickLengths = (className: string) =>
+    run &&
+    fixedCells === null && (
+      <div className={className} role="group" aria-label={copy.quickLengths}>
+        {QUICK_LENGTHS.map((length) => (
+          <button
+            key={length}
+            type="button"
+            aria-pressed={minutes === length}
+            onClick={() => nudge(run.from + length / QUARTER - 1 - run.to)}
+          >
+            {copy.duration(length)}
+          </button>
+        ))}
+      </div>
+    );
+
   return (
     <form className="board" onSubmit={submit} aria-busy={phase !== "idle" || undefined}>
       <header className="board-head">
@@ -658,6 +677,7 @@ export function BookingBoard({
             <p className="board-hint" aria-live="polite">
               {hint}
             </p>
+            {quickLengths("board-quick board-quick-top")}
             {slots.length > 0 ? (
               <TimeGrid
                 cells={cells}
@@ -825,20 +845,7 @@ export function BookingBoard({
           ) : (
             run && <p className="board-length-fixed">{copy.duration(minutes)}</p>
           )}
-          {run && fixedCells === null && (
-            <div className="board-quick" role="group" aria-label={copy.quickLengths}>
-              {QUICK_LENGTHS.map((length) => (
-                <button
-                  key={length}
-                  type="button"
-                  aria-pressed={minutes === length}
-                  onClick={() => nudge(run.from + length / QUARTER - 1 - run.to)}
-                >
-                  {copy.duration(length)}
-                </button>
-              ))}
-            </div>
-          )}
+          {quickLengths("board-quick")}
 
           <dl className="board-rows">
             <div>

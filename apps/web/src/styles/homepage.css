@@ -350,8 +350,17 @@
 
 /* PHONE — the hero is two thirds of a screen. */
 @media (--below-md) {
+  /*
+   * A phone's hero is only as tall as its words and the observatory under them, so the
+   * observatory now and tonight's open times (.home-quick) share the first screen.
+   */
   .sky-hero {
-    min-height: min(68svh, 34rem);
+    min-height: 0;
+  }
+
+  .sky-hero-copy {
+    padding-top: var(--space-10);
+    padding-bottom: 8.5rem;
   }
 
   .home-band {
@@ -874,4 +883,155 @@
   .home-faq summary::after {
     transition: none;
   }
+}
+
+/*
+ * ON A PHONE, UNDER THE HERO — the observatory now in one line and tonight's next open
+ * start times, each a tap from the booking board with that time chosen. Wider screens
+ * have the hero's sky and the cards below instead.
+ */
+.home-quick {
+  position: relative;
+  z-index: 1;
+  display: none;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+}
+
+@media (--below-md) {
+  .home-quick {
+    display: grid;
+    margin: calc(-1 * var(--space-6)) var(--space-page) 0;
+  }
+}
+
+.home-quick-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.home-quick-status p {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-quick-status [data-tone="good"] .home-dot {
+  background: var(--color-live);
+}
+
+.home-quick-status [data-tone="bad"] .home-dot {
+  background: var(--color-accent);
+}
+
+.home-quick-watch {
+  display: inline-flex;
+  min-height: 2.75rem;
+  flex: 1 1 100%;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-live-border);
+  border-radius: var(--radius-control);
+  background: var(--color-live-muted);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-label);
+  text-decoration: none;
+}
+
+.home-quick-watch b {
+  margin-left: auto;
+  color: var(--color-live);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.home-quick-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.home-quick-head .kicker {
+  margin: 0;
+}
+
+.home-quick-head time {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-quick-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-quick-times {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-quick-times a {
+  display: grid;
+  min-height: 3.5rem;
+  align-content: center;
+  gap: 0.125rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.home-quick-times a:active {
+  border-color: var(--color-accent);
+}
+
+.home-quick-times time {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-quick-times span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-kicker);
+}
+
+.home-quick-all {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-self: end;
+  gap: var(--space-1);
+  color: var(--color-accent-ink);
+  font-size: var(--font-size-label);
+  text-decoration: none;
+}
+
+.home-quick-watch:focus-visible,
+.home-quick-times a:focus-visible,
+.home-quick-all:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }

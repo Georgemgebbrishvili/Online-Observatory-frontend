@@ -393,6 +393,7 @@
   border-radius: var(--radius-large);
   background: var(--gradient-monolith);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .vote-skychart:focus-visible {

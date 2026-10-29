@@ -1,6 +1,7 @@
 import { FlightPlan } from "@/components/home/flight-plan";
 import { HomeMore } from "@/components/home/home-more";
 import { HomeNow } from "@/components/home/home-now";
+import { HomeQuick } from "@/components/home/home-quick";
 import { SkyHero } from "@/components/home/sky-hero";
 import { Container } from "@/components/ui/container";
 import type { ObservatoryPanelResult } from "@/features/home/read";
@@ -18,7 +19,8 @@ type HomeShellProps = {
 };
 
 /**
- * The public homepage: the sky with its observatory, how a night works in four small
+ * The public homepage: the sky with its observatory (on a phone, the observatory now and
+ * tonight's next open times right under it), how a night works in four small
  * doors, two small cards — tonight and the observatory now — then booking and its
  * lengths, the other ways in, questions, and a last call.
  */
@@ -33,6 +35,7 @@ export function HomeShell({ content, locale, panel, pricing, tonight }: HomeShel
   return (
     <main id="main-content" className="public-home">
       <SkyHero content={content.hero} locale={locale} />
+      <HomeQuick live={content.live} locale={locale} panel={panel} pricing={pricing} />
 
       <section className="home-band home-steps" id="about" aria-labelledby="steps-title">
         <Container>

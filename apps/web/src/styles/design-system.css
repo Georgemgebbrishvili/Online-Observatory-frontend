@@ -585,3 +585,21 @@
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   gap: var(--space-6);
 }
+
+/* The phone homepage's first panel, shown at every width here, side by side from --md. */
+.ds-quick-specimens {
+  display: grid;
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.ds-quick-specimens .home-quick {
+  display: grid;
+  margin: 0;
+}
+
+@media (--md) {
+  .ds-quick-specimens {
+    grid-template-columns: repeat(2, minmax(0, 24rem));
+  }
+}

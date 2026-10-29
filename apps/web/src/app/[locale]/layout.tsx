@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Anton,
   Archivo,
@@ -16,6 +16,7 @@ import { isLocale, locales } from "@/i18n/config";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
 import "@/styles/globals.css";
 import { brand } from "@/brand";
+import { palette } from "@/styles/tokens";
 
 const firaGO = localFont({
   src: [
@@ -100,6 +101,16 @@ type LocaleMetadataProps = {
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
+
+// The phone's own bars take the canvas colour, and the page may draw under a notch or the
+// gesture bar: every fixed bar pads itself with env(safe-area-inset-*).
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: palette.canvas,
+  colorScheme: "dark",
+};
 
 export async function generateMetadata({
   params,

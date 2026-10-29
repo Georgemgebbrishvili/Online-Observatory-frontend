@@ -601,6 +601,18 @@ html:has(.public-mobile-menu[data-open]) {
     white-space: nowrap;
   }
 
+  /*
+   * Mkhedruli runs wider than Oswald capitals: in Georgian a tab is never narrower than
+   * its word (ობსერვატორია is 105 px at 13 px), and the shorter words give up the room.
+   */
+  .phone-tab-bar:lang(ka) {
+    grid-auto-columns: minmax(max-content, 1fr);
+  }
+
+  .phone-tab-label:lang(ka) {
+    padding-inline: 0;
+  }
+
   .phone-tab[aria-current="page"] {
     border-color: var(--color-accent-border);
     background: var(--color-accent-muted);

@@ -35,13 +35,17 @@
   grid-auto-flow: column;
   gap: var(--space-2);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   padding: var(--space-1) var(--space-1) var(--space-3);
   margin: 0 calc(-1 * var(--space-1));
+  scroll-padding-inline: var(--space-1);
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
 }
 
 .night-tile {
   display: grid;
+  scroll-snap-align: start;
   justify-items: center;
   gap: 2px;
   padding: var(--space-3) var(--space-2);
@@ -158,6 +162,8 @@
 
 /* The step's number: the poster's red, in the label face. */
 .board-step-no {
+  flex: none;
+  overflow-wrap: normal;
   color: var(--color-accent-ink);
   font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-label);
   letter-spacing: var(--tracking-label);
@@ -651,6 +657,32 @@
   font-size: var(--font-size-hint);
 }
 
+/* The phone's copy of the quick lengths, above the grid on the dark panel. */
+.board-quick-top {
+  display: none;
+}
+
+@media (--below-md) {
+  .board-quick-top {
+    display: grid;
+    margin: 0 0 var(--space-3);
+  }
+
+  .board-quick-top button {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-base);
+    color: var(--color-text-primary);
+  }
+
+  .board-quick-top button:hover {
+    border-color: var(--color-line-strong);
+  }
+
+  .board-sum .board-quick {
+    display: none;
+  }
+}
+
 .board-length-fixed {
   margin: 0;
   font-weight: var(--font-weight-semibold);
@@ -804,9 +836,12 @@
     );
     left: var(--space-3);
     z-index: 44;
-    display: flex;
+    /* The time over the price on the left, the button on the right: both fit at 320 px
+       in Georgian, whose button words run long. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-1) var(--space-3);
     padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
     border-radius: var(--radius-full);
     background: var(--color-paper);
@@ -816,18 +851,41 @@
     text-decoration: none;
   }
 
+  .board-bar > span:first-child {
+    overflow: hidden;
+    grid-column: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .board-bar b {
-    margin-left: auto;
+    grid-column: 1;
     color: var(--color-on-paper);
+    font-size: var(--font-size-label);
   }
 
   .board-bar-go {
+    display: grid;
+    min-height: var(--size-touch);
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    place-items: center;
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-full);
     background: var(--gradient-poster);
     box-shadow: var(--shadow-gloss);
     color: var(--color-on-action);
     font: var(--font-weight-semibold) var(--font-size-caption) / 1 var(--font-label);
+    white-space: nowrap;
+  }
+
+  /* The Georgian words wrap onto the button's second row rather than cover the time. */
+  :lang(ka) .board-bar-go {
+    max-width: 8.5rem;
+    border-radius: var(--radius-control);
+    line-height: 1.25;
+    text-align: center;
+    white-space: normal;
   }
 }
 

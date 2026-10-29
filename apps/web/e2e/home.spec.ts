@@ -53,8 +53,9 @@ test("the public homepage: the sky, four small doors, two cards, and the chapter
   await expect(
     page.getByRole("heading", { level: 2, name: "Four steps. One real observation." }),
   ).toBeVisible();
-  // The sky, the steps, the cards, then booking, the ways in, questions and a last call.
-  await expect(page.locator("main section")).toHaveCount(7);
+  // The sky, the phone's quick panel (hidden at this width), the steps, the cards, then
+  // booking, the ways in, questions and a last call.
+  await expect(page.locator("main section")).toHaveCount(8);
   // What lengths cost, at the platform's rate by the minute (150 tetri on the fake).
   const lengths = page.getByRole("complementary", { name: "Any length, one rate" });
   await expect(lengths.locator("dd")).toHaveText([
@@ -578,4 +579,31 @@ test("keeps localized pricing inside the mobile viewport", async ({ page }) => {
     scrollWidth: document.documentElement.scrollWidth,
   }));
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
+});
+
+test("a phone's first screen holds the observatory now and tonight's open times", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/en");
+
+  const quick = page.getByRole("region", { name: "Open tonight", exact: true });
+  await expect(quick).toBeVisible();
+  await expect(quick.getByText("Online")).toBeVisible();
+  const times = quick.getByRole("listitem");
+  expect(await times.count()).toBeGreaterThan(0);
+  expect(await times.count()).toBeLessThanOrEqual(4);
+  // Above the fold: the panel starts within the first screen.
+  const box = await quick.boundingBox();
+  expect(box!.y).toBeLessThan(844);
+  // A time opens the booking board with that start chosen.
+  await expect(times.first().getByRole("link")).toHaveAttribute(
+    "href",
+    /\/en\/app\/book\?startAt=/,
+  );
+  // Nothing on the page is wider than the screen.
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(quick).toBeHidden();
 });
