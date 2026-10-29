@@ -54,7 +54,7 @@ test("Tonight, live is read and left by keyboard", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1, name: "Tonight, live" }),
   ).toBeAttached();
-  const book = await tabTo(page, /^Book your own night$/);
+  const book = await tabTo(page, /^Book a session$/);
   await book.press("Enter");
   await expect(page).toHaveURL(/\/en\/app\/book/);
 });

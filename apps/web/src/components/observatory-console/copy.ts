@@ -304,7 +304,7 @@ const en: ConsoleCopy = {
     observe: (name) => (name ? `Observe ${name}` : "Observe"),
     text: (name) =>
       name
-        ? `Connect, align and point the telescope at ${name} in one go. The mount moves at its own pace: about a minute.`
+        ? `Connect, align and point at ${name} in one go. About a minute.`
         : "Nothing in the catalogue is up right now.",
     start: (name) => (name ? `Start · ${name}` : "Start"),
   },
@@ -315,7 +315,7 @@ const en: ConsoleCopy = {
     darkNow: "Dark now",
     twilight: "Twilight",
     daylight: "Daylight",
-    oneOpen: "One telescope, in Georgia. More join as partners come online.",
+    oneOpen: "One telescope, in Georgia. More to come.",
   },
   session: { title: "Session", parkEnd: "Park & end", stop: "Stop observation", confirmStop: "Confirm stop", booked: "Booked target" },
   pointing: {
@@ -344,7 +344,7 @@ const en: ConsoleCopy = {
     less: "less",
     more: "more",
     exposing: (done, total) => `Exposing · ${done} / ${total}`,
-    refresh: (seconds) => `The view refreshes every ${seconds}. Use a short exposure to centre.`,
+    refresh: (seconds) => `View refreshes every ${seconds}. Use a short exposure to centre.`,
     histogram: "Histogram",
   },
   hand: {
@@ -389,7 +389,7 @@ const en: ConsoleCopy = {
     limits: "Slew limits",
     altMin: "Altitude min",
     altMax: "Altitude max",
-    note: "The hand control's Scope Setup, as the manual lists it. The safety envelope (20°–85°, Sun avoidance) is the platform's and sits above these.",
+    note: "The hand control's Scope Setup. The platform's safety limits (20°–85°, Sun avoidance) override these.",
   },
   frames: {
     title: "Frames",
@@ -424,18 +424,18 @@ const en: ConsoleCopy = {
     of: (step, count) => `Step ${step} of ${count}`,
     hints: {
       connect: "Connect to the telescope to start.",
-      align: "Align: the mount leaves home, solves a field and syncs. Then the feed starts.",
+      align: "The mount leaves home, solves a field and syncs. Then the feed starts.",
       target: (quick) =>
         `Select a target that has risen.${quick ? ` Quick start points at ${quick}.` : ""}`,
       point: (seconds) => `GoTo at 5°/s, plate-solve and centre. About ${seconds} seconds.`,
       stacking: (done, goal, exposure) => `Stacking ${done} of ${goal} frames of ${exposure}.`,
-      tracking: "On target and tracking the sky. Nudge with the pad: the object stays where it is on the sky.",
+      tracking: "On target and tracking. Nudge with the pad.",
       drifting: "Tracking is off: the sky drifts through the field at sidereal rate.",
       belowHorizon: "The target has set below the horizon. Choose another.",
       platform: {
         connect: "Start your session to take the real instrument's controls.",
-        running: "The observatory is slewing to your booked target. Nudges open once it is centred.",
-        observing: "On your booked target. Nudge in bounded steps, re-centre, or capture.",
+        running: "Slewing to your booked target. Nudges open once centred.",
+        observing: "On your target. Nudge, re-centre or capture.",
         stopped: "The observation has ended.",
       },
     },
@@ -492,12 +492,12 @@ const en: ConsoleCopy = {
   idle: {
     text: (quick) =>
       quick
-        ? `Connect and align to start the feed, or use Quick start to go straight to ${quick}.`
+        ? `Connect and align, or use Quick start for ${quick}.`
         : "Connect and align to start the feed.",
     ready: "Ready to point",
     pointTo: (name) => `Point to ${name} to begin.`,
     chooseRisen: "Choose a target that has risen.",
-    platform: (target) => `Your booked observation of ${target}. Start the session to take the controls.`,
+    platform: (target) => `Your booked observation: ${target}. Start the session to take control.`,
   },
   phone: { tracking: "Tracking", seeing: "Seeing", frames: "Frames" },
   details: {
@@ -551,16 +551,16 @@ const en: ConsoleCopy = {
     ra: "RA (hh:mm:ss)",
     dec: "Dec (±dd:mm:ss)",
     goto: "GoTo",
-    invalid: "Enter a right ascension from 0 to 24 h and a declination from −90° to +90°.",
+    invalid: "Enter RA 0–24 h and Dec −90° to +90°.",
   },
   refused: {
     head: "Refused · safety envelope",
     notRisen: (name) => `${name} has not risen`,
     refused: (name) => `${name} is refused`,
     below: (station) =>
-      `It sits below the horizon for ${station}. The mount refuses what it would refuse in the dome, so nothing moved.`,
+      `Below the horizon for ${station}. Nothing moved.`,
     reason: (reason) =>
-      `${reason}. The mount refuses what it would refuse in the dome, so nothing moved.`,
+      `${reason}. Nothing moved.`,
     rises: "RISES",
     best: "BEST",
     notUpTonight: "— NOT UP TONIGHT",
@@ -623,8 +623,8 @@ const ka: ConsoleCopy = {
     observe: (name) => name ?? "დაკვირვება",
     text: (name) =>
       name
-        ? `დაუკავშირდი, გაასწორე და მიმართე ტელესკოპი ობიექტისკენ (${name}) ერთი ნაბიჯით. მონტირება თავისი ტემპით მოძრაობს: დაახლოებით ერთი წუთი.`
-        : "კატალოგიდან ამჟამად არაფერია ამოსული.",
+        ? `დაკავშირება, გასწორება და მიმართვა (${name}) ერთი ნაბიჯით. დაახლოებით ერთი წუთი.`
+        : "ახლა ცაზე არაფერია ამოსული.",
     start: (name) => (name ? `დაწყება · ${name}` : "დაწყება"),
   },
   telescopes: {
@@ -634,7 +634,7 @@ const ka: ConsoleCopy = {
     darkNow: "ახლა ბნელა",
     twilight: "ბინდი",
     daylight: "დღეა",
-    oneOpen: "ერთი ტელესკოპი, საქართველოში. სხვები პარტნიორების შემოერთებასთან ერთად დაემატება.",
+    oneOpen: "ერთი ტელესკოპი, საქართველოში. მეტი მალე დაემატება.",
   },
   session: { title: "სეანსი", parkEnd: "პარკირება და დასრულება", stop: "დაკვირვების შეწყვეტა", confirmStop: "შეწყვეტის დადასტურება", booked: "დაჯავშნილი ობიექტი" },
   pointing: {
@@ -663,7 +663,7 @@ const ka: ConsoleCopy = {
     less: "ნაკლები",
     more: "მეტი",
     exposing: (done, total) => `ექსპოზიცია · ${done} / ${total}`,
-    refresh: (seconds) => `ხედი განახლდება ყოველ ${seconds}. დასაცენტრებლად გამოიყენე მოკლე ექსპოზიცია.`,
+    refresh: (seconds) => `ხედი ახლდება ყოველ ${seconds}. დასაცენტრებლად აირჩიე მოკლე ექსპოზიცია.`,
     histogram: "ჰისტოგრამა",
   },
   hand: {
@@ -708,7 +708,7 @@ const ka: ConsoleCopy = {
     limits: "მოძრაობის ზღვრები",
     altMin: "მინ. სიმაღლე",
     altMax: "მაქს. სიმაღლე",
-    note: "ხელის პულტის Scope Setup, როგორც სახელმძღვანელოშია. უსაფრთხოების ზღვარი (20°–85°, მზის არიდება) პლატფორმისაა და ამ პარამეტრებზე მაღლა დგას.",
+    note: "ხელის პულტის Scope Setup. პლატფორმის უსაფრთხოების ზღვრები (20°–85°, მზისგან დაცვა) ამ პარამეტრებზე მაღლა დგას.",
   },
   frames: {
     title: "კადრები",
@@ -743,18 +743,18 @@ const ka: ConsoleCopy = {
     of: (step, count) => `ნაბიჯი ${step} / ${count}`,
     hints: {
       connect: "დასაწყებად დაუკავშირდი ტელესკოპს.",
-      align: "გასწორება: მონტირება ტოვებს საწყის პოზიციას, ამოიცნობს ველს და სინქრონდება. შემდეგ ეთერი იწყება.",
+      align: "მონტირება ტოვებს საწყის პოზიციას, ამოიცნობს ველს და სინქრონდება. მერე ეთერი იწყება.",
       target: (quick) =>
         `აირჩიე ამოსული ობიექტი.${quick ? ` სწრაფი დაწყება მიმართავს: ${quick}.` : ""}`,
       point: (seconds) => `GoTo 5°/წმ სიჩქარით, კადრის ამოცნობა და დაცენტრება. დაახლოებით ${seconds} წამი.`,
       stacking: (done, goal, exposure) => `ჯამდება ${done} / ${goal} კადრი, თითო ${exposure}.`,
-      tracking: "ობიექტზეა და ცას მიჰყვება. პულტით გადაწიე: ობიექტი ცაზე თავის ადგილას რჩება.",
+      tracking: "ობიექტზეა და ცას მიჰყვება. გადასაწევად გამოიყენე პულტი.",
       drifting: "ტრეკინგი გამორთულია: ცა ხედვის ველში ვარსკვლავური სიჩქარით მიცურავს.",
       belowHorizon: "ობიექტი ჰორიზონტს ქვემოთ ჩავიდა. აირჩიე სხვა.",
       platform: {
-        connect: "დაიწყე სეანსი, რომ ნამდვილი ინსტრუმენტის მართვა აიღო.",
-        running: "ობსერვატორია შენი დაჯავშნილი ობიექტისკენ მოძრაობს. გადაწევა დაცენტრების შემდეგ იხსნება.",
-        observing: "შენს დაჯავშნილ ობიექტზეა. გადაწიე შეზღუდული ნაბიჯებით, ხელახლა დააცენტრე ან გადაიღე.",
+        connect: "დაიწყე სეანსი ტელესკოპის სამართავად.",
+        running: "ტელესკოპი შენი ობიექტისკენ მოძრაობს. გადაწევა დაცენტრების შემდეგ ჩაირთვება.",
+        observing: "შენს ობიექტზეა. გადაწიე, ხელახლა დააცენტრე ან გადაიღე.",
         stopped: "დაკვირვება დასრულდა.",
       },
     },
@@ -811,12 +811,12 @@ const ka: ConsoleCopy = {
   idle: {
     text: (quick) =>
       quick
-        ? `დაუკავშირდი და გაასწორე ეთერის დასაწყებად, ან სწრაფი დაწყებით პირდაპირ გადადი: ${quick}.`
+        ? `დაუკავშირდი და გაასწორე, ან სწრაფი დაწყებით გადადი: ${quick}.`
         : "დაუკავშირდი და გაასწორე ეთერის დასაწყებად.",
     ready: "მზადაა მიმართვისთვის",
     pointTo: (name) => `დასაწყებად მიმართე: ${name}.`,
     chooseRisen: "აირჩიე ამოსული ობიექტი.",
-    platform: (target) => `შენი დაჯავშნილი დაკვირვება: ${target}. დაიწყე სეანსი მართვის ასაღებად.`,
+    platform: (target) => `შენი დაჯავშნილი დაკვირვება: ${target}. დაიწყე სეანსი სამართავად.`,
   },
   phone: { tracking: "ტრეკინგი", seeing: "სიინგი", frames: "კადრები" },
   details: {
@@ -870,16 +870,16 @@ const ka: ConsoleCopy = {
     ra: "RA (სს:წწ:წწ)",
     dec: "Dec (±გგ:წწ:წწ)",
     goto: "GoTo",
-    invalid: "შეიყვანე პირდაპირი აღმავლობა 0-დან 24 სთ-მდე და დახრილობა −90°-დან +90°-მდე.",
+    invalid: "შეიყვანე RA 0–24 სთ და Dec −90°-დან +90°-მდე.",
   },
   refused: {
     head: "უარყოფილია · უსაფრთხოების ზღვარი",
     notRisen: (name) => `${name} არ ამოსულა`,
     refused: (name) => `${name} უარყოფილია`,
     below: (station) =>
-      `ამ სადგურიდან (${station}) ის ჰორიზონტს ქვემოთაა. მონტირება უარყოფს იმას, რასაც ობსერვატორიაშიც უარყოფდა, ამიტომ არაფერი გაინძრა.`,
+      `ამ სადგურიდან (${station}) ჰორიზონტს ქვემოთაა. არაფერი გაინძრა.`,
     reason: (reason) =>
-      `${reason}. მონტირება უარყოფს იმას, რასაც ობსერვატორიაშიც უარყოფდა, ამიტომ არაფერი გაინძრა.`,
+      `${reason}. არაფერი გაინძრა.`,
     rises: "ამოდის",
     best: "საუკეთესო",
     notUpTonight: "— ამაღამ არ ჩანს",

@@ -14,7 +14,7 @@ const en = {
   },
   register: {
     metadataTitle: `Create account · ${brand.en.name}`,
-    title: "Begin your observing journey.",
+    title: "Create your account.",
     submit: "Create account",
     alternate: "Already have an account?",
     alternateAction: "Sign in",
@@ -23,13 +23,13 @@ const en = {
     metadataTitle: `Verify email · ${brand.en.name}`,
     title: "Check your email.",
     description:
-      "We sent a one-time verification link. It expires in 30 minutes and can only be used once.",
+      "We sent you a link. It works once, for 30 minutes.",
     action: "Return to sign in",
   },
   verify: {
     metadataTitle: `Confirm email · ${brand.en.name}`,
     title: "Confirm your email address.",
-    description: "Confirming signs you in here, and signs you out everywhere else.",
+    description: "This signs you out on other devices.",
     submit: "Confirm email",
     invalid: "This link is invalid, used or expired.",
   },
@@ -39,7 +39,7 @@ const en = {
     submit: "Send link",
     sentTitle: "Check your email.",
     sentDescription:
-      "If an account uses that address, a link is on its way. It expires in 30 minutes and works once.",
+      "If that address has an account, we sent a link. It works once, for 30 minutes.",
     back: "Return to sign in",
   },
   resetConfirm: {
@@ -65,8 +65,8 @@ const en = {
     invalidCredentials: "Email or password is incorrect.",
     unverified: "Verify your email before signing in.",
     rateLimited: "Too many attempts. Try again in 15 minutes.",
-    unavailable: "Authentication is temporarily unavailable. Please try again later.",
-    google: "Google sign-in did not complete. Try again, or use your email and password.",
+    unavailable: "Sign-in is down. Try again later.",
+    google: "Google sign-in failed. Try again or use email.",
   },
   logout: "Sign out",
 };
@@ -76,9 +76,9 @@ export const authCopy = {
   ka: {
     signIn: {
       metadataTitle: `შესვლა · ${brand.ka.nominative}`,
-      title: "კეთილი იყოს შენი დაბრუნება.",
+      title: "გამარჯობა!",
       submit: "შესვლა",
-      alternate: `ჯერ არ გაქვს ${brand.ka.genitive} ანგარიში?`,
+      alternate: "ანგარიში არ გაქვს?",
       alternateAction: "ანგარიშის შექმნა",
       forgot: "დაგავიწყდა პაროლი?",
       google: "Google-ით გაგრძელება",
@@ -86,7 +86,7 @@ export const authCopy = {
     },
     register: {
       metadataTitle: `ანგარიშის შექმნა · ${brand.ka.nominative}`,
-      title: "შენი პირველი დაკვირვება აქედან იწყება.",
+      title: "შექმენი ანგარიში.",
       submit: "ანგარიშის შექმნა",
       alternate: "უკვე გაქვს ანგარიში?",
       alternateAction: "შესვლა",
@@ -95,16 +95,16 @@ export const authCopy = {
       metadataTitle: `ელფოსტის დადასტურება · ${brand.ka.nominative}`,
       title: "შეამოწმე ელფოსტა.",
       description:
-        "გამოგიგზავნეთ ერთჯერადი დამადასტურებელი ბმული. ის 30 წუთი მოქმედებს და მხოლოდ ერთხელ იმუშავებს.",
+        "ბმული გამოგიგზავნეთ. მუშაობს ერთხელ, 30 წუთის განმავლობაში.",
       action: "შესვლაზე დაბრუნება",
     },
     verify: {
       metadataTitle: `ელფოსტის დადასტურება · ${brand.ka.nominative}`,
-      title: "დაადასტურე ელფოსტის მისამართი.",
+      title: "დაადასტურე ელფოსტა.",
       description:
-        "დადასტურების შემდეგ აქ შეხვალ, ყველა სხვა მოწყობილობაზე კი გამოხვალ.",
+        "სხვა მოწყობილობებიდან გამოხვალ.",
       submit: "ელფოსტის დადასტურება",
-      invalid: "ეს ბმული არასწორია, უკვე გამოყენებულია ან ვადაგასულია.",
+      invalid: "ბმული აღარ მუშაობს.",
     },
     resetRequest: {
       metadataTitle: `პაროლის აღდგენა · ${brand.ka.nominative}`,
@@ -112,14 +112,14 @@ export const authCopy = {
       submit: "ბმულის გაგზავნა",
       sentTitle: "შეამოწმე ელფოსტა.",
       sentDescription:
-        "თუ ამ მისამართით ანგარიში არსებობს, ბმული უკვე გზაშია. ის 30 წუთი მოქმედებს და მხოლოდ ერთხელ იმუშავებს.",
+        "თუ ამ მისამართზე ანგარიშია, ბმული გამოგიგზავნეთ. მუშაობს ერთხელ, 30 წუთის განმავლობაში.",
       back: "შესვლაზე დაბრუნება",
     },
     resetConfirm: {
       metadataTitle: `ახალი პაროლი · ${brand.ka.nominative}`,
       title: "აირჩიე ახალი პაროლი.",
-      submit: "პაროლის დაყენება",
-      deadLink: "ეს ბმული არასწორია, უკვე გამოყენებულია ან ვადაგასულია.",
+      submit: "პაროლის შენახვა",
+      deadLink: "ბმული აღარ მუშაობს.",
       newLink: "ახალი ბმულის გაგზავნა",
     },
     fields: {
@@ -129,17 +129,17 @@ export const authCopy = {
       emailPlaceholder: "you@example.com",
       password: "პაროლი",
       newPassword: "ახალი პაროლი",
-      passwordHint: "გამოიყენე მინიმუმ 12 სიმბოლო.",
+      passwordHint: "მინიმუმ 12 სიმბოლო.",
     },
     errors: {
-      invalidEmail: "შეიყვანე სწორი ელფოსტის მისამართი.",
+      invalidEmail: "შეიყვანე სწორი ელფოსტა.",
       shortName: "შეიყვანე მინიმუმ ორი სიმბოლო.",
       weakPassword: "პაროლი 12-დან 128 სიმბოლომდე უნდა იყოს.",
       invalidCredentials: "ელფოსტა ან პაროლი არასწორია.",
       unverified: "შესვლამდე დაადასტურე ელფოსტა.",
-      rateLimited: "ცდების ლიმიტი ამოიწურა. სცადე 15 წუთში.",
-      unavailable: "ავტორიზაცია დროებით მიუწვდომელია. მოგვიანებით სცადე.",
-      google: "Google-ით შესვლა ვერ დასრულდა. სცადე ხელახლა, ან შედი ელფოსტითა და პაროლით.",
+      rateLimited: "ბევრი მცდელობაა. სცადე 15 წუთში.",
+      unavailable: "შესვლა დროებით არ მუშაობს. მოგვიანებით სცადე.",
+      google: "Google-ით შესვლა ვერ მოხერხდა. სცადე თავიდან ან შედი ელფოსტით.",
     },
     logout: "გასვლა",
   },

@@ -51,7 +51,7 @@ test("a confirmed booking opens its observation and says why it cannot be cancel
   await expect(page.getByText("SIMULATED OBSERVATORY")).toHaveCount(0);
   await expect(page.getByText("Loyalty discount")).toBeVisible();
   await expect(
-    page.getByText("A paid booking cannot be cancelled until refunds are available."),
+    page.getByText("Paid bookings can't be cancelled yet."),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "Cancel booking" })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Open the observation" })).toHaveAttribute(
@@ -66,7 +66,7 @@ test("a confirmed booking says when its confirmation was emailed, and only then"
   page,
 }) => {
   await page.goto(`/en/app/bookings/${upcoming}`);
-  await expect(page.getByText("The confirmation was emailed to you on")).toContainText(
+  await expect(page.getByText("Confirmation emailed")).toContainText(
     "21 September 2026",
   );
   await page.goto(`/en/app/bookings/${lost}`);
@@ -138,7 +138,7 @@ test.describe("changing a booking", () => {
     await expect(page.getByText("Awaiting payment", { exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Cancel booking" }).click();
     await expect(
-      page.getByText("Cancel this booking and release the slot?"),
+      page.getByText("Cancel this booking?"),
     ).toBeVisible();
 
     await page.getByRole("button", { name: "Keep it" }).click();
@@ -146,7 +146,7 @@ test.describe("changing a booking", () => {
     await page.getByRole("button", { name: "Yes, cancel it" }).click();
 
     await expect(page.getByText("Cancelled", { exact: true })).toBeVisible();
-    await expect(page.getByText("The slot has been released.")).toBeVisible();
+    await expect(page.getByText("Released.")).toBeVisible();
     await expect(page.getByRole("button", { name: "Cancel booking" })).toHaveCount(0);
   });
 
@@ -156,7 +156,7 @@ test.describe("changing a booking", () => {
 
     await expect(
       page.getByText(
-        "18 minutes of this slot were lost to the weather. You can take a refund or a free slot until 20 October 2030.",
+        "18 min lost to the weather. Take a refund or a free session by 20 October 2030.",
       ),
     ).toBeVisible();
     await page.getByRole("button", { name: "Take the refund" }).click();
@@ -164,7 +164,7 @@ test.describe("changing a booking", () => {
     await expect(page.getByText("Refunded", { exact: true })).toBeVisible();
     await expect(
       page.getByText(
-        "This slot was lost on our side, and the amount paid has been returned.",
+        "Lost on our side. Your payment was returned.",
       ),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "Take the refund" })).toHaveCount(0);

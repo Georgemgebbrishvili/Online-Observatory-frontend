@@ -62,7 +62,7 @@ test("says so, on the sign-in page, when Google sign-in did not complete", async
   await page.goto("/api/auth/google/start?locale=ka&outcome=refused");
   await expect(page).toHaveURL(/\/ka\/sign-in\?error=google$/, { timeout: firstCompile });
   await expect(page.getByRole("main").getByRole("alert")).toHaveText(
-    "Google-ით შესვლა ვერ დასრულდა. სცადე ხელახლა, ან შედი ელფოსტითა და პაროლით.",
+    "Google-ით შესვლა ვერ მოხერხდა. სცადე თავიდან ან შედი ელფოსტით.",
   );
 });
 

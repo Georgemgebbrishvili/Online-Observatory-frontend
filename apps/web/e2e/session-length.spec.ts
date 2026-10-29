@@ -47,7 +47,7 @@ test("a tap sets the start and a later tap the end, any quarter hour to 4 hours,
   await cells(page).nth(30).click();
   await expect(session.locator("output")).toHaveText("4 h");
   await expect(session).toContainText("GEL 360.00");
-  await expect(session).toContainText("4 hours is the longest session.");
+  await expect(session).toContainText("Longest session: 4 h.");
 
   // A run cannot cross a booking: it stops before the taken quarter hours.
   await cells(page).first().click();

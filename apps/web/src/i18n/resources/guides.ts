@@ -28,108 +28,108 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
     home: {
       eyebrow: "What you will see",
       title: "The sky as the camera sees it, tonight.",
-      lede: "Live view stacks many short exposures while you watch, so faint objects build up on screen over a few minutes. It is the eyepiece, made bigger and shared, not a long-exposure photograph.",
+      lede: "Many short exposures stack as you watch, so faint objects build up in minutes. Not a long-exposure photo.",
       pointsTitle: "What the telescope points at",
       points: [
         {
           title: "Planets",
-          body: "Jupiter's cloud belts and its four large moons, Saturn's rings, Venus in phase, Mars near opposition.",
+          body: "Jupiter's belts and moons, Saturn's rings, the phases of Venus.",
         },
         {
           title: "Double stars",
-          body: "Pairs like Albireo, gold and blue, or Mizar and Alcor, split cleanly at the telescope's focal length.",
+          body: "Albireo, gold and blue. Mizar and Alcor.",
         },
         {
           title: "Star clusters",
-          body: "Globular clusters such as M13 and M15 resolve into thousands of points as the stack deepens.",
+          body: "M13 and M15 resolve into thousands of stars.",
         },
         {
           title: "Nebulae",
-          body: "The Ring, the Dumbbell and the Orion Nebula show their shape and some colour in live view.",
+          body: "The Ring, the Dumbbell and Orion, with shape and some colour.",
         },
       ],
-      faqTitle: "Questions people ask first",
+      faqTitle: "Common questions",
       faq: [
         {
           question: "Is this a real telescope?",
-          answer: `Yes. ${brand.en.name} is one telescope with a colour astronomy camera on a mount in Georgia.`,
+          answer: `Yes. One telescope with a colour camera, in Georgia.`,
           link: { label: "See the observatory", path: "observatory" },
         },
         {
           question: "Do I need any equipment or software?",
-          answer: "No. A browser on a phone or a computer is enough. The telescope is controlled by the observatory's own software; you book the time and watch.",
+          answer: "No. A browser on a phone or computer is enough.",
         },
         {
           question: "When can I observe?",
-          answer: "Slots run through the dark hours of the night, in observatory time (GMT+4). The booking page shows the next seven nights and what is above the horizon for each slot.",
+          answer: "Through the dark hours, Georgia time (GMT+4). Booking shows the next seven nights.",
           link: { label: "Open the booking page", path: "app/book" },
         },
         {
           question: "What happens if it is cloudy?",
-          answer: "The observatory watches the weather. If clouds stop the telescope, the session goes on a weather hold and the page tells you. What happens to the booking is set out in the refund policy.",
+          answer: "The session goes on weather hold and the page tells you. The refund policy covers the booking.",
           link: { label: "Read the refund policy", path: "refunds" },
         },
         {
           question: "Can I keep the pictures?",
-          answer: "Yes. Every capture you take during your slot goes into your Collection, where you can open and download it.",
+          answer: "Yes. Every capture goes to your Collection to download.",
         },
       ],
     },
     pricing: {
       eyebrow: "What a slot gives you",
       title: "Time with one real telescope.",
-      lede: "A slot is the whole instrument for its length: the mount, the camera and the picture they make, with nobody else in the queue.",
+      lede: "The whole telescope is yours for the slot. No queue.",
       pointsTitle: "Included with every slot",
       points: [
         {
           title: "The telescope to yourself",
-          body: "One customer at a time. Nobody else can move it during your slot.",
+          body: "One customer at a time. Nobody else can move it.",
         },
         {
           title: "Your target, centred",
-          body: "The observatory slews, checks where it is pointing and centres your target before the picture starts.",
+          body: "The telescope finds and centres your target.",
         },
         {
           title: "The live camera picture",
-          body: "Short exposures stacked live, so the image deepens while you watch.",
+          body: "Short exposures stack live as you watch.",
         },
         {
           title: "Captures you keep",
-          body: "Every frame you capture is saved in your Collection to open and download later.",
+          body: "Every capture is saved in your Collection.",
         },
         {
           title: "Seats for friends",
-          body: "Share a watch link and up to ten people can see what you see.",
+          body: "Share a watch link with up to ten people.",
         },
         {
           title: "Weather watched for you",
-          body: "If the sky closes, the session goes on hold and the refund policy covers the booking.",
+          body: "If clouds roll in, the session holds. The refund policy covers it.",
         },
       ],
       faqTitle: "Paying and prices",
       faq: [
         {
           question: "How do I pay?",
-          answer: "On a secure payment page at the end of booking. The slot is held for you while the payment completes.",
+          answer: "On a secure payment page at the end of booking. Your slot is held while you pay.",
         },
         {
-          question: "Where do the amounts on this page come from?",
-          answer: "The observatory sets the price per slot. This page reads it live from the booking board, the same figure you see at checkout, so it is never an old number.",
+          question: "Where do these prices come from?",
+          answer: "The observatory sets them. This page shows the same live price as checkout.",
           link: { label: "See tonight's slots", path: "app/book" },
         },
         {
           question: "Is watching somebody else's session free?",
-          answer: "A seat in a live session is priced per seat, and the watch link shows that price before you pay.",
+          answer: "No. Seats are priced per seat, shown before you pay.",
         },
         {
           question: "What if the session cannot run?",
-          answer: "Weather, visibility and technical faults are covered by the refund policy, which is being finalised before launch.",
+          answer: "The refund policy covers weather, visibility and faults. It is being finalised before launch.",
           link: { label: "Read the refund policy", path: "refunds" },
         },
       ],
       cta: {
         title: "Ready to see it for yourself?",
-        body: "Pick a night and a target, and watch the real sky from wherever you are.",
+        body: "Pick a night and a target. Watch the real sky from anywhere.",
         action: { label: "Reserve a slot", path: "app/book" },
         secondary: { label: "Try the observatory", path: "observatory" },
       },
@@ -137,41 +137,41 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
     observatory: {
       eyebrow: "About the observatory",
       title: "One telescope in Georgia, run for you remotely.",
-      lede: "The console above works the way a session does: connect, point and capture.",
+      lede: "The console works like a real session: connect, point, capture.",
       stepsTitle: "What happens in a real session",
       steps: [
         {
           title: "Slew",
-          body: "The mount turns to your target. It refuses any position too low, too close to the Sun, or outside the horizon mask.",
+          body: "The mount turns to your target. Too low, near the Sun or behind the horizon mask is refused.",
         },
         {
           title: "Verify and centre",
-          body: "The camera takes a frame, the software works out where it is pointing, and the mount corrects until the target is centred.",
+          body: "The camera takes a frame, finds where it points, and the mount centres the target.",
         },
         {
           title: "Observe",
-          body: "Short exposures are stacked live and streamed to your screen as the picture builds up.",
+          body: "Short exposures stack live on your screen.",
         },
         {
           title: "Capture",
-          body: "Save the frame you like. It goes into your Collection with its time and target.",
+          body: "Save the frame you like to your Collection, with time and target.",
         },
       ],
       faqTitle: "About the instrument",
       faq: [
         {
           question: "Can my browser move the telescope directly?",
-          answer: `No. The observatory accepts no connection from outside. It dials out to the ${brand.en.name} cloud, and checks every command again on its own before the mount moves.`,
+          answer: `No. The observatory dials out to the ${brand.en.name} cloud and rechecks every command before it moves.`,
         },
         {
           question: "What is the instrument?",
-          answer: "A telescope with a ZWO ASI585MC colour camera on a computerised mount. Its aperture and focal length are on the home page, and its live state on the status page.",
+          answer: "A telescope with a ZWO ASI585MC colour camera on a computerised mount. Its live state is on the status page.",
           link: { label: "Status", path: "status" },
         },
       ],
       cta: {
         title: "Book the real one.",
-        body: "Time on the telescope and the camera picture.",
+        body: "Time on the telescope, live.",
         action: { label: "Reserve a slot", path: "app/book" },
         secondary: { label: "See prices", path: "pricing" },
       },
@@ -181,150 +181,150 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
     home: {
       eyebrow: "რას დაინახავ",
       title: "ცა ისე, როგორც კამერა ხედავს — ამაღამ.",
-      lede: "პირდაპირი გამოსახულება შენს თვალწინ ბევრ მოკლე ექსპოზიციას აჯამებს, ამიტომ მკრთალი ობიექტები რამდენიმე წუთში იკვეთება ეკრანზე. ეს ოკულარია — გადიდებული და გაზიარებული — და არა ხანგრძლივი ექსპოზიციის ფოტო.",
+      lede: "ბევრი მოკლე კადრი შენს თვალწინ ჯამდება და მკრთალი ობიექტები რამდენიმე წუთში ჩნდება. ეს ხანგრძლივი ექსპოზიციის ფოტო არ არის.",
       pointsTitle: "რას აკვირდება ტელესკოპი",
       points: [
         {
           title: "პლანეტები",
-          body: "იუპიტერის ღრუბლოვანი სარტყლები და მისი ოთხი დიდი თანამგზავრი, სატურნის რგოლები, ვენერას ფაზა, მარსი დაპირისპირების დროს.",
+          body: "იუპიტერის სარტყლები და თანამგზავრები, სატურნის რგოლები, ვენერას ფაზები.",
         },
         {
           title: "ორმაგი ვარსკვლავები",
-          body: "წყვილები, როგორიცაა ოქროსფერი და ცისფერი ალბირეო ან მიცარი და ალკორი, ტელესკოპის ფოკუსურ მანძილზე მკაფიოდ იყოფა.",
+          body: "ალბირეო — ოქროსფერი და ცისფერი. მიცარი და ალკორი.",
         },
         {
           title: "ვარსკვლავთგროვები",
-          body: "სფერული გროვები, როგორიცაა M13 და M15, დაჯამებასთან ერთად ათასობით წერტილად იშლება.",
+          body: "M13 და M15 ათასობით ვარსკვლავად იშლება.",
         },
         {
           title: "ნისლეულები",
-          body: "რგოლისებრი, ჰანტელის და ორიონის ნისლეულები პირდაპირ გამოსახულებაშიც აჩვენებენ ფორმას და ცოტა ფერსაც.",
+          body: "რგოლის, ჰანტელისა და ორიონის ნისლეულები — ფორმით და ცოტა ფერით.",
         },
       ],
-      faqTitle: "პირველი კითხვები",
+      faqTitle: "ხშირი კითხვები",
       faq: [
         {
           question: "ეს ნამდვილი ტელესკოპია?",
-          answer: `დიახ. ${brand.ka.nominative} ერთი ტელესკოპია ფერადი ასტრონომიული კამერით, მონტირებაზე, საქართველოში.`,
+          answer: `დიახ. ერთი ტელესკოპი ფერადი კამერით, საქართველოში.`,
           link: { label: "ობსერვატორიის ნახვა", path: "observatory" },
         },
         {
-          question: "მჭირდება რაიმე აღჭურვილობა ან პროგრამა?",
-          answer: "არა. საკმარისია ბრაუზერი ტელეფონზე ან კომპიუტერზე. ტელესკოპს ობსერვატორიის საკუთარი პროგრამა მართავს — შენ ჯავშნი დროს და უყურებ.",
+          question: "რამე აღჭურვილობა მჭირდება?",
+          answer: "არა. საკმარისია ბრაუზერი ტელეფონზე ან კომპიუტერზე.",
         },
         {
           question: "როდის შემიძლია დაკვირვება?",
-          answer: "სეანსები ღამის ბნელ საათებშია, ობსერვატორიის დროით (GMT+4). დაჯავშნის გვერდზე ჩანს მომდევნო შვიდი ღამე და ის, რაც თითოეულ სეანსზე ჰორიზონტს ზემოთაა.",
-          link: { label: "დაჯავშნის გვერდის გახსნა", path: "app/book" },
+          answer: "ღამის ბნელ საათებში, საქართველოს დროით (GMT+4). დაჯავშნისას ჩანს მომდევნო შვიდი ღამე.",
+          link: { label: "დაჯავშნა", path: "app/book" },
         },
         {
           question: "რა ხდება, თუ მოღრუბლულია?",
-          answer: "ობსერვატორია ამინდს ადევნებს თვალს. თუ ღრუბლები ტელესკოპს აჩერებს, სეანსი ამინდის გამო ჩერდება და გვერდი ამას გაცნობებს. რა ემართება ჯავშანს, თანხის დაბრუნების პოლიტიკაშია აღწერილი.",
+          answer: "სეანსი ამინდის გამო ჩერდება და გვერდი გაცნობებს. ჯავშანს თანხის დაბრუნების პოლიტიკა ფარავს.",
           link: { label: "თანხის დაბრუნების პოლიტიკა", path: "refunds" },
         },
         {
-          question: "შემიძლია სურათების შენახვა?",
-          answer: "დიახ. ყოველი კადრი, რომელსაც სეანსის დროს გადაიღებ, შენს კოლექციაში ინახება — იქ შეგიძლია გახსნა და ჩამოტვირთვა.",
+          question: "სურათების შენახვა შემიძლია?",
+          answer: "დიახ. ყოველი კადრი შენს კოლექციაში ინახება და შეგიძლია ჩამოტვირთო.",
         },
       ],
     },
     pricing: {
       eyebrow: "რას გაძლევს სეანსი",
       title: "დრო ერთ ნამდვილ ტელესკოპთან.",
-      lede: "სეანსის განმავლობაში მთელი ინსტრუმენტი შენია: მონტირება, კამერა და გამოსახულება, რომელსაც ისინი ქმნიან — რიგში არავინაა.",
+      lede: "სეანსის დროს მთელი ტელესკოპი შენია. რიგი არ არის.",
       pointsTitle: "ყოველ სეანსში შედის",
       points: [
         {
           title: "ტელესკოპი მხოლოდ შენთვის",
-          body: "ერთდროულად ერთი მომხმარებელი. შენი სეანსის დროს მას ვერავინ ამოძრავებს.",
+          body: "ერთდროულად ერთი მომხმარებელი. მას სხვა ვერ ამოძრავებს.",
         },
         {
           title: "შენი ობიექტი, დაცენტრებული",
-          body: "ტელესკოპი მობრუნდება, ამოწმებს, საით უყურებს, და გამოსახულების დაწყებამდე ობიექტს ცენტრში მოაქცევს.",
+          body: "ტელესკოპი პოულობს შენს ობიექტს და ცენტრში აქცევს.",
         },
         {
-          title: "კამერის პირდაპირი სურათი",
-          body: "მოკლე ექსპოზიციები რეალურ დროში ჯამდება და გამოსახულება შენს თვალწინ იკვეთება.",
+          title: "პირდაპირი გამოსახულება",
+          body: "მოკლე კადრები შენს თვალწინ ჯამდება.",
         },
         {
-          title: "კადრები, რომლებიც შენ გრჩება",
-          body: "ყოველი გადაღებული კადრი შენს კოლექციაში ინახება — მოგვიანებით გასახსნელად და ჩამოსატვირთად.",
+          title: "კადრები შენ გრჩება",
+          body: "ყოველი კადრი შენს კოლექციაში ინახება.",
         },
         {
           title: "ადგილები მეგობრებისთვის",
-          body: "გააზიარე სანახავი ბმული და ათამდე ადამიანი დაინახავს იმას, რასაც შენ ხედავ.",
+          body: "გაუზიარე ბმული ათამდე ადამიანს.",
         },
         {
           title: "ამინდს ჩვენ ვადევნებთ თვალს",
-          body: "თუ ცა მოიღრუბლა, სეანსი ჩერდება და ჯავშანს თანხის დაბრუნების პოლიტიკა ფარავს.",
+          body: "თუ მოიღრუბლა, სეანსი ჩერდება. ჯავშანს თანხის დაბრუნების პოლიტიკა ფარავს.",
         },
       ],
       faqTitle: "გადახდა და ფასები",
       faq: [
         {
           question: "როგორ გადავიხადო?",
-          answer: "დაჯავშნის ბოლოს, დაცულ გადახდის გვერდზე. სანამ გადახდა სრულდება, სეანსი შენთვისაა დაკავებული.",
+          answer: "დაჯავშნის ბოლოს, დაცულ გვერდზე. გადახდისას სეანსი შენთვისაა დაკავებული.",
         },
         {
-          question: "საიდან მოდის ამ გვერდზე მოცემული თანხები?",
-          answer: "ფასს ყოველ სეანსზე ობსერვატორია ადგენს. ეს გვერდი მას პირდაპირ ჯავშნის გვერდიდან კითხულობს — იგივე თანხაა, რასაც გადახდისას ნახავ, ამიტომ ძველი ციფრი აქ არასდროს ჩანს.",
+          question: "საიდან არის ეს ფასები?",
+          answer: "ფასს ობსერვატორია ადგენს. აქ იგივე ფასი ჩანს, რაც გადახდისას.",
           link: { label: "ამაღამინდელი სეანსები", path: "app/book" },
         },
         {
-          question: "სხვისი ეთერის ყურება უფასოა?",
-          answer: "პირდაპირ ეთერში ადგილი ფასიანია — ფასი თითო ადგილზეა — და სანახავი ბმული მას გადახდამდე გაჩვენებს.",
+          question: "სხვისი სეანსის ყურება უფასოა?",
+          answer: "არა. ადგილი ფასიანია და ფასს გადახდამდე ნახავ.",
         },
         {
           question: "რა მოხდება, თუ სეანსი ვერ ჩატარდა?",
-          answer: "ამინდს, ხილვადობას და ტექნიკურ ხარვეზებს თანხის დაბრუნების პოლიტიკა ფარავს, რომელიც გაშვებამდე სრულდება.",
+          answer: "ამინდს, ხილვადობასა და ხარვეზებს თანხის დაბრუნების პოლიტიკა ფარავს. ის გაშვებამდე სრულდება.",
           link: { label: "თანხის დაბრუნების პოლიტიკა", path: "refunds" },
         },
       ],
       cta: {
         title: "გინდა, თავად ნახო?",
-        body: "აირჩიე ღამე და ობიექტი და უყურე ნამდვილ ცას, სადაც არ უნდა იყო.",
+        body: "აირჩიე ღამე და ობიექტი. უყურე ნამდვილ ცას, სადაც არ უნდა იყო.",
         action: { label: "დაჯავშნე სეანსი", path: "app/book" },
         secondary: { label: "სცადე ობსერვატორია", path: "observatory" },
       },
     },
     observatory: {
       eyebrow: "ობსერვატორიის შესახებ",
-      title: "ერთი ტელესკოპი საქართველოში, შენთვის დისტანციურად.",
-      lede: "ზემოთ მოცემული პულტი ისე მუშაობს, როგორც სეანსი: დაუკავშირდი, მიმართე და გადაიღე.",
+      title: "ერთი ტელესკოპი საქართველოში, დისტანციურად.",
+      lede: "პულტი ნამდვილი სეანსივით მუშაობს: დაუკავშირდი, მიმართე, გადაიღე.",
       stepsTitle: "რა ხდება ნამდვილ სეანსში",
       steps: [
         {
           title: "მობრუნება",
-          body: "მონტირება შენი ობიექტისკენ ბრუნდება. ის უარს ამბობს ყველა პოზიციაზე, რომელიც ძალიან დაბალია, მზესთან ახლოსაა ან ჰორიზონტის ნიღბის მიღმაა.",
+          body: "მონტირება შენი ობიექტისკენ ბრუნდება. ძალიან დაბალი, მზესთან ახლო ან ნიღბის მიღმა პოზიცია იბლოკება.",
         },
         {
           title: "შემოწმება და დაცენტრება",
-          body: "კამერა იღებს კადრს, პროგრამა ადგენს, საით უმიზნებს, და მონტირება ასწორებს მიმართულებას, სანამ ობიექტი ცენტრში არ მოექცევა.",
+          body: "კამერა იღებს კადრს, პროგრამა ადგენს მიმართულებას და მონტირება ობიექტს ცენტრში აქცევს.",
         },
         {
           title: "დაკვირვება",
-          body: "მოკლე ექსპოზიციები რეალურ დროში ჯამდება და შენს ეკრანზე გადმოდის, გამოსახულება კი თანდათან იკვეთება.",
+          body: "მოკლე კადრები ჯამდება და პირდაპირ შენს ეკრანზე ჩანს.",
         },
         {
           title: "გადაღება",
-          body: "შეინახე მოწონებული კადრი. ის შენს კოლექციაში ხვდება, დროითა და ობიექტით.",
+          body: "შეინახე მოწონებული კადრი. ის კოლექციაში ხვდება დროით და ობიექტით.",
         },
       ],
       faqTitle: "ინსტრუმენტის შესახებ",
       faq: [
         {
-          question: "შეუძლია ჩემს ბრაუზერს ტელესკოპის პირდაპირ ამოძრავება?",
-          answer: `არა. ობსერვატორია გარედან არცერთ კავშირს არ იღებს. ის თავად უკავშირდება ${brand.ka.genitive} სერვერებს და ყოველ ბრძანებას დგარის ამოძრავებამდე დამოუკიდებლად ამოწმებს.`,
+          question: "ჩემს ბრაუზერს შეუძლია ტელესკოპის ამოძრავება?",
+          answer: `არა. ობსერვატორია გარედან კავშირს არ იღებს. ის თავად უკავშირდება ${brand.ka.genitive} სერვერს და ყოველ ბრძანებას მოძრაობამდე ხელახლა ამოწმებს.`,
         },
         {
           question: "რა ინსტრუმენტია?",
-          answer: "ტელესკოპი ZWO ASI585MC ფერადი კამერით, კომპიუტერიზებულ მონტირებაზე. მისი აპერტურა და ფოკუსური მანძილი მთავარ გვერდზეა, მიმდინარე მდგომარეობა კი სტატუსის გვერდზე.",
-          link: { label: "მიმდინარე სტატუსი", path: "status" },
+          answer: "ტელესკოპი ZWO ASI585MC ფერადი კამერით, კომპიუტერიზებულ მონტირებაზე. მიმდინარე მდგომარეობა სტატუსის გვერდზეა.",
+          link: { label: "სტატუსი", path: "status" },
         },
       ],
       cta: {
         title: "დაჯავშნე ნამდვილი.",
-        body: "დრო ტელესკოპთან და კამერის სურათი.",
+        body: "დრო ტელესკოპთან, პირდაპირ.",
         action: { label: "დაჯავშნე სეანსი", path: "app/book" },
         secondary: { label: "ფასების ნახვა", path: "pricing" },
       },

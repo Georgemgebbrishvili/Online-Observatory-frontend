@@ -3,18 +3,18 @@ import { brand } from "@/brand";
 
 const en = {
   metadataTitle: `Observatory status · ${brand.en.name}`,
-  metadataDescription: `Status of the ${brand.en.name} observatory in Georgia, and tonight's viewing conditions.`,
-  title: "What the telescope is doing now.",
+  metadataDescription: `Observatory status and tonight's sky.`,
+  title: "Telescope status",
   updated: "Reported {age} ago",
   age: { seconds: "{value} s", minutes: "{value} min", hours: "{value} h" },
   mode: {
     SIMULATED: {
       banner: "SIMULATED OBSERVATORY",
-      detail: "The simulator is answering. No real telescope is moving.",
+      detail: "Simulator only. No real telescope is moving.",
     },
     REAL: {
       banner: "REAL HARDWARE",
-      detail: "The physical telescope is answering.",
+      detail: "The real telescope is connected.",
     },
   },
   now: {
@@ -40,9 +40,9 @@ const en = {
     OFFLINE: "Offline",
   },
   linkDetail: {
-    ONLINE: "The observatory is connected and reporting.",
-    DEGRADED: "The observatory is connected, but a check is late.",
-    OFFLINE: "The observatory is not connected, so nothing here is current.",
+    ONLINE: "Connected.",
+    DEGRADED: "Connected, but slow to respond.",
+    OFFLINE: "Not connected. Data may be old.",
   },
   weather: {
     CLEAR: "Clear",
@@ -54,8 +54,8 @@ const en = {
   conditions: {
     title: "Tonight's conditions",
     detail:
-      "An hourly forecast for tonight's bookable hours. Advisory only: a forecast never starts or clears a weather hold, and the operator's hold above is what decides whether observing runs.",
-    empty: "Tonight offers no bookable hours.",
+      "Hourly forecast. For guidance only; the operator decides on weather holds.",
+    empty: "No bookable hours tonight.",
     hour: "Hour",
     cloud: "Cloud",
     cloudLayers: "Low / mid / high",
@@ -74,7 +74,7 @@ const en = {
     title: "The last 30 days",
     summary: "connected over the last 30 days",
     notMeasured:
-      "Nothing measured yet. History starts the first time the observatory connects.",
+      "No data yet.",
     daysLabel: "Connection by day, oldest first",
     dayLabel: "{date}: {value}",
     today: "Today",
@@ -90,16 +90,16 @@ const en = {
     incident: "{from}, for {minutes} min",
     ongoing: "Since {from}, still offline",
     detail:
-      "Measured from the observatory's connection to our servers. A connected observatory can still be closed by weather.",
-    unavailable: "The connection history could not be read just now.",
+      "Connection to our servers. Weather can still close it.",
+    unavailable: "Couldn't load history.",
   },
   unavailable: {
     title: "Status is unavailable",
-    detail: `${brand.en.name}'s servers did not answer, so this page has nothing current to show. It shows no older reading rather than presenting a stale one as live.`,
+    detail: "Our servers didn't answer. Try again soon.",
   },
   noObservatory: {
     title: "No observatory is listed",
-    detail: `${brand.en.name} lists no bookable observatory to report on.`,
+    detail: "No bookable observatory yet.",
   },
   back: `Return to ${brand.en.name}`,
 };
@@ -108,26 +108,26 @@ export const statusCopy = {
   en,
   ka: {
     metadataTitle: `ობსერვატორიის სტატუსი · ${brand.ka.nominative}`,
-    metadataDescription: `${brand.ka.genitive} ობსერვატორიის მიმდინარე სტატუსი და ამაღამინდელი დაკვირვების პირობები.`,
-    title: "რას აკეთებს ტელესკოპი ახლა.",
+    metadataDescription: `ობსერვატორიის სტატუსი და ამაღამინდელი ცა.`,
+    title: "ტელესკოპის სტატუსი",
     updated: "მიღებულია {age} წინ",
     age: { seconds: "{value} წმ", minutes: "{value} წთ", hours: "{value} სთ" },
     mode: {
       SIMULATED: {
         banner: "სიმულირებული ობსერვატორია",
-        detail: "პასუხობს სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.",
+        detail: "მხოლოდ სიმულატორი. ნამდვილი ტელესკოპი არ მოძრაობს.",
       },
       REAL: {
         banner: "ნამდვილი აპარატურა",
-        detail: "პასუხობს ფიზიკური ტელესკოპი.",
+        detail: "ნამდვილი ტელესკოპი დაკავშირებულია.",
       },
     },
     now: {
       title: "ახლა",
       link: "ობსერვატორიის კავშირი",
       weather: "ამინდი",
-      weatherSource: "მონაცემის წყარო",
-      hold: "ამინდის გამო შეჩერება",
+      weatherSource: "წყარო",
+      hold: "ამინდის პაუზა",
       holdActive: "დაკვირვება შეჩერებულია",
       holdInactive: "შეჩერება არ არის",
       mission: "მიმდინარე დაკვირვება",
@@ -142,13 +142,13 @@ export const statusCopy = {
     link: {
       ONLINE: "ონლაინ",
       DEGRADED: "არასტაბილური",
-      OFFLINE: "კავშირგარეშეა",
+      OFFLINE: "გათიშულია",
     },
     linkDetail: {
-      ONLINE: "ობსერვატორია დაკავშირებულია და მონაცემებს აგზავნის.",
-      DEGRADED: "ობსერვატორია დაკავშირებულია, მაგრამ შემოწმება იგვიანებს.",
+      ONLINE: "დაკავშირებულია.",
+      DEGRADED: "დაკავშირებულია, მაგრამ ნელა პასუხობს.",
       OFFLINE:
-        "ობსერვატორია დაკავშირებული არ არის, ამიტომ აქ არცერთი მონაცემი არ არის მიმდინარე.",
+        "არ არის დაკავშირებული. მონაცემი შეიძლება ძველი იყოს.",
     },
     weather: {
       CLEAR: "მოწმენდილი",
@@ -160,7 +160,7 @@ export const statusCopy = {
     conditions: {
       title: "ამაღამინდელი პირობები",
       detail:
-        "საათობრივი პროგნოზი ამაღამინდელი დასაჯავშნი საათებისთვის. მხოლოდ საინფორმაციოა: პროგნოზი ამინდის შეჩერებას არც იწყებს და არც ხსნის — ამას ზემოთ მითითებული ოპერატორის შეჩერება წყვეტს.",
+        "საათობრივი პროგნოზი. მხოლოდ ორიენტირისთვის; პაუზაზე ოპერატორი წყვეტს.",
       empty: "ამაღამ დასაჯავშნი საათები არ არის.",
       hour: "საათი",
       cloud: "ღრუბლიანობა",
@@ -168,7 +168,7 @@ export const statusCopy = {
       precipitation: "ნალექი",
       humidity: "ტენიანობა",
       wind: "ქარი",
-      seeing: "სიინგი",
+      seeing: "ჰაერის სიმშვიდე",
       chartCaption: "ღრუბლიანობა საათების მიხედვით",
       tableLabel: "საათობრივი პროგნოზის ცხრილი",
       unknown: "უცნობია",
@@ -180,32 +180,32 @@ export const statusCopy = {
       title: "ბოლო 30 დღე",
       summary: "დაკავშირებული ბოლო 30 დღის განმავლობაში",
       notMeasured:
-        "ჯერ არაფერია გაზომილი. ისტორია იწყება ობსერვატორიის პირველი დაკავშირებიდან.",
-      daysLabel: "კავშირი დღეების მიხედვით, უძველესიდან",
+        "მონაცემი ჯერ არ არის.",
+      daysLabel: "კავშირი დღეების მიხედვით",
       dayLabel: "{date}: {value}",
       today: "დღეს",
       legendLabel: "აღნიშვნები",
       legend: {
         up: "დაკავშირებული",
         partial: "მცირე შეფერხება",
-        down: "ძირითადად კავშირგარეშე",
-        unmeasured: "არ გაზომილა",
+        down: "ძირითადად გათიშული",
+        unmeasured: "მონაცემი არ არის",
       },
       incidentsTitle: "ბოლო შეფერხებები",
-      noIncidents: "ბოლო 30 დღის განმავლობაში შეფერხება არ ყოფილა.",
+      noIncidents: "30 დღეში შეფერხება არ ყოფილა.",
       incident: "{from}, {minutes} წთ",
-      ongoing: "{from}-დან, კავშირი ჯერ არ აღდგენილა",
+      ongoing: "{from}-დან, ჯერ გათიშულია",
       detail:
-        "ითვლება ობსერვატორიის ჩვენს სერვერებთან კავშირის მიხედვით. დაკავშირებული ობსერვატორია შეიძლება მაინც დაიხუროს ამინდის გამო.",
-      unavailable: "კავშირის ისტორიის წაკითხვა ახლა ვერ მოხერხდა.",
+        "კავშირი ჩვენს სერვერებთან. ამინდმა მაინც შეიძლება დახუროს.",
+      unavailable: "ისტორია ვერ ჩაიტვირთა.",
     },
     unavailable: {
       title: "სტატუსი მიუწვდომელია",
-      detail: `${brand.ka.genitive} სერვერებმა არ უპასუხა, ამიტომ ამ გვერდს მიმდინარე მონაცემი არ აქვს. ის ძველ მონაცემს მიმდინარის სახით არ აჩვენებს — სჯობს, არაფერი აჩვენოს.`,
+      detail: "სერვერმა არ უპასუხა. სცადე მოგვიანებით.",
     },
     noObservatory: {
       title: "ობსერვატორია არ არის",
-      detail: `${brand.ka.dative} დასაჯავშნი ობსერვატორია არ აქვს.`,
+      detail: "დასაჯავშნი ობსერვატორია ჯერ არ არის.",
     },
     back: `${brand.ka.on} დაბრუნება`,
   },

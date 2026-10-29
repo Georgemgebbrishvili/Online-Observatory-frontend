@@ -51,7 +51,7 @@ test("the public homepage: the sky, four small doors, two cards, and the chapter
   await page.goto("/en");
 
   await expect(
-    page.getByRole("heading", { level: 2, name: "Four steps. One real observation." }),
+    page.getByRole("heading", { level: 2, name: "Four steps to the sky." }),
   ).toBeVisible();
   // The sky, the phone's quick panel (hidden at this width), the steps, the cards, then
   // booking, the ways in, questions and a last call.
@@ -544,9 +544,9 @@ test("shows what exists today, priced by the platform, without concept tiers", a
   await expect(page.getByText("for 30 minutes", { exact: true })).toBeVisible();
   await expect(page.getByText("Price on the link", { exact: true })).toBeVisible();
   // The club comes from GET /loyalty/scheme.
-  await expect(page.getByRole("heading", { name: /the less it costs/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Observe more, pay less/ })).toBeVisible();
   await expect(page.getByText("10%", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Book a slot" }).first()).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /^Book a (slot|session)$/ }).first()).toHaveAttribute(
     "href",
     "/en/app/book",
   );

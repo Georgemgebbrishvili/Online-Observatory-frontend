@@ -54,7 +54,7 @@ test("a stranger watches a simulated session: the feed, badged, and an invitatio
     .poll(() => feed.evaluate((img: HTMLImageElement) => img.naturalWidth))
     .toBeGreaterThan(0);
   await expect(page.locator(".tonight-feed .capture-simulated")).toHaveText("Simulated");
-  await expect(page.getByRole("link", { name: "Book your own night" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Book a session" })).toHaveAttribute(
     "href",
     "/en/app/book",
   );
@@ -107,7 +107,7 @@ test("the twenty-first spectator is told it is full and offered a night", async 
   const unavailable = page.getByRole("status").filter({ hasText: "The view is full" });
   await expect(unavailable).toContainText("Up to twenty people can watch at once.");
   await expect(
-    unavailable.getByRole("link", { name: "Book your own night" }),
+    unavailable.getByRole("link", { name: "Book a session" }),
   ).toBeVisible();
 
   // Room again: Try again loads the view.
@@ -120,15 +120,15 @@ test("the twenty-first spectator is told it is full and offered a night", async 
 });
 
 for (const [name, en, ka] of [
-  ["none", "Nothing is live right now", "ახლა პირდაპირ არაფერი მიდის"],
-  ["offline", "The observatory is offline", "ობსერვატორია კავშირგარეშეა"],
-  ["hold", "Observing is on a weather hold", "დაკვირვება ამინდის გამო შეჩერებულია"],
+  ["none", "Nothing is live right now", "ახლა პირდაპირ არაფერია"],
+  ["offline", "The observatory is offline", "ობსერვატორია გათიშულია"],
+  ["hold", "Paused for weather", "შეჩერებულია ამინდის გამო"],
 ] as const) {
   test(`nothing to watch: ${name}, in both languages`, async ({ browser, request }) => {
     await scenario(request, name);
     const { context, page } = await stranger(browser);
     for (const [locale, title, book] of [
-      ["en", en, "Book your own night"],
+      ["en", en, "Book a session"],
       ["ka", ka, "დაჯავშნე სეანსი"],
     ] as const) {
       await page.goto(`/${locale}/tonight`, { timeout: firstCompile });

@@ -15,33 +15,33 @@ type RescheduleCopy = {
 export const rescheduleCopy: Record<"en" | "ka", RescheduleCopy> = {
   en: {
     offer: "Choose a free slot",
-    replacing: "Choosing a free slot to replace the one that was lost.",
+    replacing: "Pick a free session to replace the lost one.",
     free: "Free",
     closed: {
-      title: "This booking has no free slot to claim.",
-      description: "It has been replaced or refunded already, or the offer has lapsed.",
+      title: "No free session to claim.",
+      description: "It was already replaced or refunded, or the offer expired.",
     },
     toBooking: "Back to the booking",
     toBookings: "Your bookings",
-    note: "The new slot is confirmed at once, at no charge. The refund is no longer offered once it is booked.",
+    note: "Confirmed at once, free. After that, no refund.",
     form: {
-      book: "Book this slot free",
+      book: "Book free",
       booking: "Booking",
     },
   },
   ka: {
     offer: "აირჩიე უფასო სეანსი",
-    replacing: "ირჩევ უფასო სეანსს დაკარგულის ნაცვლად.",
+    replacing: "აირჩიე უფასო სეანსი დაკარგულის ნაცვლად.",
     free: "უფასო",
     closed: {
-      title: "ამ ჯავშანზე უფასო სეანსი აღარ არის.",
-      description: "ის უკვე შეიცვალა, თანხა დაბრუნდა ან შეთავაზების ვადა ამოიწურა.",
+      title: "უფასო სეანსი აღარ გეკუთვნის.",
+      description: "უკვე შეიცვალა, თანხა დაბრუნდა ან ვადა გავიდა.",
     },
     toBooking: "ჯავშანზე დაბრუნება",
     toBookings: "შენი ჯავშნები",
-    note: "ახალი სეანსი მაშინვე, უფასოდ დადასტურდება. დაჯავშნის შემდეგ თანხის დაბრუნება აღარ შემოგთავაზდება.",
+    note: "დადასტურდება მაშინვე, უფასოდ. ამის შემდეგ თანხა აღარ დაბრუნდება.",
     form: {
-      book: "ამ სეანსის უფასოდ დაჯავშნა",
+      book: "უფასოდ დაჯავშნა",
       booking: "იჯავშნება",
     },
   },

@@ -65,7 +65,7 @@ test("changes the password, and signs in with the new one", async ({ page }) => 
   await password.getByLabel("New password").fill(next);
   await password.getByRole("button", { name: "Change password" }).click();
   await expect(password.getByRole("status")).toHaveText(
-    "Password changed. You're signed out everywhere else.",
+    "Password changed. Other devices are signed out.",
   );
   secret = next;
 
@@ -123,7 +123,7 @@ test("says what to settle before an account can be deleted, and keeps it", async
 
   const deletion = panel(page, "Delete your account");
   await deletion.getByLabel("Current password").fill("correct horse battery");
-  await deletion.getByLabel("I understand that this cannot be undone.").check();
+  await deletion.getByLabel("I understand this cannot be undone.").check();
   await deletion.getByRole("button", { name: "Delete my account" }).click();
 
   const alert = deletion.getByRole("alert");
@@ -146,14 +146,14 @@ test("deletes the account after the password, and it cannot sign in again", asyn
   const deletion = panel(page, "Delete your account");
   await expect(deletion).toContainText("Your loyalty points are lost.");
   await deletion.getByLabel("Current password").fill("not my password at all");
-  await deletion.getByLabel("I understand that this cannot be undone.").check();
+  await deletion.getByLabel("I understand this cannot be undone.").check();
   await deletion.getByRole("button", { name: "Delete my account" }).click();
   await expect(deletion.getByText("That is not your current password.")).toBeVisible();
 
   // The form resets after every answer, as React's form actions do: the box is asked
   // for again, each time.
   await deletion.getByLabel("Current password").fill("correct horse battery");
-  await deletion.getByLabel("I understand that this cannot be undone.").check();
+  await deletion.getByLabel("I understand this cannot be undone.").check();
   await deletion.getByRole("button", { name: "Delete my account" }).click();
   await expect(deletion.getByRole("status")).toHaveText("Your account has been deleted.");
 

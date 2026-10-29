@@ -30,7 +30,7 @@ describe("readRefusal", () => {
       reasons,
     );
     expect(refusal.message).toBe(
-      "That target is no longer up for this whole slot. Why: Too close to the Moon, Too low in the sky. Choose another.",
+      "That object isn't up the whole session (Too close to the Moon, Too low in the sky). Choose another.",
     );
     expect(refusal.skyChanged).toBe(true);
     expect(refusal.slotGone).toBe(false);

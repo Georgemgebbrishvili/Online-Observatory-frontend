@@ -24,7 +24,7 @@ type BookingCopy = {
 export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
   en: {
     metadataTitle: `Book an observation · ${brand.en.name}`,
-    metadataDescription: "Observing time on the telescope, night by night.",
+    metadataDescription: "Book time on a live telescope.",
     title: "Time on the telescope.",
     yourBookings: "Your bookings",
     nights: "Choose a night",
@@ -40,7 +40,7 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
       OBSERVATORY_OFFLINE: "Observatory offline",
       MAINTENANCE: "Maintenance",
       IN_THE_PAST: "Already started",
-      HELD_FOR_WAITLIST: "Held for its waitlist",
+      HELD_FOR_WAITLIST: "Held for waitlist",
     },
     noSlots: {
       title: "No observing time this night.",
@@ -68,24 +68,24 @@ export const bookingCopy: Record<"en" | "ka", BookingCopy> = {
     unavailable: "მიუწვდომელია",
     reasons: {
       ALREADY_BOOKED: "დაჯავშნილია",
-      OUTSIDE_ASTRONOMICAL_DARKNESS: "ცა საკმარისად ბნელი არ არის",
-      WEATHER_HOLD: "ამინდის გამო შეჩერება",
+      OUTSIDE_ASTRONOMICAL_DARKNESS: "ჯერ ბნელი არ არის",
+      WEATHER_HOLD: "ამინდის გამო შეჩერებულია",
       OBSERVATORY_OFFLINE: "ობსერვატორია კავშირგარეშეა",
       MAINTENANCE: "ტექნიკური სამუშაოები",
       IN_THE_PAST: "უკვე დაიწყო",
-      HELD_FOR_WAITLIST: "რიგისთვის დაკავებულია",
+      HELD_FOR_WAITLIST: "რიგს ეკუთვნის",
     },
     noSlots: {
       title: "ამ ღამეს დაკვირვების დრო არ არის.",
       description: "სცადე სხვა ღამე.",
     },
     unreachable: {
-      title: "დაკვირვების დროის ჩატვირთვა ვერ მოხერხდა.",
-      description: "სცადე ცოტა ხანში.",
+      title: "დრო ვერ ჩაიტვირთა.",
+      description: "ცოტა ხანში სცადე.",
     },
     noObservatory: {
       title: "ობსერვატორია არ არის მითითებული.",
-      description: "ჯერჯერობით დასაჯავშნი არაფერია.",
+      description: "ჯერ დასაჯავშნი არაფერია.",
     },
   },
 };

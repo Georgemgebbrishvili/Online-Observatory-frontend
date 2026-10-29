@@ -172,6 +172,6 @@ test("the Georgian owner is sent to the live room", async ({ page }) => {
     page.getByRole("heading", { level: 1, name: "ეს შენი ეთერია." }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "შენს სეანსზე გადასვლა" }),
+    page.getByRole("link", { name: "სეანსზე გადასვლა" }),
   ).toBeVisible();
 });

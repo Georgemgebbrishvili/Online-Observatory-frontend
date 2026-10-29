@@ -14,15 +14,15 @@ export const targetGuideCopy: Record<
     classes: {
       MOON: "A sharp, bright surface: craters and mountains are clearest along the line between day and night.",
       PLANET:
-        "A small, bright disc that steadies as frames stack: rings, cloud belts, moons or a phase. It stays small, and the detail depends on the air over Tbilisi.",
+        "A small, bright disc that steadies as frames stack: rings, belts, moons or a phase. Detail depends on the air over Tbilisi.",
       DOUBLE_STAR:
-        "Two or more stars side by side, often in different colours. They stay points of light.",
+        "Two or more stars side by side, often in different colours.",
       GLOBULAR_CLUSTER:
-        "A ball of many thousands of stars. The core starts as a glow and resolves into points as frames stack.",
+        "A ball of thousands of stars. The glowing core resolves into points as frames stack.",
       PLANETARY_NEBULA:
-        "A small ring or disc of glowing gas. Its colour builds slowly over minutes; it will not look like a long-exposure photograph.",
+        "A small ring or disc of glowing gas. Colour builds over minutes. Not a long-exposure photo.",
       BRIGHT_NEBULA:
-        "A soft cloud of glowing gas. Its shape and some colour build over minutes; it will not look like a long-exposure photograph.",
+        "A soft cloud of glowing gas. Shape and some colour build over minutes. Not a long-exposure photo.",
     },
   },
   ka: {
@@ -31,15 +31,15 @@ export const targetGuideCopy: Record<
     classes: {
       MOON: "მკვეთრი, კაშკაშა ზედაპირი: კრატერები და მთები ყველაზე კარგად დღისა და ღამის საზღვარზე ჩანს.",
       PLANET:
-        "პატარა, კაშკაშა დისკო, რომელიც კადრების დაჯამებასთან ერთად მყარდება: რგოლები, ღრუბლის სარტყლები, თანამგზავრები ან ფაზა. ის პატარა რჩება, დეტალი კი თბილისის თავზე ჰაერზეა დამოკიდებული.",
+        "პატარა, კაშკაშა დისკო, რომელიც დაჯამებით მკვეთრდება: რგოლები, სარტყლები, თანამგზავრები ან ფაზა. დეტალი თბილისის ჰაერზეა დამოკიდებული.",
       DOUBLE_STAR:
-        "ორი ან მეტი ვარსკვლავი გვერდიგვერდ, ხშირად სხვადასხვა ფერის. ისინი სინათლის წერტილებად რჩება.",
+        "ორი ან მეტი ვარსკვლავი გვერდიგვერდ, ხშირად სხვადასხვა ფერის.",
       GLOBULAR_CLUSTER:
-        "ათასობით ვარსკვლავის ბურთი. ბირთვი ჯერ ნათებად ჩანს, კადრების დაჯამებით კი წერტილებად იშლება.",
+        "ათასობით ვარსკვლავის ბურთი. ცენტრი ჯერ ნათებაა, მერე წერტილებად იშლება.",
       PLANETARY_NEBULA:
-        "მანათობელი აირის პატარა რგოლი ან დისკო. ფერი წუთების განმავლობაში ნელა ჩნდება; ხანგრძლივი ექსპოზიციის ფოტოს არ დაემსგავსება.",
+        "მანათობელი აირის პატარა რგოლი ან დისკო. ფერი წუთებში ჩნდება. ხანგრძლივი ექსპოზიციის ფოტოს არ ჰგავს.",
       BRIGHT_NEBULA:
-        "მანათობელი აირის რბილი ღრუბელი. ფორმა და ცოტა ფერი წუთების განმავლობაში ჩნდება; ხანგრძლივი ექსპოზიციის ფოტოს არ დაემსგავსება.",
+        "მანათობელი აირის რბილი ღრუბელი. ფორმა და ცოტა ფერი წუთებში ჩნდება. ხანგრძლივი ექსპოზიციის ფოტოს არ ჰგავს.",
     },
   },
 };

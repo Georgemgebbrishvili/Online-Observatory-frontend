@@ -132,7 +132,7 @@ test("a slot taken a moment ago is refused, struck out, and the board stays", as
   await page.getByRole("button", { name: "Reserve and pay" }).click();
 
   await expect(page.locator(".booking-feedback")).toHaveText(
-    "Somebody booked this slot a moment ago. Choose another.",
+    "Just booked by someone else. Choose another.",
   );
   await expect(page).toHaveURL(/\/en\/app\/book$/);
   // Struck out; it can now only be waited for (ADR-068).

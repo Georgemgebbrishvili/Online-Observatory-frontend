@@ -142,7 +142,7 @@ test("a wrong gift code is refused on the board, and nothing is booked", async (
   await page.getByLabel("Gift code").fill("STLR-NOPE-0000");
   await page.getByRole("button", { name: "Reserve and pay" }).click();
   await expect(page.locator(".booking-feedback")).toHaveText(
-    "That gift code cannot be used: it is not valid, has been used, or has expired.",
+    "That code is invalid, used or expired.",
   );
   await expect(page).toHaveURL(/\/en\/app\/book/);
 });

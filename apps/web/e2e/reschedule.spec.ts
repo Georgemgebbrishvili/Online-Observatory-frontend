@@ -33,10 +33,10 @@ test("a lost slot is replaced with a free one, and the offer then closes", async
 
   await expect(page).toHaveURL(new RegExp(`/en/app/book\\?reschedule=${lostId}$`));
   await expect(
-    page.getByText("Choosing a free slot to replace the one that was lost."),
+    page.getByText("Pick a free session to replace the lost one."),
   ).toBeVisible();
   // ADR-068: it opens on the next clear start, the first whose forecast is known and low.
-  await expect(page.getByText("The next clear start is chosen for you.")).toBeVisible();
+  await expect(page.getByText("Next clear start picked.")).toBeVisible();
   await expect(
     page
       .getByRole("group", { name: /^Observing time/ })
@@ -55,7 +55,7 @@ test("a lost slot is replaced with a free one, and the offer then closes", async
       sent.url().endsWith(`/api/bookings/${lostId}/reschedule`) &&
       sent.method() === "POST",
   );
-  await page.getByRole("button", { name: "Book this slot free" }).click();
+  await page.getByRole("button", { name: "Book free" }).click();
   expect((await request).postDataJSON()).toMatchObject({
     targetId: "30000000-0000-4000-8000-000000000021",
   });
@@ -71,7 +71,7 @@ test("a lost slot is replaced with a free one, and the offer then closes", async
 
   await page.goto(`/en/app/book?reschedule=${lostId}`);
   await expect(
-    page.getByRole("heading", { name: "This booking has no free slot to claim." }),
+    page.getByRole("heading", { name: "No free session to claim." }),
   ).toBeVisible();
   await expect(page.getByRole("link", { name: "Back to the booking" })).toHaveAttribute(
     "href",
@@ -87,10 +87,10 @@ test("a slot taken a moment ago is refused, and the free slot stays open", async
   // The night's last half-hour start: the quarter hour before the last.
   await slots(page).nth((await slots(page).count()) - 2).click();
   await target(page, /^Saturn/).click();
-  await page.getByRole("button", { name: "Book this slot free" }).click();
+  await page.getByRole("button", { name: "Book free" }).click();
 
   await expect(page.locator(".booking-feedback")).toHaveText(
-    "Somebody booked this slot a moment ago. Choose another.",
+    "Just booked by someone else. Choose another.",
   );
   await page.goto(`/en/app/bookings/${lostId}`);
   await expect(page.getByRole("link", { name: "Choose a free slot" })).toBeVisible();
@@ -109,7 +109,7 @@ test("a booking that is not the customer's, or has nothing to claim, offers no s
       `/en/app/book/reserve?startAt=2030-01-15T14:00:00.000Z&reschedule=${id}`,
     );
     await expect(
-      page.getByRole("heading", { name: "This booking has no free slot to claim." }),
+      page.getByRole("heading", { name: "No free session to claim." }),
     ).toBeVisible();
     await expect(page.getByRole("link", { name: back })).toBeVisible();
   }
@@ -126,7 +126,7 @@ test("the Georgian reschedule fits a phone", async ({ page }) => {
     .first()
     .click();
   await expect(
-    page.getByRole("button", { name: "ამ სეანსის უფასოდ დაჯავშნა" }),
+    page.getByRole("button", { name: "უფასოდ დაჯავშნა" }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),

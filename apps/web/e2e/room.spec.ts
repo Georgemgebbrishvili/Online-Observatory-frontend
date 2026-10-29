@@ -74,7 +74,7 @@ test("a complete mission shows its captures and every step done", async ({ page 
 
 test("the dashboard's upcoming mission opens its room", async ({ page }) => {
   await page.goto("/en/app");
-  await expect(page.getByRole("link", { name: "Open mission: Saturn" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Open session: Saturn" })).toHaveAttribute(
     "href",
     `/en/app/missions/${scheduled}/session`,
   );

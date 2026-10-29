@@ -5,26 +5,26 @@ export const giftCopy = {
   en: {
     metadataTitle: `Gift a night · ${brand.en.name}`,
     metadataDescription:
-      "Give someone a live session at a real telescope in Georgia. They choose the night and the object.",
+      "Gift a live session at a real telescope in Georgia. They pick the night and the target.",
     title: "Gift a night",
-    lede: "A live session at the telescope, for someone else. They choose the night and what to point at; you choose nothing but them.",
+    lede: "A live telescope session, as a gift. They pick the night and the target.",
     facts: {
       length: (minutes: number) => `${minutes} minutes at the telescope, live`,
       valid: "Valid for twelve months from payment",
       noCash:
-        "Not exchangeable for cash. If their booking is cancelled, the gift comes back.",
+        "No cash value. If their booking is cancelled, the gift comes back.",
     },
     price: "Price",
-    priceUnknown: "The price could not be read just now. Try again in a moment.",
+    priceUnknown: "Price unavailable. Try again shortly.",
     signIn: "Sign in to buy a gift",
     signInNote:
-      "You need an account to pay. The person you give it to will need one to book.",
+      "You need an account to pay. They need one to book.",
     form: {
       legend: "Who it is for",
       name: "Their name (optional)",
       email: "Their email (optional)",
       emailHint:
-        "If you give one, the code is emailed there once our emails are on. Either way, you can print it.",
+        "We'll email the code once emails are on. You can always print it.",
       message: "A note (optional)",
       messageHint: "Up to 500 characters, printed on the card.",
       buy: "Continue to payment",
@@ -52,13 +52,13 @@ export const giftCopy = {
       back: "All your gifts",
       notFound: "This gift is not one of yours.",
       pending:
-        "This gift has not been paid for, so it has no code. Buy it again from the gift page.",
+        "Not paid, so no code. Buy it again from the gift page.",
       cancelled:
-        "The payment was declined, so this gift has no code. Nothing was charged.",
-      redeemed: "This gift has been booked. Clear skies to whoever has it.",
+        "Payment declined, so no code. Nothing was charged.",
+      redeemed: "This gift has been booked.",
       expired: "This gift expired unused.",
       print: "Print the card",
-      how: "Give them the card, or send them the code. They enter it on the booking page under “Have a gift code?”, and the booking costs nothing.",
+      how: "Give them the card or the code. They enter it under “Have a gift code?” when booking. The session is free.",
     },
     card: {
       kicker: "A gift",
@@ -74,33 +74,33 @@ export const giftCopy = {
       label: "Have a gift code?",
       field: "Gift code",
       paid: "Paid by the gift",
-      note: "The gift pays for this session if the code is valid.",
+      note: "If the code is valid, the gift pays for this session.",
       refused:
-        "That gift code cannot be used: it is not valid, has been used, or has expired.",
+        "That code is invalid, used or expired.",
     },
   },
   ka: {
     metadataTitle: `აჩუქე ღამე · ${brand.ka.nominative}`,
     metadataDescription:
-      "აჩუქე ვინმეს პირდაპირი სეანსი ნამდვილ ტელესკოპთან საქართველოში. ღამესა და ობიექტს თვითონ აირჩევს.",
+      "აჩუქე პირდაპირი სეანსი ნამდვილ ტელესკოპთან საქართველოში. ღამესა და ობიექტს თვითონ აირჩევს.",
     title: "აჩუქე ღამე",
-    lede: "პირდაპირი სეანსი ტელესკოპთან, სხვისთვის. ღამესა და ობიექტს ის აირჩევს; შენ მხოლოდ მას ირჩევ.",
+    lede: "პირდაპირი სეანსი ტელესკოპთან, საჩუქრად. ღამესა და ობიექტს თვითონ აირჩევს.",
     facts: {
       length: (minutes: number) => `${minutes} წუთი ტელესკოპთან, პირდაპირ`,
-      valid: "მოქმედებს გადახდიდან თორმეტი თვე",
+      valid: "მოქმედებს 12 თვე გადახდიდან",
       noCash: "ფულად არ იცვლება. თუ ჯავშანი გაუქმდება, საჩუქარი ბრუნდება.",
     },
     price: "ფასი",
-    priceUnknown: "ფასი ახლა ვერ წავიკითხეთ. სცადე ცოტა ხანში.",
-    signIn: "შედი, რომ საჩუქარი იყიდო",
+    priceUnknown: "ფასი ახლა ვერ ჩაიტვირთა. სცადე ცოტა ხანში.",
+    signIn: "შედი საჩუქრის საყიდლად",
     signInNote:
-      "გადასახდელად ანგარიში გჭირდება. ვისაც აჩუქებ, დასაჯავშნად მასაც დასჭირდება.",
+      "გადასახდელად ანგარიში გჭირდება. დასაჯავშნად მასაც დასჭირდება.",
     form: {
       legend: "ვისთვის",
       name: "სახელი (არასავალდებულო)",
       email: "ელფოსტა (არასავალდებულო)",
       emailHint:
-        "თუ მიუთითებ, კოდს იქ გავაგზავნით, როცა ჩვენი წერილები ჩაირთვება. ნებისმიერ შემთხვევაში შეგიძლია დაბეჭდო.",
+        "კოდს ელფოსტით გავაგზავნით, როცა წერილები ჩაირთვება. დაბეჭდვა ყოველთვის შეგიძლია.",
       message: "მინაწერი (არასავალდებულო)",
       messageHint: "500 სიმბოლომდე, ბარათზე დაიბეჭდება.",
       buy: "გადახდაზე გადასვლა",
@@ -110,11 +110,11 @@ export const giftCopy = {
     refused: {
       notConfigured: "საჩუქრის ყიდვა ახლა შეუძლებელია.",
       invalid: "შეამოწმე ელფოსტა და მინაწერი, მერე სცადე თავიდან.",
-      failed: "ვერ შესრულდა. თანხა არ ჩამოგეჭრა. სცადე თავიდან.",
+      failed: "ვერ მოხერხდა. თანხა არ ჩამოგეჭრა. სცადე თავიდან.",
     },
     mine: "შენი საჩუქრები",
     none: "საჩუქარი ჯერ არ გიყიდია.",
-    unreachable: "შენი საჩუქრები ახლა ვერ წავიკითხეთ.",
+    unreachable: "საჩუქრები ახლა ვერ ჩაიტვირთა.",
     open: "გახსნა",
     status: {
       PENDING_PAYMENT: "გადაუხდელი",
@@ -128,13 +128,13 @@ export const giftCopy = {
       back: "ყველა საჩუქარი",
       notFound: "ეს საჩუქარი შენი არ არის.",
       pending:
-        "ეს საჩუქარი გადახდილი არ არის, ამიტომ კოდი არ აქვს. იყიდე თავიდან საჩუქრის გვერდიდან.",
+        "გადახდილი არ არის, ამიტომ კოდი არ აქვს. იყიდე თავიდან საჩუქრის გვერდზე.",
       cancelled:
-        "გადახდა უარყოფილია, ამიტომ ამ საჩუქარს კოდი არ აქვს. თანხა არ ჩამოგეჭრა.",
+        "გადახდა უარყოფილია, ამიტომ კოდი არ აქვს. თანხა არ ჩამოგეჭრა.",
       redeemed: "ეს საჩუქარი უკვე დაჯავშნილია.",
-      expired: "ამ საჩუქარს ვადა გაუვიდა გამოუყენებლად.",
+      expired: "ვადა გაუვიდა გამოუყენებლად.",
       print: "ბარათის დაბეჭდვა",
-      how: "მიეცი ბარათი ან გაუგზავნე კოდი. ჯავშნის გვერდზე „გაქვს სასაჩუქრე კოდი?“ ველში შეიყვანს და ჯავშანი უფასო იქნება.",
+      how: "მიეცი ბარათი ან გაუგზავნე კოდი. დაჯავშნისას შეიყვანს ველში „გაქვს სასაჩუქრე კოდი?“ — სეანსი უფასო იქნება.",
     },
     card: {
       kicker: "საჩუქარი",
@@ -151,9 +151,9 @@ export const giftCopy = {
       label: "გაქვს სასაჩუქრე კოდი?",
       field: "სასაჩუქრე კოდი",
       paid: "იხდის საჩუქარი",
-      note: "საჩუქარი ამ სეანსს გადაიხდის, თუ კოდი სწორია.",
+      note: "თუ კოდი სწორია, სეანსს საჩუქარი გადაიხდის.",
       refused:
-        "ამ სასაჩუქრე კოდის გამოყენება შეუძლებელია: არასწორია, უკვე გამოყენებულია ან ვადა გაუვიდა.",
+        "კოდი არასწორია, გამოყენებულია ან ვადაგასულია.",
     },
   },
 } as const;

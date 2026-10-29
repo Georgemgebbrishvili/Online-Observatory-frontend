@@ -5,7 +5,7 @@ const dictionary = {
   metadata: {
     title: brand.en.siteName,
     description:
-      "Reserve time on a real telescope in Georgia, watch what it sees, and keep what you capture.",
+      "Book a real telescope in Georgia and watch the sky live.",
   },
   navigation: {
     ariaLabel: "Primary navigation",
@@ -49,7 +49,7 @@ const dictionary = {
     hero: {
       headline: "The real sky,",
       sunset: "live.",
-      lede: "A real telescope in Georgia. Reserve an observation slot and watch its camera feed.",
+      lede: "A real telescope in Georgia. Book a time and watch live.",
       cta: "Reserve a slot",
       plates: {
         saturn: "Saturn",
@@ -89,7 +89,7 @@ const dictionary = {
     },
     howItWorks: {
       eyebrow: `How ${brand.en.name} works`,
-      title: "Four steps. One real observation.",
+      title: "Four steps to the sky.",
       steps: [
         {
           title: "Reserve",
@@ -97,7 +97,7 @@ const dictionary = {
         },
         {
           title: "Slew",
-          description: "Turns to your target.",
+          description: "The telescope turns to it.",
         },
         {
           title: "Watch",
@@ -132,15 +132,15 @@ const dictionary = {
         steps: [
           {
             title: "Pick a night",
-            text: "Seven nights ahead, each with its Moon and how much time is free.",
+            text: "Up to seven nights ahead.",
           },
           {
-            title: "Tap a start, tap an end",
-            text: "Any quarter hour, from 15 minutes to 4 hours. The board opens with the next clear half hour already chosen.",
+            title: "Pick a time",
+            text: "15 minutes to 4 hours.",
           },
           {
             title: "Reserve",
-            text: "The time is held for you while you pay. A session lost to the weather gets a free replacement.",
+            text: "Clouded out? You get a free session.",
           },
         ],
         lengths: "Any length, one rate",
@@ -154,17 +154,17 @@ const dictionary = {
           { title: "Weekly vote", text: "Vote for the week's target.", href: "vote" },
           {
             title: "Gift a night",
-            text: "A session at the telescope, for someone else.",
+            text: "Give someone a night at the telescope.",
             href: "gift",
           },
           {
             title: brand.en.game,
-            text: "Fly the solar system in your browser.",
+            text: "Fly through the solar system.",
             href: "explorer",
           },
           {
             title: "Weekly cards",
-            text: "Turn a card each week for a free session, a seat or a discount.",
+            text: "A free card each week. Win a session or a discount.",
             href: "app/cards",
           },
         ],
@@ -175,26 +175,26 @@ const dictionary = {
         items: [
           {
             q: "Do I need a telescope or an app?",
-            a: "No. Everything runs in your browser; the telescope, the mount and the camera are ours.",
+            a: "No. It all runs in your browser.",
           },
           {
             q: "What if it is cloudy?",
-            a: "Every start shows a cloud forecast. If the weather stops a session, it is put on hold and you can choose a free replacement night.",
+            a: "If the weather stops your session, pick another night for free.",
           },
           {
             q: "How long can a session be?",
-            a: "Any quarter hour from 15 minutes to 4 hours, at the same rate per minute.",
+            a: "From 15 minutes to 4 hours.",
           },
           {
             q: "Can I choose what to look at?",
-            a: "Yes. Pick an object that is up for the whole session, or leave it to us and we point at the best one up.",
+            a: "Yes. Or let us pick the best one in the sky.",
           },
         ],
       },
       closer: {
         title: "The sky is open",
         sunset: "tonight.",
-        lede: "One real telescope, a few taps away.",
+        lede: "A real telescope, a few taps away.",
         cta: "Reserve a slot",
         secondary: "Try the observatory",
       },
@@ -221,7 +221,7 @@ const dictionary = {
   notFound: {
     title: "Observation not found",
     description:
-      "Nothing is at this address. It may have moved, or the link was mistyped.",
+      "This link is wrong or the page moved.",
     action: `Return to ${brand.en.name}`,
   },
 } satisfies Dictionary;
