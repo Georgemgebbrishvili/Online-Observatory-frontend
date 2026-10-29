@@ -24,3 +24,23 @@ mission channel and the MJPEG live view both carry the bearer, and the view is r
 frame by frame with `expo/fetch`, since React Native's `<Image>` cannot play MJPEG. The
 Collection tab lists captures and opens each one. Booking and payment stay on the website. No
 store build exists until Apple enrolment clears.
+
+## Android APK (local build)
+
+`android/` is generated (continuous native generation) and never committed; app.json and
+`plugins/android-release.js` hold its configuration. A release build reads
+`.env.production`, so it talks to `https://stellar.astroman.ge`.
+
+```sh
+export JAVA_HOME=<a JDK 17>  ANDROID_HOME=~/Library/Android/sdk
+# SDK: platform-tools, platforms;android-37.0, build-tools;37.0.0, ndk;27.1.12297006
+npx expo prebuild --platform android --clean --no-install
+cd android && ./gradlew assembleRelease --no-daemon --max-workers=3
+# -> android/app/build/outputs/apk/release/app-release.apk
+```
+
+Release is signed with the upload key named by `keystore.properties` (`storeFile`,
+`storePassword`, `keyAlias`, `keyPassword`), read from
+`~/Desktop/Stellar Observatory/Private/android/` or `$STELLAR_KEYSTORE_PROPERTIES`; without
+it, release falls back to the debug key. `node scripts/brand-icons.mjs` redraws the icon,
+adaptive icon and splash from the comet mark.

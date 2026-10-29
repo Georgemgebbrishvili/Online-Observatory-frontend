@@ -1,13 +1,13 @@
-import type { BookableObservatory, SlotList } from "@darkview/contracts";
+import type { BookableObservatory } from "@darkview/contracts";
 import * as WebBrowser from "expo-web-browser";
 import { StyleSheet, Text, View } from "react-native";
 
 import { useLocale } from "@/i18n/locale";
-import { platform } from "@/platform/api";
 import { webAppUrl } from "@/platform/config";
+import { readNight } from "@/platform/night";
 import { useObservatory } from "@/platform/use-observatory";
 import { useResource } from "@/platform/use-resource";
-import { clock, hasSlotAhead, nightDates, nightLabel, price } from "@/present";
+import { clock, nightLabel, price } from "@/present";
 import { line, palette, space } from "@/theme";
 import { Header } from "@/ui/header";
 import { Body, Card, Dot, Label, Loading, PrimaryButton, Screen, Title, Unavailable } from "@/ui/kit";
@@ -30,15 +30,6 @@ export default function Book() {
   );
 }
 
-/** Tonight's night: the one still in progress after midnight, else today's evening. */
-async function readNight(observatory: BookableObservatory): Promise<SlotList> {
-  const now = Date.now();
-  const [first, second] = nightDates(now, observatory.timezone);
-  const night = await platform.slots(observatory.id, first);
-  if (second && !hasSlotAhead(night.items, now)) return platform.slots(observatory.id, second);
-  return night;
-}
-
 function Night({ observatory }: { observatory: BookableObservatory }) {
   const { t, locale } = useLocale();
   const { resource, retry } = useResource(() => readNight(observatory), `night:${observatory.id}`);
@@ -52,6 +43,11 @@ function Night({ observatory }: { observatory: BookableObservatory }) {
         {resource.state === "ready" && <Title>{nightLabel(resource.value.date, locale)}</Title>}
         <Body tone="tertiary">{t.book.siteTime(observatory.timezone)}</Body>
       </View>
+
+      <Card>
+        <Body tone="secondary">{t.book.handover}</Body>
+        <PrimaryButton label={t.book.cta} onPress={openWebsite} />
+      </Card>
 
       {resource.state === "loading" && <Loading />}
       {resource.state !== "loading" && resource.state !== "ready" && <Unavailable retry={retry} />}
@@ -80,10 +76,6 @@ function Night({ observatory }: { observatory: BookableObservatory }) {
         </View>
       )}
 
-      <Card>
-        <Body tone="secondary">{t.book.handover}</Body>
-        <PrimaryButton label={t.book.cta} onPress={openWebsite} />
-      </Card>
     </>
   );
 }

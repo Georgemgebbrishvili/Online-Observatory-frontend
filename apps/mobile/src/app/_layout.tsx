@@ -7,7 +7,9 @@ import {
 } from "@expo-google-fonts/noto-sans-georgian";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -15,8 +17,11 @@ import { LocaleProvider } from "@/i18n/locale";
 import { SessionProvider } from "@/platform/session";
 import { palette } from "@/theme";
 
+// The comet stays on screen until the faces are in, so the first frame is the real one.
+void SplashScreen.preventAutoHideAsync().catch(() => {});
+
 export default function RootLayout() {
-  const [loaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Anton_400Regular,
     Geist_400Regular,
     Geist_600SemiBold,
@@ -24,6 +29,12 @@ export default function RootLayout() {
     NotoSansGeorgian_400Regular,
     NotoSansGeorgian_700Bold,
   });
+
+  // A face that fails to load falls back to the system's rather than holding the splash.
+  const loaded = fontsLoaded || fontError !== null;
+  useEffect(() => {
+    if (loaded) void SplashScreen.hideAsync().catch(() => {});
+  }, [loaded]);
 
   if (!loaded) return <View style={{ flex: 1, backgroundColor: palette.canvas }} />;
 

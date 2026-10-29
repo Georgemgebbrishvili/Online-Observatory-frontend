@@ -1,5 +1,5 @@
 import type { Capture, NativeSession, Target } from "@darkview/contracts";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -10,7 +10,7 @@ import { useSession } from "@/platform/session";
 import { clock, localDate, nightLabel, targetName } from "@/present";
 import { line, palette, radius, space } from "@/theme";
 import { Header } from "@/ui/header";
-import { Body, Loading, Screen, SimulatedBadge, Title, Unavailable } from "@/ui/kit";
+import { Body, Loading, QuietButton, Screen, SimulatedBadge, Title, Unavailable } from "@/ui/kit";
 import { type } from "@/ui/type";
 
 export default function Collection() {
@@ -21,7 +21,12 @@ export default function Collection() {
       <Header />
       <Title>{t.collection.title}</Title>
       {state.status === "loading" && <Loading />}
-      {state.status === "signed-out" && <Body tone="secondary">{t.collection.signIn}</Body>}
+      {state.status === "signed-out" && (
+        <View style={{ gap: space[3] }}>
+          <Body tone="secondary">{t.collection.signIn}</Body>
+          <QuietButton label={t.account.signInTitle} onPress={() => router.navigate("/account")} />
+        </View>
+      )}
       {state.status === "signed-in" && <Captures session={state.session} />}
     </Screen>
   );

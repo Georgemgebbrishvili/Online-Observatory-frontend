@@ -77,7 +77,7 @@ function SignIn() {
           <Body tone="error">{t.account.failure[failure]}</Body>
         </View>
       )}
-      <PrimaryButton label={busy ? t.account.submitting : t.account.submit} onPress={submit} />
+      <PrimaryButton label={busy ? t.account.submitting : t.account.submit} busy={busy} onPress={submit} />
       <Card>
         <Body tone="secondary">{t.account.noAccount}</Body>
         <QuietButton

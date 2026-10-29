@@ -1,5 +1,5 @@
 import type { NativeSession } from "@darkview/contracts";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Share, StyleSheet, Text, View } from "react-native";
 
@@ -10,7 +10,7 @@ import { useResource } from "@/platform/use-resource";
 import { useSession } from "@/platform/session";
 import { clock, localDate, nightLabel, targetName } from "@/present";
 import { line, palette, radius, space } from "@/theme";
-import { Body, Label, Loading, PrimaryButton, QuietButton, Screen, SimulatedBadge, Title, Unavailable } from "@/ui/kit";
+import { Body, Label, Loading, PrimaryButton, Screen, SimulatedBadge, Title, Unavailable } from "@/ui/kit";
 import { type } from "@/ui/type";
 
 export default function CapturePage() {
@@ -18,8 +18,7 @@ export default function CapturePage() {
   const { state } = useSession();
   const { t } = useLocale();
   return (
-    <Screen>
-      <QuietButton label={t.back} onPress={() => (router.canGoBack() ? router.back() : router.replace("/collection"))} />
+    <Screen back="/collection">
       {state.status === "loading" && <Loading />}
       {state.status === "signed-out" && <Body tone="secondary">{t.collection.signIn}</Body>}
       {state.status === "signed-in" && <Detail id={id} session={state.session} />}

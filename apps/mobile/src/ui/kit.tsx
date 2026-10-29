@@ -1,17 +1,57 @@
+import { router, type Href } from "expo-router";
 import type { ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, type TextStyle } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useLocale } from "@/i18n/locale";
-import { line, palette, radius, space } from "@/theme";
+import { line, palette, radius, space, touch } from "@/theme";
+import { ChevronLeft } from "@/ui/icons";
 import { type } from "@/ui/type";
 import type { Tone } from "@/present";
 
-export function Screen({ children }: { children: ReactNode }) {
+/**
+ * A scrolling page, edge to edge: the canvas runs under the system bars and the content
+ * keeps clear of them. A tab's bottom inset belongs to the tab bar; a pushed page (one
+ * with `back`) keeps clear of the navigation bar itself and leads with a back bar.
+ */
+export function Screen({ children, back }: { children: ReactNode; back?: Href }) {
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={styles.safe} edges={["top"]}>
-      <ScrollView contentContainerStyle={styles.scroll}>{children}</ScrollView>
-    </SafeAreaView>
+    <View style={styles.safe}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.scroll,
+          {
+            paddingTop: insets.top + space[2],
+            paddingLeft: space[4] + insets.left,
+            paddingRight: space[4] + insets.right,
+            paddingBottom: space[6] + (back ? insets.bottom : 0),
+          },
+        ]}
+        keyboardShouldPersistTaps="handled"
+      >
+        {back && <BackBar fallback={back} />}
+        {children}
+      </ScrollView>
+      {/* Scrolled content never runs under the status bar's clock and icons. */}
+      <View pointerEvents="none" style={[styles.scrim, { height: insets.top }]} />
+    </View>
+  );
+}
+
+/** Back to where the page was opened from; to `fallback` when it was opened by a link. */
+function BackBar({ fallback }: { fallback: Href }) {
+  const { t, locale } = useLocale();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t.back}
+      onPress={() => (router.canGoBack() ? router.back() : router.replace(fallback))}
+      style={({ pressed }) => [styles.back, pressed && { opacity: 0.6 }]}
+    >
+      <ChevronLeft color={palette.ink} />
+      <Text style={[type.body(locale, true), { color: palette.ink }]}>{t.back}</Text>
+    </Pressable>
   );
 }
 
@@ -80,23 +120,47 @@ export function SimulatedBadge() {
   );
 }
 
-export function PrimaryButton({ label, onPress }: { label: string; onPress: () => void }) {
+/** Skychaser's poster button (ADR-075): vermilion, cream letters, a hard print shadow. */
+export function PrimaryButton({
+  label,
+  onPress,
+  busy = false,
+}: {
+  label: string;
+  onPress: () => void;
+  busy?: boolean;
+}) {
+  const { locale } = useLocale();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ busy }}
+      onPress={onPress}
+      disabled={busy}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed, busy && { opacity: 0.7 }]}
+    >
+      {busy && <ActivityIndicator color={palette.gdInk} />}
+      <Text style={[type.body(locale, true), styles.buttonLabel]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function QuietButton({
+  label,
+  onPress,
+  wide = false,
+}: {
+  label: string;
+  onPress: () => void;
+  wide?: boolean;
+}) {
   const { locale } = useLocale();
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.button, pressed && { opacity: 0.85 }]}
+      style={({ pressed }) => [styles.quiet, wide && styles.wide, pressed && { backgroundColor: palette.deep }]}
     >
-      <Text style={[type.body(locale, true), { color: palette.ink }]}>{label}</Text>
-    </Pressable>
-  );
-}
-
-export function QuietButton({ label, onPress }: { label: string; onPress: () => void }) {
-  const { locale } = useLocale();
-  return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={styles.quiet} hitSlop={8}>
       <Text style={[type.body(locale, true), { color: palette.ink }]}>{label}</Text>
     </Pressable>
   );
@@ -125,7 +189,18 @@ export function Unavailable({ retry, message }: { retry?: () => void; message?: 
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: palette.canvas },
-  scroll: { padding: space[4], gap: space[5], paddingBottom: space[6] * 2 },
+  scroll: { gap: space[5] },
+  scrim: { position: "absolute", top: 0, left: 0, right: 0, backgroundColor: `${palette.canvas}f2` },
+  back: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: space[1],
+    minHeight: touch,
+    paddingRight: space[3],
+    marginLeft: -space[1],
+    marginBottom: -space[3],
+  },
   card: {
     gap: space[3],
     padding: space[4],
@@ -144,22 +219,29 @@ const styles = StyleSheet.create({
     borderColor: palette.gold,
   },
   button: {
-    minHeight: 48,
+    minHeight: 52,
+    flexDirection: "row",
+    gap: space[2],
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: space[5],
-    borderRadius: radius.pill,
+    borderRadius: radius.button,
     backgroundColor: palette.redFill,
-    boxShadow: `0 0 24px ${palette.red}66`,
+    experimental_backgroundImage: `linear-gradient(180deg, ${palette.sun4} 0%, ${palette.redFill} 50%, ${palette.gdMid} 100%)`,
+    boxShadow: `0 3px 0 ${palette.gdDeep}, 0 12px 30px -8px ${palette.sun4}99`,
   },
+  pressed: { transform: [{ translateY: 2 }], boxShadow: `0 1px 0 ${palette.gdDeep}` },
+  buttonLabel: { color: palette.gdInk, textShadowColor: `${palette.gdDeep}99`, textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 1 },
   quiet: {
     alignSelf: "flex-start",
-    minHeight: 44,
+    minHeight: touch,
+    alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: space[4],
-    borderRadius: radius.pill,
+    borderRadius: radius.button,
     borderWidth: 1,
     borderColor: line,
   },
+  wide: { alignSelf: "stretch" },
   state: { gap: space[3], paddingVertical: space[5] },
 });

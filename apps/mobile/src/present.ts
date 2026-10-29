@@ -124,3 +124,17 @@ export function targetName(target: Pick<Target, "nameEn" | "nameKa">, locale: Lo
 export function targetDescription(target: Target, locale: Locale) {
   return (locale === "ka" ? target.descriptionKa : target.descriptionEn) ?? null;
 }
+
+/** The first slot still open and not yet started, or null when the night is full. */
+export function nextOpenSlot(slots: readonly Slot[], now: number) {
+  return slots.find((slot) => slot.available && Date.parse(slot.startAt) > now) ?? null;
+}
+
+/**
+ * A demo observatory's name arrives with a "[DEMO]" prefix: the phone shows the prefix as
+ * a badge beside the name, never drops it.
+ */
+export function observatoryName(name: string) {
+  const match = /^\[[^\]]+\]\s*/.exec(name);
+  return match ? { demo: true, name: name.slice(match[0].length) } : { demo: false, name };
+}

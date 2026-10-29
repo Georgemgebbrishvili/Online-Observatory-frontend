@@ -19,16 +19,14 @@ export default function MissionRoom() {
   const { state } = useSession();
   const { t } = useLocale();
 
-  const back = <QuietButton label={t.back} onPress={() => (router.canGoBack() ? router.back() : router.replace("/account"))} />;
   if (state.status !== "signed-in") {
     return (
-      <Screen>
-        {back}
+      <Screen back="/account">
         {state.status === "loading" ? <Loading /> : <Body tone="secondary">{t.collection.signIn}</Body>}
       </Screen>
     );
   }
-  return <Loaded id={id} session={state.session} back={back} />;
+  return <Loaded id={id} session={state.session} />;
 }
 
 async function readRoom(id: string, token: string) {
@@ -42,7 +40,7 @@ async function readRoom(id: string, token: string) {
   return { mission, target, timezone };
 }
 
-function Loaded({ id, session, back }: { id: string; session: NativeSession; back: React.ReactNode }) {
+function Loaded({ id, session }: { id: string; session: NativeSession }) {
   const { expired } = useSession();
   const { resource, retry } = useResource(() => readRoom(id, session.token), `room:${id}`);
 
@@ -51,8 +49,7 @@ function Loaded({ id, session, back }: { id: string; session: NativeSession; bac
   }, [resource.state, expired]);
 
   return (
-    <Screen>
-      {back}
+    <Screen back="/account">
       {resource.state === "loading" && <Loading />}
       {resource.state === "not-found" && <Unavailable />}
       {resource.state === "unavailable" && <Unavailable retry={retry} />}

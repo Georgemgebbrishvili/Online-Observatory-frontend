@@ -8,7 +8,9 @@ import {
   hasSlotAhead,
   localDate,
   nightDates,
+  nextOpenSlot,
   nightLabel,
+  observatoryName,
   price,
   statusHeadline,
 } from "./present";
@@ -105,5 +107,21 @@ describe("copy", () => {
         child && typeof child === "object" ? keys(child).map((sub) => `${key}.${sub}`) : [key],
       );
     expect(keys(copy.ka).sort()).toEqual(keys(copy.en).sort());
+  });
+});
+
+describe("tonight", () => {
+  const at = (startAt: string, available: boolean) => ({ startAt, available }) as Slot;
+
+  it("offers the first open slot that has not started", () => {
+    const slots = [at("2026-10-22T17:00:00Z", true), at("2026-10-22T18:00:00Z", false), at("2026-10-22T19:00:00Z", true)];
+    expect(nextOpenSlot(slots, Date.parse("2026-10-22T17:30:00Z"))?.startAt).toBe("2026-10-22T19:00:00Z");
+    expect(nextOpenSlot(slots, Date.parse("2026-10-22T19:30:00Z"))).toBeNull();
+  });
+
+  it("shows a demo prefix as a badge, keeping the name", () => {
+    expect(observatoryName("[DEMO] Stellar Tbilisi Observatory")).toEqual({ demo: true, name: "Stellar Tbilisi Observatory" });
+    expect(observatoryName("[დემო] სტელარი")).toEqual({ demo: true, name: "სტელარი" });
+    expect(observatoryName("Stellar Tbilisi Observatory")).toEqual({ demo: false, name: "Stellar Tbilisi Observatory" });
   });
 });

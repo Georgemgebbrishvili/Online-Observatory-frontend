@@ -1,22 +1,36 @@
 import type { BookableObservatory, TonightSession } from "@darkview/contracts";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useLocale } from "@/i18n/locale";
 import { useSpectate } from "@/live/use-spectate";
 import { platform } from "@/platform/api";
+import { webAppUrl } from "@/platform/config";
+import { readNight } from "@/platform/night";
 import { useObservatory } from "@/platform/use-observatory";
 import { useResource } from "@/platform/use-resource";
-import { cloudSummary, sortTonight, statusHeadline, targetName } from "@/present";
-import { line, palette, radius, space } from "@/theme";
+import {
+  clock,
+  cloudSummary,
+  nextOpenSlot,
+  observatoryName,
+  price,
+  sortTonight,
+  statusHeadline,
+  targetName,
+} from "@/present";
+import { face, line, palette, radius, space, touch } from "@/theme";
 import { Header } from "@/ui/header";
+import { ChevronRight } from "@/ui/icons";
 import {
   Body,
   Card,
   Dot,
   Label,
   Loading,
+  PrimaryButton,
   QuietButton,
   SimulatedBadge,
   Screen,
@@ -26,7 +40,7 @@ import {
 import { type } from "@/ui/type";
 
 export default function Tonight() {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   const { resource, retry } = useObservatory();
 
   return (
@@ -40,19 +54,74 @@ export default function Tonight() {
       {resource.state === "ready" && !resource.value && <Unavailable message={t.noObservatory} />}
       {resource.state === "ready" && resource.value && (
         <>
-          <View style={{ gap: space[2] }}>
-            <Label>{t.tagline}</Label>
-            <Title>{locale === "ka" ? resource.value.nameKa : resource.value.nameEn}</Title>
-            <Body tone="tertiary">
-              {`${resource.value.telescope.manufacturer} ${resource.value.telescope.model} · ${resource.value.telescope.apertureMm} mm`}
-            </Body>
-          </View>
+          <Hero observatory={resource.value} />
+          <NextSlot observatory={resource.value} />
           <Status observatory={resource.value} />
           <Conditions observatory={resource.value} />
           <Targets observatory={resource.value} />
         </>
       )}
     </Screen>
+  );
+}
+
+/** The observatory by name and aperture: the instrument's make is never shown. */
+function Hero({ observatory }: { observatory: BookableObservatory }) {
+  const { t, locale } = useLocale();
+  const { demo, name } = observatoryName(locale === "ka" ? observatory.nameKa : observatory.nameEn);
+  return (
+    <View style={{ gap: space[2] }}>
+      <Label>{t.tagline}</Label>
+      <Title>{name}</Title>
+      <View style={styles.heroMeta}>
+        {demo && (
+          <View style={styles.demo}>
+            <Text style={[type.label(locale), { color: palette.gold }]}>{t.demo}</Text>
+          </View>
+        )}
+        <Text style={[type.reading(locale), { color: palette.ink3, flexShrink: 1 }]}>
+          {t.instrument(observatory.telescope.apertureMm, observatory.telescope.focalLengthMm)}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+/** The one thing to do tonight: the next open slot, and the way to book it. */
+function NextSlot({ observatory }: { observatory: BookableObservatory }) {
+  const { t, locale } = useLocale();
+  const { resource, retry } = useResource(() => readNight(observatory), `night:${observatory.id}`);
+  const book = () => WebBrowser.openBrowserAsync(`${webAppUrl}/${locale}/app/book`);
+
+  if (resource.state === "loading") return <Loading />;
+  if (resource.state !== "ready") return <Unavailable retry={retry} />;
+
+  const slot = nextOpenSlot(resource.value.items, Date.now());
+  return (
+    <View style={styles.ticket}>
+      <Label>{t.next.title}</Label>
+      {slot ? (
+        <View style={{ gap: space[1] }}>
+          <Text style={styles.ticketTime} accessibilityLabel={`${clock(slot.startAt, observatory.timezone)}–${clock(slot.endAt, observatory.timezone)}`}>
+            {`${clock(slot.startAt, observatory.timezone)}–${clock(slot.endAt, observatory.timezone)}`}
+          </Text>
+          <View style={styles.ticketMeta}>
+            <Dot tone="live" />
+            <Text style={[type.body(locale), { color: palette.ink2, flex: 1 }]}>{t.next.open}</Text>
+            <Text style={[type.reading(locale), { color: palette.ink }]}>{price(slot.priceMinor, locale)}</Text>
+          </View>
+        </View>
+      ) : (
+        <View style={{ gap: space[1] }}>
+          <Body strong>{t.next.full}</Body>
+          <Body tone="secondary">{t.next.fullDetail}</Body>
+        </View>
+      )}
+      <PrimaryButton label={slot ? t.next.cta : t.next.otherNight} onPress={book} />
+      {resource.value.items.length > 0 && (
+        <QuietButton wide label={t.next.allSlots} onPress={() => router.navigate("/book")} />
+      )}
+    </View>
   );
 }
 
@@ -187,6 +256,7 @@ function Targets({ observatory }: { observatory: BookableObservatory }) {
                   </Text>
                 </View>
                 <Dot tone={visibility.observable ? "live" : "off"} />
+                <ChevronRight color={palette.ink3} />
               </Pressable>
             </Link>
           );
@@ -207,11 +277,30 @@ const styles = StyleSheet.create({
   empty: { alignItems: "center", justifyContent: "center", gap: space[2], padding: space[4] },
   badge: { position: "absolute", top: space[3], left: space[3] },
   statusRow: { flexDirection: "row", alignItems: "center", gap: space[2] },
+  heroMeta: { flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: space[2] },
+  demo: {
+    paddingHorizontal: space[2],
+    paddingVertical: 2,
+    borderRadius: radius.button,
+    borderWidth: 1,
+    borderColor: palette.gold,
+  },
+  ticket: {
+    gap: space[4],
+    padding: space[4],
+    borderRadius: radius.medium,
+    borderWidth: 1,
+    borderColor: `${palette.red}55`,
+    backgroundColor: palette.deep,
+    boxShadow: `0 0 40px -12px ${palette.red}66`,
+  },
+  ticketTime: { fontFamily: face.display, fontSize: 40, lineHeight: 46, color: palette.cream, letterSpacing: 1 },
+  ticketMeta: { flexDirection: "row", alignItems: "center", gap: space[2] },
   target: {
     flexDirection: "row",
     alignItems: "center",
     gap: space[3],
-    minHeight: 56,
+    minHeight: touch + 8,
     paddingVertical: space[2],
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: line,

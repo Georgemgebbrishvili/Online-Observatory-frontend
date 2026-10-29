@@ -10,6 +10,13 @@ export const palette = {
   red: "#e3482c",
   redInk: "#f0785a",
   redFill: "#c8392a",
+  sun4: "#d9442a",
+  gdHi: "#ee6a3c",
+  gdMid: "#b8321f",
+  gdDeep: "#7d1d12",
+  gdInk: "#fff1d6",
+  cream: "#f4e8cc",
+  mark: "#f6f1e7",
   gold: "#e2b85a",
   green: "#2ecc71",
   error: "#ff7a6b",
@@ -22,7 +29,11 @@ export const size = { hint: 13, body: 15, lead: 17, title: 30, display: 44 } as 
 
 export const space = { 1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32 } as const;
 
-export const radius = { small: 8, medium: 14, pill: 999 } as const;
+// Buttons and chips at 10 (CLAUDE.md, ADR-075).
+export const radius = { small: 8, button: 10, medium: 14, pill: 999 } as const;
+
+/** Android's minimum touch target, in dp. */
+export const touch = 48;
 
 /** Font families as loaded in app/_layout.tsx. */
 export const face = {
