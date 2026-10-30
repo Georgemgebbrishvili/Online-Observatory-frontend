@@ -44,6 +44,8 @@ const nextConfig: NextConfig = {
   // The dev badge sits in the bottom-left corner, over the live room's phone dock.
   devIndicators: false,
   reactStrictMode: true,
+  // Serves app/global-not-found.tsx for the proxy's 404s; without it they get Next's bare page.
+  experimental: { globalNotFound: true },
   async headers() {
     return [
       {

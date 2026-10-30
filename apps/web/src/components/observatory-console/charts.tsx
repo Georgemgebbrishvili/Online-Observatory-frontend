@@ -72,7 +72,7 @@ function DialBase({ path, pointing }: { path: PathPoint[] | null; pointing: AltA
       {(['N', 'E', 'S', 'W'] as const).map((t, i) => {
         const a = (i * 90 * Math.PI) / 180;
         return (
-          <text key={t} x={px(70 + (R - 13) * Math.sin(a))} y={px(70 - (R - 13) * Math.cos(a))} textAnchor="middle" dominantBaseline="middle" fill={t === 'N' ? '#fc3d21' : 'rgba(244, 244, 242, .6)'} style={{ font: '600 10px var(--o-cond)' }}>
+          <text key={t} x={px(70 + (R - 14) * Math.sin(a))} y={px(70 - (R - 14) * Math.cos(a))} textAnchor="middle" dominantBaseline="middle" fill={t === 'N' ? '#fc3d21' : 'rgba(244, 244, 242, .6)'} style={{ font: '600 13px var(--o-cond)' }}>
             {t}
           </text>
         );
