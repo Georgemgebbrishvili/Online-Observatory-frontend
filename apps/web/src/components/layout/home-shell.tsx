@@ -3,9 +3,11 @@ import { HomeMore } from "@/components/home/home-more";
 import { HomeNow } from "@/components/home/home-now";
 import { HomeQuick } from "@/components/home/home-quick";
 import { SkyHero } from "@/components/home/sky-hero";
+import { SkyTonight } from "@/components/home/sky-tonight";
 import { Container } from "@/components/ui/container";
 import type { ObservatoryPanelResult } from "@/features/home/read";
 import type { PricingFacts } from "@/features/pricing/read";
+import type { TonightSky } from "@/features/sky/tonight-sky";
 import type { TonightResult } from "@/features/targets/read";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -16,6 +18,7 @@ type HomeShellProps = {
   tonight: TonightResult;
   panel: ObservatoryPanelResult;
   pricing: PricingFacts;
+  sky: TonightSky | null;
 };
 
 /**
@@ -24,7 +27,7 @@ type HomeShellProps = {
  * doors, two small cards — tonight and the observatory now — then booking and its
  * lengths, the other ways in, questions, and a last call.
  */
-export function HomeShell({ content, locale, panel, pricing, tonight }: HomeShellProps) {
+export function HomeShell({ content, locale, panel, pricing, sky, tonight }: HomeShellProps) {
   // Each step opens the page where it happens.
   const stepPages = ["app/book", "observatory", "tonight", "app/collection"];
   const steps = content.howItWorks.steps.map((step, index) => ({
@@ -36,6 +39,7 @@ export function HomeShell({ content, locale, panel, pricing, tonight }: HomeShel
     <main id="main-content" className="public-home">
       <SkyHero content={content.hero} locale={locale} />
       <HomeQuick live={content.live} locale={locale} panel={panel} pricing={pricing} />
+      <SkyTonight locale={locale} sky={sky} timezone="Asia/Tbilisi" />
 
       <section className="home-band home-steps" id="about" aria-labelledby="steps-title">
         <Container>

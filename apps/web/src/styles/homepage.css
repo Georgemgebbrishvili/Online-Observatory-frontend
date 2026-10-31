@@ -1035,3 +1035,182 @@
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
+
+/* TONIGHT'S SKY — the Moon and planets up tonight, one small strip under the hero. */
+.sky-tonight-band {
+  padding-block: var(--space-4);
+}
+
+.sky-tonight {
+  display: grid;
+  max-width: 64rem;
+  gap: var(--space-4);
+  margin-inline: auto;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-panel);
+  background:
+    radial-gradient(
+      120% 140% at 100% 0%,
+      color-mix(in srgb, var(--color-gold) 7%, transparent),
+      transparent 60%
+    ),
+    var(--color-surface-raised);
+}
+
+.sky-tonight-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+}
+
+.sky-tonight-head .kicker {
+  width: 100%;
+  margin: 0;
+}
+
+.sky-tonight-head h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.sky-tonight-head time {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.sky-tonight-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sky-obj {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: calc(var(--radius-panel) * 0.6);
+  background: color-mix(in srgb, var(--color-night) 55%, transparent);
+}
+
+.sky-orb {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--orb-hi), var(--orb-lo) 70%);
+  box-shadow: 0 0 0.9rem color-mix(in srgb, var(--orb-hi) 35%, transparent);
+}
+
+.sky-obj[data-body="Moon"] .sky-orb {
+  background: none;
+  box-shadow: none;
+}
+
+.sky-obj[data-body="Moon"] .board-moon-dark {
+  fill: var(--color-moon-dark);
+  stroke: var(--color-line-strong);
+  stroke-width: 0.6;
+}
+
+.sky-obj[data-body="Moon"] .board-moon-lit {
+  fill: var(--color-moon-lit);
+}
+
+.sky-obj[data-body="Moon"] .sky-orb svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.sky-obj[data-body="Mercury"] {
+  --orb-hi: var(--planet-mercury-hi);
+  --orb-lo: var(--planet-mercury-lo);
+}
+
+.sky-obj[data-body="Venus"] {
+  --orb-hi: var(--planet-venus-hi);
+  --orb-lo: var(--planet-venus-lo);
+}
+
+.sky-obj[data-body="Mars"] {
+  --orb-hi: var(--planet-mars-hi);
+  --orb-lo: var(--planet-mars-lo);
+}
+
+.sky-obj[data-body="Jupiter"] {
+  --orb-hi: var(--planet-jupiter-hi);
+  --orb-lo: var(--planet-jupiter-lo);
+}
+
+.sky-obj[data-body="Saturn"] {
+  --orb-hi: var(--planet-saturn-hi);
+  --orb-lo: var(--planet-saturn-lo);
+}
+
+.sky-obj[data-body="Uranus"] {
+  --orb-hi: var(--planet-uranus-hi);
+  --orb-lo: var(--planet-uranus-lo);
+}
+
+.sky-obj[data-body="Neptune"] {
+  --orb-hi: var(--planet-neptune-hi);
+  --orb-lo: var(--planet-neptune-lo);
+}
+
+.sky-obj-text {
+  display: grid;
+  min-width: 0;
+  gap: 0.125rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.sky-obj-text strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.sky-obj-text span,
+.sky-obj-text small {
+  white-space: nowrap;
+}
+
+.sky-obj-text small {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+/* On a phone the strip scrolls sideways instead of stacking six cards. */
+@media (width < 48rem) {
+  .sky-tonight {
+    padding: var(--space-4);
+  }
+
+  .sky-tonight-list {
+    display: flex;
+    margin-inline: calc(var(--space-4) * -1);
+    padding-inline: var(--space-4);
+    overflow-x: auto;
+    scroll-padding-inline: var(--space-4);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .sky-obj {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+}

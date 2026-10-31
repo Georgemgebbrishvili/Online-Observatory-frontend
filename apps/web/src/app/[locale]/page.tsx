@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 
 import { HomeShell } from "@/components/layout/home-shell";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -7,6 +8,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { TonightBanner } from "@/components/tonight/tonight-banner";
 import { readObservatoryPanel } from "@/features/home/read";
 import { readPricing } from "@/features/pricing/read";
+import { tonightSky } from "@/features/sky/tonight-sky";
 import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -33,6 +35,9 @@ export default async function HomePage({ params }: HomePageProps) {
     readObservatoryPanel(),
     readPricing(locale),
   ]);
+  // Worked out per request, so the sky moves to the next night on its own each day.
+  await connection();
+  const sky = tonightSky(new Date(), "Asia/Tbilisi");
   return (
     <div className="site-frame home-page">
       <JsonLd
@@ -61,6 +66,7 @@ export default async function HomePage({ params }: HomePageProps) {
         tonight={tonight}
         panel={panel}
         pricing={pricing}
+        sky={sky}
       />
       <SiteFooter footer={dictionary.footer} locale={locale} />
     </div>

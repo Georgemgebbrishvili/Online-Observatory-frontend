@@ -26,6 +26,22 @@
   --st-red-fill: #c8392a;
   --st-red-deep: #8f1f16;
   --st-gold: #e2b85a;
+
+  /* Planet colours for the homepage sky strip: highlight and shadow of each disc. */
+  --planet-mercury-hi: #d8d2c8;
+  --planet-mercury-lo: #6f6a63;
+  --planet-venus-hi: #fff4d6;
+  --planet-venus-lo: #c9a868;
+  --planet-mars-hi: #f2a070;
+  --planet-mars-lo: #8e3b1c;
+  --planet-jupiter-hi: #f3e1c4;
+  --planet-jupiter-lo: #a9805a;
+  --planet-saturn-hi: #f4e2a8;
+  --planet-saturn-lo: #a58a4c;
+  --planet-uranus-hi: #c9f1f1;
+  --planet-uranus-lo: #4f9aa6;
+  --planet-neptune-hi: #9fb8ff;
+  --planet-neptune-lo: #2b47a8;
   --st-green: #2ecc71;
   --st-error: #ff7a6b;
   --st-sun-1: #fff4d8;
