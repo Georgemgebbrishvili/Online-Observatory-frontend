@@ -32,6 +32,8 @@ export type NightChartModel = {
   /** The row shown first: the one standing highest tonight. */
   first: number;
   slots: { at: number; href: string; label: string; price: string }[];
+  /** Stretches of back-to-back open times, as percent along the night. */
+  open: { from: number; to: number }[];
 };
 
 type Copy = {
@@ -75,10 +77,8 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
   const o = model.objects[active];
   // Hours too near the ends, or under the "now" tag, step aside.
   const ticks = model.ticks.filter(
-    (tick) => tick.at > 5 && tick.at < 95 && (now === null || Math.abs(tick.at - now) > 4),
+    (tick) => tick.at > 5 && tick.at < 95 && (now === null || Math.abs(tick.at - now) > 2.5),
   );
-  const altitude = Number.parseInt(o.altitude, 10);
-  const angle = (Math.min(90, Math.max(0, altitude)) * Math.PI) / 180;
 
   return (
     <div className="night">
@@ -166,14 +166,19 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
             <div className="night-lane" aria-hidden="true">
               <span className="night-lane-label">{copy.open}</span>
               <span className="night-track">
-                {model.slots.map((item, index) => (
+                {model.open.map((item) => (
                   <span
-                    key={item.href}
-                    className="night-pin"
-                    data-on={slot === index || undefined}
-                    style={{ "--at": item.at } as CSSProperties}
+                    key={item.from}
+                    className="night-open"
+                    style={{ "--from": item.from, "--to": item.to } as CSSProperties}
                   />
                 ))}
+                {slot !== null && (
+                  <span
+                    className="night-pin"
+                    style={{ "--at": model.slots[slot].at } as CSSProperties}
+                  />
+                )}
               </span>
             </div>
           )}
@@ -222,15 +227,6 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
             <dt>{copy.stat.high}</dt>
             <dd>
               {o.altitude}
-              <svg className="night-gauge" viewBox="0 0 40 40" aria-hidden="true">
-                <path d="M4 36 A32 32 0 0 1 36 4" />
-                <line x1="4" y1="36" x2="38" y2="36" />
-                <circle
-                  cx={Math.round((36 - 32 * Math.cos(angle)) * 100) / 100}
-                  cy={Math.round((36 - 32 * Math.sin(angle)) * 100) / 100}
-                  r="3.2"
-                />
-              </svg>
             </dd>
           </div>
           <div>

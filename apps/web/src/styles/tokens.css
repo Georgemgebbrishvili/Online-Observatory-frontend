@@ -192,6 +192,20 @@
     color-mix(in srgb, var(--st-white) 9%, transparent),
     transparent 85%
   );
+  --gradient-edge: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--st-white) 34%, transparent),
+    color-mix(in srgb, var(--st-white) 8%, transparent) 30%,
+    color-mix(in srgb, var(--st-white) 4%, transparent) 65%,
+    color-mix(in srgb, var(--st-white) 14%, transparent)
+  );
+  --mask-edge: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  --gradient-open: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--st-red) 42%, transparent),
+    color-mix(in srgb, var(--st-red) 18%, transparent)
+  );
+  --color-open-edge: color-mix(in srgb, var(--st-red-hi) 55%, transparent);
   --color-track: color-mix(in srgb, var(--st-white) 6%, transparent);
   --color-now: var(--st-red-hi);
   --color-line: color-mix(in srgb, var(--st-white) 9%, transparent);

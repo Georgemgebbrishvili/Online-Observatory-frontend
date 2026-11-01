@@ -55,3 +55,7 @@ the hero, nothing extra.
 - 2026-11-01, later (maintainer): the section numbers are dropped, and every panel is
   tightened — smaller padding, chart rows and readout, step stage, price and bento tiles —
   so the page uses its space compactly. Hour labels under the "now" tag step aside.
+- 2026-11-01, later still (maintainer): back-to-back open times read as one band on the
+  chart instead of a tick each, with the chip under the pointer marked on it; the
+  altitude gauge is dropped; every panel gets a rim that catches light at the top-left;
+  the bento doors carry their drawings large and faint, cropped by the tile's corner.

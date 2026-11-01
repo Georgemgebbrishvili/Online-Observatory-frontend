@@ -76,6 +76,19 @@ export function NightChart({
     };
   });
 
+  // Open times that run on from one another read as one stretch of open sky.
+  const open: NightChartModel["open"] = [];
+  let run: { from: number; to: number } | null = null;
+  for (const slot of [...slots].sort((a, b) => a.time - b.time)) {
+    const until = slot.time + slot.durationMinutes * 60_000;
+    if (run && slot.time <= run.to + 60_000) run.to = Math.max(run.to, until);
+    else {
+      if (run) open.push({ from: at(run.from), to: at(run.to) });
+      run = { from: slot.time, to: until };
+    }
+  }
+  if (run) open.push({ from: at(run.from), to: at(run.to) });
+
   const highest = sky.objects.reduce(
     (best, o, index) => (o.altitude > sky.objects[best].altitude ? index : best),
     0,
@@ -91,6 +104,7 @@ export function NightChart({
         first: highest,
         sunset: clock.format(start),
         sunrise: clock.format(end),
+        open,
         slots: slots.map((slot) => ({
           at: at(slot.time),
           href: bookAt(slot),
