@@ -173,7 +173,7 @@ test("the owner opens the session to Tonight, live, and closes it again", async 
 }) => {
   await page.goto(`/en/app/missions/${observing}/session`, { timeout: firstCompile });
   const panel = page.getByRole("region", { name: "Tonight, live" });
-  await expect(panel).toContainText("Only you and your observers see this session.");
+  await expect(panel).toContainText("Only you and your guests see this.");
 
   const opened = page.waitForRequest((sent) =>
     sent.url().endsWith(`/api/missions/${observing}/broadcast`),
@@ -182,10 +182,10 @@ test("the owner opens the session to Tonight, live, and closes it again", async 
   const sent = await opened;
   expect(sent.method()).toBe("PATCH");
   expect(sent.postDataJSON()).toEqual({ broadcast: true });
-  await expect(panel).toContainText("Anyone can watch this session on Tonight, live");
+  await expect(panel).toContainText("Anyone can watch on Tonight, live");
 
   await panel.getByRole("button", { name: "Stop showing" }).click();
-  await expect(panel).toContainText("Only you and your observers see this session.");
+  await expect(panel).toContainText("Only you and your guests see this.");
   await expect(
     panel.getByRole("button", { name: "Show on Tonight, live" }),
   ).toBeVisible();
@@ -204,6 +204,6 @@ test("the owner's switch in Georgian, and a refusal said plainly", async ({ page
   await panel.getByRole("button", { name: "გამოჩენა „ამაღამ, პირდაპირ“-ზე" }).click();
   await expect(panel.getByRole("alert")).toHaveText("ვერ შეინახა. სცადე თავიდან.");
   await expect(panel).toContainText(
-    "ამ სეანსს მხოლოდ შენ და შენი დამკვირვებლები ხედავთ.",
+    "ამას მხოლოდ შენ და შენი სტუმრები ხედავთ.",
   );
 });
