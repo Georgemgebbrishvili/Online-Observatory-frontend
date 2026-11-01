@@ -1,9 +1,9 @@
 import { FlightPlan } from "@/components/home/flight-plan";
 import { HomeMore } from "@/components/home/home-more";
 import { HomeQuick } from "@/components/home/home-quick";
+import { NightChart } from "@/components/home/night-chart";
 import { ScrollReveal } from "@/components/home/scroll-reveal";
 import { SkyHero } from "@/components/home/sky-hero";
-import { SkyTonight } from "@/components/home/sky-tonight";
 import { Container } from "@/components/ui/container";
 import type { PricingFacts } from "@/features/pricing/read";
 import type { TonightSky } from "@/features/sky/tonight-sky";
@@ -18,8 +18,8 @@ type HomeShellProps = {
 };
 
 /**
- * The public homepage (ADR-076, ADR-077): the sky, tonight (open
- * times beside the planets up), how a session works, prices, other ways in, questions,
+ * The public homepage (ADR-076 to ADR-078): the sky, tonight (the planets and the open
+ * times on one night chart), how a session works, prices, other ways in, questions,
  * and a last call.
  */
 export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
@@ -36,13 +36,24 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
 
       <section className="home-band" aria-labelledby="home-tonight-title">
         <Container>
-          <header className="home-head">
+          <header className="home-head home-head-row">
             <h2 id="home-tonight-title">{content.tonight.title}</h2>
+            {sky && (
+              <time dateTime={sky.date}>
+                {new Intl.DateTimeFormat(locale === "ka" ? "ka-GE" : "en-GB", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  timeZone: "UTC",
+                }).format(new Date(`${sky.date}T12:00:00Z`))}
+              </time>
+            )}
           </header>
-          <div className="home-tonight">
+          {sky && sky.objects.length > 0 ? (
+            <NightChart locale={locale} pricing={pricing} sky={sky} timezone="Asia/Tbilisi" />
+          ) : (
             <HomeQuick locale={locale} pricing={pricing} />
-            <SkyTonight locale={locale} sky={sky} timezone="Asia/Tbilisi" />
-          </div>
+          )}
         </Container>
       </section>
 
@@ -51,7 +62,7 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
           <header className="home-head">
             <h2 id="steps-title">{content.howItWorks.title}</h2>
           </header>
-          <FlightPlan steps={steps} />
+          <FlightPlan open={content.howItWorks.open} steps={steps} />
         </Container>
       </section>
 

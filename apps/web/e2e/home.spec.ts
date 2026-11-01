@@ -62,38 +62,54 @@ test("the public homepage: the sky, tonight, the steps, prices, and the rest", a
   ).toBeVisible();
   // The sky, tonight, the steps, prices, more, questions and a last call.
   await expect(page.locator("main section")).toHaveCount(7);
-  // What lengths cost, at the platform's rate by the minute (150 tetri on the fake).
-  await expect(page.locator(".home-price b")).toHaveText([
-    "GEL 22.50",
-    "GEL 45.00",
-    "GEL 90.00",
-    "GEL 180.00",
-  ]);
-  await expect(page.locator(".home-price").first()).toHaveAttribute(
-    "href",
-    "/en/app/book?length=15",
-  );
+  // What a length costs, at the platform's rate by the minute (150 tetri on the fake):
+  // 30 minutes first, then whichever length is picked.
+  // The scroll reveal marks the page once its scripts run: from then on it answers clicks.
+  await expect(page.locator(".public-home[data-reveal]")).toHaveCount(1);
+  const picker = page.locator(".home-picker");
+  await expect(picker.locator(".home-price b")).toHaveText("GEL 45.00");
+  for (const [length, price, minutes] of [
+    ["15 min", "GEL 22.50", 15],
+    ["1 h", "GEL 90.00", 60],
+    ["2 h", "GEL 180.00", 120],
+  ] as const) {
+    await picker.getByRole("radio", { name: length }).click();
+    await expect(picker.locator(".home-price b")).toHaveText(price);
+    await expect(picker.getByRole("link", { name: `Book ${length}` })).toHaveAttribute(
+      "href",
+      `/en/app/book?length=${minutes}`,
+    );
+  }
   await expect(page.locator(".home-faq details")).toHaveCount(4);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
-  // How a session works: four cards, each the door to the page where it happens.
-  const steps = page.locator("#about .flight-plan-step");
-  await expect(steps).toHaveCount(4);
+  // How a session works: four tabs, each step opening the page where it happens.
+  const tabs = page.locator("#about").getByRole("tab");
+  await expect(tabs).toHaveCount(4);
   for (const [name, href] of [
     ["Book", "/en/app/book"],
     ["Aim", "/en/observatory"],
     ["Watch", "/en/tonight"],
     ["Keep", "/en/app/collection"],
   ]) {
-    await expect(steps.filter({ hasText: name })).toHaveAttribute("href", href);
+    await tabs.filter({ hasText: name }).click();
+    await expect(tabs.filter({ hasText: name })).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator("#about .flight-plan-step")).toHaveAttribute("href", href);
   }
 
-  // Tonight: open start times beside the Moon and planets up.
-  const open = page.getByRole("article", { name: "Open tonight" });
-  await expect(open.locator(".home-quick-times li")).toHaveCount(4);
+  // Tonight: the Moon and planets on one chart with the open times; picking a row
+  // shows that body and books the open time nearest its best.
+  const chart = page.getByRole("group", { name: "Tonight's sky from sunset to sunrise" });
+  const rows = chart.locator(".night-row");
+  expect(await rows.count()).toBeGreaterThan(0);
+  await rows.first().click();
+  await expect(rows.first()).toHaveAttribute("aria-pressed", "true");
+  const name = (await rows.first().innerText()).trim();
+  await expect(page.locator(".night-readout h3")).toHaveText(name);
+  await expect(page.getByRole("list", { name: "Open times" }).locator("a")).toHaveCount(4);
   await expect(
-    page.getByRole("article", { name: "What's up over Tbilisi" }),
-  ).toBeVisible();
+    page.getByRole("list", { name: "Open times" }).locator("a").first(),
+  ).toHaveAttribute("href", /\/en\/app\/book\?startAt=/);
 });
 
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {
@@ -234,7 +250,7 @@ test("shows and operates the internal visual system", async ({ page }) => {
   await expect(dialog).not.toBeVisible();
 
   await page.getByRole("tab", { name: "Visibility" }).click();
-  await expect(page.getByRole("tabpanel")).toContainText("Altitude");
+  await expect(page.getByRole("tabpanel", { name: "Visibility" })).toContainText("Altitude");
 });
 
 test("keeps the visual system within a mobile viewport", async ({ page }) => {
@@ -579,29 +595,27 @@ test("keeps localized pricing inside the mobile viewport", async ({ page }) => {
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("a phone's first screen holds the observatory now and tonight's open times", async ({
+test("a phone gets tonight's chart and open times without moving sideways", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/en");
 
-  const quick = page.getByRole("region", { name: "Open tonight", exact: true });
-  await expect(quick).toBeVisible();
-  await expect(quick.getByText("Online")).toBeVisible();
-  const times = quick.getByRole("listitem");
+  await expect(page.locator(".public-home[data-reveal]")).toHaveCount(1);
+  const chart = page.getByRole("group", { name: "Tonight's sky from sunset to sunrise" });
+  await chart.scrollIntoViewIfNeeded();
+  await expect(chart).toBeVisible();
+  const times = page.getByRole("list", { name: "Open times" }).getByRole("listitem");
   expect(await times.count()).toBeGreaterThan(0);
   expect(await times.count()).toBeLessThanOrEqual(4);
-  // Above the fold: the panel starts within the first screen.
-  const box = await quick.boundingBox();
-  expect(box!.y).toBeLessThan(844);
   // A time opens the booking board with that start chosen.
   await expect(times.first().getByRole("link")).toHaveAttribute(
     "href",
     /\/en\/app\/book\?startAt=/,
   );
-  // Nothing on the page is wider than the screen.
+  // A tap on a row shows that body in the readout under the chart.
+  const row = chart.locator(".night-row").last();
+  await row.click();
+  await expect(page.locator(".night-readout h3")).toHaveText((await row.innerText()).trim());
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
-
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await expect(quick).toBeHidden();
 });

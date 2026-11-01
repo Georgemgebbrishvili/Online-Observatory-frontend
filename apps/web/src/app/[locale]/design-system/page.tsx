@@ -1461,6 +1461,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
           </div>
           <div className="ds-home-specimen">
             <FlightPlan
+              open={dictionary.home.howItWorks.open}
               steps={dictionary.home.howItWorks.steps.map((step) => ({
                 ...step,
                 href: `/${locale}/app/book`,

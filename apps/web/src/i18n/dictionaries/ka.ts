@@ -88,6 +88,7 @@ const dictionary = {
     },
     howItWorks: {
       title: "როგორ მუშაობს",
+      open: "გახსენი",
       steps: [
         { title: "დაჯავშნე", description: "აირჩიე ღამე და დრო." },
         { title: "დაუმიზნე", description: "ტელესკოპი შენი ობიექტისკენ შემობრუნდება." },
@@ -101,6 +102,7 @@ const dictionary = {
         title: "გადაიხადე წუთობრივად",
         perMinute: "{price} წუთში, 15 წუთიდან 4 საათამდე.",
         cloud: "ღრუბლებმა ხელი შეგიშალა? შემდეგი სეანსი უფასოა.",
+        book: "დაჯავშნე {length}",
       },
       ways: {
         title: "კიდევ აღმოაჩინე",

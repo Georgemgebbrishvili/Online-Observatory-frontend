@@ -2,14 +2,9 @@ import type { Locale } from "@/i18n/config";
 import type { SkyBody } from "@/features/sky/tonight-sky";
 
 const en = {
-  kicker: "Tonight's sky",
-  title: "What's up over Tbilisi",
-  best: "Best {time}",
-  up: "Up {from}–{to}",
   eye: "Naked eye",
   scope: "Telescope",
   lit: "{lit}% lit",
-  empty: "No planets up tonight. The deep sky has the night to itself.",
   names: {
     Moon: "Moon",
     Mercury: "Mercury",
@@ -20,18 +15,27 @@ const en = {
     Uranus: "Uranus",
     Neptune: "Neptune",
   } satisfies Record<SkyBody, string>,
-  directions: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+  compass: [
+    "North",
+    "North-east",
+    "East",
+    "South-east",
+    "South",
+    "South-west",
+    "West",
+    "North-west",
+  ],
+  chart: "Tonight's sky from sunset to sunrise",
+  open: "Open times",
+  now: "Now",
+  book: "Book {time}",
+  stat: { best: "Best time", high: "Highest", up: "Visible", look: "Look" },
 };
 
 const ka: typeof en = {
-  kicker: "ამაღამის ცა",
-  title: "რა ჩანს თბილისის თავზე",
-  best: "საუკეთესოდ {time}",
-  up: "ჩანს {from}–{to}",
   eye: "თვალით ჩანს",
   scope: "ტელესკოპით",
   lit: "{lit}% განათებული",
-  empty: "ამაღამ პლანეტები არ ჩანს. ღამე შორეულ ცას ეკუთვნის.",
   names: {
     Moon: "მთვარე",
     Mercury: "მერკური",
@@ -42,7 +46,21 @@ const ka: typeof en = {
     Uranus: "ურანი",
     Neptune: "ნეპტუნი",
   },
-  directions: ["ჩ", "ჩა", "ა", "სა", "ს", "სდ", "დ", "ჩდ"],
+  compass: [
+    "ჩრდილოეთი",
+    "ჩრდილო-აღმოსავლეთი",
+    "აღმოსავლეთი",
+    "სამხრეთ-აღმოსავლეთი",
+    "სამხრეთი",
+    "სამხრეთ-დასავლეთი",
+    "დასავლეთი",
+    "ჩრდილო-დასავლეთი",
+  ],
+  chart: "ამაღამის ცა მზის ჩასვლიდან ამოსვლამდე",
+  open: "თავისუფალი დრო",
+  now: "ახლა",
+  book: "დაჯავშნე {time}",
+  stat: { best: "საუკეთესო დრო", high: "სიმაღლე", up: "ჩანს", look: "მიმართულება" },
 };
 
 export const skyTonightCopy: Record<Locale, typeof en> = { en, ka };

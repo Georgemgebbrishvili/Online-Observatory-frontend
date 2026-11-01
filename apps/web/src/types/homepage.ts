@@ -28,12 +28,14 @@ export type HomepageDictionary = {
   };
   howItWorks: {
     title: string;
+    /** The link on the open step to the page where it happens. */
+    open: string;
     steps: readonly { title: string; description: string }[];
   };
   tonight: { title: string };
   /** ADR-076: the sections under "how it works". */
   more: {
-    price: { title: string; perMinute: string; cloud: string };
+    price: { title: string; perMinute: string; cloud: string; book: string };
     ways: {
       title: string;
       items: readonly { title: string; text: string; href: string }[];

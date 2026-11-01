@@ -158,6 +158,42 @@
     inset 0 1px 0 color-mix(in srgb, var(--st-white) 40%, transparent),
     0 14px 34px -10px color-mix(in srgb, var(--color-accent) 95%, transparent);
   --shadow-pill-glass: inset 0 1px 0 color-mix(in srgb, var(--st-white) 20%, transparent);
+  /* ADR-078: hairlines that fade at both ends, a dot grid on the panels, the horizon. */
+  --gradient-hairline: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--st-white) 16%, transparent) 50%,
+    transparent
+  );
+  --texture-dots: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--st-white) 7%, transparent) 1px,
+    transparent 1.4px
+  );
+  --gradient-panel: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--st-white) 7%, transparent),
+    color-mix(in srgb, var(--st-white) 2%, transparent) 70%
+  );
+  --gradient-horizon:
+    radial-gradient(
+      60% 90% at 50% 120%,
+      color-mix(in srgb, var(--st-red) 38%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 40% at 50% 100%,
+      color-mix(in srgb, var(--st-amber) 22%, transparent),
+      transparent 70%
+    );
+  --gradient-meter: linear-gradient(90deg, var(--st-gd-mid), var(--st-sun-4));
+  --gradient-numeral: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--st-white) 9%, transparent),
+    transparent 85%
+  );
+  --color-track: color-mix(in srgb, var(--st-white) 6%, transparent);
+  --color-now: var(--st-red-hi);
   --color-line: color-mix(in srgb, var(--st-white) 9%, transparent);
   --color-line-strong: color-mix(in srgb, var(--st-white) 22%, transparent);
 
@@ -506,6 +542,12 @@
   --font-size-tile: 1.25rem;
   --font-size-time: 1.5rem;
   --font-size-price: clamp(1.5rem, 3vw, 2rem);
+  /* ADR-078: the night chart's readout, the price picker and the step stage. */
+  --font-size-readout: clamp(1.75rem, 3vw, 2.25rem);
+  --font-size-stat: 1.125rem;
+  --font-size-price-big: clamp(3rem, 7vw, 4.75rem);
+  --font-size-step: clamp(1.375rem, 2.4vw, 1.875rem);
+  --font-size-numeral: clamp(7rem, 16vw, 13rem);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

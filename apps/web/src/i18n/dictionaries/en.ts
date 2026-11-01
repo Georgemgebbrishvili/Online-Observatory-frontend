@@ -89,6 +89,7 @@ const dictionary = {
     },
     howItWorks: {
       title: "How it works",
+      open: "Open",
       steps: [
         { title: "Book", description: "Pick a night and a time." },
         { title: "Aim", description: "The telescope turns to your target." },
@@ -102,6 +103,7 @@ const dictionary = {
         title: "Pay by the minute",
         perMinute: "{price} a minute, from 15 minutes to 4 hours.",
         cloud: "Clouded out? Your next session is free.",
+        book: "Book {length}",
       },
       ways: {
         title: "More to explore",

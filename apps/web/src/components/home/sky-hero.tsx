@@ -31,10 +31,10 @@ export function SkyHero({ content, headingLevel = 1, locale }: SkyHeroProps) {
         </Heading>
         <p className="sky-hero-lede">{content.lede}</p>
         <div className="sky-hero-actions">
-          <ButtonLink href={`/${locale}/app/book`} size="large">
+          <ButtonLink href={`/${locale}/app/book`}>
             {content.cta}
           </ButtonLink>
-          <ButtonLink href={`/${locale}/tonight`} size="large" variant="secondary">
+          <ButtonLink href={`/${locale}/tonight`} variant="secondary">
             {content.watch}
           </ButtonLink>
         </div>

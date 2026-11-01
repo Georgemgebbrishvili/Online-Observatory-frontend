@@ -31,3 +31,24 @@ section, mobile-first layout, and only necessary text with nothing small.
   (vermilion #D9442A to #B8321F, cream letters, AA). Section buttons are medium size.
 - Sections rise into place as they scroll in (IntersectionObserver; nothing is hidden
   without the script or with reduced motion).
+
+## Amendment (ADR-078, 2026-11-01, maintainer request)
+
+The maintainer asked for a premium finish: small buttons, interactive information below
+the hero, nothing extra.
+
+- Tonight is one night chart, sunset to sunrise: each body's rise-to-set bar peaking at
+  its best time, the open start times as pins on the same clock, a "now" line, and the
+  first four open times as chips. Picking a row fills a readout — best time, highest
+  altitude, compass direction, visible window — with a button that books the open time
+  nearest its best. Every value is the almanac's or the platform's; with no sky to chart
+  the open-times card shows instead.
+- How it works is four tabs beside one stage; the bar under the open tab fills and hands
+  on while in view, holds on hover or focus, and does not move with reduced motion.
+- Pay by the minute is a length picker: the platform's price for the chosen length, a
+  bar for its share of the four-hour maximum, and one button to book it.
+- More to explore is a bento of four doors with line drawings; Questions sits beside its
+  heading as hairline rows; the last call is a panel with a sunset on its horizon.
+- Sections are numbered after a short red rule and split by fading hairlines; panels sit
+  on a faint dot grid. Homepage buttons are 40 px pills with 14 px labels.
+- The scroll reveal also shows anything a fast scroll carried past the screen.
