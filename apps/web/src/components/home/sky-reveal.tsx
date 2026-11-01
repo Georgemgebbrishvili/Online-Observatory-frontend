@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import { skyAimEvent, type SkyAim } from "@/components/home/observatory-dome";
 import { skyPlates, type SkyKind, type SkyPlate } from "@/features/targets/homepage-data";
 import type { Locale } from "@/i18n/config";
 import { palette, withAlpha } from "@/styles/tokens";
@@ -120,7 +119,6 @@ export function SkyReveal({ copy, kinds, locale, names }: SkyRevealProps) {
     let lock = 0;
     let lockTgt = 0;
     let locked: Live | null = null;
-    const aimAt = { x: 0, y: 0 };
     let raf = 0;
     let last = 0;
     let activeUntil = 0;
@@ -270,15 +268,7 @@ export function SkyReveal({ copy, kinds, locale, names }: SkyRevealProps) {
       cur.y += (tgt.y - cur.y) * k;
       gain += (gainTgt - gain) * (reduced ? 1 : 1 - Math.exp(-dt / 90));
       lock += (lockTgt - lock) * (reduced ? 1 : 1 - Math.exp(-dt / 110));
-      aimAt.x = locked ? cur.x + (locked.cx - cur.x) * lock : cur.x;
-      aimAt.y = locked ? cur.y + (locked.cy - cur.y) * lock : cur.y;
       draw(now);
-      // The observatory below turns its telescope to wherever the light is, and onto the
-      // plate's centre once the light holds one.
-      if (gainTgt > 0)
-        hero!.dispatchEvent(
-          new CustomEvent<SkyAim>(skyAimEvent, { detail: { x: aimAt.x, y: aimAt.y } }),
-        );
       const moving =
         Math.abs(tgt.x - cur.x) + Math.abs(tgt.y - cur.y) > 0.25 ||
         Math.abs(gainTgt - gain) > 0.004 ||

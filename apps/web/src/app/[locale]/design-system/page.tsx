@@ -1472,7 +1472,12 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
           <div className="ds-home-specimen">
-            <SkyHero content={dictionary.home.hero} headingLevel={2} locale={locale} />
+            <SkyHero
+              content={dictionary.home.hero}
+              headingLevel={2}
+              locale={locale}
+              panel={quickPanelSpecimen}
+            />
           </div>
         </section>
 
@@ -1480,19 +1485,15 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
           <SectionHeader id="homepage-title" section={copy.sections.homepage} />
           <div className="ds-home-specimen ds-quick-specimens">
             <HomeQuick
-              live={dictionary.home.live}
               locale={locale}
               id="ds-quick-title"
               specimen
-              panel={quickPanelSpecimen}
               pricing={quickPricingSpecimen(false)}
             />
             <HomeQuick
-              live={dictionary.home.live}
               locale={locale}
               id="ds-quick-unreachable"
               specimen
-              panel={{ kind: "unreachable" }}
               pricing={quickPricingSpecimen(true)}
             />
           </div>

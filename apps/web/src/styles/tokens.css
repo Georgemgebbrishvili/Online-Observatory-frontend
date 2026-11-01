@@ -104,6 +104,27 @@
   --color-border-subtle: color-mix(in srgb, var(--st-rule) 12%, transparent);
   --color-border-strong: color-mix(in srgb, var(--st-rule) 22%, transparent);
   --color-border-control: color-mix(in srgb, var(--st-rule) 40%, transparent);
+  /* ADR-076: the homepage's tiles and the pill buttons. */
+  --color-tile: color-mix(in srgb, var(--st-white) 4%, var(--color-night));
+  --gradient-tile: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--st-white) 6%, var(--color-night)),
+    color-mix(in srgb, var(--st-white) 3%, var(--color-night))
+  );
+  --color-chip: color-mix(in srgb, var(--st-white) 7%, transparent);
+  --color-chip-strong: color-mix(in srgb, var(--st-white) 8%, transparent);
+  --color-well: color-mix(in srgb, var(--st-black) 40%, transparent);
+  --color-scrim-chip: color-mix(in srgb, var(--st-black) 55%, transparent);
+  --color-link-hover: var(--st-red-hi);
+  --color-pill-secondary: color-mix(in srgb, var(--st-white) 7%, transparent);
+  --color-pill-secondary-hover: color-mix(in srgb, var(--st-white) 12%, transparent);
+  --color-pill-secondary-border-hover: color-mix(in srgb, var(--st-white) 40%, transparent);
+  --color-pill-primary-hover: color-mix(in srgb, var(--color-action) 88%, var(--st-white));
+  --color-pill-primary-busy: color-mix(in srgb, var(--color-action) 80%, var(--st-black));
+  --shadow-pill: inset 0 1px 0 color-mix(in srgb, var(--st-white) 22%, transparent),
+    0 8px 24px -8px color-mix(in srgb, var(--color-accent) 70%, transparent);
+  --shadow-pill-hover: inset 0 1px 0 color-mix(in srgb, var(--st-white) 26%, transparent),
+    0 12px 32px -8px color-mix(in srgb, var(--color-accent) 85%, transparent);
   --color-line: color-mix(in srgb, var(--st-white) 9%, transparent);
   --color-line-strong: color-mix(in srgb, var(--st-white) 22%, transparent);
 
@@ -405,6 +426,12 @@
   /* The game's name on its launch screen (ADR-057); Mkhedruli runs wider, so smaller. */
   --font-size-explorer: clamp(3.25rem, 9vw, 8.5rem);
   --font-size-explorer-ka: clamp(2.5rem, 7vw, 6.5rem);
+  /* The homepage below the sky (ADR-076). */
+  --font-size-section: clamp(2rem, 4.4vw, 3.25rem);
+  --font-size-closer: clamp(2.25rem, 6vw, 4.5rem);
+  --font-size-tile: 1.25rem;
+  --font-size-time: 1.5rem;
+  --font-size-price: clamp(1.5rem, 3vw, 2rem);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

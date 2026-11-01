@@ -4,8 +4,7 @@ import { brand } from "@/brand";
 const dictionary = {
   metadata: {
     title: brand.en.siteName,
-    description:
-      "Book a real telescope in Georgia and watch the sky live.",
+    description: "Book a real telescope in Georgia and watch the sky live.",
   },
   navigation: {
     ariaLabel: "Primary navigation",
@@ -49,8 +48,10 @@ const dictionary = {
     hero: {
       headline: "The real sky,",
       sunset: "live.",
-      lede: "A real telescope in Georgia. Book a time and watch live.",
-      cta: "Reserve a slot",
+      lede: "Book a real telescope in Georgia and watch the night sky live.",
+      cta: "Book a session",
+      watch: "Watch live",
+      statusLabel: "The observatory now",
       plates: {
         saturn: "Saturn",
         jupiter: "Jupiter",
@@ -88,73 +89,32 @@ const dictionary = {
       altitude: "Altitude now",
     },
     howItWorks: {
-      eyebrow: `How ${brand.en.name} works`,
-      title: "Four steps to the sky.",
+      title: "How it works",
       steps: [
-        {
-          title: "Reserve",
-          description: "Pick a night.",
-        },
-        {
-          title: "Slew",
-          description: "The telescope turns to it.",
-        },
-        {
-          title: "Watch",
-          description: "See it live.",
-        },
-        {
-          title: "Keep",
-          description: "Keep the picture.",
-        },
+        { title: "Book", description: "Pick a night and a time." },
+        { title: "Aim", description: "The telescope turns to your target." },
+        { title: "Watch", description: "See it live in your browser." },
+        { title: "Keep", description: "Save the pictures you take." },
       ],
     },
-    tonight: {
-      kicker: "Tonight",
-      title: "What the telescope can see",
-      all: "All targets",
-      empty: "Nothing is up tonight.",
-      unavailable: "Tonight's sky can't be read right now.",
-    },
-    live: {
-      kicker: "Live now",
-      title: "The observatory",
-      observing: "Observing {name}",
-      inProgress: "An observation is in progress",
-      watch: "Watch",
-      fullStatus: "Full status",
-      unavailable: "The status can't be read right now.",
-    },
+    tonight: { title: "Tonight" },
     more: {
-      book: {
-        kicker: "Booking",
-        title: "Three taps to the telescope",
-        steps: [
-          {
-            title: "Pick a night",
-            text: "Up to seven nights ahead.",
-          },
-          {
-            title: "Pick a time",
-            text: "15 minutes to 4 hours.",
-          },
-          {
-            title: "Reserve",
-            text: "Clouded out? You get a free session.",
-          },
-        ],
-        lengths: "Any length, one rate",
-        perMinute: "{price} a minute",
-        cta: "Book a session",
+      price: {
+        title: "Pay by the minute",
+        perMinute: "{price} a minute, from 15 minutes to 4 hours.",
+        cloud: "Clouded out? Your next session is free.",
       },
       ways: {
-        kicker: "More",
-        title: "More ways in",
+        title: "More to explore",
         items: [
-          { title: "Weekly vote", text: "Vote for the week's target.", href: "vote" },
+          {
+            title: "Weekly vote",
+            text: "Choose what the telescope sees next.",
+            href: "vote",
+          },
           {
             title: "Gift a night",
-            text: "Give someone a night at the telescope.",
+            text: "A night at the telescope, as a gift.",
             href: "gift",
           },
           {
@@ -162,40 +122,31 @@ const dictionary = {
             text: "Fly through the solar system.",
             href: "explorer",
           },
-          {
-            title: "Weekly cards",
-            text: "A free card each week. Win a session or a discount.",
-            href: "app/cards",
-          },
+          { title: "Weekly cards", text: "A free card every week.", href: "app/cards" },
         ],
       },
       faq: {
-        kicker: "Questions",
-        title: "Before you book",
+        title: "Questions",
         items: [
           {
             q: "Do I need a telescope or an app?",
-            a: "No. It all runs in your browser.",
+            a: "No. Everything runs in your browser.",
           },
           {
             q: "What if it is cloudy?",
-            a: "If the weather stops your session, pick another night for free.",
+            a: "If the weather stops your session, book another night for free.",
           },
-          {
-            q: "How long can a session be?",
-            a: "From 15 minutes to 4 hours.",
-          },
+          { q: "How long can a session be?", a: "From 15 minutes to 4 hours." },
           {
             q: "Can I choose what to look at?",
-            a: "Yes. Or let us pick the best one in the sky.",
+            a: "Yes. Or we pick the best object in the sky.",
           },
         ],
       },
       closer: {
         title: "The sky is open",
         sunset: "tonight.",
-        lede: "A real telescope, a few taps away.",
-        cta: "Reserve a slot",
+        cta: "Book a session",
         secondary: "Try the observatory",
       },
     },
@@ -220,8 +171,7 @@ const dictionary = {
   },
   notFound: {
     title: "Observation not found",
-    description:
-      "This link is wrong or the page moved.",
+    description: "This link is wrong or the page moved.",
     action: `Return to ${brand.en.name}`,
   },
 } satisfies Dictionary;

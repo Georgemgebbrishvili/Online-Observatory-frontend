@@ -9,7 +9,6 @@ import { TonightBanner } from "@/components/tonight/tonight-banner";
 import { readObservatoryPanel } from "@/features/home/read";
 import { readPricing } from "@/features/pricing/read";
 import { tonightSky } from "@/features/sky/tonight-sky";
-import { readTonight } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { siteUrl } from "@/lib/seo";
@@ -29,9 +28,8 @@ export default async function HomePage({ params }: HomePageProps) {
     notFound();
   }
 
-  const [dictionary, tonight, panel, pricing] = await Promise.all([
+  const [dictionary, panel, pricing] = await Promise.all([
     getDictionary(locale),
-    readTonight(locale),
     readObservatoryPanel(),
     readPricing(locale),
   ]);
@@ -63,7 +61,6 @@ export default async function HomePage({ params }: HomePageProps) {
       <HomeShell
         content={dictionary.home}
         locale={locale}
-        tonight={tonight}
         panel={panel}
         pricing={pricing}
         sky={sky}

@@ -114,23 +114,6 @@
   letter-spacing: 0.08em;
 }
 
-/* The observatory on its hill, a 3D scene over the whole hero, under the words. */
-.observatory-dome {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 400ms var(--ease-sky);
-}
-
-/* The scene fades in once it has drawn, rather than popping in. */
-.observatory-dome[data-ready] {
-  opacity: 1;
-}
-
 .sky-hero-copy {
   position: relative;
   z-index: 2;
@@ -144,11 +127,6 @@
 
 .sky-hero-copy a {
   pointer-events: auto;
-}
-
-/* The words stand above the observatory, clear of its raised telescope. */
-.sky-hero-copy {
-  padding-bottom: calc(var(--space-12) + min(11rem, 22svh));
 }
 
 .sky-hero-title {
@@ -181,8 +159,43 @@
   line-height: 1.5;
 }
 
-.sky-hero-copy .button {
-  margin-top: 2.125rem;
+.sky-hero-title {
+  letter-spacing: -0.01em;
+}
+
+.sky-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+.sky-hero-actions .button {
+  pointer-events: auto;
+}
+
+.sky-hero-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sky-hero-status li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.375rem var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-scrim-chip);
+  backdrop-filter: blur(8px);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -224,218 +237,131 @@
 /* Below --sm, not the source's 560px: the app keeps its five breakpoints (v3 §3). */
 @media (--below-sm) {
   .sky-hero {
-    min-height: clamp(28.75rem, calc(100svh - var(--size-app-header)), 47.5rem);
+    min-height: auto;
+    padding-block: var(--space-10) var(--space-8);
   }
 
   .sky {
     display: none;
   }
 
-  .sky-hero-copy .button {
-    min-width: 13.75rem;
+  .sky-hero-actions {
+    display: grid;
+    width: 100%;
+    max-width: 22rem;
   }
 }
 
 /*
- * HOW IT WORKS — a small heading over four small tiles, each a door to where that step
- * happens: two by two on a phone, one row of four from --md.
+ * BELOW THE SKY (ADR-076) — every section the same: a big tight headline, then tiles that
+ * are lighter than the night, with a hairline, 16px corners and no text under 14px.
  */
 .home-band {
-  padding-block: var(--space-12);
+  padding-block: clamp(3.5rem, 8vw, 6.5rem);
 }
 
-.home-steps-heading {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-2);
-  text-align: center;
+.home-band + .home-band {
+  border-top: 1px solid var(--color-line);
 }
 
-.home-steps-heading .kicker {
-  margin: 0;
-}
-
-.home-steps-heading h2 {
-  margin: 0;
-  font-size: var(--font-size-h3);
-}
-
-.flight-plan {
-  display: grid;
-  max-width: 64rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
-  margin: var(--space-6) auto 0;
-  padding: 0;
-  list-style: none;
-}
-
-.flight-plan > li {
-  display: grid;
-  min-width: 0;
-}
-
-.flight-plan-step {
-  display: grid;
-  grid-template-columns: 1.5rem minmax(0, 1fr);
-  align-content: start;
-  gap: var(--space-1) var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-raised);
-  color: var(--color-text-primary);
-  text-decoration: none;
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard);
-}
-
-.flight-plan-step:hover {
-  border-color: var(--color-accent-border);
-  background: var(--color-surface-hover);
-}
-
-.flight-plan-step:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.flight-plan-icon {
-  grid-row: span 2;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-top: 0.125rem;
-  color: var(--color-accent-ink);
-}
-
-.flight-plan-icon svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.flight-plan-title {
-  font-family: var(--font-label);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-label);
-  letter-spacing: var(--tracking-label);
-  line-height: 1.5;
-  text-transform: uppercase;
-}
-
-.flight-plan-text {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-kicker);
-  line-height: 1.4;
-}
-
-/* Georgian is never uppercased or tracked. */
-.flight-plan-title:lang(ka) {
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-@media (--md) {
-  .flight-plan {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (--lg) {
-  .home-band {
-    padding-block: var(--space-16);
-  }
-}
-
-/* PHONE — the hero is two thirds of a screen. */
-@media (--below-md) {
-  /*
-   * A phone's hero is only as tall as its words and the observatory under them, so the
-   * observatory now and tonight's open times (.home-quick) share the first screen.
-   */
-  .sky-hero {
-    min-height: 0;
-  }
-
-  .sky-hero-copy {
-    padding-top: var(--space-10);
-    padding-bottom: 8.5rem;
-  }
-
-  .home-band {
-    padding-block: var(--space-10);
-  }
-}
-
-/*
- * NOW — two small cards under the steps: tonight and the observatory now. One column on
- * a phone, side by side from --md, wide and narrow from --lg.
- */
-.home-now-band {
-  padding-top: 0;
-}
-
-.home-now {
-  display: grid;
-  max-width: 64rem;
-  gap: var(--space-4);
-  margin-inline: auto;
-}
-
-.home-card {
+.home-head {
   display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-5);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-raised);
-}
-
-.home-card-head {
-  display: flex;
-  min-height: 2rem;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2) var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
-.home-card-head .kicker {
-  margin: 0;
-}
-
-.home-card-more {
-  display: inline-flex;
-  min-height: 2rem;
-  align-items: center;
-  gap: var(--space-1);
-  color: var(--color-accent-ink);
-  font-size: var(--font-size-kicker);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.home-card-more:hover {
-  color: var(--color-text-primary);
-}
-
-.home-card-title {
+.home-head h2 {
   margin: 0;
   color: var(--color-text-primary);
+  font-size: var(--font-size-section);
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.home-head h2:lang(ka) {
   font-family: var(--font-body);
-  font-size: var(--font-size-body-lg);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 0;
-  line-height: 1.3;
-  text-transform: none;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
 }
 
-.home-card-note {
+.home-head p {
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
+  font-size: var(--font-size-body-lg);
+}
+
+.home-tile {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  background: var(--gradient-tile);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+a.home-tile {
+  transition:
+    border-color var(--duration-state) var(--ease-sky),
+    background-color var(--duration-state) var(--ease-sky),
+    translate var(--duration-state) var(--ease-sky);
+}
+
+a.home-tile:hover {
+  border-color: var(--color-line-strong);
+  translate: 0 -2px;
+}
+
+a.home-tile:focus-visible,
+.home-quick-times a:focus-visible,
+.home-tile-link:focus-visible,
+.flight-plan-step:focus-visible,
+.home-faq summary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.home-tile-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.home-tile-head h3 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.home-tile-head time {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.home-tile-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.home-tile-link {
+  justify-self: start;
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.home-tile-link:hover {
+  color: var(--color-link-hover);
 }
 
 .home-dot {
@@ -446,544 +372,26 @@
   background: var(--color-text-tertiary);
 }
 
-/* Tonight: three rows, a dot that is green when the target is up. */
-.home-tonight-list {
-  display: grid;
-  gap: var(--space-1);
-  margin: 0 calc(var(--space-2) * -1);
-  padding: 0;
-  list-style: none;
-}
-
-.home-tonight-list a {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2);
-  border-radius: var(--radius-small);
-  color: var(--color-text-primary);
-  text-decoration: none;
-}
-
-.home-tonight-list a:hover {
-  background: var(--color-surface-hover);
-}
-
-.home-tonight-list a[data-observable] .home-dot {
+[data-tone="good"] > .home-dot {
   background: var(--color-live);
-  box-shadow: 0 0 0 3px var(--color-live-muted);
+  box-shadow: 0 0 0.5rem var(--color-live);
 }
 
-.home-tonight-name {
-  display: grid;
-  font-size: var(--font-size-body);
-  line-height: 1.3;
-}
-
-.home-tonight-name small {
-  overflow: hidden;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-kicker);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.home-tonight-when {
-  color: var(--color-text-secondary);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-kicker);
-  white-space: nowrap;
-}
-
-/* Live now: three facts, each with its dot, and the observation in progress below. */
-.home-facts {
-  display: grid;
-  gap: var(--space-2);
-  margin: 0;
-}
-
-.home-facts > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.home-facts dt {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
-.home-facts dd {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  font-size: var(--font-size-label);
-}
-
-.home-facts [data-tone="good"] .home-dot {
-  background: var(--color-live);
-}
-
-.home-facts [data-tone="bad"] .home-dot {
+[data-tone="bad"] > .home-dot {
   background: var(--color-accent);
 }
 
-.home-live-now {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: auto;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-live-border);
-  border-radius: var(--radius-small);
-  background: var(--color-live-muted);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-label);
-  text-decoration: none;
-}
-
-.home-live-now span:not(.home-live-pulse) {
-  min-width: 0;
-  flex: 1;
-}
-
-.home-live-now b {
-  color: var(--color-live);
-  font-weight: var(--font-weight-medium);
-}
-
-.home-live-pulse {
-  width: 0.5rem;
-  height: 0.5rem;
-  flex: none;
-  border-radius: 50%;
-  background: var(--color-live);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .home-live-pulse {
-    animation: home-pulse 2s ease-in-out infinite;
-  }
-}
-
-@keyframes home-pulse {
-  50% {
-    opacity: 0.35;
-  }
-}
-
-.home-card-more:focus-visible,
-.home-tonight-list a:focus-visible,
-.home-live-now:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-@media (--md) {
-  .home-now {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (--lg) {
-  .home-now {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-  }
-
-  .home-card {
-    padding: var(--space-6);
-  }
-
-  .home-card-tonight {
-    grid-column: span 7;
-  }
-
-  .home-card-live {
-    grid-column: span 5;
-  }
-}
-
-/*
- * ADR-075: the chapters under the cards, as Skychaser sets its own — a red kicker over an
- * Anton title, plates on the dark, dotted data rows, and a last call in the poster red.
- */
-.home-chapter {
-  border-top: 1px solid var(--color-line);
-}
-
-.home-chapter > * {
-  max-width: 64rem;
-  margin-inline: auto;
-}
-
-.home-chapter-head {
+/* TONIGHT — open times beside the planets up. */
+.home-tonight {
   display: grid;
-  gap: var(--space-2);
-  margin-bottom: var(--space-5);
-}
-
-.home-chapter-head .kicker {
-  margin: 0;
-}
-
-.home-chapter-head h2 {
-  max-width: 22ch;
-  margin: 0;
-  font-size: var(--font-size-h1);
-}
-
-.home-chapter-lede {
-  max-width: 44rem;
-  margin: calc(-1 * var(--space-2)) 0 var(--space-6);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-  line-height: 1.55;
-}
-
-.home-chapter-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin: var(--space-4) 0 0;
-}
-
-.home-caption {
-  margin: 0;
-  color: var(--color-text-small);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.4 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-/* Booking: three numbered steps beside what lengths cost. */
-.home-book {
-  display: grid;
-  gap: var(--space-8);
-  align-items: start;
-}
-
-.home-book-steps {
-  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
-  margin: 0 0 var(--space-6);
-  padding: 0;
-  list-style: none;
-}
-
-.home-book-steps li {
-  display: grid;
-  grid-template-columns: 2.5rem 1fr;
-  gap: var(--space-3);
-  color: var(--color-text-secondary);
-  line-height: 1.5;
-}
-
-.home-book-steps b {
-  display: block;
-  color: var(--color-text-primary);
-  font: var(--font-weight-label) var(--font-size-body) / 1.4 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.home-book-no {
-  color: var(--color-accent-ink);
-  font: var(--font-weight-regular) var(--font-size-h3) / 1.1 var(--font-headline);
-}
-
-.home-lengths {
-  padding: var(--space-6);
-  border-radius: var(--radius-large);
-  background: var(--color-paper);
-  box-shadow: var(--shadow-paper);
-  color: var(--color-on-paper);
-}
-
-.home-lengths .kicker {
-  margin: 0 0 var(--space-3);
-  color: var(--color-paper-accent);
-}
-
-.home-lengths dl {
-  margin: 0 0 var(--space-3);
-}
-
-.home-lengths dl > div {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
-  padding: var(--space-2) 0;
-}
-
-.home-lengths dl > div::after {
-  order: 1;
-  flex: 1 1 auto;
-  border-bottom: 1px dotted color-mix(in srgb, var(--color-on-paper) 40%, transparent);
-  content: "";
-  transform: translateY(-4px);
-}
-
-.home-lengths dt {
-  font: var(--font-weight-label) var(--font-size-label) / 1.3 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.home-lengths dd {
-  order: 2;
-  margin: 0;
-  font: var(--font-weight-regular) var(--font-size-h3) / 1 var(--font-headline);
-}
-
-.home-lengths .home-caption {
-  color: var(--color-on-paper-2);
-}
-
-/* The other ways in: four doors. */
-.home-ways {
-  display: grid;
-  gap: var(--space-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.home-ways a {
-  position: relative;
-  display: grid;
-  gap: var(--space-1);
-  height: 100%;
-  padding: var(--space-5) var(--space-10) var(--space-5) var(--space-5);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-raised);
-  color: var(--color-text-secondary);
-  transition: border-color var(--duration-fast) var(--ease-standard);
-}
-
-.home-ways a:hover {
-  border-color: var(--color-accent-border);
-}
-
-.home-ways a:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.home-ways b {
-  color: var(--color-text-primary);
-  font: var(--font-weight-label) var(--font-size-body) / 1.3 var(--font-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.home-ways-go {
-  position: absolute;
-  top: var(--space-5);
-  right: var(--space-5);
-  color: var(--color-accent-ink);
-}
-
-/* Questions: one rule between each, a plus that turns. */
-.home-faq details {
-  border-bottom: 1px solid var(--color-line);
-}
-
-.home-faq summary {
-  display: flex;
-  min-height: 3.5rem;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-size: var(--font-size-body-lg);
-  list-style: none;
-}
-
-.home-faq summary::-webkit-details-marker {
-  display: none;
-}
-
-.home-faq summary::after {
-  color: var(--color-accent-ink);
-  content: "+";
-  font-size: var(--font-size-h3);
-  transition: rotate var(--duration-fast) var(--ease-standard);
-}
-
-.home-faq details[open] summary::after {
-  rotate: 45deg;
-}
-
-.home-faq summary:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.home-faq p {
-  max-width: 44rem;
-  margin: 0 0 var(--space-4);
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-}
-
-/* The last call: the headline with its last word in red, and two buttons. */
-.home-closer {
-  border-top: 1px solid var(--color-line);
-  background: radial-gradient(70% 90% at 50% 120%, var(--color-sky-red), transparent 70%);
-  text-align: center;
-}
-
-.home-closer h2 {
-  max-width: none;
-  margin: 0 auto var(--space-3);
-  font-size: var(--font-size-hero);
-}
-
-.home-closer h2 span {
-  color: var(--color-accent);
-}
-
-.home-closer p {
-  margin: 0 0 var(--space-6);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-}
-
-.home-closer-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-3);
-}
-
-@media (--md) {
-  .home-book {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-  }
-
-  .home-ways {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (--lg) {
-  .home-ways {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-faq summary::after {
-    transition: none;
-  }
-}
-
-/*
- * ON A PHONE, UNDER THE HERO — the observatory now in one line and tonight's next open
- * start times, each a tap from the booking board with that time chosen. Wider screens
- * have the hero's sky and the cards below instead.
- */
-.home-quick {
-  position: relative;
-  z-index: 1;
-  display: none;
-  align-content: start;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-raised);
-}
-
-@media (--below-md) {
-  .home-quick {
-    display: grid;
-    margin: calc(-1 * var(--space-6)) var(--space-page) 0;
-  }
-}
-
-.home-quick-status {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.home-quick-status p {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
-.home-quick-status [data-tone="good"] .home-dot {
-  background: var(--color-live);
-}
-
-.home-quick-status [data-tone="bad"] .home-dot {
-  background: var(--color-accent);
-}
-
-.home-quick-watch {
-  display: inline-flex;
-  min-height: 2.75rem;
-  flex: 1 1 100%;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-live-border);
-  border-radius: var(--radius-control);
-  background: var(--color-live-muted);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-label);
-  text-decoration: none;
-}
-
-.home-quick-watch b {
-  margin-left: auto;
-  color: var(--color-live);
-  font-weight: var(--font-weight-medium);
-  white-space: nowrap;
-}
-
-.home-quick-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-1) var(--space-3);
-}
-
-.home-quick-head .kicker {
-  margin: 0;
-}
-
-.home-quick-head time {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
-.home-quick-note {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
 }
 
 .home-quick-times {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -991,103 +399,34 @@
 
 .home-quick-times a {
   display: grid;
-  min-height: 3.5rem;
-  align-content: center;
-  gap: 0.125rem;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-control);
-  background: var(--color-surface-base);
-  color: var(--color-text-primary);
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  background: var(--color-well);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
   text-decoration: none;
-  transition: border-color var(--duration-fast) var(--ease-standard);
+  transition:
+    border-color var(--duration-state) var(--ease-sky),
+    background-color var(--duration-state) var(--ease-sky);
 }
 
-.home-quick-times a:active {
+.home-quick-times a:hover {
   border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
 }
 
 .home-quick-times time {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-body-lg);
-  font-variant-numeric: tabular-nums;
-}
-
-.home-quick-times span {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-kicker);
-}
-
-.home-quick-all {
-  display: inline-flex;
-  min-height: 2.75rem;
-  align-items: center;
-  justify-self: end;
-  gap: var(--space-1);
-  color: var(--color-accent-ink);
-  font-size: var(--font-size-label);
-  text-decoration: none;
-}
-
-.home-quick-watch:focus-visible,
-.home-quick-times a:focus-visible,
-.home-quick-all:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-/* TONIGHT'S SKY — the Moon and planets up tonight, one small strip under the hero. */
-.sky-tonight-band {
-  padding-block: var(--space-4);
-}
-
-.sky-tonight {
-  display: grid;
-  max-width: 64rem;
-  gap: var(--space-4);
-  margin-inline: auto;
-  padding: var(--space-5);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-panel);
-  background:
-    radial-gradient(
-      120% 140% at 100% 0%,
-      color-mix(in srgb, var(--color-gold) 7%, transparent),
-      transparent 60%
-    ),
-    var(--color-surface-raised);
-}
-
-.sky-tonight-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-1) var(--space-3);
-}
-
-.sky-tonight-head .kicker {
-  width: 100%;
-  margin: 0;
-}
-
-.sky-tonight-head h2 {
-  margin: 0;
   color: var(--color-text-primary);
-  font-family: var(--font-body);
-  font-size: var(--font-size-body-lg);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-time);
   font-weight: var(--font-weight-medium);
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.sky-tonight-head time {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-label);
+  font-variant-numeric: tabular-nums;
 }
 
 .sky-tonight-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
   gap: var(--space-2);
   margin: 0;
   padding: 0;
@@ -1098,10 +437,12 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3);
-  border: 1px solid var(--color-line);
-  border-radius: calc(var(--radius-panel) * 0.6);
-  background: color-mix(in srgb, var(--color-night) 55%, transparent);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.sky-obj:last-child {
+  border-bottom: 0;
 }
 
 .sky-orb {
@@ -1173,6 +514,7 @@
 .sky-obj-text {
   display: grid;
   min-width: 0;
+  flex: 1;
   gap: 0.125rem;
   color: var(--color-text-secondary);
   font-size: var(--font-size-label);
@@ -1180,37 +522,297 @@
 
 .sky-obj-text strong {
   color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
 }
 
-.sky-obj-text span,
-.sky-obj-text small {
-  white-space: nowrap;
-}
-
-.sky-obj-text small {
-  color: var(--color-text-tertiary);
+.sky-obj-tag {
+  flex: none;
+  padding: 0.25rem var(--space-3);
+  border-radius: 999px;
+  background: var(--color-chip);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-label);
+  text-align: center;
 }
 
-/* On a phone the strip scrolls sideways instead of stacking six cards. */
-@media (width < 48rem) {
-  .sky-tonight {
-    padding: var(--space-4);
+/* HOW IT WORKS — four numbered cards. */
+.flight-plan {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flight-plan-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  height: 100%;
+  padding: var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  background: var(--color-tile);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition:
+    border-color var(--duration-state) var(--ease-sky),
+    translate var(--duration-state) var(--ease-sky);
+}
+
+.flight-plan-step:hover {
+  border-color: var(--color-line-strong);
+  translate: 0 -2px;
+}
+
+.flight-plan-icon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  grid-row: span 2;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  color: var(--color-accent);
+}
+
+.flight-plan-icon svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.flight-plan-no {
+  display: none;
+}
+
+.flight-plan-title {
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.flight-plan-text {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+/* PRICES — one tile per length. */
+.home-prices,
+.home-ways {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-price {
+  height: 100%;
+  gap: var(--space-2);
+}
+
+.home-price span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.home-price b {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-price);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-guarantee {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+}
+
+.home-guarantee::before {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-live);
+  content: "";
+}
+
+/* MORE — four doors. */
+.home-ways {
+  grid-template-columns: 1fr;
+}
+
+.home-ways .home-tile {
+  position: relative;
+  height: 100%;
+  gap: var(--space-2);
+  padding-right: var(--space-12);
+}
+
+.home-ways b {
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.home-ways span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.home-ways .home-ways-go {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--space-6);
+  color: var(--color-accent);
+  font-size: var(--font-size-tile);
+  transition: translate var(--duration-state) var(--ease-sky);
+}
+
+.home-ways a:hover .home-ways-go {
+  translate: 4px 0;
+}
+
+/* QUESTIONS — tiles that open. */
+.home-faq {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.home-faq details {
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  background: var(--color-tile);
+}
+
+.home-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  border-radius: 1rem;
+  cursor: pointer;
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-semibold);
+  list-style: none;
+}
+
+.home-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.home-faq summary::after {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-chip-strong);
+  color: var(--color-accent);
+  content: "+";
+  font-size: var(--font-size-tile);
+  transition: rotate var(--duration-state) var(--ease-sky);
+}
+
+.home-faq details[open] summary::after {
+  rotate: 45deg;
+}
+
+.home-faq p {
+  margin: 0;
+  padding: 0 var(--space-6) var(--space-5);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+/* THE LAST CALL — the headline with its last word in red, and two buttons. */
+.home-closer {
+  background: radial-gradient(
+    60% 80% at 50% 100%,
+    color-mix(in srgb, var(--color-accent) 18%, transparent),
+    transparent
+  );
+  text-align: center;
+}
+
+.home-closer h2 {
+  margin: 0;
+  font-size: var(--font-size-closer);
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.home-closer h2 span {
+  color: var(--color-accent);
+}
+
+.home-closer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+@media (--md) {
+  .home-tonight {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .sky-tonight-list {
-    display: flex;
-    margin-inline: calc(var(--space-4) * -1);
-    padding-inline: var(--space-4);
-    overflow-x: auto;
-    scroll-padding-inline: var(--space-4);
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
+  .flight-plan,
+  .home-ways {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .sky-obj {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
+  .home-prices {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (--lg) {
+  .flight-plan {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .flight-plan-step {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .flight-plan-icon {
+    grid-row: auto;
+    margin-bottom: var(--space-2);
+  }
+
+  .home-ways {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (--below-md) {
+  .home-tile,
+  .flight-plan-step {
+    padding: var(--space-5);
+  }
+
+  .home-closer-actions {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.home-tile,
+  .flight-plan-step,
+  .home-ways-go {
+    transition: none;
   }
 }

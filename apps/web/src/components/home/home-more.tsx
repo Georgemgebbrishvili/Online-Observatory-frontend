@@ -14,83 +14,54 @@ type HomeMoreProps = {
   pricing: PricingFacts;
 };
 
-/** A chapter's head, as Skychaser sets them: the red kicker, the Anton title. */
-function Head({ id, kicker, title }: { id: string; kicker: string; title: string }) {
-  return (
-    <header className="home-chapter-head">
-      <p className="kicker">{kicker}</p>
-      <h2 id={id}>{title}</h2>
-    </header>
-  );
-}
-
 /**
- * ADR-075: the homepage's chapters under its cards — how booking goes and what it
- * costs, the other ways in, questions, and a last call. Every price is the platform's;
- * the price list is left out when it cannot be read.
+ * ADR-076: the homepage under its first sections — what a session costs, the other ways
+ * in, questions, and a last call. Every price is the platform's; the price section is
+ * left out when it cannot be read.
  */
 export function HomeMore({ content, locale, pricing }: HomeMoreProps) {
   const board = boardCopy[locale];
 
   return (
     <>
-      <section className="home-band home-chapter" aria-labelledby="home-book-title">
-        <Container>
-          <div className="home-book">
-            <div>
-              <Head
-                id="home-book-title"
-                kicker={content.book.kicker}
-                title={content.book.title}
-              />
-              <ol className="home-book-steps">
-                {content.book.steps.map((step, index) => (
-                  <li key={step.title}>
-                    <span className="home-book-no" aria-hidden="true">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span>
-                      <b>{step.title}</b>
-                      {step.text}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-              <ButtonLink href={`/${locale}/app/book`} variant="primary" size="large">
-                {content.book.cta}
-              </ButtonLink>
-            </div>
-            {pricing.slot && (
-              <aside className="home-lengths" aria-label={content.book.lengths}>
-                <p className="kicker">{content.book.lengths}</p>
-                <dl>
-                  {pricing.slot.lengths.map((length) => (
-                    <div key={length.minutes}>
-                      <dt>{board.duration(length.minutes)}</dt>
-                      <dd>{length.price}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="home-caption">
-                  {fill(content.book.perMinute, { price: pricing.slot.perMinute })}
-                </p>
-              </aside>
-            )}
-          </div>
-        </Container>
-      </section>
+      {pricing.slot && (
+        <section className="home-band" aria-labelledby="home-price-title">
+          <Container>
+            <header className="home-head">
+              <h2 id="home-price-title">{content.price.title}</h2>
+              <p>{fill(content.price.perMinute, { price: pricing.slot.perMinute })}</p>
+            </header>
+            <ul className="home-prices">
+              {pricing.slot.lengths.map((length) => (
+                <li key={length.minutes}>
+                  <Link
+                    className="home-tile home-price"
+                    href={`/${locale}/app/book?length=${length.minutes}`}
+                  >
+                    <span>{board.duration(length.minutes)}</span>
+                    <b>{length.price}</b>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="home-guarantee">{content.price.cloud}</p>
+          </Container>
+        </section>
+      )}
 
-      <section className="home-band home-chapter" aria-labelledby="home-ways-title">
+      <section className="home-band" aria-labelledby="home-ways-title">
         <Container>
-          <Head
-            id="home-ways-title"
-            kicker={content.ways.kicker}
-            title={content.ways.title}
-          />
+          <header className="home-head">
+            <h2 id="home-ways-title">{content.ways.title}</h2>
+          </header>
           <ul className="home-ways">
             {content.ways.items.map((item) => (
               <li key={item.href}>
-                <Link href={`/${locale}/${item.href}`}>
+                <Link
+                  className="home-tile"
+                  href={`/${locale}/${item.href}`}
+                  data-way={item.href}
+                >
                   <b>{item.title}</b>
                   <span>{item.text}</span>
                   <span className="home-ways-go" aria-hidden="true">
@@ -103,13 +74,11 @@ export function HomeMore({ content, locale, pricing }: HomeMoreProps) {
         </Container>
       </section>
 
-      <section className="home-band home-chapter" aria-labelledby="home-faq-title">
+      <section className="home-band" aria-labelledby="home-faq-title">
         <Container>
-          <Head
-            id="home-faq-title"
-            kicker={content.faq.kicker}
-            title={content.faq.title}
-          />
+          <header className="home-head">
+            <h2 id="home-faq-title">{content.faq.title}</h2>
+          </header>
           <div className="home-faq">
             {content.faq.items.map((item) => (
               <details key={item.q}>
@@ -126,9 +95,8 @@ export function HomeMore({ content, locale, pricing }: HomeMoreProps) {
           <h2 id="home-closer-title">
             {content.closer.title} <span>{content.closer.sunset}</span>
           </h2>
-          <p>{content.closer.lede}</p>
           <div className="home-closer-actions">
-            <ButtonLink href={`/${locale}/app/book`} variant="primary" size="large">
+            <ButtonLink href={`/${locale}/app/book`} size="large">
               {content.closer.cta}
             </ButtonLink>
             <ButtonLink href={`/${locale}/observatory`} variant="secondary" size="large">

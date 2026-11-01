@@ -7,6 +7,9 @@ export type HomepageDictionary = {
     sunset: string;
     lede: string;
     cta: string;
+    watch: string;
+    /** Names the two status chips under the buttons. */
+    statusLabel: string;
     plates: Record<SkyPlate, string>;
     /** What each plate is, written small above its name. */
     kinds: Record<SkyKind, string>;
@@ -26,47 +29,21 @@ export type HomepageDictionary = {
     altitude: string;
   };
   howItWorks: {
-    eyebrow: string;
     title: string;
     steps: readonly { title: string; description: string }[];
   };
-  /** The four small cards under the steps: tonight, now, the telescope, the price. */
-  tonight: {
-    kicker: string;
-    title: string;
-    all: string;
-    empty: string;
-    unavailable: string;
-  };
-  live: {
-    kicker: string;
-    title: string;
-    observing: string;
-    inProgress: string;
-    watch: string;
-    fullStatus: string;
-    unavailable: string;
-  };
-  /** ADR-075: the sections below the cards, Skychaser's chapters. */
+  tonight: { title: string };
+  /** ADR-076: the sections under "how it works". */
   more: {
-    book: {
-      kicker: string;
-      title: string;
-      steps: readonly { title: string; text: string }[];
-      lengths: string;
-      perMinute: string;
-      cta: string;
-    };
+    price: { title: string; perMinute: string; cloud: string };
     ways: {
-      kicker: string;
       title: string;
       items: readonly { title: string; text: string; href: string }[];
     };
-    faq: { kicker: string; title: string; items: readonly { q: string; a: string }[] };
+    faq: { title: string; items: readonly { q: string; a: string }[] };
     closer: {
       title: string;
       sunset: string;
-      lede: string;
       cta: string;
       secondary: string;
     };

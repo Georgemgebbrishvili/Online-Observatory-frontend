@@ -32,7 +32,7 @@ const icons: ReactNode[] = [
   </>,
 ];
 
-/** How a session works, in four small tiles, each a door to the page where it happens. */
+/** How a session works, in four numbered cards, each a door to the page where it happens. */
 export function FlightPlan({ steps }: { steps: readonly FlightStep[] }) {
   return (
     <ol className="flight-plan">
@@ -50,6 +50,9 @@ export function FlightPlan({ steps }: { steps: readonly FlightStep[] }) {
               >
                 {icons[index % icons.length]}
               </svg>
+            </span>
+            <span className="flight-plan-no" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
             </span>
             <span className="flight-plan-title">{step.title}</span>
             <span className="flight-plan-text">{step.description}</span>

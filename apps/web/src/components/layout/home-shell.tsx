@@ -1,6 +1,5 @@
 import { FlightPlan } from "@/components/home/flight-plan";
 import { HomeMore } from "@/components/home/home-more";
-import { HomeNow } from "@/components/home/home-now";
 import { HomeQuick } from "@/components/home/home-quick";
 import { SkyHero } from "@/components/home/sky-hero";
 import { SkyTonight } from "@/components/home/sky-tonight";
@@ -8,26 +7,23 @@ import { Container } from "@/components/ui/container";
 import type { ObservatoryPanelResult } from "@/features/home/read";
 import type { PricingFacts } from "@/features/pricing/read";
 import type { TonightSky } from "@/features/sky/tonight-sky";
-import type { TonightResult } from "@/features/targets/read";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
 type HomeShellProps = {
   content: Dictionary["home"];
   locale: Locale;
-  tonight: TonightResult;
   panel: ObservatoryPanelResult;
   pricing: PricingFacts;
   sky: TonightSky | null;
 };
 
 /**
- * The public homepage: the sky with its observatory (on a phone, the observatory now and
- * tonight's next open times right under it), how a night works in four small
- * doors, two small cards — tonight and the observatory now — then booking and its
- * lengths, the other ways in, questions, and a last call.
+ * The public homepage (ADR-076): the sky with the observatory's state, tonight (open
+ * times beside the planets up), how a session works, prices, other ways in, questions,
+ * and a last call.
  */
-export function HomeShell({ content, locale, panel, pricing, sky, tonight }: HomeShellProps) {
+export function HomeShell({ content, locale, panel, pricing, sky }: HomeShellProps) {
   // Each step opens the page where it happens.
   const stepPages = ["app/book", "observatory", "tonight", "app/collection"];
   const steps = content.howItWorks.steps.map((step, index) => ({
@@ -37,27 +33,26 @@ export function HomeShell({ content, locale, panel, pricing, sky, tonight }: Hom
 
   return (
     <main id="main-content" className="public-home">
-      <SkyHero content={content.hero} locale={locale} />
-      <HomeQuick live={content.live} locale={locale} panel={panel} pricing={pricing} />
-      <SkyTonight locale={locale} sky={sky} timezone="Asia/Tbilisi" />
+      <SkyHero content={content.hero} locale={locale} panel={panel} />
 
-      <section className="home-band home-steps" id="about" aria-labelledby="steps-title">
+      <section className="home-band" aria-labelledby="home-tonight-title">
         <Container>
-          <header className="home-steps-heading">
-            <p className="kicker">{content.howItWorks.eyebrow}</p>
-            <h2 id="steps-title">{content.howItWorks.title}</h2>
+          <header className="home-head">
+            <h2 id="home-tonight-title">{content.tonight.title}</h2>
           </header>
-          <FlightPlan steps={steps} />
+          <div className="home-tonight">
+            <HomeQuick locale={locale} pricing={pricing} />
+            <SkyTonight locale={locale} sky={sky} timezone="Asia/Tbilisi" />
+          </div>
         </Container>
       </section>
 
-      <section
-        className="home-band home-now-band"
-        id="now"
-        aria-label={content.live.title}
-      >
+      <section className="home-band" id="about" aria-labelledby="steps-title">
         <Container>
-          <HomeNow content={content} locale={locale} tonight={tonight} panel={panel} />
+          <header className="home-head">
+            <h2 id="steps-title">{content.howItWorks.title}</h2>
+          </header>
+          <FlightPlan steps={steps} />
         </Container>
       </section>
 

@@ -13,12 +13,21 @@ test("communicates real telescope access in the English sky hero", async ({ page
   ).toBeVisible();
   // ADR-052 §7: the last words in red, as the Skychaser headline sets its own.
   await expect(hero.locator(".sky-hero-title em")).toHaveText("live.");
-  await expect(hero.getByText(/A real telescope in Georgia/)).toBeVisible();
+  await expect(hero.getByText(/Book a real telescope in Georgia/)).toBeVisible();
   await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
-  await expect(hero.getByRole("link", { name: "Reserve a slot" })).toHaveAttribute(
+  await expect(hero.getByRole("link", { name: "Book a session" })).toHaveAttribute(
     "href",
     "/en/app/book",
   );
+  await expect(hero.getByRole("link", { name: "Watch live" })).toHaveAttribute(
+    "href",
+    "/en/tonight",
+  );
+  // ADR-076: no telescope model in the hero, the observatory's state in two chips.
+  await expect(hero.locator(".observatory-dome")).toHaveCount(0);
+  const status = hero.getByRole("list", { name: "The observatory now" });
+  await expect(status.getByText("Online", { exact: true })).toBeVisible();
+  await expect(status.getByText("Clear", { exact: true })).toBeVisible();
 
   // The sky hides drawings, and says so (CLAUDE.md, ADR-052 §7).
   await expect(hero.getByRole("img", { name: /not telescope output/ })).toBeVisible();
@@ -45,56 +54,48 @@ test("renders the Georgian sky hero and switches locale", async ({ page }) => {
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("the public homepage: the sky, four small doors, two cards, and the chapters", async ({
+test("the public homepage: the sky, tonight, the steps, prices, and the rest", async ({
   page,
 }) => {
   await page.goto("/en");
 
   await expect(
-    page.getByRole("heading", { level: 2, name: "Four steps to the sky." }),
+    page.getByRole("heading", { level: 2, name: "How it works" }),
   ).toBeVisible();
-  // The sky, the phone's quick panel (hidden at this width), tonight's planets, the steps, the cards, then
-  // booking, the ways in, questions and a last call.
-  await expect(page.locator("main section")).toHaveCount(9);
+  // The sky, tonight, the steps, prices, more, questions and a last call.
+  await expect(page.locator("main section")).toHaveCount(7);
   // What lengths cost, at the platform's rate by the minute (150 tetri on the fake).
-  const lengths = page.getByRole("complementary", { name: "Any length, one rate" });
-  await expect(lengths.locator("dd")).toHaveText([
+  await expect(page.locator(".home-price b")).toHaveText([
     "GEL 22.50",
     "GEL 45.00",
     "GEL 90.00",
     "GEL 180.00",
   ]);
+  await expect(page.locator(".home-price").first()).toHaveAttribute(
+    "href",
+    "/en/app/book?length=15",
+  );
   await expect(page.locator(".home-faq details")).toHaveCount(4);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
-  // How a session works: four tiles, each the door to the page where it happens.
+  // How a session works: four cards, each the door to the page where it happens.
   const steps = page.locator("#about .flight-plan-step");
   await expect(steps).toHaveCount(4);
   for (const [name, href] of [
-    ["Reserve", "/en/app/book"],
-    ["Slew", "/en/observatory"],
+    ["Book", "/en/app/book"],
+    ["Aim", "/en/observatory"],
     ["Watch", "/en/tonight"],
     ["Keep", "/en/app/collection"],
   ]) {
     await expect(steps.filter({ hasText: name })).toHaveAttribute("href", href);
   }
 
-  // Tonight: the platform's first three targets (GET /targets/tonight on the fake).
-  const tonight = page.getByRole("article", { name: "What the telescope can see" });
-  await expect(tonight.locator(".home-tonight-list li")).toHaveCount(3);
-  await expect(tonight.getByRole("link", { name: /Saturn/ })).toHaveAttribute(
-    "href",
-    "/en/app/missions/saturn",
-  );
-  await expect(tonight.getByRole("link", { name: /All targets/ })).toHaveAttribute(
-    "href",
-    "/en/app/missions",
-  );
-
-  // Live now: the observatory's public state.
-  const live = page.getByRole("article", { name: "The observatory" });
-  await expect(live.getByText("Online", { exact: true })).toBeVisible();
-  await expect(live.getByText("Clear", { exact: true })).toBeVisible();
+  // Tonight: open start times beside the Moon and planets up.
+  const open = page.getByRole("article", { name: "Open tonight" });
+  await expect(open.locator(".home-quick-times li")).toHaveCount(4);
+  await expect(
+    page.getByRole("article", { name: "What's up over Tbilisi" }),
+  ).toBeVisible();
 });
 
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {
@@ -407,9 +408,7 @@ test("keeps the Georgian authenticated home within a mobile viewport", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/app");
 
-  await expect(
-    page.getByRole("heading", { name: "გამარჯობა, Observer!" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "გამარჯობა, Observer!" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "ალბირეო ამაღამ ჩანს" })).toBeVisible();
 
   const viewport = await page.evaluate(() => ({
@@ -544,12 +543,13 @@ test("shows what exists today, priced by the platform, without concept tiers", a
   await expect(page.getByText("for 30 minutes", { exact: true })).toBeVisible();
   await expect(page.getByText("Price on the link", { exact: true })).toBeVisible();
   // The club comes from GET /loyalty/scheme.
-  await expect(page.getByRole("heading", { name: /Observe more, pay less/ })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Observe more, pay less/ }),
+  ).toBeVisible();
   await expect(page.getByText("10%", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: /^Book a (slot|session)$/ }).first()).toHaveAttribute(
-    "href",
-    "/en/app/book",
-  );
+  await expect(
+    page.getByRole("link", { name: /^Book a (slot|session)$/ }).first(),
+  ).toHaveAttribute("href", "/en/app/book");
 
   // Provisional once, and the future in one note.
   await expect(page.getByText(/Prices may change before launch/)).toHaveCount(1);
