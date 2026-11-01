@@ -23,11 +23,9 @@ test("communicates real telescope access in the English sky hero", async ({ page
     "href",
     "/en/tonight",
   );
-  // ADR-076: no telescope model in the hero, the observatory's state in two chips.
+  // ADR-076/077: no telescope model and no status chips in the hero.
   await expect(hero.locator(".observatory-dome")).toHaveCount(0);
-  const status = hero.getByRole("list", { name: "The observatory now" });
-  await expect(status.getByText("Online", { exact: true })).toBeVisible();
-  await expect(status.getByText("Clear", { exact: true })).toBeVisible();
+  await expect(hero.getByText("Online", { exact: true })).toHaveCount(0);
 
   // The sky hides drawings, and says so (CLAUDE.md, ADR-052 §7).
   await expect(hero.getByRole("img", { name: /not telescope output/ })).toBeVisible();

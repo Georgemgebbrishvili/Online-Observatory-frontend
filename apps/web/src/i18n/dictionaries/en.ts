@@ -51,7 +51,6 @@ const dictionary = {
       lede: "Book a real telescope in Georgia and watch the night sky live.",
       cta: "Book a session",
       watch: "Watch live",
-      statusLabel: "The observatory now",
       plates: {
         saturn: "Saturn",
         jupiter: "Jupiter",

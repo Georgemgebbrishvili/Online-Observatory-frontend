@@ -104,27 +104,60 @@
   --color-border-subtle: color-mix(in srgb, var(--st-rule) 12%, transparent);
   --color-border-strong: color-mix(in srgb, var(--st-rule) 22%, transparent);
   --color-border-control: color-mix(in srgb, var(--st-rule) 40%, transparent);
-  /* ADR-076: the homepage's tiles and the pill buttons. */
-  --color-tile: color-mix(in srgb, var(--st-white) 4%, var(--color-night));
+  /* ADR-077: glass, iPhone-style — frosted tiles, glossy pills, soft ambient light. */
+  --color-tile: color-mix(in srgb, var(--st-white) 6%, transparent);
   --gradient-tile: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--st-white) 6%, var(--color-night)),
-    color-mix(in srgb, var(--st-white) 3%, var(--color-night))
+    160deg,
+    color-mix(in srgb, var(--st-white) 11%, transparent),
+    color-mix(in srgb, var(--st-white) 3%, transparent) 60%
   );
-  --color-chip: color-mix(in srgb, var(--st-white) 7%, transparent);
-  --color-chip-strong: color-mix(in srgb, var(--st-white) 8%, transparent);
-  --color-well: color-mix(in srgb, var(--st-black) 40%, transparent);
+  --color-glass-border: color-mix(in srgb, var(--st-white) 13%, transparent);
+  --color-glass-border-hover: color-mix(in srgb, var(--st-white) 26%, transparent);
+  --shadow-glass:
+    inset 0 1px 0 color-mix(in srgb, var(--st-white) 16%, transparent),
+    0 24px 48px -24px color-mix(in srgb, var(--st-black) 80%, transparent);
+  --blur-glass: blur(24px) saturate(170%);
+  --gradient-ambient:
+    radial-gradient(
+      40rem 28rem at 12% 8%,
+      color-mix(in srgb, var(--st-red) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      36rem 30rem at 92% 38%,
+      color-mix(in srgb, var(--st-sky-blue) 13%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40rem 30rem at 20% 78%,
+      color-mix(in srgb, var(--st-amber) 9%, transparent),
+      transparent 70%
+    );
+  --gradient-title: linear-gradient(180deg, var(--st-white) 30%, var(--st-ink-2));
+  --gradient-title-accent: linear-gradient(180deg, var(--st-red-hi), var(--st-red));
+  --color-chip: color-mix(in srgb, var(--st-white) 9%, transparent);
+  --color-chip-strong: color-mix(in srgb, var(--st-white) 12%, transparent);
+  --color-well: color-mix(in srgb, var(--st-white) 5%, transparent);
   --color-scrim-chip: color-mix(in srgb, var(--st-black) 55%, transparent);
   --color-link-hover: var(--st-red-hi);
-  --color-pill-secondary: color-mix(in srgb, var(--st-white) 7%, transparent);
-  --color-pill-secondary-hover: color-mix(in srgb, var(--st-white) 12%, transparent);
-  --color-pill-secondary-border-hover: color-mix(in srgb, var(--st-white) 40%, transparent);
-  --color-pill-primary-hover: color-mix(in srgb, var(--color-action) 88%, var(--st-white));
+  --color-pill-secondary: color-mix(in srgb, var(--st-white) 10%, transparent);
+  --color-pill-secondary-hover: color-mix(in srgb, var(--st-white) 16%, transparent);
+  --color-pill-secondary-border-hover: color-mix(
+    in srgb,
+    var(--st-white) 34%,
+    transparent
+  );
+  --gradient-pill: linear-gradient(180deg, var(--st-sun-4), var(--st-gd-mid));
+  --gradient-pill-hover: linear-gradient(180deg, var(--st-sun-4), var(--st-red-fill));
+  --color-pill-primary-hover: var(--st-red);
   --color-pill-primary-busy: color-mix(in srgb, var(--color-action) 80%, var(--st-black));
-  --shadow-pill: inset 0 1px 0 color-mix(in srgb, var(--st-white) 22%, transparent),
-    0 8px 24px -8px color-mix(in srgb, var(--color-accent) 70%, transparent);
-  --shadow-pill-hover: inset 0 1px 0 color-mix(in srgb, var(--st-white) 26%, transparent),
-    0 12px 32px -8px color-mix(in srgb, var(--color-accent) 85%, transparent);
+  --shadow-pill:
+    inset 0 1px 0 color-mix(in srgb, var(--st-white) 35%, transparent),
+    0 10px 28px -10px color-mix(in srgb, var(--color-accent) 80%, transparent);
+  --shadow-pill-hover:
+    inset 0 1px 0 color-mix(in srgb, var(--st-white) 40%, transparent),
+    0 14px 34px -10px color-mix(in srgb, var(--color-accent) 95%, transparent);
+  --shadow-pill-glass: inset 0 1px 0 color-mix(in srgb, var(--st-white) 20%, transparent);
   --color-line: color-mix(in srgb, var(--st-white) 9%, transparent);
   --color-line-strong: color-mix(in srgb, var(--st-white) 22%, transparent);
 
@@ -279,14 +312,22 @@
   --color-scene-star: var(--st-ink);
   /* A monolith's four corner ticks (the Skychaser console's), for any panel to wear. */
   --gradient-ticks:
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 14px 1px no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 1px 14px no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 14px 1px no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 1px 14px no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 14px 1px no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 1px 14px no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 14px 1px no-repeat,
-    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 1px 14px no-repeat;
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 14px 1px
+      no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 1px 14px
+      no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 14px 1px
+      no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 0 / 1px 14px
+      no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 14px 1px
+      no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 100% / 1px 14px
+      no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 14px
+      1px no-repeat,
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)) 100% 100% / 1px
+      14px no-repeat;
   --gradient-monolith: linear-gradient(
     180deg,
     color-mix(in srgb, var(--st-monolith-top) 90%, transparent),
@@ -304,17 +345,49 @@
    * grain's alpha (.55 × the source's .06 layer opacity) is baked into its matrix.
    */
   --gradient-stars:
-    radial-gradient(1.2px 1.2px at 23px 41px, color-mix(in srgb, var(--st-white) 90%, transparent), transparent 60%),
-    radial-gradient(1px 1px at 131px 187px, color-mix(in srgb, var(--st-white) 70%, transparent), transparent 60%),
-    radial-gradient(1.5px 1.5px at 207px 73px, color-mix(in srgb, var(--st-sun-1) 75%, transparent), transparent 60%),
-    radial-gradient(1px 1px at 61px 223px, color-mix(in srgb, var(--st-blush) 75%, transparent), transparent 60%),
-    radial-gradient(1px 1px at 283px 131px, color-mix(in srgb, var(--st-white) 60%, transparent), transparent 60%),
-    radial-gradient(1px 1px at 167px 17px, color-mix(in srgb, var(--st-white) 60%, transparent), transparent 60%),
-    radial-gradient(1.5px 1.5px at 311px 263px, color-mix(in srgb, var(--st-blush) 60%, transparent), transparent 60%);
+    radial-gradient(
+      1.2px 1.2px at 23px 41px,
+      color-mix(in srgb, var(--st-white) 90%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      1px 1px at 131px 187px,
+      color-mix(in srgb, var(--st-white) 70%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      1.5px 1.5px at 207px 73px,
+      color-mix(in srgb, var(--st-sun-1) 75%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      1px 1px at 61px 223px,
+      color-mix(in srgb, var(--st-blush) 75%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      1px 1px at 283px 131px,
+      color-mix(in srgb, var(--st-white) 60%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      1px 1px at 167px 17px,
+      color-mix(in srgb, var(--st-white) 60%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      1.5px 1.5px at 311px 263px,
+      color-mix(in srgb, var(--st-blush) 60%, transparent),
+      transparent 60%
+    );
   --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.93 0 0 0 0 0.8 0 0 0 0.033 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   /* The homepage sky's own vignette and grain, darker at its top and foot. */
   --gradient-sky-vignette:
-    radial-gradient(90% 80% at 50% 50%, transparent 50%, color-mix(in srgb, var(--st-black) 50%, transparent) 100%),
+    radial-gradient(
+      90% 80% at 50% 50%,
+      transparent 50%,
+      color-mix(in srgb, var(--st-black) 50%, transparent) 100%
+    ),
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--st-black) 25%, transparent),
@@ -427,8 +500,9 @@
   --font-size-explorer: clamp(3.25rem, 9vw, 8.5rem);
   --font-size-explorer-ka: clamp(2.5rem, 7vw, 6.5rem);
   /* The homepage below the sky (ADR-076). */
-  --font-size-section: clamp(2rem, 4.4vw, 3.25rem);
-  --font-size-closer: clamp(2.25rem, 6vw, 4.5rem);
+  --font-size-section: clamp(1.875rem, 4vw, 3rem);
+  --font-size-closer: clamp(2.25rem, 5.5vw, 4rem);
+  --font-size-hero-glass: clamp(2.5rem, 7vw, 5.25rem);
   --font-size-tile: 1.25rem;
   --font-size-time: 1.5rem;
   --font-size-price: clamp(1.5rem, 3vw, 2rem);
@@ -491,7 +565,8 @@
   --glow-action: var(--shadow-poster);
   --glow-live: 0 0 18px -6px color-mix(in srgb, var(--st-green) 60%, transparent);
   --glow-live-led:
-    0 0 0 3px color-mix(in srgb, var(--st-green) 20%, transparent), 0 0 10px var(--st-green);
+    0 0 0 3px color-mix(in srgb, var(--st-green) 20%, transparent),
+    0 0 10px var(--st-green);
   --glow-hold-led:
     0 0 0 3px color-mix(in srgb, var(--st-red) 14%, transparent), 0 0 12px var(--st-red);
   --glow-gold-led:
@@ -506,7 +581,9 @@
   --glow-pulse-high:
     0 0 0 9px color-mix(in srgb, var(--st-red) 6%, transparent),
     0 0 34px color-mix(in srgb, var(--st-red) 75%, transparent);
-  --glow-tab-icon: drop-shadow(0 0 6px color-mix(in srgb, var(--st-red) 55%, transparent));
+  --glow-tab-icon: drop-shadow(
+    0 0 6px color-mix(in srgb, var(--st-red) 55%, transparent)
+  );
   --glow-nav-current: 0 0 14px color-mix(in srgb, var(--st-white) 35%, transparent);
   --glow-sky: radial-gradient(
     circle,

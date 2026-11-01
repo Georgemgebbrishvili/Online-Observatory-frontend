@@ -61,9 +61,7 @@ import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { TargetPreview } from "@/components/room/target-preview";
 import { FlightPlan } from "@/components/home/flight-plan";
 import { PageGuide } from "@/components/guide/page-guide";
-import { brand } from "@/brand";
 import { HomeQuick } from "@/components/home/home-quick";
-import type { ObservatoryPanelResult } from "@/features/home/read";
 import type { PricingFacts } from "@/features/pricing/read";
 import { SkyHero } from "@/components/home/sky-hero";
 import { TonightList } from "@/components/home/tonight-list";
@@ -115,37 +113,6 @@ import {
   stepSpecimenHistory,
   targetSpecimens,
 } from "./copy";
-
-// The phone homepage's first panel (HomeQuick), with a live observation and four open
-// times, then unreadable. Fixed values, so the specimen never follows the clock.
-const quickPanelSpecimen: ObservatoryPanelResult = {
-  kind: "ok",
-  observatory: {
-    id: "specimen",
-    slug: "stellar-tbilisi",
-    kind: "FIRST_PARTY",
-    nameEn: `${brand.en.name} Tbilisi`,
-    nameKa: `${brand.ka.nominative} თბილისი`,
-    city: "Tbilisi",
-    countryCode: "GE",
-    timezone: "Asia/Tbilisi",
-    telescope: { manufacturer: "", model: "", apertureMm: 203, focalLengthMm: 2032 },
-  },
-  status: {
-    observatoryId: "specimen",
-    mode: "SIMULATED",
-    link: "ONLINE",
-    weather: {
-      status: "CLEAR",
-      source: "OPERATOR",
-      holdActive: false,
-      updatedAt: "2026-10-28T16:00:00Z",
-    },
-    missionInProgress: true,
-    currentTargetName: "Saturn",
-    updatedAt: "2026-10-28T16:00:00Z",
-  },
-};
 
 const quickPricingSpecimen = (unreadable: boolean): PricingFacts => ({
   slot: null,
@@ -1472,12 +1439,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
           <div className="ds-home-specimen">
-            <SkyHero
-              content={dictionary.home.hero}
-              headingLevel={2}
-              locale={locale}
-              panel={quickPanelSpecimen}
-            />
+            <SkyHero content={dictionary.home.hero} headingLevel={2} locale={locale} />
           </div>
         </section>
 

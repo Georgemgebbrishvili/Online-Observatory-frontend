@@ -1,10 +1,10 @@
 import { FlightPlan } from "@/components/home/flight-plan";
 import { HomeMore } from "@/components/home/home-more";
 import { HomeQuick } from "@/components/home/home-quick";
+import { ScrollReveal } from "@/components/home/scroll-reveal";
 import { SkyHero } from "@/components/home/sky-hero";
 import { SkyTonight } from "@/components/home/sky-tonight";
 import { Container } from "@/components/ui/container";
-import type { ObservatoryPanelResult } from "@/features/home/read";
 import type { PricingFacts } from "@/features/pricing/read";
 import type { TonightSky } from "@/features/sky/tonight-sky";
 import type { Locale } from "@/i18n/config";
@@ -13,17 +13,16 @@ import type { Dictionary } from "@/i18n/types";
 type HomeShellProps = {
   content: Dictionary["home"];
   locale: Locale;
-  panel: ObservatoryPanelResult;
   pricing: PricingFacts;
   sky: TonightSky | null;
 };
 
 /**
- * The public homepage (ADR-076): the sky with the observatory's state, tonight (open
+ * The public homepage (ADR-076, ADR-077): the sky, tonight (open
  * times beside the planets up), how a session works, prices, other ways in, questions,
  * and a last call.
  */
-export function HomeShell({ content, locale, panel, pricing, sky }: HomeShellProps) {
+export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
   // Each step opens the page where it happens.
   const stepPages = ["app/book", "observatory", "tonight", "app/collection"];
   const steps = content.howItWorks.steps.map((step, index) => ({
@@ -33,7 +32,7 @@ export function HomeShell({ content, locale, panel, pricing, sky }: HomeShellPro
 
   return (
     <main id="main-content" className="public-home">
-      <SkyHero content={content.hero} locale={locale} panel={panel} />
+      <SkyHero content={content.hero} locale={locale} />
 
       <section className="home-band" aria-labelledby="home-tonight-title">
         <Container>
@@ -57,6 +56,7 @@ export function HomeShell({ content, locale, panel, pricing, sky }: HomeShellPro
       </section>
 
       <HomeMore content={content.more} locale={locale} pricing={pricing} />
+      <ScrollReveal />
     </main>
   );
 }

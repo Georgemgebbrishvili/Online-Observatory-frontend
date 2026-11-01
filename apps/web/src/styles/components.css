@@ -24,7 +24,7 @@
 .button {
   position: relative;
   display: inline-flex;
-  min-height: 3rem;
+  min-height: 2.75rem;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
@@ -78,19 +78,19 @@
 }
 
 .button-large {
-  min-height: 3.5rem;
+  min-height: 3.25rem;
   padding-inline: var(--space-8);
-  font-size: var(--font-size-body-lg);
+  font-size: var(--font-size-body);
 }
 
 .button-primary {
-  background: var(--color-action);
+  background: var(--gradient-pill);
   box-shadow: var(--shadow-pill);
   color: var(--color-on-action);
 }
 
 .button-primary:hover:not(:disabled) {
-  background: var(--color-pill-primary-hover);
+  background: var(--gradient-pill-hover);
   box-shadow: var(--shadow-pill-hover);
 }
 
@@ -103,8 +103,10 @@
 }
 
 .button-secondary {
-  border-color: var(--color-line-strong);
+  border-color: var(--color-glass-border);
   background: var(--color-pill-secondary);
+  box-shadow: var(--shadow-pill-glass);
+  backdrop-filter: var(--blur-glass);
   color: var(--color-text-primary);
 }
 

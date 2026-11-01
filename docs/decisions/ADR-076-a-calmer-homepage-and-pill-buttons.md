@@ -22,3 +22,12 @@
 
 The maintainer asked for no animated telescope, a different style for every button and
 section, mobile-first layout, and only necessary text with nothing small.
+
+## Amendment (ADR-077, 2026-11-01, maintainer request)
+
+- The hero loses its status chips; the observatory's state lives on /status and /tonight.
+- iPhone-style glass: frosted tiles (24 px corners, bright top edge, backdrop blur) over
+  soft ambient light; headlines in Geist bold with a glossy gradient; glossy pill buttons
+  (vermilion #D9442A to #B8321F, cream letters, AA). Section buttons are medium size.
+- Sections rise into place as they scroll in (IntersectionObserver; nothing is hidden
+  without the script or with reduced motion).

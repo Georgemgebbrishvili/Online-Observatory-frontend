@@ -6,7 +6,6 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { TonightBanner } from "@/components/tonight/tonight-banner";
-import { readObservatoryPanel } from "@/features/home/read";
 import { readPricing } from "@/features/pricing/read";
 import { tonightSky } from "@/features/sky/tonight-sky";
 import { isLocale } from "@/i18n/config";
@@ -28,9 +27,8 @@ export default async function HomePage({ params }: HomePageProps) {
     notFound();
   }
 
-  const [dictionary, panel, pricing] = await Promise.all([
+  const [dictionary, pricing] = await Promise.all([
     getDictionary(locale),
-    readObservatoryPanel(),
     readPricing(locale),
   ]);
   // Worked out per request, so the sky moves to the next night on its own each day.
@@ -61,7 +59,6 @@ export default async function HomePage({ params }: HomePageProps) {
       <HomeShell
         content={dictionary.home}
         locale={locale}
-        panel={panel}
         pricing={pricing}
         sky={sky}
       />

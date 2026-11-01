@@ -96,10 +96,8 @@ export function HomeMore({ content, locale, pricing }: HomeMoreProps) {
             {content.closer.title} <span>{content.closer.sunset}</span>
           </h2>
           <div className="home-closer-actions">
-            <ButtonLink href={`/${locale}/app/book`} size="large">
-              {content.closer.cta}
-            </ButtonLink>
-            <ButtonLink href={`/${locale}/observatory`} variant="secondary" size="large">
+            <ButtonLink href={`/${locale}/app/book`}>{content.closer.cta}</ButtonLink>
+            <ButtonLink href={`/${locale}/observatory`} variant="secondary">
               {content.closer.secondary}
             </ButtonLink>
           </div>

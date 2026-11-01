@@ -8,8 +8,6 @@ export type HomepageDictionary = {
     lede: string;
     cta: string;
     watch: string;
-    /** Names the two status chips under the buttons. */
-    statusLabel: string;
     plates: Record<SkyPlate, string>;
     /** What each plate is, written small above its name. */
     kinds: Record<SkyKind, string>;
