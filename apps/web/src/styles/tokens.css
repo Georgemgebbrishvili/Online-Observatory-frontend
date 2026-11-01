@@ -543,11 +543,11 @@
   --font-size-time: 1.5rem;
   --font-size-price: clamp(1.5rem, 3vw, 2rem);
   /* ADR-078: the night chart's readout, the price picker and the step stage. */
-  --font-size-readout: clamp(1.75rem, 3vw, 2.25rem);
+  --font-size-readout: clamp(1.5rem, 2.2vw, 1.75rem);
   --font-size-stat: 1.125rem;
-  --font-size-price-big: clamp(3rem, 7vw, 4.75rem);
-  --font-size-step: clamp(1.375rem, 2.4vw, 1.875rem);
-  --font-size-numeral: clamp(7rem, 16vw, 13rem);
+  --font-size-price-big: clamp(2.5rem, 5vw, 3.5rem);
+  --font-size-step: clamp(1.25rem, 2vw, 1.5rem);
+  --font-size-numeral: clamp(5rem, 11vw, 8.5rem);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

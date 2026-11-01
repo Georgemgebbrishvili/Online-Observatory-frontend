@@ -73,7 +73,10 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
   }, [model.start, model.end]);
 
   const o = model.objects[active];
-  const ticks = model.ticks.filter((tick) => tick.at > 5 && tick.at < 95);
+  // Hours too near the ends, or under the "now" tag, step aside.
+  const ticks = model.ticks.filter(
+    (tick) => tick.at > 5 && tick.at < 95 && (now === null || Math.abs(tick.at - now) > 4),
+  );
   const altitude = Number.parseInt(o.altitude, 10);
   const angle = (Math.min(90, Math.max(0, altitude)) * Math.PI) / 180;
 

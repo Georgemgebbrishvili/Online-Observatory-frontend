@@ -52,3 +52,6 @@ the hero, nothing extra.
 - Sections are numbered after a short red rule and split by fading hairlines; panels sit
   on a faint dot grid. Homepage buttons are 40 px pills with 14 px labels.
 - The scroll reveal also shows anything a fast scroll carried past the screen.
+- 2026-11-01, later (maintainer): the section numbers are dropped, and every panel is
+  tightened — smaller padding, chart rows and readout, step stage, price and bento tiles —
+  so the page uses its space compactly. Hour labels under the "now" tag step aside.
