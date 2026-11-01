@@ -53,6 +53,7 @@ export function describeShellContract(routes: readonly string[]) {
 
       test(`${path} holds its shape at every width`, async ({ page }) => {
         await page.goto(path);
+        await expect(page.locator(".route-loading")).toHaveCount(0);
         await expect(page.locator("main")).toBeVisible();
 
         for (const width of widths) {
@@ -69,6 +70,7 @@ export function describeShellContract(routes: readonly string[]) {
 
       test(`${path} exposes one unambiguous landmark set`, async ({ page }) => {
         await page.goto(path);
+        await expect(page.locator(".route-loading")).toHaveCount(0);
 
         // 390 and 1440 are the two that matter: the sidebar and the bottom bar swap
         // places between them, and a duplicate landmark would appear in that swap.
@@ -101,6 +103,7 @@ export function describeShellContract(routes: readonly string[]) {
 
       test(`${path} starts its heading outline at h1`, async ({ page }) => {
         await page.goto(path);
+        await expect(page.locator(".route-loading")).toHaveCount(0);
         await page.setViewportSize({ width: 1440, height: 900 });
 
         const levels = await headingLevels(page);

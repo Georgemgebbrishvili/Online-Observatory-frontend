@@ -43,7 +43,7 @@ export function SkyTonight({
           {sky.objects.length === 0 ? (
             <p className="home-card-note">{copy.empty}</p>
           ) : (
-            <ul className="sky-tonight-list">
+            <ul className="sky-tonight-list" tabIndex={0} aria-label={copy.title}>
               {sky.objects.map((o) => (
                 <li key={o.body} className="sky-obj" data-body={o.body}>
                   <span className="sky-orb" aria-hidden="true">

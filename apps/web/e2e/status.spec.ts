@@ -52,8 +52,8 @@ test("calls the forecast advisory and keeps the operator's hold authoritative", 
   await expect(page.getByRole("heading", { name: "Tonight's conditions" })).toBeVisible({
     timeout: firstCompile,
   });
-  await expect(page.getByText(/Advisory only/)).toBeVisible();
-  await expect(page.getByText(/never starts or clears a weather hold/)).toBeVisible();
+  await expect(page.getByText(/For guidance only/)).toBeVisible();
+  await expect(page.getByText(/the operator decides on weather holds/)).toBeVisible();
 });
 
 test("shows thirty days of the link, with unmeasured days never drawn as up", async ({

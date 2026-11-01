@@ -128,10 +128,10 @@ test("says what to settle before an account can be deleted, and keeps it", async
 
   const alert = deletion.getByRole("alert");
   await expect(alert).toContainText("Your account cannot be deleted yet:");
-  await expect(alert).toContainText("An observation of yours is not over yet.");
-  await expect(alert).toContainText("A paid slot of yours is still ahead.");
-  await expect(alert).toContainText("A slot is held for you awaiting payment.");
-  await expect(alert).toContainText("A refund or a free slot is owed to you.");
+  await expect(alert).toContainText("A session is running.");
+  await expect(alert).toContainText("You have a paid session ahead.");
+  await expect(alert).toContainText("A session awaits payment.");
+  await expect(alert).toContainText("You are owed a refund or free session.");
 
   await page.goto("/en/app/profile");
   await expect(page).toHaveURL(/\/en\/app\/profile$/);

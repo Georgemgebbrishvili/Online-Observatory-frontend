@@ -34,7 +34,7 @@ test("a booked start can be waited for, once", async ({ page }) => {
   const taken = page.locator(".time-cell.is-taken").first();
   await taken.click();
   await expect(taken).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByText(/Someone holds this start/)).toBeVisible();
+  await expect(page.getByText(/This start is taken/)).toBeVisible();
 
   const request = page.waitForRequest(
     (sent) => sent.url().endsWith("/api/waitlist") && sent.method() === "POST",
@@ -48,7 +48,7 @@ test("a booked start can be waited for, once", async ({ page }) => {
   // Again: refused, and nothing is booked.
   await page.getByRole("button", { name: "Join the waitlist" }).click();
   await expect(page.locator(".booking-feedback")).toHaveText(
-    /You cannot wait for this start/,
+    /You can.t wait for this start/,
   );
   await expect(page).toHaveURL(/\/en\/app\/book$/);
 });

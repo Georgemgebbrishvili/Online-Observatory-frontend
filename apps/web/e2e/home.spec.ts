@@ -53,9 +53,9 @@ test("the public homepage: the sky, four small doors, two cards, and the chapter
   await expect(
     page.getByRole("heading", { level: 2, name: "Four steps to the sky." }),
   ).toBeVisible();
-  // The sky, the phone's quick panel (hidden at this width), the steps, the cards, then
+  // The sky, the phone's quick panel (hidden at this width), tonight's planets, the steps, the cards, then
   // booking, the ways in, questions and a last call.
-  await expect(page.locator("main section")).toHaveCount(8);
+  await expect(page.locator("main section")).toHaveCount(9);
   // What lengths cost, at the platform's rate by the minute (150 tetri on the fake).
   const lengths = page.getByRole("complementary", { name: "Any length, one rate" });
   await expect(lengths.locator("dd")).toHaveText([
@@ -408,7 +408,7 @@ test("keeps the Georgian authenticated home within a mobile viewport", async ({
   await page.goto("/ka/app");
 
   await expect(
-    page.getByRole("heading", { name: "კეთილი იყოს შენი დაბრუნება, Observer." }),
+    page.getByRole("heading", { name: "გამარჯობა, Observer!" }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "ალბირეო ამაღამ ჩანს" })).toBeVisible();
 
@@ -552,9 +552,9 @@ test("shows what exists today, priced by the platform, without concept tiers", a
   );
 
   // Provisional once, and the future in one note.
-  await expect(page.getByText(/provisional/i)).toHaveCount(1);
+  await expect(page.getByText(/Prices may change before launch/)).toHaveCount(1);
   await expect(
-    page.getByText(/Subscriptions, observation passes and private sessions/),
+    page.getByText(/Subscriptions, passes and private sessions/),
   ).toBeVisible();
 
   // The internal configuration is not the public's business.

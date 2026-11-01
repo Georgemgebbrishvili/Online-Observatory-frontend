@@ -16,8 +16,8 @@ export default async function RouteLoading({
   const locale = isLocale(requested) ? requested : "en";
 
   return (
-    <main id="main-content" className="route-loading">
+    <div className="route-loading">
       <LoadingState label={feedbackCopy[locale].loading} lines={4} />
-    </main>
+    </div>
   );
 }

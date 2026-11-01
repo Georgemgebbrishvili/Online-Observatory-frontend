@@ -59,7 +59,7 @@ test("a stranger reads what a gift is and is asked to sign in, in both languages
   await page.goto("/ka/gift");
   await expect(page.getByRole("heading", { level: 2, name: "აჩუქე ღამე" })).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "შედი, რომ საჩუქარი იყიდო" }),
+    page.getByRole("link", { name: "შედი საჩუქრის საყიდლად" }),
   ).toBeVisible();
 
   // A gift's page is its buyer's alone.
@@ -127,7 +127,7 @@ test("a declined payment leaves a gift with no code", async ({ page }) => {
   await signIn(page);
   await buy(page, "Decline");
   await expect(page.locator('[data-gift="CANCELLED"]')).toContainText(
-    "The payment was declined, so this gift has no code.",
+    "Payment declined, so no code.",
   );
   await expect(page.locator("[data-gift-code]")).toHaveCount(0);
 });

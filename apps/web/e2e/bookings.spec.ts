@@ -110,7 +110,7 @@ test("the Georgian bookings fit a phone", async ({ page }) => {
   expect(width).toBeLessThanOrEqual(390);
 
   await page.goto(`/ka/app/bookings/${lost}`);
-  await expect(page.getByText(/18 წუთი ამინდის გამო დაიკარგა/)).toBeVisible();
+  await expect(page.getByText(/ამინდის გამო 18 წთ დაიკარგა/)).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(390);

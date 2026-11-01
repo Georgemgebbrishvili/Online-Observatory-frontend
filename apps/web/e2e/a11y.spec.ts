@@ -38,7 +38,7 @@ function describeAxe(routes: readonly string[]) {
           await page.setViewportSize({ width, height: 900 });
           await page.goto(path);
           // A streamed page shows loading.tsx's <main> beside its own for a moment.
-          await expect(page.locator("main.route-loading")).toHaveCount(0);
+          await expect(page.locator(".route-loading")).toHaveCount(0);
           await expect(page.locator("main")).toBeVisible();
           // The operator's lists and console are fetched by the browser: scanned loaded,
           // as the visual gate captures them. The design system's busy specimens stay busy.

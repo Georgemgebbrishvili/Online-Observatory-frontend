@@ -40,11 +40,11 @@ test("a stranger watches a simulated session: the feed, badged, and an invitatio
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "Saturn, from the observatory in Georgia",
+      name: "Saturn, live from Georgia",
     }),
   ).toBeVisible();
   await expect(
-    page.getByText("On target. The picture builds as frames stack."),
+    page.getByText("On target. The image is sharpening."),
   ).toBeVisible();
   await expect(page.getByText("Until 00:30")).toBeVisible();
   const feed = page.getByRole("img", { name: "Simulated live view of Saturn" });
@@ -80,7 +80,7 @@ test("the same session in Georgian", async ({ browser, request }) => {
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "სატურნი, ობსერვატორიიდან საქართველოში",
+      name: "სატურნი, პირდაპირ საქართველოდან",
     }),
   ).toBeVisible();
   await expect(page.getByText("00:30-მდე")).toBeVisible();
@@ -104,8 +104,8 @@ test("the twenty-first spectator is told it is full and offered a night", async 
   await page.goto("/en/tonight", { timeout: firstCompile });
   expect((await spectate).status()).toBe(503);
 
-  const unavailable = page.getByRole("status").filter({ hasText: "The view is full" });
-  await expect(unavailable).toContainText("Up to twenty people can watch at once.");
+  const unavailable = page.getByRole("status").filter({ hasText: "Full or just ended" });
+  await expect(unavailable).toContainText("Up to 20 people can watch.");
   await expect(
     unavailable.getByRole("link", { name: "Book a session" }),
   ).toBeVisible();

@@ -53,7 +53,7 @@ test("a tap sets the start and a later tap the end, any quarter hour to 4 hours,
   await cells(page).first().click();
   await cells(page).nth(5).click();
   await expect(session.locator("output")).toHaveText("45 min");
-  await expect(session).toContainText("the time after it is taken");
+  await expect(session).toContainText("next time is taken");
   await expect(session).toContainText("GEL 67.50");
 
   // The start again ends the run at once: 15 minutes cannot go shorter.

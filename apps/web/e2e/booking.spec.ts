@@ -53,7 +53,7 @@ test("/app/book is one board: the nights, a night's slots, and what is up for a 
   // six quarter hours are cloudy) is chosen, and one press reserves it. The object is
   // optional.
   const session = page.locator(".board-sum");
-  await expect(session).toContainText("We picked the next clear 30 min.");
+  await expect(session).toContainText("Next clear 30 min picked.");
   await expect(session).toContainText("Best in the sky");
   await expect(slots.nth(7)).toHaveAttribute("aria-pressed", "true");
   await expect(slots.nth(8)).toHaveAttribute("aria-pressed", "true");
