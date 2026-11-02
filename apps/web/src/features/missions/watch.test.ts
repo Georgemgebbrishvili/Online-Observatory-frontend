@@ -72,9 +72,11 @@ describe("sessionOver", () => {
       "SLEWING",
       "OBSERVING",
       "CAPTURING",
+      // A capture returns to observing while the slot runs (ADR-079 §5).
+      "PROCESSING",
     ] as const)
       expect(sessionOver(state)).toBe(false);
-    for (const state of ["PROCESSING", "COMPLETE", "FAILED", "HARDWARE_ERROR"] as const)
+    for (const state of ["COMPLETE", "FAILED", "HARDWARE_ERROR"] as const)
       expect(sessionOver(state)).toBe(true);
   });
 });

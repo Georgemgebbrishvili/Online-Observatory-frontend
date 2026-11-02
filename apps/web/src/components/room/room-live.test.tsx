@@ -1,5 +1,5 @@
 import type { Mission, TargetVisibility } from "@darkview/contracts";
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { formatCapturedAt } from "@/features/collection/present";
@@ -337,54 +337,115 @@ describe("RoomLive", () => {
     expect(screen.getByRole("status")).not.toHaveTextContent("Your time is up");
   });
 
-  it("waits for a scheduled mission's slot, then starts it on the customer's word", async () => {
+  it("counts down to a scheduled mission's slot, then starts it by itself (ADR-079)", async () => {
     const fetch = answer(409, {
       code: "OBSERVATORY_OFFLINE",
       message: "The observatory is offline.",
     });
     vi.stubGlobal("fetch", fetch);
-    const { unmount } = renderRoom({
+    const opens = Date.now() + 2_500;
+    renderRoom({
       state: "SCHEDULED",
-      scheduledStartAt: "2099-01-15T18:00:00.000Z",
+      scheduledStartAt: new Date(opens).toISOString(),
+      sessionEndsAt: new Date(opens + 30 * 60_000).toISOString(),
     });
 
     await waitFor(() =>
       expect(screen.getByRole("status")).toHaveTextContent(
-        /Your slot opens at 15 January 2099/,
+        /Your slot opens at .*, in 0:0[0-3]\. The telescope starts by itself then/,
       ),
     );
-    expect(screen.getByRole("button", { name: "Start observation" })).toBeDisabled();
     expect(fetch).not.toHaveBeenCalled();
-    unmount();
+    // There is no Start: opening the page inside the slot is the start.
+    expect(screen.queryByRole("button", { name: "Start observation" })).toBeNull();
 
-    renderRoom({ state: "SCHEDULED", scheduledStartAt: "2020-01-15T18:00:00.000Z" });
-    const start = await screen.findByRole("button", { name: "Start observation" });
-    await waitFor(() => expect(start).toBeEnabled());
-    fireEvent.click(start);
+    await waitFor(
+      () =>
+        expect(fetch).toHaveBeenCalledWith(
+          `/api/missions/${missionId}/start`,
+          expect.objectContaining({ method: "POST" }),
+        ),
+      { timeout: 5_000 },
+    );
     await waitFor(() =>
       expect(screen.getByRole("status")).toHaveTextContent("Observatory offline"),
     );
-    // Never retried by itself: the start moves the telescope.
+    // A refusal that is not "too early" waits for the customer.
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("button", { name: "Start observation" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Try again" })).toBeEnabled();
   });
 
-  it("says a slot that was never started has ended, and offers another night", async () => {
+  it("says far ahead only when the slot opens, and starts nothing", async () => {
+    const fetch = answer(200, session());
+    vi.stubGlobal("fetch", fetch);
+    renderRoom({ state: "SCHEDULED", scheduledStartAt: "2099-01-15T18:00:00.000Z" });
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent(
+        /Your slot opens at 15 January 2099.*\. The telescope starts by itself then, while this page is open\./,
+      ),
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("says a slot that has ended has ended, and offers another night, without starting it", async () => {
+    const fetch = answer(200, session());
+    vi.stubGlobal("fetch", fetch);
+    renderRoom({
+      state: "SCHEDULED",
+      scheduledStartAt: "2020-01-15T18:00:00.000Z",
+      sessionEndsAt: "2020-01-15T18:30:00.000Z",
+    });
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent("This slot has ended"),
+    );
+    expect(screen.getByRole("link", { name: "Book another night" })).toBeVisible();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("reads the platform's MISSION_NOT_ACTIVE well past the opening as the slot's end", async () => {
     const fetch = answer(409, {
       code: "MISSION_NOT_ACTIVE",
       message: "The booked slot for this mission has already ended.",
     });
     vi.stubGlobal("fetch", fetch);
-    renderRoom({ state: "SCHEDULED", scheduledStartAt: "2020-01-15T18:00:00.000Z" });
-    const start = await screen.findByRole("button", { name: "Start observation" });
-    await waitFor(() => expect(start).toBeEnabled());
-    fireEvent.click(start);
-
+    renderRoom({
+      state: "SCHEDULED",
+      scheduledStartAt: new Date(Date.now() - 10 * 60_000).toISOString(),
+    });
     await waitFor(() =>
       expect(screen.getByRole("alert")).toHaveTextContent("This slot has ended"),
     );
-    expect(screen.queryByRole("button", { name: "Start observation" })).toBeNull();
+    expect(fetch).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("link", { name: "Book another night" })).toBeVisible();
+  });
+
+  it("tries a start refused as early again, just after the opening", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const fetch = vi
+        .fn()
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({ code: "MISSION_NOT_ACTIVE", message: "Not yet." }),
+            { status: 409 },
+          ),
+        )
+        .mockResolvedValue(new Response(JSON.stringify(session()), { status: 200 }));
+      vi.stubGlobal("fetch", fetch);
+      renderRoom({
+        state: "SCHEDULED",
+        scheduledStartAt: new Date(Date.now() - 5_000).toISOString(),
+        sessionEndsAt: new Date(Date.now() + 30 * 60_000).toISOString(),
+      });
+      await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10_500);
+      });
+      await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("asks whether a weather hold has lifted, and reloads when it has", async () => {
@@ -411,17 +472,15 @@ describe("RoomLive", () => {
     }
   });
 
-  it("does not reopen a session the customer has just opened when the room is re-read", async () => {
+  it("does not reopen the session it has just opened when the room is re-read", async () => {
     const fetch = answer(200, session());
     vi.stubGlobal("fetch", fetch);
     const props = {
       state: "SCHEDULED",
-      scheduledStartAt: "2020-01-15T18:00:00.000Z",
+      scheduledStartAt: new Date(Date.now() - 60_000).toISOString(),
+      sessionEndsAt: new Date(Date.now() + 29 * 60_000).toISOString(),
     } as const;
     const { rerender } = renderRoom(props);
-    const start = await screen.findByRole("button", { name: "Start observation" });
-    await waitFor(() => expect(start).toBeEnabled());
-    fireEvent.click(start);
     await openChannel();
 
     // router.refresh() brings the platform's new state down as a prop.
@@ -443,7 +502,10 @@ describe("RoomLive", () => {
       </RoomLive>,
     );
     await new Promise((resolve) => setTimeout(resolve, 50));
-    expect(fetch).toHaveBeenCalledTimes(1);
+    const starts = fetch.mock.calls.filter((call) =>
+      String((call as unknown[])[0]).endsWith("/start"),
+    );
+    expect(starts).toHaveLength(1);
     expect(FakeSocket.all).toHaveLength(1);
   });
 

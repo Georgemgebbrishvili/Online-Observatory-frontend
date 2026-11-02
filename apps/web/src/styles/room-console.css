@@ -224,7 +224,8 @@
     order: 3;
   }
 
-  .room-console .room-controls {
+  .room-console .room-controls,
+  .room-console .room-targets {
     order: 4;
   }
 
@@ -889,9 +890,97 @@
 
 /* ── captures and history ────────────────────────────────────── */
 
+/* A session's captures, newest first, as one strip that scrolls sideways (ADR-079 §3). */
 .room-console .room-capture-grid {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  grid-auto-columns: minmax(11rem, 15rem);
+  grid-auto-flow: column;
+  grid-template-columns: none;
   gap: var(--space-3);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
+
+.room-console .room-capture-grid > * {
+  scroll-snap-align: start;
+}
+
+/* ADR-079 §4: the objects up now, the one on the telescope marked. */
+.room-console .room-targets-lock {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-3);
+  color: var(--room-ink-2);
+  font-size: var(--font-size-caption);
+}
+
+.room-console .room-targets-lock strong {
+  color: var(--room-ink);
+  font-size: var(--font-size-label);
+}
+
+.room-console .room-targets-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.room-console .room-targets-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--room-border);
+  border-radius: 10px;
+  background: var(--room-well);
+}
+
+.room-console .room-targets-list li.is-current {
+  border-color: var(--room-red);
+  box-shadow: inset 3px 0 0 var(--room-red);
+}
+
+.room-console .room-targets-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.room-console .room-targets-badge {
+  flex: none;
+  color: var(--room-red);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+}
+
+/* ADR-080: the picture's health, above the status line, only while it is not OK. */
+.room-console .room-health[data-health] {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--room-border);
+  border-left: 3px solid var(--color-warning);
+  border-radius: 10px;
+  background: var(--room-well);
+  font-size: var(--font-size-label);
+}
+
+.room-console .room-health p {
+  margin: 0;
+}
+
+.room-console .room-health p + p {
+  color: var(--room-ink-2);
+  font-size: var(--font-size-caption);
+}
+
+.room-console .room-health[data-health="UNRECOVERED"] {
+  border-left-color: var(--room-red);
 }
 
 .room-console .room-history ol {
@@ -985,6 +1074,11 @@
   }
 
   .room.room-console .room-stats {
+    order: 4;
+  }
+
+  /* Under the view: switching object is the phone's next choice after capturing. */
+  .room.room-console .room-targets {
     order: 4;
   }
 

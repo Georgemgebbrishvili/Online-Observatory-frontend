@@ -39,7 +39,7 @@ describe("activeMission", () => {
     );
   });
 
-  it("opens the nearest scheduled mission from an hour before until a slot after", () => {
+  it("opens the nearest scheduled mission from an hour before its slot", () => {
     const later = mission("later", { scheduledStartAt: minutes(50) });
     const sooner = mission("sooner", { scheduledStartAt: minutes(20) });
     expect(activeMission([later, sooner], now)?.id).toBe("sooner");
@@ -48,12 +48,37 @@ describe("activeMission", () => {
     ).toBe("started");
   });
 
+  it("keeps a scheduled mission until its own slot ends, whatever its length", () => {
+    const long = mission("long", {
+      scheduledStartAt: minutes(-90),
+      sessionEndsAt: minutes(30),
+    });
+    expect(activeMission([long], now)?.id).toBe("long");
+    const short = mission("short", {
+      scheduledStartAt: minutes(-15),
+      sessionEndsAt: minutes(0),
+    });
+    expect(activeMission([short], now)).toBeNull();
+  });
+
+  it("without a slot end, waits out the longest slot a booking may hold", () => {
+    expect(
+      activeMission([mission("open", { scheduledStartAt: minutes(-239) })], now)?.id,
+    ).toBe("open");
+    expect(
+      activeMission([mission("gone", { scheduledStartAt: minutes(-240) })], now),
+    ).toBeNull();
+  });
+
   it("sends anyone else to booking", () => {
     expect(
       activeMission(
         [
           mission("tomorrow", { scheduledStartAt: minutes(61) }),
-          mission("missed", { scheduledStartAt: minutes(-30) }),
+          mission("missed", {
+            scheduledStartAt: minutes(-30),
+            sessionEndsAt: minutes(0),
+          }),
           mission("done", { state: "COMPLETE" }),
           mission("failed", { state: "HARDWARE_ERROR" }),
           mission("unscheduled", { scheduledStartAt: null }),

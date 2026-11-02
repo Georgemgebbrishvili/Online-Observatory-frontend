@@ -27,6 +27,8 @@ type CollectionCopy = {
   noNights: string;
   openNight: string;
   nightCaptures: (count: number) => string;
+  /** ADR-079: one session's captures of one object, "{target}" captured "{time}". */
+  sessionGroup: string;
   view: string;
   imageAlt: (target: string) => string;
   simulated: string;
@@ -86,6 +88,7 @@ export const collectionGalleryCopy: Record<"en" | "ka", CollectionCopy> = {
     noNights: "No nights yet. Your first observation will appear here once it ends.",
     openNight: "Open the night",
     nightCaptures: (count: number) => (count === 1 ? "1 capture" : `${count} captures`),
+    sessionGroup: "{target} · session of {time}",
     view: "Open capture",
     imageAlt: (target) => `${target}, as captured`,
     simulated: "Simulated capture",
@@ -131,6 +134,7 @@ export const collectionGalleryCopy: Record<"en" | "ka", CollectionCopy> = {
     noNights: "ღამეები ჯერ არ არის. პირველი დაკვირვება აქ გამოჩნდება, როცა დასრულდება.",
     openNight: "ღამის გახსნა",
     nightCaptures: (count: number) => `${count} კადრი`,
+    sessionGroup: "{target} · სეანსი {time}",
     view: "კადრის გახსნა",
     imageAlt: (target) => `${target} — გადაღებული კადრი`,
     simulated: "სიმულირებული კადრი",

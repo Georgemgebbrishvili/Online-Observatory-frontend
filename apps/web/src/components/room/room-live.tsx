@@ -13,10 +13,12 @@ import { useState, type ReactNode } from "react";
 
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import { slotEndOf } from "@/features/missions/active";
 import {
   isStopped,
   liveAction,
   liveStatus,
+  reopensSession,
   timeLeft,
   type LiveState,
 } from "@/features/missions/live";
@@ -27,17 +29,21 @@ import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
 import { roomCopy } from "@/i18n/resources/room";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
+import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 
 import { LiveFeed } from "./live-feed";
 import { MissionSteps } from "./mission-steps";
 import {
+  describeOutcome,
   RoomCaptureAction,
   RoomControlsView,
   RoomSessionView,
   useRoomControls,
 } from "./room-controls";
+import { RoomHealth } from "./room-health";
 import { RoomSharing } from "./room-sharing";
+import { RoomTargetsView, useMissionTargets, type TargetOption } from "./room-targets";
 import { RoomTonight } from "./room-tonight";
 import { RoomPointing } from "./room-pointing";
 import { SkyChart } from "./sky-chart";
@@ -74,6 +80,11 @@ type RoomLiveProps = {
   captures?: ReactNode;
   /** How many captures the mission has, for the phone's stats. */
   captureCount?: number;
+  /**
+   * The catalogue's objects by id, named in the locale, so the object a RETARGET put on
+   * the telescope is named and captured with its own profile (ADR-079).
+   */
+  catalogue?: Record<string, { name: string; imagingProfile: ImagingProfile }>;
   /** The captures and history, rendered on the server. */
   children: ReactNode;
 };
@@ -90,6 +101,9 @@ const travelling: readonly MissionState[] = [
 
 /** Clock skew between this browser and the platform, at most. */
 const slotEndedMarginMs = 5 * 60_000;
+
+/** Within a day of the slot, the page counts down to it. */
+const countdownFromMs = 24 * 60 * 60_000;
 
 function describe(copy: Copy, live: LiveState, named: (text: string) => string) {
   const status = liveStatus(live);
@@ -133,21 +147,35 @@ export function RoomLive({
   headerAction,
   captures,
   captureCount = 0,
-  targetName,
+  catalogue = {},
+  targetName: bookedName,
   targetSlug,
   timezone,
   visibility,
   horizon = null,
 }: RoomLiveProps) {
   const copy = roomCopy[locale];
+  const sessionCopy = roomSessionCopy[locale];
   const now = useNow();
+  const opensAt = mission.scheduledStartAt ? Date.parse(mission.scheduledStartAt) : null;
+  const endsAt = slotEndOf(mission);
   const { live, onStreamError, start } = useLiveSession({
     missionId: mission.id,
     state: mission.state,
     failureReason: mission.failureReason ?? null,
     locale,
+    opensAt,
+    endsAt,
+    startsOnOpen: true,
   });
 
+  // ADR-079: the object on the telescope now, which a RETARGET changes; the booked one
+  // until the channel or the mission says otherwise.
+  const currentTargetId =
+    live.currentTargetId ?? mission.currentTargetId ?? mission.targetId;
+  const current = catalogue[currentTargetId];
+  const targetName =
+    currentTargetId === mission.targetId ? bookedName : (current?.name ?? bookedName);
   const named = (template: string) => fill(template, { target: targetName });
   const state = live.missionState;
   const failureReason = live.failureReason;
@@ -180,43 +208,109 @@ export function RoomLive({
   }
 
   const feedStatus = liveStatus(live);
-  const opensAt = mission.scheduledStartAt ?? null;
-  const slotOpen = now !== null && (opensAt === null || now >= Date.parse(opensAt));
-  // The platform refuses a start with MISSION_NOT_ACTIVE both before a slot opens and
-  // after it ends. Well past the opening it can only be the end, and pressing Start
-  // again can never succeed.
+  const slotOpen = now !== null && (opensAt === null || now >= opensAt);
+  // A scheduled mission past its slot's end is never started (ADR-079 §1). Without a
+  // known end, the platform's MISSION_NOT_ACTIVE well past the opening can only be it.
   const slotEnded =
-    live.startError === "MISSION_NOT_ACTIVE" &&
-    opensAt !== null &&
+    live.missionState === "SCHEDULED" &&
     now !== null &&
-    now > Date.parse(opensAt) + slotEndedMarginMs;
+    ((endsAt !== null && now >= endsAt) ||
+      (live.startError === "MISSION_NOT_ACTIVE" &&
+        opensAt !== null &&
+        now > opensAt + slotEndedMarginMs));
   const action = slotEnded ? null : liveAction(live);
-  const pending = live.start === "pending";
+  const untilOpen = opensAt !== null && now !== null ? opensAt - now : null;
 
-  const text = (slotEnded ? copy.live.slotEnded : describe(copy, live, named)) ?? {
-    title: copy.live.notStarted.title,
-    description:
-      opensAtText && !slotOpen
-        ? fill(copy.live.notStarted.before, { time: opensAtText })
-        : named(copy.live.notStarted.open),
-  };
+  const described = slotEnded ? copy.live.slotEnded : describe(copy, live, named);
+  const saved = live.ended
+    ? fill(copy.live.saved[live.ended.captureIds.length === 1 ? "one" : "other"], {
+        count: String(live.ended.captureIds.length),
+      })
+    : null;
+  const text = (described &&
+    saved && {
+      title: described.title,
+      description: `${described.description} ${saved}`,
+    }) ||
+    described || {
+      title: copy.live.notStarted.title,
+      description:
+        opensAtText && !slotOpen
+          ? untilOpen !== null && untilOpen <= countdownFromMs
+            ? fill(copy.live.notStarted.soon, {
+                time: opensAtText,
+                left: timeLeft(new Date(opensAt ?? 0).toISOString(), now ?? 0).text,
+              })
+            : fill(copy.live.notStarted.before, { time: opensAtText })
+          : named(copy.live.notStarted.open),
+    };
 
   const controlsCopy = roomControlsCopy[locale];
+  const connected =
+    live.session !== null &&
+    live.socket === "open" &&
+    !live.expired &&
+    live.channelError === null;
   const controls = useRoomControls({
     missionId: mission.id,
     missionState: state,
-    connected:
-      live.session !== null &&
-      live.socket === "open" &&
-      !live.expired &&
-      live.channelError === null,
+    connected,
     verdicts: live.verdicts,
-    imagingProfile,
+    // The capture names the object on the telescope now, not the booked one.
+    imagingProfile:
+      currentTargetId === mission.targetId
+        ? imagingProfile
+        : (current?.imagingProfile ?? imagingProfile),
     signInPath: `/${locale}/sign-in`,
   });
 
-  // One primary action at a time: Start before the session, Capture during it, and
-  // another night once the observation has stopped short.
+  // ADR-079 §4: the objects up now, while the session runs.
+  const targetsRead = useMissionTargets({
+    missionId: mission.id,
+    active: connected && reopensSession(state),
+    currentTargetId,
+  });
+  const list = targetsRead.kind === "ok" ? targetsRead.list : null;
+  const unlisted = targetsRead.kind === "unreadable" ? "unreadable" : "loading";
+  const refusedAt = (control: "retarget" | "capture") =>
+    controls.outcome?.control === control && controls.outcome.outcome.kind === "refused"
+      ? (controls.outcome.outcome.allowedAt ?? null)
+      : null;
+  const later = (...values: (string | null | undefined)[]) =>
+    values
+      .filter((value): value is string => typeof value === "string")
+      .sort()
+      .at(-1) ?? null;
+  // The channel's dwell lock is the latest word; before it speaks, the list's, then the
+  // mission's. A refusal names when it lifts too.
+  const lockedUntil = later(
+    live.retargetAllowedAt !== undefined
+      ? live.retargetAllowedAt
+      : (list?.retargetAllowedAt ?? mission.retargetAllowedAt),
+    refusedAt("retarget"),
+  );
+  const captureAllowedAt = later(live.captureAllowedAt, refusedAt("capture"));
+  const options: TargetOption[] | "loading" | "unreadable" = list
+    ? [
+        ...(list.items.some((item) => item.target.id === currentTargetId)
+          ? []
+          : [{ id: currentTargetId, name: targetName, current: true }]),
+        ...list.items.map((item) => ({
+          id: item.target.id,
+          name: locale === "ka" ? item.target.nameKa : item.target.nameEn,
+          current: item.target.id === currentTargetId,
+        })),
+      ]
+    : unlisted;
+  const switchMessage =
+    controls.outcome?.control === "retarget"
+      ? describeOutcome(controlsCopy, controls.outcome)
+      : null;
+
+  // One primary action at a time: Capture during the session, the Collection once it
+  // has ended, and another night once the observation has stopped short. There is no
+  // Start: opening the page inside the slot starts it (ADR-079 §1).
+  const over = feedStatus === "parked" || feedStatus === "parking" || live.ended !== null;
   const button =
     feedStatus === "stopped" || slotEnded ? (
       <>
@@ -230,21 +324,26 @@ export function RoomLive({
         )}
         <ButtonLink href={`/${locale}/app/book`}>{copy.live.actions.book}</ButtonLink>
       </>
-    ) : action === "start" || (pending && state === "SCHEDULED") ? (
-      <Button
-        size="large"
-        onClick={() => void start()}
-        disabled={!slotOpen}
-        loading={pending}
-      >
-        {copy.live.actions.start}
-      </Button>
+    ) : over ? (
+      <>
+        <ButtonLink variant="secondary" href={`/${locale}/app/book`}>
+          {copy.live.actions.book}
+        </ButtonLink>
+        <ButtonLink href={`/${locale}/app/collection`}>
+          {copy.live.actions.collection}
+        </ButtonLink>
+      </>
     ) : action ? (
       <Button variant="secondary" onClick={() => void start()}>
         {action === "reopen" ? copy.live.actions.reopen : copy.live.actions.retry}
       </Button>
     ) : (
-      <RoomCaptureAction {...controls} copy={controlsCopy} />
+      <RoomCaptureAction
+        {...controls}
+        copy={controlsCopy}
+        allowedAt={captureAllowedAt}
+        now={now}
+      />
     );
 
   const [handOpen, setHandOpen] = useState(false);
@@ -343,7 +442,18 @@ export function RoomLive({
                   />
                 )
               }
-              plates={plates}
+              plates={
+                plates && currentTargetId !== mission.targetId
+                  ? { ...plates, subject: { name: targetName, coordinates: null } }
+                  : plates
+              }
+              notice={
+                <RoomHealth
+                  copy={sessionCopy.health}
+                  health={state === "OBSERVING" ? live.imageHealth : null}
+                  now={now}
+                />
+              }
               frameNote={
                 live.stream && live.frame
                   ? frameNote(live.frame, copy.live.frame, locale)
@@ -411,6 +521,23 @@ export function RoomLive({
             now={now}
           />
           {guide}
+          {connected && reopensSession(state) && (
+            <RoomTargetsView
+              copy={sessionCopy.targets}
+              options={options}
+              lockedUntil={lockedUntil}
+              now={now}
+              observing={state === "OBSERVING"}
+              pendingId={
+                controls.pending?.control === "retarget"
+                  ? (controls.pending.targetId ?? null)
+                  : null
+              }
+              busy={controls.pending !== null}
+              message={switchMessage}
+              onSwitch={controls.onRetarget}
+            />
+          )}
           <RoomControlsView {...controls} copy={controlsCopy} />
           <RoomSharing
             missionId={mission.id}

@@ -19,18 +19,25 @@ type StateCopy = { title: string; description: string };
 
 type LiveCopy = {
   status: Record<Exclude<LiveStatus, "not-started" | "refused">, StateCopy>;
-  notStarted: { title: string; before: string; open: string };
+  /**
+   * ADR-079: before the slot the page counts down, and inside it the page starts the
+   * mission by itself. `soon` is "{time}" and "{left}", the countdown, within a day.
+   */
+  notStarted: { title: string; before: string; soon: string; open: string };
   /** The booked slot is over and was never started: the platform refuses a start. */
   slotEnded: { title: string; description: string };
   refused: { title: string; reasons: Partial<Record<ErrorCode, string>>; other: string };
   liveReal: string;
   actions: {
-    start: string;
     retry: string;
     reopen: string;
     book: string;
     booking: string;
+    /** The way to the captures, once the session has ended (ADR-079 §6). */
+    collection: string;
   };
+  /** How many captures the ended session kept: "{count}". */
+  saved: { one: string; other: string };
   /** What happens next, under the state's title, when the observation stopped short. */
   stopped: Record<StoppedState, string>;
   simulated: string;
@@ -197,6 +204,18 @@ const en: RoomCopy = {
         title: "Live view closed",
         description: "This mission's live view has closed.",
       },
+      finishing: {
+        title: "Finishing",
+        description: "Your slot has ended. The capture in progress is being saved.",
+      },
+      parking: {
+        title: "Parking the telescope",
+        description: "Your session is over. The telescope is moving to its park position.",
+      },
+      parked: {
+        title: "Telescope parked",
+        description: "Your session is over and the telescope is parked.",
+      },
       stopped: {
         title: "Observation stopped",
         description:
@@ -209,8 +228,10 @@ const en: RoomCopy = {
     },
     notStarted: {
       title: "Not started",
-      before: "Your slot opens at {time}. You can start the observation from then.",
-      open: "Your slot is open. Starting turns the telescope to {target}.",
+      before:
+        "Your slot opens at {time}. The telescope starts by itself then, while this page is open.",
+      soon: "Your slot opens at {time}, in {left}. The telescope starts by itself then — keep this page open.",
+      open: "Your slot is open. The telescope is turning to {target}.",
     },
     slotEnded: {
       title: "This slot has ended",
@@ -234,11 +255,15 @@ const en: RoomCopy = {
     },
     liveReal: "The camera's picture, as it arrives.",
     actions: {
-      start: "Start observation",
       retry: "Try again",
       reopen: "Watch here",
       book: "Book another night",
       booking: "See your booking",
+      collection: "Open your Collection",
+    },
+    saved: {
+      one: "{count} capture is in your Collection.",
+      other: "{count} captures are in your Collection.",
     },
     stopped: {
       NOT_VISIBLE:
@@ -465,6 +490,18 @@ const ka: RoomCopy = {
         title: "პირდაპირი ეთერი დაიხურა",
         description: "ამ მისიის პირდაპირი ეთერი დაიხურა.",
       },
+      finishing: {
+        title: "სრულდება",
+        description: "შენი სეანსი დასრულდა. მიმდინარე კადრი ინახება.",
+      },
+      parking: {
+        title: "ტელესკოპი პარკირდება",
+        description: "შენი სეანსი დასრულდა. ტელესკოპი პარკირების პოზიციისკენ მოძრაობს.",
+      },
+      parked: {
+        title: "ტელესკოპი დაპარკირდა",
+        description: "შენი სეანსი დასრულდა და ტელესკოპი დაპარკირებულია.",
+      },
       stopped: {
         title: "დაკვირვება შეწყდა",
         description: "ტელესკოპი უსაფრთხოდაა. აქამდე გადაღებული კადრები კოლექციაში რჩება.",
@@ -476,8 +513,10 @@ const ka: RoomCopy = {
     },
     notStarted: {
       title: "ჯერ არ დაწყებულა",
-      before: "შენი სეანსი {time}-ზე იწყება. დაკვირვებას მაშინ დაიწყებ.",
-      open: "შენი სეანსი ღიაა. დაწყებისას ტელესკოპი ობიექტისკენ მობრუნდება: {target}.",
+      before:
+        "შენი სეანსი {time}-ზე იწყება. ტელესკოპი მაშინ თავად ჩაირთვება, თუ ეს გვერდი გახსნილია.",
+      soon: "შენი სეანსი {time}-ზე იწყება, {left}-ში. ტელესკოპი მაშინ თავად ჩაირთვება — ეს გვერდი გახსნილი დატოვე.",
+      open: "შენი სეანსი ღიაა. ტელესკოპი ობიექტისკენ ბრუნდება: {target}.",
     },
     slotEnded: {
       title: "ეს სეანსი დასრულდა",
@@ -501,11 +540,15 @@ const ka: RoomCopy = {
     },
     liveReal: "კამერის გამოსახულება, როგორც მოდის.",
     actions: {
-      start: "დაიწყე დაკვირვება",
       retry: "სცადე თავიდან",
       reopen: "აქ ყურება",
       book: "დაჯავშნე სხვა ღამე",
       booking: "ჯავშნის ნახვა",
+      collection: "გახსენი კოლექცია",
+    },
+    saved: {
+      one: "შენს კოლექციაშია {count} კადრი.",
+      other: "შენს კოლექციაშია {count} კადრი.",
     },
     stopped: {
       NOT_VISIBLE:

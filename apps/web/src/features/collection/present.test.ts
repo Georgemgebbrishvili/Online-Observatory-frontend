@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { formatCapturedAt, formatExposure, formatIntegration } from "./present";
+import type { CollectionEntry } from "./read";
+import {
+  formatCapturedAt,
+  formatExposure,
+  formatIntegration,
+  sessionGroups,
+} from "./present";
 
 describe("capture formatting", () => {
   it("states the shutter time in the observatory's zone and names the zone", () => {
@@ -22,5 +28,29 @@ describe("capture formatting", () => {
     expect(formatIntegration(120, "en")).toBe("2 min");
     expect(formatIntegration(119.6, "en")).toBe("2 min");
     expect(formatIntegration(252, "en")).toBe("4 min 12 s");
+  });
+});
+
+describe("sessionGroups (ADR-079)", () => {
+  const entry = (id: string, missionId: string, targetId: string) =>
+    ({
+      capture: { id, missionId, targetId },
+      target: null,
+      retired: false,
+      thumbnail: null,
+    }) as unknown as CollectionEntry;
+
+  it("groups a session's captures by the object, in the order given", () => {
+    const groups = sessionGroups([
+      entry("c3", "m2", "albireo"),
+      entry("c2", "m2", "albireo"),
+      entry("c1", "m2", "saturn"),
+      entry("c0", "m1", "saturn"),
+    ]);
+    expect(groups.map((group) => group.entries.map((e) => e.capture.id))).toEqual([
+      ["c3", "c2"],
+      ["c1"],
+      ["c0"],
+    ]);
   });
 });

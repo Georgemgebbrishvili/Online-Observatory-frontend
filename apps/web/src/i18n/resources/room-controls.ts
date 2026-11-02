@@ -1,6 +1,4 @@
-import type { CommandRejectionReason } from "@darkview/contracts";
-
-import type { Control } from "@/features/missions/controls";
+import type { Control, Refusal } from "@/features/missions/controls";
 
 /** Strings only, so the copy can cross into the client component whole. */
 export type RoomControlsCopy = {
@@ -13,6 +11,8 @@ export type RoomControlsCopy = {
   centring: string;
   capturing: string;
   noCapture: string;
+  /** The capture button while it waits out the cooldown (ADR-079 §3): "{time}". */
+  captureAgain: string;
   sending: string;
   waiting: string;
   done: Record<Control, string>;
@@ -23,7 +23,7 @@ export type RoomControlsCopy = {
   stopDetail: string;
   stopConfirm: string;
   stopKeep: string;
-  reasons: Record<CommandRejectionReason, string>;
+  reasons: Record<Refusal, string>;
 };
 
 export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
@@ -39,10 +39,12 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
       recenter: "Re-centre",
       capture: "Capture",
       stop: "Stop",
+      retarget: "Switch",
     },
     centring: "The controls open once the target is centred.",
     capturing: "Capturing. The controls return when it is done.",
     noCapture: "Capturing is unavailable: this target is no longer in the catalogue.",
+    captureAgain: "Capture again in {time}",
     sending: "Sending",
     waiting: "Waiting for the telescope",
     done: {
@@ -53,6 +55,7 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
       recenter: "Re-centring on the target.",
       capture: "Capture started.",
       stop: "Stopping the observation.",
+      retarget: "Switching objects. The telescope is on its way.",
     },
     refused: "The telescope refused.",
     noAnswer: "No answer from the telescope. Try again.",
@@ -88,6 +91,17 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
       WEATHER_HOLD_ACTIVE: "The observatory is on weather hold.",
       OBSERVATORY_OFFLINE: "The observatory is offline.",
       UNATTENDED_DISARMED: "The observatory is not open for observing right now.",
+      MISSION_BUSY:
+        "The telescope is busy moving or saving a capture. Try again once it is observing.",
+      DWELL_LOCKED:
+        "The telescope stays at least 10 minutes on each object, to spare its mount.",
+      TARGET_NOT_VISIBLE_NOW:
+        "That object is not up long enough right now, or is too close to something the telescope must avoid.",
+      CAPTURE_IN_PROGRESS: "A capture is already being saved. Wait for it to finish.",
+      CAPTURE_COOLDOWN: "Captures are at least 30 seconds apart. Try again in a moment.",
+      CAPTURE_LIMIT_REACHED: "This session already holds the most captures it can: 50.",
+      SESSION_ENDING: "Your slot is about to end, so the telescope stays where it is.",
+      ALREADY_ON_TARGET: "The telescope is already on that object.",
     },
   },
   ka: {
@@ -102,10 +116,12 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
       recenter: "ცენტრირება",
       capture: "გადაღება",
       stop: "დასრულება",
+      retarget: "გადართვა",
     },
     centring: "მართვა გაიხსნება, როცა ობიექტი ცენტრში მოექცევა.",
     capturing: "მიმდინარეობს გადაღება. მართვა დასრულების შემდეგ დაბრუნდება.",
     noCapture: "გადაღება მიუწვდომელია: ეს ობიექტი კატალოგში აღარ არის.",
+    captureAgain: "კვლავ გადაღება {time}-ში",
     sending: "იგზავნება",
     waiting: "ველოდებით ტელესკოპს",
     done: {
@@ -116,6 +132,7 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
       recenter: "ობიექტზე ცენტრირება მიმდინარეობს.",
       capture: "გადაღება დაიწყო.",
       stop: "დაკვირვება სრულდება.",
+      retarget: "ობიექტი იცვლება. ტელესკოპი ახალი ობიექტისკენ ბრუნდება.",
     },
     refused: "ტელესკოპმა უარი თქვა.",
     noAnswer: "ტელესკოპმა არ უპასუხა. სცადე თავიდან.",
@@ -151,6 +168,17 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
       WEATHER_HOLD_ACTIVE: "ობსერვატორია ამინდის გამო შეჩერებულია.",
       OBSERVATORY_OFFLINE: "ობსერვატორია კავშირგარეშეა.",
       UNATTENDED_DISARMED: "ობსერვატორია ახლა დაკვირვებისთვის ღია არ არის.",
+      MISSION_BUSY:
+        "ტელესკოპი ახლა მოძრაობს ან კადრს ინახავს. სცადე, როცა დაკვირვებას განაახლებს.",
+      DWELL_LOCKED:
+        "მონტირების დასაზოგად ტელესკოპი თითოეულ ობიექტზე სულ მცირე 10 წუთი რჩება.",
+      TARGET_NOT_VISIBLE_NOW:
+        "ეს ობიექტი ახლა საკმარისად დიდხანს არ ჩანს, ან იმასთან ახლოსაა, რასაც ტელესკოპი უნდა მოერიდოს.",
+      CAPTURE_IN_PROGRESS: "კადრი უკვე ინახება. დაელოდე დასრულებას.",
+      CAPTURE_COOLDOWN: "კადრებს შორის სულ მცირე 30 წამია. სცადე ცოტა ხანში.",
+      CAPTURE_LIMIT_REACHED: "ამ სეანსს უკვე აქვს კადრების მაქსიმალური რაოდენობა: 50.",
+      SESSION_ENDING: "შენი სეანსი მალე სრულდება, ამიტომ ტელესკოპი ადგილზე რჩება.",
+      ALREADY_ON_TARGET: "ტელესკოპი უკვე ამ ობიექტზეა.",
     },
   },
 };

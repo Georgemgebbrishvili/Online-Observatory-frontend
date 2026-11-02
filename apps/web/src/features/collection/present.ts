@@ -57,3 +57,18 @@ export function formatIntegration(seconds: number, locale: Locale) {
 export function formatFrameSize({ heightPx, widthPx }: Capture) {
   return widthPx && heightPx ? `${widthPx} × ${heightPx} px` : null;
 }
+
+/**
+ * Captures by the session and the object they came from, in the order given (newest
+ * first): a booked session keeps many, across the objects it switched between (ADR-079).
+ */
+export function sessionGroups(entries: readonly CollectionEntry[]) {
+  const groups: { key: string; entries: CollectionEntry[] }[] = [];
+  for (const entry of entries) {
+    const key = `${entry.capture.missionId}:${entry.capture.targetId}`;
+    const group = groups.find((candidate) => candidate.key === key);
+    if (group) group.entries.push(entry);
+    else groups.push({ key, entries: [entry] });
+  }
+  return groups;
+}

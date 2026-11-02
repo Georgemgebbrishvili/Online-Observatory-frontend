@@ -9,7 +9,8 @@ export type PanelIcon =
   | "observatory"
   | "captures"
   | "history"
-  | "seat";
+  | "seat"
+  | "targets";
 
 // Stroke paths on a 16-unit grid. Plain signs, never a reticle or crosshair (ADR-039).
 const paths: Record<PanelIcon, string> = {
@@ -23,6 +24,7 @@ const paths: Record<PanelIcon, string> = {
   captures: "M2.5 3.5h11v9h-11zM2.5 10.5l3-3 3 3 2-2 3 3",
   history: "M5 4h8.5M5 8h8.5M5 12h8.5M2.5 4h.01M2.5 8h.01M2.5 12h.01",
   seat: "M8 2.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM3 13.5a5 5 0 0 1 10 0",
+  targets: "M8 2.5l1.6 3.4 3.7.4-2.8 2.5.8 3.7L8 10.6l-3.3 1.9.8-3.7-2.8-2.5 3.7-.4z",
 };
 
 type PanelHeadProps = {

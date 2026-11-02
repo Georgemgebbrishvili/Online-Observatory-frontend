@@ -39,7 +39,7 @@ const mission = {
   startedAt: null,
   endedAt: null,
   captureIds: Array.from(
-    { length: 10 },
+    { length: 60 },
     (_, index) => `60000000-0000-4000-8000-0000000000${String(index).padStart(2, "0")}`,
   ),
   observable: false,
@@ -154,13 +154,13 @@ describe("readRoom", () => {
     );
   });
 
-  it("asks for the eight newest captures only", async () => {
+  it("asks for a session's fifty newest captures only, its most (ADR-079)", async () => {
     platform();
     await readRoom(missionId);
     const asked = platformRequest.mock.calls
       .map(([path]) => String(path))
       .filter((path) => path.startsWith("/captures/"));
-    expect(asked).toHaveLength(8);
-    expect(asked[0]).toBe(`/captures/${mission.captureIds[9]}`);
+    expect(asked).toHaveLength(50);
+    expect(asked[0]).toBe(`/captures/${mission.captureIds[59]}`);
   });
 });

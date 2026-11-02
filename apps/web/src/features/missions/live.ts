@@ -1,9 +1,12 @@
 import type {
   ErrorCode,
   HorizontalCoordinates,
+  ImageHealth,
   MissionChannelMessage,
+  MissionEndPhase,
   MissionFailureReason,
   MissionSession,
+  MissionSessionEnded,
   MissionState,
   ObservatoryLinkState,
   ObservatoryMode,
@@ -18,7 +21,7 @@ import type { CommandVerdict } from "./controls";
  * URL it offered. Pure, so every state is reachable from a test without a socket.
  */
 export type LiveStatus =
-  /** SCHEDULED: the customer starts it, inside the booked slot (ADR-018). */
+  /** SCHEDULED: opening the page inside the booked slot starts it (ADR-079). */
   | "not-started"
   /** POST /missions/{id}/start in flight. */
   | "starting"
@@ -33,8 +36,14 @@ export type LiveStatus =
   | "hold"
   /** The session's `expiresAt` has passed. */
   | "expired"
-  /** The mission is past its live view: processing, complete. */
+  /** The mission is past its live view: complete. */
   | "ended"
+  /** ADR-079 `MissionEndPhase`: the slot ended and a capture in flight is being saved. */
+  | "finishing"
+  /** The mission is over and the telescope is on its way to park. */
+  | "parking"
+  /** The telescope reports parked, or MISSION_SESSION_ENDED said so. */
+  | "parked"
   /** The observation stopped short: not visible, a hardware fault, cancelled, failed. */
   | "stopped"
   /** The platform refused the start, or the channel refused the session. */
@@ -73,6 +82,17 @@ export type LiveState = {
   channelError: ErrorCode | null;
   expired: boolean;
   /**
+   * ADR-079 and ADR-080, from MISSION_TELEMETRY. Undefined until the channel has said:
+   * a realtime service that predates them never does, and the mission's own fields stand.
+   */
+  currentTargetId: string | null | undefined;
+  retargetAllowedAt: string | null | undefined;
+  captureAllowedAt: string | null | undefined;
+  imageHealth: ImageHealth | null;
+  endPhase: MissionEndPhase | null;
+  /** MISSION_SESSION_ENDED: the session is over, with every capture it kept. */
+  ended: MissionSessionEnded | null;
+  /**
    * The agent's verdicts, by `commandId` (slice 3). Kept rather than handled as they
    * arrive: a verdict can land before the 202 that names its command.
    */
@@ -90,10 +110,11 @@ export type LiveEvent =
   | { type: "expired" };
 
 /**
- * The states `startMissionSession` opens a session for: SCHEDULED, which the customer
- * starts by hand, and the live ones, which reopen (the platform rotates the session, so
- * a stale tab stops watching). As `LIVE_MISSION_STATES` in the platform's
- * `features/missions/session.ts`.
+ * The states `startMissionSession` opens a session for: SCHEDULED, which opening the page
+ * inside the slot starts, and the live ones, which reopen (the platform rotates the
+ * session, so a stale tab stops watching). As `LIVE_MISSION_STATES` in the platform's
+ * `features/missions/session.ts`, which holds PROCESSING since a capture returns to
+ * OBSERVING (ADR-079 §5).
  */
 const reopenable: readonly MissionState[] = [
   "PREPARING",
@@ -102,6 +123,7 @@ const reopenable: readonly MissionState[] = [
   "CENTERING",
   "OBSERVING",
   "CAPTURING",
+  "PROCESSING",
 ];
 
 export function reopensSession(state: MissionState) {
@@ -138,6 +160,12 @@ export function initialLive(
     socket: "closed",
     channelError: null,
     expired: false,
+    currentTargetId: undefined,
+    retargetAllowedAt: undefined,
+    captureAllowedAt: undefined,
+    imageHealth: null,
+    endPhase: null,
+    ended: null,
     verdicts: {},
   } satisfies LiveState;
 }
@@ -173,14 +201,9 @@ export function liveReducer(state: LiveState, event: LiveEvent): LiveState {
     case "stream-failed":
       return { ...state, stream: null, frame: null };
     case "expired":
-      return {
-        ...state,
-        expired: true,
-        stream: null,
-        frame: null,
-        pointing: undefined,
-        socket: "closed",
-      };
+      // The channel stays: the slot's end is when the telescope finishes and parks, and
+      // the channel says so after it (ADR-079 §5).
+      return { ...state, expired: true, stream: null, frame: null, pointing: undefined };
     case "message":
       return onMessage(state, event.message);
   }
@@ -204,8 +227,21 @@ function onMessage(state: LiveState, message: MissionChannelMessage): LiveState 
         pointing: ended ? undefined : state.pointing,
       };
     }
-    case "MISSION_TELEMETRY":
-      return { ...state, link: message.link, pointing: message.pointing ?? null };
+    case "MISSION_TELEMETRY": {
+      // A field the message leaves out is one its sender does not know: what was said stands.
+      const said = <T>(value: T | undefined, before: T) =>
+        value === undefined ? before : value;
+      return {
+        ...state,
+        link: message.link,
+        pointing: message.pointing ?? null,
+        currentTargetId: said(message.currentTargetId, state.currentTargetId),
+        retargetAllowedAt: said(message.retargetAllowedAt, state.retargetAllowedAt),
+        captureAllowedAt: said(message.captureAllowedAt, state.captureAllowedAt),
+        imageHealth: said(message.imageHealth, state.imageHealth),
+        endPhase: said(message.endPhase, state.endPhase),
+      };
+    }
     case "MISSION_STREAM":
       // A late offer after the session ended is not a live view.
       if (state.expired) return state;
@@ -249,6 +285,17 @@ function onMessage(state: LiveState, message: MissionChannelMessage): LiveState 
       };
     case "MISSION_CAPTURE_READY":
       return state;
+    case "MISSION_SESSION_ENDED":
+      return {
+        ...state,
+        ended: message,
+        missionState: message.state,
+        failureReason: message.failureReason ?? null,
+        endPhase: message.parked ? "PARKED" : state.endPhase,
+        stream: null,
+        frame: null,
+        imageHealth: null,
+      };
   }
 }
 
@@ -257,6 +304,10 @@ export function liveStatus(state: LiveState): LiveStatus {
   const mission = state.missionState;
   if (mission === "WEATHER_HOLD") return "hold";
   if (isStopped(mission)) return "stopped";
+  if (state.ended) return state.ended.parked ? "parked" : "ended";
+  if (state.endPhase === "PARKED") return "parked";
+  if (state.endPhase === "PARKING") return "parking";
+  if (state.endPhase === "FINISHING") return "finishing";
   if (mission !== "SCHEDULED" && !reopensSession(mission)) return "ended";
   if (state.expired) return "expired";
   if (state.start === "pending") return "starting";
@@ -288,10 +339,12 @@ export function isStopped(state: MissionState): state is StoppedState {
   return (stoppedStates as readonly MissionState[]).includes(state);
 }
 
-/** Whether the feed offers to start again, and what that button means. */
-export function liveAction(state: LiveState): "start" | "retry" | "reopen" | null {
+/**
+ * Whether the feed offers to try again, and what that button means. Never a first start:
+ * opening the page inside the slot is the start (ADR-079 §1).
+ */
+export function liveAction(state: LiveState): "retry" | "reopen" | null {
   const status = liveStatus(state);
-  if (status === "not-started") return "start";
   if (
     status === "offline" ||
     status === "hold" ||
@@ -302,7 +355,7 @@ export function liveAction(state: LiveState): "start" | "retry" | "reopen" | nul
     if (state.channelError === "FORBIDDEN") return "reopen";
     if (state.start === "failed" && !retryable.includes(state.startError)) return null;
     if (state.session && state.link === "OFFLINE") return null;
-    return state.missionState === "SCHEDULED" ? "start" : "retry";
+    return "retry";
   }
   return null;
 }

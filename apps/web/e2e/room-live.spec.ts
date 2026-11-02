@@ -81,16 +81,17 @@ test("starting is stated while the platform opens the session", async ({ page })
   await expect(page.locator(".live-feed")).toHaveAttribute("data-live-status", "live");
 });
 
-for (const [locale, opens, button] of [
-  ["en", "Your slot opens at", "Start observation"],
-  ["ka", "შენი სეანსი", "დაიწყე დაკვირვება"],
+for (const [locale, opens] of [
+  ["en", "Your slot opens at"],
+  ["ka", "შენი სეანსი"],
 ] as const) {
   test(`${locale}: a scheduled mission waits for its slot, with the plate as an illustration`, async ({
     page,
   }) => {
     await page.goto(`/${locale}/app/missions/${scheduled}/session`);
     await expect(feedStatus(page)).toContainText(opens);
-    await expect(page.getByRole("button", { name: button })).toBeDisabled();
+    // ADR-079: no Start; the page starts the mission itself once the slot opens.
+    await expect(page.locator(".live-feed-action button")).toHaveCount(0);
     await expect(page.locator(".target-preview img")).toHaveAttribute(
       "src",
       "/plates/saturn.webp",
@@ -99,20 +100,13 @@ for (const [locale, opens, button] of [
   });
 }
 
-test("the customer starts a scheduled mission once its slot is open", async ({
+test("a scheduled mission opened inside its slot starts by itself (ADR-079)", async ({
   page,
 }) => {
   await scenario(page, "open");
   // The fake's slot is 2030-01-15 18:00 UTC; the browser reads it five minutes in.
   await page.clock.setFixedTime(new Date("2030-01-15T18:05:00.000Z"));
   await page.goto(`/en/app/missions/${scheduled}/session`);
-
-  const start = page.getByRole("button", { name: "Start observation" });
-  await expect(start).toBeEnabled();
-  await expect(feedStatus(page)).toContainText(
-    "Your slot is open. Starting turns the telescope to Saturn.",
-  );
-  await start.click();
 
   await expect(
     page.getByRole("heading", { level: 1, name: "Moving telescope to Saturn" }),

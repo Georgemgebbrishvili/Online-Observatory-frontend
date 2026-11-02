@@ -56,9 +56,9 @@ const streamOffer = message({
 });
 
 describe("the live feed's status", () => {
-  it("waits for the customer on a scheduled mission, and offers the start", () => {
+  it("waits for the slot on a scheduled mission, with no start to press (ADR-079)", () => {
     expect(liveStatus(scheduled)).toBe("not-started");
-    expect(liveAction(scheduled)).toBe("start");
+    expect(liveAction(scheduled)).toBeNull();
   });
 
   it("goes from starting to connecting to live", () => {
@@ -156,7 +156,8 @@ describe("the live feed's status", () => {
       );
     for (const state of ["NOT_VISIBLE", "HARDWARE_ERROR", "CANCELLED", "FAILED"] as const)
       expect(after(state)).toBe("stopped");
-    expect(after("PROCESSING")).toBe("ended");
+    // A capture returns to OBSERVING while the slot runs (ADR-079 §5).
+    expect(after("PROCESSING")).toBe("live");
     expect(after("COMPLETE")).toBe("ended");
   });
 
@@ -176,8 +177,8 @@ describe("the live feed's status", () => {
     expect(liveStatus(refused("RATE_LIMITED"))).toBe("error");
     expect(liveStatus(refused("SAFETY_REFUSED"))).toBe("refused");
 
-    // A scheduled mission's retry is the start itself; a final refusal offers nothing.
-    expect(liveAction(refused("SAFETY_REFUSED"))).toBe("start");
+    // A scheduled mission's retry is the start again; a final refusal offers nothing.
+    expect(liveAction(refused("SAFETY_REFUSED"))).toBe("retry");
     expect(liveAction(refused("SAFETY_NOT_CONFIGURED"))).toBeNull();
     const live = run(
       observing,
@@ -202,7 +203,7 @@ describe("the live feed's status", () => {
 
   it("closes the view for a mission past its live states", () => {
     expect(liveStatus(initialLive("COMPLETE", null))).toBe("ended");
-    expect(liveStatus(initialLive("PROCESSING", null))).toBe("ended");
+    expect(liveStatus(initialLive("PROCESSING", null))).toBe("starting");
     expect(liveStatus(initialLive("WEATHER_HOLD", "WEATHER_UNSAFE"))).toBe("hold");
   });
 });
@@ -341,5 +342,106 @@ describe("what the live frame is (platform issue 199)", () => {
     );
     expect(ended.frame).toBeNull();
     expect(run(streaming, { type: "stream-failed" }).frame).toBeNull();
+  });
+});
+
+describe("a booked session (ADR-079, ADR-080)", () => {
+  const live = run(
+    observing,
+    { type: "started", session },
+    { type: "socket-open" },
+    streamOffer,
+  );
+  const telemetry = (body: Record<string, unknown>) =>
+    message({ type: "MISSION_TELEMETRY", mode: "SIMULATED", link: "ONLINE", ...body });
+  const health = {
+    status: "RECOVERING",
+    reason: "BLANK_FRAME",
+    step: "RE_EXPOSE",
+    attempt: 1,
+    since: "2026-09-28T10:04:00.000Z",
+    nextRetryAt: null,
+  } as const;
+
+  it("keeps what telemetry said about the session until it says otherwise", () => {
+    const said = run(
+      live,
+      telemetry({
+        currentTargetId: "30000000-0000-4000-8000-000000000021",
+        retargetAllowedAt: "2026-09-28T10:12:00.000Z",
+        captureAllowedAt: null,
+        imageHealth: health,
+      }),
+    );
+    expect(said.currentTargetId).toBe("30000000-0000-4000-8000-000000000021");
+    expect(said.retargetAllowedAt).toBe("2026-09-28T10:12:00.000Z");
+    expect(said.captureAllowedAt).toBeNull();
+    expect(said.imageHealth).toEqual(health);
+
+    // A sender that leaves the fields out does not know them: they stand.
+    const older = run(said, telemetry({}));
+    expect(older.retargetAllowedAt).toBe("2026-09-28T10:12:00.000Z");
+    expect(older.imageHealth).toEqual(health);
+    expect(run(said, telemetry({ imageHealth: null })).imageHealth).toBeNull();
+    expect(live.retargetAllowedAt).toBeUndefined();
+  });
+
+  it("keeps the channel past the slot's end, and follows finishing, parking and parked", () => {
+    const expired = run(live, { type: "expired" });
+    expect(liveStatus(expired)).toBe("expired");
+    expect(expired.socket).toBe("open");
+
+    const finishing = run(expired, telemetry({ endPhase: "FINISHING" }));
+    expect(liveStatus(finishing)).toBe("finishing");
+    const complete = run(
+      finishing,
+      message({ type: "MISSION_STATE", state: "COMPLETE", failureReason: null }),
+      telemetry({ endPhase: "PARKING" }),
+    );
+    expect(liveStatus(complete)).toBe("parking");
+    expect(liveStatus(run(complete, telemetry({ endPhase: "PARKED" })))).toBe("parked");
+  });
+
+  it("ends on MISSION_SESSION_ENDED with every capture the session kept", () => {
+    const ended = run(
+      live,
+      message({
+        type: "MISSION_SESSION_ENDED",
+        state: "COMPLETE",
+        failureReason: null,
+        endReason: "SLOT_ENDED",
+        endedAt: "2026-09-28T10:30:05.000Z",
+        parked: true,
+        captureIds: ["60000000-0000-4000-8000-000000000001"],
+        summaryEmailQueued: true,
+      }),
+    );
+    expect(liveStatus(ended)).toBe("parked");
+    expect(ended.ended?.captureIds).toHaveLength(1);
+    expect(ended.missionState).toBe("COMPLETE");
+    expect(ended.stream).toBeNull();
+
+    const unconfirmed = run(
+      live,
+      message({
+        type: "MISSION_SESSION_ENDED",
+        state: "COMPLETE",
+        endReason: "SLOT_ENDED",
+        endedAt: "2026-09-28T10:30:05.000Z",
+        parked: false,
+        captureIds: [],
+        summaryEmailQueued: false,
+      }),
+    );
+    expect(liveStatus(unconfirmed)).toBe("ended");
+  });
+
+  it("states a short stop over any end phase", () => {
+    const failed = run(
+      live,
+      telemetry({ endPhase: "PARKING" }),
+      message({ type: "MISSION_STATE", state: "FAILED", failureReason: "MOUNT_FAULT" }),
+    );
+    expect(liveStatus(failed)).toBe("stopped");
   });
 });

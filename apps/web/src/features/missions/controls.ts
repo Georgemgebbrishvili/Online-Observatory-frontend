@@ -7,7 +7,23 @@ import type {
 } from "@darkview/contracts";
 
 /** What the customer can press. Each is one `submitMissionCommand`. */
-export type Control = "up" | "down" | "left" | "right" | "recenter" | "capture" | "stop";
+export type Control =
+  | "up"
+  | "down"
+  | "left"
+  | "right"
+  | "recenter"
+  | "capture"
+  | "stop"
+  /** ADR-079: switch to another object from `GET /missions/{id}/targets`. */
+  | "retarget";
+
+/**
+ * Why a command was refused: the agent's or the cloud's `CommandRejectionReason`, or a
+ * RETARGET to the object already on the telescope, which the cloud answers with CONFLICT
+ * and no reason of its own.
+ */
+export type Refusal = CommandRejectionReason | "ALREADY_ON_TARGET";
 
 /**
  * One press of a nudge arrow, in arcminutes. The client's to choose
@@ -26,6 +42,7 @@ const nudges = {
 export function commandRequest(
   control: Control,
   imagingProfile: ImagingProfile | null,
+  targetId: string | null = null,
 ): MissionCommandRequest {
   switch (control) {
     case "up":
@@ -48,6 +65,9 @@ export function commandRequest(
       return { type: "CAPTURE", capture: { kind: "CAPTURE", imagingProfile } };
     case "stop":
       return { type: "ABORT", reason: null };
+    case "retarget":
+      if (!targetId) throw new Error("A switch needs the object's id.");
+      return { type: "RETARGET", retarget: { targetId } };
   }
 }
 
@@ -59,6 +79,7 @@ const live: readonly MissionState[] = [
   "CENTERING",
   "OBSERVING",
   "CAPTURING",
+  "PROCESSING",
 ];
 
 export type Offered = {
@@ -88,7 +109,7 @@ export function offeredControls(
     move: false,
     capture: false,
     stop: true,
-    waiting: state === "CAPTURING" ? "capturing" : "centring",
+    waiting: state === "CAPTURING" || state === "PROCESSING" ? "capturing" : "centring",
   };
 }
 
@@ -100,7 +121,8 @@ export type CommandVerdict = {
 
 export type Outcome =
   | { kind: "done" }
-  | { kind: "refused"; reason: CommandRejectionReason | null }
+  /** `allowedAt`: when the same command would be accepted (DWELL_LOCKED, CAPTURE_COOLDOWN). */
+  | { kind: "refused"; reason: Refusal | null; allowedAt?: string | null }
   | { kind: "no-answer" }
   | { kind: "error" };
 
@@ -118,8 +140,28 @@ export function outcomeOf(verdict: CommandVerdict): Outcome {
 /** A command in flight: pressed, relayed, and waiting for the agent. */
 export type Pending = {
   control: Control;
+  /** The object a RETARGET switches to; null for every other control. */
+  targetId: string | null;
   /** From the 202; null while the request itself is in flight. */
   commandId: string | null;
   /** The envelope's own deadline: with no verdict by then, there will be none. */
   expiresAt: string | null;
 };
+
+/**
+ * How long until `at`, for a lock that lifts then: "7:42", or null once it has passed
+ * (or there is none). The dwell lock and the capture cooldown count down with it.
+ */
+export function waitUntil(at: string | null | undefined, now: number | null) {
+  if (!at || now === null) return null;
+  const seconds = Math.ceil((Date.parse(at) - now) / 1000);
+  if (!(seconds > 0)) return null;
+  const pad = (value: number) => String(value).padStart(2, "0");
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor(seconds / 60) % 60;
+  const text =
+    hours > 0
+      ? `${hours}:${pad(minutes)}:${pad(seconds % 60)}`
+      : `${minutes}:${pad(seconds % 60)}`;
+  return { seconds, text, iso: `PT${seconds}S` };
+}

@@ -70,14 +70,18 @@ describe("offeredControls", () => {
     expect(offeredControls("CAPTURING", true, "PLANETARY").waiting).toBe("capturing");
   });
 
+  it("waits while a capture is processed: it returns to observing (ADR-079)", () => {
+    expect(offeredControls("PROCESSING", true, "PLANETARY")).toEqual({
+      move: false,
+      capture: false,
+      stop: true,
+      waiting: "capturing",
+    });
+  });
+
   it("offers nothing unconnected, or outside a live state", () => {
     expect(offeredControls("OBSERVING", false, "PLANETARY").stop).toBe(false);
-    for (const state of [
-      "SCHEDULED",
-      "PROCESSING",
-      "COMPLETE",
-      "WEATHER_HOLD",
-    ] as const) {
+    for (const state of ["SCHEDULED", "COMPLETE", "WEATHER_HOLD"] as const) {
       expect(offeredControls(state, true, "PLANETARY").stop).toBe(false);
     }
   });

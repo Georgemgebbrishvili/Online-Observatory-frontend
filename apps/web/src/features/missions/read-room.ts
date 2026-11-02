@@ -45,6 +45,8 @@ export type Room = {
   captures: CollectionEntry[];
   /** The mission's observatory, from `listBookableObservatories`; null when unread. */
   observatory: BookableObservatory | null;
+  /** The catalogue's targets, for the object a RETARGET put on the telescope (ADR-079). */
+  catalogue: Target[];
   timezone: string;
   /** When the room was read, so the forecast hour is the hour it was read in. */
   readAt: number;
@@ -56,9 +58,12 @@ export type RoomResult =
   | { kind: "signed-out" }
   | { kind: "unreachable" };
 
-/** Bounds, as the dashboard bounds its reads: a mission's history and captures are short. */
+/**
+ * Bounds, as the dashboard bounds its reads. A booked session keeps at most 50 captures
+ * (ADR-079 §3), and the room shows every one of them.
+ */
 const eventPages = 5;
-const capturesShown = 8;
+const capturesShown = 50;
 
 async function readEvents(missionId: string) {
   const events: MissionEvent[] = [];
@@ -157,6 +162,7 @@ export const readRoom = cache(async (missionId: string): Promise<RoomResult> => 
       horizon,
       captures,
       observatory,
+      catalogue: catalogue ? [...catalogue.values()] : [],
       timezone: observatory?.timezone ?? "UTC",
       readAt: Date.now(),
     },

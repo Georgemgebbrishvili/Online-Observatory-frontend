@@ -105,6 +105,26 @@
   margin-top: var(--space-8);
 }
 
+/* ADR-079: one session's captures of one object. */
+.capture-session {
+  margin-top: var(--space-8);
+}
+
+.capture-session h3 {
+  margin: 0;
+  font-size: var(--font-size-label);
+}
+
+.capture-session > p {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.capture-session .capture-grid {
+  margin-top: var(--space-4);
+}
+
 .capture-card {
   overflow: hidden;
   border: 1px solid var(--color-border-strong);

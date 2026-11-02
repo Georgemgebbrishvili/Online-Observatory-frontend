@@ -1,10 +1,6 @@
 "use client";
 
-import type {
-  CommandRejectionReason,
-  ImagingProfile,
-  MissionState,
-} from "@darkview/contracts";
+import type { ImagingProfile, MissionState } from "@darkview/contracts";
 import {
   zCommandRejectionReason,
   zSubmitMissionCommandResponse,
@@ -17,11 +13,13 @@ import {
   NUDGE_STEP_ARCMINUTES,
   offeredControls,
   outcomeOf,
+  waitUntil,
   type CommandVerdict,
   type Control,
   type Offered,
   type Outcome,
   type Pending,
+  type Refusal,
 } from "@/features/missions/controls";
 import { fill } from "@/features/operator/format";
 import type { RoomControlsCopy } from "@/i18n/resources/room-controls";
@@ -45,10 +43,12 @@ const arrows = [
 export type RoomControlsState = {
   offered: Offered;
   /** A command in flight: which control, and whether the request itself has been answered. */
-  pending: { control: Control; relayed: boolean } | null;
-  outcome: { control: Control; outcome: Outcome } | null;
+  pending: { control: Control; relayed: boolean; targetId?: string | null } | null;
+  outcome: { control: Control; outcome: Outcome; targetId?: string | null } | null;
   confirmingStop: boolean;
   onPress?: (control: Control) => void;
+  /** ADR-079: switch to another object, by its catalogue id. */
+  onRetarget?: (targetId: string) => void;
   onConfirmingStop?: (confirming: boolean) => void;
 };
 
@@ -58,7 +58,7 @@ type ViewProps = RoomControlsState & {
   label?: string;
 };
 
-function describe(
+export function describeOutcome(
   copy: RoomControlsCopy,
   outcome: RoomControlsState["outcome"],
 ): string | null {
@@ -91,7 +91,9 @@ export function RoomControlsView({
   const titleId = useId();
   if (!offered.stop) return null;
   const busy = pending !== null;
-  const message = describe(copy, outcome);
+  // A switch of object is answered in the object list, where it was pressed.
+  const message =
+    outcome?.control === "retarget" ? null : describeOutcome(copy, outcome);
   const step = fill(copy.step, { step: String(NUDGE_STEP_ARCMINUTES) });
 
   return (
@@ -149,22 +151,33 @@ export function RoomControlsView({
   );
 }
 
-/** Capture, the room's one primary action while the target is observed. */
+/**
+ * Capture, the room's one primary action while the target is observed. A session may
+ * capture many times (ADR-079 §3): after each, the button waits out `captureAllowedAt`.
+ */
 export function RoomCaptureAction({
+  allowedAt = null,
   copy,
+  now = null,
   offered,
   onPress,
   pending,
-}: Pick<ViewProps, "copy" | "offered" | "onPress" | "pending">) {
+}: Pick<ViewProps, "copy" | "offered" | "onPress" | "pending"> & {
+  /** `MissionTelemetryUpdate.captureAllowedAt`: the next capture is accepted from then. */
+  allowedAt?: string | null;
+  now?: number | null;
+}) {
   if (!offered.capture) return null;
+  const wait = waitUntil(allowedAt, now);
   return (
     <Button
       size="large"
-      disabled={pending !== null}
+      disabled={pending !== null || wait !== null}
       loading={pending?.control === "capture"}
       onClick={() => onPress?.("capture")}
+      data-capture-wait={wait ? wait.seconds : undefined}
     >
-      {copy.labels.capture}
+      {wait ? fill(copy.captureAgain, { time: wait.text }) : copy.labels.capture}
     </Button>
   );
 }
@@ -245,12 +258,21 @@ export function RoomSessionView({
 }
 
 /** The refusal a 403 or 409 names, in the agent's vocabulary, when it names one. */
-function refusalOf(error: ApiRequestError): CommandRejectionReason | null {
+function refusalOf(error: ApiRequestError, control: Control): Refusal | null {
   const named = zCommandRejectionReason.safeParse(error.error?.details?.rejectionReason);
   if (named.success) return named.data;
   if (error.error?.code === "SESSION_NOT_OWNER") return "WRONG_SESSION";
   if (error.error?.code === "MISSION_NOT_ACTIVE") return "NO_ACTIVE_MISSION";
+  // ADR-079: a switch to the object already on the telescope.
+  if (control === "retarget" && error.error?.code === "CONFLICT") return "ALREADY_ON_TARGET";
+  if (error.error?.code === "TARGET_NOT_OBSERVABLE") return "TARGET_NOT_VISIBLE_NOW";
   return null;
+}
+
+/** `details.allowedAt` of a DWELL_LOCKED or CAPTURE_COOLDOWN refusal, when it is one. */
+function allowedAtOf(error: ApiRequestError) {
+  const value = error.error?.details?.allowedAt;
+  return typeof value === "string" && !Number.isNaN(Date.parse(value)) ? value : null;
 }
 
 type RoomControlsProps = {
@@ -308,20 +330,21 @@ export function useRoomControls({
     return () => window.clearTimeout(timer);
   }, [waitUntil]);
 
-  async function press(control: Control) {
+  async function press(control: Control, targetId: string | null = null) {
     if (pending) return;
-    setCommand({ control, commandId: null, expiresAt: null, outcome: null });
+    setCommand({ control, targetId, commandId: null, expiresAt: null, outcome: null });
     try {
       const accepted = await apiRequest(
         `/missions/${encodeURIComponent(missionId)}/command`,
         {
           method: "POST",
-          body: commandRequest(control, imagingProfile),
+          body: commandRequest(control, imagingProfile, targetId),
           schema: zSubmitMissionCommandResponse,
         },
       );
       setCommand({
         control,
+        targetId,
         commandId: accepted.commandId,
         expiresAt: accepted.expiresAt,
         outcome:
@@ -337,15 +360,20 @@ export function useRoomControls({
         navigateWithFreshSession(signInPath);
         return;
       }
-      const refusal =
+      const answered =
         error instanceof ApiRequestError && (error.status === 403 || error.status === 409)
-          ? refusalOf(error)
+          ? error
           : null;
+      const refusal = answered ? refusalOf(answered, control) : null;
+      const allowedAt = answered ? allowedAtOf(answered) : null;
       setCommand({
         control,
+        targetId,
         commandId: null,
         expiresAt: null,
-        outcome: refusal ? { kind: "refused", reason: refusal } : { kind: "error" },
+        outcome: refusal
+          ? { kind: "refused", reason: refusal, allowedAt }
+          : { kind: "error" },
       });
     }
   }
@@ -354,10 +382,18 @@ export function useRoomControls({
 
   return {
     offered,
-    pending: pending && { control: pending.control, relayed: pending.commandId !== null },
-    outcome: command && outcome ? { control: command.control, outcome } : null,
+    pending: pending && {
+      control: pending.control,
+      relayed: pending.commandId !== null,
+      targetId: pending.targetId,
+    },
+    outcome:
+      command && outcome
+        ? { control: command.control, outcome, targetId: command.targetId }
+        : null,
     confirmingStop: confirmingStop && !stopped,
     onPress: (control) => void press(control),
+    onRetarget: (targetId) => void press("retarget", targetId),
     onConfirmingStop: (confirming) => {
       if (!pending) setCommand(null);
       setConfirmingStop(confirming);

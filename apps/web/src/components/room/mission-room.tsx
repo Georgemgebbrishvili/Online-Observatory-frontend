@@ -159,6 +159,15 @@ export function MissionRoom({ locale, present = false, room }: MissionRoomProps)
           </section>
         }
         captureCount={captures.length}
+        catalogue={Object.fromEntries(
+          room.catalogue.map((entry) => [
+            entry.id,
+            {
+              name: locale === "ka" ? entry.nameKa : entry.nameEn,
+              imagingProfile: entry.imagingProfile,
+            },
+          ]),
+        )}
         captures={
           <section
             className="room-panel room-captures"
@@ -173,7 +182,7 @@ export function MissionRoom({ locale, present = false, room }: MissionRoomProps)
             {captures.length === 0 ? (
               <p className="room-muted">{copy.captures.empty}</p>
             ) : (
-              <div className="room-capture-grid">
+              <div className="room-capture-grid" data-capture-strip="">
                 {captures.map((entry) => (
                   <CaptureCard
                     key={entry.capture.id}

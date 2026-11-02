@@ -37,6 +37,19 @@ const pingEveryMs = 30_000;
 /** How often a room that arrived in a weather hold asks whether the hold has lifted. */
 const holdCheckEveryMs = 60_000;
 
+/**
+ * Clock skew between this browser and the platform, at most: a start refused as early
+ * this close to the slot's opening is tried again, every `earlyRetryMs`.
+ */
+const skewMs = 2 * 60_000;
+const earlyRetryMs = 10_000;
+
+/**
+ * How long the channel is kept after the mission ends or the slot's time is up: the
+ * platform keeps sending telemetry for 300 s while the telescope parks (ADR-079 §5).
+ */
+const lingerMs = 330_000;
+
 function header() {
   return { messageId: crypto.randomUUID(), sentAt: new Date().toISOString() };
 }
@@ -57,11 +70,14 @@ export function useNow() {
 
 /**
  * The room's live session: `startMissionSession`, then `/ws/mission/{id}` for as long as
- * the session lasts. A scheduled mission waits for the customer's start; a live one is
- * reopened on arrival, which rotates its session so a stale tab stops watching.
+ * the session lasts, and on until the telescope has parked.
  *
- * The start is never retried by itself: for a scheduled mission it moves the telescope.
- * The channel is: it is subscription only.
+ * Opening the page inside the booked slot is the start (ADR-079 §1): a scheduled mission
+ * starts when the page opens inside its slot, or when the slot opens while the page is
+ * open; a live one is reopened on arrival, which rotates its session so a stale tab stops
+ * watching. Before the slot, and after it, nothing is called. A start refused as too
+ * early, within clock skew of the opening, is tried again; any other refusal waits for
+ * the customer's retry.
  */
 const longestTimerMs = 2 ** 31 - 1;
 
@@ -69,12 +85,23 @@ export function useLiveSession({
   failureReason,
   locale,
   missionId,
+  opensAt = null,
+  endsAt = null,
+  startsOnOpen = false,
   state,
 }: {
   missionId: string;
   state: MissionState;
   failureReason: MissionFailureReason | null;
   locale: Locale;
+  /** The slot's start and end, in ms; null when unknown. */
+  opensAt?: number | null;
+  endsAt?: number | null;
+  /**
+   * The session page (ADR-079 §1): a scheduled mission starts when the page is open
+   * inside its slot. The observatory console starts one only when asked.
+   */
+  startsOnOpen?: boolean;
 }) {
   const [live, dispatch] = useReducer(liveReducer, undefined, () =>
     initialLive(state, failureReason),
@@ -104,15 +131,35 @@ export function useLiveSession({
   }, [locale, missionId]);
 
   // Once per page, and only for the state the page arrived in: a refresh after the
-  // customer's own start must not reopen (and so rotate) the session it just opened, and
+  // page's own start must not reopen (and so rotate) the session it just opened, and
   // React's development double-mount must not rotate it twice.
+  const now = useNow();
   const [arrivedIn] = useState(state);
-  const reopened = useRef(false);
+  const inSlot =
+    now !== null && (opensAt === null || now >= opensAt) && (endsAt === null || now < endsAt);
+  const opened = useRef(false);
   useEffect(() => {
-    if (reopened.current || !reopensSession(arrivedIn)) return;
-    reopened.current = true;
+    if (opened.current) return;
+    if (!reopensSession(arrivedIn) && !(startsOnOpen && arrivedIn === "SCHEDULED" && inSlot))
+      return;
+    opened.current = true;
     void start();
-  }, [arrivedIn, start]);
+  }, [arrivedIn, inSlot, start, startsOnOpen]);
+
+  // The browser's clock may run ahead of the platform's: a start refused as early, just
+  // after the opening, is tried again.
+  const early =
+    live.start === "failed" &&
+    live.startError === "MISSION_NOT_ACTIVE" &&
+    live.missionState === "SCHEDULED" &&
+    opensAt !== null &&
+    now !== null &&
+    now < opensAt + skewMs;
+  useEffect(() => {
+    if (!early) return;
+    const id = window.setTimeout(() => void start(), earlyRetryMs);
+    return () => window.clearTimeout(id);
+  }, [early, start]);
 
   // A hold opens no session, so no channel tells the room when it lifts. It asks, and
   // reloads on any change: the page it arrived on was rendered for the hold.
@@ -134,12 +181,24 @@ export function useLiveSession({
 
   const sessionId = live.session?.sessionId ?? null;
   const channelPath = live.session?.missionChannelUrl ?? null;
-  const closed =
+  // Past the live states, or past the slot's time, the channel stays while the telescope
+  // finishes and parks, until MISSION_SESSION_ENDED (sent after the park) or for no longer
+  // than the platform keeps saying so.
+  const ending =
     live.expired ||
-    live.channelError !== null ||
     (live.missionState !== "SCHEDULED" &&
       live.missionState !== "WEATHER_HOLD" &&
       !reopensSession(live.missionState));
+  const [lingered, setLingered] = useState(false);
+  useEffect(() => {
+    if (!ending) return;
+    const id = window.setTimeout(() => setLingered(true), lingerMs);
+    return () => window.clearTimeout(id);
+  }, [ending]);
+  const closed =
+    live.channelError !== null ||
+    live.ended !== null ||
+    (ending && lingered);
 
   const refresh = useRef(router.refresh);
   useEffect(() => {
@@ -182,8 +241,13 @@ export function useLiveSession({
         const message = parseChannelMessage(event.data);
         if (!message) return;
         if (message.type === "MISSION_STREAM") streamFailures.current = 0;
-        // The channel's capture carries no thumbnail: the room reads it again.
-        if (message.type === "MISSION_CAPTURE_READY") refresh.current();
+        // The channel's capture carries no thumbnail: the room reads it again, as it does
+        // for the session's end, which names every capture it kept.
+        if (
+          message.type === "MISSION_CAPTURE_READY" ||
+          message.type === "MISSION_SESSION_ENDED"
+        )
+          refresh.current();
         dispatch({ type: "message", message });
       };
       current.onclose = () => {

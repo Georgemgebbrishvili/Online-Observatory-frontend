@@ -39,6 +39,7 @@ import {
   zListBookingsResponse,
   zListCapturesResponse,
   zListMissionEventsResponse,
+  zListMissionTargetsResponse,
   zListMissionsResponse,
   zListSlotTargetsResponse,
   zListSlotsResponse,
@@ -158,6 +159,13 @@ const fakeAccounts = {
     id: "00000000-0000-4000-8000-000000000011",
     role: "USER",
     displayName: "Sharer",
+  },
+  // ADR-079: owns the booked sessions the e2e creates through POST /__test/booked, so
+  // their captures land in no other Collection.
+  "booker@darkview.test": {
+    id: "00000000-0000-4000-8000-000000000012",
+    role: "USER",
+    displayName: "Booker",
   },
   // Account slice 1: resets its password in e2e, so no other test's sign-in depends on it.
   "forgetful@darkview.test": {
@@ -2459,6 +2467,8 @@ const simulatedJpeg = Buffer.from(
 async function startSession(request, response, id) {
   const user = sessionUser(request);
   if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+  const booked = bookedOf(id, user);
+  if (booked) return startBooked(request, response, booked, user);
   const mission = missions.find((row) => row.id === id && row.userId === user.id);
   if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
   const scenario = cookiesOf(request).fake_live ?? null;
@@ -2620,6 +2630,380 @@ function subscribed(socket, mission, session) {
   }
 }
 
+// ADR-079 and ADR-080: a booked session, start to park, as the platform runs it with the
+// simulated agent. Each test creates its own with POST /__test/booked, owned by the
+// booker, so no shared fixture, list or baseline moves. A booked mission has its own
+// clock, `Date.now() + offsetMs`: POST /__test/booked/{id}/advance moves it, as the test
+// moves the browser's, so the 10-minute dwell and the 30-second cooldown pass in a
+// moment. POST /__test/booked/{id}/health stands in for the agent's watchdog.
+const bookedMissions = new Map();
+const DWELL_MS = 600_000;
+const CAPTURE_COOLDOWN_MS = 30_000;
+const MAX_CAPTURES = 50;
+const bookerId = "00000000-0000-4000-8000-000000000012";
+
+const bookedClock = (booked) => Date.now() + booked.offsetMs;
+const bookedOf = (id, user) => {
+  const booked = bookedMissions.get(id);
+  return booked && (!user || booked.mission.userId === user.id) ? booked : null;
+};
+
+function createBooked(body) {
+  const id = randomUUID();
+  const opens = Date.now() + (body?.opensInSeconds ?? 10) * 1000;
+  const mission = zGetMissionResponse.parse({
+    id,
+    userId: bookerId,
+    bookingId: null,
+    targetId: "30000000-0000-4000-8000-000000000006",
+    currentTargetId: null,
+    sessionEndsAt: new Date(opens + (body?.minutes ?? 30) * 60_000).toISOString(),
+    retargetAllowedAt: null,
+    observatoryId,
+    state: "SCHEDULED",
+    failureReason: null,
+    mode: "SIMULATED",
+    scheduledStartAt: new Date(opens).toISOString(),
+    requestedAt: new Date().toISOString(),
+    startedAt: null,
+    endedAt: null,
+    captureIds: [],
+    observable: false,
+    observerCapacity: 5,
+  });
+  const booked = {
+    mission,
+    offsetMs: 0,
+    dwellFrom: null,
+    lastCaptureAt: null,
+    capturing: false,
+    imageHealth: null,
+    endPhase: null,
+    ended: false,
+    sockets: new Set(),
+  };
+  bookedMissions.set(id, booked);
+  booked.ticker = setInterval(() => bookedTick(booked), 250);
+  return mission;
+}
+
+function bookedSay(booked, body) {
+  for (const socket of booked.sockets)
+    socket.sendJson(channelMessage({ missionId: booked.mission.id, ...body }));
+}
+
+function bookedState(booked, state, failureReason = null) {
+  booked.mission.state = state;
+  if (state !== "OBSERVING") booked.imageHealth = null;
+  bookedSay(booked, {
+    type: "MISSION_STATE",
+    state,
+    failureReason,
+    remainingSeconds: null,
+  });
+}
+
+/** The dwell lock as the cloud words it: null once lifted, or waived (UNRECOVERED). */
+function retargetAllowedAt(booked) {
+  if (booked.dwellFrom === null || booked.imageHealth?.status === "UNRECOVERED")
+    return null;
+  const lifts = booked.dwellFrom + DWELL_MS;
+  return lifts > bookedClock(booked) ? new Date(lifts).toISOString() : null;
+}
+
+function captureAllowedAt(booked) {
+  if (booked.capturing || booked.lastCaptureAt === null) return null;
+  const lifts = booked.lastCaptureAt + CAPTURE_COOLDOWN_MS;
+  return lifts > bookedClock(booked) ? new Date(lifts).toISOString() : null;
+}
+
+function bookedTelemetry(booked) {
+  const parked = booked.endPhase === "PARKED" || booked.endPhase === "PARKING";
+  bookedSay(booked, {
+    type: "MISSION_TELEMETRY",
+    mode: "SIMULATED",
+    link: "ONLINE",
+    tracking: !parked,
+    centeringIteration: null,
+    residualArcminutes: null,
+    nudgeUsedDegrees: null,
+    ambientTemperatureC: null,
+    pointing: parked ? null : { altitudeDegrees: 38, azimuthDegrees: 160 },
+    currentTargetId: booked.mission.currentTargetId,
+    retargetAllowedAt: retargetAllowedAt(booked),
+    captureAllowedAt: captureAllowedAt(booked),
+    imageHealth: booked.mission.state === "OBSERVING" ? booked.imageHealth : null,
+    endPhase: booked.endPhase,
+  });
+}
+
+function bookedStream(booked, socket) {
+  const token = randomUUID();
+  const expiresAt = new Date(Date.now() + STREAM_TTL_SECONDS * 1000);
+  streamTokens.set(token, { missionId: booked.mission.id, userId: bookerId, expiresAt });
+  socket.sendJson(
+    channelMessage({
+      missionId: booked.mission.id,
+      type: "MISSION_STREAM",
+      streamUrl: `${appOrigin}/stream/mission/${booked.mission.id}?t=${token}`,
+      encoding: "JPEG",
+      mode: "SIMULATED",
+      expiresAt: expiresAt.toISOString(),
+    }),
+  );
+}
+
+/** Steps a beat apart on the real clock, so a test sees each state go by. */
+function bookedSteps(booked, steps, everyMs = 500) {
+  steps.forEach((step, index) => setTimeout(step, everyMs * (index + 1)));
+}
+
+/** The first acquisition, and every RETARGET's: slew, verify, centre, observe. */
+function acquire(booked, targetId, first) {
+  booked.mission.currentTargetId = targetId;
+  booked.dwellFrom = bookedClock(booked);
+  booked.imageHealth = null;
+  bookedSteps(booked, [
+    ...(first ? [() => bookedState(booked, "PREPARING")] : []),
+    () => bookedState(booked, "SLEWING"),
+    () => bookedState(booked, "VERIFYING"),
+    () => bookedState(booked, "CENTERING"),
+    () => {
+      bookedState(booked, "OBSERVING");
+      booked.imageHealth = {
+        status: "OK",
+        reason: null,
+        step: null,
+        attempt: null,
+        since: new Date(bookedClock(booked)).toISOString(),
+        nextRetryAt: null,
+      };
+      bookedTelemetry(booked);
+    },
+  ]);
+}
+
+/** The slot's end, on the mission's clock: finish, complete, park, say so once. */
+function bookedTick(booked) {
+  const { mission } = booked;
+  if (booked.ended || mission.state === "SCHEDULED") return;
+  if (bookedClock(booked) < Date.parse(mission.sessionEndsAt) || booked.endPhase) return;
+  booked.endPhase = "FINISHING";
+  bookedTelemetry(booked);
+  bookedSteps(
+    booked,
+    [
+      () => {
+        mission.endedAt = new Date(bookedClock(booked)).toISOString();
+        bookedState(booked, "COMPLETE");
+        booked.endPhase = "PARKING";
+        bookedTelemetry(booked);
+      },
+      () => {
+        booked.endPhase = "PARKED";
+        bookedTelemetry(booked);
+      },
+      () => {
+        booked.ended = true;
+        clearInterval(booked.ticker);
+        bookedSay(booked, {
+          type: "MISSION_SESSION_ENDED",
+          state: "COMPLETE",
+          failureReason: null,
+          endReason: "SLOT_ENDED",
+          endedAt: mission.endedAt,
+          parked: true,
+          captureIds: mission.captureIds,
+          summaryEmailQueued: true,
+        });
+      },
+    ],
+    1500,
+  );
+}
+
+/** GET /missions/{id}/targets: what is up now, ranked, the current one flagged. */
+function missionTargets(mission, now, currentTargetId, lockedUntil) {
+  const endsAt = mission.sessionEndsAt ?? new Date(now + 30 * 60_000).toISOString();
+  const evaluatedAt = new Date(now).toISOString();
+  return zListMissionTargetsResponse.parse({
+    missionId: mission.id,
+    observatoryId,
+    evaluatedAt,
+    windowEndsAt: new Date(Math.min(Date.parse(endsAt), now + DWELL_MS)).toISOString(),
+    sessionEndsAt: endsAt,
+    currentTargetId,
+    retargetAllowedAt: lockedUntil,
+    items: slotTargets(evaluatedAt, 10)
+      .items.filter((item) => item.visibility.observable)
+      .sort(
+        (a, b) =>
+          b.visibility.atStart.horizontal.altitudeDegrees -
+          a.visibility.atStart.horizontal.altitudeDegrees,
+      )
+      .map(({ target, visibility }) => ({
+        target,
+        visibility,
+        observableUntil: endsAt,
+        current: target.id === currentTargetId,
+      })),
+  });
+}
+
+function startBooked(request, response, booked, user) {
+  const { mission } = booked;
+  const now = bookedClock(booked);
+  if (
+    now < Date.parse(mission.scheduledStartAt) ||
+    now >= Date.parse(mission.sessionEndsAt)
+  )
+    return error(response, 409, "MISSION_NOT_ACTIVE", "Outside the booked slot.");
+  if (mission.state !== "SCHEDULED" && !LIVE_STATES.includes(mission.state))
+    return error(response, 409, "MISSION_NOT_ACTIVE", "No live session to open.");
+  if (mission.state === "SCHEDULED") {
+    mission.state = "PREPARING";
+    mission.startedAt = new Date(now).toISOString();
+    acquire(booked, mission.targetId, true);
+  }
+  const session = zStartMissionSessionResponse.parse({
+    sessionId: randomUUID(),
+    missionId: mission.id,
+    userId: user.id,
+    issuedAt: new Date(now).toISOString(),
+    expiresAt: mission.sessionEndsAt,
+    missionChannelUrl: `/ws/mission/${mission.id}`,
+    allowedCommands: ["NUDGE", "CAPTURE", "RECENTER", "RETARGET", "ABORT"],
+  });
+  liveSessions.set(session.sessionId, {
+    ...session,
+    scenario: "booked",
+    mode: "SIMULATED",
+  });
+  send(response, 200, session);
+}
+
+function subscribedBooked(socket, booked) {
+  booked.sockets.add(socket);
+  socket.on("close", () => booked.sockets.delete(socket));
+  socket.sendJson(
+    channelMessage({
+      missionId: booked.mission.id,
+      type: "MISSION_STATE",
+      state: booked.mission.state,
+      failureReason: null,
+      remainingSeconds: null,
+    }),
+  );
+  bookedTelemetry(booked);
+  if (LIVE_STATES.includes(booked.mission.state)) bookedStream(booked, socket);
+}
+
+function bookedCommand(response, booked, body) {
+  const { mission } = booked;
+  const now = bookedClock(booked);
+  const left = Date.parse(mission.sessionEndsAt) - now;
+  const refuse = (code, reason, extra = {}) =>
+    error(response, 409, code, `Refused: ${reason ?? code}.`, {
+      ...(reason && { rejectionReason: reason }),
+      ...extra,
+    });
+  const { type } = body;
+  if (type === "RETARGET") {
+    const targetId = body.retarget?.targetId;
+    if (!targetId)
+      return error(response, 422, "VALIDATION_FAILED", "retarget is required.");
+    if (mission.state !== "OBSERVING") return refuse("MISSION_BUSY", "MISSION_BUSY");
+    if (left < 300_000) return refuse("SESSION_ENDING", "SESSION_ENDING");
+    if (targetId === mission.currentTargetId) return refuse("CONFLICT", null);
+    const locked = retargetAllowedAt(booked);
+    if (locked) return refuse("DWELL_LOCKED", "DWELL_LOCKED", { allowedAt: locked });
+    const up = missionTargets(mission, now, mission.currentTargetId, null).items;
+    if (!up.some((item) => item.target.id === targetId))
+      return refuse("TARGET_NOT_OBSERVABLE", "TARGET_NOT_VISIBLE_NOW", {
+        blockReasons: ["BELOW_MIN_ALTITUDE"],
+      });
+  }
+  if (type === "CAPTURE") {
+    if (booked.capturing || ["CAPTURING", "PROCESSING"].includes(mission.state))
+      return refuse("CAPTURE_IN_PROGRESS", "CAPTURE_IN_PROGRESS");
+    const cooled = captureAllowedAt(booked);
+    if (cooled)
+      return refuse("CAPTURE_COOLDOWN", "CAPTURE_COOLDOWN", { allowedAt: cooled });
+    if (mission.captureIds.length >= MAX_CAPTURES)
+      return refuse("CAPTURE_LIMIT_REACHED", "CAPTURE_LIMIT_REACHED");
+    if (left < 60_000) return refuse("SESSION_ENDING", "SESSION_ENDING");
+  }
+
+  const accepted = zSubmitMissionCommandResponse.parse({
+    commandId: randomUUID(),
+    missionId: mission.id,
+    type: type === "RECENTER" ? "GOTO" : type,
+    issuedAt: new Date(now).toISOString(),
+    expiresAt: new Date(now + COMMAND_TTL_SECONDS * 1000).toISOString(),
+    status: "ACCEPTED",
+  });
+  send(response, 202, accepted);
+  if (type === "CAPTURE") {
+    booked.capturing = true;
+    booked.lastCaptureAt = now;
+  }
+  setTimeout(() => {
+    bookedSay(booked, {
+      type: "MISSION_COMMAND_RESULT",
+      commandId: accepted.commandId,
+      status: "ACCEPTED",
+      rejectionReason: null,
+    });
+    if (type === "RETARGET") acquire(booked, body.retarget.targetId, false);
+    if (type === "CAPTURE") bookedCapture(booked);
+    if (type === "ABORT") {
+      mission.endedAt = new Date(bookedClock(booked)).toISOString();
+      bookedState(booked, "CANCELLED", "CUSTOMER_CANCELLED");
+    }
+  }, 300);
+}
+
+/** CAPTURING, PROCESSING, the Capture against the object on the telescope, OBSERVING. */
+function bookedCapture(booked) {
+  const { mission } = booked;
+  const target = targets.items.find((row) => row.id === mission.currentTargetId);
+  bookedSteps(booked, [
+    () => bookedState(booked, "CAPTURING"),
+    () => bookedState(booked, "PROCESSING"),
+    () => {
+      const capture = zGetCaptureResponse.parse({
+        id: randomUUID(),
+        missionId: mission.id,
+        userId: bookerId,
+        targetId: mission.currentTargetId,
+        capturedAt: new Date(bookedClock(booked)).toISOString(),
+        imagingProfile: target.imagingProfile,
+        opticalConfig: target.opticalConfig,
+        exposureMilliseconds: 2000,
+        gain: 200,
+        framesStacked: 12,
+        integrationSeconds: 24,
+        widthPx: 3840,
+        heightPx: 2160,
+        solvedFocalLengthMm: null,
+        fitsAvailable: false,
+        visibility: "PRIVATE",
+        mode: "SIMULATED",
+        thumbnailUrl: null,
+      });
+      captures.unshift({ assets: ["THUMBNAIL", "IMAGE"], capture });
+      mission.captureIds.push(capture.id);
+      booked.capturing = false;
+      bookedSay(booked, {
+        type: "MISSION_CAPTURE_READY",
+        capture: withThumbnail({ assets: ["THUMBNAIL", "IMAGE"], capture }),
+      });
+      bookedState(booked, "OBSERVING");
+      bookedTelemetry(booked);
+    },
+  ]);
+}
+
 // Phase 4 slice 3: `submitMissionCommand`, as the platform's API answers it, and the
 // agent's one verdict on the channel. The `fake_command` cookie picks the outcome for this
 // browser context: unset, the agent accepts; `refuse`, it refuses a nudge past its limit;
@@ -2632,7 +3016,9 @@ const COMMAND_TTL_SECONDS = 15;
 async function submitCommand(request, response, id) {
   const user = sessionUser(request);
   if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
-  const mission = missions.find((row) => row.id === id && row.userId === user.id);
+  const booked = bookedOf(id, user);
+  const mission =
+    booked?.mission ?? missions.find((row) => row.id === id && row.userId === user.id);
   if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
   const body = zSubmitMissionCommandBody.safeParse(await json(request));
   if (!body.success)
@@ -2642,6 +3028,16 @@ async function submitCommand(request, response, id) {
       "VALIDATION_FAILED",
       "MissionCommandRequest is malformed.",
     );
+  if (booked) {
+    const held = [...liveSessions.values()].some(
+      (candidate) =>
+        candidate.missionId === id &&
+        Date.parse(candidate.expiresAt) > bookedClock(booked),
+    );
+    if (!held)
+      return error(response, 409, "MISSION_NOT_ACTIVE", "No session owns this mission.");
+    return bookedCommand(response, booked, body.data);
+  }
 
   const session = [...liveSessions.values()]
     .filter(
@@ -3086,6 +3482,17 @@ function onChannelMessage(socket, missionId, user, raw, request) {
   }
 
   const session = liveSessions.get(parsed.data.sessionId);
+  const booked = bookedOf(missionId, user);
+  if (booked) {
+    if (
+      !session ||
+      session.missionId !== missionId ||
+      parsed.data.missionId !== missionId ||
+      Date.parse(session.expiresAt) <= bookedClock(booked)
+    )
+      return refuse("FORBIDDEN", "No live session for this mission is yours.");
+    return subscribedBooked(socket, booked);
+  }
   const mission = missions.find((row) => row.id === missionId);
   // One refusal for every cause, as the realtime service words it.
   if (
@@ -3259,10 +3666,58 @@ http
       if (!found) return error(response, 404, "NOT_FOUND", "No such target.");
       return send(response, 200, zGetTargetResponse.parse(found));
     }
+    const booked = path.match(/^\/__test\/booked(?:\/([0-9a-f-]+)\/(advance|health))?$/);
+    if (booked && request.method === "POST") {
+      const body = await json(request);
+      if (!booked[1]) return send(response, 201, createBooked(body));
+      const row = bookedOf(booked[1]);
+      if (!row) return error(response, 404, "NOT_FOUND", "No such booked mission.");
+      if (booked[2] === "advance") row.offsetMs += (body?.seconds ?? 0) * 1000;
+      if (booked[2] === "health") row.imageHealth = body.imageHealth;
+      bookedTick(row);
+      bookedTelemetry(row);
+      return send(response, 200, {
+        ...row.mission,
+        clock: new Date(bookedClock(row)).toISOString(),
+      });
+    }
+    const missionTargetsPath = path.match(/^\/missions\/([0-9a-f-]+)\/targets$/);
+    if (missionTargetsPath && request.method === "GET") {
+      const user = sessionUser(request);
+      if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+      const row = bookedOf(missionTargetsPath[1], user);
+      const mission =
+        row?.mission ??
+        missions.find((m) => m.id === missionTargetsPath[1] && m.userId === user.id);
+      if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
+      if (!LIVE_STATES.includes(mission.state) && mission.state !== "PROCESSING")
+        return error(response, 409, "MISSION_NOT_ACTIVE", "The mission is not live.");
+      return send(
+        response,
+        200,
+        row
+          ? missionTargets(
+              mission,
+              bookedClock(row),
+              mission.currentTargetId,
+              retargetAllowedAt(row),
+            )
+          : missionTargets(mission, Date.now(), mission.targetId, null),
+      );
+    }
     const history = path.match(/^\/missions\/([0-9a-f-]+)\/events$/);
     if (history && request.method === "GET") {
       const user = sessionUser(request);
       if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+      if (bookedOf(history[1], user))
+        return send(
+          response,
+          200,
+          zListMissionEventsResponse.parse({
+            items: [],
+            page: { hasMore: false, nextCursor: null },
+          }),
+        );
       // Existence is private: somebody else's mission is the same 404 as none.
       const mission = missions.find(
         (row) => row.id === history[1] && row.userId === user.id,
@@ -3432,6 +3887,16 @@ http
       if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
       const [, collection, id, download] = owned;
       if (collection === "missions" && !download) {
+        const booked = bookedOf(id, user);
+        if (booked)
+          return send(
+            response,
+            200,
+            zGetMissionResponse.parse({
+              ...booked.mission,
+              retargetAllowedAt: retargetAllowedAt(booked),
+            }),
+          );
         const mission = missions.find((row) => row.id === id && row.userId === user.id);
         if (!mission) return error(response, 404, "NOT_FOUND", "No such mission.");
         return send(response, 200, zGetMissionResponse.parse(mission));

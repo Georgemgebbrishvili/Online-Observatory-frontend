@@ -6,8 +6,10 @@ import {
   captureReference,
   captureTitle,
   formatCapturedAt,
+  sessionGroups,
 } from "@/features/collection/present";
 import type { CollectionEntry, CollectionResult } from "@/features/collection/read";
+import { fill } from "@/features/operator/format";
 import { targetDescription } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { collectionGalleryCopy } from "@/i18n/resources/collection";
@@ -140,6 +142,28 @@ export function CollectionGallery({
   const [first, ...rest] = result.entries;
   const featured = paged ? null : first;
   const archive = paged ? result.entries : rest;
+  // ADR-079: a session keeps many captures, of more than one object; they are grouped
+  // so, and a page of one session's one object needs no heading.
+  const groups = sessionGroups(archive);
+  const groupName = (entries: CollectionEntry[]) =>
+    fill(copy.sessionGroup, {
+      target: captureTitle(entries[0], locale),
+      time: formatCapturedAt(entries[entries.length - 1].capture.capturedAt, result.timezone, locale),
+    });
+  const card = (entry: CollectionEntry) => (
+    <CaptureCard
+      key={entry.capture.id}
+      captureId={entry.capture.id}
+      href={`${base}/${entry.capture.id}`}
+      title={captureTitle(entry, locale)}
+      reference={captureReference(entry)}
+      capturedAt={formatCapturedAt(entry.capture.capturedAt, result.timezone, locale)}
+      thumbnail={entry.thumbnail}
+      simulated={entry.capture.mode === "SIMULATED"}
+      visibility={entry.capture.visibility}
+      copy={copy}
+    />
+  );
 
   return (
     <div className="collection-page">
@@ -155,26 +179,21 @@ export function CollectionGallery({
             <h2 id="capture-archive-title">{copy.allCaptures}</h2>
             <p className="page-lede">{copy.allDescription}</p>
           </div>
-          <div className="capture-grid">
-            {archive.map((entry) => (
-              <CaptureCard
-                key={entry.capture.id}
-                captureId={entry.capture.id}
-                href={`${base}/${entry.capture.id}`}
-                title={captureTitle(entry, locale)}
-                reference={captureReference(entry)}
-                capturedAt={formatCapturedAt(
-                  entry.capture.capturedAt,
-                  result.timezone,
-                  locale,
-                )}
-                thumbnail={entry.thumbnail}
-                simulated={entry.capture.mode === "SIMULATED"}
-                visibility={entry.capture.visibility}
-                copy={copy}
-              />
-            ))}
-          </div>
+          {groups.length === 1 ? (
+            <div className="capture-grid">{archive.map(card)}</div>
+          ) : (
+            groups.map((group) => (
+              <section
+                key={group.key}
+                className="capture-session"
+                aria-label={groupName(group.entries)}
+              >
+                <h3>{groupName(group.entries)}</h3>
+                <p className="data">{copy.nightCaptures(group.entries.length)}</p>
+                <div className="capture-grid">{group.entries.map(card)}</div>
+              </section>
+            ))
+          )}
         </section>
       )}
 

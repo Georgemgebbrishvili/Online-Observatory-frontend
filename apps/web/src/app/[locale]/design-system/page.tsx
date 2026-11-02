@@ -42,6 +42,8 @@ import { PanelHead } from "@/components/room/panel-head";
 import { PointingDial } from "@/components/room/pointing-dial";
 import { SkyChart } from "@/components/room/sky-chart";
 import { RoomPointing } from "@/components/room/room-pointing";
+import { RoomHealth } from "@/components/room/room-health";
+import { RoomTargetsView } from "@/components/room/room-targets";
 import {
   RoomCaptureAction,
   RoomControlsView,
@@ -58,6 +60,7 @@ import { tonightCopy } from "@/i18n/resources/tonight";
 import { WatchView, type WatchPhase } from "@/components/room/mission-watch";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
+import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { TargetPreview } from "@/components/room/target-preview";
 import { FlightPlan } from "@/components/home/flight-plan";
 import { PageGuide } from "@/components/guide/page-guide";
@@ -309,6 +312,15 @@ const bookingStatusSpecimens = [
   "REFUNDED",
 ] as const;
 
+/** A fixed instant for the countdown specimens, so the page renders the same every time. */
+const specimenNow = Date.parse("2030-01-15T18:20:00.000Z");
+const specimenAt = (seconds: number) =>
+  new Date(specimenNow + seconds * 1000).toISOString();
+const specimenTargets = [
+  { id: "30000000-0000-4000-8000-000000000006", name: "Saturn", current: true },
+  { id: "30000000-0000-4000-8000-000000000021", name: "Albireo", current: false },
+] as const;
+
 const liveSpecimens: readonly LiveStatus[] = [
   "not-started",
   "starting",
@@ -319,6 +331,9 @@ const liveSpecimens: readonly LiveStatus[] = [
   "hold",
   "expired",
   "ended",
+  "finishing",
+  "parking",
+  "parked",
   "stopped",
   "refused",
   "error",
@@ -1090,6 +1105,14 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 pending={{ control: "capture", relayed: false }}
                 copy={roomControlsCopy[locale]}
               />
+              {/* ADR-079 §3: waiting out the 30-second cooldown. */}
+              <RoomCaptureAction
+                offered={{ move: true, capture: true, stop: true, waiting: null }}
+                pending={null}
+                copy={roomControlsCopy[locale]}
+                allowedAt={specimenAt(24)}
+                now={specimenNow}
+              />
             </div>
             {(
               [
@@ -1107,6 +1130,62 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 copy={roomControlsCopy[locale]}
                 label={`${roomControlsCopy[locale].sessionTitle} ${index + 1}`}
               />
+            ))}
+          </div>
+          {/* ADR-079 §4: the objects up now; ADR-080: the picture's health. */}
+          <div className="room-console ds-room-specimens">
+            {(
+              [
+                [specimenTargets, null, true, false, null],
+                [specimenTargets, specimenAt(462), true, false, null],
+                [
+                  specimenTargets,
+                  specimenAt(462),
+                  true,
+                  false,
+                  roomControlsCopy[locale].reasons.DWELL_LOCKED,
+                ],
+                [specimenTargets, null, false, false, null],
+                [specimenTargets, null, true, true, null],
+                ["loading", null, true, false, null],
+                ["unreadable", null, true, false, null],
+              ] as const
+            ).map(([options, lockedUntil, observing, busy, message], index) => (
+              <RoomTargetsView
+                key={index}
+                copy={roomSessionCopy[locale].targets}
+                options={typeof options === "string" ? options : [...options]}
+                lockedUntil={lockedUntil}
+                now={specimenNow}
+                observing={observing}
+                pendingId={busy ? specimenTargets[1].id : null}
+                busy={busy}
+                message={message}
+                label={`${roomSessionCopy[locale].targets.title} ${index + 1}`}
+              />
+            ))}
+          </div>
+          <div className="room-console ds-room-specimens">
+            {(
+              [
+                { status: "RECOVERING", reason: "BLANK_FRAME", step: "RE_EXPOSE" },
+                { status: "RECOVERING", reason: "OFF_CENTRE", step: "RE_CENTRE" },
+                { status: "WAITING", reason: "CLOUDS", step: "WAIT_FOR_SKY" },
+                { status: "UNRECOVERED", reason: "NO_STARS", step: null },
+              ] as const
+            ).map((health) => (
+              <div key={`${health.status}-${health.step}`} className="live-feed-flow">
+                <RoomHealth
+                  copy={roomSessionCopy[locale].health}
+                  now={specimenNow}
+                  health={{
+                    ...health,
+                    attempt: 1,
+                    since: specimenAt(-20),
+                    nextRetryAt: health.status === "RECOVERING" ? null : specimenAt(95),
+                  }}
+                />
+              </div>
             ))}
           </div>
           <h3 className="ds-subheading">{copy.cards.missionSteps}</h3>
@@ -1268,14 +1347,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                       : null
                   }
                   action={
-                    status === "not-started" || status === "starting" ? (
-                      <Button
-                        disabled={status === "not-started"}
-                        loading={status === "starting"}
-                      >
-                        {room.live.actions.start}
-                      </Button>
-                    ) : status === "refused" || status === "error" ? (
+                    status === "refused" || status === "error" ? (
                       <Button variant="secondary">{room.live.actions.retry}</Button>
                     ) : status === "stopped" ? (
                       <>

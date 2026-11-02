@@ -23,6 +23,8 @@ type LiveFeedProps = {
   steps?: ReactNode;
   /** The one action, at the right of the status line. */
   action?: ReactNode;
+  /** ADR-080: the picture's health, above the status line, while it is not OK. */
+  notice?: ReactNode;
   onStreamError?: () => void;
 };
 
@@ -40,6 +42,7 @@ export function LiveFeed({
   description,
   frameNote,
   labels,
+  notice,
   onStreamError,
   plates,
   preview,
@@ -117,6 +120,7 @@ export function LiveFeed({
       </div>
       <div className="live-feed-flow">
         {steps}
+        {notice}
         <div className="live-feed-status">
           <div role={alert ? "alert" : "status"}>
             <strong>{title}</strong>
