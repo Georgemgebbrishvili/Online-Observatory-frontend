@@ -901,6 +901,8 @@ a.home-tile:focus-visible,
 
 .night-stats div {
   display: grid;
+  /* A label that wraps (Georgian) keeps its value level with the one beside it. */
+  align-content: space-between;
   gap: 0.125rem;
   padding: var(--space-3) 0;
   border-bottom: 1px solid var(--color-line);
@@ -930,6 +932,7 @@ a.home-tile:focus-visible,
   font-weight: var(--font-weight-semibold);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .night-book {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import { MoonGlyph } from "@/components/booking/moon-glyph";
 import { ButtonLink } from "@/components/ui/button";
@@ -58,6 +58,16 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
   const [active, setActive] = useState(model.first);
   const [slot, setSlot] = useState<number | null>(null);
   const [now, setNow] = useState<number | null>(null);
+  const track = useRef<HTMLSpanElement>(null);
+  const [trackPx, setTrackPx] = useState<number | null>(null);
+
+  useEffect(() => {
+    const element = track.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => setTrackPx(entry.contentRect.width));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   // "Now" only in the browser, so the server's page stays the same for everyone.
   useEffect(() => {
@@ -75,10 +85,14 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
   }, [model.start, model.end]);
 
   const o = model.objects[active];
-  // Hours too near the ends, or under the "now" tag, step aside.
-  const ticks = model.ticks.filter(
-    (tick) => tick.at > 5 && tick.at < 95 && (now === null || Math.abs(tick.at - now) > 2.5),
-  );
+  // Hours too near the ends, or under the "now" tag, step aside. The tag and half a
+  // label need about 36px either side, so that room is measured, not a share of the
+  // width. Every other hour is minor (hidden on phones), counted before the tag hides any.
+  const nowClearance = trackPx ? (36 / trackPx) * 100 : 2.5;
+  const ticks = model.ticks
+    .filter((tick) => tick.at > 5 && tick.at < 95)
+    .map((tick, index) => ({ ...tick, minor: index % 2 === 1 }));
+  const labels = ticks.filter((tick) => now === null || Math.abs(tick.at - now) > nowClearance);
 
   return (
     <div className="night">
@@ -90,17 +104,17 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
           style={now === null ? undefined : ({ "--now": now } as CSSProperties)}
         >
           <div className="night-axis" aria-hidden="true">
-            <span className="night-axis-track">
+            <span className="night-axis-track" ref={track}>
               {(now === null || now > 15) && (
                 <span className="night-end" data-end="start">
                   {model.sunset}
                 </span>
               )}
-              {ticks.map((tick, index) => (
+              {labels.map((tick) => (
                 <span
                   key={tick.at}
                   className="night-tick"
-                  data-minor={index % 2 === 1 || undefined}
+                  data-minor={tick.minor || undefined}
                   style={{ "--at": tick.at } as CSSProperties}
                 >
                   {tick.label}
@@ -115,10 +129,10 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
           </div>
 
           <div className="night-grid" aria-hidden="true">
-            {ticks.map((tick, index) => (
+            {ticks.map((tick) => (
               <span
                 key={tick.at}
-                data-minor={index % 2 === 1 || undefined}
+                data-minor={tick.minor || undefined}
                 style={{ "--at": tick.at } as CSSProperties}
               />
             ))}
