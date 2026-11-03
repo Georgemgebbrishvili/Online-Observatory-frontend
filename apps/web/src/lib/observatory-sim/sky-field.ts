@@ -277,8 +277,8 @@ type DsoSpec = {
 
 /**
  * What a 203 mm scope can be steered onto between the eight GoTo targets.
- * J2000, magnitudes and sizes from the usual catalogues. Three have
- * reference photographs; the rest are drawn from their shape and size.
+ * J2000, magnitudes and sizes from the usual catalogues. The showpieces have
+ * plates or a reference photograph; the rest are drawn from their shape and size.
  */
 const DEEP_SKY: DsoSpec[] = [
   { id: 'm42', name: 'Orion Nebula', ra: 5.591, dec: -5.391, mag: 4.0, major: 85, minor: 60, shape: 'nebula', frameSpan: 1.0 },
@@ -319,6 +319,15 @@ const DEEP_SKY: DsoSpec[] = [
 ];
 
 export const DEEP_SKY_BY_ID = new Map(DEEP_SKY.map((d) => [d.id, d]));
+
+/**
+ * The deep-sky showpieces drawn as plates (scripts/paint-sky-plates.py): what a live
+ * stack on this instrument settles to, painted by code, north up. Each is the span of
+ * the plate in arcminutes; it takes over from a reference photograph in the frame.
+ */
+const PLATE_SPAN_ARCMIN: Record<string, number> = {
+  m1: 9, m13: 24, m15: 16, m27: 12, m31: 64, m42: 60, m51: 16.8, m81: 32, m82: 14, m104: 12, ngc869: 36,
+};
 
 function separationDeg(a: AltAz, b: AltAz): number {
   const d = tangentOffsetDeg(a, b);
@@ -406,8 +415,8 @@ export function skyObjectsNear(
       minorArcmin: spec.minor ?? spec.major,
       paDeg: spec.pa ?? 0,
       shape: spec.shape,
-      photoSrc: TARGET_PHOTOS[spec.id]?.src,
-      frameSpan: spec.frameSpan,
+      photoSrc: PLATE_SPAN_ARCMIN[spec.id] ? `/sky/plates/${spec.id}.webp` : TARGET_PHOTOS[spec.id]?.src,
+      frameSpan: PLATE_SPAN_ARCMIN[spec.id] ? PLATE_SPAN_ARCMIN[spec.id] / spec.major : spec.frameSpan,
     });
   }
 

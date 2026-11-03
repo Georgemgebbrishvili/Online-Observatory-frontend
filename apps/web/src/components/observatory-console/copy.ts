@@ -22,6 +22,15 @@ export type ConsoleCopy = {
     text: (name: string | null) => string;
     start: (name: string | null) => string;
   };
+  dome: {
+    title: string;
+    aria: string;
+    up: (n: number) => string;
+    down: (n: number) => string;
+    press: string;
+    scope: string;
+    kinds: Record<'planet' | 'moon' | 'star' | 'deep', string>;
+  };
   telescopes: {
     title: string;
     live: string;
@@ -142,6 +151,8 @@ export type ConsoleCopy = {
       target: (quick: string | null) => string;
       point: (seconds: number) => string;
       stacking: (done: number, goal: number, exposure: string) => string;
+      liveStack: (done: number, goal: number) => string;
+      settled: string;
       tracking: string;
       drifting: string;
       belowHorizon: string;
@@ -172,6 +183,7 @@ export type ConsoleCopy = {
     standby: string;
     connecting: string;
     stacking: (done: number, goal: number) => string;
+    liveStack: (done: number, goal: number) => string;
     slewing: string;
     slewingLong: string;
     solving: string;
@@ -308,6 +320,15 @@ const en: ConsoleCopy = {
         : "Nothing in the catalogue is up right now.",
     start: (name) => (name ? `Start · ${name}` : "Start"),
   },
+  dome: {
+    title: "Sky tonight",
+    aria: "Tonight's sky over the telescope, twenty showpieces",
+    up: (n) => `${n} up`,
+    down: (n) => `${n} below the horizon`,
+    press: "Press an object: the mount slews, solves and centres it, then the live stack settles.",
+    scope: "Telescope",
+    kinds: { planet: "Planet", moon: "Moon", star: "Double star", deep: "Deep sky" },
+  },
   telescopes: {
     title: "Telescopes",
     live: "Live",
@@ -429,6 +450,8 @@ const en: ConsoleCopy = {
         `Select a target that has risen.${quick ? ` Quick start points at ${quick}.` : ""}`,
       point: (seconds) => `GoTo at 5°/s, plate-solve and centre. About ${seconds} seconds.`,
       stacking: (done, goal, exposure) => `Stacking ${done} of ${goal} frames of ${exposure}.`,
+      liveStack: (done, goal) => `Live stack ${done} of ${goal}: the air's ripple averages out as the frames align.`,
+      settled: "The stack has settled. Capture keeps this frame.",
       tracking: "On target and tracking. Nudge with the pad.",
       drifting: "Tracking is off: the sky drifts through the field at sidereal rate.",
       belowHorizon: "The target has set below the horizon. Choose another.",
@@ -464,6 +487,7 @@ const en: ConsoleCopy = {
     standby: "Standby",
     connecting: "Connecting",
     stacking: (done, goal) => `Stacking · ${done} / ${goal}`,
+    liveStack: (done, goal) => `Live stack · ${done} / ${goal}`,
     slewing: "Slewing",
     slewingLong: "Slewing · long way round",
     solving: "Plate-solving",
@@ -627,6 +651,15 @@ const ka: ConsoleCopy = {
         : "ახლა ცაზე არაფერია ამოსული.",
     start: (name) => (name ? `დაწყება · ${name}` : "დაწყება"),
   },
+  dome: {
+    title: "ამაღამ ცაზე",
+    aria: "ამაღამდელი ცა ტელესკოპის თავზე, ოცი გამორჩეული ობიექტი",
+    up: (n) => `${n} ამოსული`,
+    down: (n) => `ჰორიზონტს ქვემოთ: ${n}`,
+    press: "დააჭირე ობიექტს: მონტირება მიტრიალდება, კადრს ამოიცნობს და დააცენტრებს, მერე დაჯამება სურათს გაასუფთავებს.",
+    scope: "ტელესკოპი",
+    kinds: { planet: "პლანეტა", moon: "მთვარე", star: "ორმაგი ვარსკვლავი", deep: "ღრმა ცა" },
+  },
   telescopes: {
     title: "ტელესკოპები",
     live: "პირდაპირი",
@@ -748,6 +781,8 @@ const ka: ConsoleCopy = {
         `აირჩიე ამოსული ობიექტი.${quick ? ` სწრაფი დაწყება მიმართავს: ${quick}.` : ""}`,
       point: (seconds) => `GoTo 5°/წმ სიჩქარით, კადრის ამოცნობა და დაცენტრება. დაახლოებით ${seconds} წამი.`,
       stacking: (done, goal, exposure) => `ჯამდება ${done} / ${goal} კადრი, თითო ${exposure}.`,
+      liveStack: (done, goal) => `პირდაპირი დაჯამება ${done} / ${goal}: კადრები ერთმანეთს ესწორება და ჰაერის ტალღა ქრება.`,
+      settled: "დაჯამება დასრულდა. გადაღება ამ კადრს შეინახავს.",
       tracking: "ობიექტზეა და ცას მიჰყვება. გადასაწევად გამოიყენე პულტი.",
       drifting: "ტრეკინგი გამორთულია: ცა ხედვის ველში ვარსკვლავური სიჩქარით მიცურავს.",
       belowHorizon: "ობიექტი ჰორიზონტს ქვემოთ ჩავიდა. აირჩიე სხვა.",
@@ -783,6 +818,7 @@ const ka: ConsoleCopy = {
     standby: "მოლოდინი",
     connecting: "უკავშირდება",
     stacking: (done, goal) => `ჯამდება · ${done} / ${goal}`,
+    liveStack: (done, goal) => `პირდაპირი დაჯამება · ${done} / ${goal}`,
     slewing: "მოძრაობს",
     slewingLong: "მოძრაობს · გრძელი გზით",
     solving: "კადრის ამოცნობა",

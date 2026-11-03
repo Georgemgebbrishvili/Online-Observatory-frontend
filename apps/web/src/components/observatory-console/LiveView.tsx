@@ -11,7 +11,7 @@ import {
   twilightFraction,
 } from '@/lib/observatory-sim/atmosphere';
 import { skyElectronsFromSurface } from '@/lib/observatory-sim/camera';
-import { drawLiveScene, drawNoise, makeGrainTiles, type FrameInputs, type LiveScene } from '@/lib/observatory-sim/render';
+import { drawLiveScene, drawNoise, effectiveBlurArcsec, makeGrainTiles, warpBySeeing, type FrameInputs, type LiveScene } from '@/lib/observatory-sim/render';
 import { angularSeparation, type AltAz } from '@/lib/observatory-sim/safety';
 import { faintestStar, sensorLevels, starPeakLin } from '@/lib/observatory-sim/sensor';
 import { altAzToRaDec, raDecToAltAz, tangentOffsetDeg, type SkyObject } from '@/lib/observatory-sim/sky-field';
@@ -58,6 +58,11 @@ export type LiveViewProps = {
   edgeIllumination: number;
   /** Subs in the stack shown; 1 when not stacking. */
   subs: number;
+  /**
+   * A planet the stack registers on, as planetary stackers do: the stacked frame closes on
+   * its disc as frames accumulate. Null for everything else.
+   */
+  registerOn?: AltAz | null;
   gain: number;
   /** Called when a sub finishes, with the fraction of the next already exposed. */
   onExposure?: (progress: number) => void;
@@ -90,6 +95,7 @@ export default function LiveView(props: LiveViewProps) {
     if (!canvas || !ctx) return;
 
     grainRef.current = makeGrainTiles();
+    const boilBuffer = document.createElement('canvas');
     let frame = 0;
     let running = true;
     let lastHistogram = 0;
@@ -134,7 +140,12 @@ export default function LiveView(props: LiveViewProps) {
       const steady = 1 / Math.sqrt(Math.max(1, p.subs));
       const alt = at.pointing.altitude + at.imageOffset.alt * steady;
       const cosAlt = Math.max(0.05, Math.cos((alt * Math.PI) / 180));
-      const pointing = { altitude: alt, azimuth: at.pointing.azimuth + (at.imageOffset.az * steady) / cosAlt };
+      let pointing = { altitude: alt, azimuth: at.pointing.azimuth + (at.imageOffset.az * steady) / cosAlt };
+      if (p.registerOn && p.subs > 1) {
+        const k = 1 - steady;
+        const dAz = ((p.registerOn.azimuth - pointing.azimuth + 540) % 360) - 180;
+        pointing = { altitude: pointing.altitude + (p.registerOn.altitude - pointing.altitude) * k, azimuth: pointing.azimuth + dAz * k };
+      }
       const arcsecPerPx = (p.fovArcmin * 60) / width;
       const seeing = seeingAtAltitude(p.seeingArcsec, alt);
       const skyMag = skySurfaceBrightness({
@@ -144,8 +155,13 @@ export default function LiveView(props: LiveViewProps) {
         altitudeDeg: alt,
         cloud: 0,
       });
-      const levels = sensorLevels({ exposureS: p.exposureSec, gain: p.gain, subs: p.subs, skyEPerS: skyElectronsFromSurface(skyMag, p.plateScaleArcsecPx, p.apertureMm) });
-      const peakAtMag0 = starPeakLin(0, seeing, p.plateScaleArcsecPx, p.apertureMm, p.exposureSec, p.gain);
+      const raw = sensorLevels({ exposureS: p.exposureSec, gain: p.gain, subs: p.subs, skyEPerS: skyElectronsFromSurface(skyMag, p.plateScaleArcsecPx, p.apertureMm) });
+      // A live stack's display stretch sets its black point toward the sky as frames
+      // accumulate and the noise falls, so the background darkens while the object stays.
+      const levels = { ...raw, sky: raw.sky * (1 - 0.55 * Math.min(1, Math.log2(Math.max(1, p.subs)) / 4)) };
+      // A lucky stack registers its frames on their sharpest: the same light in a smaller star, a higher peak.
+      const fwhm = p.exposureSec < 0.1 ? effectiveBlurArcsec({ seeingArcsec: seeing, diffractionArcsec: p.diffractionArcsec, subs: p.subs }) : seeing;
+      const peakAtMag0 = starPeakLin(0, fwhm, p.plateScaleArcsecPx, p.apertureMm, p.exposureSec, p.gain);
       const halfW = p.fovArcmin / 120;
       const halfH = (halfW * height) / width;
       const cloudAt = (dAlt: number, dAz: number) => cloudOpacity({ altitude: alt + dAlt, azimuth: pointing.azimuth + dAz / cosAlt }, at.nowMs, p.cloudCover);
@@ -186,6 +202,7 @@ export default function LiveView(props: LiveViewProps) {
         image,
       };
       drawLiveScene(ctx, inputs, frame, scene);
+      warpBySeeing(ctx, boilBuffer, inputs, at.nowMs / 1000);
       drawNoise(ctx, inputs, grainRef.current, frame);
       if (histCtx && p.onHistogram && time - lastHistogram > 500) {
         lastHistogram = time;

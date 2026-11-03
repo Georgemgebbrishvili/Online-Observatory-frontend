@@ -121,6 +121,8 @@ export const designSystemCopy = {
       noFrame: "Before the first frame",
       stacking: "Stacking · controls locked",
       conditions: "Conditions over the picture",
+      domeStandby: "Sky tonight · before a connection",
+      domeOnTarget: "Sky tonight · on a showpiece, the telescope's crosshair on it",
     },
     palette: "Core palette",
     paletteNames: [
@@ -425,6 +427,8 @@ export const designSystemCopy = {
       noFrame: "პირველ კადრამდე",
       stacking: "კადრების დაჯამება · მართვა დაბლოკილია",
       conditions: "პირობები გამოსახულებაზე",
+      domeStandby: "ამაღამ ცაზე · დაკავშირებამდე",
+      domeOnTarget: "ამაღამ ცაზე · ობიექტზე, ტელესკოპის ნიშნულით",
     },
     palette: "ძირითადი პალიტრა",
     paletteNames: [

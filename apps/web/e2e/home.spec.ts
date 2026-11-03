@@ -506,7 +506,7 @@ test("the console connects, aligns and points at the quick start's target", asyn
     timeout: 60_000,
   });
   await expect(view.getByText(/^Albireo/)).toBeVisible();
-  await expect(page.getByRole("button", { name: /^Capture \d+ × \d+ s/ })).toBeEnabled();
+  await expect(page.getByRole("button", { name: /^Capture \d+ × \d+ m?s/ })).toBeEnabled();
 
   // Ending the session parks the mount and returns the console to standby.
   await page.getByRole("button", { name: "Park & end" }).click();

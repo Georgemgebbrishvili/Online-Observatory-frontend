@@ -5,9 +5,12 @@ import { useId, useState } from "react";
 import { consoleCopy } from "@/components/observatory-console/copy";
 import { CopyProvider } from "@/components/observatory-console/copy-context";
 import { Camera } from "@/components/observatory-console/panels";
+import SkyDome from "@/components/observatory-console/sky-dome";
 import { ConditionAlerts } from "@/components/observatory-console/ViewStage";
 import type { Locale } from "@/i18n/config";
 import { EXPOSURES_S, GAIN, STACK_SIZES } from "@/lib/observatory-sim/camera";
+import { STATION_BY_ID } from "@/lib/observatory-sim/sim-stations";
+import { TELESCOPE_TARGET_BY_ID, targetPosition } from "@/lib/observatory-sim/telescope-targets";
 
 /** A frame of a star field: the sky's peak low, a tail of stars, a few pixels clipped. */
 const sampleHistogram = Array.from({ length: 32 }, (_, i) =>
@@ -16,7 +19,13 @@ const sampleHistogram = Array.from({ length: 32 }, (_, i) =>
     : Math.round(9000 * Math.exp(-((i - 5) ** 2) / 6) + 600 * Math.exp(-i / 6)),
 );
 
-type Labels = { live: string; noFrame: string; stacking: string; conditions: string };
+type Labels = { live: string; noFrame: string; stacking: string; conditions: string; domeStandby: string; domeOnTarget: string };
+
+/** A fixed autumn evening over the station, so the dome specimens are the same on every render. */
+const DOME_NIGHT_MS = Date.parse("2026-09-25T20:00:00+04:00");
+const domeStation = STATION_BY_ID.get("tbilisi-01")!;
+const domeTarget = TELESCOPE_TARGET_BY_ID.get("m57")!;
+const domePointing = targetPosition(domeTarget, domeStation, new Date(DOME_NIGHT_MS));
 
 const noop = () => {};
 
@@ -98,6 +107,14 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
               histogram={sampleHistogram}
             />
             <figcaption id={`${id}-stacking`}>{labels.stacking}</figcaption>
+          </figure>
+          <figure>
+            <SkyDome locale={locale} station={domeStation} minuteMs={DOME_NIGHT_MS} pointing={null} targetId={null} onPick={noop} />
+            <figcaption>{labels.domeStandby}</figcaption>
+          </figure>
+          <figure>
+            <SkyDome locale={locale} station={domeStation} minuteMs={DOME_NIGHT_MS} pointing={domePointing} targetId={domeTarget.id} onPick={noop} />
+            <figcaption>{labels.domeOnTarget}</figcaption>
           </figure>
           <figure>
             <div className="ds-console-stage">

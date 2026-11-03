@@ -14,6 +14,7 @@ import { LIMITS, angularSeparation, evaluateSafety, sunPosition, type AltAz } fr
 import { SESSION_MINUTES, STATIONS as SIM_STATIONS, skyStateAt, type Station } from '@/lib/observatory-sim/sim-stations';
 import { airmass, hourAngle, localSiderealHours } from '@/lib/observatory-sim/site-time';
 import { moonInSky, nearestObject, skyObjectsNear, tangentOffsetDeg } from '@/lib/observatory-sim/sky-field';
+import { SHOWPIECE_BY_ID, aimPosition } from '@/lib/observatory-sim/showpieces';
 import { TELESCOPE_TARGET_BY_ID, targetPosition, targetTitle, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
 import { consoleCopy } from './copy';
 import { CaptureDialog, RefusedDialog, SheetDialog, TargetsDialog, displayName, type Frame, type Refusal } from './dialogs';
@@ -23,6 +24,7 @@ import { PlatformConsole, type PlatformMission } from './platform-console';
 import { plateFor } from './plates';
 import { ConsoleShell, decShort, degText, duration, hms, raShort, type Action } from './shell';
 import { altitudePath, bestOf, clock, nightSpan, settleSkyClock, skyNow } from './sky';
+import SkyDome from './sky-dome';
 
 /** What the quick start points at: tonight's best target from the platform's catalogue, as the sky model knows it. */
 export type TonightTarget = { name: string; targetId: string } | null;
@@ -54,6 +56,10 @@ const TICK_MS = 250;
 const NIGHT_KEY = 'stellar.observatory.night';
 const NODE_ID = 'tbilisi-01';
 const AUTOFOCUS_MS = 6_000;
+/** The live stack's cadence at planetary exposures: what the view can align and average. */
+const LIVE_FRAME_S = 0.06;
+/** Raw video first, the air's boil and all, before the live stack starts. */
+const LIVE_DELAY_MS = 4_000;
 
 /**
  * The one station is the platform's observatory (ADR-053 §6, amended 2026-10-17): the
@@ -143,6 +149,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const [night, setNight] = useState(false);
   const [full, setFull] = useState(false);
   const [stack, setStack] = useState<{ startsAtMs: number } | null>(null);
+  /** The live stack that runs once on target: the view settles from the air's ripple to a clean frame. */
+  const [live, setLive] = useState<{ startsAtMs: number } | null>(null);
   const [frames, setFrames] = useState<Frame[]>([]);
   const [snap, setSnap] = useState<MountSnapshot | null>(null);
   const [exposing, setExposing] = useState<number | null>(null);
@@ -234,8 +242,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const inGoto = gotoState === 'slewing' || gotoState === 'solving' || gotoState === 'centring';
 
   const pointing = snap?.pointing ?? mount.pointing;
-  const targetNow = useMemo(() => (station && target ? targetPosition(target, station, date) : null), [station, target, date]);
-  const targetFn = useCallback((tg: TelescopeTarget, st: Station) => (ms: number) => targetPosition(tg, st, skyDate(ms)), [skyDate]);
+  const targetNow = useMemo(() => (station && target ? aimPosition(target, station, date) : null), [station, target, date]);
+  const targetFn = useCallback((tg: TelescopeTarget, st: Station) => (ms: number) => aimPosition(tg, st, skyDate(ms)), [skyDate]);
 
   const cameraOn = station !== null && !connecting && cal !== 'todo';
   const objects = useMemo(
@@ -247,6 +255,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const cloudCover = nodeCloud === null ? 0 : Math.min(1, Math.max(0, nodeCloud / 100));
   const stacking = stack !== null;
   const subsDone = stack ? Math.min(subsGoal, Math.floor((now - stack.startsAtMs) / (exp * 1000))) : 0;
+  // The live view aligns and averages the frames as they arrive; at planetary rates it keeps up at about 25 a second.
+  const liveDone = live ? Math.max(0, Math.min(subsGoal, Math.floor((now - live.startsAtMs) / (Math.max(exp, LIVE_FRAME_S) * 1000)))) : 0;
+  const settled = live !== null && liveDone >= subsGoal;
   const padEnabled = cal === 'done' && park !== 'running' && !stacking && !!station;
   const timeLeftMs = station ? connectedAtMs + SESSION_MINUTES * 60_000 - now : null;
   const step = !station || connecting ? 0 : cal !== 'done' ? 1 : inGoto ? 3 : onTarget ? 4 : 2;
@@ -333,6 +344,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     setTarget(null);
     setAcquisition(null);
     setStack(null);
+    setLive(null);
     setFrames([]);
     setSynced(false);
     setFullView(false);
@@ -389,8 +401,18 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     const startedAtMs = Date.now();
     mount.unpark();
     const plan = mount.goto(targetFn(next, station), startedAtMs);
+    // A showpiece brings its own camera: the train that frames it and the subs that suit it.
+    const recipe = SHOWPIECE_BY_ID.get(next.id)?.recipe;
+    if (recipe) {
+      setTrain(recipe.train);
+      setRoiId(recipe.roi);
+      setExpIx(indexOf(EXPOSURES_S, recipe.exposureS));
+      setGain(recipe.gain);
+      setSubsIx(indexOf(STACK_SIZES, recipe.stack));
+    }
     setTarget(next);
     setStack(null);
+    setLive(null);
     setModal(null);
     setSynced(false);
     setAcquisition(planAcquisition({ targetId: next.id, targetName: targetTitle(next), plan, warm: true, pace: mount.pace }));
@@ -401,26 +423,47 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     setAcquisition(null);
   }, [mount]);
 
+  /** One press from anywhere: connect and align first when the session has not, then the GoTo. */
+  const observe = useCallback((tg: TelescopeTarget) => {
+    setModal(null);
+    const at = new Date(skyNow());
+    const verdict = evaluateSafety(node, targetPosition(tg, node, at), at);
+    if (!verdict.ok) {
+      setRefusal({ target: tg, reason: verdict.reason });
+      setModal('refused');
+      return;
+    }
+    if (station?.id === NODE_ID && cal === 'done') {
+      pointAt(tg);
+      return;
+    }
+    if (station?.id === NODE_ID) {
+      setAuto(tg);
+      return;
+    }
+    connect(STATIONS[0]);
+    setAuto(tg);
+  }, [node, station, cal, connect, pointAt, STATIONS]);
+
+  // A new exposure, gain, train or focus starts the live stack again, as capture software does.
+  useEffect(() => {
+    setLive((l) => (l ? { startsAtMs: Date.now() } : l));
+  }, [expIx, gain, train, roiId, focus, subsIx]);
+
   const press = useCallback((axis: Axis, dir: 1 | -1) => {
     if (acquisitionRef.current && acquisitionStateAt(acquisitionRef.current, Date.now()).state !== 'OBSERVING') {
       acquisitionRef.current = null;
       setAcquisition(null);
     }
+    setLive(null);
     mount.press(axis, dir, rate);
   }, [mount, rate]);
   const release = useCallback((axis: Axis) => mount.release(axis), [mount]);
 
   const quickStart = useCallback(() => {
     const tg = tonight ? resolveTarget(tonight.targetId) : null;
-    if (!tg) return;
-    setModal(null);
-    if (station?.id === NODE_ID && cal === 'done') {
-      pointAt(tg);
-      return;
-    }
-    connect(STATIONS[0]);
-    setAuto(tg);
-  }, [tonight, station, cal, connect, pointAt, STATIONS]);
+    if (tg) observe(tg);
+  }, [tonight, observe]);
 
   const sync = useCallback(() => {
     mount.sync();
@@ -510,6 +553,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         observingRef.current = acquisition;
         setTracking((mode) => (target.kind === 'moon' ? 'lunar' : mode === 'off' || mode === 'lunar' || mode === 'solar' ? 'sidereal' : mode));
         mount.setTracking(target.kind === 'moon' ? 'lunar' : 'sidereal', Date.now());
+        setLive({ startsAtMs: Date.now() + LIVE_DELAY_MS });
       }
     }
     if (autofocus) {
@@ -595,7 +639,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   } else {
     primary = stacking
       ? { label: t.steps.stacking(subsDone, subsGoal), run: () => undefined, disabled: true }
-      : { label: t.steps.capture(subsGoal, expLabel), run: () => setStack({ startsAtMs: Date.now() }), icon: 'camera' };
+      // The capture takes the live stack over where it stands: a settled stack is kept at once.
+      : { label: t.steps.capture(subsGoal, expLabel), run: () => setStack({ startsAtMs: live?.startsAtMs ?? Date.now() }), icon: 'camera' };
     secondary = stacking
       ? [{ label: t.steps.stopStack, run: () => setStack(null) }]
       : [{ label: t.steps.recentre, run: () => target && pointAt(target) }, { label: t.steps.changeTarget, run: () => setModal('targets') }];
@@ -607,6 +652,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     t.steps.hints.point(pointEstimate),
     stacking ? t.steps.hints.stacking(subsDone, subsGoal, expLabel)
       : target && targetNow && targetNow.altitude <= 0 ? t.steps.hints.belowHorizon
+      : live && !settled ? t.steps.hints.liveStack(liveDone, subsGoal)
+      : settled ? t.steps.hints.settled
       : tracking !== 'off' ? t.steps.hints.tracking : t.steps.hints.drifting,
   ];
   const flowSteps: Array<[string, string]> = [
@@ -618,8 +665,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   ];
   const goStep = (i: number) => {
     if (i === 0) disconnect();
-    else if (i === 1) { setAcquisition(null); setStack(null); setCal('todo'); }
-    else if (i === 2) { setAcquisition(null); setStack(null); setModal('targets'); }
+    else if (i === 1) { setAcquisition(null); setStack(null); setLive(null); setCal('todo'); }
+    else if (i === 2) { setAcquisition(null); setStack(null); setLive(null); setModal('targets'); }
     else if (i === 3 && target) pointAt(target);
   };
 
@@ -696,6 +743,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const statusText = !station ? t.status.standby
     : connecting ? t.status.connecting
     : stacking ? t.status.stacking(subsDone, subsGoal)
+    : live && !settled && onTarget ? t.status.liveStack(liveDone, subsGoal)
     : gotoState === 'slewing' ? (longWay ? t.status.slewingLong : t.status.slewing)
     : gotoState === 'solving' ? t.status.solving
     : gotoState === 'centring' ? t.status.centring
@@ -777,7 +825,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       cloudCover={cloudCover}
       dew={dew}
       edgeIllumination={edgeIllumination(trainInfo)}
-      subs={stacking ? Math.max(1, subsDone) : 1}
+      subs={stacking ? Math.max(1, subsDone) : live ? Math.max(1, liveDone) : 1}
+      registerOn={target?.kind === 'planet' && exp < 0.1 ? targetNow : null}
       gain={gain}
       onExposure={onExposure}
       onHistogram={onHistogram}
@@ -789,8 +838,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       {modal === 'targets' && station && (
         <TargetsDialog night={night} station={station} tonightId={tonightTarget?.id ?? null} onPoint={pointAt} onClose={closeModal} />
       )}
-      {modal === 'refused' && refusal && station && (
-        <RefusedDialog night={night} station={station} refusal={refusal} onChoose={() => setModal('targets')} onClose={closeModal} />
+      {modal === 'refused' && refusal && (
+        <RefusedDialog night={night} station={station ?? node} refusal={refusal} onChoose={() => setModal(station ? 'targets' : null)} onClose={closeModal} />
       )}
       {modal === 'capture' && viewing && <CaptureDialog night={night} frame={viewing} onClose={closeModal} />}
       {modal === 'mount' && (
@@ -832,6 +881,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       observatoryName={observatoryName}
       clocks={{ utc: mounted ? clock(skyMs, 'UTC', true) : '--:--:--', local: mounted ? clock(skyMs, selected.timezone, true) : '--:--:--', site: selected.site.split(',')[0], dark }}
       quick={{ name: quickName, plate: tonightTarget ? plateFor(tonightTarget.id) : null, onStart: quickStart }}
+      dome={mounted ? <SkyDome locale={locale} station={station ?? node} minuteMs={minute * 60_000} pointing={station ? pointing : null} targetId={target?.id ?? null} onPick={observe} /> : null}
       stations={{ rows: stationRows, selectedId, onPick: pick, sky: skyRow, selected, skyState }}
       session={{ elapsed: sessionTime, connected: station !== null, onEnd: disconnect, label: t.session.parkEnd }}
       stage={{
@@ -893,13 +943,13 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         enabled: padEnabled, onPress: press, onRelease: release,
         onCentre: () => target && pointAt(target), canCentre: onTarget && !stacking,
         onSync: cal === 'done' && !inGoto && !!station ? sync : null, synced,
-        onStop: () => { mount.halt(); setAcquisition(null); setStack(null); }, canStop: !!station && (inGoto || stacking || (snap?.rates.alt !== 0 || snap?.rates.az !== 0)),
+        onStop: () => { mount.halt(); setAcquisition(null); setStack(null); setLive(null); }, canStop: !!station && (inGoto || stacking || (snap?.rates.alt !== 0 || snap?.rates.az !== 0)),
         onSettings: () => setModal('mount'),
         stepNote: null, limitNote, commandNote: null,
       }}
       frames={frames}
       onOpenFrame={(f) => { setViewing(f); setModal('capture'); }}
-      onAddFrame={step === 4 && !stacking ? () => setStack({ startsAtMs: Date.now() }) : null}
+      onAddFrame={step === 4 && !stacking ? () => setStack({ startsAtMs: live?.startsAtMs ?? Date.now() }) : null}
       phone={{ tracking: rmsNow, seeing: `${seeing.toFixed(1)}″` }}
       sheets={{ stations: modal === 'stations', hand: modal === 'hand', onClose: closeModal, onOpenStations: () => setModal('stations'), onOpenHand: () => setModal('hand') }}
       modals={modals}

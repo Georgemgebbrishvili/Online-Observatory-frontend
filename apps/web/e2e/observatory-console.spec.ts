@@ -104,7 +104,8 @@ test.describe("the sky model's 8SE", () => {
     await hand.getByRole("button", { name: "Re-centre the target" }).click();
     await expect(status(page)).toHaveText(/Slewing|Plate-solving|Centring/);
     await expect(view(page).getByText("Centred")).toBeVisible({ timeout: 30_000 });
-    await expect(status(page)).toHaveText(/On target · tracking/);
+    // Back on target the live stack runs again before the status settles.
+    await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 30_000 });
   });
 
   test("tracking off lets the sky drift; lunar and sidereal are the hand control's rates", async ({ page }) => {
@@ -127,9 +128,9 @@ test.describe("the sky model's 8SE", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await onTarget(page);
 
-    // The camera: the exposure sets the refresh note; the frames and gain move.
+    // The camera: Albireo is a showpiece and brings its own recipe; Auto and the frames move it.
     const camera = page.getByRole("region", { name: "Camera" });
-    await expect(camera.getByText(/refreshes every 8 s/)).toBeVisible();
+    await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("50 ms");
     await camera.getByRole("button", { name: "Auto for target" }).click();
     await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("1 s");
     await camera.getByRole("button", { name: "Frames to stack: more" }).click();
@@ -169,6 +170,22 @@ test.describe("the sky model's 8SE", () => {
     await form.getByRole("button", { name: "GoTo" }).click();
     await expect(status(page)).toHaveText(/Slewing|Plate-solving|Centring/);
     await expect(view(page).getByText(/^19:30:43/)).toBeVisible();
+  });
+
+  test("pressing a showpiece on the sky dome runs the whole acquisition and the stack settles", async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/en/observatory?turbo");
+    const dome = page.getByRole("region", { name: "Sky tonight" });
+    await expect(dome.getByRole("button", { name: /^Albireo · \d+°$/ })).toHaveCount(2);
+    // From standby: one press connects, aligns, slews, solves and centres.
+    await dome.locator(".sdo-dome__chip", { hasText: "Albireo" }).click();
+    await expect(status(page)).toHaveText(/Live stack/, { timeout: 60_000 });
+    await expect(view(page).getByRole("group", { name: "Optical train" }).first().getByRole("button", { name: "f/20", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("region", { name: "Camera" }).getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("50 ms");
+    await expect(page.getByLabel("Steps").locator(".sdo-act__hint p")).toHaveText("The stack has settled. Capture keeps this frame.", { timeout: 30_000 });
+    await expect(status(page)).toHaveText(/On target · tracking/);
+    await expect(dome.locator(".sdo-dome__chip", { hasText: "Albireo" })).toHaveAttribute("aria-pressed", "true");
   });
 
   test("the Georgian console names the same controls", async ({ page }) => {

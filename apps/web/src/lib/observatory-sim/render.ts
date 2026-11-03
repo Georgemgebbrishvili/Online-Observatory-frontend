@@ -396,7 +396,10 @@ export function drawLiveScene(ctx: CanvasRenderingContext2D, i: FrameInputs, fra
   // sub is a smear, and searching the whole path would be millions of stars.
   const reachDeg = Math.min(Math.hypot(s.drift.x, s.drift.y), MAX_TRAIL_SEARCH_DEG);
   const radiusDeg = Math.hypot(i.width, i.height) / pxPerDeg / 2 + 0.05 + reachDeg;
-  const look: Look = { sigma, donut, obstruction: i.obstruction, streak, skyLin: i.levels.skyLin, sky: i.levels.sky, dew: i.dew };
+  // A lucky stack sharpens the core; the seeing's halo stays around it, carrying the star's colour.
+  const seeingSigma = (i.seeingArcsec * (1 + 1.2 * i.dew) * FWHM_TO_SIGMA) / arcsecPerPx(i);
+  const halo = seeingSigma > sigma * 1.5 ? seeingSigma : 0;
+  const look: Look = { sigma, donut, obstruction: i.obstruction, streak, skyLin: i.levels.skyLin, sky: i.levels.sky, dew: i.dew, halo };
   const twinkle = (key: number) => Math.max(0.15, 1 + i.scintillation * hashNormal(key, frame, 3));
   if (starLimit > BRIGHTEST_FIELD_MAG) {
     for (const star of fieldStarsNear(eq, radiusDeg)) {
@@ -470,6 +473,61 @@ export function drawLiveScene(ctx: CanvasRenderingContext2D, i: FrameInputs, fra
   ctx.restore();
 }
 
+/* --- the air's boil ---------------------------------------------------------- */
+
+/**
+ * How far the seeing shoves one patch of the image against its neighbours on one frame,
+ * display pixels rms. The whole frame's tip-tilt is separate; this is what is left over
+ * across patches a few arcseconds apart, an eighth of the FWHM or so. A long sub
+ * averages it away as it does the tip-tilt, and the stack's alignment and averaging
+ * calm it by the square root of the frames.
+ */
+export function boilPx(i: Pick<FrameInputs, 'seeingArcsec' | 'exposureSec' | 'subs' | 'fovArcmin' | 'width'>): number {
+  const perFrame = 0.12 * i.seeingArcsec * Math.min(1, Math.sqrt(0.02 / Math.max(0.0005, i.exposureSec)));
+  return perFrame / Math.sqrt(Math.max(1, i.subs)) / ((i.fovArcmin * 60) / i.width);
+}
+
+/**
+ * The image as the air leaves it: rows and then columns of the frame slide against
+ * each other by a correlated, drifting offset, so a planet's limb ripples and its
+ * belts wobble as they do in a planetary video at high power. The ripple's scale is
+ * the isoplanatic patch, about five arcseconds; it drifts with the wind.
+ */
+export function warpBySeeing(ctx: CanvasRenderingContext2D, buffer: HTMLCanvasElement, i: FrameInputs, seconds: number) {
+  const amp = boilPx(i);
+  if (amp < 0.35) return;
+  const canvas = ctx.canvas;
+  const scale = canvas.width / i.width;
+  if (buffer.width !== canvas.width || buffer.height !== canvas.height) {
+    buffer.width = canvas.width;
+    buffer.height = canvas.height;
+  }
+  const bctx = buffer.getContext('2d');
+  if (!bctx) return;
+  // Wavenumber per display pixel: one ripple per isoplanatic patch.
+  const k = (2 * Math.PI) / Math.max(10, 5 / ((i.fovArcmin * 60) / i.width));
+  const strip = Math.max(2, Math.round(2 * scale));
+  const shift = (u: number, phase: number) =>
+    amp * scale * (0.75 * Math.sin(k * u + 2.1 * seconds + phase) + 0.5 * Math.sin(0.53 * k * u - 1.6 * seconds + phase * 2.1));
+
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 1;
+  ctx.filter = 'none';
+  for (const pass of [0, 1] as const) {
+    bctx.clearRect(0, 0, buffer.width, buffer.height);
+    bctx.drawImage(canvas, 0, 0);
+    const length = pass === 0 ? canvas.height : canvas.width;
+    for (let s = 0; s < length; s += strip) {
+      const d = shift(s / scale, pass * 1.9);
+      if (pass === 0) ctx.drawImage(buffer, 0, s, canvas.width, strip, d, s, canvas.width, strip);
+      else ctx.drawImage(buffer, s, 0, strip, canvas.height, s, d, strip, canvas.height);
+    }
+  }
+  ctx.restore();
+}
+
 /* --- stars ----------------------------------------------------------------- */
 
 type Look = {
@@ -481,6 +539,8 @@ type Look = {
   skyLin: number;
   sky: number;
   dew: number;
+  /** The seeing halo's sigma around a lucky-stacked star, display pixels; 0 when there is none. */
+  halo: number;
 };
 
 /** Star colour by a 0–1 tint: blue-white through white to orange. */
@@ -544,6 +604,11 @@ function drawStar(ctx: CanvasRenderingContext2D, x: number, y: number, peak: num
   const R = look.sigma * 3;
   ctx.globalAlpha = base * clamp(shown, 0, 1);
   ctx.drawImage(psf, x - R, y - R, R * 2, R * 2);
+  if (look.halo > 0) {
+    const Rh = look.halo * 3;
+    ctx.globalAlpha = base * clamp(shown * 0.45, 0, 0.55);
+    ctx.drawImage(psf, x - Rh, y - Rh, Rh * 2, Rh * 2);
+  }
   // Bloom: the bright star's wings, and dew's halo around anything bright. Drawn first,
   // in the star's colour: a colour sensor's clipped star is white only at its heart.
   const wings = peak > 4 ? Math.min(0.6, 0.18 * Math.log10(peak)) : 0;
@@ -573,6 +638,32 @@ function drawStar(ctx: CanvasRenderingContext2D, x: number, y: number, peak: num
 
 /* --- bodies ----------------------------------------------------------------- */
 
+const channelCache = new WeakMap<HTMLImageElement, HTMLCanvasElement[]>();
+
+/** A photograph split into its red, green and blue channels, made once per image. */
+function channelImages(image: HTMLImageElement): HTMLCanvasElement[] | null {
+  const cached = channelCache.get(image);
+  if (cached) return cached;
+  if (typeof document === 'undefined' || !image.naturalWidth) return null;
+  const out = (['#f00', '#0f0', '#00f'] as const).map((colour) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const c = canvas.getContext('2d');
+    if (!c) return canvas;
+    c.drawImage(image, 0, 0);
+    c.globalCompositeOperation = 'multiply';
+    c.fillStyle = colour;
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    return canvas;
+  });
+  channelCache.set(image, out);
+  return out;
+}
+
+/** The 8SE at f/10 on the 585's 2.9 µm pixels: 2.9 / 2032 × 206 265. */
+const NATIVE_PLATE_ARCSEC_PX = 0.294;
+
 /**
  * The night side of a disc: the terminator is an ellipse whose minor axis is the
  * cosine of the phase angle. Drawn as a mask that darkens what the Sun does not
@@ -592,23 +683,13 @@ function maskPhase(ctx: CanvasRenderingContext2D, radius: number, phase: { fract
   ctx.globalCompositeOperation = 'source-over';
   ctx.fillStyle = 'rgba(4, 4, 6, 0.96)';
   ctx.beginPath();
-  // The half away from the Sun.
+  // The limb away from the Sun, then back along the terminator: through the far half when
+  // more than half is lit (a crescent of night), through the sunward half when less is.
   ctx.arc(0, 0, radius + 0.5, 0, Math.PI, false);
+  if (k < 0.5) ctx.ellipse(0, 0, radius + 0.5, b, 0, Math.PI, 2 * Math.PI, false);
+  else ctx.ellipse(0, 0, radius + 0.5, b, 0, Math.PI, 0, true);
   ctx.closePath();
   ctx.fill();
-  ctx.beginPath();
-  if (k < 0.5) {
-    // Less than half lit: the terminator bulges into the sunward half; darken it.
-    ctx.ellipse(0, 0, radius + 0.5, b, 0, Math.PI, 2 * Math.PI, false);
-    ctx.closePath();
-    ctx.fill();
-  } else {
-    // More than half lit: the terminator bulges into the far half; relight it.
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.ellipse(0, 0, radius - 0.5, b, 0, 0, Math.PI, false);
-    ctx.closePath();
-    ctx.fill();
-  }
   ctx.restore();
 }
 
@@ -629,7 +710,10 @@ function drawBody(
   extinction: number,
 ) {
   const diameter = targetDiameterPx(o.sizeArcmin, i.fovArcmin, i.width);
-  const factor = burnOut(o.saturateSec ?? 1, i.exposureSec, i.gain);
+  // A body's saturation time is quoted at the native f/10 plate scale: a Barlow spreads the
+  // same light over four times the pixels and a reducer packs it into fewer.
+  const spread = (NATIVE_PLATE_ARCSEC_PX / i.plateScaleArcsecPx) ** 2;
+  const factor = burnOut((o.saturateSec ?? 1) * spread, i.exposureSec, i.gain);
   const sigma = look.sigma + look.donut * 0.6;
 
   if (factor > 6) {
@@ -651,44 +735,45 @@ function drawBody(
   const dispersion = dispersionArcsec(o.altitude) / arcsecPerPx(i);
   const length = Math.hypot(look.streak.x, look.streak.y);
 
-  const disc = (dx: number, dy: number, tint: string | null, alpha: number) => {
+  // Refraction lifts blue more than red. The live stack registers the colour channels as
+  // it aligns frames, as a planetary stacker's RGB align does, so the fringe fades as it grows.
+  const split = dispersion / Math.sqrt(Math.max(1, i.subs));
+  const channels = image && split > 0.6 && length <= 2 ? channelImages(image) : null;
+
+  const disc = (dx: number, dy: number, source: CanvasImageSource | null, alpha: number) => {
     ctx.save();
     ctx.translate(p.x + dx, p.y + dy);
     ctx.rotate((northDeg * Math.PI) / 180);
     ctx.globalAlpha = alpha;
     ctx.filter = `blur(${sigma.toFixed(2)}px) contrast(${contrast.toFixed(2)}) brightness(${brightness.toFixed(2)})`;
-    if (image) {
+    if (source && image) {
       const w = diameter * (o.frameSpan ?? 1);
       const h = image.naturalWidth ? w * (image.naturalHeight / image.naturalWidth) : w;
-      ctx.drawImage(image, -w / 2, -h / 2, w, h);
+      ctx.drawImage(source, -w / 2, -h / 2, w, h);
     } else {
       ctx.fillStyle = 'rgba(235, 225, 205, 0.9)';
       ctx.beginPath();
       ctx.arc(0, 0, Math.max(1, diameter / 2), 0, Math.PI * 2);
       ctx.fill();
     }
-    if (tint) {
-      ctx.globalCompositeOperation = 'source-atop';
-      ctx.fillStyle = tint;
-      ctx.filter = 'none';
-      ctx.fillRect(-diameter, -diameter, diameter * 2, diameter * 2);
-    }
     ctx.restore();
   };
 
-  // The trail of a moving disc: a few copies along the streak, each fainter.
-  const copies = length > 2 ? Math.min(6, Math.ceil(length / Math.max(2, diameter / 3))) : 1;
-  for (let c = 0; c < copies; c++) {
-    const t = copies === 1 ? 0 : c / (copies - 1) - 0.5;
-    disc(look.streak.x * t, look.streak.y * t, null, 1 / copies);
-  }
-  if (dispersion > 0.6 && copies === 1) {
-    // Refraction lifts blue more than red: a blue fringe on the upper limb, red below.
-    disc(0, -dispersion / 2, 'rgba(120, 160, 255, 0.5)', 0.22);
-    disc(0, dispersion / 2, 'rgba(255, 110, 80, 0.5)', 0.22);
+  if (channels) {
+    // Red sinks, blue rises: three channels added back together, offset along the vertical.
+    disc(0, split / 2, channels[0], 1);
+    disc(0, 0, channels[1], 1);
+    disc(0, -split / 2, channels[2], 1);
+  } else {
+    // The trail of a moving disc: a few copies along the streak, each fainter.
+    const copies = length > 2 ? Math.min(6, Math.ceil(length / Math.max(2, diameter / 3))) : 1;
+    for (let c = 0; c < copies; c++) {
+      const t = copies === 1 ? 0 : c / (copies - 1) - 0.5;
+      disc(look.streak.x * t, look.streak.y * t, image, 1 / copies);
+    }
   }
 
-  if (o.phase && image && copies === 1) {
+  if (o.phase && image && length <= 2) {
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.globalCompositeOperation = 'source-over';
@@ -707,7 +792,7 @@ function drawBody(
  */
 function deepSkyVisibility(mag: number, exposureSec: number, subs: number, limit: number): number {
   const exposure = clamp((Math.log10(Math.max(0.001, exposureSec)) + 1.3) / 2.2, 0, 1);
-  const faintness = clamp(1 - (mag - 4) / 8, 0.25, 1);
+  const faintness = clamp(1 - (mag - 4) / 12, 0.25, 1);
   const reach = clamp((limit - 8) / 6, 0, 1);
   return clamp(exposure * faintness * reach * (1 + 0.2 * Math.log10(Math.max(1, subs))), 0, 1);
 }
@@ -719,7 +804,7 @@ function seedFrom(id: string): number {
 }
 
 /**
- * A deep-sky object: three have photographs; the rest are drawn from their catalogued
+ * A deep-sky object: the showpieces have plates or photographs; the rest are drawn from their catalogued
  * shape, size and orientation. Illustrated where there is no photograph, never a
  * photograph of something else.
  */
@@ -758,7 +843,7 @@ function drawDeepSky(
   }
 
   const random = rng(seedFrom(o.id));
-  const still: Look = { sigma, donut: 0, obstruction: 0, streak: { x: 0, y: 0 }, skyLin: i.levels.skyLin, sky: i.levels.sky, dew: i.dew };
+  const still: Look = { sigma, donut: 0, obstruction: 0, streak: { x: 0, y: 0 }, skyLin: i.levels.skyLin, sky: i.levels.sky, dew: i.dew, halo: 0 };
   // A member star `e` magnitudes above the frame's limit, as a peak: six above is the first to clip.
   const member = (e: number) => Math.pow(10, 0.4 * (e - 6));
   switch (o.shape) {

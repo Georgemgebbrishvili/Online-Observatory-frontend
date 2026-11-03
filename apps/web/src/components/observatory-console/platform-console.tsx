@@ -190,6 +190,7 @@ export function PlatformConsole({ locale, observatoryName, nodeCloud, simulated,
       simulated={simulated}
       observatoryName={observatoryName}
       clocks={{ utc: mounted ? clock(now, 'UTC', true) : '--:--:--', local: mounted ? clock(now, station.timezone, true) : '--:--:--', site: station.site.split(',')[0], dark }}
+      dome={null}
       quick={null}
       stations={{ rows: stationRows, selectedId: NODE_ID, onPick: () => undefined, sky: [[t.skyLabel, mounted ? t.sky[skyState] : '—'], [t.cloud, nodeCloud !== null ? `${nodeCloud}%` : '—'], [t.seeing, `${DEFAULT_SEEING_ARCSEC.toFixed(1)}″`]], selected: station, skyState }}
       session={{ elapsed: sessionLeft, connected: d.session && !ended, onEnd: stop, label: confirmStop ? t.session.confirmStop : t.session.stop, note: `${t.session.booked}: ${mission.targetName}` }}

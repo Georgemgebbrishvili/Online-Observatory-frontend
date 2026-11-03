@@ -783,6 +783,132 @@
   flex-direction: column;
   min-height: 0;
 }
+/* Tonight's sky: the showpieces on a dome, each one press from the live view. */
+.sdo-dome {
+  flex-shrink: 0;
+  --dome-planet: #ffc94a;
+  --dome-moon: #f4ecd8;
+  --dome-star: #8fd0ff;
+  --dome-deep: #ff8a6b;
+}
+.sdo-dome__sky {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  overflow: visible;
+}
+.sdo-dome__dir {
+  font: 600 13px/1 var(--o-mono);
+  fill: var(--o-ink-3);
+}
+.sdo-dome__stars {
+  fill: rgba(244, 244, 242, 0.55);
+}
+.sdo-dome__scope {
+  stroke: var(--o-amber-ink);
+  stroke-width: 1.5;
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px var(--o-hal-glow));
+}
+.sdo-dome__obj {
+  cursor: pointer;
+  outline: none;
+}
+.sdo-dome__obj.is-planet { fill: var(--dome-planet); }
+.sdo-dome__obj.is-moon { fill: var(--dome-moon); }
+.sdo-dome__obj.is-star { fill: var(--dome-star); }
+.sdo-dome__obj.is-deep { fill: var(--dome-deep); }
+.sdo-dome__obj.is-low { opacity: 0.45; }
+.sdo-dome__obj > :not(.sdo-dome__hit) {
+  transition: transform 0.15s ease;
+}
+.sdo-dome__obj:hover > :not(.sdo-dome__hit),
+.sdo-dome__obj:focus-visible > :not(.sdo-dome__hit) {
+  transform: scale(1.35);
+}
+.sdo-dome__obj:focus-visible .sdo-dome__hit {
+  stroke: var(--o-amber-ink);
+  stroke-width: 1.5;
+}
+.sdo-dome__hit {
+  fill: transparent;
+}
+.sdo-dome__ring {
+  fill: none;
+  stroke: var(--o-amber-ink);
+  stroke-width: 1.5;
+  animation: sdo-dome-pulse 1.6s ease-in-out infinite;
+}
+@keyframes sdo-dome-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.sdo-dome__label {
+  font: 600 13px/1 var(--o-sans);
+  fill: var(--o-ink);
+  paint-order: stroke;
+  stroke: rgba(5, 5, 7, 0.9);
+  stroke-width: 4px;
+  pointer-events: none;
+}
+.sdo-dome__list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sdo-dome__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid var(--o-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--o-ink);
+  font: 500 13px/1 var(--o-sans);
+  cursor: pointer;
+}
+.sdo-dome__chip:hover {
+  border-color: var(--o-line-hi);
+  background: rgba(255, 255, 255, 0.08);
+}
+.sdo-dome__chip.is-on {
+  border-color: var(--o-amber-ink);
+  box-shadow: 0 0 14px -4px var(--o-hal-glow);
+}
+.sdo-dome__chip.is-low {
+  color: var(--o-ink-3);
+}
+.sdo-dome__chip i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dome-deep);
+}
+.sdo-dome__chip.is-planet i { background: var(--dome-planet); }
+.sdo-dome__chip.is-moon i { background: var(--dome-moon); }
+.sdo-dome__chip.is-star i { background: var(--dome-star); }
+.sdo-dome__chip small {
+  font: 500 13px/1 var(--o-mono);
+  color: var(--o-ink-3);
+}
+.sdo-dome__note {
+  margin: 10px 0 0;
+  padding: 0 14px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--o-ink-2);
+}
+.sdo-phone .sdo-dome {
+  margin: 14px 16px 0;
+}
+
 /* Quick start and Session keep their height; only the telescope list gives way (it scrolls). */
 .sdo-quick,
 .sdo-col > .sdo-panel:has(.sdo-session__row) {

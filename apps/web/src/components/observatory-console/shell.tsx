@@ -22,6 +22,8 @@ export type ShellProps = {
   observatoryName: string;
   clocks: { utc: string; local: string; site: string; dark: readonly [string, string] };
   quick: { name: string | null; plate: string | null; onStart: () => void } | null;
+  /** Tonight's sky with the showpieces, each one press from the live view. */
+  dome: ReactNode;
   stations: { rows: StationRow[]; selectedId: string; onPick: (s: Station) => void; sky: [string, string][]; selected: Station; skyState: 'night' | 'twilight' | 'day' };
   session: { elapsed: string; connected: boolean; onEnd: () => void; label: string; note?: string | null };
   stage: Omit<ViewStageProps, 'viewRef'> & { viewRef: RefObject<HTMLDivElement | null> };
@@ -117,6 +119,7 @@ export function ConsoleShell(p: ShellProps) {
         <h1 className="sdo-sr">{t.observatory} — {p.observatoryName}</h1>
         <div className="sdo-col sdo-desk">
           {p.quick && <QuickStart name={p.quick.name} plate={p.quick.plate} onStart={p.quick.onStart} />}
+          {p.dome}
           <Telescopes rows={p.stations.rows} selectedId={p.stations.selectedId} onPick={p.stations.onPick} sky={p.stations.sky} />
           <Session elapsed={p.session.elapsed} connected={p.session.connected} onEnd={p.session.onEnd} label={p.session.label} note={p.session.note} />
         </div>
@@ -158,6 +161,7 @@ export function ConsoleShell(p: ShellProps) {
                 ))}
               </div>
             )}
+            {p.dome}
             <div className="sdo-pstats">
               <div className="sdo-stat"><span className="sdo-lbl">{t.phone.tracking}</span><span className="sdo-v sdo-v--sm">{p.phone.tracking}</span></div>
               <div className="sdo-stat"><span className="sdo-lbl">{t.phone.seeing}</span><span className="sdo-v sdo-v--sm">{p.phone.seeing}</span></div>
