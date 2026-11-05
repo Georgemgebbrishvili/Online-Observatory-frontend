@@ -3,12 +3,11 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import type { Station } from '@/lib/observatory-sim/sim-stations';
-import { TELESCOPE_TARGETS, manualTarget, parseDec, parseRa, sortGraded, targetPosition, type TargetKind, type TargetOrder, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
+import { targetPosition, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
 import { exposureLabel } from '@/lib/observatory-sim/camera';
 import { AltCurve } from './charts';
 import { useCopy } from './copy-context';
 import Icon from './icons';
-import { plateArt, plateFor } from './plates';
 import { altitudePath, bestOf, clock, nightSpan, risesAt, skyNow } from './sky';
 
 export type Frame = {
@@ -33,7 +32,7 @@ export type Frame = {
   provenance: string;
 };
 
-function Modal({ width, head, tone = '#f0785a', night, onClose, labelledBy, children }: {
+function Modal({ width, head, tone = '#8fb0ff', night, onClose, labelledBy, children }: {
   width: number; head: ReactNode; tone?: string; night: boolean; onClose: () => void; labelledBy: string; children: ReactNode;
 }) {
   const t = useCopy();
@@ -59,132 +58,7 @@ function Modal({ width, head, tone = '#f0785a', night, onClose, labelledBy, chil
   );
 }
 
-const TABS: Array<{ id: 'all' | 'solar' | 'nebula' | 'galaxy' | 'cluster' | 'star'; kinds: TargetKind[] | null }> = [
-  { id: 'all', kinds: null },
-  { id: 'solar', kinds: ['planet', 'moon'] },
-  { id: 'nebula', kinds: ['nebula'] },
-  { id: 'galaxy', kinds: ['galaxy'] },
-  { id: 'cluster', kinds: ['cluster'] },
-  { id: 'star', kinds: ['star'] },
-];
-
-const SWATCH: Record<TargetKind, string> = {
-  planet: 'radial-gradient(circle at 42% 38%, #f3dcb5 0 14%, #c9a06a 30%, #7f5232 48%, #220e0b 62%)',
-  moon: 'radial-gradient(circle at 62% 40%, #f1f0ea 0%, #a6a49e 50%, #38201a 54%, #22100a 100%)',
-  galaxy: 'radial-gradient(ellipse 60% 22% at 50% 50%, #fff4de 0%, #eac6b9 40%, #3c1f1b 75%, #220e0b 100%)',
-  nebula: 'radial-gradient(ellipse at 45% 55%, #f4a8c2 0 16%, #6d4a6a 40%, #220e0b 70%)',
-  cluster: 'radial-gradient(circle at 50% 46%, #fff 0 3%, transparent 5%), radial-gradient(circle at 32% 60%, #fff0df 0 3%, transparent 5%), radial-gradient(circle at 68% 34%, #fff0df 0 3%, transparent 5%), radial-gradient(circle, #783a1d 0, #2a1208 70%)',
-  star: 'radial-gradient(circle at 50% 50%, #fff 0 8%, #ffd8bc 18%, #582a1a 40%, #2a1208 70%)',
-};
-
 export const displayName = (t: TelescopeTarget) => (t.catalog && t.catalog !== t.name ? `${t.name} · ${t.catalog}` : t.name);
-const signed = (v: number, digits = 0) => `${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(digits)}`;
-
-export function TargetsDialog({ night, station, tonightId, onPoint, onClose }: {
-  night: boolean; station: Station; tonightId: string | null; onPoint: (t: TelescopeTarget) => void; onClose: () => void;
-}) {
-  const t = useCopy();
-  const [at] = useState(skyNow);
-  const [query, setQuery] = useState('');
-  const [tab, setTab] = useState('all');
-  const [order, setOrder] = useState<TargetOrder>('zenith');
-  const span = useMemo(() => nightSpan(station, new Date(at)), [station, at]);
-  const graded = useMemo(
-    () => TELESCOPE_TARGETS.map((target) => ({ target, position: targetPosition(target, station, new Date(at)), visible: true })),
-    [station, at],
-  );
-  const rows = useMemo(() => {
-    const kinds = TABS.find((t) => t.id === tab)?.kinds ?? null;
-    const q = query.trim().toLowerCase();
-    const list = graded.filter(({ target }) =>
-      (!kinds || kinds.includes(target.kind)) && (!q || `${target.name} ${target.catalog ?? ''}`.toLowerCase().includes(q)),
-    );
-    const sorted = sortGraded(list, order);
-    const first = sorted.findIndex((g) => g.target.id === tonightId);
-    if (first > 0) sorted.unshift(...sorted.splice(first, 1));
-    return sorted.slice(0, 60);
-  }, [graded, tab, query, order, tonightId]);
-  const paths = useMemo(() => new Map(rows.map((r) => [r.target.id, altitudePath(r.target, station, span, 30)])), [rows, station, span]);
-  const [ra, setRa] = useState('');
-  const [dec, setDec] = useState('');
-  const [coordError, setCoordError] = useState(false);
-  const gotoCoordinates = () => {
-    const h = parseRa(ra);
-    const d = parseDec(dec);
-    if (h === null || d === null) {
-      setCoordError(true);
-      return;
-    }
-    setCoordError(false);
-    onPoint(manualTarget(h, d));
-  };
-
-  return (
-    <Modal width={860} night={night} onClose={onClose} labelledBy="sdo-targets-t" head={<><Icon name="search" size={16} /><span id="sdo-targets-t">{t.targets.title}</span></>}>
-      <div className="sdo-targets">
-        <div className="sdo-targets__top">
-          <label className="sdo-search">
-            <Icon name="search" size={16} />
-            <span className="sdo-sr">{t.targets.search}</span>
-            <input type="search" placeholder={t.targets.search} value={query} onChange={(e) => setQuery(e.target.value)} />
-          </label>
-          <div className="sdo-seg" role="group" aria-label={t.targets.order}>
-            {([['zenith', t.targets.zenith], ['brightest', t.targets.brightest], ['name', t.targets.name]] as const).map(([id, label]) => (
-              <button key={id} type="button" className={order === id ? 'is-on' : ''} aria-pressed={order === id} onClick={() => setOrder(id)}>{label}</button>
-            ))}
-          </div>
-        </div>
-        <div className="sdo-tabs" role="group" aria-label={t.targets.kind}>
-          {TABS.map((item) => (
-            <button key={item.id} type="button" className={`sdo-tab${tab === item.id ? ' is-on' : ''}`} aria-pressed={tab === item.id} onClick={() => setTab(item.id)}>{t.targets[item.id]}</button>
-          ))}
-        </div>
-        <ul className="sdo-tlist">
-          {rows.map(({ target, position }) => {
-            const low = position.altitude < 0;
-            const card = plateFor(target.id);
-            const tonight = target.id === tonightId;
-            return (
-              <li key={target.id}>
-                <button type="button" className={`sdo-tgt${low ? ' is-low' : ''}`} onClick={() => onPoint(target)}>
-                  <span className="sdo-sw" style={card ? undefined : { background: SWATCH[target.kind] }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {card && <img src={plateArt(card)} alt="" loading="lazy" />}
-                  </span>
-                  <span className="sdo-tgt__name">
-                    <b><span>{displayName(target)}</span>{tonight && <span className="sdo-badge sdo-badge--best">{t.targets.tonightBadge}</span>}</b>
-                    <span className="sdo-lbl">{t.targets.kinds[target.kind]} · {t.targets.mag} {signed(position.mag, 1).replace('+', '')}</span>
-                  </span>
-                  <span className="sdo-tgt__col sdo-tgt__curve">
-                    <span className="sdo-lbl">{t.targets.tonight}</span>
-                    <AltCurve path={paths.get(target.id) ?? []} span={span} now={at} color={low ? '#ff7a6b' : '#f0785a'} />
-                  </span>
-                  <span className="sdo-tgt__now">
-                    <span className="sdo-lbl">{t.targets.now}</span>
-                    <b className={low ? 'is-low' : ''}>{signed(position.altitude)}°</b>
-                  </span>
-                  <span className={`sdo-btn${low ? ' sdo-btn--ghost' : tonight ? ' sdo-btn--primary' : ''}`}>{low ? t.targets.notRisen : t.targets.point}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <form className="sdo-coords" onSubmit={(e) => { e.preventDefault(); gotoCoordinates(); }} aria-label={t.targets.coordinates}>
-          <span className="sdo-lbl">{t.targets.coordinates}</span>
-          <label><span className="sdo-sr">{t.targets.ra}</span><input className="sdo-input" inputMode="decimal" placeholder={t.targets.ra} value={ra} onChange={(e) => setRa(e.target.value)} aria-invalid={coordError || undefined} /></label>
-          <label><span className="sdo-sr">{t.targets.dec}</span><input className="sdo-input" inputMode="decimal" placeholder={t.targets.dec} value={dec} onChange={(e) => setDec(e.target.value)} aria-invalid={coordError || undefined} /></label>
-          <button type="submit" className="sdo-btn">{t.targets.goto}</button>
-          {coordError && <p className="sdo-note sdo-coords__err" role="alert" style={{ padding: 0 }}>{t.targets.invalid}</p>}
-        </form>
-        <div className="sdo-targets__foot">
-          <span>{t.targets.foot(station.name)}</span>
-          <span>{t.targets.refusedBelow}</span>
-        </div>
-      </div>
-    </Modal>
-  );
-}
-
 export type Refusal = { target: TelescopeTarget; reason: string };
 
 export function RefusedDialog({ night, station, refusal, onChoose, onClose }: { night: boolean; station: Station; refusal: Refusal; onChoose: () => void; onClose: () => void }) {
@@ -272,7 +146,7 @@ export function CaptureDialog({ night, frame, onClose }: { night: boolean; frame
         </div>
         <div className="sdo-capture__info">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span className="sdo-lbl" style={{ color: '#f0785a' }}>{frame.stationName}</span>
+            <span className="sdo-lbl" style={{ color: '#8fb0ff' }}>{frame.stationName}</span>
             <h2 id="sdo-capture-t">{frame.targetName}</h2>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

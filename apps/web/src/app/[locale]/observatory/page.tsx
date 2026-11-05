@@ -19,6 +19,7 @@ import { observatoryPageCopy } from "@/i18n/resources/observatory";
 import { getCurrentUser } from "@/lib/platform/session";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
 import "@/styles/observatory-console.css";
+import "@/styles/observatory-hub.css";
 import "@/styles/pages.css";
 
 type ObservatoryRouteProps = {

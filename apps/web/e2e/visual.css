@@ -87,25 +87,23 @@ nextjs-portal {
 }
 
 /*
- * ADR-053: the observatory console. Its aurora drifts, its LEDs blink, the current step
- * pulses and the object in the eyepiece shimmers with the seeing; its panels and glass
- * blur what is behind them, which costs the capture seconds. Held still and flat.
+ * ADR-083: the observatory console. Its LEDs blink, the Autopilot's current step and the
+ * running auto buttons pulse; its cards and glass blur what is behind them, which costs the
+ * capture seconds. Held still and flat.
  */
-.sdo-atmo__aurora,
 .sdo-blink,
-.sdo-fs.is-now .sdo-fs__dot,
-.sdo-spin {
+.oh-pipe li.is-now::before,
+.oh-auto button.is-on {
   animation: none !important;
-}
-
-.sdo-atmo__aurora {
-  filter: none !important;
 }
 
 .sdo-panel,
 .sdo-glass,
-.sdo-head,
-.sdo-scrim {
+.sdo-scrim,
+.oh-head,
+.oh-card,
+.oh-rail,
+.oh-mnav {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }

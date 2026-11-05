@@ -84,6 +84,62 @@ const PATHS = {
       <circle cx="15" cy="11" r="1.2" />
     </>
   ),
+  mount: (
+    <>
+      <path d="M4 20l6-6M14 4l6 6-6 6-6-6z" />
+      <circle cx="7" cy="17" r="1" />
+    </>
+  ),
+  focuser: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+    </>
+  ),
+  grid: (
+    <>
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M4 10h16M4 15h16M10 4v16M15 4v16" />
+    </>
+  ),
+  star: (
+    <path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7z" />
+  ),
+  planet: (
+    <>
+      <circle cx="12" cy="12" r="5" />
+      <ellipse cx="12" cy="12" rx="10.5" ry="3.4" transform="rotate(-20 12 12)" />
+    </>
+  ),
+  rings: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+    </>
+  ),
+  sliders: (
+    <>
+      <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12" />
+      <circle cx="16" cy="6" r="2" />
+      <circle cx="10" cy="12" r="2" />
+      <circle cx="18" cy="18" r="2" />
+    </>
+  ),
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2" />
+    </>
+  ),
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+    </>
+  ),
+  stop: <rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" />,
+  parkP: <path d="M7 21V3h6a5 5 0 0 1 0 10H7" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;

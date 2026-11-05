@@ -8,22 +8,22 @@ import { EXPOSURES_S, GAIN, ROI_BY_ID, STACK_SIZES, exposureLabel, type RoiPrese
 import { captureEntries, withPngText } from '@/lib/observatory-sim/capture-meta';
 import { getSunAltitude, getTonightDarkWindow } from '@/lib/observatory-sim/dark-window';
 import { acquisitionStateAt, planAcquisition, PLATE_SOLVE_MS, type Acquisition } from '@/lib/observatory-sim/mission';
-import { NexStarMount, SE_TRACKING_ERROR, alignmentError, planGoto, type Axis, type MountSettings, type MountSnapshot, type TrackingMode, type TrackedBody } from '@/lib/observatory-sim/mount-drive';
+import { NexStarMount, SE_TRACKING_ERROR, alignmentError, type Axis, type MountSettings, type MountSnapshot, type TrackingMode, type TrackedBody } from '@/lib/observatory-sim/mount-drive';
 import { DEFAULT_SEEING_ARCSEC, TRAIN_BY_ID, edgeIllumination, effectiveFocalLength, fieldOfView, fieldRotationDegPerHour, obstructionRatio, resolvingPowerArcsec, type OpticalTrainId } from '@/lib/observatory-sim/optics';
 import { LIMITS, angularSeparation, evaluateSafety, sunPosition, type AltAz } from '@/lib/observatory-sim/safety';
-import { SESSION_MINUTES, STATIONS as SIM_STATIONS, skyStateAt, type Station } from '@/lib/observatory-sim/sim-stations';
+import { SESSION_MINUTES, STATIONS as SIM_STATIONS, type Station } from '@/lib/observatory-sim/sim-stations';
 import { airmass, hourAngle, localSiderealHours } from '@/lib/observatory-sim/site-time';
 import { moonInSky, nearestObject, skyObjectsNear, tangentOffsetDeg } from '@/lib/observatory-sim/sky-field';
-import { SHOWPIECE_BY_ID, aimPosition } from '@/lib/observatory-sim/showpieces';
-import { TELESCOPE_TARGET_BY_ID, targetPosition, targetTitle, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
+import { SHOWPIECES, SHOWPIECE_BY_ID, aimPosition } from '@/lib/observatory-sim/showpieces';
+import { TELESCOPE_TARGET_BY_ID, gradeTargets, manualTarget, parseDec, parseRa, targetPosition, targetTitle, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
 import { consoleCopy } from './copy';
-import { CaptureDialog, RefusedDialog, SheetDialog, TargetsDialog, displayName, type Frame, type Refusal } from './dialogs';
+import { CaptureDialog, RefusedDialog, SheetDialog, displayName, type Frame, type Refusal } from './dialogs';
 import LiveView, { type MountSample } from './LiveView';
-import { MountSettingsPanel, type StationRow } from './panels';
+import { MountSettingsPanel } from './panels';
 import { PlatformConsole, type PlatformMission } from './platform-console';
 import { plateFor } from './plates';
-import { ConsoleShell, decShort, degText, duration, hms, raShort, type Action } from './shell';
-import { altitudePath, bestOf, clock, nightSpan, settleSkyClock, skyNow } from './sky';
+import { ConsoleShell, decShort, degText, duration, lstText, raShort, type Action, type HubKind, type HubTarget } from './shell';
+import { altitudePath, bestOf, clock, nightSpan, settleSkyClock, skyNow, tonightSky } from './sky';
 import SkyDome from './sky-dome';
 
 /** What the quick start points at: tonight's best target from the platform's catalogue, as the sky model knows it. */
@@ -46,7 +46,7 @@ export type ObservatoryConsoleProps = {
 };
 
 type RunState = 'todo' | 'running' | 'done';
-type Modal = 'targets' | 'refused' | 'capture' | 'stations' | 'hand' | 'details' | 'mount' | null;
+type Modal = 'refused' | 'capture' | 'mount' | null;
 
 const CONNECT_MS = 2_000;
 /** The alignment field: a mid-sky patch the mount solves and syncs on, as an auto-align does. */
@@ -60,6 +60,9 @@ const AUTOFOCUS_MS = 6_000;
 const LIVE_FRAME_S = 0.06;
 /** Raw video first, the air's boil and all, before the live stack starts. */
 const LIVE_DELAY_MS = 4_000;
+/** The AUX focuser's position at best focus, as the hub read it off the real motor; a step of the model's focus is 25 of its steps. */
+const FOCUS_HOME = 24_672;
+const FOCUS_STEP = 25;
 
 /**
  * The one station is the platform's observatory (ADR-053 §6, amended 2026-10-17): the
@@ -79,6 +82,7 @@ const ARROWS: Record<string, { axis: Axis; dir: 1 | -1 }> = {
 const pad2 = (n: number) => String(n).padStart(2, '0');
 const typing = (el: EventTarget | null) => el instanceof HTMLElement && (el.isContentEditable || ['INPUT', 'SELECT', 'TEXTAREA'].includes(el.tagName));
 const shortName = (t: TelescopeTarget) => displayName(t).split(' · ')[0];
+const hubKind = (t: TelescopeTarget): HubKind => (t.kind === 'planet' || t.kind === 'moon' || t.kind === 'star' ? t.kind : 'deep');
 const indexOf = (list: readonly number[], value: number) => Math.max(0, list.findIndex((v) => v >= value));
 
 function resolveTarget(id: string) {
@@ -120,7 +124,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   skyAheadRef.current = skyAheadMs;
   const skyMs = now + skyAheadMs;
 
-  const [selectedId, setSelectedId] = useState(NODE_ID);
   const [station, setStation] = useState<Station | null>(null);
   const [connectedAtMs, setConnectedAtMs] = useState(0);
   const [park, setPark] = useState<RunState>('todo');
@@ -128,6 +131,13 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const [cal, setCal] = useState<RunState>('todo');
   const [calEndsAtMs, setCalEndsAtMs] = useState(0);
   const [auto, setAuto] = useState<TelescopeTarget | null>(null);
+  const [alignNext, setAlignNext] = useState(false);
+  /** The target the Autopilot will find: tonight's best until the user picks another. */
+  const [picked, setPicked] = useState<string | null>(tonight ? resolveTarget(tonight.targetId)?.id ?? null : null);
+  const [points, setPoints] = useState<string[]>([]);
+  const [log, setLog] = useState<string[]>([]);
+  const [afCurve, setAfCurve] = useState<number[]>([]);
+  const [custom, setCustom] = useState<TelescopeTarget[]>([]);
   const [target, setTarget] = useState<TelescopeTarget | null>(null);
   const [acquisition, setAcquisition] = useState<Acquisition | null>(null);
   const [refusal, setRefusal] = useState<Refusal | null>(null);
@@ -217,7 +227,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   }, []);
 
   const date = useMemo(() => new Date(skyMs), [skyMs]);
-  const selected = STATIONS.find((s) => s.id === selectedId) ?? STATIONS[0];
+  const selected = STATIONS[0];
   const connecting = station !== null && now < connectedAtMs + CONNECT_MS;
   const lstHours = useMemo(() => (station ? localSiderealHours(station.lon, date) : 0), [station, date]);
   const sunAltitude = useMemo(() => (station ? getSunAltitude(station.lat, station.lon, date) : 0), [station, date]);
@@ -347,6 +357,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     setLive(null);
     setFrames([]);
     setSynced(false);
+    setPoints([]);
     setFullView(false);
     histogramRef.current = null;
     offsetsRef.current = [];
@@ -358,17 +369,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     mount.reset();
     // The reset leaves the drive's tracking off; the selector still says what the user chose.
     mount.setTracking(tracking, Date.now());
-    setSelectedId(s.id);
     setStation(s);
     setConnectedAtMs(Date.now());
   }, [disconnect, mount, tracking]);
-
-  const pick = useCallback((s: Station) => {
-    if (s.soon) return;
-    if (station && station.id !== s.id) disconnect();
-    setSelectedId(s.id);
-    setModal((m) => (m === 'stations' ? null : m));
-  }, [station, disconnect]);
 
   const parkHome = useCallback(() => {
     setAcquisition(null);
@@ -426,6 +429,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   /** One press from anywhere: connect and align first when the session has not, then the GoTo. */
   const observe = useCallback((tg: TelescopeTarget) => {
     setModal(null);
+    setPicked(tg.id);
     const at = new Date(skyNow());
     const verdict = evaluateSafety(node, targetPosition(tg, node, at), at);
     if (!verdict.ok) {
@@ -460,10 +464,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   }, [mount, rate]);
   const release = useCallback((axis: Axis) => mount.release(axis), [mount]);
 
-  const quickStart = useCallback(() => {
-    const tg = tonight ? resolveTarget(tonight.targetId) : null;
-    if (tg) observe(tg);
-  }, [tonight, observe]);
 
   const sync = useCallback(() => {
     mount.sync();
@@ -529,11 +529,15 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   // Retire timed steps and run the chains, once a tick.
   useEffect(() => {
     if (clockMs === null) return;
-    if (auto && station && !connecting && cal === 'todo') align();
+    if ((auto || alignNext) && station && !connecting && cal === 'todo') {
+      align();
+      setAlignNext(false);
+    }
     if (park === 'running' && now >= parkEndsAtMs) setPark('done');
     if (cal === 'running' && now >= calEndsAtMs) {
       mount.model = alignmentError(connectedAtMs);
       setCal('done');
+      if (station) setPoints((ps) => [...ps, `${t.hub.autopilot.pipe[0]} · ${clock(skyNow(), station.timezone)}`]);
       if (auto) {
         pointAt(auto);
         setAuto(null);
@@ -545,6 +549,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         // The solve told the mount where it is: a sync here, then the residual move,
         // from where the tube is this instant rather than at the last frame.
         centringRef.current = acquisition;
+        setPoints((ps) => [...ps, `${shortName(target)} · ${clock(skyNow(), station.timezone)}`].slice(-8));
         stepMount();
         mount.sync();
         mount.goto(targetFn(target, station), Date.now());
@@ -561,6 +566,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       // A V-curve: out one way, back through focus, out the other, then to the minimum.
       const sweep = tt < 0.35 ? autofocus.from + (6 - autofocus.from) * (tt / 0.35) : tt < 0.75 ? 6 - 12 * ((tt - 0.35) / 0.4) : -6 + 6 * ((tt - 0.75) / 0.25);
       setFocus(Math.round(sweep));
+      setAfCurve((c) => [...c, sweep]);
       if (tt >= 1) {
         setFocus(0);
         setAutofocus(null);
@@ -605,75 +611,61 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     });
   }, []);
 
-  /* --- the step bar ---------------------------------------------------- */
+  /* --- the autopilot ---------------------------------------------------- */
 
-  const tonightTarget = tonight ? resolveTarget(tonight.targetId) : null;
-  const stepLabel = target ? shortName(target) : 'target';
+  const pickedTarget = picked ? resolveTarget(picked) ?? custom.find((c) => c.id === picked) ?? null : null;
+  const addCustom = useCallback((raText: string, decText: string) => {
+    const ra = parseRa(raText);
+    const dec = parseDec(decText);
+    if (ra === null || dec === null) return false;
+    const tg = manualTarget(ra, dec);
+    setCustom((c) => [...c.filter((x) => x.id !== tg.id), tg]);
+    setPicked(tg.id);
+    return true;
+  }, []);
   const expLabel = exposureLabel(exp);
   const expTotal = `${subsGoal} × ${expLabel} · ${duration(subsGoal * exp)}`;
-  const gotoEstimate = (to: AltAz | null) => (to ? Math.round(planGoto(pointing, to, settingsNow, 0).totalS + (PLATE_SOLVE_MS + 5_000) / 1000) : 25);
-  const pointEstimate = acquisition ? Math.round((acquisition.settledAtMs - acquisition.startedAtMs) / 1000) : gotoEstimate(targetNow);
-  const alignEstimate = Math.round(planGoto({ altitude: 0, azimuth: 0 }, ALIGN_FIELD, settingsNow, 0).totalS + PLATE_SOLVE_MS / 1000);
 
+  /** Where am I?: connect if need be, then the solve-and-sync on a field. */
+  const whereAmI = useCallback(() => {
+    if (!station) {
+      connect(STATIONS[0]);
+      setAlignNext(true);
+      return;
+    }
+    setAcquisition(null);
+    align();
+  }, [station, connect, STATIONS, align]);
+
+  const stopAll = useCallback(() => {
+    mount.halt();
+    setAcquisition(null);
+    setAuto(null);
+    setStack(null);
+    setLive(null);
+  }, [mount]);
+
+  const busy = connecting || cal === 'running' || park === 'running';
   let primary: Action;
-  let secondary: Action[] = [];
-  if (step === 0) {
-    primary = connecting ? { label: t.steps.connecting, run: () => undefined, disabled: true } : { label: t.steps.connectTo(selected.name), run: () => connect(selected) };
-    secondary = [{ label: t.steps.stationDetails, run: () => setModal('details') }];
-  } else if (step === 1) {
-    primary = park === 'running'
-      ? { label: t.steps.parking, run: () => undefined, disabled: true }
-      : cal === 'running' ? { label: t.steps.aligning, run: () => undefined, disabled: true }
-      : { label: t.steps.align, run: align };
-    secondary = [];
-  } else if (step === 2) {
-    primary = target && !acquisition ? { label: t.steps.pointTo(stepLabel), run: () => pointAt(target) } : { label: t.steps.chooseTarget, run: () => setModal('targets') };
-    secondary = [
-      ...(tonightTarget && tonight ? [{ label: tonight.name, run: () => pointAt(tonightTarget) }] : []),
-      { label: t.steps.search, run: () => setModal('targets') },
-      { label: t.steps.parkHome, run: parkHome, disabled: park === 'running' },
-    ];
-  } else if (step === 3) {
-    primary = { label: t.steps.pointTo(stepLabel), run: () => undefined, disabled: true };
-    secondary = [{ label: t.steps.cancelGoto, run: cancelGoto }];
-  } else {
-    primary = stacking
-      ? { label: t.steps.stacking(subsDone, subsGoal), run: () => undefined, disabled: true }
-      // The capture takes the live stack over where it stands: a settled stack is kept at once.
-      : { label: t.steps.capture(subsGoal, expLabel), run: () => setStack({ startsAtMs: live?.startsAtMs ?? Date.now() }), icon: 'camera' };
-    secondary = stacking
-      ? [{ label: t.steps.stopStack, run: () => setStack(null) }]
-      : [{ label: t.steps.recentre, run: () => target && pointAt(target) }, { label: t.steps.changeTarget, run: () => setModal('targets') }];
-  }
-  const hints = [
-    t.steps.hints.connect,
-    t.steps.hints.align,
-    t.steps.hints.target(tonight?.name ?? null),
-    t.steps.hints.point(pointEstimate),
-    stacking ? t.steps.hints.stacking(subsDone, subsGoal, expLabel)
-      : target && targetNow && targetNow.altitude <= 0 ? t.steps.hints.belowHorizon
-      : live && !settled ? t.steps.hints.liveStack(liveDone, subsGoal)
-      : settled ? t.steps.hints.settled
-      : tracking !== 'off' ? t.steps.hints.tracking : t.steps.hints.drifting,
-  ];
-  const flowSteps: Array<[string, string]> = [
-    [t.steps.names[0], `≈ ${CONNECT_MS / 1000} s`],
-    [t.steps.names[1], `≈ ${alignEstimate} s`],
-    [t.steps.names[2], t.steps.youPick],
-    [t.steps.names[3], `≈ ${pointEstimate} s`],
-    [t.steps.names[4], expTotal],
-  ];
-  const goStep = (i: number) => {
-    if (i === 0) disconnect();
-    else if (i === 1) { setAcquisition(null); setStack(null); setLive(null); setCal('todo'); }
-    else if (i === 2) { setAcquisition(null); setStack(null); setLive(null); setModal('targets'); }
-    else if (i === 3 && target) pointAt(target);
-  };
+  // Until the console has hydrated a press would be lost: the button waits for it.
+  if (clockMs === null) primary = { label: t.hub.autopilot.go, run: () => undefined, disabled: true };
+  else if (busy) primary = { label: t.hub.autopilot.busy, run: () => undefined, disabled: true };
+  else if (inGoto) primary = { label: t.hub.autopilot.cancel, run: cancelGoto };
+  else if (onTarget && target && pickedTarget?.id === target.id) primary = { label: t.hub.autopilot.recentre, run: () => pointAt(target) };
+  else primary = pickedTarget ? { label: t.hub.autopilot.go, run: () => observe(pickedTarget) } : { label: t.hub.autopilot.pick, run: () => undefined, disabled: true };
+
+  const pipeNow = connecting || cal === 'running' ? 0 : gotoState === 'slewing' ? 1 : gotoState === 'solving' ? 2 : gotoState === 'centring' ? 3 : -1;
+  const pipeDone = onTarget ? 5 : gotoState === 'centring' ? 3 : gotoState === 'solving' ? 2 : gotoState === 'slewing' ? 1 : cal === 'done' ? 1 : 0;
+
+  const captureAction: Action = stacking
+    ? { label: t.steps.stopStack, run: () => setStack(null) }
+    // The capture takes the live stack over where it stands: a settled stack is kept at once.
+    : { label: t.steps.capture(subsGoal, expLabel), run: () => setStack({ startsAtMs: live?.startsAtMs ?? Date.now() }), disabled: step !== 4, icon: 'camera' };
 
   /* --- the keyboard ---------------------------------------------------- */
 
-  const keysRef = useRef({ padEnabled, station, modal, full, press, release, setFullView, primary, quickStart });
-  keysRef.current = { padEnabled, station, modal, full, press, release, setFullView, primary, quickStart };
+  const keysRef = useRef({ padEnabled, station, modal, full, press, release, setFullView, primary });
+  keysRef.current = { padEnabled, station, modal, full, press, release, setFullView, primary };
   useEffect(() => {
     const onDown = (e: KeyboardEvent) => {
       const k = keysRef.current;
@@ -686,8 +678,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         if (!e.repeat) k.press(arrow.axis, arrow.dir);
       } else if (e.key === 'f' || e.key === 'F') {
         k.setFullView(!k.full);
-      } else if (e.key === 's' || e.key === 'S') {
-        k.quickStart();
       } else if (e.key === 'Enter' && !(e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement) && !k.primary.disabled) {
         k.primary.run();
       }
@@ -720,24 +710,26 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const darkWin = useMemo(() => getTonightDarkWindow(selected.lat, selected.lon, new Date(Math.floor(skyMs / 60_000) * 60_000), selected.timezone), [selected, Math.floor(skyMs / 60_000)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const minute = Math.floor(skyMs / 60_000);
-  const stationRows = useMemo<StationRow[]>(() => {
-    const at = new Date(minute * 60_000);
-    return STATIONS.map((s) => {
-      const state = skyStateAt(s, at);
-      return { station: s, dark: state === 'night', twilight: state === 'twilight', local: clockMs === null ? '—' : clock(at.getTime(), s.timezone) };
-    });
-  }, [minute, STATIONS, clockMs]);
+  // Every target the sky model knows, graded once a minute: up and safe first, highest first.
+  const graded = useMemo(() => (clockMs === null ? [] : gradeTargets(node, new Date(minute * 60_000))), [minute, node, clockMs === null]); // eslint-disable-line react-hooks/exhaustive-deps
+  const hubTargets = useMemo<HubTarget[]>(() => graded
+    .map(({ target: tg, position, visible }) => ({ id: tg.id, name: shortName(tg), sub: tg.catalog && tg.catalog !== shortName(tg) ? tg.catalog : t.targets.kinds[tg.kind], kind: hubKind(tg), altitude: position.altitude, up: visible }))
+    .concat(custom.map((tg) => {
+      const position = targetPosition(tg, node, new Date(minute * 60_000));
+      return { id: tg.id, name: tg.name, sub: t.hub.targets.filters.custom, kind: 'star' as const, altitude: position.altitude, up: position.altitude > 0, custom: true };
+    }))
+    .sort((x, y) => Number(y.up) - Number(x.up) || y.altitude - x.altitude), [graded, custom, node, minute, t]);
+  const bestTargets = useMemo(() => {
+    const show = new Set(SHOWPIECES.map((sp) => sp.id));
+    return hubTargets.filter((h) => h.up && show.has(h.id)).slice(0, 3);
+  }, [hubTargets]);
+  const tonightAt = useMemo(() => (clockMs === null ? null : tonightSky(node, new Date(minute * 60_000))), [minute, node, clockMs === null]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const mounted = clockMs !== null;
-  const skyState = skyStateAt(selected, date);
   const hoursLeft = (label: string, ms: number) => {
     const m = Math.max(0, Math.round(ms / 60_000));
     return [label, `${Math.floor(m / 60)} h ${pad2(m % 60)} m`] as const;
   };
-  const dark = !mounted ? ([t.darkLeft, '—'] as const)
-    : darkWin.isCurrentlyDark && darkWin.dawnEnd
-    ? hoursLeft(t.darkLeft, darkWin.dawnEnd.getTime() - skyMs)
-    : darkWin.duskStart && darkWin.duskStart.getTime() > skyMs ? hoursLeft(t.darkIn, darkWin.duskStart.getTime() - skyMs) : ([t.darkLeft, '—'] as const);
 
   const longWay = acquisition?.plan.longWay ?? false;
   const statusText = !station ? t.status.standby
@@ -755,23 +747,15 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     : t.status.connected;
   const idle = step >= 3 ? null
     : step < 2 || !cameraOn
-      ? { title: t.observatory, text: t.idle.text(tonight?.name ?? null), note: simulated ? t.simulated : observatoryName }
-      : { title: t.idle.ready, text: target ? t.idle.pointTo(shortName(target)) : t.idle.chooseRisen };
+      ? { title: t.observatory, text: t.idle.text(pickedTarget ? shortName(pickedTarget) : null), note: simulated ? t.simulated : observatoryName }
+      : { title: t.idle.ready, text: pickedTarget ? t.idle.pointTo(shortName(pickedTarget)) : t.idle.chooseRisen };
   const battery = station ? Math.max(5, 100 - Math.floor(((now - connectedAtMs) / 60_000) * 0.3)) : null;
   const stationName = (station ?? selected).name;
   // The field the view actually shows: the whole frame, or what the phone's crop leaves.
   const fovText = `${t.stage.fov} ${(fov.widthArcmin * (cameraOn ? shown.w : 1)).toFixed(1)}′ × ${(fov.heightArcmin * (cameraOn ? shown.h : 1)).toFixed(1)}′`;
   const scaleText = `${fov.plateScaleArcsecPx.toFixed(2)}″ / PX · ${t.stage.framesHud} ${frames.length}`;
   const opticsLine = `${Math.round(focal)} MM · F/${fRatio.toFixed(1).replace(/\.0$/, '')}`;
-  const sessionTime = station ? hms(now - connectedAtMs) : '00:00:00';
   const rmsNow = onTarget && tracking !== 'off' ? `${history.rms[history.rms.length - 1]?.toFixed(1) ?? '0.6'}″` : '—';
-  const skyRow: [string, string][] = [
-    [t.skyLabel, mounted ? t.sky[skyState] : '—'],
-    [t.cloud, selected.id === NODE_ID && nodeCloud !== null ? `${nodeCloud}%` : '—'],
-    [t.seeing, `${seeing.toFixed(1)}″`],
-  ];
-  const quickName = tonight && tonightTarget ? tonight.name : null;
-
   // Where the target sits from the frame's centre, arcminutes, once the mount is on it.
   // Both at the snapshot's instant: the target moves while the tick catches up.
   const offsetText = (() => {
@@ -833,13 +817,47 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     />
   ) : null;
 
+  // The Autopilot's own record of what the telescope did, as the hub keeps it.
+  const tz = selected.timezone;
+  useEffect(() => {
+    if (clockMs === null || !station) return;
+    setLog((l) => [...l, `${clock(skyNow(), tz, true)}  ${statusText}`].slice(-60));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusText, station]);
+
+  const offArcmin = (() => {
+    if (!onTarget || !snap || !station || !target) return null;
+    const d = tangentOffsetDeg(snap.pointing, targetPosition(target, station, skyDate(snap.atMs)));
+    return Math.hypot(d.x * 60, d.y * 60);
+  })();
+  const pickedPos = pickedTarget && mounted ? targetPosition(pickedTarget, node, date) : null;
+  const recipe = pickedTarget ? SHOWPIECE_BY_ID.get(pickedTarget.id)?.recipe : undefined;
+  const focusPos = FOCUS_HOME + focus * FOCUS_STEP;
+  const fps = exp < 1 ? Math.min(30, Math.round(1 / Math.max(exp, 1 / 30))) : null;
+  const lcdState = !station ? 'Off' : connecting ? 'Connecting' : cal === 'running' ? 'Aligning' : park === 'running' ? 'Parking'
+    : gotoState === 'slewing' ? 'Slewing' : gotoState === 'solving' ? 'Solving' : gotoState === 'centring' ? 'Centring'
+    : onTarget && target ? shortName(target) : t.hub.hc.ready;
+  const lcd: [string, string] = [
+    `${t.hub.hc.brand} ${lcdState}`,
+    station ? `Az${pointing.azimuth.toFixed(1)} Alt${pointing.altitude >= 0 ? '+' : '-'}${Math.abs(pointing.altitude).toFixed(1)}` : '',
+  ];
+  const dayChip = !mounted ? '' : darkWin.isCurrentlyDark && darkWin.dawnEnd
+    ? t.hub.tonight.darkNow(hoursLeft('', darkWin.dawnEnd.getTime() - skyMs)[1])
+    : darkWin.duskStart && darkWin.duskStart.getTime() > skyMs ? t.hub.tonight.darkIn(hoursLeft('', darkWin.duskStart.getTime() - skyMs)[1]) : t.hub.tonight.daytime;
+  const at = (ms: number | null) => (ms === null ? '—' : clock(ms, tz));
+  const bar = tonightAt && tonightAt.sunset !== null && tonightAt.sunrise !== null && tonightAt.duskStart !== null && tonightAt.dawnEnd !== null
+    ? (() => {
+        const start = tonightAt.sunset - 3_600_000;
+        const len = tonightAt.sunrise + 3_600_000 - start;
+        const f = (ms: number) => Math.min(1, Math.max(0, (ms - start) / len));
+        return { dark: [f(tonightAt.duskStart), f(tonightAt.dawnEnd)] as [number, number], now: f(skyMs) };
+      })()
+    : null;
+
   const modals = (
     <>
-      {modal === 'targets' && station && (
-        <TargetsDialog night={night} station={station} tonightId={tonightTarget?.id ?? null} onPoint={pointAt} onClose={closeModal} />
-      )}
       {modal === 'refused' && refusal && (
-        <RefusedDialog night={night} station={station ?? node} refusal={refusal} onChoose={() => setModal(station ? 'targets' : null)} onClose={closeModal} />
+        <RefusedDialog night={night} station={station ?? node} refusal={refusal} onChoose={closeModal} onClose={closeModal} />
       )}
       {modal === 'capture' && viewing && <CaptureDialog night={night} frame={viewing} onClose={closeModal} />}
       {modal === 'mount' && (
@@ -847,28 +865,44 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
           <MountSettingsPanel settings={settingsNow} onChange={changeSettings} />
         </SheetDialog>
       )}
-      {modal === 'details' && (
-        <SheetDialog night={night} title={t.details.title(selected.name)} onClose={closeModal}>
-          <dl className="sdo-dl" style={{ gridTemplateColumns: '1fr' }}>
-            {([
-              [t.details.site, selected.site],
-              [t.details.elevation, `${selected.elevationM} m`],
-              [t.details.sky, t.details.bortle(selected.bortle)],
-              [t.details.optics, selected.instrument.optics],
-              [t.details.aperture, `${selected.instrument.apertureMm} mm`],
-              [t.details.focalLength, `${selected.instrument.focalLengthMm} mm`],
-              [t.details.resolution, `${resolvingPowerArcsec(selected.instrument).toFixed(2)}″`],
-              [t.details.mount, selected.instrument.mount],
-              [t.details.camera, t.details.cameraKind],
-              [t.details.sensor, `${fieldOfView(selected.instrument).widthPx} × ${fieldOfView(selected.instrument).heightPx} · ${selected.instrument.pixelSizeUm} µm`],
-              [t.details.session, t.details.hours(SESSION_MINUTES / 60)],
-            ] as const).map(([k, v]) => (
-              <div key={k}><dt className="sdo-lbl">{k}</dt><dd>{v}</dd></div>
-            ))}
-          </dl>
-        </SheetDialog>
-      )}
     </>
+  );
+
+  const setup = (
+    <div className="oh-pane--cols">
+      <div>
+        <h3 className="oh-h3" style={{ marginTop: 0 }}>{t.hub.setup.telescope}</h3>
+        <dl className="oh-kv">
+          {([
+            [t.details.optics, selected.instrument.optics],
+            [t.details.aperture, `${selected.instrument.apertureMm} mm`],
+            [t.details.focalLength, `${selected.instrument.focalLengthMm} mm`],
+            [t.details.resolution, `${resolvingPowerArcsec(selected.instrument).toFixed(2)}″`],
+            [t.details.mount, selected.instrument.mount],
+            [t.details.camera, t.details.cameraKind],
+            [t.details.sensor, `${fieldOfView(selected.instrument).widthPx} × ${fieldOfView(selected.instrument).heightPx} · ${selected.instrument.pixelSizeUm} µm`],
+          ] as const).map(([k, v]) => (
+            <div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>
+          ))}
+        </dl>
+      </div>
+      <div>
+        <h3 className="oh-h3" style={{ marginTop: 0 }}>{t.hub.setup.site}</h3>
+        <dl className="oh-kv">
+          {([
+            [t.details.site, selected.site],
+            [t.details.elevation, `${selected.elevationM} m`],
+            [t.details.sky, t.details.bortle(selected.bortle)],
+            [t.cloud, nodeCloud !== null ? `${nodeCloud}%` : '—'],
+            [t.seeing, `${seeing.toFixed(1)}″`],
+            [t.details.session, t.details.hours(SESSION_MINUTES / 60)],
+          ] as const).map(([k, v]) => (
+            <div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>
+          ))}
+        </dl>
+        <button type="button" className="oh-btn" style={{ width: '100%' }} onClick={() => setModal('mount')}>{t.hub.setup.mountSettings}</button>
+      </div>
+    </div>
   );
 
   return (
@@ -879,11 +913,28 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       onNight={toggleNight}
       simulated={simulated}
       observatoryName={observatoryName}
-      clocks={{ utc: mounted ? clock(skyMs, 'UTC', true) : '--:--:--', local: mounted ? clock(skyMs, selected.timezone, true) : '--:--:--', site: selected.site.split(',')[0], dark }}
-      quick={{ name: quickName, plate: tonightTarget ? plateFor(tonightTarget.id) : null, onStart: quickStart }}
+      clock={{ local: mounted ? clock(skyMs, tz, true) : '--:--:--', lst: mounted ? lstText(localSiderealHours(node.lon, date)) : '--' }}
+      devices={[
+        { key: 'mount', label: t.hub.devices.mount, text: !station ? t.hub.devices.offline : park === 'running' || (park === 'done' && cal !== 'done') ? t.hub.devices.parked : inGoto ? t.hub.devices.slewing : cal === 'done' ? t.hub.devices.aligned : t.hub.devices.online, on: !!station && !connecting },
+        { key: 'camera', label: t.hub.devices.camera, text: !cameraOn ? t.hub.devices.offline : fps !== null ? t.hub.devices.fps(fps) : expLabel, on: cameraOn },
+        { key: 'focuser', label: t.hub.devices.focuser, text: station ? t.hub.devices.pos(focusPos) : t.hub.devices.offline, on: !!station && !connecting },
+      ]}
+      onPark={station && park !== 'running' ? parkHome : null}
+      onStopAll={station ? stopAll : null}
+      tonight={{
+        chip: dayChip,
+        rows: tonightAt ? [
+          [t.hub.tonight.sunset, at(tonightAt.sunset)],
+          [t.hub.tonight.sunrise, at(tonightAt.sunrise)],
+          [t.hub.tonight.darkFrom, at(tonightAt.duskStart)],
+          [t.hub.tonight.darkUntil, at(tonightAt.dawnEnd)],
+          [t.hub.tonight.moon, `${tonightAt.moonPercent}% · ${tonightAt.moonWaxing ? t.hub.tonight.waxing : t.hub.tonight.waning}`],
+          [t.hub.tonight.moonRiseSet, `${at(tonightAt.moonRise)} / ${at(tonightAt.moonSet)}`],
+        ] : [],
+        bar,
+      }}
+      targets={{ list: hubTargets, best: bestTargets, up: hubTargets.filter((h) => h.up).length, selectedId: picked, onSelect: setPicked, onCustom: addCustom, locked: false }}
       dome={mounted ? <SkyDome locale={locale} station={station ?? node} minuteMs={minute * 60_000} pointing={station ? pointing : null} targetId={target?.id ?? null} onPick={observe} /> : null}
-      stations={{ rows: stationRows, selectedId, onPick: pick, sky: skyRow, selected, skyState }}
-      session={{ elapsed: sessionTime, connected: station !== null, onEnd: disconnect, label: t.session.parkEnd }}
       stage={{
         viewRef,
         feed,
@@ -905,7 +956,38 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         caption,
         idle,
       }}
-      flow={{ steps: flowSteps, step, hint: hints[step], primary, secondary, goStep, total: expTotal }}
+      rails={{
+        onAutoExp: target ? autoCamera : null,
+        onFocus: cameraOn ? () => { setAfCurve([]); setAutofocus({ startedAtMs: Date.now(), from: focus }); } : null,
+        focusing: autofocus !== null,
+        onPng: cameraOn && target && !stacking ? () => void capture(1, Date.now()) : null,
+      }}
+      autopilot={{
+        name: pickedTarget ? shortName(pickedTarget) : null,
+        sub: pickedTarget ? t.targets.kinds[pickedTarget.kind] : null,
+        plate: pickedTarget ? plateFor(pickedTarget.id) : null,
+        rows: pickedPos ? [
+          [t.pointing.altitude, degText(pickedPos.altitude)],
+          [t.pointing.ra, raShort(pickedPos.raHours)],
+          [t.pointing.dec, decShort(pickedPos.decDeg)],
+        ] : [],
+        go: primary,
+        busy: busy || inGoto,
+        pipe: { now: pipeNow, done: pipeDone },
+        readout: [
+          [t.hub.autopilot.offTarget, offArcmin === null ? '—' : `${offArcmin.toFixed(1)}′`],
+          [t.hub.autopilot.pass, gotoState === 'solving' ? '1' : gotoState === 'centring' || onTarget ? '2' : '—'],
+          [t.hub.autopilot.solveTime, pipeDone >= 3 ? `${(PLATE_SOLVE_MS / mount.pace / 1000).toFixed(1)} s` : '—'],
+        ],
+        log,
+        links: [
+          { label: t.hub.autopilot.whereAmI, run: whereAmI, disabled: busy || inGoto },
+          { label: t.hub.autopilot.gotoOnly, run: () => pickedTarget && pointAt(pickedTarget), disabled: cal !== 'done' || !pickedTarget || inGoto },
+          { label: t.hub.autopilot.sync, run: sync, disabled: cal !== 'done' || inGoto },
+        ],
+        after: [...(recipe ? [t.hub.autopilot.autoCamera] : []), t.hub.autopilot.keepCentred],
+        note: target && targetNow && targetNow.altitude <= 0 ? t.steps.hints.belowHorizon : null,
+      }}
       pointing={{
         path,
         pointing: station ? pointing : null,
@@ -934,24 +1016,64 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         onAuto: target ? autoCamera : null,
         refreshNote,
         histogram: cameraOn ? histogram : null,
+        stats: [
+          [t.hub.camera.size, `${roi.widthPx}×${roi.heightPx}`],
+          [t.hub.camera.depth, exp < 0.1 ? '8-bit' : '16-bit'],
+          [t.hub.camera.rate, !cameraOn ? '—' : fps !== null ? `${fps} fps` : `1/${expLabel}`],
+          [t.hub.camera.exposure, expLabel],
+          [t.hub.camera.gain, String(gain)],
+          [t.hub.camera.sensor, `${((fieldOfView(instrument).widthPx * fieldOfView(instrument).heightPx) / 1e6).toFixed(1)} MP`],
+        ],
+        capture: captureAction,
+        progress: stacking
+          ? { title: t.hub.camera.running(subsDone, subsGoal), count: `${subsDone} / ${subsGoal}`, frac: subsDone / subsGoal }
+          : live && onTarget
+            ? { title: settled ? t.status.tracking : t.status.liveStack(liveDone, subsGoal), count: `${liveDone} / ${subsGoal}`, frac: liveDone / subsGoal }
+            : { title: t.hub.camera.idle, count: '', frac: 0 },
       }}
       hand={{
         rate, onRate: (v) => setRate(Math.max(1, Math.min(9, v))),
         tracking, onTracking: (m) => setTracking(m),
-        focus, onFocus: (d) => setFocus((f) => Math.max(-12, Math.min(12, f + d))),
-        onAutofocus: cameraOn ? () => setAutofocus({ startedAtMs: Date.now(), from: focus }) : null, focusing: autofocus !== null,
-        enabled: padEnabled, onPress: press, onRelease: release,
         onCentre: () => target && pointAt(target), canCentre: onTarget && !stacking,
         onSync: cal === 'done' && !inGoto && !!station ? sync : null, synced,
-        onStop: () => { mount.halt(); setAcquisition(null); setStack(null); setLive(null); }, canStop: !!station && (inGoto || stacking || (snap?.rates.alt !== 0 || snap?.rates.az !== 0)),
+        onStop: stopAll, canStop: !!station && (inGoto || stacking || (snap?.rates.alt !== 0 || snap?.rates.az !== 0)),
         onSettings: () => setModal('mount'),
         stepNote: null, limitNote, commandNote: null,
       }}
+      hc={{
+        lcd,
+        enabled: padEnabled, onPress: press, onRelease: release,
+        rate, onRate: (v) => setRate(Math.max(1, Math.min(9, v))),
+        onAlign: busy || inGoto ? null : whereAmI,
+        onEnter: primary.disabled ? null : primary.run,
+        onBack: stopAll,
+        onMenu: () => setModal('mount'),
+        identify: near ? near.object.name : target ? shortName(target) : t.hub.hc.noObject,
+        info: pickedTarget && pickedPos ? `${shortName(pickedTarget)} ${pickedPos.altitude.toFixed(0)}deg` : t.hub.hc.noObject,
+      }}
+      align={{
+        done: [!!station, cal === 'done', synced, points.length > 1].filter(Boolean).length,
+        points,
+        onWhere: busy || inGoto ? null : whereAmI,
+        onSync: cal === 'done' && !inGoto && !!station ? sync : null,
+        onClear: cal === 'done' && !inGoto ? () => { setPoints([]); setSynced(false); setAcquisition(null); setCal('todo'); } : null,
+      }}
+      focuser={{
+        rows: [
+          [t.hub.focuser.position, station ? String(focusPos) : '—'],
+          [t.hub.focuser.offset, focus === 0 ? '0' : `${focus > 0 ? '+' : '−'}${Math.abs(focus * FOCUS_STEP)}`],
+          [t.hub.focuser.state, autofocus ? t.hub.focuser.moving : t.hub.focuser.idle],
+        ],
+        onIn: station ? () => setFocus((f) => Math.max(-12, f - 1)) : null,
+        onOut: station ? () => setFocus((f) => Math.min(12, f + 1)) : null,
+        onRun: cameraOn ? () => { setAfCurve([]); setAutofocus({ startedAtMs: Date.now(), from: focus }); } : null,
+        running: autofocus !== null,
+        curve: afCurve,
+      }}
+      setup={setup}
+      log={log}
       frames={frames}
       onOpenFrame={(f) => { setViewing(f); setModal('capture'); }}
-      onAddFrame={step === 4 && !stacking ? () => setStack({ startsAtMs: live?.startsAtMs ?? Date.now() }) : null}
-      phone={{ tracking: rmsNow, seeing: `${seeing.toFixed(1)}″` }}
-      sheets={{ stations: modal === 'stations', hand: modal === 'hand', onClose: closeModal, onOpenStations: () => setModal('stations'), onOpenHand: () => setModal('hand') }}
       modals={modals}
     />
   );

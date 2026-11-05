@@ -56,9 +56,11 @@ function masks(page: Page) {
     page.locator(".legal-toc ol"),
     // The observatory console's clocks and the stations' local times run on the browser's
     // clock, which is held, and on the server's first render, which is not.
-    page.locator(".sdo-clocks"),
-    page.locator(".sdo-stn__meta"),
-    page.locator(".sdo-pstation small"),
+    page.locator(".oh-clock"),
+    page.locator(".oh-tncard"),
+    page.locator(".oh-tgcard .oh-best"),
+    page.locator(".oh-row__meta"),
+    page.locator(".oh-apcard .oh-kv"),
     // The booking board's nights are the server's next seven days; the session's rows
     // and the phone's bar carry the chosen one.
     page.locator(".board-nights"),

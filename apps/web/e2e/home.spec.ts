@@ -444,31 +444,25 @@ test("the observatory console stands by on the sky model, badged simulated, with
   await expect(
     page.getByRole("banner").getByRole("link", { name: "Observatory", exact: true }),
   ).toHaveAttribute("aria-current", "page");
-  await expect(page.locator(".sdo-head .sdo-pill--sim")).toHaveText(/Simulated/);
+  await expect(page.locator(".oh-head .oh-badge")).toHaveText(/Simulated/);
 
-  // The one open station is the platform's observatory; its forecast is the platform's.
-  const telescopes = page.getByRole("region", { name: "Telescopes" });
-  await expect(
-    telescopes.getByRole("button", { name: /Stellar Tbilisi/ }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await expect(telescopes.getByText("12%")).toBeVisible();
+  // The one station is the platform's observatory; its forecast is the platform's.
+  await expect(page.locator(".oh-head .oh-bt b")).toHaveText("Stellar Tbilisi");
   // ADR-053 §6 as amended: no stations the product has no plan behind.
-  await expect(telescopes.getByText("Coming soon")).toHaveCount(0);
-  await expect(telescopes.getByRole("button", { name: /Station$/ })).toHaveCount(0);
+  await expect(page.getByText("Coming soon")).toHaveCount(0);
+  await page.getByRole("tab", { name: "Setup" }).click();
+  await expect(page.getByRole("tabpanel").getByText("12%")).toBeVisible();
 
-  // The quick start points at tonight's highest observable target from the catalogue.
-  await expect(page.getByRole("button", { name: /Start · Albireo/ })).toBeEnabled();
+  // The Autopilot starts on tonight's highest observable target from the catalogue.
+  const autopilot = page.getByRole("region", { name: "Autopilot" });
+  await expect(autopilot.locator(".oh-big")).toHaveText("Albireo");
+  await expect(autopilot.getByRole("button", { name: /FIND & TRACK/ })).toBeEnabled();
 
-  // Nothing is drawn as the telescope's output: standby, captioned, step one of five.
+  // Nothing is drawn as the telescope's output: standby, captioned, no step under way.
   const view = page.getByRole("region", { name: "Telescope view" });
   await expect(view.getByText("Illustration — not telescope output")).toBeVisible();
   await expect(view.getByRole("status")).toHaveText("Standby");
-  await expect(
-    page.getByRole("button", { name: /Connect to Stellar Tbilisi/ }),
-  ).toBeVisible();
-  const step = page.locator(".sdo-flow .is-now");
-  await expect(step).toContainText("Connect");
-  await expect(step).toHaveAttribute("aria-current", "step");
+  await expect(autopilot.locator(".oh-pipe [aria-current=step]")).toHaveCount(0);
 
   // Claims the platform does not back are gone.
   await expect(page.getByText(/41\.72/)).toHaveCount(0);
@@ -489,10 +483,10 @@ test("the console connects, aligns and points at the quick start's target", asyn
   await page.clock.install({ time: new Date("2026-09-25T20:00:00+04:00") });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory?turbo");
-  await page.getByRole("button", { name: /Start · Albireo/ }).click();
+  await page.getByRole("button", { name: /FIND & TRACK/ }).click();
 
   // Align and point run as one chain; the feed is the sky model's.
-  await expect(page.locator(".sdo-flow .is-now")).toContainText("Align", {
+  await expect(page.locator(".oh-pipe [aria-current=step]")).toContainText("Align", {
     timeout: 15_000,
   });
   const view = page.getByRole("region", { name: "Telescope view" });
@@ -508,9 +502,9 @@ test("the console connects, aligns and points at the quick start's target", asyn
   await expect(view.getByText(/^Albireo/)).toBeVisible();
   await expect(page.getByRole("button", { name: /^Capture \d+ × \d+ m?s/ })).toBeEnabled();
 
-  // Ending the session parks the mount and returns the console to standby.
-  await page.getByRole("button", { name: "Park & end" }).click();
-  await expect(view.getByRole("status")).toHaveText("Standby");
+  // Park drives the mount home.
+  await page.locator(".oh-head").getByRole("button", { name: "Park" }).click();
+  await expect(view.getByRole("status")).toHaveText(/Parking|Parked/);
 });
 
 test("/network is folded into the observatory page", async ({ page }) => {
@@ -532,8 +526,8 @@ test("preserves observatory locale and mobile width", async ({ page }) => {
   );
   // The site header on the phone too; the console's bar keeps the station and the badge.
   await expect(page.getByRole("banner")).toHaveCount(1);
-  await expect(page.locator(".sdo-pstation")).toContainText("სტელარი თბილისი");
-  await expect(page.locator(".sdo-phead .sdo-pill--sim")).toHaveText("სიმულირებული");
+  await expect(page.locator(".oh-head .oh-bt b")).toHaveText("სტელარი თბილისი");
+  await expect(page.locator(".oh-head .oh-badge")).toHaveText("სიმულირებული");
 
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,

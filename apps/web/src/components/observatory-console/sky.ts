@@ -1,3 +1,4 @@
+import { Body, Illumination, MoonPhase, Observer, SearchRiseSet } from 'astronomy-engine';
 import { getSunAltitude, getTonightDarkWindow } from '@/lib/observatory-sim/dark-window';
 import type { Station } from '@/lib/observatory-sim/sim-stations';
 import { targetPosition, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
@@ -63,4 +64,34 @@ export function settleSkyClock(station: Station, now = Date.now()): number {
     }
   }
   return skyOffsetMs;
+}
+
+export type TonightSky = {
+  sunset: number | null;
+  sunrise: number | null;
+  duskStart: number | null;
+  dawnEnd: number | null;
+  moonPercent: number;
+  moonWaxing: boolean;
+  moonRise: number | null;
+  moonSet: number | null;
+};
+
+/** Tonight at the station, as the hub's Tonight card reads it: Sun, darkness and Moon. */
+export function tonightSky(station: Station, now: Date): TonightSky {
+  const observer = new Observer(station.lat, station.lon, 0);
+  const w = getTonightDarkWindow(station.lat, station.lon, now, station.timezone);
+  const from = new Date((w.duskStart?.getTime() ?? now.getTime()) - 6 * 3_600_000);
+  const at = (r: { date: Date } | null) => r?.date.getTime() ?? null;
+  const phase = MoonPhase(now);
+  return {
+    sunset: at(SearchRiseSet(Body.Sun, observer, -1, from, 1)),
+    sunrise: at(SearchRiseSet(Body.Sun, observer, +1, w.duskStart ?? now, 1)),
+    duskStart: w.duskStart?.getTime() ?? null,
+    dawnEnd: w.dawnEnd?.getTime() ?? null,
+    moonPercent: Math.round(Illumination(Body.Moon, now).phase_fraction * 100),
+    moonWaxing: phase < 180,
+    moonRise: at(SearchRiseSet(Body.Moon, observer, +1, from, 1.5)),
+    moonSet: at(SearchRiseSet(Body.Moon, observer, -1, from, 1.5)),
+  };
 }

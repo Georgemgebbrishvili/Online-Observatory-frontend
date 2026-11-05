@@ -1,3 +1,4 @@
+import { brand } from "@/brand";
 import type { Locale } from "@/i18n/config";
 import type { TargetKind } from "@/lib/observatory-sim/telescope-targets";
 
@@ -5,23 +6,12 @@ import type { TargetKind } from "@/lib/observatory-sim/telescope-targets";
 export type ConsoleCopy = {
   observatory: string;
   utc: string;
-  darkLeft: string;
-  darkIn: string;
   simulated: string;
   simulatedLong: string;
   live: string;
   nightMode: string;
-  menu: string;
-  skyLabel: string;
-  sky: { night: string; twilight: string; day: string };
   cloud: string;
   seeing: string;
-  quick: {
-    title: string;
-    observe: (name: string | null) => string;
-    text: (name: string | null) => string;
-    start: (name: string | null) => string;
-  };
   dome: {
     title: string;
     aria: string;
@@ -29,18 +19,8 @@ export type ConsoleCopy = {
     down: (n: number) => string;
     press: string;
     scope: string;
-    kinds: Record<'planet' | 'moon' | 'star' | 'deep', string>;
   };
-  telescopes: {
-    title: string;
-    live: string;
-    comingSoon: string;
-    darkNow: string;
-    twilight: string;
-    daylight: string;
-    oneOpen: string;
-  };
-  session: { title: string; parkEnd: string; stop: string; confirmStop: string; booked: string };
+  session: { confirmStop: string; booked: string };
   pointing: {
     title: string;
     altAz: string;
@@ -55,18 +35,15 @@ export type ConsoleCopy = {
     trackRms: string;
     battery: string;
     sensor: string;
-    aria: string;
   };
   camera: {
     title: string;
     exposure: string;
     frames: string;
     gain: string;
-    roi: string;
     auto: string;
     less: string;
     more: string;
-    exposing: (done: string, total: string) => string;
     refresh: (seconds: string) => string;
     histogram: string;
   };
@@ -82,17 +59,14 @@ export type ConsoleCopy = {
     slewRate: string;
     tracking: string;
     trackingModes: { off: string; sidereal: string; lunar: string; solar: string };
-    focus: string;
     focusIn: string;
     focusOut: string;
-    autofocus: string;
     focusing: string;
     sync: string;
     synced: string;
     settings: string;
     stop: string;
     atLimit: { alt: string; cordwrap: string };
-    button: string;
     step: (arcmin: number) => string;
     operatorOnly: string;
   };
@@ -115,20 +89,12 @@ export type ConsoleCopy = {
     note: string;
   };
   frames: {
-    title: string;
-    thisSession: (count: number) => string;
-    empty: string;
     open: (n: number, name: string) => string;
-    captured: string;
-    add: string;
   };
   stage: {
     aria: string;
-    optics: string;
     train: string;
     roi: string;
-    reticle: string;
-    fullView: string;
     liveFeed: string;
     simulatedFeed: string;
     standby: string;
@@ -141,39 +107,12 @@ export type ConsoleCopy = {
     conditions: string;
   };
   steps: {
-    label: string;
-    names: [string, string, string, string, string];
-    youPick: string;
-    of: (step: number, count: number) => string;
     hints: {
-      connect: string;
-      align: string;
-      target: (quick: string | null) => string;
-      point: (seconds: number) => string;
-      stacking: (done: number, goal: number, exposure: string) => string;
-      liveStack: (done: number, goal: number) => string;
-      settled: string;
-      tracking: string;
-      drifting: string;
       belowHorizon: string;
-      platform: { connect: string; running: string; observing: string; stopped: string };
     };
-    connecting: string;
-    connectTo: (name: string) => string;
-    stationDetails: string;
-    parking: string;
-    aligning: string;
-    align: string;
-    parkHome: string;
-    pointTo: (name: string) => string;
-    chooseTarget: string;
-    search: string;
-    cancelGoto: string;
-    stacking: (done: number, goal: number) => string;
     capture: (subs: number, exposure: string) => string;
     stopStack: string;
     recentre: string;
-    changeTarget: string;
     startSession: string;
     starting: string;
     waiting: string;
@@ -196,7 +135,18 @@ export type ConsoleCopy = {
     aligning: string;
     ready: string;
     connected: string;
-    platform: Record<"starting" | "connecting" | "reconnecting" | "connected" | "live" | "ended" | "refused" | "error" | "offline" | "idle", string>;
+    platform: Record<
+      | "starting"
+      | "connecting"
+      | "reconnecting"
+      | "connected"
+      | "ended"
+      | "refused"
+      | "error"
+      | "offline"
+      | "idle",
+      string
+    >;
   };
   idle: {
     text: (quick: string | null) => string;
@@ -205,9 +155,7 @@ export type ConsoleCopy = {
     chooseRisen: string;
     platform: (target: string) => string;
   };
-  phone: { tracking: string; seeing: string; frames: string };
   details: {
-    title: (name: string) => string;
     site: string;
     elevation: string;
     sky: string;
@@ -224,33 +172,7 @@ export type ConsoleCopy = {
     cameraKind: string;
   };
   targets: {
-    title: string;
-    search: string;
-    order: string;
-    zenith: string;
-    brightest: string;
-    name: string;
-    kind: string;
-    all: string;
-    solar: string;
-    nebula: string;
-    galaxy: string;
-    cluster: string;
-    star: string;
-    tonight: string;
-    tonightBadge: string;
-    now: string;
-    notRisen: string;
-    point: string;
-    foot: (station: string) => string;
-    refusedBelow: string;
     kinds: Record<TargetKind, string>;
-    mag: string;
-    coordinates: string;
-    ra: string;
-    dec: string;
-    goto: string;
-    invalid: string;
   };
   refused: {
     head: string;
@@ -292,7 +214,160 @@ export type ConsoleCopy = {
     failed: string;
   };
   /** What the field is going through right now, over the view. */
-  alerts: { belowHorizon: string; low: (limitDeg: number) => string; cloud: string; dew: (humidity: number) => string };
+  alerts: {
+    belowHorizon: string;
+    low: (limitDeg: number) => string;
+    cloud: string;
+    dew: (humidity: number) => string;
+  };
+  /** The Observatory Hub's cockpit (ADR-083): its panels, in its words. */
+  hub: {
+    brand: string;
+    devices: {
+      mount: string;
+      camera: string;
+      focuser: string;
+      online: string;
+      offline: string;
+      aligned: string;
+      parked: string;
+      slewing: string;
+      pos: (n: number) => string;
+      fps: (n: number) => string;
+    };
+    lst: string;
+    park: string;
+    stopAll: string;
+    night: string;
+    tonight: {
+      title: string;
+      sunset: string;
+      sunrise: string;
+      darkFrom: string;
+      darkUntil: string;
+      moon: string;
+      moonRiseSet: string;
+      waxing: string;
+      waning: string;
+      darkIn: (t: string) => string;
+      darkNow: (t: string) => string;
+      daytime: string;
+    };
+    targets: {
+      title: string;
+      up: (n: number) => string;
+      best: string;
+      search: string;
+      filters: { planet: string; star: string; deep: string; custom: string; all: string };
+      customForm: string;
+      ra: string;
+      dec: string;
+      add: string;
+      invalid: string;
+      none: string;
+      below: string;
+      booked: string;
+    };
+    view: string;
+    mode: string;
+    optics: string;
+    roi: string;
+    auto: string;
+    autoExp: string;
+    focus: string;
+    export: string;
+    png: string;
+    grid: string;
+    reticle: string;
+    invert: string;
+    mirror: string;
+    flip: string;
+    full: string;
+    controls: string;
+    tabs: {
+      mount: string;
+      align: string;
+      focus: string;
+      capture: string;
+      setup: string;
+      log: string;
+    };
+    autopilot: {
+      title: string;
+      pick: string;
+      go: string;
+      cancel: string;
+      recentre: string;
+      busy: string;
+      pipe: [string, string, string, string, string];
+      offTarget: string;
+      pass: string;
+      solveTime: string;
+      whereAmI: string;
+      gotoOnly: string;
+      sync: string;
+      after: string;
+      autoCamera: string;
+      keepCentred: string;
+      booked: string;
+    };
+    align: {
+      steps: [string, string, string, string];
+      points: string;
+      none: string;
+      clear: string;
+    };
+    focuser: {
+      title: string;
+      position: string;
+      offset: string;
+      state: string;
+      idle: string;
+      moving: string;
+      out: string;
+      in: string;
+      run: string;
+      curve: string;
+    };
+    camera: {
+      size: string;
+      depth: string;
+      rate: string;
+      exposure: string;
+      gain: string;
+      sensor: string;
+      recent: string;
+      noFrames: string;
+      idle: string;
+      running: (done: number, goal: number) => string;
+    };
+    setup: { telescope: string; site: string; mountSettings: string };
+    log: { title: string; empty: string };
+    hc: {
+      brand: string;
+      ready: string;
+      keys: {
+        align: string;
+        back: string;
+        enter: string;
+        option: string;
+        solar: string;
+        stars: string;
+        deep: string;
+        identify: string;
+        focuser: string;
+        menu: string;
+        speed: string;
+        info: string;
+        tour: string;
+        help: string;
+      };
+      ratePrompt: string;
+      rateSet: (n: number) => string;
+      noObject: string;
+    };
+    phoneTabs: { live: string; targets: string; controls: string };
+  };
   provenanceSimulated: string;
   close: string;
 };
@@ -300,45 +375,22 @@ export type ConsoleCopy = {
 const en: ConsoleCopy = {
   observatory: "Observatory",
   utc: "UTC",
-  darkLeft: "Dark left",
-  darkIn: "Dark in",
   simulated: "Simulated",
   simulatedLong: "sky model",
   live: "Live",
   nightMode: "Night mode",
-  menu: "Menu",
-  skyLabel: "Sky",
-  sky: { night: "Dark", twilight: "Twilight", day: "Day" },
   cloud: "Cloud",
   seeing: "Seeing",
-  quick: {
-    title: "Quick start",
-    observe: (name) => (name ? `Observe ${name}` : "Observe"),
-    text: (name) =>
-      name
-        ? `Connect, align and point at ${name} in one go. About a minute.`
-        : "Nothing in the catalogue is up right now.",
-    start: (name) => (name ? `Start · ${name}` : "Start"),
-  },
   dome: {
     title: "Sky tonight",
     aria: "Tonight's sky over the telescope, twenty showpieces",
     up: (n) => `${n} up`,
     down: (n) => `${n} below the horizon`,
-    press: "Press an object: the mount slews, solves and centres it, then the live stack settles.",
+    press:
+      "Press an object: the mount slews, solves and centres it, then the live stack settles.",
     scope: "Telescope",
-    kinds: { planet: "Planet", moon: "Moon", star: "Double star", deep: "Deep sky" },
   },
-  telescopes: {
-    title: "Telescopes",
-    live: "Live",
-    comingSoon: "Coming soon",
-    darkNow: "Dark now",
-    twilight: "Twilight",
-    daylight: "Daylight",
-    oneOpen: "One telescope, in Georgia. More to come.",
-  },
-  session: { title: "Session", parkEnd: "Park & end", stop: "Stop observation", confirmStop: "Confirm stop", booked: "Booked target" },
+  session: { confirmStop: "Confirm stop", booked: "Booked target" },
   pointing: {
     title: "Pointing",
     altAz: "Alt · Az",
@@ -353,19 +405,17 @@ const en: ConsoleCopy = {
     trackRms: "Track RMS",
     battery: "Battery",
     sensor: "Sensor",
-    aria: "Pointing: altitude and azimuth",
   },
   camera: {
     title: "Camera",
     exposure: "Exposure",
     frames: "Frames to stack",
     gain: "Gain",
-    roi: "Read-out",
     auto: "Auto for target",
     less: "less",
     more: "more",
-    exposing: (done, total) => `Exposing · ${done} / ${total}`,
-    refresh: (seconds) => `View refreshes every ${seconds}. Use a short exposure to centre.`,
+    refresh: (seconds) =>
+      `View refreshes every ${seconds}. Use a short exposure to centre.`,
     histogram: "Histogram",
   },
   hand: {
@@ -380,17 +430,14 @@ const en: ConsoleCopy = {
     slewRate: "Slew rate",
     tracking: "Tracking",
     trackingModes: { off: "Off", sidereal: "Sidereal", lunar: "Lunar", solar: "Solar" },
-    focus: "Focus",
     focusIn: "Focus in",
     focusOut: "Focus out",
-    autofocus: "Autofocus",
     focusing: "Focusing…",
     sync: "Sync",
     synced: "Synced here",
     settings: "Mount settings",
     stop: "Stop",
     atLimit: { alt: "Altitude limit", cordwrap: "Cordwrap limit" },
-    button: "Hand control",
     step: (arcmin) => `${arcmin}′ steps`,
     operatorOnly: "Operator-only on the real instrument",
   },
@@ -413,20 +460,12 @@ const en: ConsoleCopy = {
     note: "The hand control's Scope Setup. The platform's safety limits (20°–85°, Sun avoidance) override these.",
   },
   frames: {
-    title: "Frames",
-    thisSession: (count) => `${count} this session`,
-    empty: "Capture opens once the mount is tracking a target.",
     open: (n, name) => `Open frame ${n}, ${name}`,
-    captured: "Captured",
-    add: "Capture a new frame",
   },
   stage: {
     aria: "Telescope view",
-    optics: "Optics",
     train: "Optical train",
     roi: "Read-out region",
-    reticle: "Reticle",
-    fullView: "Full view (F)",
     liveFeed: "Live feed",
     simulatedFeed: "Simulated feed",
     standby: "Standby",
@@ -439,45 +478,12 @@ const en: ConsoleCopy = {
     conditions: "Conditions",
   },
   steps: {
-    label: "Steps",
-    names: ["Connect", "Align", "Target", "Point", "Capture"],
-    youPick: "you pick",
-    of: (step, count) => `Step ${step} of ${count}`,
     hints: {
-      connect: "Connect to the telescope to start.",
-      align: "The mount leaves home, solves a field and syncs. Then the feed starts.",
-      target: (quick) =>
-        `Select a target that has risen.${quick ? ` Quick start points at ${quick}.` : ""}`,
-      point: (seconds) => `GoTo at 5°/s, plate-solve and centre. About ${seconds} seconds.`,
-      stacking: (done, goal, exposure) => `Stacking ${done} of ${goal} frames of ${exposure}.`,
-      liveStack: (done, goal) => `Live stack ${done} of ${goal}: the air's ripple averages out as the frames align.`,
-      settled: "The stack has settled. Capture keeps this frame.",
-      tracking: "On target and tracking. Nudge with the pad.",
-      drifting: "Tracking is off: the sky drifts through the field at sidereal rate.",
       belowHorizon: "The target has set below the horizon. Choose another.",
-      platform: {
-        connect: "Start your session to take the real instrument's controls.",
-        running: "Slewing to your booked target. Nudges open once centred.",
-        observing: "On your target. Nudge, re-centre or capture.",
-        stopped: "The observation has ended.",
-      },
     },
-    connecting: "Connecting…",
-    connectTo: (name) => `Connect to ${name}`,
-    stationDetails: "Station details",
-    parking: "Parking…",
-    aligning: "Aligning…",
-    align: "Align",
-    parkHome: "Park at home",
-    pointTo: (name) => `Point to ${name}`,
-    chooseTarget: "Choose a target",
-    search: "Search",
-    cancelGoto: "Cancel GoTo",
-    stacking: (done, goal) => `Stacking ${done} / ${goal}`,
     capture: (subs, exposure) => `Capture ${subs} × ${exposure}`,
     stopStack: "Stop stack",
     recentre: "Re-centre",
-    changeTarget: "Change target",
     startSession: "Start session",
     starting: "Starting…",
     waiting: "Waiting for the observatory…",
@@ -505,7 +511,6 @@ const en: ConsoleCopy = {
       connecting: "Connecting",
       reconnecting: "Reconnecting",
       connected: "Session open",
-      live: "Live",
       ended: "Ended",
       refused: "Refused",
       error: "Error",
@@ -516,16 +521,15 @@ const en: ConsoleCopy = {
   idle: {
     text: (quick) =>
       quick
-        ? `Connect and align, or use Quick start for ${quick}.`
-        : "Connect and align to start the feed.",
+        ? `Press Find & Track: the telescope aligns itself, finds ${quick} and tracks it.`
+        : "Pick a target, then press Find & Track.",
     ready: "Ready to point",
-    pointTo: (name) => `Point to ${name} to begin.`,
+    pointTo: (name) => `Press Find & Track to point at ${name}.`,
     chooseRisen: "Choose a target that has risen.",
-    platform: (target) => `Your booked observation: ${target}. Start the session to take control.`,
+    platform: (target) =>
+      `Your booked observation: ${target}. Start the session to take control.`,
   },
-  phone: { tracking: "Tracking", seeing: "Seeing", frames: "Frames" },
   details: {
-    title: (name) => `${name} · details`,
     site: "Site",
     elevation: "Elevation",
     sky: "Sky",
@@ -542,26 +546,6 @@ const en: ConsoleCopy = {
     cameraKind: "Colour CMOS camera",
   },
   targets: {
-    title: "Choose a target",
-    search: "Search the catalogue",
-    order: "Order",
-    zenith: "Highest",
-    brightest: "Brightest",
-    name: "Name",
-    kind: "Kind",
-    all: "All",
-    solar: "Planets & Moon",
-    nebula: "Nebulae",
-    galaxy: "Galaxies",
-    cluster: "Clusters",
-    star: "Stars",
-    tonight: "Tonight",
-    tonightBadge: "TONIGHT",
-    now: "Now",
-    notRisen: "Not risen",
-    point: "Point",
-    foot: (station) => `Curves: altitude dusk → dawn for ${station} · orange line: now`,
-    refusedBelow: "Below the horizon is refused",
     kinds: {
       planet: "planet",
       moon: "moon",
@@ -570,21 +554,13 @@ const en: ConsoleCopy = {
       cluster: "cluster",
       star: "star",
     },
-    mag: "mag",
-    coordinates: "Go to coordinates",
-    ra: "RA (hh:mm:ss)",
-    dec: "Dec (±dd:mm:ss)",
-    goto: "GoTo",
-    invalid: "Enter RA 0–24 h and Dec −90° to +90°.",
   },
   refused: {
     head: "Refused · safety envelope",
     notRisen: (name) => `${name} has not risen`,
     refused: (name) => `${name} is refused`,
-    below: (station) =>
-      `Below the horizon for ${station}. Nothing moved.`,
-    reason: (reason) =>
-      `${reason}. Nothing moved.`,
+    below: (station) => `Below the horizon for ${station}. Nothing moved.`,
+    reason: (reason) => `${reason}. Nothing moved.`,
     rises: "RISES",
     best: "BEST",
     notUpTonight: "— NOT UP TONIGHT",
@@ -624,6 +600,165 @@ const en: ConsoleCopy = {
     cloud: "Cloud passing",
     dew: (humidity) => `Dew on the optics · ${humidity}%`,
   },
+  hub: {
+    brand: "ONLINE OBSERVATORY",
+    devices: {
+      mount: "Mount",
+      camera: "Camera",
+      focuser: "Focuser",
+      online: "Online",
+      offline: "Offline",
+      aligned: "Aligned",
+      parked: "Parked",
+      slewing: "Slewing",
+      pos: (n) => `Pos ${n}`,
+      fps: (n) => `${n} fps`,
+    },
+    lst: "LST",
+    park: "Park",
+    stopAll: "STOP",
+    night: "Night",
+    tonight: {
+      title: "Tonight",
+      sunset: "Sunset",
+      sunrise: "Sunrise",
+      darkFrom: "Dark from",
+      darkUntil: "Dark until",
+      moon: "Moon",
+      moonRiseSet: "Moon rise / set",
+      waxing: "wax.",
+      waning: "wan.",
+      darkIn: (t) => `dark in ${t}`,
+      darkNow: (t) => `dark for ${t}`,
+      daytime: "daytime",
+    },
+    targets: {
+      title: "Targets",
+      up: (n) => `${n} up now`,
+      best: "Best right now",
+      search: "Search M42, Jupiter, Vega…",
+      filters: { planet: "Solar sys", star: "Stars", deep: "Deep sky", custom: "Custom", all: "All" },
+      customForm: "Add a target by coordinates",
+      ra: "RA (hh:mm:ss)",
+      dec: "Dec (±dd:mm:ss)",
+      add: "Add target",
+      invalid: "RA runs 0–24 h and Dec −90° to +90°, as hh:mm:ss and ±dd:mm:ss.",
+      none: "Nothing matches",
+      below: "below",
+      booked: "Booked",
+    },
+    view: "View",
+    mode: "Mode",
+    optics: "Optics",
+    roi: "Crop",
+    auto: "Auto",
+    autoExp: "Auto exp",
+    focus: "Focus",
+    export: "Export",
+    png: "PNG",
+    grid: "Grid",
+    reticle: "Reticle",
+    invert: "Invert",
+    mirror: "Mirror",
+    flip: "Flip",
+    full: "Full",
+    controls: "Controls",
+    tabs: {
+      mount: "Mount",
+      align: "Align",
+      focus: "Focus",
+      capture: "Capture",
+      setup: "Setup",
+      log: "Log",
+    },
+    autopilot: {
+      title: "Autopilot",
+      pick: "Pick a target",
+      go: "FIND & TRACK",
+      cancel: "CANCEL GOTO",
+      recentre: "RE-CENTRE",
+      busy: "WORKING…",
+      pipe: ["Align", "Slew", "Solve", "Center", "Track"],
+      offTarget: "Off target",
+      pass: "Pass",
+      solveTime: "Solve time",
+      whereAmI: "Where am I?",
+      gotoOnly: "GoTo only",
+      sync: "Sync",
+      after: "After it locks on",
+      autoCamera: "The camera takes the target's recipe",
+      keepCentred: "Tracking keeps it centred",
+      booked: "Your booked target: the platform runs the GoTo.",
+    },
+    align: {
+      steps: [
+        "The mount starts level at home, switched on: no hand-controller alignment needed.",
+        "Easiest: press Where am I? or just Find & Track. The camera recognises the stars and aligns by itself.",
+        "Manual way: centre a bright object on the reticle and press Sync.",
+        "Every successful plate solve adds a point and improves GoTo accuracy.",
+      ],
+      points: "Alignment points",
+      none: "none yet",
+      clear: "Clear alignment",
+    },
+    focuser: {
+      title: "Focuser",
+      position: "Position",
+      offset: "From best",
+      state: "Motor",
+      idle: "still",
+      moving: "moving",
+      out: "Focus out",
+      in: "Focus in",
+      run: "Run autofocus",
+      curve: "Autofocus (V-curve)",
+    },
+    camera: {
+      size: "Size",
+      depth: "Depth",
+      rate: "Rate",
+      exposure: "Exposure",
+      gain: "Gain",
+      sensor: "Sensor",
+      recent: "Recent frames",
+      noFrames: "Captured frames appear here",
+      idle: "No capture running",
+      running: (d, g) => `Stacking ${d} / ${g}`,
+    },
+    setup: {
+      telescope: "Telescope",
+      site: "Observing site",
+      mountSettings: "Mount settings",
+    },
+    log: {
+      title: "Session log",
+      empty: "Nothing yet. Every step the telescope takes is written here.",
+    },
+    hc: {
+      brand: brand.en.name.toUpperCase(),
+      ready: "Ready",
+      keys: {
+        align: "ALIGN",
+        back: "BACK",
+        enter: "ENTER",
+        option: "Option",
+        solar: "SOLAR SYSTEM",
+        stars: "STARS",
+        deep: "DEEP SKY",
+        identify: "IDENTIFY",
+        focuser: "FOCUSER",
+        menu: "MENU",
+        speed: "MOTOR SPEED",
+        info: "OBJECT INFO",
+        tour: "SKY TOUR",
+        help: "HELP",
+      },
+      ratePrompt: "Rate? 1-9",
+      rateSet: (n) => `Rate ${n}`,
+      noObject: "No object near",
+    },
+    phoneTabs: { live: "Live", targets: "Targets", controls: "Controls" },
+  },
   provenanceSimulated: "Simulated · sky model",
   close: "Close",
 };
@@ -631,45 +766,22 @@ const en: ConsoleCopy = {
 const ka: ConsoleCopy = {
   observatory: "ობსერვატორია",
   utc: "UTC",
-  darkLeft: "ბნელა კიდევ",
-  darkIn: "დაბნელდება",
   simulated: "სიმულირებული",
   simulatedLong: "ცის მოდელი",
   live: "პირდაპირი",
   nightMode: "ღამის რეჟიმი",
-  menu: "მენიუ",
-  skyLabel: "ცა",
-  sky: { night: "ბნელა", twilight: "ბინდი", day: "დღეა" },
   cloud: "ღრუბლიანობა",
   seeing: "სიინგი",
-  quick: {
-    title: "სწრაფი დაწყება",
-    observe: (name) => name ?? "დაკვირვება",
-    text: (name) =>
-      name
-        ? `დაკავშირება, გასწორება და მიმართვა (${name}) ერთი ნაბიჯით. დაახლოებით ერთი წუთი.`
-        : "ახლა ცაზე არაფერია ამოსული.",
-    start: (name) => (name ? `დაწყება · ${name}` : "დაწყება"),
-  },
   dome: {
     title: "ამაღამ ცაზე",
     aria: "ამაღამდელი ცა ტელესკოპის თავზე, ოცი გამორჩეული ობიექტი",
     up: (n) => `${n} ამოსული`,
     down: (n) => `ჰორიზონტს ქვემოთ: ${n}`,
-    press: "დააჭირე ობიექტს: მონტირება მიტრიალდება, კადრს ამოიცნობს და დააცენტრებს, მერე დაჯამება სურათს გაასუფთავებს.",
+    press:
+      "დააჭირე ობიექტს: მონტირება მიტრიალდება, კადრს ამოიცნობს და დააცენტრებს, მერე დაჯამება სურათს გაასუფთავებს.",
     scope: "ტელესკოპი",
-    kinds: { planet: "პლანეტა", moon: "მთვარე", star: "ორმაგი ვარსკვლავი", deep: "ღრმა ცა" },
   },
-  telescopes: {
-    title: "ტელესკოპები",
-    live: "პირდაპირი",
-    comingSoon: "მალე",
-    darkNow: "ახლა ბნელა",
-    twilight: "ბინდი",
-    daylight: "დღეა",
-    oneOpen: "ერთი ტელესკოპი, საქართველოში. მეტი მალე დაემატება.",
-  },
-  session: { title: "სეანსი", parkEnd: "პარკირება და დასრულება", stop: "დაკვირვების შეწყვეტა", confirmStop: "შეწყვეტის დადასტურება", booked: "დაჯავშნილი ობიექტი" },
+  session: { confirmStop: "შეწყვეტის დადასტურება", booked: "დაჯავშნილი ობიექტი" },
   pointing: {
     title: "მიმართულება",
     altAz: "სიმ · აზ",
@@ -684,19 +796,17 @@ const ka: ConsoleCopy = {
     trackRms: "ტრეკინგის RMS",
     battery: "ბატარეა",
     sensor: "სენსორი",
-    aria: "მიმართულება: სიმაღლე და აზიმუტი",
   },
   camera: {
     title: "კამერა",
     exposure: "ექსპოზიცია",
     frames: "დასაჯამებელი კადრები",
     gain: "გაძლიერება",
-    roi: "წაკითხვის არე",
     auto: "ავტომატურად ობიექტისთვის",
     less: "ნაკლები",
     more: "მეტი",
-    exposing: (done, total) => `ექსპოზიცია · ${done} / ${total}`,
-    refresh: (seconds) => `ხედი ახლდება ყოველ ${seconds}. დასაცენტრებლად აირჩიე მოკლე ექსპოზიცია.`,
+    refresh: (seconds) =>
+      `ხედი ახლდება ყოველ ${seconds}. დასაცენტრებლად აირჩიე მოკლე ექსპოზიცია.`,
     histogram: "ჰისტოგრამა",
   },
   hand: {
@@ -710,18 +820,20 @@ const ka: ConsoleCopy = {
     recentre: "ობიექტის ხელახლა დაცენტრება",
     slewRate: "მოძრაობის სიჩქარე",
     tracking: "ტრეკინგი",
-    trackingModes: { off: "გამორთ.", sidereal: "ვარსკვლავური", lunar: "მთვარის", solar: "მზის" },
-    focus: "ფოკუსი",
+    trackingModes: {
+      off: "გამორთ.",
+      sidereal: "ვარსკვლავური",
+      lunar: "მთვარის",
+      solar: "მზის",
+    },
     focusIn: "ფოკუსი შიგნით",
     focusOut: "ფოკუსი გარეთ",
-    autofocus: "ავტოფოკუსი",
     focusing: "ფოკუსირდება…",
     sync: "სინქრონიზაცია",
     synced: "სინქრონიზებულია აქ",
     settings: "მონტირების პარამეტრები",
     stop: "გაჩერება",
     atLimit: { alt: "სიმაღლის ზღვარი", cordwrap: "კაბელის ზღვარი" },
-    button: "ხელის პულტი",
     step: (arcmin) => `ნაბიჯი ${arcmin}′`,
     operatorOnly: "ნამდვილ ინსტრუმენტზე მხოლოდ ოპერატორისთვის",
   },
@@ -744,20 +856,12 @@ const ka: ConsoleCopy = {
     note: "ხელის პულტის Scope Setup. პლატფორმის უსაფრთხოების ზღვრები (20°–85°, მზისგან დაცვა) ამ პარამეტრებზე მაღლა დგას.",
   },
   frames: {
-    title: "კადრები",
-    thisSession: (count) => `ამ სეანსში ${count}`,
-    empty: "გადაღება იხსნება, როცა მონტირება ობიექტს მიჰყვება.",
     open: (n, name) => `გახსენი კადრი ${n}: ${name}`,
-    captured: "გადაღებული",
-    add: "ახალი კადრის გადაღება",
   },
   stage: {
     aria: "ტელესკოპის ხედი",
-    optics: "ოპტიკა",
     train: "ოპტიკური სქემა",
     roi: "წაკითხვის არე",
-    reticle: "ბადე",
-    fullView: "სრული ხედი (F)",
     liveFeed: "პირდაპირი ეთერი",
     simulatedFeed: "სიმულირებული ეთერი",
     standby: "მოლოდინი",
@@ -770,45 +874,12 @@ const ka: ConsoleCopy = {
     conditions: "პირობები",
   },
   steps: {
-    label: "ნაბიჯები",
-    names: ["დაკავშირება", "გასწორება", "ობიექტი", "მიმართვა", "გადაღება"],
-    youPick: "შენ ირჩევ",
-    of: (step, count) => `ნაბიჯი ${step} / ${count}`,
     hints: {
-      connect: "დასაწყებად დაუკავშირდი ტელესკოპს.",
-      align: "მონტირება ტოვებს საწყის პოზიციას, ამოიცნობს ველს და სინქრონდება. მერე ეთერი იწყება.",
-      target: (quick) =>
-        `აირჩიე ამოსული ობიექტი.${quick ? ` სწრაფი დაწყება მიმართავს: ${quick}.` : ""}`,
-      point: (seconds) => `GoTo 5°/წმ სიჩქარით, კადრის ამოცნობა და დაცენტრება. დაახლოებით ${seconds} წამი.`,
-      stacking: (done, goal, exposure) => `ჯამდება ${done} / ${goal} კადრი, თითო ${exposure}.`,
-      liveStack: (done, goal) => `პირდაპირი დაჯამება ${done} / ${goal}: კადრები ერთმანეთს ესწორება და ჰაერის ტალღა ქრება.`,
-      settled: "დაჯამება დასრულდა. გადაღება ამ კადრს შეინახავს.",
-      tracking: "ობიექტზეა და ცას მიჰყვება. გადასაწევად გამოიყენე პულტი.",
-      drifting: "ტრეკინგი გამორთულია: ცა ხედვის ველში ვარსკვლავური სიჩქარით მიცურავს.",
       belowHorizon: "ობიექტი ჰორიზონტს ქვემოთ ჩავიდა. აირჩიე სხვა.",
-      platform: {
-        connect: "დაიწყე სეანსი ტელესკოპის სამართავად.",
-        running: "ტელესკოპი შენი ობიექტისკენ მოძრაობს. გადაწევა დაცენტრების შემდეგ ჩაირთვება.",
-        observing: "შენს ობიექტზეა. გადაწიე, ხელახლა დააცენტრე ან გადაიღე.",
-        stopped: "დაკვირვება დასრულდა.",
-      },
     },
-    connecting: "უკავშირდება…",
-    connectTo: (name) => `დაუკავშირდი: ${name}`,
-    stationDetails: "სადგურის დეტალები",
-    parking: "პარკირება…",
-    aligning: "სწორდება…",
-    align: "გასწორება",
-    parkHome: "პარკირება საწყისზე",
-    pointTo: (name) => `მიმართე: ${name}`,
-    chooseTarget: "აირჩიე ობიექტი",
-    search: "ძიება",
-    cancelGoto: "GoTo-ს გაუქმება",
-    stacking: (done, goal) => `ჯამდება ${done} / ${goal}`,
     capture: (subs, exposure) => `გადაიღე ${subs} × ${exposure}`,
     stopStack: "დაჯამების შეჩერება",
     recentre: "ხელახლა დაცენტრება",
-    changeTarget: "ობიექტის შეცვლა",
     startSession: "სეანსის დაწყება",
     starting: "იწყება…",
     waiting: "ობსერვატორიის მოლოდინი…",
@@ -836,7 +907,6 @@ const ka: ConsoleCopy = {
       connecting: "უკავშირდება",
       reconnecting: "ხელახლა უკავშირდება",
       connected: "სეანსი ღიაა",
-      live: "პირდაპირი",
       ended: "დასრულდა",
       refused: "უარყოფილია",
       error: "შეცდომა",
@@ -847,16 +917,15 @@ const ka: ConsoleCopy = {
   idle: {
     text: (quick) =>
       quick
-        ? `დაუკავშირდი და გაასწორე, ან სწრაფი დაწყებით გადადი: ${quick}.`
-        : "დაუკავშირდი და გაასწორე ეთერის დასაწყებად.",
+        ? `დააჭირე „პოვნა და მიყოლას“: ტელესკოპი თვითონ სწორდება, პოულობს ობიექტს (${quick}) და მიჰყვება.`
+        : "აირჩიე ობიექტი და დააჭირე „პოვნა და მიყოლას“.",
     ready: "მზადაა მიმართვისთვის",
-    pointTo: (name) => `დასაწყებად მიმართე: ${name}.`,
+    pointTo: (name) => `დააჭირე „პოვნა და მიყოლას“, რომ მიმართო: ${name}.`,
     chooseRisen: "აირჩიე ამოსული ობიექტი.",
-    platform: (target) => `შენი დაჯავშნილი დაკვირვება: ${target}. დაიწყე სეანსი სამართავად.`,
+    platform: (target) =>
+      `შენი დაჯავშნილი დაკვირვება: ${target}. დაიწყე სეანსი სამართავად.`,
   },
-  phone: { tracking: "ტრეკინგი", seeing: "სიინგი", frames: "კადრები" },
   details: {
-    title: (name) => `${name} · დეტალები`,
     site: "ადგილი",
     elevation: "სიმაღლე ზღვის დონიდან",
     sky: "ცა",
@@ -873,26 +942,6 @@ const ka: ConsoleCopy = {
     cameraKind: "ფერადი CMOS კამერა",
   },
   targets: {
-    title: "აირჩიე ობიექტი",
-    search: "კატალოგში ძიება",
-    order: "დალაგება",
-    zenith: "ყველაზე მაღლა",
-    brightest: "ყველაზე კაშკაშა",
-    name: "სახელი",
-    kind: "ტიპი",
-    all: "ყველა",
-    solar: "პლანეტები და მთვარე",
-    nebula: "ნისლეულები",
-    galaxy: "გალაქტიკები",
-    cluster: "გროვები",
-    star: "ვარსკვლავები",
-    tonight: "ამაღამ",
-    tonightBadge: "ამაღამ",
-    now: "ახლა",
-    notRisen: "არ ამოსულა",
-    point: "მიმართე",
-    foot: (station) => `მრუდები: სიმაღლე ბინდიდან განთიადამდე (${station}) · ნარინჯისფერი ხაზი: ახლა`,
-    refusedBelow: "ჰორიზონტს ქვემოთ — უარყოფილია",
     kinds: {
       planet: "პლანეტა",
       moon: "მთვარე",
@@ -901,21 +950,13 @@ const ka: ConsoleCopy = {
       cluster: "გროვა",
       star: "ვარსკვლავი",
     },
-    mag: "სიდიდე",
-    coordinates: "კოორდინატებზე გადასვლა",
-    ra: "RA (სს:წწ:წწ)",
-    dec: "Dec (±გგ:წწ:წწ)",
-    goto: "GoTo",
-    invalid: "შეიყვანე RA 0–24 სთ და Dec −90°-დან +90°-მდე.",
   },
   refused: {
     head: "უარყოფილია · უსაფრთხოების ზღვარი",
     notRisen: (name) => `${name} არ ამოსულა`,
     refused: (name) => `${name} უარყოფილია`,
-    below: (station) =>
-      `ამ სადგურიდან (${station}) ჰორიზონტს ქვემოთაა. არაფერი გაინძრა.`,
-    reason: (reason) =>
-      `${reason}. არაფერი გაინძრა.`,
+    below: (station) => `ამ სადგურიდან (${station}) ჰორიზონტს ქვემოთაა. არაფერი გაინძრა.`,
+    reason: (reason) => `${reason}. არაფერი გაინძრა.`,
     rises: "ამოდის",
     best: "საუკეთესო",
     notUpTonight: "— ამაღამ არ ჩანს",
@@ -954,6 +995,165 @@ const ka: ConsoleCopy = {
     low: (limitDeg) => `დაბლაა · ${limitDeg}°-ზე ქვემოთ`,
     cloud: "ღრუბელი გადადის",
     dew: (humidity) => `ნამი ოპტიკაზე · ${humidity}%`,
+  },
+  hub: {
+    brand: "ონლაინ ობსერვატორია",
+    devices: {
+      mount: "მონტირება",
+      camera: "კამერა",
+      focuser: "ფოკუსერი",
+      online: "ჩართულია",
+      offline: "გამორთულია",
+      aligned: "სწორებულია",
+      parked: "პარკირებულია",
+      slewing: "ბრუნავს",
+      pos: (n) => `პოზ. ${n}`,
+      fps: (n) => `${n} კადრი/წმ`,
+    },
+    lst: "LST",
+    park: "პარკირება",
+    stopAll: "გაჩერება",
+    night: "ღამე",
+    tonight: {
+      title: "ამაღამ",
+      sunset: "მზის ჩასვლა",
+      sunrise: "მზის ამოსვლა",
+      darkFrom: "სიბნელე იწყება",
+      darkUntil: "სიბნელე მთავრდება",
+      moon: "მთვარე",
+      moonRiseSet: "მთვარე ამოდის / ჩადის",
+      waxing: "მზარდი",
+      waning: "კლებადი",
+      darkIn: (t) => `დაბნელდება ${t}-ში`,
+      darkNow: (t) => `ბნელა კიდევ ${t}`,
+      daytime: "დღეა",
+    },
+    targets: {
+      title: "ობიექტები",
+      up: (n) => `${n} ჩანს ახლა`,
+      best: "საუკეთესო ახლა",
+      search: "ძებნა: M42, იუპიტერი, ვეგა…",
+      filters: { planet: "მზის სისტ.", star: "ვარსკვ.", deep: "ღრმა ცა", custom: "საკუთარი", all: "ყველა" },
+      customForm: "ობიექტის დამატება კოორდინატებით",
+      ra: "RA (სთ:წთ:წმ)",
+      dec: "Dec (±გრ:წთ:წმ)",
+      add: "ობიექტის დამატება",
+      invalid: "RA 0–24 სთ-ია, Dec კი −90°-დან +90°-მდე, ფორმატით სთ:წთ:წმ და ±გრ:წთ:წმ.",
+      none: "ვერაფერი მოიძებნა",
+      below: "ქვემოთ",
+      booked: "დაჯავშნილი",
+    },
+    view: "ხედი",
+    mode: "რეჟიმი",
+    optics: "ოპტიკა",
+    roi: "ჭრა",
+    auto: "ავტო",
+    autoExp: "ავტო ექსპ.",
+    focus: "ფოკუსი",
+    export: "ექსპორტი",
+    png: "PNG",
+    grid: "ბადე",
+    reticle: "სამიზნე",
+    invert: "ინვერსია",
+    mirror: "სარკე",
+    flip: "ამოტრიალება",
+    full: "სრული",
+    controls: "მართვა",
+    tabs: {
+      mount: "მონტირება",
+      align: "სწორება",
+      focus: "ფოკუსი",
+      capture: "გადაღება",
+      setup: "პარამეტრები",
+      log: "ჟურნალი",
+    },
+    autopilot: {
+      title: "ავტოპილოტი",
+      pick: "აირჩიეთ ობიექტი",
+      go: "პოვნა და მიყოლა",
+      cancel: "GOTO-ს გაუქმება",
+      recentre: "ხელახლა ცენტრში",
+      busy: "მიმდინარეობს…",
+      pipe: ["სწორება", "მობრუნება", "ამოცნობა", "ცენტრი", "მიყოლა"],
+      offTarget: "აცდენა",
+      pass: "ცდა",
+      solveTime: "ამოცნობის დრო",
+      whereAmI: "სად ვარ?",
+      gotoOnly: "მხოლოდ GoTo",
+      sync: "სინქრონი",
+      after: "დამიზნების შემდეგ",
+      autoCamera: "კამერა ობიექტის რეცეპტს იღებს",
+      keepCentred: "მიყოლა ობიექტს ცენტრში ინახავს",
+      booked: "თქვენი დაჯავშნილი ობიექტი: GoTo-ს პლატფორმა ასრულებს.",
+    },
+    align: {
+      steps: [
+        "მონტირება სახლის პოზიციაში, ჩართული იწყებს: პულტით სწორება საჭირო არ არის.",
+        "უმარტივესი: დააჭირეთ „სად ვარ?“ ან უბრალოდ „პოვნა და მიყოლა“. კამერა ვარსკვლავებს ცნობს და თვითონ სწორდება.",
+        "ხელით: კაშკაშა ობიექტი სამიზნის ცენტრში მოიყვანეთ და დააჭირეთ „სინქრონს“.",
+        "ყოველი წარმატებული ამოცნობა წერტილს ამატებს და GoTo-ს სიზუსტეს აუმჯობესებს.",
+      ],
+      points: "სწორების წერტილები",
+      none: "ჯერ არცერთი",
+      clear: "სწორების წაშლა",
+    },
+    focuser: {
+      title: "ფოკუსერი",
+      position: "პოზიცია",
+      offset: "საუკეთესოდან",
+      state: "ძრავი",
+      idle: "გაჩერებულია",
+      moving: "მოძრაობს",
+      out: "ფოკუსი გარეთ",
+      in: "ფოკუსი შიგნით",
+      run: "ავტოფოკუსის გაშვება",
+      curve: "ავტოფოკუსი (V-მრუდი)",
+    },
+    camera: {
+      size: "ზომა",
+      depth: "სიღრმე",
+      rate: "სიხშირე",
+      exposure: "ექსპოზიცია",
+      gain: "გაძლიერება",
+      sensor: "სენსორი",
+      recent: "ბოლო კადრები",
+      noFrames: "გადაღებული კადრები აქ გამოჩნდება",
+      idle: "გადაღება არ მიმდინარეობს",
+      running: (d, g) => `დაჯამება ${d} / ${g}`,
+    },
+    setup: {
+      telescope: "ტელესკოპი",
+      site: "დაკვირვების ადგილი",
+      mountSettings: "მონტირების პარამეტრები",
+    },
+    log: {
+      title: "სეანსის ჟურნალი",
+      empty: "ჯერ ცარიელია. ტელესკოპის ყოველი ნაბიჯი აქ ჩაიწერება.",
+    },
+    hc: {
+      brand: brand.en.name.toUpperCase(),
+      ready: "Ready",
+      keys: {
+        align: "ALIGN",
+        back: "BACK",
+        enter: "ENTER",
+        option: "Option",
+        solar: "SOLAR SYSTEM",
+        stars: "STARS",
+        deep: "DEEP SKY",
+        identify: "IDENTIFY",
+        focuser: "FOCUSER",
+        menu: "MENU",
+        speed: "MOTOR SPEED",
+        info: "OBJECT INFO",
+        tour: "SKY TOUR",
+        help: "HELP",
+      },
+      ratePrompt: "Rate? 1-9",
+      rateSet: (n) => `Rate ${n}`,
+      noObject: "No object near",
+    },
+    phoneTabs: { live: "ლაივი", targets: "ობიექტები", controls: "მართვა" },
   },
   provenanceSimulated: "სიმულირებული · ცის მოდელი",
   close: "დახურვა",

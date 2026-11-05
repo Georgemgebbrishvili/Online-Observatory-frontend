@@ -18,7 +18,7 @@ const altitude = (page: Page) =>
 
 async function onTarget(page: Page) {
   await page.goto("/en/observatory?turbo");
-  await page.getByRole("button", { name: /Start · Albireo/ }).click();
+  await page.getByRole("button", { name: /FIND & TRACK/ }).click();
   await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 60_000 });
   await expect(view(page).getByText(/Centred|Off target/)).toBeVisible();
 }
@@ -35,15 +35,15 @@ test.describe("the sky model's 8SE", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/en/observatory");
 
-    // The station's details are the maker's numbers.
-    await page.getByRole("button", { name: "Station details" }).click();
-    const sheet = page.getByRole("dialog");
-    await expect(sheet.getByText("203 mm Schmidt-Cassegrain")).toBeVisible();
-    await expect(sheet.getByText("203.2 mm")).toBeVisible();
-    await expect(sheet.getByText("2032 mm")).toBeVisible();
-    await expect(sheet.getByText("0.57″")).toBeVisible();
-    await expect(sheet.getByText(/3840 × 2160 · 2.9 µm/)).toBeVisible();
-    await sheet.getByRole("button", { name: "Close" }).click();
+    // The station's details are the maker's numbers, on the Setup tab.
+    await page.getByRole("tab", { name: "Setup" }).click();
+    const setup = page.getByRole("tabpanel");
+    await expect(setup.getByText("203 mm Schmidt-Cassegrain")).toBeVisible();
+    await expect(setup.getByText("203.2 mm")).toBeVisible();
+    await expect(setup.getByText("2032 mm")).toBeVisible();
+    await expect(setup.getByText("0.57″")).toBeVisible();
+    await expect(setup.getByText(/3840 × 2160 · 2.9 µm/)).toBeVisible();
+    await page.getByRole("tab", { name: "Mount" }).click();
 
     // The field at native focal length, and the three trains and three read-out regions.
     await expect(view(page).getByText(/Field 18\.8′ × 10\.6′/)).toBeVisible();
@@ -137,16 +137,19 @@ test.describe("the sky model's 8SE", () => {
     await expect(camera.getByRole("group", { name: "Frames to stack" }).locator("output")).toHaveText("16");
     await expect(page.getByRole("button", { name: /^Capture 16 × 1 s/ })).toBeEnabled();
 
-    // Focus: in and out, then autofocus runs its curve and lands at zero.
-    const hand = page.getByRole("region", { name: "Hand control" });
-    await hand.getByRole("button", { name: "Focus out" }).click({ clickCount: 3 });
-    await expect(hand.getByText("Focus +3")).toBeVisible();
-    await hand.getByRole("button", { name: "Autofocus" }).click();
-    await expect(hand.getByRole("button", { name: "Focusing…" })).toBeDisabled();
-    await expect(hand.getByRole("button", { name: "Autofocus" })).toBeEnabled({ timeout: 10_000 });
-    await expect(hand.getByText(/^Focus$/)).toBeVisible();
+    // Focus: in and out on the Focus tab, then autofocus runs its V-curve and lands at best focus.
+    await page.getByRole("tab", { name: "Focus" }).click();
+    const focus = page.getByRole("tabpanel", { name: "Focuser" });
+    await focus.getByRole("button", { name: "Focus out" }).click({ clickCount: 3 });
+    await expect(focus.locator(".oh-metric div").nth(1).locator("b")).toHaveText("+75");
+    await focus.getByRole("button", { name: "Run autofocus" }).click();
+    await expect(focus.getByRole("button", { name: "Focusing…" })).toBeDisabled();
+    await expect(focus.getByRole("button", { name: "Run autofocus" })).toBeEnabled({ timeout: 10_000 });
+    await expect(focus.locator(".oh-metric div").nth(1).locator("b")).toHaveText("0");
+    await page.getByRole("tab", { name: "Mount" }).click();
 
     // Sync improves the pointing model here; the mount settings are the hand control's.
+    const hand = page.getByRole("region", { name: "Hand control" });
     await hand.getByRole("button", { name: "Sync" }).click();
     await expect(hand.getByRole("button", { name: "Synced here" })).toBeVisible();
     await hand.getByRole("button", { name: "Mount settings" }).click();
@@ -157,17 +160,18 @@ test.describe("the sky model's 8SE", () => {
     await expect(settings.getByRole("group", { name: "Altitude max" }).locator("output")).toHaveText("85°");
     await settings.getByRole("button", { name: "Close" }).click();
 
-    // A GoTo by coordinates: refused when malformed, a slew when well-formed.
-    await page.getByRole("button", { name: "Change target" }).click();
-    const picker = page.getByRole("dialog", { name: "Choose a target" });
-    const form = picker.getByRole("form", { name: "Go to coordinates" });
-    await form.getByPlaceholder("RA (hh:mm:ss)").fill("25:00:00");
-    await form.getByPlaceholder("Dec (±dd:mm:ss)").fill("+10:00:00");
-    await form.getByRole("button", { name: "GoTo" }).click();
+    // A custom target by coordinates, as the hub's Custom tab: refused when malformed, found when well-formed.
+    const targets = page.getByRole("region", { name: "Targets" });
+    await targets.getByRole("button", { name: "Custom" }).click();
+    const form = targets.getByRole("form", { name: "Add a target by coordinates" });
+    await form.getByLabel("RA (hh:mm:ss)").fill("25:00:00");
+    await form.getByLabel("Dec (±dd:mm:ss)").fill("+10:00:00");
+    await form.getByRole("button", { name: "Add target" }).click();
     await expect(form.getByRole("alert")).toBeVisible();
-    await form.getByPlaceholder("RA (hh:mm:ss)").fill("19:30:43");
-    await form.getByPlaceholder("Dec (±dd:mm:ss)").fill("+27:57:35");
-    await form.getByRole("button", { name: "GoTo" }).click();
+    await form.getByLabel("RA (hh:mm:ss)").fill("19:30:43");
+    await form.getByLabel("Dec (±dd:mm:ss)").fill("+27:57:35");
+    await form.getByRole("button", { name: "Add target" }).click();
+    await page.getByRole("button", { name: /FIND & TRACK/ }).click();
     await expect(status(page)).toHaveText(/Slewing|Plate-solving|Centring/);
     await expect(view(page).getByText(/^19:30:43/)).toBeVisible();
   });
@@ -183,8 +187,9 @@ test.describe("the sky model's 8SE", () => {
     await expect(status(page)).toHaveText(/Live stack/, { timeout: 60_000 });
     await expect(view(page).getByRole("group", { name: "Optical train" }).first().getByRole("button", { name: "f/20", exact: true })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("region", { name: "Camera" }).getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("50 ms");
-    await expect(page.getByLabel("Steps").locator(".sdo-act__hint p")).toHaveText("The stack has settled. Capture keeps this frame.", { timeout: 30_000 });
-    await expect(status(page)).toHaveText(/On target · tracking/);
+    // The live stack fills, then the Autopilot's pipeline stands done to TRACK.
+    await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 30_000 });
+    await expect(page.locator(".oh-pipe .is-done")).toHaveCount(5);
     await expect(dome.locator(".sdo-dome__chip", { hasText: "Albireo" })).toHaveAttribute("aria-pressed", "true");
   });
 
@@ -194,10 +199,27 @@ test.describe("the sky model's 8SE", () => {
     // `next dev`'s own badge sits over the phone's corner button; no visitor sees it.
     await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
     await expect(page.getByRole("heading", { level: 1 })).toContainText("ობსერვატორია");
-    await page.getByRole("button", { name: "ხელის პულტი" }).click();
-    const sheet = page.getByRole("dialog");
-    await expect(sheet.getByRole("group", { name: "ტრეკინგი" }).getByRole("button")).toHaveText(["გამორთ.", "ვარსკვლავური", "მთვარის", "მზის"]);
-    await expect(sheet.getByRole("button", { name: "მონტირების პარამეტრები" })).toBeVisible();
+    await page.locator(".oh-mnav").getByRole("button", { name: "მართვა" }).click();
+    const hand = page.getByRole("region", { name: "ხელის პულტი" });
+    await expect(hand.getByRole("group", { name: "ტრეკინგი" }).getByRole("button")).toHaveText(["გამორთ.", "ვარსკვლავური", "მთვარის", "მზის"]);
+    await expect(hand.getByRole("button", { name: "მონტირების პარამეტრები" })).toBeVisible();
+  });
+
+  test("the hand controller's keys drive the model: the rate, the arrows and the LCD", async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await onTarget(page);
+    const pad = page.getByRole("group", { name: "Hand control" });
+    await expect(pad.locator(".hc-row").first()).toHaveText(/STELLAR.*Albireo/);
+    // MOTOR SPEED, then a digit: the rate is the hand control's.
+    await pad.getByRole("button", { name: /MOTOR SPEED/ }).click();
+    await pad.getByRole("button", { name: /^8/ }).click();
+    await expect(page.getByRole("region", { name: "Hand control" }).getByText("Rate 8 · 3°/s")).toBeVisible();
+    const before = degrees(await altitude(page).textContent());
+    await pad.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerdown", { pointerId: 1 });
+    await page.waitForTimeout(800);
+    await pad.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerup", { pointerId: 1 });
+    await expect.poll(async () => degrees(await altitude(page).textContent()) - before, { timeout: 5_000 }).toBeGreaterThan(0.5);
   });
 });
 
@@ -218,11 +240,11 @@ test.describe("the real instrument", () => {
   test("takes the same console: the session reopens, the stream shows, a nudge is relayed and answered", async ({ page }) => {
     await page.goto("/en/observatory");
     // The platform reports REAL: the pill is Live, the booked target is the mission's.
-    await expect(page.locator(".sdo-head .sdo-pill--live")).toHaveText(/Live/);
+    await expect(page.locator(".oh-head .oh-badge")).toHaveText(/Live/);
     await expect(view(page).getByText("Booked target")).toBeVisible();
     await expect(view(page).getByText("Hercules Cluster", { exact: true })).toBeVisible();
     // Nothing of the model's is offered on the real instrument.
-    await expect(page.getByRole("button", { name: /Start · / })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /FIND & TRACK/ })).toHaveCount(0);
     const hand = page.getByRole("region", { name: "Hand control" });
     await expect(hand.getByRole("button", { name: "Mount settings" })).toBeDisabled();
     await expect(hand.getByRole("button", { name: "Sync" })).toBeDisabled();
@@ -235,16 +257,16 @@ test.describe("the real instrument", () => {
     await expect(view(page).getByText("Live feed")).toBeVisible();
 
     // A nudge is one bounded step: relayed, then the agent's verdict.
-    await hand.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerdown", { pointerId: 1 });
-    await hand.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerup", { pointerId: 1 });
+    const pad = page.getByRole("group", { name: "Hand control" });
+    await pad.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerdown", { pointerId: 1 });
+    await pad.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerup", { pointerId: 1 });
     await expect(hand.locator("p[role=status]")).toHaveText(/Relayed|Done/);
     await expect(hand.locator("p[role=status]")).toHaveText("Done", { timeout: 10_000 });
 
     // Capture is the platform's CAPTURE; the session's end is a confirmed stop.
     await page.getByRole("button", { name: "Capture", exact: true }).click();
     await expect(hand.locator("p[role=status]")).toHaveText("Done", { timeout: 10_000 });
-    const stop = page.getByRole("region", { name: "Session" }).getByRole("button", { name: "Stop observation" });
-    await stop.click();
-    await expect(page.getByRole("region", { name: "Session" }).getByRole("button", { name: "Confirm stop" })).toBeVisible();
+    await page.locator(".oh-head").getByRole("button", { name: "STOP" }).click();
+    await expect(page.locator(".oh-apnote")).toHaveText("Confirm stop");
   });
 });

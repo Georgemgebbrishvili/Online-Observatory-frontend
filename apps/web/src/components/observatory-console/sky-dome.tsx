@@ -77,13 +77,13 @@ function SkyDome({ locale, station, minuteMs, pointing, targetId, onPick }: SkyD
           <radialGradient id={`${id}-bg`} cx="50%" cy="50%" r="50%">
             <stop offset="0" stopColor="#0b1020" />
             <stop offset="0.85" stopColor="#070a14" />
-            <stop offset="1" stopColor="#1a0f0c" />
+            <stop offset="1" stopColor="#14214f" />
           </radialGradient>
         </defs>
-        <circle cx={C} cy={C} r={R} fill={`url(#${id}-bg)`} stroke="rgba(244,244,242,.28)" />
-        <circle cx={C} cy={C} r={(R * 2) / 3} fill="none" stroke="rgba(244,244,242,.08)" />
-        <circle cx={C} cy={C} r={R / 3} fill="none" stroke="rgba(244,244,242,.08)" />
-        <path d={`M${C} ${C - R}V${C + R}M${C - R} ${C}H${C + R}`} stroke="rgba(244,244,242,.06)" />
+        <circle cx={C} cy={C} r={R} fill={`url(#${id}-bg)`} stroke="rgba(143,176,255,.28)" />
+        <circle cx={C} cy={C} r={(R * 2) / 3} fill="none" stroke="rgba(143,176,255,.08)" />
+        <circle cx={C} cy={C} r={R / 3} fill="none" stroke="rgba(143,176,255,.08)" />
+        <path d={`M${C} ${C - R}V${C + R}M${C - R} ${C}H${C + R}`} stroke="rgba(143,176,255,.06)" />
         {(['N', 'E', 'S', 'W'] as const).map((d, i) => {
           const p = place({ altitude: -6, azimuth: i * 90 });
           return <text key={d} x={p.x} y={p.y + 4.5} className="sdo-dome__dir" textAnchor="middle">{d}</text>;
