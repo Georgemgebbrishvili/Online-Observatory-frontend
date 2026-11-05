@@ -15,6 +15,7 @@ import "@/styles/pages.css";
 import "@/styles/homepage.css";
 import "@/styles/profile.css";
 import "@/styles/observatory-console.css";
+import "@/styles/observatory-hub.css";
 import "@/styles/skychaser-card.css";
 import "@/styles/cards.css";
 import "@/styles/status.css";

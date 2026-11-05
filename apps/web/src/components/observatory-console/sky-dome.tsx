@@ -37,6 +37,8 @@ export type SkyDomeProps = {
   pointing: AltAz | null;
   targetId: string | null;
   onPick: (t: TelescopeTarget) => void;
+  /** Daytime observing: the night gate is waived, the Sun's keep-out is not. */
+  daytime?: boolean;
 };
 
 /**
@@ -45,7 +47,7 @@ export type SkyDomeProps = {
  * behind the horizon mask stay pressable so the refusal can say why; objects below the
  * horizon are counted, not drawn.
  */
-function SkyDome({ locale, station, minuteMs, pointing, targetId, onPick }: SkyDomeProps) {
+function SkyDome({ locale, station, minuteMs, pointing, targetId, onPick, daytime = false }: SkyDomeProps) {
   const t = useCopy();
   const [hover, setHover] = useState<string | null>(null);
   const id = useId();
@@ -54,9 +56,9 @@ function SkyDome({ locale, station, minuteMs, pointing, targetId, onPick }: SkyD
     return SHOWPIECES.map((s) => {
       const target = TELESCOPE_TARGET_BY_ID.get(s.id)!;
       const position = targetPosition(target, station, at);
-      return { s, target, position, kind: domeKind(target), safe: evaluateSafety(station, position, at).ok };
+      return { s, target, position, kind: domeKind(target), safe: evaluateSafety(station, position, at, { daytime }).ok };
     }).sort((a, b) => b.position.altitude - a.position.altitude);
-  }, [station, minuteMs]);
+  }, [station, minuteMs, daytime]);
   // The bright stars, for the shape of the sky behind the showpieces.
   const stars = useMemo(() => {
     const at = new Date(minuteMs);

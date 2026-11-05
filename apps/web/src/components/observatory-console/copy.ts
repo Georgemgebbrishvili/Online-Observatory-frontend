@@ -1,11 +1,9 @@
-import { brand } from "@/brand";
 import type { Locale } from "@/i18n/config";
 import type { TargetKind } from "@/lib/observatory-sim/telescope-targets";
 
 /** Every word the console says, in both languages. Numbers and units stay as the model writes them. */
 export type ConsoleCopy = {
   observatory: string;
-  utc: string;
   simulated: string;
   simulatedLong: string;
   live: string;
@@ -41,10 +39,8 @@ export type ConsoleCopy = {
     exposure: string;
     frames: string;
     gain: string;
-    auto: string;
     less: string;
     more: string;
-    refresh: (seconds: string) => string;
     histogram: string;
   };
   hand: {
@@ -61,7 +57,6 @@ export type ConsoleCopy = {
     trackingModes: { off: string; sidereal: string; lunar: string; solar: string };
     focusIn: string;
     focusOut: string;
-    focusing: string;
     sync: string;
     synced: string;
     settings: string;
@@ -112,7 +107,6 @@ export type ConsoleCopy = {
     };
     capture: (subs: number, exposure: string) => string;
     stopStack: string;
-    recentre: string;
     startSession: string;
     starting: string;
     waiting: string;
@@ -269,29 +263,23 @@ export type ConsoleCopy = {
       booked: string;
     };
     view: string;
-    mode: string;
-    optics: string;
-    roi: string;
-    auto: string;
-    autoExp: string;
-    focus: string;
-    export: string;
-    png: string;
-    grid: string;
     reticle: string;
+    grid: string;
     invert: string;
     mirror: string;
     flip: string;
+    autoExp: string;
+    focusRun: string;
+    png: string;
     full: string;
     controls: string;
-    tabs: {
-      mount: string;
-      align: string;
-      focus: string;
-      capture: string;
-      setup: string;
-      log: string;
-    };
+    slew: string;
+    rate: string;
+    capture: string;
+    daytime: string;
+    daytimeHint: string;
+    daytimeNote: string;
+    tabs: { mount: string; align: string; focus: string; setup: string; log: string };
     autopilot: {
       title: string;
       pick: string;
@@ -307,66 +295,48 @@ export type ConsoleCopy = {
       gotoOnly: string;
       sync: string;
       after: string;
-      autoCamera: string;
+      afterExposure: string;
+      afterFocus: string;
       keepCentred: string;
       booked: string;
     };
-    align: {
-      steps: [string, string, string, string];
-      points: string;
-      none: string;
-      clear: string;
-    };
+    align: { steps: [string, string, string, string]; points: string; none: string; clear: string };
     focuser: {
       title: string;
       position: string;
-      offset: string;
       state: string;
       idle: string;
       moving: string;
-      out: string;
-      in: string;
+      speed: string;
+      stepsPerS: string;
       run: string;
+      stop: string;
       curve: string;
+      chartEmpty: string;
+      method: string;
+      methods: { auto: string; hfr: string; contrast: string };
+      contrast: string;
+      running: (pass: number, points: number) => string;
+      result: (best: number, measure: string, before: number | null, after: number | null) => string;
+      failed: string;
     };
-    camera: {
-      size: string;
-      depth: string;
-      rate: string;
-      exposure: string;
-      gain: string;
-      sensor: string;
-      recent: string;
-      noFrames: string;
+    ae: {
+      auto: string;
+      stop: string;
+      scene: string;
+      scenes: { daylight: string; moon: string; planet: string; star: string; deepsky: string; dark: string };
+      keep: string;
       idle: string;
-      running: (done: number, goal: number) => string;
+      metering: (pass: number) => string;
+      locked: (passes: number) => string;
+      limit: string;
+      failed: string;
+      level: (percent: number, clipped: number) => string;
     };
+    camera: { size: string; depth: string; rate: string; noFrames: string; idle: string; running: (done: number, goal: number) => string };
     setup: { telescope: string; site: string; mountSettings: string };
-    log: { title: string; empty: string };
-    hc: {
-      brand: string;
-      ready: string;
-      keys: {
-        align: string;
-        back: string;
-        enter: string;
-        option: string;
-        solar: string;
-        stars: string;
-        deep: string;
-        identify: string;
-        focuser: string;
-        menu: string;
-        speed: string;
-        info: string;
-        tour: string;
-        help: string;
-      };
-      ratePrompt: string;
-      rateSet: (n: number) => string;
-      noObject: string;
-    };
-    phoneTabs: { live: string; targets: string; controls: string };
+    log: { empty: string };
+    phoneTabs: { track: string; move: string; camera: string; targets: string; more: string };
   };
   provenanceSimulated: string;
   close: string;
@@ -374,7 +344,6 @@ export type ConsoleCopy = {
 
 const en: ConsoleCopy = {
   observatory: "Observatory",
-  utc: "UTC",
   simulated: "Simulated",
   simulatedLong: "sky model",
   live: "Live",
@@ -411,11 +380,8 @@ const en: ConsoleCopy = {
     exposure: "Exposure",
     frames: "Frames to stack",
     gain: "Gain",
-    auto: "Auto for target",
     less: "less",
     more: "more",
-    refresh: (seconds) =>
-      `View refreshes every ${seconds}. Use a short exposure to centre.`,
     histogram: "Histogram",
   },
   hand: {
@@ -432,7 +398,6 @@ const en: ConsoleCopy = {
     trackingModes: { off: "Off", sidereal: "Sidereal", lunar: "Lunar", solar: "Solar" },
     focusIn: "Focus in",
     focusOut: "Focus out",
-    focusing: "Focusing…",
     sync: "Sync",
     synced: "Synced here",
     settings: "Mount settings",
@@ -483,7 +448,6 @@ const en: ConsoleCopy = {
     },
     capture: (subs, exposure) => `Capture ${subs} × ${exposure}`,
     stopStack: "Stop stack",
-    recentre: "Re-centre",
     startSession: "Start session",
     starting: "Starting…",
     waiting: "Waiting for the observatory…",
@@ -648,29 +612,23 @@ const en: ConsoleCopy = {
       booked: "Booked",
     },
     view: "View",
-    mode: "Mode",
-    optics: "Optics",
-    roi: "Crop",
-    auto: "Auto",
-    autoExp: "Auto exp",
-    focus: "Focus",
-    export: "Export",
-    png: "PNG",
-    grid: "Grid",
     reticle: "Reticle",
+    grid: "Grid",
     invert: "Invert",
     mirror: "Mirror",
     flip: "Flip",
-    full: "Full",
+    autoExp: "Auto exposure",
+    focusRun: "Autofocus",
+    png: "Save PNG",
+    full: "Full screen",
     controls: "Controls",
-    tabs: {
-      mount: "Mount",
-      align: "Align",
-      focus: "Focus",
-      capture: "Capture",
-      setup: "Setup",
-      log: "Log",
-    },
+    slew: "Mount slew",
+    rate: "Rate",
+    capture: "Capture",
+    daytime: "Day",
+    daytimeHint: "Observe the sky as it is now, daylight included: the Moon, Venus, Jupiter and bright stars. The telescope still never points within 30° of the Sun.",
+    daytimeNote: "Daytime observing: the telescope keeps 30° away from the Sun.",
+    tabs: { mount: "Mount", align: "Align", focus: "Focus", setup: "Setup", log: "Log" },
     autopilot: {
       title: "Autopilot",
       pick: "Pick a target",
@@ -686,7 +644,8 @@ const en: ConsoleCopy = {
       gotoOnly: "GoTo only",
       sync: "Sync",
       after: "After it locks on",
-      autoCamera: "The camera takes the target's recipe",
+      afterExposure: "Auto exposure for the scene",
+      afterFocus: "Autofocus",
       keepCentred: "Tracking keeps it centred",
       booked: "Your booked target: the platform runs the GoTo.",
     },
@@ -704,60 +663,46 @@ const en: ConsoleCopy = {
     focuser: {
       title: "Focuser",
       position: "Position",
-      offset: "From best",
       state: "Motor",
       idle: "still",
       moving: "moving",
-      out: "Focus out",
-      in: "Focus in",
-      run: "Run autofocus",
-      curve: "Autofocus (V-curve)",
+      speed: "Focus speed",
+      stepsPerS: "steps/s",
+      run: "Autofocus",
+      stop: "Stop autofocus",
+      curve: "Autofocus curve",
+      chartEmpty: "Run autofocus: every sample and the fitted curve are drawn here.",
+      method: "Measure",
+      methods: { auto: "Auto", hfr: "Stars (HFR)", contrast: "Contrast" },
+      contrast: "contrast",
+      running: (pass, n) => `Pass ${pass} · ${n} samples`,
+      result: (best, m, before, after) => `Best ${best} · ${m}${before !== null && after !== null ? ` ${before.toFixed(2)} → ${after.toFixed(2)}` : ""}`,
+      failed: "Autofocus found no curve: try a brighter target.",
+    },
+    ae: {
+      auto: "Auto",
+      stop: "Stop",
+      scene: "Scene",
+      scenes: { daylight: "Daylight", moon: "Moon", planet: "Planet", star: "Star", deepsky: "Deep sky", dark: "Finder" },
+      keep: "Keep adjusting",
+      idle: "Reads the picture and sets exposure and gain",
+      metering: (n) => ` · metering, pass ${n}`,
+      locked: (n) => ` · locked in ${n}`,
+      limit: " · at the camera's limit",
+      failed: " · no picture to read",
+      level: (p, c) => `level ${p}% · clipped ${c < 0.1 ? 0 : c.toFixed(1)}%`,
     },
     camera: {
       size: "Size",
       depth: "Depth",
       rate: "Rate",
-      exposure: "Exposure",
-      gain: "Gain",
-      sensor: "Sensor",
-      recent: "Recent frames",
       noFrames: "Captured frames appear here",
       idle: "No capture running",
       running: (d, g) => `Stacking ${d} / ${g}`,
     },
-    setup: {
-      telescope: "Telescope",
-      site: "Observing site",
-      mountSettings: "Mount settings",
-    },
-    log: {
-      title: "Session log",
-      empty: "Nothing yet. Every step the telescope takes is written here.",
-    },
-    hc: {
-      brand: brand.en.name.toUpperCase(),
-      ready: "Ready",
-      keys: {
-        align: "ALIGN",
-        back: "BACK",
-        enter: "ENTER",
-        option: "Option",
-        solar: "SOLAR SYSTEM",
-        stars: "STARS",
-        deep: "DEEP SKY",
-        identify: "IDENTIFY",
-        focuser: "FOCUSER",
-        menu: "MENU",
-        speed: "MOTOR SPEED",
-        info: "OBJECT INFO",
-        tour: "SKY TOUR",
-        help: "HELP",
-      },
-      ratePrompt: "Rate? 1-9",
-      rateSet: (n) => `Rate ${n}`,
-      noObject: "No object near",
-    },
-    phoneTabs: { live: "Live", targets: "Targets", controls: "Controls" },
+    setup: { telescope: "Telescope", site: "Observing site", mountSettings: "Mount settings" },
+    log: { empty: "Nothing yet. Every step the telescope takes is written here." },
+    phoneTabs: { track: "Track", move: "Move", camera: "Camera", targets: "Targets", more: "More" },
   },
   provenanceSimulated: "Simulated · sky model",
   close: "Close",
@@ -765,7 +710,6 @@ const en: ConsoleCopy = {
 
 const ka: ConsoleCopy = {
   observatory: "ობსერვატორია",
-  utc: "UTC",
   simulated: "სიმულირებული",
   simulatedLong: "ცის მოდელი",
   live: "პირდაპირი",
@@ -802,11 +746,8 @@ const ka: ConsoleCopy = {
     exposure: "ექსპოზიცია",
     frames: "დასაჯამებელი კადრები",
     gain: "გაძლიერება",
-    auto: "ავტომატურად ობიექტისთვის",
     less: "ნაკლები",
     more: "მეტი",
-    refresh: (seconds) =>
-      `ხედი ახლდება ყოველ ${seconds}. დასაცენტრებლად აირჩიე მოკლე ექსპოზიცია.`,
     histogram: "ჰისტოგრამა",
   },
   hand: {
@@ -828,7 +769,6 @@ const ka: ConsoleCopy = {
     },
     focusIn: "ფოკუსი შიგნით",
     focusOut: "ფოკუსი გარეთ",
-    focusing: "ფოკუსირდება…",
     sync: "სინქრონიზაცია",
     synced: "სინქრონიზებულია აქ",
     settings: "მონტირების პარამეტრები",
@@ -879,7 +819,6 @@ const ka: ConsoleCopy = {
     },
     capture: (subs, exposure) => `გადაიღე ${subs} × ${exposure}`,
     stopStack: "დაჯამების შეჩერება",
-    recentre: "ხელახლა დაცენტრება",
     startSession: "სეანსის დაწყება",
     starting: "იწყება…",
     waiting: "ობსერვატორიის მოლოდინი…",
@@ -1044,29 +983,23 @@ const ka: ConsoleCopy = {
       booked: "დაჯავშნილი",
     },
     view: "ხედი",
-    mode: "რეჟიმი",
-    optics: "ოპტიკა",
-    roi: "ჭრა",
-    auto: "ავტო",
-    autoExp: "ავტო ექსპ.",
-    focus: "ფოკუსი",
-    export: "ექსპორტი",
-    png: "PNG",
-    grid: "ბადე",
     reticle: "სამიზნე",
+    grid: "ბადე",
     invert: "ინვერსია",
     mirror: "სარკე",
     flip: "ამოტრიალება",
-    full: "სრული",
+    autoExp: "ავტო ექსპოზიცია",
+    focusRun: "ავტოფოკუსი",
+    png: "PNG-ის შენახვა",
+    full: "სრული ეკრანი",
     controls: "მართვა",
-    tabs: {
-      mount: "მონტირება",
-      align: "სწორება",
-      focus: "ფოკუსი",
-      capture: "გადაღება",
-      setup: "პარამეტრები",
-      log: "ჟურნალი",
-    },
+    slew: "მონტირების მოძრაობა",
+    rate: "სიჩქ.",
+    capture: "გადაღება",
+    daytime: "დღე",
+    daytimeHint: "დააკვირდი ცას ისე, როგორც ახლაა, დღის სინათლის ჩათვლით: მთვარე, ვენერა, იუპიტერი და კაშკაშა ვარსკვლავები. ტელესკოპი მზიდან 30°-ზე ახლოს მაინც არასდროს მიმართება.",
+    daytimeNote: "დღის დაკვირვება: ტელესკოპი მზიდან 30°-ით შორს რჩება.",
+    tabs: { mount: "მონტირება", align: "სწორება", focus: "ფოკუსი", setup: "პარამეტრები", log: "ჟურნალი" },
     autopilot: {
       title: "ავტოპილოტი",
       pick: "აირჩიეთ ობიექტი",
@@ -1082,7 +1015,8 @@ const ka: ConsoleCopy = {
       gotoOnly: "მხოლოდ GoTo",
       sync: "სინქრონი",
       after: "დამიზნების შემდეგ",
-      autoCamera: "კამერა ობიექტის რეცეპტს იღებს",
+      afterExposure: "ავტო ექსპოზიცია სცენისთვის",
+      afterFocus: "ავტოფოკუსი",
       keepCentred: "მიყოლა ობიექტს ცენტრში ინახავს",
       booked: "თქვენი დაჯავშნილი ობიექტი: GoTo-ს პლატფორმა ასრულებს.",
     },
@@ -1100,60 +1034,46 @@ const ka: ConsoleCopy = {
     focuser: {
       title: "ფოკუსერი",
       position: "პოზიცია",
-      offset: "საუკეთესოდან",
       state: "ძრავი",
       idle: "გაჩერებულია",
       moving: "მოძრაობს",
-      out: "ფოკუსი გარეთ",
-      in: "ფოკუსი შიგნით",
-      run: "ავტოფოკუსის გაშვება",
-      curve: "ავტოფოკუსი (V-მრუდი)",
+      speed: "ფოკუსის სიჩქარე",
+      stepsPerS: "ბიჯი/წმ",
+      run: "ავტოფოკუსი",
+      stop: "ავტოფოკუსის გაჩერება",
+      curve: "ავტოფოკუსის მრუდი",
+      chartEmpty: "გაუშვით ავტოფოკუსი: ყოველი გაზომვა და მორგებული მრუდი აქ გამოჩნდება.",
+      method: "საზომი",
+      methods: { auto: "ავტო", hfr: "ვარსკვლავები (HFR)", contrast: "კონტრასტი" },
+      contrast: "კონტრასტი",
+      running: (pass, n) => `ცდა ${pass} · ${n} გაზომვა`,
+      result: (best, m, before, after) => `საუკეთესო ${best} · ${m}${before !== null && after !== null ? ` ${before.toFixed(2)} → ${after.toFixed(2)}` : ""}`,
+      failed: "ავტოფოკუსმა მრუდი ვერ იპოვა: სცადეთ უფრო კაშკაშა ობიექტი.",
+    },
+    ae: {
+      auto: "ავტო",
+      stop: "გაჩერება",
+      scene: "სცენა",
+      scenes: { daylight: "დღის შუქი", moon: "მთვარე", planet: "პლანეტა", star: "ვარსკვლავი", deepsky: "ღრმა ცა", dark: "მაძიებელი" },
+      keep: "მუდმივი მორგება",
+      idle: "კითხულობს სურათს და აყენებს ექსპოზიციას და გაძლიერებას",
+      metering: (n) => ` · იზომება, ცდა ${n}`,
+      locked: (n) => ` · დაფიქსირდა ${n} ცდაში`,
+      limit: " · კამერის ზღვარზეა",
+      failed: " · წასაკითხი სურათი არ არის",
+      level: (p, c) => `დონე ${p}% · გადაჭარბებული ${c < 0.1 ? 0 : c.toFixed(1)}%`,
     },
     camera: {
       size: "ზომა",
       depth: "სიღრმე",
       rate: "სიხშირე",
-      exposure: "ექსპოზიცია",
-      gain: "გაძლიერება",
-      sensor: "სენსორი",
-      recent: "ბოლო კადრები",
       noFrames: "გადაღებული კადრები აქ გამოჩნდება",
       idle: "გადაღება არ მიმდინარეობს",
       running: (d, g) => `დაჯამება ${d} / ${g}`,
     },
-    setup: {
-      telescope: "ტელესკოპი",
-      site: "დაკვირვების ადგილი",
-      mountSettings: "მონტირების პარამეტრები",
-    },
-    log: {
-      title: "სეანსის ჟურნალი",
-      empty: "ჯერ ცარიელია. ტელესკოპის ყოველი ნაბიჯი აქ ჩაიწერება.",
-    },
-    hc: {
-      brand: brand.en.name.toUpperCase(),
-      ready: "Ready",
-      keys: {
-        align: "ALIGN",
-        back: "BACK",
-        enter: "ENTER",
-        option: "Option",
-        solar: "SOLAR SYSTEM",
-        stars: "STARS",
-        deep: "DEEP SKY",
-        identify: "IDENTIFY",
-        focuser: "FOCUSER",
-        menu: "MENU",
-        speed: "MOTOR SPEED",
-        info: "OBJECT INFO",
-        tour: "SKY TOUR",
-        help: "HELP",
-      },
-      ratePrompt: "Rate? 1-9",
-      rateSet: (n) => `Rate ${n}`,
-      noObject: "No object near",
-    },
-    phoneTabs: { live: "ლაივი", targets: "ობიექტები", controls: "მართვა" },
+    setup: { telescope: "ტელესკოპი", site: "დაკვირვების ადგილი", mountSettings: "მონტირების პარამეტრები" },
+    log: { empty: "ჯერ ცარიელია. ტელესკოპის ყოველი ნაბიჯი აქ ჩაიწერება." },
+    phoneTabs: { track: "მიყოლა", move: "მოძრაობა", camera: "კამერა", targets: "ობიექტები", more: "მეტი" },
   },
   provenanceSimulated: "სიმულირებული · ცის მოდელი",
   close: "დახურვა",

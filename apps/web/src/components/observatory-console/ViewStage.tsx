@@ -53,6 +53,8 @@ export type ViewLook = { grid: boolean; invert: boolean; mirror: boolean; flip: 
 
 export type ViewStageProps = {
   look: ViewLook;
+  /** The hub's tools over the picture: view toggles down the left, optics across the top. */
+  overlay?: ReactNode;
   viewRef: RefObject<HTMLDivElement | null>;
   /** The camera's picture: the sky model's canvas, or the platform's stream. */
   feed: ReactNode | null;
@@ -161,6 +163,7 @@ function ViewStage(p: ViewStageProps) {
       </div>
       <p className="sdo-hud sdo-glass sdo-hud--bc sdo-caption">{p.caption}</p>
 
+      {p.overlay}
       {p.idle && (
         <div className="sdo-idle sdo-glass">
           <span className="sdo-idle__icon">

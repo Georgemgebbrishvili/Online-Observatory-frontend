@@ -76,10 +76,11 @@ export function sunPosition(node: ObservatoryNode, now: Date): AltAz {
  * Order matters: report the most fundamental reason first, so a user pointing
  * at a daytime target is told it is daytime rather than that the Sun is close.
  */
-export function evaluateSafety(node: ObservatoryNode, target: AltAz, now: Date): SafetyVerdict {
+export function evaluateSafety(node: ObservatoryNode, target: AltAz, now: Date, opts: { daytime?: boolean } = {}): SafetyVerdict {
   const sun = sunPosition(node, now);
 
-  if (sun.altitude > LIMITS.sunAltitudeCeilingDeg) {
+  // Daytime observing (ADR-083) waives the night gate, never the Sun's own keep-out.
+  if (!opts.daytime && sun.altitude > LIMITS.sunAltitudeCeilingDeg) {
     return { ok: false, code: 'daylight', reason: sunReason(node.site, sun.altitude) };
   }
 

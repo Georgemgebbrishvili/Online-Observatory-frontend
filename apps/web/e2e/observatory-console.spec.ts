@@ -18,6 +18,7 @@ const altitude = (page: Page) =>
 
 async function onTarget(page: Page) {
   await page.goto("/en/observatory?turbo");
+  await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
   await page.getByRole("button", { name: /FIND & TRACK/ }).click();
   await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 60_000 });
   await expect(view(page).getByText(/Centred|Off target/)).toBeVisible();
@@ -34,6 +35,8 @@ test.describe("the sky model's 8SE", () => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/en/observatory");
+    // The console sizes itself and takes its handlers once mounted.
+    await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
 
     // The station's details are the maker's numbers, on the Setup tab.
     await page.getByRole("tab", { name: "Setup" }).click();
@@ -55,11 +58,12 @@ test.describe("the sky model's 8SE", () => {
     await view(page).getByRole("group", { name: "Read-out region" }).getByRole("button", { name: "640" }).click();
     await expect(view(page).getByText(/Field 1\.6′ × 1\.2′/)).toBeVisible();
 
-    // The hand control's rates are the manual's; the camera's exposures are the sensor's.
+    // The slew pad's rates are the manual's; the camera's exposures are the sensor's.
     const hand = page.getByRole("region", { name: "Hand control" });
-    await expect(hand.getByText("Rate 5 · 16×")).toBeVisible();
+    await expect(page.locator(".oh-slewcard .oh-rate__pill")).toHaveText("Rate 5");
     await hand.getByRole("button", { name: "Slew rate: more" }).click({ clickCount: 4 });
-    await expect(hand.getByText("Rate 9 · 5°/s")).toBeVisible();
+    await expect(page.locator(".oh-slewcard .oh-rate__pill")).toHaveText("Rate 9");
+    await expect(hand.getByRole("group", { name: "Slew rate" }).locator("output")).toHaveText("9 · 5°/s");
     const camera = page.getByRole("region", { name: "Camera" });
     await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("8 s");
     for (let i = 0; i < 9; i += 1) await camera.getByRole("button", { name: "Exposure: less" }).click();
@@ -77,7 +81,7 @@ test.describe("the sky model's 8SE", () => {
     // the target, fixed to the sky, falls that far below the centre of the frame.
     const hand = page.getByRole("region", { name: "Hand control" });
     await hand.getByRole("button", { name: "Slew rate: more" }).click({ clickCount: 2 });
-    await expect(hand.getByText("Rate 7 · 1°/s")).toBeVisible();
+    await expect(page.locator(".oh-slewcard .oh-rate__pill")).toHaveText("Rate 7");
     await page.keyboard.down("ArrowUp");
     await page.waitForTimeout(1500);
     await page.keyboard.up("ArrowUp");
@@ -98,7 +102,10 @@ test.describe("the sky model's 8SE", () => {
       )
       .toBe(true);
     await page.waitForTimeout(2000);
-    await expect(view(page).getByText(/Off target/)).toHaveText(offset ?? "");
+    // The worm's wander is a few arcseconds: the offset holds to within half an arcminute.
+    const nums = (t: string | null) => (t ?? "").match(/[\d.]+′/g)!.map((v) => Number(v.replace("′", "")));
+    const after = nums(await view(page).getByText(/Off target/).textContent());
+    nums(offset).forEach((v, i) => expect(Math.abs(after[i] - v)).toBeLessThan(0.5));
 
     // Centre: a GoTo back, and the target is centred again.
     await hand.getByRole("button", { name: "Re-centre the target" }).click();
@@ -128,24 +135,24 @@ test.describe("the sky model's 8SE", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await onTarget(page);
 
-    // The camera: Albireo is a showpiece and brings its own recipe; Auto and the frames move it.
+    // The camera: Albireo is a showpiece and brings its own recipe; auto exposure reads
+    // the picture and settles, and the frames move by hand.
     const camera = page.getByRole("region", { name: "Camera" });
     await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("50 ms");
-    await camera.getByRole("button", { name: "Auto for target" }).click();
-    await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("1 s");
+    await camera.locator(".oh-ae__auto").click();
+    await expect(camera.locator(".oh-ae__status")).toHaveText(/Star.*(locked|limit)/, { timeout: 60_000 });
     await camera.getByRole("button", { name: "Frames to stack: more" }).click();
-    await expect(camera.getByRole("group", { name: "Frames to stack" }).locator("output")).toHaveText("16");
-    await expect(page.getByRole("button", { name: /^Capture 16 × 1 s/ })).toBeEnabled();
+    await expect(camera.getByRole("group", { name: "Frames to stack" }).locator("output")).toHaveText("100");
+    await expect(page.getByRole("button", { name: /^Capture 100 × / })).toBeEnabled();
 
-    // Focus: in and out on the Focus tab, then autofocus runs its V-curve and lands at best focus.
+    // Focus: the dial turns by the keyboard, four steps at this speed; the Focus tab reads the motor.
+    const dial = page.getByRole("slider", { name: "Focuser" });
+    const start = Number(await dial.getAttribute("aria-valuenow"));
+    await dial.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(dial).toHaveAttribute("aria-valuenow", String(start + 4), { timeout: 5_000 });
     await page.getByRole("tab", { name: "Focus" }).click();
-    const focus = page.getByRole("tabpanel", { name: "Focuser" });
-    await focus.getByRole("button", { name: "Focus out" }).click({ clickCount: 3 });
-    await expect(focus.locator(".oh-metric div").nth(1).locator("b")).toHaveText("+75");
-    await focus.getByRole("button", { name: "Run autofocus" }).click();
-    await expect(focus.getByRole("button", { name: "Focusing…" })).toBeDisabled();
-    await expect(focus.getByRole("button", { name: "Run autofocus" })).toBeEnabled({ timeout: 10_000 });
-    await expect(focus.locator(".oh-metric div").nth(1).locator("b")).toHaveText("0");
+    await expect(page.getByRole("tabpanel", { name: "Autofocus curve" }).locator(".oh-metric div").first().locator("b")).toHaveText(String(start + 4));
     await page.getByRole("tab", { name: "Mount" }).click();
 
     // Sync improves the pointing model here; the mount settings are the hand control's.
@@ -199,27 +206,52 @@ test.describe("the sky model's 8SE", () => {
     // `next dev`'s own badge sits over the phone's corner button; no visitor sees it.
     await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
     await expect(page.getByRole("heading", { level: 1 })).toContainText("ობსერვატორია");
-    await page.locator(".oh-mnav").getByRole("button", { name: "მართვა" }).click();
+    await page.locator(".oh-mtabs").getByRole("button", { name: "მეტი" }).click();
     const hand = page.getByRole("region", { name: "ხელის პულტი" });
     await expect(hand.getByRole("group", { name: "ტრეკინგი" }).getByRole("button")).toHaveText(["გამორთ.", "ვარსკვლავური", "მთვარის", "მზის"]);
     await expect(hand.getByRole("button", { name: "მონტირების პარამეტრები" })).toBeVisible();
   });
 
-  test("the hand controller's keys drive the model: the rate, the arrows and the LCD", async ({ page }) => {
+  test("the slew pad drives the model: the rate slider, a held arrow, a diagonal", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await onTarget(page);
-    const pad = page.getByRole("group", { name: "Hand control" });
-    await expect(pad.locator(".hc-row").first()).toHaveText(/STELLAR.*Albireo/);
-    // MOTOR SPEED, then a digit: the rate is the hand control's.
-    await pad.getByRole("button", { name: /MOTOR SPEED/ }).click();
-    await pad.getByRole("button", { name: /^8/ }).click();
-    await expect(page.getByRole("region", { name: "Hand control" }).getByText("Rate 8 · 3°/s")).toBeVisible();
+    const pad = page.getByRole("group", { name: "Mount slew" });
+    await page.getByRole("slider", { name: "Slew rate" }).first().fill("8");
+    await expect(page.locator(".oh-slewcard .oh-rate__pill")).toHaveText("Rate 8");
+    await expect(page.getByRole("region", { name: "Hand control" }).getByRole("group", { name: "Slew rate" }).locator("output")).toHaveText("8 · 3°/s");
     const before = degrees(await altitude(page).textContent());
-    await pad.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerdown", { pointerId: 1 });
+    await pad.getByRole("button", { name: "Slew up", exact: true }).dispatchEvent("pointerdown", { pointerId: 1 });
     await page.waitForTimeout(800);
-    await pad.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerup", { pointerId: 1 });
+    await pad.getByRole("button", { name: "Slew up", exact: true }).dispatchEvent("pointerup", { pointerId: 1 });
     await expect.poll(async () => degrees(await altitude(page).textContent()) - before, { timeout: 5_000 }).toBeGreaterThan(0.5);
+    // A diagonal drives both axes: the altitude climbs again as the azimuth turns.
+    const mid = degrees(await altitude(page).textContent());
+    await pad.getByRole("button", { name: "Slew up · Slew east" }).dispatchEvent("pointerdown", { pointerId: 2 });
+    await page.waitForTimeout(600);
+    await pad.getByRole("button", { name: "Slew up · Slew east" }).dispatchEvent("pointerup", { pointerId: 2 });
+    await expect.poll(async () => degrees(await altitude(page).textContent()) - mid, { timeout: 5_000 }).toBeGreaterThan(0.3);
+  });
+
+  test("autofocus reads the picture: the contrast curve, the fit and the best position", async ({ page }) => {
+    test.setTimeout(240_000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await onTarget(page);
+    // Knock the focus out by 300 steps, then let autofocus find its way back.
+    const dial = page.getByRole("slider", { name: "Focuser" });
+    const start = Number(await dial.getAttribute("aria-valuenow"));
+    await dial.focus();
+    for (let i = 0; i < 6; i += 1) await page.keyboard.press("Shift+ArrowRight");
+    await expect(dial).toHaveAttribute("aria-valuenow", String(start + 240), { timeout: 10_000 });
+    await page.locator(".oh-af__run").click();
+    await expect(page.locator(".oh-af__run")).toHaveText("Stop autofocus");
+    await expect(page.locator(".oh-af__res")).toHaveText(/^Best \d+ · (HFR|contrast)/, { timeout: 180_000 });
+    // The stars are smaller than before the run: the focus was knocked out, and found again.
+    const m = (await page.locator(".oh-af__res").textContent())!.match(/Best (\d+) · (?:HFR|contrast) ([\d.]+) → ([\d.]+)/)!;
+    expect(Number(m[3])).toBeLessThan(Number(m[2]));
+    expect(Math.abs(Number(m[1]) - (start + 240))).toBeGreaterThan(100);
+    await page.getByRole("tab", { name: "Focus" }).click();
+    expect(await page.getByRole("tabpanel", { name: "Autofocus curve" }).locator(".oh-chart circle").count()).toBeGreaterThanOrEqual(16);
   });
 });
 
@@ -248,7 +280,7 @@ test.describe("the real instrument", () => {
     const hand = page.getByRole("region", { name: "Hand control" });
     await expect(hand.getByRole("button", { name: "Mount settings" })).toBeDisabled();
     await expect(hand.getByRole("button", { name: "Sync" })).toBeDisabled();
-    await expect(hand.getByText("2′ steps")).toBeVisible();
+    await expect(page.locator(".oh-apnote")).toHaveText("Your booked target: the platform runs the GoTo.");
 
     // The booked mission is already observing, so the console reopens its session on
     // arrival, as the live room does; a scheduled one would wait for "Start session".
@@ -257,9 +289,9 @@ test.describe("the real instrument", () => {
     await expect(view(page).getByText("Live feed")).toBeVisible();
 
     // A nudge is one bounded step: relayed, then the agent's verdict.
-    const pad = page.getByRole("group", { name: "Hand control" });
-    await pad.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerdown", { pointerId: 1 });
-    await pad.getByRole("button", { name: "Slew up" }).dispatchEvent("pointerup", { pointerId: 1 });
+    const pad = page.getByRole("group", { name: "Mount slew" });
+    await pad.getByRole("button", { name: "Slew up", exact: true }).dispatchEvent("pointerdown", { pointerId: 1 });
+    await pad.getByRole("button", { name: "Slew up", exact: true }).dispatchEvent("pointerup", { pointerId: 1 });
     await expect(hand.locator("p[role=status]")).toHaveText(/Relayed|Done/);
     await expect(hand.locator("p[role=status]")).toHaveText("Done", { timeout: 10_000 });
 

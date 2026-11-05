@@ -1105,9 +1105,6 @@
 
 /* ── phone ─────────────────────────────────────────────────── */
 @media (--below-md) {
-  .sdo {
-    padding-bottom: 104px;
-  }
   .sdo.sdo-scrim {
     padding-bottom: 16px;
   }

@@ -158,7 +158,8 @@ export default function LiveView(props: LiveViewProps) {
       const raw = sensorLevels({ exposureS: p.exposureSec, gain: p.gain, subs: p.subs, skyEPerS: skyElectronsFromSurface(skyMag, p.plateScaleArcsecPx, p.apertureMm) });
       // A live stack's display stretch sets its black point toward the sky as frames
       // accumulate and the noise falls, so the background darkens while the object stays.
-      const levels = { ...raw, sky: raw.sky * (1 - 0.55 * Math.min(1, Math.log2(Math.max(1, p.subs)) / 4)) };
+      // A clipped sky is white on every sub: no stack brings it back.
+      const levels = { ...raw, sky: raw.skyLin >= 1 ? raw.sky : raw.sky * (1 - 0.55 * Math.min(1, Math.log2(Math.max(1, p.subs)) / 4)) };
       // A lucky stack registers its frames on their sharpest: the same light in a smaller star, a higher peak.
       const fwhm = p.exposureSec < 0.1 ? effectiveBlurArcsec({ seeingArcsec: seeing, diffractionArcsec: p.diffractionArcsec, subs: p.subs }) : seeing;
       const peakAtMag0 = starPeakLin(0, fwhm, p.plateScaleArcsecPx, p.apertureMm, p.exposureSec, p.gain);

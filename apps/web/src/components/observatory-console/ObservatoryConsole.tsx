@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '@/i18n/config';
 import { cloudOpacity, dewOnOptics, humidityAt, seeingAt } from '@/lib/observatory-sim/atmosphere';
 import { EXPOSURES_S, GAIN, ROI_BY_ID, STACK_SIZES, exposureLabel, type RoiPreset } from '@/lib/observatory-sim/camera';
+import { HC_RATES } from '@/lib/observatory-sim/mount-drive';
 import { captureEntries, withPngText } from '@/lib/observatory-sim/capture-meta';
 import { getSunAltitude, getTonightDarkWindow } from '@/lib/observatory-sim/dark-window';
 import { acquisitionStateAt, planAcquisition, PLATE_SOLVE_MS, type Acquisition } from '@/lib/observatory-sim/mission';
@@ -23,8 +24,10 @@ import { MountSettingsPanel } from './panels';
 import { PlatformConsole, type PlatformMission } from './platform-console';
 import { plateFor } from './plates';
 import { ConsoleShell, decShort, degText, duration, lstText, raShort, type Action, type HubKind, type HubTarget } from './shell';
-import { altitudePath, bestOf, clock, nightSpan, settleSkyClock, skyNow, tonightSky } from './sky';
+import { altitudePath, bestOf, clock, liveSkyClock, nightSpan, settleSkyClock, skyNow, tonightSky } from './sky';
 import SkyDome from './sky-dome';
+import { FOCUS_SPEEDS } from './focus-dial';
+import { useAutoExposure, useAutofocus } from './use-auto';
 
 /** What the quick start points at: tonight's best target from the platform's catalogue, as the sky model knows it. */
 export type TonightTarget = { name: string; targetId: string } | null;
@@ -55,14 +58,18 @@ const OBJECT_RADIUS_DEG = 1.5;
 const TICK_MS = 250;
 const NIGHT_KEY = 'stellar.observatory.night';
 const NODE_ID = 'tbilisi-01';
-const AUTOFOCUS_MS = 6_000;
 /** The live stack's cadence at planetary exposures: what the view can align and average. */
 const LIVE_FRAME_S = 0.06;
 /** Raw video first, the air's boil and all, before the live stack starts. */
 const LIVE_DELAY_MS = 4_000;
-/** The AUX focuser's position at best focus, as the hub read it off the real motor; a step of the model's focus is 25 of its steps. */
+/** The AUX focuser's position near best focus, as the hub read it off the real motor. */
 const FOCUS_HOME = 24_672;
-const FOCUS_STEP = 25;
+/** Focuser steps per unit of the renderer's defocus: one unit throws a star about 0.9″ out of focus. */
+const STEPS_PER_DEFOCUS = 60;
+/** The GoTo speed of the AUX focuser, steps a second, as the hub measured it. */
+const FOCUS_GOTO_S = 370;
+/** A Barlow pushes focus outward, a reducer pulls it in: where best focus lies for each train, from the native one. */
+const FOCUS_SHIFT: Record<OpticalTrainId, number> = { F6_3_REDUCER: -260, F10_NATIVE: 0, F20_BARLOW: 420 };
 
 /**
  * The one station is the platform's observatory (ADR-053 §6, amended 2026-10-17): the
@@ -87,20 +94,6 @@ const indexOf = (list: readonly number[], value: number) => Math.max(0, list.fin
 
 function resolveTarget(id: string) {
   return TELESCOPE_TARGET_BY_ID.get(id) ?? TELESCOPE_TARGET_BY_ID.get(`star-${id}`) ?? null;
-}
-
-/** The camera's profile for a kind of target: planetary milliseconds, deep-sky seconds. */
-function autoProfile(t: TelescopeTarget): { exp: number; subs: number; gain: number } {
-  switch (t.kind) {
-    case 'moon':
-      return { exp: indexOf(EXPOSURES_S, 0.002), subs: indexOf(STACK_SIZES, 100), gain: 150 };
-    case 'planet':
-      return { exp: indexOf(EXPOSURES_S, 0.01), subs: indexOf(STACK_SIZES, 200), gain: 250 };
-    case 'star':
-      return { exp: indexOf(EXPOSURES_S, 1), subs: indexOf(STACK_SIZES, 8), gain: 300 };
-    default:
-      return { exp: indexOf(EXPOSURES_S, 8), subs: indexOf(STACK_SIZES, 8), gain: 300 };
-  }
 }
 
 /**
@@ -136,7 +129,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const [picked, setPicked] = useState<string | null>(tonight ? resolveTarget(tonight.targetId)?.id ?? null : null);
   const [points, setPoints] = useState<string[]>([]);
   const [log, setLog] = useState<string[]>([]);
-  const [afCurve, setAfCurve] = useState<number[]>([]);
   const [custom, setCustom] = useState<TelescopeTarget[]>([]);
   const [target, setTarget] = useState<TelescopeTarget | null>(null);
   const [acquisition, setAcquisition] = useState<Acquisition | null>(null);
@@ -146,13 +138,19 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
 
   const [train, setTrain] = useState<OpticalTrainId>('F10_NATIVE');
   const [roiId, setRoiId] = useState<RoiPreset['id']>('full');
-  const [expIx, setExpIx] = useState(indexOf(EXPOSURES_S, 8));
+  const [exp, setExp] = useState(8);
   const [subsIx, setSubsIx] = useState(indexOf(STACK_SIZES, 8));
   const [gain, setGain] = useState(300);
   const [rate, setRate] = useState(5);
   const [tracking, setTracking] = useState<TrackingMode>('sidereal');
-  const [focus, setFocus] = useState(0);
-  const [autofocus, setAutofocus] = useState<{ startedAtMs: number; from: number } | null>(null);
+  const [focusPos, setFocusPos] = useState(FOCUS_HOME);
+  const [focusMoving, setFocusMoving] = useState(false);
+  const [focusRate, setFocusRate] = useState(5);
+  const [daytime, setDaytime] = useState(false);
+  const [afterAe, setAfterAe] = useState(true);
+  const [afterAf, setAfterAf] = useState(true);
+  /** The acquisition that has just locked on, for the after-lock exposure and focus. */
+  const [lockedAt, setLockedAt] = useState<Acquisition | null>(null);
   const [settings, setSettings] = useState<MountSettings | null>(null);
   const [synced, setSynced] = useState(false);
   const [reticle, setReticle] = useState(true);
@@ -169,7 +167,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   /** How much of the sensor's frame the view shows, across and up: under 1 where the phone crops it to fill. */
   const [shown, setShown] = useState({ w: 1, h: 1 });
 
-  const exp = EXPOSURES_S[expIx];
   const subsGoal = STACK_SIZES[subsIx];
 
   /* --- the mount ------------------------------------------------------- */
@@ -203,10 +200,61 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const centringRef = useRef<Acquisition | null>(null);
   const observingRef = useRef<Acquisition | null>(null);
 
+  /* --- the focus motor --------------------------------------------------- */
+
+  // The AUX motor: a GoTo at its own speed, or a hold at the chosen rate. Stepped with the mount, copied out with the tick.
+  const focuserRef = useRef({ pos: FOCUS_HOME, target: null as number | null, vel: 0, lastMs: 0 });
+  const focusWaiters = useRef<Array<() => void>>([]);
+  // Where best focus lies this session: the tube's own offset, found only by focusing.
+  const focusOffsetRef = useRef(0);
+  const stepFocuser = useCallback((nowMs: number) => {
+    const f = focuserRef.current;
+    const dt = f.lastMs ? Math.min(0.1, (nowMs - f.lastMs) / 1000) : 0;
+    f.lastMs = nowMs;
+    if (f.target !== null) {
+      const d = f.target - f.pos;
+      const most = FOCUS_GOTO_S * dt;
+      if (Math.abs(d) <= most) {
+        f.pos = f.target;
+        f.target = null;
+        const done = focusWaiters.current;
+        focusWaiters.current = [];
+        done.forEach((r) => r());
+      } else f.pos += Math.sign(d) * most;
+    } else if (f.vel !== 0) f.pos += f.vel * dt;
+    f.pos = Math.min(60_000, Math.max(0, f.pos));
+  }, []);
+  const focusMoveTo = useCallback(async (to: number) => {
+    const f = focuserRef.current;
+    f.vel = 0;
+    f.target = Math.round(Math.min(60_000, Math.max(0, to)));
+    await new Promise<void>((resolve) => focusWaiters.current.push(resolve));
+    // The view draws the new focus at the next tick.
+    await new Promise((r) => setTimeout(r, TICK_MS + 80));
+  }, []);
+  const focusNudge = useCallback((steps: number) => {
+    const f = focuserRef.current;
+    f.vel = 0;
+    f.target = Math.round(Math.min(60_000, Math.max(0, (f.target ?? f.pos) + steps)));
+  }, []);
+  const focusHold = useCallback((dir: -1 | 0 | 1) => {
+    const f = focuserRef.current;
+    f.target = null;
+    f.vel = dir * FOCUS_SPEEDS[focusRate - 1];
+    if (dir === 0) f.pos = Math.round(f.pos);
+  }, [focusRate]);
+
   useEffect(() => {
     setSkyAheadMs(settleSkyClock(SIM_STATIONS.find((s) => s.id === NODE_ID)!));
-    // `?turbo`: the same model, its GoTo and solves eight times faster. For the test suite.
-    if (new URLSearchParams(window.location.search).has('turbo')) mountRef.current!.pace = 8;
+    focusOffsetRef.current = Math.round((Math.random() - 0.5) * 260);
+    // `?turbo`: the same model, its GoTo and solves eight times faster. For the test suite;
+    // the camera and focus stay where the recipe puts them.
+    if (new URLSearchParams(window.location.search).has('turbo')) {
+      mountRef.current!.pace = 8;
+      focusOffsetRef.current = 0;
+      setAfterAe(false);
+      setAfterAf(false);
+    }
     setClockMs(Date.now());
     try {
       setNight(localStorage.getItem(NIGHT_KEY) === '1');
@@ -222,6 +270,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       if (s) setSnap((prev) => (prev && s.atMs - prev.atMs < 1000 && Math.abs(prev.pointing.altitude - s.pointing.altitude) < 1e-4 && Math.abs(prev.pointing.azimuth - s.pointing.azimuth) < 1e-4 && prev.slewing === s.slewing && prev.atLimit === s.atLimit && prev.tracking === s.tracking ? prev : s));
       setExposing(exposingRef.current);
       setHistogram(histogramRef.current);
+      const f = focuserRef.current;
+      setFocusPos(Math.round(f.pos));
+      setFocusMoving(f.target !== null || f.vel !== 0);
     }, TICK_MS);
     return () => clearInterval(id);
   }, []);
@@ -296,6 +347,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     const loop = () => {
       if (!live) return;
       stepMount();
+      stepFocuser(Date.now());
       handle = requestAnimationFrame(loop);
     };
     handle = requestAnimationFrame(loop);
@@ -303,7 +355,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       live = false;
       cancelAnimationFrame(handle);
     };
-  }, [stepMount]);
+  }, [stepMount, stepFocuser]);
 
   /* --- what of the frame the view shows -------------------------------- */
 
@@ -395,7 +447,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     if (!station) return;
     const at = new Date(skyNow());
     const to = targetPosition(next, station, at);
-    const verdict = evaluateSafety(station, to, at);
+    const verdict = evaluateSafety(station, to, at, { daytime });
     if (!verdict.ok) {
       setRefusal({ target: next, reason: verdict.reason });
       setModal('refused');
@@ -409,7 +461,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     if (recipe) {
       setTrain(recipe.train);
       setRoiId(recipe.roi);
-      setExpIx(indexOf(EXPOSURES_S, recipe.exposureS));
+      setExp(recipe.exposureS);
       setGain(recipe.gain);
       setSubsIx(indexOf(STACK_SIZES, recipe.stack));
     }
@@ -419,7 +471,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     setModal(null);
     setSynced(false);
     setAcquisition(planAcquisition({ targetId: next.id, targetName: targetTitle(next), plan, warm: true, pace: mount.pace }));
-  }, [station, mount, targetFn]);
+  }, [station, mount, targetFn, daytime]);
 
   const cancelGoto = useCallback(() => {
     mount.abortSlew();
@@ -431,7 +483,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     setModal(null);
     setPicked(tg.id);
     const at = new Date(skyNow());
-    const verdict = evaluateSafety(node, targetPosition(tg, node, at), at);
+    const verdict = evaluateSafety(node, targetPosition(tg, node, at), at, { daytime });
     if (!verdict.ok) {
       setRefusal({ target: tg, reason: verdict.reason });
       setModal('refused');
@@ -447,12 +499,13 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     }
     connect(STATIONS[0]);
     setAuto(tg);
-  }, [node, station, cal, connect, pointAt, STATIONS]);
+  }, [node, station, cal, connect, pointAt, STATIONS, daytime]);
 
-  // A new exposure, gain, train or focus starts the live stack again, as capture software does.
+  // A new exposure, gain, train or crop starts the live stack again, as capture software does;
+  // a focus change does not, the frames just sharpen or soften.
   useEffect(() => {
     setLive((l) => (l ? { startsAtMs: Date.now() } : l));
-  }, [expIx, gain, train, roiId, focus, subsIx]);
+  }, [exp, gain, train, roiId, subsIx]);
 
   const press = useCallback((axis: Axis, dir: 1 | -1) => {
     if (acquisitionRef.current && acquisitionStateAt(acquisitionRef.current, Date.now()).state !== 'OBSERVING') {
@@ -474,14 +527,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     mount.settings = next;
     setSettings(next);
   }, [mount]);
-
-  const autoCamera = useCallback(() => {
-    if (!target) return;
-    const p = autoProfile(target);
-    setExpIx(p.exp);
-    setSubsIx(p.subs);
-    setGain(p.gain);
-  }, [target]);
 
   const capture = useCallback(async (subs: number, startedAtMs: number) => {
     const canvas = viewRef.current?.querySelector('canvas');
@@ -559,17 +604,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         setTracking((mode) => (target.kind === 'moon' ? 'lunar' : mode === 'off' || mode === 'lunar' || mode === 'solar' ? 'sidereal' : mode));
         mount.setTracking(target.kind === 'moon' ? 'lunar' : 'sidereal', Date.now());
         setLive({ startsAtMs: Date.now() + LIVE_DELAY_MS });
-      }
-    }
-    if (autofocus) {
-      const tt = Math.min(1, (now - autofocus.startedAtMs) / AUTOFOCUS_MS);
-      // A V-curve: out one way, back through focus, out the other, then to the minimum.
-      const sweep = tt < 0.35 ? autofocus.from + (6 - autofocus.from) * (tt / 0.35) : tt < 0.75 ? 6 - 12 * ((tt - 0.35) / 0.4) : -6 + 6 * ((tt - 0.75) / 0.25);
-      setFocus(Math.round(sweep));
-      setAfCurve((c) => [...c, sweep]);
-      if (tt >= 1) {
-        setFocus(0);
-        setAutofocus(null);
+        setLockedAt(acquisition);
       }
     }
     if (stack && subsDone >= subsGoal) {
@@ -614,6 +649,83 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   /* --- the autopilot ---------------------------------------------------- */
 
   const pickedTarget = picked ? resolveTarget(picked) ?? custom.find((c) => c.id === picked) ?? null : null;
+
+  /* --- auto exposure and autofocus, read off the picture ------------------ */
+
+  const camRef = useRef({ exposureS: exp, gain });
+  camRef.current = { exposureS: exp, gain };
+  const hintRef = useRef({ sunAltitudeDeg: sunAltitude, kind: target?.kind ?? null, steady: onTarget && !stacking });
+  const afRunningRef = useRef(false);
+  hintRef.current = { sunAltitudeDeg: sunAltitude, kind: target?.kind ?? null, steady: onTarget && !stacking };
+  const trainRef = useRef(train);
+  trainRef.current = train;
+  const view = useCallback(() => viewRef.current, []);
+  const ae = useAutoExposure({
+    view,
+    read: () => camRef.current,
+    apply: (exposureS, g) => {
+      setExp(exposureS);
+      setGain(g);
+    },
+    hint: () => hintRef.current,
+    allowed: () => hintRef.current.steady && !afRunningRef.current,
+  });
+  const af = useAutofocus({
+    view,
+    position: () => Math.round(focuserRef.current.pos),
+    moveTo: focusMoveTo,
+    exposureS: () => camRef.current.exposureS,
+    // A slower beam has the deeper focus: wider steps at f/20, finer at f/6.3.
+    step: () => (trainRef.current === 'F20_BARLOW' ? 110 : trainRef.current === 'F6_3_REDUCER' ? 50 : 75),
+  });
+  afRunningRef.current = af.state.running;
+  const aeRun = ae.run;
+  const afRun = af.run;
+  const aeStop = ae.stop;
+  const afStop = af.stop;
+  // A slew, a park or the session's end ends any metering: the picture is no longer the scene.
+  useEffect(() => {
+    if (inGoto || cal === 'running' || !station || park === 'running') {
+      aeStop();
+      afStop();
+      focuserRef.current.target = null;
+      focuserRef.current.vel = 0;
+    }
+  }, [inGoto, cal, station, park, aeStop, afStop]);
+  // Once on target: the scene's exposure, then focus, as the hub's autopilot does after it locks on.
+  useEffect(() => {
+    if (!lockedAt) return;
+    let live = true;
+    void (async () => {
+      await new Promise((r) => setTimeout(r, 600));
+      if (live && afterAe) await aeRun('auto');
+      if (live && afterAf) await afRun('auto');
+    })();
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lockedAt]);
+
+  const toggleDaytime = useCallback(() => {
+    // The sky jumps between now and tonight: any GoTo, stack or metering is let go.
+    mount.halt();
+    setAcquisition(null);
+    setAuto(null);
+    setTarget(null);
+    setLive(null);
+    setStack(null);
+    aeStop();
+    afStop();
+    setDaytime((on) => {
+      if (on) setSkyAheadMs(settleSkyClock(node));
+      else {
+        liveSkyClock();
+        setSkyAheadMs(0);
+      }
+      return !on;
+    });
+  }, [node, mount, aeStop, afStop]);
   const addCustom = useCallback((raText: string, decText: string) => {
     const ra = parseRa(raText);
     const dec = parseDec(decText);
@@ -639,13 +751,19 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
 
   const stopAll = useCallback(() => {
     mount.halt();
+    focuserRef.current.target = null;
+    focuserRef.current.vel = 0;
+    aeStop();
+    afStop();
     setAcquisition(null);
     setAuto(null);
     setStack(null);
     setLive(null);
-  }, [mount]);
+  }, [mount, aeStop, afStop]);
 
   const busy = connecting || cal === 'running' || park === 'running';
+  // The mount is moving on its own: no metering, no focusing, no dial until it has stopped.
+  const mountBusy = busy || inGoto;
   let primary: Action;
   // Until the console has hydrated a press would be lost: the button waits for it.
   if (clockMs === null) primary = { label: t.hub.autopilot.go, run: () => undefined, disabled: true };
@@ -711,7 +829,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
 
   const minute = Math.floor(skyMs / 60_000);
   // Every target the sky model knows, graded once a minute: up and safe first, highest first.
-  const graded = useMemo(() => (clockMs === null ? [] : gradeTargets(node, new Date(minute * 60_000))), [minute, node, clockMs === null]); // eslint-disable-line react-hooks/exhaustive-deps
+  const graded = useMemo(() => (clockMs === null ? [] : gradeTargets(node, new Date(minute * 60_000), { daytime })), [minute, node, clockMs === null, daytime]); // eslint-disable-line react-hooks/exhaustive-deps
   const hubTargets = useMemo<HubTarget[]>(() => graded
     .map(({ target: tg, position, visible }) => ({ id: tg.id, name: shortName(tg), sub: tg.catalog && tg.catalog !== shortName(tg) ? tg.catalog : t.targets.kinds[tg.kind], kind: hubKind(tg), altitude: position.altitude, up: visible }))
     .concat(custom.map((tg) => {
@@ -788,7 +906,10 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     ...(dew > 0.25 && humidity !== null ? [{ text: t.alerts.dew(Math.round(humidity)), warn: false }] : []),
   ];
   const limitNote = snap?.atLimit ? (snap.atLimit === 'cordwrap' ? t.hand.atLimit.cordwrap : t.hand.atLimit.alt) : null;
-  const refreshNote = cameraOn && exp >= 2 ? t.camera.refresh(expLabel) : null;
+
+  // Best focus: the train's own, the tube's offset, and a slow drift as the night cools it.
+  const bestFocus = FOCUS_HOME + FOCUS_SHIFT[train] + focusOffsetRef.current + Math.round(35 * Math.sin(skyMs / 5_400_000));
+  const defocus = Math.max(-25, Math.min(25, (focusPos - bestFocus) / STEPS_PER_DEFOCUS));
 
   const feed = station && cameraOn ? (
     <LiveView
@@ -804,7 +925,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       plateScaleArcsecPx={fov.plateScaleArcsecPx}
       apertureMm={station.instrument.apertureMm}
       obstruction={obstructionRatio(station.instrument)}
-      defocus={focus}
+      defocus={defocus}
       bortle={station.bortle}
       cloudCover={cloudCover}
       dew={dew}
@@ -823,7 +944,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     if (clockMs === null || !station) return;
     setLog((l) => [...l, `${clock(skyNow(), tz, true)}  ${statusText}`].slice(-60));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusText, station]);
+  }, [statusText.replace(/\d+ \/ \d+/, ''), station]);
 
   const offArcmin = (() => {
     if (!onTarget || !snap || !station || !target) return null;
@@ -831,16 +952,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     return Math.hypot(d.x * 60, d.y * 60);
   })();
   const pickedPos = pickedTarget && mounted ? targetPosition(pickedTarget, node, date) : null;
-  const recipe = pickedTarget ? SHOWPIECE_BY_ID.get(pickedTarget.id)?.recipe : undefined;
-  const focusPos = FOCUS_HOME + focus * FOCUS_STEP;
   const fps = exp < 1 ? Math.min(30, Math.round(1 / Math.max(exp, 1 / 30))) : null;
-  const lcdState = !station ? 'Off' : connecting ? 'Connecting' : cal === 'running' ? 'Aligning' : park === 'running' ? 'Parking'
-    : gotoState === 'slewing' ? 'Slewing' : gotoState === 'solving' ? 'Solving' : gotoState === 'centring' ? 'Centring'
-    : onTarget && target ? shortName(target) : t.hub.hc.ready;
-  const lcd: [string, string] = [
-    `${t.hub.hc.brand} ${lcdState}`,
-    station ? `Az${pointing.azimuth.toFixed(1)} Alt${pointing.altitude >= 0 ? '+' : '-'}${Math.abs(pointing.altitude).toFixed(1)}` : '',
-  ];
   const dayChip = !mounted ? '' : darkWin.isCurrentlyDark && darkWin.dawnEnd
     ? t.hub.tonight.darkNow(hoursLeft('', darkWin.dawnEnd.getTime() - skyMs)[1])
     : darkWin.duskStart && darkWin.duskStart.getTime() > skyMs ? t.hub.tonight.darkIn(hoursLeft('', darkWin.duskStart.getTime() - skyMs)[1]) : t.hub.tonight.daytime;
@@ -853,6 +965,12 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         return { dark: [f(tonightAt.duskStart), f(tonightAt.dawnEnd)] as [number, number], now: f(skyMs) };
       })()
     : null;
+
+  // The panels that need no tick keep their props between ticks, so they are not drawn again four times a second.
+  const targetsProp = useMemo(() => ({ list: hubTargets, best: bestTargets, up: hubTargets.filter((h) => h.up).length, selectedId: picked, onSelect: setPicked, onCustom: addCustom, locked: false }), [hubTargets, bestTargets, picked, addCustom]);
+  // The dome's crosshair moves in half-degree steps: a still tube is a still dome.
+  const domeKey = station ? `${Math.round(pointing.altitude * 2)}:${Math.round(pointing.azimuth * 2)}` : '';
+  const domePointing = useMemo(() => (station ? { altitude: Math.round(pointing.altitude * 2) / 2, azimuth: Math.round(pointing.azimuth * 2) / 2 } : null), [domeKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const modals = (
     <>
@@ -933,8 +1051,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         ] : [],
         bar,
       }}
-      targets={{ list: hubTargets, best: bestTargets, up: hubTargets.filter((h) => h.up).length, selectedId: picked, onSelect: setPicked, onCustom: addCustom, locked: false }}
-      dome={mounted ? <SkyDome locale={locale} station={station ?? node} minuteMs={minute * 60_000} pointing={station ? pointing : null} targetId={target?.id ?? null} onPick={observe} /> : null}
+      targets={targetsProp}
+      dome={mounted ? <SkyDome locale={locale} station={station ?? node} minuteMs={minute * 60_000} pointing={domePointing} targetId={target?.id ?? null} onPick={observe} daytime={daytime} /> : null}
+      daytime={{ on: daytime, onToggle: toggleDaytime }}
       stage={{
         viewRef,
         feed,
@@ -956,10 +1075,11 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         caption,
         idle,
       }}
-      rails={{
-        onAutoExp: target ? autoCamera : null,
-        onFocus: cameraOn ? () => { setAfCurve([]); setAutofocus({ startedAtMs: Date.now(), from: focus }); } : null,
-        focusing: autofocus !== null,
+      tools={{
+        onAutoExp: cameraOn && !mountBusy ? () => void ae.run('auto') : null,
+        aeRunning: ae.state.running,
+        onFocus: cameraOn && !mountBusy ? () => void af.run('auto') : null,
+        focusing: af.state.running,
         onPng: cameraOn && target && !stacking ? () => void capture(1, Date.now()) : null,
       }}
       autopilot={{
@@ -985,8 +1105,12 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
           { label: t.hub.autopilot.gotoOnly, run: () => pickedTarget && pointAt(pickedTarget), disabled: cal !== 'done' || !pickedTarget || inGoto },
           { label: t.hub.autopilot.sync, run: sync, disabled: cal !== 'done' || inGoto },
         ],
-        after: [...(recipe ? [t.hub.autopilot.autoCamera] : []), t.hub.autopilot.keepCentred],
-        note: target && targetNow && targetNow.altitude <= 0 ? t.steps.hints.belowHorizon : null,
+        after: [
+          { label: t.hub.autopilot.afterExposure, on: afterAe, onToggle: () => setAfterAe((v) => !v) },
+          { label: t.hub.autopilot.afterFocus, on: afterAf, onToggle: () => setAfterAf((v) => !v) },
+          { label: t.hub.autopilot.keepCentred, on: tracking !== 'off', onToggle: null },
+        ],
+        note: target && targetNow && targetNow.altitude <= 0 ? t.steps.hints.belowHorizon : daytime ? t.hub.daytimeNote : null,
       }}
       pointing={{
         path,
@@ -1008,23 +1132,51 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         battery,
         sensor: `${((fieldOfView(instrument).widthPx * fieldOfView(instrument).heightPx) / 1e6).toFixed(1)} MP`,
       }}
-      camera={{
-        exp: expIx, subs: subsIx, gain, total: expTotal, locked: stacking, enabled: true,
-        onExp: (i) => setExpIx(Math.max(0, Math.min(EXPOSURES_S.length - 1, i))),
-        onSubs: (i) => setSubsIx(Math.max(0, Math.min(STACK_SIZES.length - 1, i))),
+      slew={{
+        enabled: padEnabled,
+        rate,
+        rateLabel: HC_RATES.find((r) => r.rate === rate)?.label ?? '',
+        onRate: (v) => setRate(Math.max(1, Math.min(9, v))),
+        onPress: press,
+        onRelease: release,
+        onCentre: () => target && pointAt(target),
+        canCentre: onTarget && !stacking,
+      }}
+      focuser={{
+        position: station ? focusPos : null,
+        enabled: !!station && !mountBusy && !af.state.running,
+        moving: focusMoving,
+        rate: focusRate,
+        onRate: (v) => setFocusRate(Math.max(1, Math.min(9, v))),
+        onNudge: focusNudge,
+        onHold: focusHold,
+        af: cameraOn && !mountBusy ? { state: af.state, run: (m) => void af.run(m), stop: af.stop } : null,
+        rows: [
+          [t.hub.focuser.position, station ? String(focusPos) : '—'],
+          [t.hub.focuser.speed, `${FOCUS_SPEEDS[focusRate - 1]} ${t.hub.focuser.stepsPerS}`],
+          [t.hub.focuser.state, focusMoving ? t.hub.focuser.moving : t.hub.focuser.idle],
+        ],
+      }}
+      exposure={{
+        exposureS: exp,
+        onExposure: (v) => setExp(Math.max(EXPOSURES_S[0], Math.min(EXPOSURES_S[EXPOSURES_S.length - 1], v))),
+        gain,
         onGain: (v) => setGain(Math.max(GAIN.min, Math.min(GAIN.max, v))),
-        onAuto: target ? autoCamera : null,
-        refreshNote,
+        subs: subsIx,
+        onSubs: (i) => setSubsIx(Math.max(0, Math.min(STACK_SIZES.length - 1, i))),
+        total: expTotal,
+        locked: stacking,
         histogram: cameraOn ? histogram : null,
+        ae: cameraOn && !mountBusy ? { state: ae.state, run: (m) => void ae.run(m), stop: ae.stop, keep: ae.keep, setKeep: ae.setKeep } : null,
+      }}
+      capture={{
+        action: captureAction,
+        total: expTotal,
         stats: [
           [t.hub.camera.size, `${roi.widthPx}×${roi.heightPx}`],
           [t.hub.camera.depth, exp < 0.1 ? '8-bit' : '16-bit'],
           [t.hub.camera.rate, !cameraOn ? '—' : fps !== null ? `${fps} fps` : `1/${expLabel}`],
-          [t.hub.camera.exposure, expLabel],
-          [t.hub.camera.gain, String(gain)],
-          [t.hub.camera.sensor, `${((fieldOfView(instrument).widthPx * fieldOfView(instrument).heightPx) / 1e6).toFixed(1)} MP`],
         ],
-        capture: captureAction,
         progress: stacking
           ? { title: t.hub.camera.running(subsDone, subsGoal), count: `${subsDone} / ${subsGoal}`, frac: subsDone / subsGoal }
           : live && onTarget
@@ -1040,35 +1192,12 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         onSettings: () => setModal('mount'),
         stepNote: null, limitNote, commandNote: null,
       }}
-      hc={{
-        lcd,
-        enabled: padEnabled, onPress: press, onRelease: release,
-        rate, onRate: (v) => setRate(Math.max(1, Math.min(9, v))),
-        onAlign: busy || inGoto ? null : whereAmI,
-        onEnter: primary.disabled ? null : primary.run,
-        onBack: stopAll,
-        onMenu: () => setModal('mount'),
-        identify: near ? near.object.name : target ? shortName(target) : t.hub.hc.noObject,
-        info: pickedTarget && pickedPos ? `${shortName(pickedTarget)} ${pickedPos.altitude.toFixed(0)}deg` : t.hub.hc.noObject,
-      }}
       align={{
         done: [!!station, cal === 'done', synced, points.length > 1].filter(Boolean).length,
         points,
         onWhere: busy || inGoto ? null : whereAmI,
         onSync: cal === 'done' && !inGoto && !!station ? sync : null,
         onClear: cal === 'done' && !inGoto ? () => { setPoints([]); setSynced(false); setAcquisition(null); setCal('todo'); } : null,
-      }}
-      focuser={{
-        rows: [
-          [t.hub.focuser.position, station ? String(focusPos) : '—'],
-          [t.hub.focuser.offset, focus === 0 ? '0' : `${focus > 0 ? '+' : '−'}${Math.abs(focus * FOCUS_STEP)}`],
-          [t.hub.focuser.state, autofocus ? t.hub.focuser.moving : t.hub.focuser.idle],
-        ],
-        onIn: station ? () => setFocus((f) => Math.max(-12, f - 1)) : null,
-        onOut: station ? () => setFocus((f) => Math.min(12, f + 1)) : null,
-        onRun: cameraOn ? () => { setAfCurve([]); setAutofocus({ startedAtMs: Date.now(), from: focus }); } : null,
-        running: autofocus !== null,
-        curve: afCurve,
       }}
       setup={setup}
       log={log}

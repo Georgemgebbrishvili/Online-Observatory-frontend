@@ -450,6 +450,7 @@ test("the observatory console stands by on the sky model, badged simulated, with
   await expect(page.locator(".oh-head .oh-bt b")).toHaveText("Stellar Tbilisi");
   // ADR-053 §6 as amended: no stations the product has no plan behind.
   await expect(page.getByText("Coming soon")).toHaveCount(0);
+  await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
   await page.getByRole("tab", { name: "Setup" }).click();
   await expect(page.getByRole("tabpanel").getByText("12%")).toBeVisible();
 

@@ -11,9 +11,9 @@
 
 import { ASI585MC } from './instrument';
 
-/** The exposures the console offers, seconds: the planetary milliseconds up to a deep-sky minute. */
+/** The exposures the console offers, seconds: daylight's tens of microseconds up to a deep-sky minute. */
 export const EXPOSURES_S: readonly number[] = [
-  0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 15, 30, 60,
+  0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 4, 8, 15, 30, 60,
 ];
 
 /** Frames a stack may hold: hundreds for lucky imaging, a handful for a long sub. */
@@ -34,9 +34,10 @@ export const ROI_BY_ID = new Map(ROIS.map((r) => [r.id, r]));
 
 /** "8 s", "500 ms", "0.5 ms". */
 export function exposureLabel(seconds: number): string {
-  if (seconds >= 1) return `${seconds} s`;
+  if (seconds >= 1) return `${+seconds.toFixed(seconds < 10 ? 1 : 0)} s`;
   const ms = seconds * 1000;
-  return `${ms >= 1 ? ms : ms.toFixed(1)} ms`;
+  if (ms < 0.5) return `${Math.round(ms * 1000)} µs`;
+  return `${ms >= 1 ? +ms.toFixed(ms < 10 ? 1 : 0) : ms.toFixed(1)} ms`;
 }
 
 /** Electrons per ADU at this gain: ZWO's 0.1 dB steps, so 10 dB of gain is 200 units. */

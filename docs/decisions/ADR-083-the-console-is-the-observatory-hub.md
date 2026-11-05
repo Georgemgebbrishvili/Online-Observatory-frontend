@@ -26,29 +26,61 @@ website.
 
 ## Decision
 
-1. **The hub's cockpit, on `/observatory`.** One header bar (name, Simulated or Live badge,
-   Mount / Camera / Focuser device pills, local time and sidereal time, Night, Park, STOP); a
-   left column of Tonight (sunset, sunrise, darkness, Moon), Targets (best right now, search,
-   Solar system / Stars / Deep sky / Custom / All) and the sky dome; the view between a View rail
-   (reticle, grid, invert, mirror, flip, full) and an Optics rail (train, crop, auto exposure,
-   focus, PNG); a Controls card under it with Mount (the hand controller's faceplate beside the
-   hand control), Align, Focus, Capture, Setup and Log; a right column of Autopilot, Camera and
-   Pointing.
-2. **The hub's flow.** Pick a target, press **Find & Track**: the Autopilot connects and aligns
-   if it must, slews, solves, centres and tracks, and its pipeline (Align, Slew, Solve, Center,
-   Track) shows where it is, with Off target, Pass and Solve time. **Where am I?**, **GoTo only**
-   and **Sync** sit under it, as in the hub. Custom targets are typed in by RA and Dec.
-3. **The hub's colours.** Navy and blue, three tokens (background `6,10,28`, accent `59,112,246`,
+1. **One screen.** The console fills the window under the site's header and never scrolls:
+   the picture in the middle, the controls under it, the Autopilot and capture on the right,
+   the targets on the left. The side columns scroll inside themselves; the picture and the
+   controls stay put. Below 1240 px the targets go; on a phone the picture stays on top and a
+   row of tabs (Track, Move, Camera, Targets, More) shows one group of controls at a time.
+2. **The controls are capture software's, drawn well.** Under the picture, left to right: a
+   round **mount slew pad**, eight arrows on a ring with the re-centre button in the middle and
+   the rate on a slider with a pill that names it (a diagonal drives both axes); a **focuser
+   dial**, a knob that turns by drag or keyboard, the position in its centre and two rotate
+   buttons that hold a direction at the chosen speed (the hub's measured 2–350 steps a second);
+   and the **exposure panel**, tick sliders for exposure (50 µs to 60 s, log scale) and gain,
+   with the auto exposure row and the stack depth. The view's toggles (reticle, grid, invert,
+   mirror, flip, auto exposure, autofocus, PNG, full screen) sit over the picture's left edge,
+   the optical train and crop over its top right.
+3. **Auto exposure reads the picture** (`lib/observatory-sim/metering.ts`,
+   `use-auto.ts`): the frame's median, bright tail, maximum and clipped share, the stars it
+   finds. It names the scene first, daylight, Moon, planet, star, deep sky or finder, from the
+   picture before the target, then moves exposure and gain toward that scene's goal within its
+   range, exposure before gain, and re-reads until the level holds. Each scene can be forced;
+   **Keep adjusting** meters again when the picture drifts.
+4. **Autofocus reads the picture too.** A coarse sweep of nine positions, then a fine one of
+   seven around the best, every position approached from the same side for the gear's
+   backlash. Stars are measured by their half-flux radius and fitted with a V; anything else,
+   the Moon, a planet or a daylight scene, by contrast and fitted with a parabola; on Auto the
+   measure is chosen after the first sweep, when the sharp positions have shown whether there
+   are stars to measure. The curve, the fit and the best position are charted on the Focus
+   tab. Both run by themselves after the Autopilot locks on, when their switches are on.
+5. **Daytime observing.** The **Day** switch puts the sky clock back on the wall clock and
+   waives the night gate: the Moon, Venus, Jupiter and the bright stars can be found in daylight
+   with a daylight exposure. The Sun's 30° keep-out is never waived, and a clipped daylight
+   sky is white on every sub: no stack brings it back.
+6. **The hub's flow.** Pick a target, press **Find & Track**: the Autopilot connects and aligns
+   if it must, slews, solves, centres and tracks; its pipeline shows where it is, with Off
+   target, Pass and Solve time. **Where am I?**, **GoTo only** and **Sync** sit under it.
+   Custom targets are typed in by RA and Dec.
+7. **The hub's colours.** Navy and blue, three tokens (background `6,10,28`, accent `59,112,246`,
    ink `230,237,255`) on glass cards, `observatory-hub.css`; night mode turns all three red.
    `observatory-console.css` keeps the dialogs and the dome in the same blue. Gold still badges
    anything simulated; green still marks Live.
-4. **The hand controller** is drawn as the hub draws it: red LCD with two lines, arrows, the
-   numbered keys. Its LCD shows the mount's state and position; MOTOR SPEED and a digit set the
-   rate; 1–3 filter Targets; 5 opens Focus; 6 opens Mount settings; 9 steps through the best
-   targets. Its maker is not named (`ADR-055`): the faceplate reads STELLAR.
-5. **The real instrument takes the same cockpit** (`platform-console.tsx`): the booked target in
-   the Autopilot, the pipeline from the mission's state, Capture on the Camera card, nudges from
-   the faceplate, STOP asking once for confirmation.
+8. **The real instrument takes the same cockpit** (`platform-console.tsx`): the booked target
+   in the Autopilot, the pipeline from the mission's state, nudges from the slew pad, Capture on
+   its card, STOP asking once for confirmation. The focuser and the auto controls show and stay
+   the operator's.
+
+9. **Glass without blur, and panels that keep still.** Measured on the production build at a
+   quarter of the CPU: with `backdrop-filter` blur on every card the phone drew 4–5 frames a
+   second and the desk 3; without it, 30. So the blur is kept only on the small overlays over the
+   picture, and never on a phone or where the system asks for reduced transparency. The panels
+   that need no tick (targets, the dome's crosshair in half-degree steps) keep their props between
+   ticks and are not drawn again four times a second. After both: 47–57 fps on the throttled
+   phone, 62 on the desk, through alignment, slewing, the live stack, auto exposure and autofocus.
+10. **Nothing meters while the mount moves.** A connect, an alignment, a GoTo, a park or the
+    session's end stops auto exposure and autofocus and halts the focus motor; the auto controls
+    and the dial are disabled until the mount has stopped; auto exposure's *Keep adjusting* waits
+    while autofocus runs; the focuser dial never restarts the live stack.
 
 ## What stays binding
 
@@ -60,5 +92,6 @@ contract. The site header and the rest of the site keep `ADR-075`'s colours.
 ## Consequences
 
 The console's visual baselines change everywhere and need a refresh. The station list, quick
-start, five-step bar, target-search dialog and phone dock are deleted, with their copy and CSS.
-On a phone the console shows one of Live, Targets or Controls at a time from its own tab row.
+start, five-step bar, target-search dialog, phone dock, hand-controller faceplate and the old
+camera panel are deleted, with their copy and CSS. The simulator's focuser is a model now: a
+position, a GoTo speed, hold rates, a best focus per optical train that drifts with the night.

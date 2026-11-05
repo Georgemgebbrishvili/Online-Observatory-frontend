@@ -138,28 +138,31 @@ export function usePlatformDriver({
     [mission.id, imagingProfile, signInPath],
   );
 
-  // A held arrow: one bounded step now, then one every step interval until release.
-  const holdRef = useRef<{ axis: Axis; control: Control; timer: number } | null>(null);
+  // A held arrow: one bounded step now, then one every step interval until release. A
+  // diagonal holds both axes; the platform takes one command at a time, so they alternate.
+  const holdRef = useRef(new Map<Axis, number>());
   const press = useCallback(
     (axis: Axis, direction: 1 | -1) => {
       const control: Control = axis === 'alt' ? (direction > 0 ? 'up' : 'down') : direction > 0 ? 'right' : 'left';
-      if (holdRef.current) window.clearInterval(holdRef.current.timer);
+      const held = holdRef.current.get(axis);
+      if (held !== undefined) window.clearInterval(held);
       void submit(control);
-      const timer = window.setInterval(() => {
+      holdRef.current.set(axis, window.setInterval(() => {
         if (!pendingRef.current) void submit(control);
-      }, stepEveryMs);
-      holdRef.current = { axis, control, timer };
+      }, stepEveryMs));
     },
     [submit],
   );
   const release = useCallback((axis: Axis) => {
-    if (holdRef.current?.axis === axis) {
-      window.clearInterval(holdRef.current.timer);
-      holdRef.current = null;
+    const held = holdRef.current.get(axis);
+    if (held !== undefined) {
+      window.clearInterval(held);
+      holdRef.current.delete(axis);
     }
   }, []);
-  useEffect(() => () => {
-    if (holdRef.current) window.clearInterval(holdRef.current.timer);
+  useEffect(() => {
+    const holds = holdRef.current;
+    return () => holds.forEach((timer) => window.clearInterval(timer));
   }, []);
 
   const expiresAt = live.session?.expiresAt ?? null;

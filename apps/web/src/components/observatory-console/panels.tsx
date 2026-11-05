@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useId } from 'react';
-import { EXPOSURES_S, GAIN, STACK_SIZES, exposureLabel } from '@/lib/observatory-sim/camera';
 import { HC_RATES, type MountSettings, type TrackingMode } from '@/lib/observatory-sim/mount-drive';
 import type { AltAz } from '@/lib/observatory-sim/safety';
 import { Dial, Spark } from './charts';
@@ -66,7 +65,7 @@ function PointingBase({ path, pointing, rows, rms, rmsHistory, seeing, seeingHis
   );
 }
 
-function Stepper({ label, value, onDown, onUp, min, max }: { label: string; value: string; onDown: () => void; onUp: () => void; min: boolean; max: boolean }) {
+export function Stepper({ label, value, onDown, onUp, min, max }: { label: string; value: string; onDown: () => void; onUp: () => void; min: boolean; max: boolean }) {
   const t = useCopy();
   return (
     <div className="sdo-stepper" role="group" aria-label={label}>
@@ -77,30 +76,8 @@ function Stepper({ label, value, onDown, onUp, min, max }: { label: string; valu
   );
 }
 
-export type CameraProps = {
-  /** Index into EXPOSURES_S and STACK_SIZES. */
-  exp: number;
-  subs: number;
-  gain: number;
-  total: string;
-  locked: boolean;
-  /** The platform sets the real camera: the controls show, and do nothing. */
-  enabled: boolean;
-  onExp: (i: number) => void;
-  onSubs: (i: number) => void;
-  onGain: (v: number) => void;
-  onAuto: (() => void) | null;
-  refreshNote: string | null;
-  /** The live frame's brightness histogram, 32 bins; null with no frame. */
-  histogram: number[] | null;
-  /** An element whose text completes the panel's name, where several panels share a page. */
-  nameId?: string;
-  /** Inside a card that already names it: the controls alone. */
-  bare?: boolean;
-};
-
 /** The live frame's histogram, log-scaled so the sky's peak does not flatten the stars' tail. */
-function Histogram({ bins, label }: { bins: number[]; label: string }) {
+export function Histogram({ bins, label }: { bins: number[]; label: string }) {
   const logs = bins.map((v) => Math.log1p(v));
   const max = Math.max(...logs) || 1;
   return (
@@ -112,53 +89,6 @@ function Histogram({ bins, label }: { bins: number[]; label: string }) {
         return <rect key={i} x={i * 8} y={40 - h} width="7" height={h} fill={i >= 31 ? '#e6edff' : '#3b70f6'} opacity=".85" />;
       })}
     </svg>
-  );
-}
-
-function CameraBase({ exp, subs, gain, total, locked, enabled, onExp, onSubs, onGain, onAuto, refreshNote, histogram, nameId, bare }: CameraProps) {
-  const t = useCopy();
-  const id = useId();
-  const off = locked || !enabled;
-  const controls = (
-      <div className="sdo-cam">
-      <div className="sdo-cam__row">
-        <span className="sdo-lbl">{t.camera.exposure}</span>
-        <Stepper label={t.camera.exposure} value={exposureLabel(EXPOSURES_S[exp])} onDown={() => onExp(exp - 1)} onUp={() => onExp(exp + 1)} min={off || exp <= 0} max={off || exp >= EXPOSURES_S.length - 1} />
-      </div>
-      <div className="sdo-cam__row">
-        <span className="sdo-lbl">{t.camera.frames}</span>
-        <Stepper label={t.camera.frames} value={String(STACK_SIZES[subs])} onDown={() => onSubs(subs - 1)} onUp={() => onSubs(subs + 1)} min={off || subs <= 0} max={off || subs >= STACK_SIZES.length - 1} />
-      </div>
-      <div className="sdo-cam__gain">
-        <div className="sdo-cam__row">
-          <label className="sdo-lbl" htmlFor={`${id}-gain`}>{t.camera.gain}</label>
-          <span className="sdo-mono" style={{ fontSize: 13 }}>{gain}{gain >= GAIN.hcg ? ' · HCG' : ''}</span>
-        </div>
-        <input id={`${id}-gain`} className="sdo-range" type="range" min={GAIN.min} max={GAIN.max} step={GAIN.step} value={gain} disabled={off}
-          aria-valuetext={`${gain}${gain >= GAIN.hcg ? ', high conversion gain' : ''}`}
-          style={{ ['--fill' as string]: `${(gain / GAIN.max) * 100}%`, ['--hcg' as string]: `${(GAIN.hcg / GAIN.max) * 100}%` }} onChange={(e) => onGain(Number(e.target.value))} />
-      </div>
-      {onAuto && (
-        <button type="button" className="sdo-sec" onClick={onAuto} disabled={off}>{t.camera.auto}</button>
-      )}
-      {histogram && (
-        <div className="sdo-cam__gain">
-          <span className="sdo-lbl">{t.camera.histogram}</span>
-          <Histogram bins={histogram} label={t.camera.histogram} />
-        </div>
-      )}
-      {refreshNote && <p className="sdo-note" style={{ padding: 0 }}>{refreshNote}</p>}
-    </div>
-  );
-  if (bare) return controls;
-  return (
-    <section className="sdo-panel" aria-labelledby={nameId ? `${id}-t ${nameId}` : `${id}-t`}>
-      <div className="sdo-ph">
-        <h2 id={`${id}-t`} className="sdo-ph__t"><Icon name="camera" size={15} />{t.camera.title}</h2>
-        <span className="sdo-ph__id">{total}</span>
-      </div>
-      {controls}
-    </section>
   );
 }
 
@@ -276,7 +206,6 @@ function FrameThumbsBase({ frames, onOpen }: { frames: Frame[]; onOpen: (f: Fram
 }
 
 export const Pointing = memo(PointingBase);
-export const Camera = memo(CameraBase);
 export const HandControl = memo(HandControlBase);
 export const MountSettingsPanel = memo(MountSettingsBase);
 export const FrameThumbs = memo(FrameThumbsBase);

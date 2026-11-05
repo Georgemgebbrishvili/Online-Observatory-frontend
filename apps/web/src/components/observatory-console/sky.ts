@@ -95,3 +95,8 @@ export function tonightSky(station: Station, now: Date): TonightSky {
     moonSet: at(SearchRiseSet(Body.Moon, observer, -1, from, 1.5)),
   };
 }
+
+/** The sky as it is now: daytime observing (ADR-083) puts the sky clock back on the wall clock. */
+export function liveSkyClock() {
+  skyOffsetMs = 0;
+}

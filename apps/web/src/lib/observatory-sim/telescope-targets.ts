@@ -152,10 +152,10 @@ export type TargetOrder = 'zenith' | 'brightest' | 'name';
 export type GradedTarget = { target: TelescopeTarget; position: TargetPosition; visible: boolean };
 
 /** Every target positioned and graded for this site and instant. */
-export function gradeTargets(node: ObservatoryNode, date: Date): GradedTarget[] {
+export function gradeTargets(node: ObservatoryNode, date: Date, opts: { daytime?: boolean } = {}): GradedTarget[] {
   return TELESCOPE_TARGETS.map((target) => {
     const position = targetPosition(target, node, date);
-    return { target, position, visible: evaluateSafety(node, position, date).ok };
+    return { target, position, visible: evaluateSafety(node, position, date, opts).ok };
   });
 }
 

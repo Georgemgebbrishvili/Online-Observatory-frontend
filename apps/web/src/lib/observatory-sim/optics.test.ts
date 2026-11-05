@@ -41,7 +41,8 @@ describe('the NexStar 8SE with the ASI585MC', () => {
 
 describe('the camera', () => {
   it('offers planetary milliseconds through a deep-sky minute, labelled as such', () => {
-    expect(EXPOSURES_S[0]).toBe(0.0005);
+    expect(EXPOSURES_S[0]).toBe(0.00005);
+    expect(exposureLabel(0.0001)).toBe('100 µs');
     expect(EXPOSURES_S.at(-1)).toBe(60);
     expect(exposureLabel(0.0005)).toBe('0.5 ms');
     expect(exposureLabel(0.01)).toBe('10 ms');

@@ -4,7 +4,7 @@ import type { ImagingProfile, Mission } from '@darkview/contracts';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '@/i18n/config';
 import { stepOf } from '@/features/missions/room';
-import { EXPOSURES_S, STACK_SIZES } from '@/lib/observatory-sim/camera';
+import { STACK_SIZES } from '@/lib/observatory-sim/camera';
 import { DEFAULT_SEEING_ARCSEC, TRAIN_BY_ID, effectiveFocalLength, fieldOfView, type OpticalTrainId } from '@/lib/observatory-sim/optics';
 import { STATIONS as SIM_STATIONS, type Station } from '@/lib/observatory-sim/sim-stations';
 import { consoleCopy } from './copy';
@@ -205,7 +205,6 @@ export function PlatformConsole({ locale, observatoryName, simulated, mission, c
         caption,
         idle: d.feed ? null : { title: t.observatory, text: t.idle.platform(mission.targetName), note: simulated ? t.simulated : observatoryName },
       }}
-      rails={{ onAutoExp: null, onFocus: null, focusing: false, onPng: null }}
       autopilot={{
         name: mission.targetName,
         sub: t.hub.targets.booked,
@@ -235,13 +234,30 @@ export function PlatformConsole({ locale, observatoryName, simulated, mission, c
         battery: null,
         sensor: `${((fov.widthPx * fov.heightPx) / 1e6).toFixed(1)} MP`,
       }}
-      camera={{
-        exp: Math.max(0, EXPOSURES_S.findIndex((v) => v >= 8)), subs: Math.max(0, STACK_SIZES.findIndex((v) => v >= 8)), gain: 300, total: mission.imagingProfile ?? '—', locked: false, enabled: false,
-        onExp: () => undefined, onSubs: () => undefined, onGain: () => undefined, onAuto: null, refreshNote: null, histogram: null,
-        stats: [[t.hub.camera.size, `${fov.widthPx}×${fov.heightPx}`], [t.hub.camera.sensor, `${((fov.widthPx * fov.heightPx) / 1e6).toFixed(1)} MP`]],
-        capture: d.offered.capture ? { label: t.steps.captureReal, run: driver.capture, disabled: d.pending !== null } : null,
+      exposure={{
+        exposureS: 8, onExposure: null, gain: 300, onGain: null,
+        subs: Math.max(0, STACK_SIZES.findIndex((v) => v >= 8)), onSubs: null,
+        total: mission.imagingProfile ?? '—', locked: false, histogram: null, ae: null,
+      }}
+      capture={{
+        action: d.offered.capture ? { label: t.steps.captureReal, run: driver.capture, disabled: d.pending !== null } : null,
+        total: mission.imagingProfile ?? '—',
+        stats: [[t.hub.camera.size, `${fov.widthPx}×${fov.heightPx}`]],
         progress: { title: ms === 'CAPTURING' ? t.status.stacking(0, 1) : t.hub.camera.idle, count: '', frac: 0 },
       }}
+      slew={{
+        enabled: d.offered.move && d.pending === null,
+        rate: 1, rateLabel: t.hand.step(2), onRate: null,
+        onPress: driver.press, onRelease: driver.release,
+        onCentre: driver.recentre, canCentre: d.offered.move && d.pending === null,
+      }}
+      focuser={{
+        position: null, enabled: false, moving: false, rate: 5, onRate: null,
+        onNudge: () => undefined, onHold: () => undefined, af: null,
+        rows: [[t.hub.focuser.state, t.hand.operatorOnly]],
+      }}
+      tools={{ onAutoExp: null, aeRunning: false, onFocus: null, focusing: false, onPng: null }}
+      daytime={null}
       hand={{
         rate: 1, onRate: null,
         tracking: d.tracking === false ? 'off' : 'sidereal', onTracking: null,
@@ -251,15 +267,7 @@ export function PlatformConsole({ locale, observatoryName, simulated, mission, c
         onSettings: null,
         stepNote: t.hand.step(2), limitNote: null, commandNote,
       }}
-      hc={{
-        lcd: [`${t.hub.hc.brand} ${ms}`.slice(0, 16), pointing ? `Az${pointing.azimuth.toFixed(1)} Alt${pointing.altitude >= 0 ? '+' : '-'}${Math.abs(pointing.altitude).toFixed(1)}` : ''],
-        enabled: d.offered.move && d.pending === null, onPress: driver.press, onRelease: driver.release,
-        rate: 1, onRate: null,
-        onAlign: null, onEnter: primary.disabled ? null : primary.run, onBack: d.offered.stop ? stop : null, onMenu: null,
-        identify: mission.targetName, info: mission.targetName,
-      }}
       align={{ done: live ? 2 : 0, points: [], onWhere: null, onSync: null, onClear: null }}
-      focuser={{ rows: [[t.hub.focuser.state, t.hand.operatorOnly]], onIn: null, onOut: null, onRun: null, running: false, curve: [] }}
       setup={<p className="oh-hint">{t.hand.operatorOnly}</p>}
       log={[statusText]}
       frames={frames}
