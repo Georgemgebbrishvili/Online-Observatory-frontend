@@ -43,6 +43,7 @@ export const tonightCopy = {
       detail: "Try again in a moment.",
     },
     book: "Book a session",
+    sky: "See the whole sky now",
     banner: "Live now: {target}",
     bannerAction: "Watch",
     room: {
@@ -96,6 +97,7 @@ export const tonightCopy = {
       detail: "სცადე ცოტა ხანში.",
     },
     book: "დაჯავშნე სეანსი",
+    sky: "ნახე მთელი ცა ახლა",
     banner: "ახლა პირდაპირ: {target}",
     bannerAction: "ყურება",
     room: {

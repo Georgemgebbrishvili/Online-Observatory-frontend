@@ -20,6 +20,7 @@ const dictionary = {
       observatory: "Observatory",
       pricing: "Pricing",
       explorer: brand.en.game,
+      sky: "Night Sky",
       signIn: "Sign in",
       register: "Create an account",
       reserve: "Reserve a slot",
@@ -36,7 +37,7 @@ const dictionary = {
       cards: "Weekly cards",
       bookings: "Your nights",
       subscription: "Subscription",
-      loyalty: "Loyalty",
+      loyalty: "Club",
       passes: "Observation Pass",
       plannedGroup: "Not yet available",
       previewDescription:

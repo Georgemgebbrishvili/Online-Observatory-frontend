@@ -17,7 +17,10 @@ import {
   zChangeEmailRequest,
   zChangePasswordRequest,
   zDeleteAccountRequest,
+  zAdminAdjustLoyaltyPointsBody,
+  zAdminAdjustLoyaltyPointsResponse,
   zCreateBookingBody,
+  zGetMyLoyaltyResponse,
   zCreateBookingResponse,
   zGetBookingResponse,
   zGetCaptureDownloadResponse,
@@ -773,6 +776,124 @@ async function purchaseGift(request, response) {
   );
 }
 
+// ADR-084: the Loyalty Club, as the platform keeps it (DV-090..096). One account per
+// user, made on first read with the welcome bonus; the observer's is seeded so the club
+// page has a tier, progress and history to show.
+const loyaltyScheme = {
+  pointsPerGel: 5,
+  pointsPerGelRedeemed: 100,
+  welcomeBonusPoints: 100,
+  referralBonusPoints: 200,
+  minimumPayableMinor: 100,
+  progressMarkers: [5000],
+  tiers: [
+    { code: "MEMBER", nameEn: "Member", nameKa: "წევრი", thresholdPoints: 0, discountPercent: 10 },
+    { code: "VIP", nameEn: "VIP", nameKa: "VIP", thresholdPoints: 20000, discountPercent: 20 },
+  ],
+};
+const loyaltyAccounts = new Map();
+const loyaltyAdjustments = new Map();
+// Referred user id -> referrer user id; paid once, on the referred user's first payment.
+const referrals = new Map();
+
+function referralCodeFor(userId) {
+  return createHash("sha256").update(`ref:${userId}`).digest("hex").slice(0, 8).toUpperCase();
+}
+
+function loyaltyEntry(account, kind, points, extra = {}) {
+  account.balance += points;
+  account.tierPoints += extra.tierPoints ?? 0;
+  account.entries.unshift({
+    id: randomUUID(),
+    kind,
+    points,
+    tierPoints: extra.tierPoints ?? 0,
+    bookingId: extra.bookingId ?? null,
+    reason: extra.reason ?? null,
+    createdAt: new Date().toISOString(),
+  });
+}
+
+function loyaltyAccountOf(userId) {
+  let account = loyaltyAccounts.get(userId);
+  if (account) return account;
+  account = { userId, balance: 0, tierPoints: 0, entries: [] };
+  loyaltyAccounts.set(userId, account);
+  if (userId === fakeAccounts["observer@darkview.test"].id) {
+    account.entries.push(
+      {
+        id: "7a000000-0000-4000-8000-000000000003",
+        kind: "PURCHASE_EARNED",
+        points: 6900,
+        tierPoints: 6900,
+        bookingId: "51000000-0000-4000-8000-000000000002",
+        reason: null,
+        createdAt: "2026-09-21T09:01:00.000Z",
+      },
+      {
+        id: "7a000000-0000-4000-8000-000000000002",
+        kind: "ADMIN_ADJUSTMENT",
+        points: -2800,
+        tierPoints: 0,
+        bookingId: null,
+        reason: "Duplicate welcome bonus removed",
+        createdAt: "2026-09-10T12:00:00.000Z",
+      },
+      {
+        id: "7a000000-0000-4000-8000-000000000001",
+        kind: "WELCOME_BONUS",
+        points: 100,
+        tierPoints: 0,
+        bookingId: null,
+        reason: null,
+        createdAt: "2026-09-01T00:00:00.000Z",
+      },
+    );
+    account.balance = 4200;
+    account.tierPoints = 6900;
+    return account;
+  }
+  loyaltyEntry(account, "WELCOME_BONUS", loyaltyScheme.welcomeBonusPoints);
+  return account;
+}
+
+function loyaltyTierOf(account) {
+  const tiers = [...loyaltyScheme.tiers].sort((a, b) => a.thresholdPoints - b.thresholdPoints);
+  const tier = tiers.filter((row) => row.thresholdPoints <= account.tierPoints).at(-1) ?? tiers[0];
+  const nextTier = tiers.find((row) => row.thresholdPoints > account.tierPoints) ?? null;
+  return { tier, nextTier };
+}
+
+function loyaltyView(userId) {
+  const account = loyaltyAccountOf(userId);
+  return zGetMyLoyaltyResponse.parse({
+    userId,
+    balance: account.balance,
+    tierPoints: account.tierPoints,
+    ...loyaltyTierOf(account),
+    referralCode: referralCodeFor(userId),
+    recentEntries: account.entries.slice(0, 50),
+  });
+}
+
+/** As the platform on a settled booking payment: points earned, then any referral paid. */
+function settleLoyalty(userId, booking) {
+  const account = loyaltyAccountOf(userId);
+  const earned = Math.floor(booking.priceMinor / 100) * loyaltyScheme.pointsPerGel;
+  if (earned > 0)
+    loyaltyEntry(account, "PURCHASE_EARNED", earned, { tierPoints: earned, bookingId: booking.id });
+  const referrer = referrals.get(userId);
+  if (referrer) {
+    referrals.delete(userId);
+    loyaltyEntry(account, "REFERRAL_BONUS", loyaltyScheme.referralBonusPoints);
+    loyaltyEntry(loyaltyAccountOf(referrer), "REFERRAL_BONUS", loyaltyScheme.referralBonusPoints);
+  }
+}
+
+function userById(userId) {
+  return [...users.values()].find((row) => row.id === userId) ?? null;
+}
+
 async function createBooking(request, response) {
   const user = sessionUser(request);
   if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
@@ -791,7 +912,16 @@ async function createBooking(request, response) {
     durationMinutes,
     locale,
     voucherCode,
+    loyaltyPoints,
   } = body.data;
+  // One price reduction per booking (DV-095).
+  if (voucherCode && loyaltyPoints !== undefined)
+    return error(
+      response,
+      422,
+      "VALIDATION_FAILED",
+      "A booking uses one of a voucher, loyalty points or subscription minutes.",
+    );
   if (requested !== observatoryId)
     return error(response, 404, "NOT_FOUND", "No such observatory.");
   // ADR-067: a gift, spendable by whoever holds its code.
@@ -855,6 +985,27 @@ async function createBooking(request, response) {
     );
 
   const free = prize?.kind === "FREE_SLOT" || Boolean(gift);
+  // DV-095, the platform's order: the tier discount, any discount prize, then points,
+  // never below the scheme's minimum payable.
+  const slotMinor = 150 * durationMinutes;
+  const club = loyaltyAccountOf(user.id);
+  const tierDiscountMinor = free
+    ? 0
+    : Math.floor((slotMinor * loyaltyTierOf(club).tier.discountPercent) / 100);
+  const prizeDiscountMinor =
+    prize?.kind === "DISCOUNT"
+      ? Math.floor(((slotMinor - tierDiscountMinor) * prize.percentOff) / 100)
+      : 0;
+  const discountedMinor = slotMinor - tierDiscountMinor - prizeDiscountMinor;
+  const spent = loyaltyPoints ?? 0;
+  const pointsMinor = Math.floor((spent * 100) / loyaltyScheme.pointsPerGelRedeemed);
+  if (spent > 0) {
+    const most = Math.max(discountedMinor - loyaltyScheme.minimumPayableMinor, 0);
+    if (pointsMinor > most)
+      return error(response, 422, "VALIDATION_FAILED", "Too many points for this booking.");
+    if (club.balance < spent)
+      return error(response, 422, "VALIDATION_FAILED", "Not enough loyalty points.");
+  }
   const paymentId = free ? null : randomUUID();
   const paymentIntent = free
     ? null
@@ -874,22 +1025,19 @@ async function createBooking(request, response) {
     slotStartAt: new Date(slotStartAt).toISOString(),
     durationMinutes,
     status: free ? "CONFIRMED" : "PENDING_PAYMENT",
-    priceMinor: free
-      ? 0
-      : prize?.kind === "DISCOUNT"
-        ? 150 * durationMinutes * (1 - prize.percentOff / 100)
-        : 150 * durationMinutes,
+    priceMinor: free ? 0 : discountedMinor - pointsMinor,
     currency: "GEL",
     paymentId,
     paymentIntent,
     missionId: null,
-    tierDiscountMinor: 0,
-    loyaltyPointsRedeemed: 0,
+    tierDiscountMinor,
+    loyaltyPointsRedeemed: spent,
     subscriptionMinutesSpent: 0,
     entitlement: null,
     createdAt: new Date().toISOString(),
   });
   const answer = zCreateBookingResponse.parse({ booking, paymentIntent });
+  if (spent > 0) loyaltyEntry(club, "REDEEMED", -spent, { bookingId: booking.id });
   if (gift) Object.assign(gift, { status: "REDEEMED", redeemedBookingId: booking.id });
   if (prize)
     Object.assign(prize, {
@@ -1033,6 +1181,12 @@ async function sandboxCheckout(request, response, paymentId) {
     status: result === "PAID" ? "CONFIRMED" : "CANCELLED",
     paymentIntent: null,
   });
+  // ADR-084: a settled payment earns points; a declined one gives spent points back.
+  if (result === "PAID") settleLoyalty(user.id, rows[index]);
+  else if (rows[index].loyaltyPointsRedeemed > 0)
+    loyaltyEntry(loyaltyAccountOf(user.id), "REDEMPTION_RELEASED", rows[index].loyaltyPointsRedeemed, {
+      bookingId: rows[index].id,
+    });
   response.writeHead(303, {
     location: `${appOrigin}/${payment.locale}/app/bookings/${payment.bookingId}`,
   });
@@ -1613,31 +1767,30 @@ const routes = {
   },
   "GET /observatories": (_request, response) => send(response, 200, observatories),
   // GET /loyalty/scheme: the club's rules as the live platform's seed sets them.
-  "GET /loyalty/scheme": (_request, response) =>
-    send(response, 200, {
-      pointsPerGel: 5,
-      pointsPerGelRedeemed: 100,
-      welcomeBonusPoints: 100,
-      referralBonusPoints: 200,
-      minimumPayableMinor: 100,
-      progressMarkers: [5000],
-      tiers: [
-        {
-          code: "MEMBER",
-          nameEn: "Member",
-          nameKa: "წევრი",
-          thresholdPoints: 0,
-          discountPercent: 10,
-        },
-        {
-          code: "VIP",
-          nameEn: "VIP",
-          nameKa: "VIP",
-          thresholdPoints: 20000,
-          discountPercent: 20,
-        },
-      ],
-    }),
+  "GET /loyalty/scheme": (_request, response) => send(response, 200, loyaltyScheme),
+  // DV-091: the signed-in user's club account.
+  "GET /loyalty": (request, response) => {
+    const user = sessionUser(request);
+    if (!user) return error(response, 401, "UNAUTHENTICATED", "No session.");
+    send(response, 200, loyaltyView(user.id));
+  },
+  // DV-092: idempotent by adjustmentId, 404 for nobody, 409 below zero.
+  "POST /admin/loyalty/adjustments": async (request, response) => {
+    if (!operator(request, response)) return;
+    const body = zAdminAdjustLoyaltyPointsBody.safeParse(await json(request));
+    if (!body.success)
+      return error(response, 422, "VALIDATION_FAILED", "Malformed adjustment.");
+    const { adjustmentId, userId, points, reason } = body.data;
+    if (loyaltyAdjustments.has(adjustmentId))
+      return send(response, 200, loyaltyView(loyaltyAdjustments.get(adjustmentId)));
+    if (!userById(userId)) return error(response, 404, "NOT_FOUND", "No such user.");
+    const account = loyaltyAccountOf(userId);
+    if (account.balance + points < 0)
+      return error(response, 409, "CONFLICT", "The balance would go below zero.");
+    loyaltyEntry(account, "ADMIN_ADJUSTMENT", points, { reason });
+    loyaltyAdjustments.set(adjustmentId, userId);
+    send(response, 200, zAdminAdjustLoyaltyPointsResponse.parse(loyaltyView(userId)));
+  },
   // Enabled only, as the platform answers (features/targets/catalogue.ts).
   "GET /targets": (request, response) =>
     sessionUser(request)?.id === fakeAccounts["failing@darkview.test"].id
@@ -2126,7 +2279,11 @@ const routes = {
     if (!body.success) {
       return error(response, 422, "VALIDATION_FAILED", "Name, email and password.");
     }
-    const { displayName, email, locale, password } = body.data;
+    const { displayName, email, locale, password, referralCode } = body.data;
+    // DV-096: an unknown code is ignored; a known one pays both on the first payment.
+    const referrer = referralCode
+      ? [...users.values()].find((row) => referralCodeFor(row.id) === referralCode)
+      : null;
     // Platform ADR-049, as the demo answers it: an address on demo.test is verified at
     // once and signed in, 200 with the user and the session cookies.
     if (!users.has(email) && email.endsWith("@demo.test")) {
@@ -2140,6 +2297,7 @@ const routes = {
       });
       users.set(email, user);
       passwords.set(email, password);
+      if (referrer) referrals.set(user.id, referrer.id);
       const token = randomUUID();
       const csrf = randomUUID();
       sessions.set(token, { user, csrf });

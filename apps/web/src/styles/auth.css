@@ -62,6 +62,16 @@
   border-top: 1px solid var(--color-border-subtle);
 }
 
+/* ADR-084: a referral link's arrival, named for nobody. */
+.auth-invited {
+  margin: 0 0 0.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius-medium);
+  background: var(--color-accent-muted);
+  color: var(--color-text-primary);
+}
+
 .auth-form-error {
   margin: 0 0 0.5rem;
   padding: 0.8rem 1rem;

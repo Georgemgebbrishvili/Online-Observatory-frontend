@@ -14,6 +14,7 @@ const en = {
     missions: "Missions",
     targets: "Targets",
     logs: "Logs",
+    loyalty: "Club",
   },
   mode: {
     SIMULATED: {
@@ -273,6 +274,25 @@ const en = {
     detailColumn: "Detail",
     system: "System",
   },
+  // ADR-084: an operator's points adjustment (DV-092).
+  loyalty: {
+    title: "Loyalty adjustment",
+    detail:
+      "Add or remove points on a customer's balance. Every adjustment is audited with your name and the reason. It never changes the customer's tier.",
+    user: "Customer id",
+    userHint: "The customer's account id (a UUID), as the mission list and the logs show it.",
+    points: "Points",
+    pointsHint: "Positive to add, negative to remove. Not zero.",
+    reason: "Reason",
+    reasonHint: "3 to 500 characters. The customer sees it in their history.",
+    submit: "Adjust balance",
+    done: "Done. Customer {name} now has {balance} points to spend.",
+    invalid: "Check the fields: a customer id, a whole number of points other than zero, and a reason of 3 to 500 characters.",
+    notFound: "No customer has that id.",
+    negative: "That removal would take the balance below zero. Nothing was changed.",
+    forbidden: "Only an operator can adjust balances.",
+    failed: "The platform did not take the adjustment. Nothing was changed. {message}",
+  },
 };
 
 export const operatorCopy = {
@@ -290,6 +310,7 @@ export const operatorCopy = {
       missions: "მისიები",
       targets: "ობიექტები",
       logs: "ჟურნალი",
+      loyalty: "კლუბი",
     },
     mode: {
       SIMULATED: {
@@ -553,6 +574,24 @@ export const operatorCopy = {
       mission: "მისია",
       detailColumn: "დეტალები",
       system: "სისტემა",
+    },
+    loyalty: {
+      title: "ქულების კორექტირება",
+      detail:
+        "მომხმარებლის ბალანსზე ქულების დამატება ან ჩამოჭრა. ყოველი კორექტირება შენი სახელითა და მიზეზით აუდიტში იწერება. მომხმარებლის დონეს არასდროს ცვლის.",
+      user: "მომხმარებლის id",
+      userHint: "მომხმარებლის ანგარიშის id (UUID), როგორც მისიების სიასა და ჟურნალშია.",
+      points: "ქულები",
+      pointsHint: "დადებითი — დასამატებლად, უარყოფითი — ჩამოსაჭრელად. ნული არა.",
+      reason: "მიზეზი",
+      reasonHint: "3-დან 500 სიმბოლომდე. მომხმარებელი მას თავის ისტორიაში ნახავს.",
+      submit: "ბალანსის კორექტირება",
+      done: "მზადაა. მომხმარებელს {name} ახლა {balance} დასახარჯი ქულა აქვს.",
+      invalid: "შეამოწმე ველები: მომხმარებლის id, ნულისგან განსხვავებული მთელი რიცხვი და 3–500 სიმბოლოს მიზეზი.",
+      notFound: "ამ id-ით მომხმარებელი არ არსებობს.",
+      negative: "ეს ჩამოჭრა ბალანსს ნულს ქვემოთ ჩაიყვანდა. არაფერი შეცვლილა.",
+      forbidden: "ბალანსის კორექტირება მხოლოდ ოპერატორს შეუძლია.",
+      failed: "პლატფორმამ კორექტირება არ მიიღო. არაფერი შეცვლილა. {message}",
     },
   },
 } as const satisfies Record<Locale, typeof en>;

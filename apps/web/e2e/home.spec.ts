@@ -146,13 +146,14 @@ test("provides the complete public navigation on desktop and mobile", async ({
   for (const [item, href] of [
     ["Observatory", "/en/observatory"],
     ["Book", "/en/app/book"],
+    ["Night Sky", "/en/sky"],
     ["Stellar Explorer", "/en/explorer"],
   ]) {
     await expect(
       publicNavigation.getByRole("link", { name: item, exact: true }),
     ).toHaveAttribute("href", href);
   }
-  await expect(publicNavigation.getByRole("link")).toHaveCount(3);
+  await expect(publicNavigation.getByRole("link")).toHaveCount(4);
 
   // The bar's right side is the language and the profile button, nothing else.
   await expect(header.getByRole("link", { name: "Reserve a slot" })).toHaveCount(0);
@@ -186,7 +187,7 @@ test("keeps the one site header on the signed-in pages", async ({ page }) => {
   const header = page.getByRole("banner");
   const publicNavigation = header.getByRole("navigation", { name: "Public navigation" });
   await expect(header.getByLabel(brand.en.siteName)).toBeVisible();
-  await expect(publicNavigation.getByRole("link")).toHaveCount(3);
+  await expect(publicNavigation.getByRole("link")).toHaveCount(4);
   await expect(publicNavigation.getByRole("link", { name: "Book" })).toHaveAttribute(
     "aria-current",
     "page",

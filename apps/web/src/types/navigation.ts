@@ -6,6 +6,8 @@ export type PublicNavigationDictionary = {
   observatory: string;
   pricing: string;
   explorer: string;
+  /** ADR-085: the Night Sky page. */
+  sky: string;
   signIn: string;
   register: string;
   reserve: string;
@@ -26,6 +28,7 @@ export type AppNavigationDictionary = {
   // Reachable and navigable, and honest that they are not built. The phase that
   // fills each one is in features/navigation/navigation-model.ts.
   subscription: string;
+  /** ADR-084: the Loyalty Club, built. */
   loyalty: string;
   passes: string;
   plannedGroup: string;

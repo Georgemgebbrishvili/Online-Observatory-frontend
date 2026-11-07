@@ -6,6 +6,8 @@ export function publicLinks(locale: Locale, navigation: PublicNavigationDictiona
   return [
     { label: navigation.observatory, href: `/${locale}/observatory` },
     { label: navigation.book, href: `/${locale}/app/book` },
+    // ADR-085: the Night Sky, the free way in.
+    { label: navigation.sky, href: `/${locale}/sky` },
     { label: navigation.explorer, href: `/${locale}/explorer` },
   ];
 }

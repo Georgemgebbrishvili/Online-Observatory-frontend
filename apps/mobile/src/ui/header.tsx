@@ -1,11 +1,15 @@
+import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useLocale } from "@/i18n/locale";
 import { line, palette, radius, space, touch } from "@/theme";
-import { CometMark, Wordmark } from "@/ui/icons";
+import { AccountIcon, CometMark, Wordmark } from "@/ui/icons";
 import { type } from "@/ui/type";
 
-/** The lockup, and the language switch: all the header carries (ADR-057). */
+/**
+ * The lockup, the language switch and the account button (ADR-057; clients ADR-084: with
+ * the Club tab, five tabs truncate "Collection" on a 360 dp phone, so Account moved here).
+ */
 export function Header() {
   const { t, locale, toggle } = useLocale();
   return (
@@ -14,16 +18,26 @@ export function Header() {
         <CometMark size={26} />
         <Wordmark height={15} />
       </View>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t.language}
-        onPress={toggle}
-        style={({ pressed }) => [styles.switch, pressed && { backgroundColor: palette.deep }]}
-      >
-        <Text style={[type.label(locale === "en" ? "ka" : "en"), { color: palette.ink2 }]}>
-          {t.language}
-        </Text>
-      </Pressable>
+      <View style={styles.actions}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t.language}
+          onPress={toggle}
+          style={({ pressed }) => [styles.switch, pressed && { backgroundColor: palette.deep }]}
+        >
+          <Text style={[type.label(locale === "en" ? "ka" : "en"), { color: palette.ink2 }]}>
+            {t.language}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t.tabs.account}
+          onPress={() => router.push("/account")}
+          style={({ pressed }) => [styles.switch, pressed && { backgroundColor: palette.deep }]}
+        >
+          <AccountIcon color={palette.ink2} />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -31,6 +45,7 @@ export function Header() {
 const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: touch },
   lockup: { flexDirection: "row", alignItems: "center", gap: space[2] },
+  actions: { flexDirection: "row", alignItems: "center", gap: space[2] },
   switch: {
     minHeight: 40,
     minWidth: touch,

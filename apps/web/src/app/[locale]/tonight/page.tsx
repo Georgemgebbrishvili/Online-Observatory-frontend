@@ -80,6 +80,12 @@ export default async function TonightPage({ params }: TonightPageProps) {
           {/* No title block (ADR-056): the heading is for the outline and assistive tech. */}
           <h1 className="visually-hidden">{copy.title}</h1>
           {body}
+          {/* ADR-085: the sky as it is, for anyone. */}
+          <p className="tonight-sky-link">
+            <ButtonLink href={`/${locale}/sky`} variant="secondary">
+              {copy.sky}
+            </ButtonLink>
+          </p>
         </Container>
       </main>
       <SiteFooter footer={dictionary.footer} locale={locale} path="tonight" />

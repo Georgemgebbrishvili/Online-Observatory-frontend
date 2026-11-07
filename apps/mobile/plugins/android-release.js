@@ -1,6 +1,8 @@
 // Release builds for Android, kept in config so `expo prebuild` can regenerate android/.
-// - Signs release with the upload key when its properties file exists (the key and its
-//   password live outside the repository); otherwise release falls back to the debug key.
+// - Signs release with the upload key named by its properties file (the key and its
+//   password live outside the repository). Without the key a release build FAILS: a
+//   Play upload signed with the debug key would be refused, or worse, accepted for a
+//   test track and then impossible to update.
 // - Builds the two ABIs phones run, and gives Gradle room on a 16 GB machine.
 const { withAppBuildGradle, withGradleProperties } = require("expo/config-plugins");
 
@@ -8,6 +10,12 @@ const loader = `
 def stellarKeystore = new Properties()
 def stellarKeystoreFile = file(System.getenv("STELLAR_KEYSTORE_PROPERTIES") ?: "\${System.getProperty('user.home')}/Desktop/Stellar Observatory/Private/android/keystore.properties")
 if (stellarKeystoreFile.exists()) stellarKeystoreFile.withInputStream { stellarKeystore.load(it) }
+gradle.taskGraph.whenReady { graph ->
+    def release = graph.allTasks.any { it.name ==~ /(assemble|bundle|package|sign).*Release.*/ }
+    if (release && !stellarKeystore.storeFile) {
+        throw new GradleException("Release builds need the upload key: no keystore.properties at \${stellarKeystoreFile}. Set STELLAR_KEYSTORE_PROPERTIES or restore the file; release never falls back to the debug key.")
+    }
+}
 `;
 
 const releaseConfig = `

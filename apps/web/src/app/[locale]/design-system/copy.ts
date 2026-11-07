@@ -107,6 +107,12 @@ export const designSystemCopy = {
         "Skychaser's card, face down as a button (hover and focus lift it), turning, and disabled; turned in each rarity, the picked card glowing; a target with no painting; the prizes as a list, and the odds.",
         "ADR-058 — the weekly card draw",
       ],
+      club: [
+        "16",
+        "Loyalty Club",
+        "The member card part way to the next tier, with a progress marker, and at the top tier with no bar; the tier ladder with the current tier marked.",
+        "ADR-084 — the Loyalty Club gets its surfaces",
+      ],
     },
     cardSpecimens: {
       down: "Face down · hover, focus",
@@ -412,6 +418,12 @@ export const designSystemCopy = {
         "კვირის ბარათები",
         "Skychaser-ის ბარათი: დაფარული, როგორც ღილაკი (მიტანისა და ფოკუსისას იწევა), გადაბრუნებისას და გათიშული; გადაბრუნებული თითოეული იშვიათობით, არჩეული ბარათი ნათებით; ობიექტი ნახატის გარეშე; პრიზების სია და შანსები.",
         "ADR-058 — კვირის ბარათები",
+      ],
+      club: [
+        "16",
+        "ლოიალობის კლუბი",
+        "წევრის ბარათი შემდეგ დონემდე გზის შუაში, პროგრესის ნიშნულით, და უმაღლეს დონეზე, ზოლის გარეშე; დონეების კიბე მიმდინარე დონის აღნიშვნით.",
+        "ADR-084 — ლოიალობის კლუბი",
       ],
     },
     cardSpecimens: {

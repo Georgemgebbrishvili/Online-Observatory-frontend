@@ -4,6 +4,8 @@ import type {
   BookableObservatory,
   Booking,
   CardPrize,
+  LoyaltyAccount,
+  LoyaltyScheme,
   Slot,
   SlotTarget,
   Target,
@@ -24,16 +26,25 @@ import { NightStrip } from "@/components/booking/night-strip";
 import { TargetArt, targetAccent } from "@/components/booking/target-art";
 import { TimeGrid, type GridCell } from "@/components/booking/time-grid";
 import { Dropdown } from "@/components/ui/dropdown";
+import { Checkbox } from "@/components/ui/form";
 import { useRovingRadios } from "@/components/ui/roving-radios";
 import { longDate } from "@/features/cards/dates";
 import { checkoutTarget } from "@/features/booking/checkout";
 import { readRefusal } from "@/features/booking/refusal";
 import { nightSky } from "@/features/booking/night-sky";
+import {
+  maxSpendablePoints,
+  POINTS_STEP,
+  pointsValueMinor,
+  priceBreakdown,
+  reductionLock,
+} from "@/features/loyalty/club";
 import { targetDescription, targetName } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { boardCopy } from "@/i18n/resources/board";
 import { cardsCopy } from "@/i18n/resources/cards";
 import { giftCopy } from "@/i18n/resources/gift";
+import { loyaltyCopy } from "@/i18n/resources/loyalty";
 import { bookingCopy } from "@/i18n/resources/booking";
 import { rescheduleCopy } from "@/i18n/resources/reschedule";
 import { reserveCopy } from "@/i18n/resources/reserve";
@@ -61,6 +72,10 @@ type BookingBoardProps = {
   signInPath: string;
   /** ADR-058: the account's unspent free-slot and discount prizes for this observatory. */
   prizes?: CardPrize[];
+  /** ADR-085: an object named in the address (`?target=<slug>`), chosen on arrival. */
+  initialTargetId?: string | null;
+  /** ADR-084: the customer's club account and the scheme, or null when unread. */
+  club?: { scheme: LoyaltyScheme; account: LoyaltyAccount } | null;
 };
 
 type Phase = "idle" | "reserving" | "redirecting";
@@ -131,6 +146,8 @@ function Section({
  * key and the checkout redirect (ADR-043), or the free replacement of a lost slot.
  */
 export function BookingBoard({
+  club = null,
+  initialTargetId = null,
   durationMinutes,
   initialStartAt,
   locale,
@@ -148,6 +165,7 @@ export function BookingBoard({
   const words = targetCopy[locale];
   const cards = cardsCopy[locale];
   const gifts = giftCopy[locale].board;
+  const points = loyaltyCopy[locale].board;
   const { ref: targetRef, onKeyDown: onTargetKey } = useRovingRadios<HTMLDivElement>();
   const timezone = observatory.timezone;
   const router = useRouter();
@@ -280,7 +298,9 @@ export function BookingBoard({
   const [waitingAt, setWaitingAt] = useState<number | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [targetId, setTargetId] = useState<string | null>(reschedule?.targetId ?? null);
+  const [targetId, setTargetId] = useState<string | null>(
+    reschedule?.targetId ?? initialTargetId,
+  );
   const [phase, setPhase] = useState<Phase>("idle");
   const [key] = useState(() => crypto.randomUUID());
 
@@ -394,6 +414,32 @@ export function BookingBoard({
   const prize = gift
     ? null
     : (usable.find((candidate) => candidate.id === prizeId) ?? null);
+
+  // ADR-084: points on a cash booking, in hundreds, never with a voucher (the contract's 422).
+  const [usePoints, setUsePoints] = useState(false);
+  const [pointsWanted, setPointsWanted] = useState(0);
+  const voucher = !!gift || !!prize;
+  const discountPercent = club?.account.tier.discountPercent ?? 0;
+  const mostPoints =
+    club && chosen && !reschedule
+      ? maxSpendablePoints({
+          priceMinor: chosen.priceMinor,
+          discountPercent,
+          balance: club.account.balance,
+          scheme: club.scheme,
+        })
+      : 0;
+  const spent = usePoints && !voucher ? Math.min(pointsWanted, mostPoints) : 0;
+  const lock = reductionLock({ points: spent, voucher });
+  const breakdown =
+    club && chosen && !reschedule && !voucher
+      ? priceBreakdown({
+          priceMinor: chosen.priceMinor,
+          discountPercent,
+          points: spent,
+          pointsPerGelRedeemed: club.scheme.pointsPerGelRedeemed,
+        })
+      : null;
 
   const settle = () => {
     setFeedback(null);
@@ -532,6 +578,7 @@ export function BookingBoard({
           slotStartAt: chosen.startAt,
           durationMinutes: chosen.durationMinutes,
           locale,
+          ...(spent > 0 ? { loyaltyPoints: spent } : {}),
           ...(gift
             ? { voucherCode: gift }
             : prize?.voucherCode
@@ -564,6 +611,8 @@ export function BookingBoard({
       setFeedback(
         gift && code === "VALIDATION_FAILED"
           ? gifts.refused
+          : spent > 0 && code === "VALIDATION_FAILED"
+            ? points.refused
           : prize && code === "VALIDATION_FAILED"
             ? cards.board.refused
             : !target && code === "VALIDATION_FAILED"
@@ -595,7 +644,9 @@ export function BookingBoard({
         ? gifts.paid
         : prize?.kind === "FREE_SLOT"
           ? cards.board.free
-          : formatPrice(slot.priceMinor, slot.currency, locale);
+          : breakdown && slot === chosen
+            ? formatPrice(breakdown.totalMinor, slot.currency, locale)
+            : formatPrice(slot.priceMinor, slot.currency, locale);
   const runText = run
     ? `${clock(slots[run.from].startAt)} – ${clock(Date.parse(slots[run.to].startAt) + QUARTER_MS)}`
     : null;
@@ -892,6 +943,7 @@ export function BookingBoard({
           {usable.length > 0 && (
             <Dropdown
               label={cards.board.label}
+              disabled={lock.voucherLocked}
               value={prize?.id ?? ""}
               onChange={(event) => setPrizeId(event.target.value)}
               options={[
@@ -914,6 +966,7 @@ export function BookingBoard({
                 <input
                   className="field-input data"
                   name="giftCode"
+                  disabled={lock.voucherLocked}
                   value={giftCode}
                   onChange={(event) => {
                     setGiftCode(event.target.value);
@@ -927,6 +980,96 @@ export function BookingBoard({
                 {gift && <span className="field-hint">{gifts.note}</span>}
               </label>
             </details>
+          )}
+          {lock.voucherLocked && <p className="board-caption">{points.pointsLocked}</p>}
+          {club && chosen && !reschedule && (
+            <div className="board-points">
+              <Checkbox
+                name="usePoints"
+                label={points.use}
+                checked={usePoints && !voucher}
+                disabled={lock.pointsLocked || mostPoints === 0}
+                onChange={(event) => {
+                  setUsePoints(event.target.checked);
+                  if (event.target.checked) setPointsWanted(mostPoints);
+                  setFeedback(null);
+                }}
+              />
+              <p className="board-caption">
+                {points.balance(
+                  new Intl.NumberFormat("en-GB").format(Math.max(club.account.balance, 0)),
+                  formatPrice(
+                    pointsValueMinor(
+                      Math.max(club.account.balance, 0),
+                      club.scheme.pointsPerGelRedeemed,
+                    ),
+                    chosen.currency,
+                    locale,
+                  ),
+                )}{" "}
+                {lock.pointsLocked
+                  ? points.voucherLocked
+                  : mostPoints > 0
+                    ? points.most(new Intl.NumberFormat("en-GB").format(mostPoints))
+                    : points.none}
+              </p>
+              {usePoints && !voucher && mostPoints > 0 && (
+                <div className="board-length board-points-stepper" role="group" aria-label={points.field}>
+                  <button
+                    type="button"
+                    aria-label={points.fewer}
+                    disabled={spent <= POINTS_STEP}
+                    onClick={() => setPointsWanted(Math.max(spent - POINTS_STEP, POINTS_STEP))}
+                  >
+                    <span aria-hidden="true">−</span>
+                  </button>
+                  <input
+                    className="data"
+                    name="loyaltyPoints"
+                    inputMode="numeric"
+                    aria-label={points.field}
+                    value={spent}
+                    onChange={(event) => {
+                      const typed = Number(event.target.value.replace(/\D/g, ""));
+                      setPointsWanted(Math.floor(typed / POINTS_STEP) * POINTS_STEP);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    aria-label={points.more}
+                    disabled={spent >= mostPoints}
+                    onClick={() => setPointsWanted(Math.min(spent + POINTS_STEP, mostPoints))}
+                  >
+                    <span aria-hidden="true">+</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          {breakdown && chosen && (breakdown.tierDiscountMinor > 0 || breakdown.pointsMinor > 0) && (
+            <dl className="board-breakdown">
+              <div>
+                <dt>{points.slot}</dt>
+                <dd>{formatPrice(breakdown.slotMinor, chosen.currency, locale)}</dd>
+              </div>
+              {breakdown.tierDiscountMinor > 0 && club && (
+                <div>
+                  <dt>
+                    {points.tier(
+                      locale === "ka" ? club.account.tier.nameKa : club.account.tier.nameEn,
+                      discountPercent,
+                    )}
+                  </dt>
+                  <dd>−{formatPrice(breakdown.tierDiscountMinor, chosen.currency, locale)}</dd>
+                </div>
+              )}
+              {breakdown.pointsMinor > 0 && (
+                <div>
+                  <dt>{points.points(new Intl.NumberFormat("en-GB").format(spent))}</dt>
+                  <dd>−{formatPrice(breakdown.pointsMinor, chosen.currency, locale)}</dd>
+                </div>
+              )}
+            </dl>
           )}
           <div className="board-total">
             <span className="board-label">{copy.cost}</span>

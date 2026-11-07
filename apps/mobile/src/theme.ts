@@ -16,6 +16,10 @@ export const palette = {
   gdDeep: "#7d1d12",
   gdInk: "#fff1d6",
   cream: "#f4e8cc",
+  // The session ticket's stock, for the club's member card (clients ADR-084).
+  paper: "#efe3c4",
+  paperInk: "#2b1b12",
+  paperMuted: "#7a5a44",
   mark: "#f6f1e7",
   gold: "#e2b85a",
   green: "#2ecc71",

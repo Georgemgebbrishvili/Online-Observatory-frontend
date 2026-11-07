@@ -79,6 +79,16 @@ export function CollectionIcon({ color, size = 24 }: IconProps) {
   );
 }
 
+/** Club: a member card with a star. */
+export function ClubIcon({ color, size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Rect x="3" y="5.5" width="18" height="13" rx="2" {...stroke(color)} />
+      <Path d="M12 8.6l1.1 2.3 2.5.3-1.8 1.7.5 2.5-2.3-1.2-2.3 1.2.5-2.5-1.8-1.7 2.5-.3z" {...stroke(color)} />
+    </Svg>
+  );
+}
+
 /** Account: a person. */
 export function AccountIcon({ color, size = 24 }: IconProps) {
   return (

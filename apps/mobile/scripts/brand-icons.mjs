@@ -1,7 +1,8 @@
 // Draws the app icon, Android's adaptive and themed layers, the splash mark and the web
-// favicon from the comet mark (apps/web/public/brand/logo-mark.svg). Run from apps/mobile:
-// `node scripts/brand-icons.mjs`. sharp comes from the repo root's install.
-import { writeFile } from "node:fs/promises";
+// favicon from the comet mark (apps/web/public/brand/logo-mark.svg), and the Google Play
+// listing's graphics into store/. Run from apps/mobile: `node scripts/brand-icons.mjs`.
+// sharp comes from the repo root's install.
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
@@ -46,3 +47,33 @@ await writeFile(out("adaptive-icon.png"), await png(mark(1024, 0.46)));
 await writeFile(out("adaptive-monochrome.png"), await png(mark(1024, 0.46, { mono: true })));
 await writeFile(out("splash-icon.png"), await png(mark(1024, 0.9)));
 await writeFile(out("favicon.png"), await png(mark(96, 0.8, { background: true })));
+
+// Google Play's listing: a 512 x 512 32-bit PNG icon and a 1024 x 500 feature graphic,
+// the comet mark beside the STELLAR wordmark (the outlines src/ui/icons.tsx draws).
+const store = (name) => fileURLToPath(new URL(`../store/${name}`, import.meta.url));
+await mkdir(fileURLToPath(new URL("../store/", import.meta.url)), { recursive: true });
+const rgba = (svg) => sharp(svg).ensureAlpha().png({ compressionLevel: 9 }).toBuffer();
+await writeFile(store("play-icon-512.png"), await rgba(mark(512, 0.62, { background: true })));
+
+const icons = await readFile(fileURLToPath(new URL("../src/ui/icons.tsx", import.meta.url)), "utf8");
+const wordmark = /const wordmarkPath =\s*"([^"]+)"/.exec(icons)[1];
+const markSide = 300;
+const wordHeight = 74;
+const wordWidth = (wordHeight * 6020) / 712;
+const gap = 40;
+const left = (1024 - (markSide * 0.78 + gap + wordWidth)) / 2;
+const feature = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <defs>
+    <radialGradient id="glow" cx="${left + markSide * 0.39}" cy="250" r="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c8392a" stop-opacity="0.34"/><stop offset="1" stop-color="#c8392a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="500" fill="#0d0d0d"/>
+  <rect width="1024" height="500" fill="url(#glow)"/>
+  <image x="${left - markSide * 0.11}" y="${250 - markSide / 2}" width="${markSide}" height="${markSide}"
+    href="data:image/png;base64,${(await png(mark(markSide * 2, 0.78))).toString("base64")}"/>
+  <svg x="${left + markSide * 0.78 + gap}" y="${250 - wordHeight / 2}" width="${wordWidth}" height="${wordHeight}" viewBox="43 -700 6020 712">
+    <path d="${wordmark}" fill="#F6F1E7"/>
+  </svg>
+</svg>`);
+await writeFile(store("feature-graphic-1024x500.png"), await rgba(feature));

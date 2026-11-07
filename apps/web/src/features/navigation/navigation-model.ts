@@ -24,7 +24,8 @@ export const appDestinations = [
     group: "planned",
     phase: 5,
   },
-  { key: "loyalty", segment: "loyalty", icon: "loyalty", group: "planned", phase: 5 },
+  // ADR-084: the Loyalty Club, built; reached from the account menu.
+  { key: "loyalty", segment: "loyalty", icon: "loyalty", group: "account" },
   { key: "passes", segment: "passes", icon: "passes", group: "planned", phase: 5 },
 ] as const;
 
@@ -38,7 +39,7 @@ export const plannedDestinations = appDestinations.filter(
 );
 
 /** Segments `/app/[destination]` renders itself, rather than a route of its own. */
-const ownRoute = new Set(["", "live", "collection", "book", "profile"]);
+const ownRoute = new Set(["", "live", "collection", "book", "profile", "loyalty"]);
 
 export function isAppDestinationSegment(
   segment: string,

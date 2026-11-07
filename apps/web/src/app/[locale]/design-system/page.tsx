@@ -1,4 +1,6 @@
 import type {
+  LoyaltyAccount,
+  LoyaltyScheme,
   ObservatoryHorizon,
   ObservatoryUptime,
   TonightSession,
@@ -21,6 +23,7 @@ import "@/styles/cards.css";
 import "@/styles/status.css";
 import "@/styles/tonight.css";
 import "@/styles/gift.css";
+import "@/styles/loyalty.css";
 import { notFound } from "next/navigation";
 
 import { CalendarSpecimens } from "./calendar-specimens";
@@ -55,6 +58,7 @@ import { RoomTonightView } from "@/components/room/room-tonight";
 import { TonightBannerView } from "@/components/tonight/tonight-banner";
 import { TonightLive } from "@/components/tonight/tonight-live";
 import { GiftCard } from "@/components/gift/gift-card";
+import { MemberCard, TierLadder } from "@/components/loyalty/club-page";
 import { TargetGuide } from "@/components/room/target-guide";
 import { GiftFormView } from "@/components/gift/gift-form";
 import { tonightCopy } from "@/i18n/resources/tonight";
@@ -216,6 +220,29 @@ function SectionHeader({
     </header>
   );
 }
+
+// ADR-084: the club's specimens, in the live seed's shape.
+const schemeSpecimen: LoyaltyScheme = {
+  pointsPerGel: 5,
+  pointsPerGelRedeemed: 100,
+  welcomeBonusPoints: 100,
+  referralBonusPoints: 200,
+  minimumPayableMinor: 100,
+  progressMarkers: [5000],
+  tiers: [
+    { code: "MEMBER", nameEn: "Member", nameKa: "წევრი", thresholdPoints: 0, discountPercent: 10 },
+    { code: "VIP", nameEn: "VIP", nameKa: "VIP", thresholdPoints: 20000, discountPercent: 20 },
+  ],
+};
+const clubSpecimen: LoyaltyAccount = {
+  userId: "00000000-0000-4000-8000-000000000001",
+  balance: 4200,
+  tierPoints: 6900,
+  tier: schemeSpecimen.tiers[0],
+  nextTier: schemeSpecimen.tiers[1],
+  referralCode: "STAR7Q2K",
+  recentEntries: [],
+};
 
 export async function generateMetadata({
   params,
@@ -1563,6 +1590,20 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
           <div className="cards-columns">
             <PrizeList locale={locale} prizes={prizeSpecimens} />
             <CardOdds locale={locale} odds={oddsSpecimen} />
+          </div>
+        </section>
+
+        <section className="ds-section" aria-labelledby="club-title">
+          <SectionHeader id="club-title" section={copy.sections.club} />
+          <div className="club-columns">
+            <MemberCard id="ds-club-member" account={clubSpecimen} locale={locale} scheme={schemeSpecimen} />
+            <MemberCard
+              id="ds-club-top"
+              account={{ ...clubSpecimen, tier: schemeSpecimen.tiers[1], nextTier: null, tierPoints: 24000 }}
+              locale={locale}
+              scheme={schemeSpecimen}
+            />
+            <TierLadder id="ds-club-ladder" current="MEMBER" locale={locale} scheme={schemeSpecimen} />
           </div>
         </section>
       </Container>

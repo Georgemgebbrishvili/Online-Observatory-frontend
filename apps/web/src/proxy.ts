@@ -29,6 +29,7 @@ export const SECTIONS = [
   "register",
   "reset-password",
   "sign-in",
+  "sky",
   "status",
   "terms",
   "tonight",

@@ -9,10 +9,9 @@ import {
 } from "./navigation-model";
 
 describe("app navigation model", () => {
-  it("carries the planned surfaces the inventory found missing", () => {
+  it("carries the planned surfaces the inventory found missing, less the club (ADR-084)", () => {
     expect(plannedDestinations.map((destination) => destination.key)).toEqual([
       "subscription",
-      "loyalty",
       "passes",
     ]);
   });
@@ -33,10 +32,10 @@ describe("app navigation model", () => {
 
   it("separates segments with their own route from those the preview renders", () => {
     // These have real pages; the preview must not claim them.
-    for (const segment of ["", "live", "collection", "book", "profile"]) {
+    for (const segment of ["", "live", "collection", "book", "profile", "loyalty"]) {
       expect(isPreviewSegment(segment), segment).toBe(false);
     }
-    for (const segment of ["subscription", "loyalty", "passes"]) {
+    for (const segment of ["subscription", "passes"]) {
       expect(isPreviewSegment(segment), segment).toBe(true);
     }
   });
@@ -45,7 +44,9 @@ describe("app navigation model", () => {
     const planned = appDestinations
       .map((destination) => destination.segment)
       .filter((segment) => isPlannedSegment(segment));
-    expect(planned).toEqual(["subscription", "loyalty", "passes"]);
+    expect(planned).toEqual(["subscription", "passes"]);
+    // ADR-084: the club is built.
+    expect(isPlannedSegment("loyalty")).toBe(false);
     expect(isPlannedSegment("profile")).toBe(false);
   });
 });

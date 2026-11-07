@@ -20,6 +20,7 @@ export function OperatorNavigation({
     { href: `/${locale}/admin/missions`, label: copy.missions },
     { href: `/${locale}/admin/targets`, label: copy.targets },
     { href: `/${locale}/admin/logs`, label: copy.logs },
+    { href: `/${locale}/admin/loyalty`, label: copy.loyalty },
   ];
 
   return (

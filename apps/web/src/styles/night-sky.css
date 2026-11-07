@@ -1,0 +1,495 @@
+/*
+ * The Night Sky (ADR-085): the sky fills the window under the header; the controls float
+ * over it on glass, the time bar at the foot, the panel at the side (a sheet on a phone).
+ */
+.sky-page {
+  position: relative;
+  /* Above the phone tab bar, which the body pads for (navigation.css). */
+  height: calc(
+    100dvh - var(--size-app-header) - var(--tab-bar-space, 0rem) - env(safe-area-inset-bottom, 0rem)
+  );
+  min-height: 28rem;
+  overflow: hidden;
+  background: var(--color-surface-base);
+}
+
+/* The frame is exactly the window: the page does not grow to fill it (main's flex: 1). */
+.sky-frame {
+  min-height: 0;
+}
+
+.sky-frame .sky-page {
+  flex: none;
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+}
+
+.sky-stage {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  cursor: grab;
+  outline: none;
+}
+
+.sky-stage:active {
+  cursor: grabbing;
+}
+
+.sky-stage:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--focus-ring);
+}
+
+.sky-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sky-labels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sky-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  text-shadow: 0 1px 2px var(--color-scrim);
+  translate: -50% 0.35rem;
+  will-change: transform;
+}
+
+.sky-label[hidden] {
+  display: none;
+}
+
+.sky-label-body {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.sky-label-constellation {
+  color: var(--color-sky-blue);
+  translate: -50% -50%;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+:lang(ka) .sky-label-constellation {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.sky-label-showpiece {
+  color: var(--color-gold);
+}
+
+.sky-label-showpiece::before {
+  content: "";
+  position: absolute;
+  top: -1.1rem;
+  left: 50%;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-full);
+  translate: -50% 0;
+}
+
+.sky-label.is-selected {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-bold);
+}
+
+.sky-compass {
+  color: var(--color-accent);
+  font-family: var(--font-label);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-bold);
+  translate: -50% -110%;
+}
+
+.sky-loading {
+  position: absolute;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-loading {
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+}
+
+.sky-computed {
+  margin-inline-start: auto;
+  color: var(--color-text-tertiary);
+}
+
+.sky-top {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+  pointer-events: none;
+}
+
+.sky-top > *,
+.sky-side > *,
+.sky-time,
+.sky-panel,
+.sky-list {
+  pointer-events: auto;
+}
+
+.sky-search {
+  position: relative;
+  flex: 1 1 14rem;
+  max-width: 22rem;
+}
+
+.sky-input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-full);
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--blur-glass));
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.sky-results {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  right: 0;
+  z-index: 3;
+  margin: 0;
+  padding: var(--space-1);
+  list-style: none;
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface-raised);
+}
+
+.sky-results button {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-text-primary);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.sky-results button:hover,
+.sky-results button:focus-visible {
+  background: var(--color-overlay-hover);
+}
+
+.sky-note {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-3);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-full);
+  background: var(--color-glass);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-place .sky-note {
+  margin: 0;
+  flex-basis: 100%;
+  padding-bottom: var(--space-1);
+}
+
+.sky-chip {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-full);
+  background: var(--color-glass);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--font-size-caption);
+  cursor: pointer;
+}
+
+.sky-chip:hover:not(:disabled) {
+  border-color: var(--color-glass-border-hover);
+}
+
+.sky-chip:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.sky-chip[aria-pressed="true"],
+.sky-chip[aria-checked="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.sky-side {
+  position: absolute;
+  top: calc(var(--space-3) + 3.5rem);
+  right: var(--space-3);
+  display: grid;
+  justify-items: end;
+  gap: var(--space-2);
+}
+
+.sky-zoom {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sky-toggles {
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-medium);
+  background: var(--color-glass);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-toggles summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  cursor: pointer;
+}
+
+.sky-toggles fieldset {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0 var(--space-3) var(--space-3);
+  border: 0;
+}
+
+.sky-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.25rem;
+  cursor: pointer;
+}
+
+.sky-toggle input {
+  accent-color: var(--color-accent);
+}
+
+.sky-time {
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-medium);
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--blur-glass));
+}
+
+.sky-clock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-clock b {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+}
+
+.sky-state {
+  color: var(--color-gold);
+}
+
+.sky-steps,
+.sky-speed {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.sky-now {
+  border-color: var(--color-accent-border);
+}
+
+.sky-panel {
+  position: absolute;
+  top: calc(var(--space-3) + 3.5rem);
+  left: var(--space-3);
+  z-index: 4;
+  width: min(22rem, calc(100% - var(--space-6)));
+  max-height: calc(100% - 13rem);
+  overflow-y: auto;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+}
+
+.sky-panel header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sky-panel h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
+
+.sky-panel dl {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  font-size: var(--font-size-caption);
+}
+
+.sky-panel dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sky-panel dt {
+  color: var(--color-text-secondary);
+}
+
+.sky-panel dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  text-align: end;
+}
+
+.sky-observe {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sky-observe p,
+.sky-caption {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-list {
+  position: absolute;
+  z-index: 3;
+  left: var(--space-3);
+  bottom: calc(var(--space-3) + 8rem);
+  max-width: min(24rem, calc(100% - var(--space-6)));
+  color: var(--color-text-primary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-list summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-full);
+  background: var(--color-glass);
+  cursor: pointer;
+}
+
+.sky-list[open] {
+  padding: 0 var(--space-3) var(--space-3);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface-raised);
+}
+
+.sky-list[open] summary {
+  margin: var(--space-2) 0;
+}
+
+.sky-list-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-body);
+}
+
+.sky-list ul {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+}
+
+.sky-credits {
+  color: var(--color-text-secondary);
+}
+
+/* A phone: the panel is a sheet over the time bar, the toggles fold away. */
+@media (--below-md) {
+  .sky-panel {
+    top: auto;
+    left: var(--space-2);
+    right: var(--space-2);
+    bottom: var(--space-2);
+    width: auto;
+    max-height: 70%;
+  }
+
+  /* The time steps share the width, so six fit a 360 px phone on one line. */
+  .sky-steps .sky-chip {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 var(--space-1);
+    white-space: nowrap;
+  }
+
+  .sky-search {
+    max-width: none;
+  }
+
+  .sky-side {
+    top: calc(var(--space-3) + 7rem);
+  }
+
+
+  .sky-list {
+    bottom: calc(var(--space-3) + 10.5rem);
+  }
+}

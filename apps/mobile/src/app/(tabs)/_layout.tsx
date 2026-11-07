@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useLocale } from "@/i18n/locale";
 import { line, palette } from "@/theme";
-import { AccountIcon, BookIcon, CollectionIcon, TonightIcon } from "@/ui/icons";
+import { BookIcon, ClubIcon, CollectionIcon, TonightIcon } from "@/ui/icons";
 import { type } from "@/ui/type";
 
 // The phone tab bar: the bar colour under the system navigation bar, the active tab in the
@@ -19,6 +19,8 @@ export default function TabsLayout() {
         tabBarActiveTintColor: palette.redInk,
         tabBarInactiveTintColor: palette.ink3,
         // Four tabs on a 360 dp phone: the label keeps its face but loses most tracking.
+        // Five (with Account) truncated "Collection" at 72 dp, measured 2026-11-07, so
+        // Account is a page opened from the header's button (ADR-084).
         tabBarLabelStyle: { ...type.label(locale), fontSize: 12, lineHeight: 16, letterSpacing: locale === "ka" ? 0 : 0.6 },
         tabBarStyle: {
           backgroundColor: palette.bar,
@@ -44,8 +46,8 @@ export default function TabsLayout() {
         options={{ title: t.tabs.collection, tabBarIcon: ({ color }) => <CollectionIcon color={color} /> }}
       />
       <Tabs.Screen
-        name="account"
-        options={{ title: t.tabs.account, tabBarIcon: ({ color }) => <AccountIcon color={color} /> }}
+        name="club"
+        options={{ title: t.tabs.club, tabBarIcon: ({ color }) => <ClubIcon color={color} /> }}
       />
     </Tabs>
   );

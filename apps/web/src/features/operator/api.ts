@@ -3,6 +3,7 @@ import type {
   AdminUpdateTargetRequest,
   AuditCategory,
   AuditEventPage,
+  LoyaltyAdjustmentRequest,
   MissionPage,
   MissionState,
   OperatorObservatoryState,
@@ -11,6 +12,7 @@ import type {
   SetObservatoryModeRequest,
 } from "@darkview/contracts";
 import {
+  zAdminAdjustLoyaltyPointsResponse,
   zAdminCancelMissionResponse,
   zAdminGetObservatoryStateResponse,
   zAdminListAuditEventsResponse,
@@ -102,5 +104,14 @@ export function listAuditEvents(
 ): Promise<AuditEventPage> {
   return apiRequest(`/admin/logs${query(params)}`, {
     schema: zAdminListAuditEventsResponse,
+  });
+}
+
+/** DV-092: points on or off a customer's balance, idempotent by `adjustmentId`. */
+export function adjustLoyaltyPoints(body: LoyaltyAdjustmentRequest) {
+  return apiRequest("/admin/loyalty/adjustments", {
+    method: "POST",
+    body,
+    schema: zAdminAdjustLoyaltyPointsResponse,
   });
 }

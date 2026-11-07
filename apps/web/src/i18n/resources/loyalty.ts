@@ -1,0 +1,166 @@
+import type { LoyaltyEntryKind } from "@darkview/contracts";
+
+import { brand } from "@/brand";
+import type { Locale } from "@/i18n/config";
+
+// Georgian is never uppercased or tracked; the glossary is the site's (slot = სეანსი).
+export const loyaltyCopy = {
+  en: {
+    metadataTitle: "Club",
+    title: `${brand.en.name} Club`,
+    loading: "Reading your points",
+    invited: "Invited by a member. You both get the referral bonus after your first paid booking.",
+    card: {
+      kicker: "Member card",
+      balance: "Points to spend",
+      tierPoints: (points: string) => `${points} tier points`,
+      toNext: (points: string, tier: string) => `${points} points to ${tier}`,
+      top: "Top tier",
+      topDetail: "You are in the club's highest tier.",
+      progress: (tier: string) => `Progress to ${tier}`,
+      marker: (points: string) => `${points} points`,
+      off: (percent: number) => `${percent}% off every session`,
+    },
+    ladder: {
+      title: "Tiers",
+      from: (points: string) => `from ${points} points`,
+      start: "from your first booking",
+      off: (percent: number) => `${percent}% off`,
+      current: "Your tier",
+    },
+    earn: {
+      title: "How you earn",
+      rate: (points: number) => `${points} points for every GEL you pay`,
+      welcome: (points: number) => `${points} points when you confirm your email`,
+      referral: (points: number) =>
+        `${points} points each, for you and a friend you invite, after their first paid booking`,
+      spend: (points: number) => `${points} points take 1 GEL off a booking on the website`,
+      rules: "Only settled payments raise your tier. Bonuses and adjustments never do. Points do not expire.",
+    },
+    referral: {
+      title: "Invite a friend",
+      lede: "Share your link. When your friend's first paid booking settles, you both get the bonus.",
+      code: "Your code",
+      copy: "Copy link",
+      copied: "Link copied",
+      share: "Share",
+      shareText: `Observe the real sky with me on ${brand.en.name}.`,
+      failed: "Copy did not work. Select the link and copy it yourself.",
+    },
+    history: {
+      title: "History",
+      empty: "No points yet. Your first paid session earns them.",
+      booking: "Booking",
+      points: (points: string) => `${points} points`,
+    },
+    kinds: {
+      WELCOME_BONUS: "Welcome bonus",
+      REFERRAL_BONUS: "Referral bonus",
+      PURCHASE_EARNED: "Earned on a session",
+      PURCHASE_REVERSED: "Refund reversed",
+      REDEEMED: "Spent on a booking",
+      REDEMPTION_RELEASED: "Returned from a booking",
+      ADMIN_ADJUSTMENT: "Adjusted by the observatory",
+    } satisfies Record<LoyaltyEntryKind, string>,
+    unreachable: {
+      title: "The club cannot be read right now",
+      description:
+        "The platform is not answering, so your points are not shown. Nothing has changed on your account. Try again in a minute.",
+    },
+    board: {
+      use: "Use points",
+      balance: (points: string, value: string) => `You have ${points} points, worth ${value}.`,
+      most: (points: string) => `Up to ${points} on this session`,
+      none: "Not enough points for this session yet.",
+      field: "Points to spend",
+      fewer: "100 fewer points",
+      more: "100 more points",
+      voucherLocked: "Points and a voucher do not combine. Remove the voucher to use points.",
+      pointsLocked: "A booking takes one reduction: points are in use.",
+      slot: "Session",
+      tier: (tier: string, percent: number) => `${tier} discount, ${percent}%`,
+      points: (points: string) => `${points} points`,
+      refused: "Those points cannot be spent on this session. Choose fewer.",
+    },
+  },
+  ka: {
+    metadataTitle: "კლუბი",
+    title: `${brand.ka.genitive} კლუბი`,
+    loading: "ქულები იკითხება",
+    invited: "მოგიწვია კლუბის წევრმა. პირველი გადახდილი ჯავშნის შემდეგ მოწვევის ბონუსს ორივე მიიღებთ.",
+    card: {
+      kicker: "წევრის ბარათი",
+      balance: "დასახარჯი ქულები",
+      tierPoints: (points: string) => `დონის ${points} ქულა`,
+      toNext: (points: string, tier: string) => `${points} ქულა დონემდე: ${tier}`,
+      top: "უმაღლესი დონე",
+      topDetail: "კლუბის უმაღლეს დონეზე ხარ.",
+      progress: (tier: string) => `პროგრესი დონემდე: ${tier}`,
+      marker: (points: string) => `${points} ქულა`,
+      off: (percent: number) => `${percent}% ფასდაკლება ყველა სეანსზე`,
+    },
+    ladder: {
+      title: "დონეები",
+      from: (points: string) => `${points} ქულიდან`,
+      start: "პირველივე ჯავშნიდან",
+      off: (percent: number) => `${percent}% ფასდაკლება`,
+      current: "შენი დონე",
+    },
+    earn: {
+      title: "როგორ აგროვებ",
+      rate: (points: number) => `${points} ქულა ყოველ გადახდილ ლარზე`,
+      welcome: (points: number) => `${points} ქულა ელფოსტის დადასტურებაზე`,
+      referral: (points: number) =>
+        `${points}-${points} ქულა შენც და მოწვეულ მეგობარსაც, მისი პირველი გადახდილი ჯავშნის შემდეგ`,
+      spend: (points: number) => `${points} ქულა = 1 ლარი ფასდაკლება ჯავშანზე, ვებსაიტზე`,
+      rules: "დონეს მხოლოდ დასრულებული გადახდები ზრდის. ბონუსები და კორექტირებები — არასდროს. ქულებს ვადა არ გასდით.",
+    },
+    referral: {
+      title: "მოიწვიე მეგობარი",
+      lede: "გაუზიარე შენი ბმული. როცა მეგობრის პირველი ჯავშნის გადახდა დასრულდება, ბონუსს ორივე მიიღებთ.",
+      code: "შენი კოდი",
+      copy: "ბმულის კოპირება",
+      copied: "ბმული დაკოპირდა",
+      share: "გაზიარება",
+      shareText: `მოდი, ნამდვილ ცას ერთად დავაკვირდეთ ${brand.ka.on}.`,
+      failed: "კოპირება ვერ მოხერხდა. მონიშნე ბმული და დააკოპირე თავად.",
+    },
+    history: {
+      title: "ისტორია",
+      empty: "ქულები ჯერ არ გაქვს. პირველი გადახდილი სეანსი მოგიტანს.",
+      booking: "ჯავშანი",
+      points: (points: string) => `${points} ქულა`,
+    },
+    kinds: {
+      WELCOME_BONUS: "მისასალმებელი ბონუსი",
+      REFERRAL_BONUS: "მოწვევის ბონუსი",
+      PURCHASE_EARNED: "დაგროვდა სეანსზე",
+      PURCHASE_REVERSED: "დაბრუნებული თანხის გამო ჩამოიჭრა",
+      REDEEMED: "დაიხარჯა ჯავშანზე",
+      REDEMPTION_RELEASED: "დაბრუნდა ჯავშნიდან",
+      ADMIN_ADJUSTMENT: "ობსერვატორიის კორექტირება",
+    } satisfies Record<LoyaltyEntryKind, string>,
+    unreachable: {
+      title: "კლუბის წაკითხვა ახლა ვერ ხერხდება",
+      description:
+        "პლატფორმა არ პასუხობს, ამიტომ ქულებს ვერ გაჩვენებთ. შენს ანგარიშზე არაფერი შეცვლილა. სცადე წუთში.",
+    },
+    board: {
+      use: "ქულების გამოყენება",
+      balance: (points: string, value: string) => `გაქვს ${points} ქულა, ღირებულებით ${value}.`,
+      most: (points: string) => `ამ სეანსზე მაქსიმუმ ${points}`,
+      none: "ამ სეანსისთვის ქულები ჯერ არ გყოფნის.",
+      field: "დასახარჯი ქულები",
+      fewer: "100 ქულით ნაკლები",
+      more: "100 ქულით მეტი",
+      voucherLocked: "ქულები და ვაუჩერი ერთად არ მუშაობს. ქულებისთვის ვაუჩერი მოხსენი.",
+      pointsLocked: "ჯავშანს ერთი ფასდაკლება აქვს: ქულები უკვე გამოიყენება.",
+      slot: "სეანსი",
+      tier: (tier: string, percent: number) => `${tier}: ${percent}% ფასდაკლება`,
+      points: (points: string) => `${points} ქულა`,
+      refused: "ამდენი ქულის დახარჯვა ამ სეანსზე არ შეიძლება. აირჩიე ნაკლები.",
+    },
+  },
+} satisfies Record<Locale, unknown>;
+
+export type LoyaltyCopy = (typeof loyaltyCopy)[Locale];

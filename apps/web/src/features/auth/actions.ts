@@ -86,6 +86,9 @@ export async function registerAction(
     password: formData.get("password")?.toString() ?? "",
     locale,
   };
+  // DV-096: a member's referral code, carried from `/register?ref=` (ADR-084).
+  const referralCode = text(formData, "referralCode");
+  if (referralCode.length >= 6 && referralCode.length <= 16) body.referralCode = referralCode;
   if (body.displayName.length < 2) return { errors: { name: copy.shortName } };
   if (body.password.length < 12 || body.password.length > 128) {
     return { errors: { password: copy.weakPassword } };

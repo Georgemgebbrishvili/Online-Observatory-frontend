@@ -69,6 +69,7 @@ export function SiteHeaderBar({
     { label: app.live, href: `/${locale}/app/live` },
     { label: app.collection, href: `/${locale}/app/collection` },
     { label: app.cards, href: `/${locale}/app/cards` },
+    { label: app.loyalty, href: `/${locale}/app/loyalty` },
     { label: app.profile, href: `/${locale}/app/profile` },
   ];
   const guestLinks = [

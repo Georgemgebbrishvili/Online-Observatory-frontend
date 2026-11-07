@@ -11,15 +11,14 @@ import { useResource } from "@/platform/use-resource";
 import { useSession, type SignInFailure } from "@/platform/session";
 import { clock, localDate, nightLabel, targetName } from "@/present";
 import { line, palette, radius, space } from "@/theme";
-import { Header } from "@/ui/header";
 import { Body, Card, Dot, Label, Loading, PrimaryButton, QuietButton, Screen, Title, Unavailable } from "@/ui/kit";
 import { type } from "@/ui/type";
 
 export default function Account() {
   const { state } = useSession();
   return (
-    <Screen>
-      <Header />
+    // A page of its own, opened from the header's account button (clients ADR-084).
+    <Screen back="/">
       {state.status === "loading" && <Loading />}
       {state.status === "signed-out" && <SignIn />}
       {state.status === "signed-in" && <Nights session={state.session} />}
@@ -78,6 +77,7 @@ function SignIn() {
         </View>
       )}
       <PrimaryButton label={busy ? t.account.submitting : t.account.submit} busy={busy} onPress={submit} />
+      <AccountLinks />
       <Card>
         <Body tone="secondary">{t.account.noAccount}</Body>
         <QuietButton
@@ -86,6 +86,27 @@ function SignIn() {
         />
       </Card>
     </View>
+  );
+}
+
+/**
+ * Google Play requires an in-app path to account deletion: the platform's deletion flow
+ * (platform ADR-044) is on the website's profile page, behind its own sign-in.
+ */
+function AccountLinks() {
+  const { t, locale } = useLocale();
+  return (
+    <Card>
+      <Body tone="secondary">{t.account.deleteDetail}</Body>
+      <QuietButton
+        label={t.account.deleteAccount}
+        onPress={() => WebBrowser.openBrowserAsync(`${webAppUrl}/${locale}/app/profile`)}
+      />
+      <QuietButton
+        label={t.account.privacy}
+        onPress={() => WebBrowser.openBrowserAsync(`${webAppUrl}/${locale}/privacy`)}
+      />
+    </Card>
   );
 }
 
@@ -145,6 +166,7 @@ function Nights({ session }: { session: NativeSession }) {
         ))}
       <QuietButton label={t.account.signOut} onPress={signOut} />
       <Text style={[type.reading(), { color: palette.ink3 }]}>{session.user.email}</Text>
+      <AccountLinks />
     </>
   );
 

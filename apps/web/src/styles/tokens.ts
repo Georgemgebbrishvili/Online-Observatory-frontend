@@ -93,6 +93,29 @@ export const observatoryArt = {
   interiorRed: "#ff4a30",
 } as const;
 
+/**
+ * The Night Sky's scene (ADR-085): the planets' and Moon's illustration colours, the
+ * figures and grids drawn on the sky, the ground. Used only by that renderer.
+ */
+export const nightSkyArt = {
+  sun: "#fff4d6",
+  moon: "#e9e4da",
+  mercury: "#bfb4a6",
+  venus: "#f3e9cf",
+  mars: "#d9774a",
+  jupiter: "#e6d1b0",
+  saturn: "#e7d39b",
+  uranus: "#a9dbe3",
+  neptune: "#7f9de8",
+  ring: "#d9c79a",
+  figures: "#7f9ccf",
+  altazGrid: "#3d8b6d",
+  equatorialGrid: "#4a74b8",
+  ground: "#0b0a09",
+  groundDay: "#2c2a24",
+  horizon: "#6b4a3a",
+} as const;
+
 /** A palette colour at an opacity, as a canvas fill or stop takes it. */
 export function withAlpha(hex: string, alpha: number) {
   const value = parseInt(hex.slice(1), 16);

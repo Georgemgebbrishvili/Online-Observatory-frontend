@@ -11,6 +11,8 @@ export const publicRoutes = [
   "status",
   // ADR-066: what the fake shows a signed-in visitor: nothing live.
   "tonight",
+  // ADR-085: the Night Sky.
+  "sky",
   // ADR-067: the form and the observer's gifts.
   "gift",
   "terms",
@@ -26,10 +28,11 @@ export const appRoutes = [
   "app/profile",
   // ADR-058: the weekly cards, face down; e2e/cards.spec.ts turns one on its own account.
   "app/cards",
+  // ADR-084: the Loyalty Club.
+  "app/loyalty",
   // Reachable and honest about not being built yet. Phase 1's Done-when.
   "app/book",
   "app/subscription",
-  "app/loyalty",
   "app/passes",
 ] as const;
 
@@ -69,6 +72,8 @@ export const operatorRoutes = [
   "admin/missions",
   "admin/targets",
   "admin/logs",
+  // ADR-084: the operator's points adjustment.
+  "admin/loyalty",
 ] as const;
 
 export const locales = ["en", "ka"] as const;

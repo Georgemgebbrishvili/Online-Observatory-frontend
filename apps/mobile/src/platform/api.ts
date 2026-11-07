@@ -11,6 +11,8 @@ import type {
   ListBookableObservatoriesResponse,
   ListSlotsResponse,
   ListTonightTargetsResponse,
+  LoyaltyAccount,
+  LoyaltyScheme,
   Mission,
   MissionCommandAccepted,
   MissionCommandRequest,
@@ -95,6 +97,10 @@ export const platform = {
     request<MissionSession>(`/missions/${q(id)}/start`, { method: "POST", token }),
   command: (id: string, token: string, body: MissionCommandRequest) =>
     request<MissionCommandAccepted>(`/missions/${q(id)}/command`, { method: "POST", token, body }),
+
+  /** Clients ADR-084: the club's public rules, and the signed-in member's account. */
+  loyaltyScheme: () => get<LoyaltyScheme>("/loyalty/scheme"),
+  loyalty: (token: string) => request<LoyaltyAccount>("/loyalty", { token }),
 
   captures: (token: string) => request<CapturePage>("/captures?limit=24", { token }),
   capture: (id: string, token: string) => request<Capture>(`/captures/${q(id)}`, { token }),

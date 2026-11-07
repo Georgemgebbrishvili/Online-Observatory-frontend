@@ -103,3 +103,8 @@
   display: grid;
   gap: var(--space-6);
 }
+
+/* ADR-085: the way from tonight's list to the whole sky. */
+.tonight-sky-link {
+  margin: var(--space-6) 0 0;
+}

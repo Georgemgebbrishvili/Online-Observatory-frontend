@@ -12,7 +12,16 @@ import { getCurrentUser } from "@/lib/platform/session";
 import { privatePageMetadata } from "@/lib/seo";
 import "@/styles/auth.css";
 
-type RegistrationPageProps = { params: Promise<{ locale: string }> };
+type RegistrationPageProps = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ ref?: string | string[] }>;
+};
+
+/** DV-096: a member's code from `?ref=`, in the contract's shape, or none. */
+function referralCode(value: string | string[] | undefined) {
+  const code = typeof value === "string" ? value.trim() : "";
+  return code.length >= 6 && code.length <= 16 ? code : null;
+}
 
 export async function generateMetadata({
   params,
@@ -23,11 +32,15 @@ export async function generateMetadata({
     : {};
 }
 
-export default async function RegistrationPage({ params }: RegistrationPageProps) {
+export default async function RegistrationPage({
+  params,
+  searchParams,
+}: RegistrationPageProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   if (await getCurrentUser()) redirect(`/${locale}/app`);
 
+  const ref = referralCode((await searchParams).ref);
   const dictionary = await getDictionary(locale);
   const copy = authCopy[locale];
   return (
@@ -36,7 +49,7 @@ export default async function RegistrationPage({ params }: RegistrationPageProps
       <AuthPage
         title={copy.register.title}
       >
-        <RegistrationForm copy={copy} locale={locale} />
+        <RegistrationForm copy={copy} locale={locale} referralCode={ref} />
       </AuthPage>
       <SiteFooter footer={dictionary.footer} locale={locale} path="register" />
     </div>

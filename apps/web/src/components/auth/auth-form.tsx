@@ -14,6 +14,7 @@ import {
 } from "@/features/auth/actions";
 import type { Locale } from "@/i18n/config";
 import type { authCopy } from "@/i18n/resources/auth";
+import { loyaltyCopy } from "@/i18n/resources/loyalty";
 import { GoogleSignInButton, googleSignInHref } from "@/components/auth/google-sign-in";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/form";
@@ -115,9 +116,12 @@ export function SignInForm({
 export function RegistrationForm({
   copy,
   locale,
+  referralCode = null,
 }: {
   copy: AuthResource;
   locale: Locale;
+  /** ADR-084: a member's code from `?ref=`; the platform names nobody, so neither do we. */
+  referralCode?: string | null;
 }) {
   const [state, action] = useActionState(registerAction.bind(null, locale), {});
   useRedirect(state);
@@ -125,6 +129,14 @@ export function RegistrationForm({
   return (
     <form action={action} className="auth-form">
       <FormMessage state={state} />
+      {referralCode && (
+        <>
+          <p className="auth-invited" role="status" data-referral>
+            {loyaltyCopy[locale].invited}
+          </p>
+          <input type="hidden" name="referralCode" value={referralCode} />
+        </>
+      )}
       <GoogleOrEmail copy={copy} locale={locale} />
       <Field htmlFor="name" label={copy.fields.name} error={state.errors?.name}>
         <TextInput

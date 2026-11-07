@@ -7,6 +7,7 @@ import { StatePanel } from "@/components/ui/state-panel";
 import { quarterHour, readBoard, sessionMinutes } from "@/features/booking/board";
 import { readReschedule } from "@/features/booking/reschedule";
 import { readPrizes } from "@/features/cards/read";
+import { readClub } from "@/features/loyalty/read";
 import { isLocale } from "@/i18n/config";
 import { bookingCopy } from "@/i18n/resources/booking";
 import { requireUser } from "@/lib/platform/session";
@@ -14,6 +15,7 @@ import "@/styles/pages.css";
 import "@/styles/booking.css";
 import "@/styles/booking-board.css";
 import "@/styles/target-art.css";
+import "@/styles/loyalty.css";
 
 type BookPageProps = {
   params: Promise<{ locale: string }>;
@@ -21,6 +23,7 @@ type BookPageProps = {
     startAt?: string | string[];
     reschedule?: string | string[];
     length?: string | string[];
+    target?: string | string[];
   }>;
 };
 
@@ -38,7 +41,7 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
 
   await requireUser(locale);
 
-  const { startAt, reschedule: rescheduleParam, length } = await searchParams;
+  const { startAt, reschedule: rescheduleParam, length, target } = await searchParams;
   const reschedule = await readReschedule(rescheduleParam);
   if (reschedule.kind === "closed") {
     return <RescheduleClosed bookingId={reschedule.bookingId} locale={locale} />;
@@ -75,17 +78,20 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
     );
   } else {
     // ADR-058: the prizes this booking could spend. None for a free replacement.
-    const prizes = booking
-      ? []
-      : ((await readPrizes()) ?? []).filter(
-          (prize) =>
-            prize.status === "ACTIVE" &&
-            prize.kind !== "OBSERVER_SEAT" &&
-            prize.observatoryId === board.observatory.id,
-        );
+    // ADR-084: the club account, for points; none for a free replacement.
+    const [allPrizes, club] = booking
+      ? [[], null]
+      : await Promise.all([readPrizes(), readClub()]);
+    const prizes = (allPrizes ?? []).filter(
+      (prize) =>
+        prize.status === "ACTIVE" &&
+        prize.kind !== "OBSERVER_SEAT" &&
+        prize.observatoryId === board.observatory.id,
+    );
     main = (
       <BookingBoard
         prizes={prizes}
+        club={club?.kind === "ok" ? { scheme: club.scheme, account: club.account } : null}
         locale={locale}
         observatory={board.observatory}
         nights={board.nights}
@@ -93,6 +99,9 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
         reschedule={booking}
         durationMinutes={minutes}
         initialStartAt={typeof startAt === "string" ? startAt : null}
+        initialTargetId={
+          board.targets.find((candidate) => candidate.slug === target)?.id ?? null
+        }
         signInPath={`/${locale}/sign-in`}
       />
     );
