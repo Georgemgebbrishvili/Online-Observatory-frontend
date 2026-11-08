@@ -85,3 +85,22 @@ test("on a phone the tab bar leads to the Night Sky, and lights it there", async
     expect(await label.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
   }
 });
+
+test.describe("a visitor outside Tbilisi", () => {
+  // The server renders in its own zone (UTC on Vercel, Tbilisi on a dev machine); a
+  // browser elsewhere must hydrate the page without a mismatch. Production threw React
+  // error #418 on every load from the "your time" clock line (2026-11-08).
+  test.use({ timezoneId: "America/New_York" });
+
+  test("hydrates the Night Sky without a mismatch, then shows their own clock", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+    await page.goto("/en/sky");
+    await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
+    await expect(page.getByRole("group", { name: "Time" })).toContainText("Your time");
+    expect(errors.filter((error) => /hydrat|#418|did not match/i.test(error))).toEqual([]);
+  });
+});

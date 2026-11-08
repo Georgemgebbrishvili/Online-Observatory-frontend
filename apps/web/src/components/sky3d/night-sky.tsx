@@ -2,7 +2,7 @@
 
 import type { SolarSystemBody } from "@darkview/contracts";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import {
   SITE,
@@ -101,6 +101,10 @@ type Picked = {
   lit: number | null;
   slug: string | null;
 };
+
+const noSubscription = () => () => {};
+const browserZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
+const observatoryZone = () => "Asia/Tbilisi";
 
 /**
  * The Night Sky (ADR-085): a full-screen 3D sky with a time bar, search, a panel for what
@@ -673,7 +677,9 @@ export function NightSky({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, pickedType, tenMinutes, site.site]);
 
-  const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // The visitor's zone, read only in the browser: the server renders in its own (UTC on
+  // Vercel), so the first render says Tbilisi on both sides and hydrates clean.
+  const zone = useSyncExternalStore(noSubscription, browserZone, observatoryZone);
   const timeLabel = (at: Date | null) =>
     at ? `${dayMonth(at, locale, "Asia/Tbilisi")}, ${clock(at, "Asia/Tbilisi")}` : copy.panel.never;
 
