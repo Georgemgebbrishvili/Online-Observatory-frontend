@@ -114,6 +114,12 @@ export const nightSkyArt = {
   ground: "#0b0a09",
   groundDay: "#2c2a24",
   horizon: "#6b4a3a",
+  hills: "#10131a",
+  hillsDay: "#4a5262",
+  path: "#f0a35e",
+  pathLabel: "#f6dcc0",
+  reticle: "#E3482C",
+  scrim: "#000000",
 } as const;
 
 /** A palette colour at an opacity, as a canvas fill or stop takes it. */

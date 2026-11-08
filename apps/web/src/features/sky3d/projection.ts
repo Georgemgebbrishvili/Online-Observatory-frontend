@@ -3,7 +3,8 @@ import { worldOf, type Vec3 } from "./astro";
 /** An alt-az camera with no roll: where it looks, and its vertical field of view. */
 export type View = { alt: number; az: number; fov: number };
 
-export const FOV = { min: 5, max: 120 } as const;
+/** Down to 1.2′ across: wide enough for a planet's disc to fill the screen. */
+export const FOV = { min: 0.02, max: 120 } as const;
 /** Short of the zenith and nadir, where an alt-az camera's "up" is undefined. */
 export const MAX_ALT = 89.5;
 

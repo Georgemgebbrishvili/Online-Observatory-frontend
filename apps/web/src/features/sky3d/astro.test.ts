@@ -1,4 +1,4 @@
-import { Body, Equator, Horizon, MakeTime } from "astronomy-engine";
+import { Body, Equator, GeoVector, Horizon, Illumination, MakeTime } from "astronomy-engine";
 import { PerspectiveCamera, Vector3 } from "three";
 import { describe, expect, it } from "vitest";
 
@@ -10,10 +10,13 @@ import {
   colourOfBv,
   events,
   horizonMatrix,
+  fixedAltAz,
   horizontal,
+  jupiterMoons,
   limitingMagnitude,
   observerOf,
   skyBrightness,
+  skyPath,
   skyState,
   unitJ2000,
   worldOf,
@@ -202,5 +205,48 @@ describe("tonight's events", () => {
     expect(transit!.getTime()).toBeGreaterThan(rise!.getTime());
     expect(transit!.getTime()).toBeLessThan(set!.getTime());
     expect(Math.abs(transit!.getTime() - at.getTime())).toBeLessThan(86_400_000);
+  });
+});
+
+describe("the path across the sky", () => {
+  it("passes through the body's own position at each step", () => {
+    const path = skyPath({ body: "Saturn" }, at, 2, 30, SITE);
+    expect(path).toHaveLength(5);
+    for (const point of path) {
+      expect(separation(point, bodyState("Saturn", new Date(point.at), SITE))).toBeLessThan(0.001);
+    }
+  });
+
+  it("runs a star through the panel's own positions and tops out on the meridian", () => {
+    const path = skyPath({ raHours: STARS.Vega.ra, decDeg: STARS.Vega.dec }, at, 24, 10, SITE);
+    for (const point of path.filter((_, i) => i % 12 === 0)) {
+      expect(separation(point, fixedAltAz(STARS.Vega.ra, STARS.Vega.dec, new Date(point.at), SITE))).toBeLessThan(0.001);
+    }
+    const top = path.reduce((best, point) => (point.alt > best.alt ? point : best));
+    // Culmination south of the zenith: 90 - (latitude - declination), refraction aside.
+    expect(top.alt).toBeCloseTo(90 - (SITE.latitude - STARS.Vega.dec), 0);
+    // Near the zenith the azimuth swings fast, so the time decides: the transit's.
+    const transit = events({ raHours: STARS.Vega.ra, decDeg: STARS.Vega.dec }, new Date(top.at - 6 * 3_600_000), SITE).transit!;
+    expect(Math.abs(top.at - transit.getTime())).toBeLessThanOrEqual(5 * 60_000);
+  });
+});
+
+describe("a close-up disc", () => {
+  it.each(["Moon", "Venus", "Mars", "Jupiter"] as const)("lights %s from the side the phase angle says", (name) => {
+    const state = bodyState(name, at, SITE);
+    const geo = GeoVector(Body[name], MakeTime(at), true);
+    const length = Math.hypot(geo.x, geo.y, geo.z);
+    const towardEarth = [-geo.x / length, -geo.y / length, -geo.z / length];
+    const cos = state.sunward.reduce((sum, value, i) => sum + value * towardEarth[i], 0);
+    expect(Math.acos(cos) / (Math.PI / 180)).toBeCloseTo(Illumination(Body[name], MakeTime(at)).phase_angle, 0);
+  });
+
+  it("keeps Jupiter's moons within their orbits' reach, and Io closest", () => {
+    const arcmin = (offset: number[]) => (Math.hypot(...offset) * 180 * 60) / Math.PI;
+    const moons = jupiterMoons(at);
+    expect(moons.map((moon) => moon.name)).toEqual(["io", "europa", "ganymede", "callisto"]);
+    // Callisto reaches about 10.5' from Jupiter at the closest opposition; Io about 2.3'.
+    for (const moon of moons) expect(arcmin(moon.offset)).toBeLessThan(11);
+    expect(arcmin(moons[0].offset)).toBeLessThan(2.5);
   });
 });

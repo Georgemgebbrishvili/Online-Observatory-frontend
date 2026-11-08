@@ -43,6 +43,57 @@ test("the Night Sky draws, its time bar moves time, and search finds Saturn", as
   await expect(page.getByRole("complementary", { name: "Orion" })).toContainText("Constellation");
 });
 
+test("the Night Sky says what is up, and looks closer at what is picked", async ({ page }) => {
+  // Polaris never sets from Tbilisi (41.7° N), so this holds at any hour the suite runs.
+  await page.goto("/en/sky");
+  await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
+  const search = page.getByRole("combobox", { name: "Find in the sky" });
+  await search.fill("Polaris");
+  await expect(page.getByRole("option").first()).toContainText(/Up \d+°/);
+  await search.press("Enter");
+  const panel = page.getByRole("complementary", { name: "Polaris" });
+  await expect(panel).toContainText(/Above the horizon · \d+° up, N/);
+  await expect(panel).toContainText("never sets here");
+
+  // A closer look narrows the view onto it, and the time bar then names what is drawn.
+  const timeBar = page.getByRole("group", { name: "Time" });
+  await expect(timeBar).toContainText("Computed sky, not a telescope view");
+  await panel.getByRole("button", { name: "Look closer" }).click();
+  await expect(page.locator(".sky")).toHaveAttribute("data-close", "true", { timeout: 10_000 });
+  await expect(timeBar).toContainText("Illustration — not telescope output");
+  await panel.getByRole("button", { name: "Whole sky" }).click();
+  await expect(page.locator(".sky")).toHaveAttribute("data-close", "false", { timeout: 10_000 });
+
+  // The list: what is up, by height, and what is below with its next rise; each one a way there.
+  await page.getByText("What is up, as a list").click();
+  const list = page.locator(".sky-list");
+  await expect(list.getByRole("heading", { name: /Up now|Below the horizon/ }).first()).toBeVisible();
+  await expect(list.locator(".sky-roster button").first()).toBeVisible();
+  const first = list.locator(".sky-roster button").first();
+  const name = (await first.locator(".sky-status").textContent())!;
+  await first.click();
+  await expect(page.getByRole("complementary", { name })).toBeVisible();
+});
+
+test("on a phone a closer look folds the panel so the object shows", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/en/sky");
+  await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
+  const search = page.getByRole("combobox", { name: "Find in the sky" });
+  await search.fill("Polaris");
+  await search.press("Enter");
+  const panel = page.getByRole("complementary", { name: "Polaris" });
+  await expect(panel.locator("dl")).toBeVisible();
+  await panel.getByRole("button", { name: "Look closer" }).click();
+  await expect(panel).toHaveAttribute("data-folded", "true");
+  await expect(panel.locator("dl")).toBeHidden();
+  const details = panel.getByRole("button", { name: "Details" });
+  await expect(details).toHaveAttribute("aria-expanded", "false");
+  await details.click();
+  await expect(panel.locator("dl")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+});
+
 test("the Night Sky reads in Georgian", async ({ page }) => {
   await page.goto("/ka/sky");
   await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });

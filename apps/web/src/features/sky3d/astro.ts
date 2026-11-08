@@ -11,8 +11,11 @@ import {
   Body,
   DefineStar,
   Equator,
+  GeoVector,
+  HelioVector,
   Horizon,
   Illumination,
+  JupiterMoons,
   MakeTime,
   Observer,
   Refraction,
@@ -133,6 +136,8 @@ export type BodyState = {
   phaseAngle: number;
   /** Saturn's ring opening, degrees. */
   ringTilt?: number;
+  /** J2000 unit vector from the body to the Sun: which side of its disc is lit. */
+  sunward: Vec3;
 };
 
 /** One body, exactly as astronomy-engine gives it. */
@@ -143,6 +148,8 @@ export function bodyState(name: SkyBodyName, date: Date, site: Site): BodyState 
   const eq = Equator(body, time, observer, true, true);
   const hor = Horizon(time, observer, eq.ra, eq.dec, "normal");
   const ill = Illumination(body, time);
+  const helio = name === "Sun" ? { x: 0, y: 0, z: 1 } : HelioVector(body, time);
+  const length = Math.hypot(helio.x, helio.y, helio.z) || 1;
   return {
     name,
     alt: hor.altitude,
@@ -154,6 +161,7 @@ export function bodyState(name: SkyBodyName, date: Date, site: Site): BodyState 
     litFraction: name === "Sun" ? 1 : ill.phase_fraction,
     phaseAngle: name === "Sun" ? 0 : ill.phase_angle,
     ...(ill.ring_tilt !== undefined && { ringTilt: ill.ring_tilt }),
+    sunward: [-helio.x / length, -helio.y / length, -helio.z / length],
   };
 }
 
@@ -163,6 +171,51 @@ export function bodies(date: Date, site: Site) {
 
 /** Saturn's north pole, J2000 (IAU WGCCRE): the ring plane's normal. */
 export const SATURN_POLE = unitJ2000(40.589 / 15, 83.537);
+
+/**
+ * North poles, J2000 (IAU WGCCRE 2015; the Moon's mean pole), so a close-up disc turns as
+ * the body does on the sky.
+ */
+export const POLES: Record<SkyBodyName, Vec3> = {
+  Sun: unitJ2000(286.13 / 15, 63.87),
+  Moon: unitJ2000(269.9949 / 15, 66.5392),
+  Mercury: unitJ2000(281.0103 / 15, 61.4155),
+  Venus: unitJ2000(272.76 / 15, 67.16),
+  Mars: unitJ2000(317.681 / 15, 52.887),
+  Jupiter: unitJ2000(268.057 / 15, 64.495),
+  Saturn: SATURN_POLE,
+  Uranus: unitJ2000(257.311 / 15, -15.175),
+  Neptune: unitJ2000(299.36 / 15, 43.46),
+};
+
+export type MoonOfJupiter = "io" | "europa" | "ganymede" | "callisto";
+const JUPITER_RADIUS_AU = 71_492 / AU_KM;
+const LIGHT_DAYS_PER_AU = 499.004784 / 86_400;
+
+/**
+ * Jupiter's four large moons as seen from the Earth: each one's J2000 offset from
+ * Jupiter's own direction (a small vector, radians), and whether Jupiter hides it.
+ * The moons are placed where they were when their light left, as Jupiter is.
+ */
+export function jupiterMoons(date: Date): { name: MoonOfJupiter; offset: Vec3; hidden: boolean }[] {
+  const time = MakeTime(date);
+  const jupiter = GeoVector(Body.Jupiter, time, true);
+  const distance = Math.hypot(jupiter.x, jupiter.y, jupiter.z);
+  const toward: Vec3 = [jupiter.x / distance, jupiter.y / distance, jupiter.z / distance];
+  const moons = JupiterMoons(time.AddDays(-distance * LIGHT_DAYS_PER_AU));
+  return (["io", "europa", "ganymede", "callisto"] as const).map((name) => {
+    const { x, y, z } = moons[name];
+    const sum: Vec3 = [jupiter.x + x, jupiter.y + y, jupiter.z + z];
+    const length = Math.hypot(...sum);
+    const along = x * toward[0] + y * toward[1] + z * toward[2];
+    const across = Math.sqrt(Math.max(0, x * x + y * y + z * z - along * along));
+    return {
+      name,
+      offset: [sum[0] / length - toward[0], sum[1] / length - toward[1], sum[2] / length - toward[2]],
+      hidden: along > 0 && across < JUPITER_RADIUS_AU,
+    };
+  });
+}
 
 export type SkyState = "day" | "civil" | "nautical" | "astronomical" | "night";
 
@@ -251,6 +304,55 @@ export function events(
     transit: at(SearchHourAngle(body, observer, 0, passStart).time),
     set: upNow ? nextSet : nextRise && at(SearchRiseSet(body, observer, -1, nextRise, 1)),
   };
+}
+
+/** The next rise after `from` within a day, or null (up all day, or not rising). */
+export function nextRise(target: { body: SkyBodyName } | { raHours: number; decDeg: number }, from: Date, site: Site) {
+  let body: Body;
+  if ("body" in target) {
+    body = Body[target.body];
+  } else {
+    DefineStar(STAR_SLOT, target.raHours, target.decDeg, 1000);
+    body = STAR_SLOT;
+  }
+  return SearchRiseSet(body, observerOf(site), +1, from, 1)?.date ?? null;
+}
+
+export type PathPoint = { at: number; alt: number; az: number };
+
+/**
+ * Where an object stands, step by step, from `from` over `hours`: its daily path across
+ * this site's sky (apparent, refracted). A body moves along the stars as it goes, so each
+ * step is its own position, not a turned copy of the first.
+ */
+export function skyPath(
+  target: { body: SkyBodyName } | { raHours: number; decDeg: number },
+  from: Date,
+  hours: number,
+  stepMinutes: number,
+  site: Site,
+): PathPoint[] {
+  const observer = observerOf(site);
+  let body: Body;
+  if ("body" in target) {
+    body = Body[target.body];
+  } else {
+    DefineStar(STAR_SLOT, target.raHours, target.decDeg, 1000);
+    body = STAR_SLOT;
+  }
+  const points: PathPoint[] = [];
+  // A star's aberration is left out, as fixedAltAz leaves it out, so the path runs
+  // through the very point the panel gives.
+  const aberration = "body" in target;
+  const steps = Math.round((hours * 60) / stepMinutes);
+  for (let i = 0; i <= steps; i++) {
+    const at = from.getTime() + i * stepMinutes * 60_000;
+    const time = MakeTime(new Date(at));
+    const eq = Equator(body, time, observer, true, aberration);
+    const hor = Horizon(time, observer, eq.ra, eq.dec, "normal");
+    points.push({ at, alt: hor.altitude, az: hor.azimuth });
+  }
+  return points;
 }
 
 /** Of-date apparent position of a J2000 object, through astronomy-engine's own Horizon. */

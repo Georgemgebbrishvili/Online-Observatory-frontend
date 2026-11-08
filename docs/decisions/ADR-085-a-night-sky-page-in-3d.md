@@ -100,3 +100,55 @@ also on mobile".
 - **The controls stack in flow**, top and foot, instead of sitting at fixed offsets that a
   wrapped Georgian row or a taller time bar ran into; the page subtracts the desk header's
   real 77 px, so the time bar no longer ends below the window.
+
+## Amendment — 2026-11-08, later
+
+Decided by the maintainer (Nika), in session: "it should look more like Stellarium with the
+probable path of the object I choose … I have to be able to zoom in and see how the object
+looks … it should also indicate which ones are above the horizon".
+
+- **The selected object's path.** Twelve hours either side of the page's instant, in
+  ten-minute steps from astronomy-engine (`skyPath`, held to the panel's own positions by
+  test), drawn on a 2D overlay over the sky: solid above the horizon, dashed below it when
+  the ground is seen through, a dot and a Tbilisi time at each whole hour, an arrow for the
+  way it moves, and its rise, highest and set marked. A toggle ("Path of what you pick")
+  turns it off. A turning four-arc marker shows what is selected.
+- **Zoom to 1.2′.** The field narrows from 5° to 0.02°. "Look closer" (or a double tap)
+  frames the object, and the view follows it as the sky turns, until the visitor drags.
+  - **Planets and the Moon:** each is drawn on a disc at its true apparent size, from the
+    photographs the console already ships (`target-photos.ts`, credited on the page). The
+    disc is turned to the body's IAU pole and lit from the body's own direction to the Sun,
+    so its phase and the tilt of its terminator are right. By day the disc's dark side lets
+    the sky through.
+  - **Venus** is a plain cloud deck: its photograph is a radar map of the ground.
+  - **Saturn** is a globe with rings in 3D, so the rings open as they do from here, with the
+    globe's shadow on them and theirs on the globe.
+  - **Jupiter's four moons** come from astronomy-engine, light-time corrected; they agree
+    with PyEphem to within 1″.
+  - **Deep-sky showpieces:** their painted plates (ADR-082) at true size, north up.
+  - **Doubles:** framed tight enough to split.
+  - **Out of focus:** a planet too small for a disc is a point of light sized like a star of
+    its magnitude.
+  - **The caption:** when the view is narrower than 3°, the time bar's caption reads
+    "Illustration — not telescope output" in place of "Computed sky".
+- **Stellarium's look.** It is a look, not a copy of Stellarium's art:
+  - **Stars:** bright stars carry a soft halo. Near the horizon, stars dim and redden by
+    airmass (0.22 mag per airmass) and twinkle; there is no twinkle with reduced motion.
+  - **The sky:** it has a faint glow low down at night, a blue day paler toward the horizon,
+    and a warm twilight band on the Sun's side.
+  - **The horizon:** a silhouette of far hills and a near tree line, never above 2.4°. It is
+    an illustration, not the observatory's measured horizon, and rise and set stay
+    geometric.
+  - **The Milky Way:** it fades out below a 12° field, where it would only grey the
+    background.
+- **Above or below the horizon, everywhere.**
+  - **Search results:** each carries "Up 34°" or "Below".
+  - **The panel:** it opens with "Above the horizon · 49° up, S", "Below the horizon · rises
+    …", "never sets here" or "never rises here".
+  - **The list:** it now holds the Moon, the planets and the showpieces: those up, by
+    height, with their direction, and those below, with their next rise; each one flies
+    there.
+  - **Labels:** below the horizon, with the ground seen through, they dim.
+- **On a phone** "Look closer" folds the panel to its head (Details unfolds it), so the
+  object shows above it; an opened list sits above the panel, and the desk panel ends above
+  the time bar and the list button instead of covering them.

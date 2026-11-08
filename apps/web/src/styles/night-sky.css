@@ -58,6 +58,14 @@
   height: 100%;
 }
 
+.sky-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 .sky-labels {
   position: absolute;
   inset: 0;
@@ -114,6 +122,20 @@
   translate: -50% 0;
 }
 
+.sky-label-showpiece.is-framed::before {
+  display: none;
+}
+
+.sky-label.is-below {
+  opacity: 0.55;
+  font-style: italic;
+}
+
+.sky-label-moon {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-kicker);
+}
+
 .sky-label.is-selected {
   color: var(--color-accent);
   font-weight: var(--font-weight-bold);
@@ -142,6 +164,16 @@
 .sky-computed {
   margin-inline-start: auto;
   color: var(--color-text-tertiary);
+}
+
+.sky-computed-close,
+.sky[data-close="true"] .sky-computed-wide {
+  display: none;
+}
+
+.sky[data-close="true"] .sky-computed-close {
+  display: inline;
+  color: var(--color-text-secondary);
 }
 
 /*
@@ -220,6 +252,10 @@
 }
 
 .sky-results button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   width: 100%;
   min-height: 2.75rem;
   padding: 0 var(--space-3);
@@ -235,6 +271,62 @@
 .sky-results button:hover,
 .sky-results button:focus-visible {
   background: var(--color-overlay-hover);
+}
+
+/* Up or down: a lit dot for above the horizon, a hollow one for below. */
+.sky-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.sky-status::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+.sky-status.is-up::before {
+  background: var(--color-live);
+  box-shadow: 0 0 0.5rem var(--color-live-border);
+}
+
+.sky-status.is-down::before {
+  border: 1px solid var(--color-text-tertiary);
+}
+
+.sky-results .sky-status {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-kicker);
+}
+
+.sky-status-line {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  white-space: normal;
+}
+
+.sky-status-line.is-up {
+  color: var(--color-text-primary);
+}
+
+.sky-look {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.sky-closer {
+  border-color: var(--color-accent-border);
+}
+
+/* The fold is a phone's: on a desk the panel sits beside the sky, never over it. */
+.sky-unfold {
+  display: none;
 }
 
 .sky-note {
@@ -385,7 +477,8 @@
   left: var(--space-3);
   z-index: 4;
   width: min(22rem, calc(100% - var(--space-6)));
-  max-height: calc(100% - 13rem);
+  /* Ends above the foot -- the time bar and the list button under it -- and scrolls inside. */
+  max-height: calc(100% - 18.5rem);
   overflow-y: auto;
   display: grid;
   gap: var(--space-3);
@@ -463,6 +556,9 @@
 }
 
 .sky-list[open] {
+  /* Opened, the list is what the visitor asked for: above the panel, never under it. */
+  position: relative;
+  z-index: 5;
   max-height: 50dvh;
   overflow-y: auto;
   padding: 0 var(--space-3) var(--space-3);
@@ -484,6 +580,43 @@
   padding-inline-start: var(--space-4);
 }
 
+.sky-list .sky-roster {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.sky-roster button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-1) var(--space-2);
+  border: 0;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-text-secondary);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.sky-roster button:hover,
+.sky-roster button:focus-visible {
+  background: var(--color-overlay-hover);
+}
+
+.sky-roster .sky-status {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  white-space: normal;
+}
+
 .sky-credits {
   color: var(--color-text-secondary);
 }
@@ -497,6 +630,14 @@
     bottom: var(--space-2);
     width: auto;
     max-height: 70%;
+  }
+
+  .sky-unfold {
+    display: inline-block;
+  }
+
+  .sky-panel[data-folded="true"] > :not(header, .sky-status-line, .sky-look, .sky-caption) {
+    display: none;
   }
 
   /* The time steps share the width, so six fit a 360 px phone on one line -- in

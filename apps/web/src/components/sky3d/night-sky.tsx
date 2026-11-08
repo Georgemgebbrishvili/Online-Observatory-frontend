@@ -6,9 +6,13 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 
 import {
   SITE,
+  SKY_BODIES,
   bodies,
+  bodyState,
   events,
   fixedAltAz,
+  nextRise,
+  skyPath,
   skyState,
   type BodyState,
   type Site,
@@ -23,7 +27,7 @@ import { SHOWPIECES } from "@/lib/observatory-sim/showpieces";
 import { BRIGHT_STARS } from "@/lib/observatory-sim/stars";
 import { TELESCOPE_TARGET_BY_ID } from "@/lib/observatory-sim/telescope-targets";
 
-import type { Constellation, SkyRenderer, SkyThing, Toggles } from "./renderer";
+import type { Constellation, PathOverlay, SkyRenderer, SkyThing, Toggles } from "./renderer";
 
 /** A platform target, for the panel's booking link. */
 export type Bookable = {
@@ -39,6 +43,7 @@ const DEFAULT_TOGGLES: Toggles = {
   lines: true,
   names: true,
   planets: true,
+  path: true,
   altaz: false,
   equatorial: false,
   milkyway: true,
@@ -87,6 +92,9 @@ function decText(deg: number) {
   return `${deg < 0 ? "−" : "+"}${Math.floor(a)}° ${String(Math.round((a % 1) * 60)).padStart(2, "0")}′`;
 }
 
+/** What an object's key points at, for the astronomy: a body, or a fixed J2000 place. */
+type Target = { body: SkyBodyName } | { raHours: number; decDeg: number };
+
 type Picked = {
   key: string;
   name: string;
@@ -101,6 +109,11 @@ type Picked = {
   lit: number | null;
   slug: string | null;
 };
+
+/** Apparent alt/az of a target at an instant. */
+function whereAt(target: Target, at: Date, site: Site) {
+  return "body" in target ? bodyState(target.body, at, site) : fixedAltAz(target.raHours, target.decDeg, at, site);
+}
 
 const noSubscription = () => () => {};
 const browserZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -122,6 +135,7 @@ export function NightSky({
 }) {
   const copy = nightSkyCopy[locale];
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const overlayRef = useRef<HTMLCanvasElement>(null);
   const labelsRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<SkyRenderer | null>(null);
@@ -129,9 +143,13 @@ export function NightSky({
 
   // Time: the simulated instant runs from an anchor at a speed, or stands still.
   const time = useRef({ anchorSim: openedAt, anchorReal: 0, speed: 1, playing: true });
-  const viewRef = useRef<View>({ alt: 25, az: 180, fov: 70 });
+  // South, low enough that the horizon shows above the time bar.
+  const viewRef = useRef<View>({ alt: 16, az: 180, fov: 75 });
   const velocity = useRef({ alt: 0, az: 0 });
-  const fly = useRef<{ from: View; to: View; start: number } | null>(null);
+  const fly = useRef<{ from: View; to: View; start: number; duration: number } | null>(null);
+  // Following the selected object as the sky turns: after a search or a closer look.
+  const track = useRef(false);
+  const lookCloserRef = useRef<(key: string) => void>(() => {});
   const orientation = useRef<import("three").Quaternion | null>(null);
   const reduceMotion = useRef(false);
 
@@ -152,6 +170,10 @@ export function NightSky({
   const [constellations, setConstellations] = useState<Constellation[]>([]);
   // The catalogue, for the panel of a tapped star; the renderer keeps its own copy.
   const [starData, setStarData] = useState<Float32Array | null>(null);
+  const [listOpen, setListOpen] = useState(false);
+  const listRef = useRef<HTMLDetailsElement>(null);
+  // On a phone the panel is a sheet over the sky; for a closer look it folds to its head.
+  const [folded, setFolded] = useState(false);
 
   useEffect(() => {
     togglesRef.current = toggles;
@@ -161,6 +183,7 @@ export function NightSky({
   }, [site]);
   useEffect(() => {
     selectedRef.current = selected;
+    if (!selected) track.current = false;
   }, [selected]);
 
   const simDate = useCallback(() => {
@@ -248,10 +271,12 @@ export function NightSky({
         rendererRef.current = new module.SkyRenderer(
           canvasRef.current!,
           labelsRef.current!,
+          overlayRef.current!,
           starsRef.current,
           figures,
           [],
         );
+        rendererRef.current.setMotion(!reduceMotion.current);
         time.current.anchorReal = performance.now();
         setPhase("ready");
       } catch {
@@ -270,7 +295,12 @@ export function NightSky({
     const renderer = rendererRef.current;
     if (!renderer || phase !== "ready") return;
     renderer.setThings(things);
-    renderer.setNames(new Map((Object.keys(copy.bodies) as SkyBodyName[]).map((name) => [`body:${name}`, bodyName(name)])));
+    renderer.setNames(
+      new Map([
+        ...(Object.keys(copy.bodies) as SkyBodyName[]).map((name) => [`body:${name}`, bodyName(name)] as const),
+        ...Object.entries(copy.moons).map(([name, label]) => [`moon:${name}`, label] as const),
+      ]),
+    );
   }, [things, phase, copy, bodyName]);
 
   // The frame loop, paused while the tab is hidden.
@@ -280,6 +310,7 @@ export function NightSky({
     const renderer = rendererRef.current!;
     let raf = 0;
     let lastClock = 0;
+    let close = "";
     const resize = () => renderer.resize(stage.clientWidth, stage.clientHeight);
     resize();
     const observer = new ResizeObserver(resize);
@@ -287,17 +318,21 @@ export function NightSky({
 
     const frame = (t: number) => {
       // Inertia, and the flight to a searched object.
-      if (fly.current) {
-        const k = Math.min(1, (t - fly.current.start) / 900);
+      const flying = fly.current;
+      if (flying) {
+        if (flying.start < 0) flying.start = t;
+        const k = Math.min(1, (t - flying.start) / flying.duration);
         const e = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
-        const { from, to } = fly.current;
+        const { from, to } = flying;
         let dAz = to.az - from.az;
         if (dAz > 180) dAz -= 360;
         if (dAz < -180) dAz += 360;
+        // The field changes by a ratio, so a flight from the whole sky to a planet's disc
+        // zooms evenly instead of all at the end.
         viewRef.current = clampView({
           alt: from.alt + (to.alt - from.alt) * e,
           az: from.az + dAz * e,
-          fov: from.fov + (to.fov - from.fov) * e,
+          fov: from.fov * (to.fov / from.fov) ** e,
         });
         if (k >= 1) fly.current = null;
       } else if (!reduceMotion.current && (Math.abs(velocity.current.alt) > 0.001 || Math.abs(velocity.current.az) > 0.001)) {
@@ -310,7 +345,8 @@ export function NightSky({
         velocity.current.az *= 0.92;
       }
       const date = simDate();
-      renderer.render(
+      const following = track.current && !flying;
+      const drawn = renderer.render(
         {
           date,
           site: siteRef.current,
@@ -318,9 +354,21 @@ export function NightSky({
           toggles: togglesRef.current,
           compass: copy.compass,
           selected: selectedRef.current,
+          track: following,
         },
         orientation.current,
       );
+      if (following) viewRef.current = drawn.view;
+      // In flight, aim at where the object is now, not where it was at take-off.
+      if (flying && track.current && drawn.target && drawn.target.alt > -1) {
+        flying.to = clampView({ ...flying.to, alt: drawn.target.alt, az: drawn.target.az });
+      }
+      // Close enough for a disc or a plate: say on the sky that it is an illustration.
+      const isClose = String(drawn.view.fov < 3);
+      if (isClose !== close) {
+        close = isClose;
+        if (stage.parentElement) stage.parentElement.dataset.close = isClose;
+      }
       if (t - lastClock > 250) {
         lastClock = t;
         setNow(date);
@@ -346,6 +394,7 @@ export function NightSky({
     const stage = stageRef.current!;
     const pointers = new Map<number, { x: number; y: number }>();
     let downAt = { x: 0, y: 0, t: 0 };
+    let lastTap = { x: 0, y: 0, t: 0 };
     let pinch = 0;
     const perPx = () => viewRef.current.fov / stage.clientHeight;
 
@@ -368,6 +417,7 @@ export function NightSky({
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       if (pointers.size === 1) {
         const k = perPx();
+        if (Math.hypot(event.clientX - downAt.x, event.clientY - downAt.y) > 6) track.current = false;
         velocity.current = { alt: dy * k, az: -dx * k };
         viewRef.current = clampView({ ...viewRef.current, alt: viewRef.current.alt + dy * k, az: viewRef.current.az - dx * k });
       } else if (pointers.size === 2) {
@@ -385,7 +435,14 @@ export function NightSky({
         velocity.current = { alt: 0, az: 0 };
         const rect = stage.getBoundingClientRect();
         const hit = rendererRef.current?.pick(event.clientX - rect.left, event.clientY - rect.top) ?? null;
-        setSelected(hit);
+        const now = performance.now();
+        const again = now - lastTap.t < 380 && Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < 30;
+        lastTap = { x: event.clientX, y: event.clientY, t: again ? 0 : now };
+        if (again && (hit ?? selectedRef.current)) lookCloserRef.current(hit ?? selectedRef.current!);
+        else {
+          setSelected(hit);
+          setFolded(false);
+        }
       }
     };
     const wheel = (event: WheelEvent) => {
@@ -421,6 +478,7 @@ export function NightSky({
     if (next[event.key]) {
       event.preventDefault();
       fly.current = null;
+      if (event.key.startsWith("Arrow")) track.current = false;
       viewRef.current = clampView(next[event.key]);
     }
   };
@@ -503,7 +561,6 @@ export function NightSky({
 
   // What is up now, for the list (and the whole page without WebGL).
   const states = useMemo(() => bodies(now, site.site), [now, site.site]);
-  const upNow = states.filter((state) => state.alt > 0 && state.name !== "Sun");
   const sun = states[0];
   const sky = skyState(sun.alt);
 
@@ -569,20 +626,77 @@ export function NightSky({
     [things],
   );
 
+  const flyTo = (to: View) => {
+    orientation.current = null;
+    if (pointing === "on") setPointing("off");
+    if (reduceMotion.current) {
+      fly.current = null;
+      viewRef.current = to;
+      return;
+    }
+    const zoomSteps = Math.abs(Math.log2(to.fov / viewRef.current.fov));
+    // The frame loop stamps the start on the flight's first frame.
+    fly.current = { from: viewRef.current, to, start: -1, duration: Math.min(2400, 900 + 200 * zoomSteps) };
+  };
+
   const goTo = (key: string) => {
-    const at = simDate();
-    const where = locate(key, at);
+    const where = locate(key, simDate());
     setQuery("");
     if (!where) return setSearchNote(copy.search.none);
     setSelected(key);
+    setFolded(false);
     setSearchNote(where.alt < 0 ? copy.search.below : null);
     const fov = key.startsWith("constellation:") ? 60 : key.startsWith("body:") ? 25 : 30;
-    const to = clampView({ alt: Math.max(where.alt, 5), az: where.az, fov });
-    orientation.current = null;
-    if (pointing === "on") setPointing("off");
-    if (reduceMotion.current) viewRef.current = to;
-    else fly.current = { from: viewRef.current, to, start: performance.now() };
+    track.current = where.alt > 0 && !key.startsWith("constellation:");
+    flyTo(clampView({ alt: Math.max(where.alt, 5), az: where.az, fov }));
   };
+
+  // Close enough to see it: a planet's disc, a plate, a double split. The view then follows it.
+  const lookCloser = (key: string) => {
+    const renderer = rendererRef.current;
+    const where = locate(key, simDate());
+    if (!renderer || !where) return;
+    setSelected(key);
+    if (where.alt < 0 && !togglesRef.current.ground) return setSearchNote(copy.search.below);
+    setSearchNote(null);
+    setFolded(true);
+    track.current = !key.startsWith("constellation:");
+    flyTo(clampView({ alt: where.alt, az: where.az, fov: renderer.fitFov(key) }));
+  };
+  useEffect(() => {
+    lookCloserRef.current = lookCloser;
+  });
+
+  // A pick from the list flies there and folds the list away, so the panel shows.
+  const pickFromList = (key: string) => {
+    if (phase === "ready" && listRef.current) listRef.current.open = false;
+    goTo(key);
+  };
+
+  const wholeSky = () => {
+    track.current = false;
+    flyTo(clampView({ alt: Math.min(Math.max(viewRef.current.alt, 20), 60), az: viewRef.current.az, fov: 70 }));
+  };
+
+  const direction = (az: number) => copy.points[Math.round(az / 45) % 8];
+
+  // What a key is, for the astronomy: a body, or a fixed J2000 place (a constellation has none).
+  const targetOf = useCallback(
+    (key: string): Target | null => {
+      const [kind, id] = [key.slice(0, key.indexOf(":")), key.slice(key.indexOf(":") + 1)];
+      if (kind === "body") return { body: id as SkyBodyName };
+      if (kind === "fixed") {
+        const thing = things.find((t) => t.kind === "fixed" && t.id === id);
+        return thing && thing.kind === "fixed" ? { raHours: thing.raHours, decDeg: thing.decDeg } : null;
+      }
+      if (kind === "star" && starData) {
+        const [x, y, z] = starData.subarray(Number(id) * 5, Number(id) * 5 + 3);
+        return { raHours: ((Math.atan2(y, x) / DEG / 15) + 24) % 24, decDeg: Math.asin(z) / DEG };
+      }
+      return null;
+    },
+    [things, starData],
+  );
 
   // The panel's facts for the selected thing.
   const picked = useMemo<Picked | null>(() => {
@@ -677,6 +791,68 @@ export function NightSky({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, pickedType, tenMinutes, site.site]);
 
+  // Where a key's object stands at the page's instant, for a search result's up or down.
+  const positionNow = (key: string) => {
+    const target = targetOf(key);
+    if (target) return whereAt(target, now, site.site);
+    const thing = things.find((t) => `${t.kind}:${t.id}` === key);
+    if (!thing || thing.kind !== "constellation") return null;
+    const [x, y, z] = thing.label;
+    return fixedAltAz(((Math.atan2(y, x) / DEG / 15) + 24) % 24, Math.asin(z) / DEG, now, site.site);
+  };
+
+  // The selected object's path across today's sky: twelve hours either side of now, in
+  // ten-minute steps that land on the whole hours, with its rise, highest and set marked.
+  const pathTarget = useMemo(() => (selected ? targetOf(selected) : null), [selected, targetOf]);
+  const pathOverlay = useMemo<PathOverlay | null>(() => {
+    if (!pathTarget) return null;
+    const centre = tenMinutes * 600_000;
+    const points = skyPath(pathTarget, new Date(centre - 12 * 3_600_000), 24, 10, site.site);
+    const marks: PathOverlay["marks"] = [];
+    if (pickedEvents) {
+      const named = [
+        [copy.panel.rise, pickedEvents.rise],
+        [copy.panel.transit, pickedEvents.transit],
+        [copy.panel.set, pickedEvents.set],
+      ] as const;
+      for (const [name, at] of named) {
+        if (!at) continue;
+        const where = whereAt(pathTarget, at, site.site);
+        const height = name === copy.panel.transit ? ` · ${where.alt.toFixed(0)}°` : "";
+        marks.push({ alt: where.alt, az: where.az, label: `${name} ${clock(at, "Asia/Tbilisi")}${height}` });
+      }
+    }
+    return { points, marks, hourLabel: (at: number) => clock(new Date(at), "Asia/Tbilisi") };
+  }, [pathTarget, pickedEvents, tenMinutes, site.site, copy]);
+  useEffect(() => {
+    rendererRef.current?.setPath(pathOverlay);
+  }, [pathOverlay, phase]);
+
+  // The list: the Moon, the planets and the showpieces, up first by height, then the rest
+  // with their next rise (searched once per hour of sky time, and only while it is open).
+  const roster = useMemo(() => {
+    if (!listOpen && phase !== "no-webgl") return [];
+    const list: { key: string; label: string; target: Target }[] = SKY_BODIES.filter((name) => name !== "Sun").map((name) => ({
+      key: `body:${name}`,
+      label: copy.bodies[name],
+      target: { body: name },
+    }));
+    for (const thing of things) {
+      if (thing.kind === "fixed" && thing.type !== "star") {
+        list.push({ key: `fixed:${thing.id}`, label: thing.name, target: { raHours: thing.raHours, decDeg: thing.decDeg } });
+      }
+    }
+    return list;
+  }, [listOpen, phase, copy, things]);
+  const hourOfSky = Math.floor(now.getTime() / 3_600_000);
+  const rises = useMemo(
+    () => new Map(roster.map((item) => [item.key, nextRise(item.target, new Date(hourOfSky * 3_600_000), site.site)])),
+    [roster, hourOfSky, site.site],
+  );
+  const placed = roster.map((item) => ({ ...item, where: whereAt(item.target, now, site.site) }));
+  const above = placed.filter((item) => item.where.alt > 0).sort((a, b) => b.where.alt - a.where.alt);
+  const belowList = placed.filter((item) => item.where.alt <= 0);
+
   // The visitor's zone, read only in the browser: the server renders in its own (UTC on
   // Vercel), so the first render says Tbilisi on both sides and hydrates clean.
   const zone = useSyncExternalStore(noSubscription, browserZone, observatoryZone);
@@ -702,6 +878,7 @@ export function NightSky({
         onKeyDown={onKey}
       >
         <canvas ref={canvasRef} className="sky-canvas" aria-hidden="true" />
+        <canvas ref={overlayRef} className="sky-overlay" aria-hidden="true" />
         <div ref={labelsRef} className="sky-labels" aria-hidden="true" />
         {phase === "loading" && (
           <p className="sky-loading" role="status">
@@ -742,13 +919,21 @@ export function NightSky({
             />
             {results.length > 0 && (
               <ul id="sky-search-results" className="sky-results" role="listbox" aria-label={copy.search.label}>
-                {results.map((item) => (
-                  <li key={item.key} role="option" aria-selected={false}>
-                    <button type="button" onClick={() => goTo(item.key)}>
-                      {item.label}
-                    </button>
-                  </li>
-                ))}
+                {results.map((item) => {
+                  const where = positionNow(item.key);
+                  return (
+                    <li key={item.key} role="option" aria-selected={false}>
+                      <button type="button" onClick={() => goTo(item.key)}>
+                        <span>{item.label}</span>
+                        {where && (
+                          <span className={`sky-status ${where.alt > 0 ? "is-up" : "is-down"}`}>
+                            {where.alt > 0 ? copy.status.upShort(Math.round(where.alt)) : copy.status.downShort}
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             )}
             {searchNote && (
@@ -812,7 +997,9 @@ export function NightSky({
               </span>
             )}
             <span className="sky-state">{copy.state[sky]}</span>
-            <span className="sky-computed">{copy.computed}</span>
+            {/* Close up, what is drawn is a disc or a plate: an illustration (CLAUDE.md). */}
+            <span className="sky-computed sky-computed-wide">{copy.computed}</span>
+            <span className="sky-computed sky-computed-close">{copy.panel.illustration}</span>
           </div>
           <div className="sky-steps">
             <button type="button" className="sky-chip" aria-label={copy.time.dayBackLabel} onClick={() => shift(-86_400_000)}>
@@ -862,33 +1049,84 @@ export function NightSky({
             ))}
           </div>
         </div>
-        <details className="sky-list" open={phase === "no-webgl" || undefined}>
+        <details
+          ref={listRef}
+          className="sky-list"
+          open={phase === "no-webgl" || undefined}
+          onToggle={(event) => setListOpen(event.currentTarget.open)}
+        >
           <summary>{phase === "no-webgl" ? copy.noWebgl : copy.listTitle}</summary>
           <h2 className="sky-list-title">{copy.upNow}</h2>
-          {upNow.length === 0 ? (
+          {above.length === 0 ? (
             <p>{copy.upNowEmpty}</p>
           ) : (
-            <ul>
-              {upNow.map((state) => (
-                <li key={state.name}>
-                  <b>{copy.bodies[state.name]}</b> {state.alt.toFixed(0)}° · {state.az.toFixed(0)}° · {copy.panel.magnitude}{" "}
-                  {state.magnitude.toFixed(1)}
+            <ul className="sky-roster">
+              {above.map((item) => (
+                <li key={item.key}>
+                  <button type="button" onClick={() => pickFromList(item.key)}>
+                    <span className="sky-status is-up">{item.label}</span>
+                    <span>{copy.status.high(Math.round(item.where.alt), direction(item.where.az))}</span>
+                  </button>
                 </li>
               ))}
             </ul>
+          )}
+          {belowList.length > 0 && (
+            <>
+              <h2 className="sky-list-title">{copy.belowNow}</h2>
+              <ul className="sky-roster">
+                {belowList.map((item) => {
+                  const rise = rises.get(item.key);
+                  return (
+                    <li key={item.key}>
+                      <button type="button" onClick={() => pickFromList(item.key)}>
+                        <span className="sky-status is-down">{item.label}</span>
+                        <span>{rise ? copy.status.rises(clock(rise, "Asia/Tbilisi")) : copy.status.never}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
           )}
           <p className="sky-credits">{copy.credits}</p>
         </details>
       </div>
 
       {picked && (
-        <aside className="sky-panel" aria-labelledby="sky-panel-title" data-picked={picked.key}>
+        <aside className="sky-panel" aria-labelledby="sky-panel-title" data-picked={picked.key} data-folded={folded}>
           <header>
             <h2 id="sky-panel-title">{picked.name}</h2>
             <button type="button" className="sky-chip" onClick={() => setSelected(null)}>
               {copy.panel.close}
             </button>
           </header>
+          <p className={`sky-status sky-status-line ${picked.alt > 0 ? "is-up" : "is-down"}`}>
+            {picked.alt > 0
+              ? `${copy.status.up} · ${copy.status.high(Math.round(picked.alt), direction(picked.az))}${
+                  pickedEvents && !pickedEvents.set && picked.type !== "constellation" ? ` · ${copy.status.always}` : ""
+                }`
+              : `${copy.status.down}${
+                  picked.type === "constellation"
+                    ? ""
+                    : ` · ${pickedEvents?.rise ? copy.status.rises(timeLabel(pickedEvents.rise)) : copy.status.never}`
+                }`}
+          </p>
+          {phase === "ready" && (
+            <div className="sky-look">
+              {picked.type !== "constellation" && (picked.alt > 0 || toggles.ground) && (
+                <button type="button" className="sky-chip sky-closer" onClick={() => lookCloser(picked.key)}>
+                  {copy.panel.closer}
+                </button>
+              )}
+              <button type="button" className="sky-chip" onClick={wholeSky}>
+                {copy.panel.wide}
+              </button>
+              <button type="button" className="sky-chip sky-unfold" aria-expanded={!folded} onClick={() => setFolded(!folded)}>
+                {copy.panel.details}
+              </button>
+            </div>
+          )}
           <dl>
             <div>
               <dt>{copy.panel.type}</dt>
@@ -949,7 +1187,7 @@ export function NightSky({
               </Link>
             </div>
           )}
-          {(picked.type === "planet" || picked.type === "moon") && <p className="sky-caption">{copy.panel.illustration}</p>}
+          {picked.type !== "star" && picked.type !== "constellation" && <p className="sky-caption">{copy.panel.illustration}</p>}
         </aside>
       )}
 

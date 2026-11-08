@@ -325,7 +325,7 @@ export const DEEP_SKY_BY_ID = new Map(DEEP_SKY.map((d) => [d.id, d]));
  * stack on this instrument settles to, painted by code, north up. Each is the span of
  * the plate in arcminutes; it takes over from a reference photograph in the frame.
  */
-const PLATE_SPAN_ARCMIN: Record<string, number> = {
+export const PLATE_SPAN_ARCMIN: Record<string, number> = {
   m1: 9, m13: 24, m15: 16, m27: 12, m31: 64, m42: 60, m51: 16.8, m81: 32, m82: 14, m104: 12, ngc869: 36,
 };
 
