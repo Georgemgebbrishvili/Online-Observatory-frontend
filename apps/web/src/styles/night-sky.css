@@ -429,6 +429,8 @@
   margin: 0;
   font-family: var(--font-mono);
   text-align: end;
+  /* A value never breaks ("18h 37.0m" read as two lines in Georgian); its label wraps. */
+  white-space: nowrap;
 }
 
 .sky-observe {
