@@ -222,9 +222,14 @@ const STAR_SLOT = Body.Star1;
  * (J2000 RA/Dec) is defined as a user star first, so astronomy-engine searches it the same
  * way it searches a planet.
  */
+/**
+ * One pass over the horizon, in order. Up now: the rise it is still in, its highest, and
+ * the set ahead. Down now: its next rise, then the highest and set after it. A body that
+ * never rises or never sets has no rise and set, only its next highest.
+ */
 export function events(
   target: { body: SkyBodyName } | { raHours: number; decDeg: number },
-  from: Date,
+  now: Date,
   site: Site,
 ): Events {
   const observer = observerOf(site);
@@ -236,10 +241,15 @@ export function events(
     body = STAR_SLOT;
   }
   const at = (time: { date: Date } | null) => (time ? time.date : null);
+  const nextRise = at(SearchRiseSet(body, observer, +1, now, 1));
+  const nextSet = at(SearchRiseSet(body, observer, -1, now, 1));
+  const upNow = nextSet !== null && (nextRise === null || nextSet < nextRise);
+  const rise = upNow ? at(SearchRiseSet(body, observer, +1, now, -1)) : nextRise;
+  const passStart = rise ?? now;
   return {
-    rise: at(SearchRiseSet(body, observer, +1, from, 1)),
-    transit: at(SearchHourAngle(body, observer, 0, from).time),
-    set: at(SearchRiseSet(body, observer, -1, from, 1)),
+    rise,
+    transit: at(SearchHourAngle(body, observer, 0, passStart).time),
+    set: upNow ? nextSet : nextRise && at(SearchRiseSet(body, observer, -1, nextRise, 1)),
   };
 }
 

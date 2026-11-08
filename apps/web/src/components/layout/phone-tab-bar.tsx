@@ -13,10 +13,10 @@ type PhoneTabBarProps = {
   signedIn: boolean;
 };
 
-type Tab = "observatory" | "book" | "profile";
+type Tab = "observatory" | "book" | "sky" | "profile";
 
 const pressedKey = "stellar:phone-tab";
-const tabNames: readonly string[] = ["observatory", "book", "profile"];
+const tabNames: readonly string[] = ["observatory", "book", "sky", "profile"];
 const isTab = (value: string | null): value is Tab =>
   value !== null && tabNames.includes(value);
 const noSubscription = () => () => {};
@@ -48,6 +48,16 @@ function TabIcon({ name }: { name: Tab }) {
       </svg>
     );
   }
+  if (name === "sky") {
+    // A crescent and two stars: the Night Sky (ADR-085).
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M14.5 4.5a7.5 7.5 0 1 0 5 13.2A6.2 6.2 0 0 1 14.5 4.5Z" />
+        <path d="M18.5 3.5v3M17 5h3" />
+        <path d="M20.5 9.5v2M19.5 10.5h2" />
+      </svg>
+    );
+  }
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="8.5" r="3.6" />
@@ -57,8 +67,9 @@ function TabIcon({ name }: { name: Tab }) {
 }
 
 /**
- * On a phone, the three places a customer goes back to, under the thumb: the observatory,
- * booking a night, and their own profile (or signing in). Glass, like the header.
+ * On a phone, the four places a customer goes back to, under the thumb: the observatory,
+ * booking a night, the Night Sky, and their own profile (or signing in). Glass, like
+ * the header.
  */
 export function PhoneTabBar({ locale, navigation, signedIn }: PhoneTabBarProps) {
   const pathname = usePathname();
@@ -103,6 +114,13 @@ export function PhoneTabBar({ locale, navigation, signedIn }: PhoneTabBarProps) 
       label: navigation.public.book,
       href: `${base}/app/book`,
       current: within(`${base}/app/book`) || (onAuthPage && cameFor === "book"),
+    },
+    {
+      // ADR-085: the free way in, one tap away on a phone as it is in the header.
+      key: "sky",
+      label: navigation.public.sky,
+      href: `${base}/sky`,
+      current: within(`${base}/sky`),
     },
     {
       key: "profile",

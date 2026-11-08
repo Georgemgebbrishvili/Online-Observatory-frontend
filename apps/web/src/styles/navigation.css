@@ -566,7 +566,9 @@ html:has(.public-mobile-menu[data-open]) {
     font-family: var(--font-label);
     font-size: var(--font-size-tab);
     font-weight: var(--font-weight-medium);
-    letter-spacing: 0.04em;
+    /* Four tabs (ADR-085 added the Night Sky): OBSERVATORY fits a 360 px phone's tab at
+       this tracking with no side padding, measured 72 px in 79. */
+    letter-spacing: 0.02em;
     line-height: 1;
     text-decoration: none;
     text-transform: uppercase;
@@ -596,7 +598,6 @@ html:has(.public-mobile-menu[data-open]) {
   .phone-tab-label {
     max-width: 100%;
     overflow: hidden;
-    padding-inline: var(--space-1);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -609,8 +610,12 @@ html:has(.public-mobile-menu[data-open]) {
     grid-auto-columns: minmax(max-content, 1fr);
   }
 
-  .phone-tab-label:lang(ka) {
-    padding-inline: 0;
+  /* Four Georgian words on a 360 px phone touched each other at 13px; one pixel less
+     gives each tab a little air (ADR-085 made it four). */
+  @media (--below-sm) {
+    .phone-tab:lang(ka) {
+      font-size: var(--font-size-tab-tight);
+    }
   }
 
   .phone-tab[aria-current="page"] {

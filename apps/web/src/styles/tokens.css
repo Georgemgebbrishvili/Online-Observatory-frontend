@@ -539,6 +539,8 @@
   /* The Skychaser bar's links (15px) and the phone tab bar's labels (12px). */
   --font-size-nav: 0.9375rem;
   --font-size-tab: 0.8125rem;
+  /* Four Georgian tab labels on a narrow phone (ADR-085). */
+  --font-size-tab-tight: 0.75rem;
   /* The wordmark: 20.35px fills the kit's 28px box as Skychaser's outlined word does. */
   --font-size-wordmark: 1.272rem;
   --font-size-wordmark-small: 1rem;

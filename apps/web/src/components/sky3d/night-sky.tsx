@@ -666,7 +666,7 @@ export function NightSky({
   const pickedDec = picked?.decDeg;
   const pickedEvents = useMemo(() => {
     if (!selected || pickedType === undefined || pickedType === "constellation") return null;
-    const from = new Date(tenMinutes * 600_000 - 12 * 3_600_000);
+    const from = new Date(tenMinutes * 600_000);
     if (selected.startsWith("body:")) return events({ body: selected.slice(5) as SkyBodyName }, from, site.site);
     return events({ raHours: pickedRa!, decDeg: pickedDec! }, from, site.site);
     // RA/Dec of a fixed object never change; a body's are searched by astronomy-engine.
@@ -704,151 +704,175 @@ export function NightSky({
         )}
       </div>
 
-      <div className="sky-top">
-        <div className="sky-search" role="search">
-          <label className="visually-hidden" htmlFor="sky-search-input">
-            {copy.search.label}
-          </label>
-          <input
-            id="sky-search-input"
-            className="sky-input"
-            type="search"
-            value={query}
-            placeholder={copy.search.placeholder}
-            autoComplete="off"
-            role="combobox"
-            aria-expanded={results.length > 0}
-            aria-controls="sky-search-results"
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setSearchNote(null);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                if (results[0]) goTo(results[0].key);
-                else if (query.trim()) setSearchNote(copy.search.none);
-              }
-            }}
-          />
-          {results.length > 0 && (
-            <ul id="sky-search-results" className="sky-results" role="listbox" aria-label={copy.search.label}>
-              {results.map((item) => (
-                <li key={item.key} role="option" aria-selected={false}>
-                  <button type="button" onClick={() => goTo(item.key)}>
-                    {item.label}
-                  </button>
+      {/* The top controls and the side ones stack in flow, so a row that wraps (Georgian,
+          a narrow phone) pushes the next down instead of running into it. */}
+      <div className="sky-head">
+        <div className="sky-top">
+          <div className="sky-search" role="search">
+            <label className="visually-hidden" htmlFor="sky-search-input">
+              {copy.search.label}
+            </label>
+            <input
+              id="sky-search-input"
+              className="sky-input"
+              type="search"
+              value={query}
+              placeholder={copy.search.placeholder}
+              autoComplete="off"
+              role="combobox"
+              aria-expanded={results.length > 0}
+              aria-controls="sky-search-results"
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setSearchNote(null);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  if (results[0]) goTo(results[0].key);
+                  else if (query.trim()) setSearchNote(copy.search.none);
+                }
+              }}
+            />
+            {results.length > 0 && (
+              <ul id="sky-search-results" className="sky-results" role="listbox" aria-label={copy.search.label}>
+                {results.map((item) => (
+                  <li key={item.key} role="option" aria-selected={false}>
+                    <button type="button" onClick={() => goTo(item.key)}>
+                      {item.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {searchNote && (
+              <p className="sky-note" role="status">
+                {searchNote}
+              </p>
+            )}
+          </div>
+          <div className="sky-place">
+            <span>{site.mine ? copy.yours : copy.site}</span>
+            {!site.mine && (
+              <button type="button" className="sky-chip" onClick={useMyLocation} disabled={locating === "asking"}>
+                {locating === "asking" ? copy.locating : copy.useLocation}
+              </button>
+            )}
+            {locating === "refused" && <span className="sky-note">{copy.locationRefused}</span>}
+            {site.mine && <span className="sky-note">{copy.locationNote}</span>}
+          </div>
+        </div>
+
+        <div className="sky-side">
+          <details className="sky-toggles">
+            <summary>{copy.toggles.label}</summary>
+            <fieldset>
+              <legend className="visually-hidden">{copy.toggles.label}</legend>
+              {(Object.keys(DEFAULT_TOGGLES) as (keyof Toggles)[]).map((key) => (
+                <label key={key} className="sky-toggle">
+                  <input type="checkbox" checked={toggles[key]} onChange={() => changeToggle(key)} />
+                  <span>{copy.toggles[key]}</span>
+                </label>
+              ))}
+            </fieldset>
+          </details>
+          <div className="sky-zoom">
+            <button type="button" className="sky-chip" aria-label={copy.view.zoomIn} onClick={() => zoom(1 / 1.4)}>
+              +
+            </button>
+            <button type="button" className="sky-chip" aria-label={copy.view.zoomOut} onClick={() => zoom(1.4)}>
+              −
+            </button>
+          </div>
+          {phase === "ready" && (
+            <button type="button" className="sky-chip sky-point" aria-pressed={pointing === "on"} onClick={() => void togglePointing()}>
+              {pointing === "on" ? copy.view.stopPointing : copy.view.point}
+            </button>
+          )}
+          {pointing === "refused" && <p className="sky-note">{copy.view.pointRefused}</p>}
+        </div>
+      </div>
+
+      {/* The time bar, and the list button above it however tall the bar grows. */}
+      <div className="sky-foot">
+        <div className="sky-time" role="group" aria-label={copy.time.label}>
+          <div className="sky-clock">
+            <span>
+              <b>{clock(now, "Asia/Tbilisi")}</b> {copy.time.tbilisi} · {dayMonth(now, locale, "Asia/Tbilisi")}
+            </span>
+            {zone !== "Asia/Tbilisi" && (
+              <span>
+                <b>{clock(now, zone)}</b> {copy.time.yourZone}
+              </span>
+            )}
+            <span className="sky-state">{copy.state[sky]}</span>
+            <span className="sky-computed">{copy.computed}</span>
+          </div>
+          <div className="sky-steps">
+            <button type="button" className="sky-chip" aria-label={copy.time.dayBackLabel} onClick={() => shift(-86_400_000)}>
+              {copy.time.dayBack}
+            </button>
+            <button type="button" className="sky-chip" aria-label={copy.time.hourBackLabel} onClick={() => shift(-3_600_000)}>
+              {copy.time.hourBack}
+            </button>
+            <button
+              type="button"
+              className="sky-chip"
+              aria-pressed={!playing}
+              onClick={() => {
+                const next = !playing;
+                setSimTime(simDate().getTime(), { playing: next });
+                setPlaying(next);
+              }}
+            >
+              {playing ? copy.time.pause : copy.time.play}
+            </button>
+            <button type="button" className="sky-chip sky-now" onClick={toNow}>
+              {copy.time.now}
+            </button>
+            <button type="button" className="sky-chip" aria-label={copy.time.hourOnLabel} onClick={() => shift(3_600_000)}>
+              {copy.time.hourOn}
+            </button>
+            <button type="button" className="sky-chip" aria-label={copy.time.dayOnLabel} onClick={() => shift(86_400_000)}>
+              {copy.time.dayOn}
+            </button>
+          </div>
+          <div className="sky-speed" role="radiogroup" aria-label={copy.time.speed}>
+            {SPEEDS.map((value) => (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={speed === value}
+                className="sky-chip"
+                onClick={() => {
+                  setSimTime(simDate().getTime(), { speed: value, playing: true });
+                  setSpeed(value);
+                  setPlaying(true);
+                }}
+              >
+                ×{value}
+              </button>
+            ))}
+          </div>
+        </div>
+        <details className="sky-list" open={phase === "no-webgl" || undefined}>
+          <summary>{phase === "no-webgl" ? copy.noWebgl : copy.listTitle}</summary>
+          <h2 className="sky-list-title">{copy.upNow}</h2>
+          {upNow.length === 0 ? (
+            <p>{copy.upNowEmpty}</p>
+          ) : (
+            <ul>
+              {upNow.map((state) => (
+                <li key={state.name}>
+                  <b>{copy.bodies[state.name]}</b> {state.alt.toFixed(0)}° · {state.az.toFixed(0)}° · {copy.panel.magnitude}{" "}
+                  {state.magnitude.toFixed(1)}
                 </li>
               ))}
             </ul>
           )}
-          {searchNote && (
-            <p className="sky-note" role="status">
-              {searchNote}
-            </p>
-          )}
-        </div>
-        <div className="sky-place">
-          <span>{site.mine ? copy.yours : copy.site}</span>
-          {!site.mine && (
-            <button type="button" className="sky-chip" onClick={useMyLocation} disabled={locating === "asking"}>
-              {locating === "asking" ? copy.locating : copy.useLocation}
-            </button>
-          )}
-          {locating === "refused" && <span className="sky-note">{copy.locationRefused}</span>}
-          {site.mine && <span className="sky-note">{copy.locationNote}</span>}
-        </div>
-      </div>
-
-      <div className="sky-side">
-        <details className="sky-toggles">
-          <summary>{copy.toggles.label}</summary>
-          <fieldset>
-            <legend className="visually-hidden">{copy.toggles.label}</legend>
-            {(Object.keys(DEFAULT_TOGGLES) as (keyof Toggles)[]).map((key) => (
-              <label key={key} className="sky-toggle">
-                <input type="checkbox" checked={toggles[key]} onChange={() => changeToggle(key)} />
-                <span>{copy.toggles[key]}</span>
-              </label>
-            ))}
-          </fieldset>
+          <p className="sky-credits">{copy.credits}</p>
         </details>
-        <div className="sky-zoom">
-          <button type="button" className="sky-chip" aria-label={copy.view.zoomIn} onClick={() => zoom(1 / 1.4)}>
-            +
-          </button>
-          <button type="button" className="sky-chip" aria-label={copy.view.zoomOut} onClick={() => zoom(1.4)}>
-            −
-          </button>
-        </div>
-        {phase === "ready" && (
-          <button type="button" className="sky-chip sky-point" aria-pressed={pointing === "on"} onClick={() => void togglePointing()}>
-            {pointing === "on" ? copy.view.stopPointing : copy.view.point}
-          </button>
-        )}
-        {pointing === "refused" && <p className="sky-note">{copy.view.pointRefused}</p>}
-      </div>
-
-      <div className="sky-time" role="group" aria-label={copy.time.label}>
-        <div className="sky-clock">
-          <span>
-            <b>{clock(now, "Asia/Tbilisi")}</b> {copy.time.tbilisi} · {dayMonth(now, locale, "Asia/Tbilisi")}
-          </span>
-          {zone !== "Asia/Tbilisi" && (
-            <span>
-              <b>{clock(now, zone)}</b> {copy.time.yourZone}
-            </span>
-          )}
-          <span className="sky-state">{copy.state[sky]}</span>
-          <span className="sky-computed">{copy.computed}</span>
-        </div>
-        <div className="sky-steps">
-          <button type="button" className="sky-chip" aria-label={copy.time.dayBackLabel} onClick={() => shift(-86_400_000)}>
-            {copy.time.dayBack}
-          </button>
-          <button type="button" className="sky-chip" aria-label={copy.time.hourBackLabel} onClick={() => shift(-3_600_000)}>
-            {copy.time.hourBack}
-          </button>
-          <button
-            type="button"
-            className="sky-chip"
-            aria-pressed={!playing}
-            onClick={() => {
-              const next = !playing;
-              setSimTime(simDate().getTime(), { playing: next });
-              setPlaying(next);
-            }}
-          >
-            {playing ? copy.time.pause : copy.time.play}
-          </button>
-          <button type="button" className="sky-chip sky-now" onClick={toNow}>
-            {copy.time.now}
-          </button>
-          <button type="button" className="sky-chip" aria-label={copy.time.hourOnLabel} onClick={() => shift(3_600_000)}>
-            {copy.time.hourOn}
-          </button>
-          <button type="button" className="sky-chip" aria-label={copy.time.dayOnLabel} onClick={() => shift(86_400_000)}>
-            {copy.time.dayOn}
-          </button>
-        </div>
-        <div className="sky-speed" role="radiogroup" aria-label={copy.time.speed}>
-          {SPEEDS.map((value) => (
-            <button
-              key={value}
-              type="button"
-              role="radio"
-              aria-checked={speed === value}
-              className="sky-chip"
-              onClick={() => {
-                setSimTime(simDate().getTime(), { speed: value, playing: true });
-                setSpeed(value);
-                setPlaying(true);
-              }}
-            >
-              ×{value}
-            </button>
-          ))}
-        </div>
       </div>
 
       {picked && (
@@ -923,23 +947,6 @@ export function NightSky({
         </aside>
       )}
 
-      <details className="sky-list" open={phase === "no-webgl" || undefined}>
-        <summary>{phase === "no-webgl" ? copy.noWebgl : copy.listTitle}</summary>
-        <h2 className="sky-list-title">{copy.upNow}</h2>
-        {upNow.length === 0 ? (
-          <p>{copy.upNowEmpty}</p>
-        ) : (
-          <ul>
-            {upNow.map((state) => (
-              <li key={state.name}>
-                <b>{copy.bodies[state.name]}</b> {state.alt.toFixed(0)}° · {state.az.toFixed(0)}° · {copy.panel.magnitude}{" "}
-                {state.magnitude.toFixed(1)}
-              </li>
-            ))}
-          </ul>
-        )}
-        <p className="sky-credits">{copy.credits}</p>
-      </details>
     </div>
   );
 }

@@ -174,9 +174,33 @@ describe("tonight's events", () => {
     expect(set).not.toBeNull();
   });
 
-  it("finds a fixed star's transit", () => {
-    const { transit } = events({ raHours: 18.6156, decDeg: 38.7837 }, at, SITE);
-    expect(transit!.getTime()).toBeGreaterThan(at.getTime());
-    expect(transit!.getTime() - at.getTime()).toBeLessThan(86_400_000);
+  it("gives one pass in order: a body below the horizon now shows its next rise, then its highest, then its set", () => {
+    // 16:00 in Tbilisi on 8 November 2026: Saturn is down and rises at 16:19. The panel
+    // used to show that morning's 04:35 set under the evening's rise; the set it means is
+    // the one on the 9th.
+    const now = new Date("2026-11-08T12:00:00Z");
+    const { rise, transit, set } = events({ body: "Saturn" }, now, SITE);
+    expect(rise!.getTime()).toBeGreaterThan(now.getTime());
+    expect(transit!.getTime()).toBeGreaterThan(rise!.getTime());
+    expect(set!.getTime()).toBeGreaterThan(transit!.getTime());
+  });
+
+  it("gives the pass under way for a body up now: its latest rise, then its highest, then its set", () => {
+    // Vega at 16:00 Tbilisi on 8 November is high in the south-west; it rose that morning.
+    const now = new Date("2026-11-08T12:00:00Z");
+    const { rise, transit, set } = events({ raHours: 18.6156, decDeg: 38.7837 }, now, SITE);
+    expect(rise!.getTime()).toBeLessThan(now.getTime());
+    expect(set!.getTime()).toBeGreaterThan(now.getTime());
+    expect(transit!.getTime()).toBeGreaterThan(rise!.getTime());
+    expect(transit!.getTime()).toBeLessThan(set!.getTime());
+  });
+
+  it("finds a fixed star's transit within the pass it is in", () => {
+    // 20:00 in Tbilisi: Vega is up, past its highest (16:31), and sets after midnight.
+    // The transit shown is this pass's, between its rise and its set, within a day.
+    const { rise, transit, set } = events({ raHours: 18.6156, decDeg: 38.7837 }, at, SITE);
+    expect(transit!.getTime()).toBeGreaterThan(rise!.getTime());
+    expect(transit!.getTime()).toBeLessThan(set!.getTime());
+    expect(Math.abs(transit!.getTime() - at.getTime())).toBeLessThan(86_400_000);
   });
 });

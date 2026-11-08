@@ -3,14 +3,23 @@
  * over it on glass, the time bar at the foot, the panel at the side (a sheet on a phone).
  */
 .sky-page {
+  /* The header's bar and its 1px rule: 56px on a phone, 76px from --lg (globals.css).
+     Counting only 56 left the desk's time bar 9px below the window's edge. */
+  --sky-header: calc(var(--size-app-header) + 1px);
   position: relative;
   /* Above the phone tab bar, which the body pads for (navigation.css). */
   height: calc(
-    100dvh - var(--size-app-header) - var(--tab-bar-space, 0rem) - env(safe-area-inset-bottom, 0rem)
+    100dvh - var(--sky-header) - var(--tab-bar-space, 0rem) - env(safe-area-inset-bottom, 0rem)
   );
   min-height: 28rem;
   overflow: hidden;
   background: var(--color-surface-base);
+}
+
+@media (--lg) {
+  .sky-page {
+    --sky-header: calc(var(--size-bar) + 1px);
+  }
 }
 
 /* The frame is exactly the window: the page does not grow to fill it (main's flex: 1). */
@@ -135,11 +144,34 @@
   color: var(--color-text-tertiary);
 }
 
-.sky-top {
+/*
+ * The controls float over the sky in two stacks, top and foot. Each stacks in flow, so a
+ * row that wraps -- Georgian, a narrow phone -- pushes the next one along instead of
+ * running into it. Neither stack takes the pointer; the controls in them do.
+ */
+.sky-head,
+.sky-foot {
   position: absolute;
-  top: var(--space-3);
   left: var(--space-3);
   right: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.sky-head {
+  top: var(--space-3);
+  flex-direction: column;
+}
+
+/* The list button sits on the time bar, which comes first in reading order. */
+.sky-foot {
+  bottom: var(--space-3);
+  flex-direction: column-reverse;
+  align-items: flex-start;
+}
+
+.sky-top {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -259,9 +291,7 @@
 }
 
 .sky-side {
-  position: absolute;
-  top: calc(var(--space-3) + 3.5rem);
-  right: var(--space-3);
+  align-self: flex-end;
   display: grid;
   justify-items: end;
   gap: var(--space-2);
@@ -309,10 +339,7 @@
 }
 
 .sky-time {
-  position: absolute;
-  left: var(--space-3);
-  right: var(--space-3);
-  bottom: var(--space-3);
+  align-self: stretch;
   display: grid;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
@@ -417,10 +444,6 @@
 }
 
 .sky-list {
-  position: absolute;
-  z-index: 3;
-  left: var(--space-3);
-  bottom: calc(var(--space-3) + 8rem);
   max-width: min(24rem, calc(100% - var(--space-6)));
   color: var(--color-text-primary);
   font-size: var(--font-size-caption);
@@ -438,6 +461,8 @@
 }
 
 .sky-list[open] {
+  max-height: 50dvh;
+  overflow-y: auto;
   padding: 0 var(--space-3) var(--space-3);
   border-radius: var(--radius-medium);
   background: var(--color-surface-raised);
@@ -472,24 +497,20 @@
     max-height: 70%;
   }
 
-  /* The time steps share the width, so six fit a 360 px phone on one line. */
+  /* The time steps share the width, so six fit a 360 px phone on one line -- in
+     Georgian too, where "+1 დღე" needs 43px of the 48 each step gets. */
+  .sky-steps {
+    gap: var(--space-1);
+  }
+
   .sky-steps .sky-chip {
     flex: 1 1 0;
     min-width: 0;
-    padding: 0 var(--space-1);
+    padding: 0;
     white-space: nowrap;
   }
 
   .sky-search {
     max-width: none;
-  }
-
-  .sky-side {
-    top: calc(var(--space-3) + 7rem);
-  }
-
-
-  .sky-list {
-    bottom: calc(var(--space-3) + 10.5rem);
   }
 }

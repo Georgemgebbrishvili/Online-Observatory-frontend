@@ -82,3 +82,21 @@ Missing are a full star catalogue (the console has 61 stars) and a renderer.
 - `/app/book` learns `?target=<slug>`: the board opens with that object chosen when it is
   bookable.
 - The header has four links.
+
+## Amendment — 2026-11-08
+
+Decided by the maintainer (Nika), in session: "make it visible on the Stellar website and
+also on mobile".
+
+- **The phone tab bar gains Night Sky**, between Book and Profile: four tabs where there
+  were three. On a phone the header's links sit behind the menu, so without this the page
+  was two taps deep. The labels lose their side padding and half their tracking so
+  OBSERVATORY fits a 360 px tab whole; Georgian on a phone narrower than 480 px drops to
+  12 px (`--font-size-tab-tight`).
+- **The panel's rise, highest and set are one pass**, in order: for an object up now, the
+  rise it is in, its highest, the set ahead; for one down, its next rise and the highest and
+  set after it. Searched independently from twelve hours back, the panel could show the
+  morning's set under the evening's rise.
+- **The controls stack in flow**, top and foot, instead of sitting at fixed offsets that a
+  wrapped Georgian row or a taller time bar ran into; the page subtracts the desk header's
+  real 77 px, so the time bar no longer ends below the window.

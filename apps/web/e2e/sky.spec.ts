@@ -63,3 +63,25 @@ test("the header and /tonight lead to the Night Sky", async ({ page }) => {
     page.getByRole("banner").getByRole("navigation", { name: "Public navigation" }).getByRole("link", { name: "Night Sky" }),
   ).toHaveAttribute("href", "/en/sky");
 });
+
+test("on a phone the tab bar leads to the Night Sky, and lights it there", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto("/en/observatory");
+  const sky = page.locator("nav.phone-tab-bar").getByRole("link", { name: "Night Sky" });
+  await expect(sky).toBeVisible({ timeout: firstCompile });
+  await expect(sky).toHaveAttribute("href", "/en/sky");
+  await sky.click();
+  await expect(page).toHaveURL(/\/en\/sky$/);
+  await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
+  await expect(page.locator("nav.phone-tab-bar").getByRole("link", { name: "Night Sky" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  // Four tabs on a 360 px phone: every label shows whole -- none cut to an ellipsis --
+  // and none spills off the bar.
+  for (const label of await page.locator("nav.phone-tab-bar .phone-tab-label").all()) {
+    const box = await label.boundingBox();
+    expect(box && box.x >= 0 && box.x + box.width <= 360).toBe(true);
+    expect(await label.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  }
+});
