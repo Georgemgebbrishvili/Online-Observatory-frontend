@@ -80,8 +80,14 @@ function masks(page: Page) {
     page.locator(".cal-month"),
     page.locator(".cal-note"),
     page.locator(".cal-list"),
-    // The homepage sky's found count: how far its opening drift got before the capture.
-    page.locator(".sky-hint p:first-child"),
+    // ADR-086: the homepage hero draws tonight's best placed planet with its almanac, and
+    // its panels and side facts read the server's tonight: open times, counts, what is up.
+    page.locator(".home-hero-field"),
+    page.locator(".home-hero-tag"),
+    page.locator(".home-hero-rail dd"),
+    // Each figure on its own: a panel's time can run wider than the box around it.
+    page.locator(".hero-panel-foot > *"),
+    page.locator(".hero-panel-orbs"),
   ];
 }
 

@@ -1,18 +1,13 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { PricePicker } from "@/components/home/price-picker";
-import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { fill } from "@/features/operator/format";
-import type { PricingFacts } from "@/features/pricing/read";
 import type { Locale } from "@/i18n/config";
 import type { HomepageDictionary } from "@/types/homepage";
 
 type HomeMoreProps = {
   content: HomepageDictionary["more"];
   locale: Locale;
-  pricing: PricingFacts;
 };
 
 // One line drawing per door, set large and faint in its tile.
@@ -46,33 +41,12 @@ const glyphs: Record<string, ReactNode> = {
 };
 
 /**
- * ADR-076, ADR-078: the homepage under tonight and the steps — what a session costs,
- * the other ways in, questions, and a last call. Every price is the platform's; the
- * price section is left out when it cannot be read.
+ * ADR-076, ADR-078, ADR-086: the homepage under tonight and the steps — the other ways
+ * in, and questions. What a session costs is on the hero's panels and /pricing.
  */
-export function HomeMore({ content, locale, pricing }: HomeMoreProps) {
+export function HomeMore({ content, locale }: HomeMoreProps) {
   return (
     <>
-      {pricing.slot && (
-        <section className="home-band" aria-labelledby="home-price-title">
-          <Container>
-            <div className="home-split">
-              <header className="home-head">
-                <h2 id="home-price-title">{content.price.title}</h2>
-                <p>{fill(content.price.perMinute, { price: pricing.slot.perMinute })}</p>
-                <p className="home-guarantee">{content.price.cloud}</p>
-              </header>
-              <PricePicker
-                book={content.price.book}
-                label={content.price.title}
-                lengths={pricing.slot.lengths}
-                locale={locale}
-              />
-            </div>
-          </Container>
-        </section>
-      )}
-
       <section className="home-band" aria-labelledby="home-ways-title">
         <Container>
           <header className="home-head">
@@ -128,21 +102,6 @@ export function HomeMore({ content, locale, pricing }: HomeMoreProps) {
         </Container>
       </section>
 
-      <section className="home-band home-closer" aria-labelledby="home-closer-title">
-        <Container>
-          <div className="home-closer-panel">
-            <h2 id="home-closer-title">
-              {content.closer.title} <span>{content.closer.sunset}</span>
-            </h2>
-            <div className="home-closer-actions">
-              <ButtonLink href={`/${locale}/app/book`}>{content.closer.cta}</ButtonLink>
-              <ButtonLink href={`/${locale}/observatory`} variant="secondary">
-                {content.closer.secondary}
-              </ButtonLink>
-            </div>
-          </div>
-        </Container>
-      </section>
     </>
   );
 }

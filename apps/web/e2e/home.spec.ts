@@ -3,23 +3,24 @@ import { expect, test } from "@playwright/test";
 import { brand } from "../src/brand";
 import { openAccountMenu } from "./selectors";
 
-test("communicates real telescope access in the English sky hero", async ({ page }) => {
+test("communicates real telescope access in the English hero", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
 
-  const hero = page.locator(".sky-hero");
+  const hero = page.locator(".home-hero");
   await expect(
     page.getByRole("heading", { level: 1, name: "The real sky, live." }),
   ).toBeVisible();
   // ADR-052 §7: the last words in red, as the Skychaser headline sets its own.
-  await expect(hero.locator(".sky-hero-title em")).toHaveText("live.");
+  await expect(hero.locator(".home-hero-title em")).toHaveText("live.");
   await expect(hero.getByText(/Book a real telescope in Georgia/)).toBeVisible();
   await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
-  await expect(hero.getByRole("link", { name: "Book a session" })).toHaveAttribute(
+  const actions = hero.locator(".home-hero-actions");
+  await expect(actions.getByRole("link", { name: "Book a session" })).toHaveAttribute(
     "href",
     "/en/app/book",
   );
-  await expect(hero.getByRole("link", { name: "Watch live" })).toHaveAttribute(
+  await expect(actions.getByRole("link", { name: "Watch live" })).toHaveAttribute(
     "href",
     "/en/tonight",
   );
@@ -27,13 +28,24 @@ test("communicates real telescope access in the English sky hero", async ({ page
   await expect(hero.locator(".observatory-dome")).toHaveCount(0);
   await expect(hero.getByText("Online", { exact: true })).toHaveCount(0);
 
-  // The sky hides drawings, and says so (CLAUDE.md, ADR-052 §7).
-  await expect(hero.getByRole("img", { name: /not telescope output/ })).toBeVisible();
+  // ADR-086: tonight's planet is a drawing, and says so (CLAUDE.md, ADR-052 §7).
+  await expect(hero.locator(".home-hero-field img")).toBeVisible();
   await expect(hero.getByText("Illustration — not telescope output")).toBeVisible();
-  await expect(hero.getByText("Explore the sky")).toBeVisible();
+  await expect(hero.locator(".home-hero-tag")).toHaveAttribute("href", "/en/sky");
+  // The observatory record's aperture down the side, never the maker's name.
+  await expect(hero.locator(".home-hero-rail")).toContainText("203 mm");
+
+  // Four panels: the booking board, the live view, the prices and the night sky.
+  const panels = hero.locator(".hero-panel");
+  await expect(panels).toHaveCount(4);
+  await expect(panels.nth(0)).toHaveAttribute("href", /^\/en\/app\/book/);
+  await expect(panels.nth(1)).toHaveAttribute("href", "/en/tonight");
+  await expect(panels.nth(2)).toHaveAttribute("href", "/en/pricing");
+  await expect(panels.nth(3)).toHaveAttribute("href", "/en/sky");
+  await expect(panels.nth(2)).toContainText("GEL 1.50");
 });
 
-test("renders the Georgian sky hero and switches locale", async ({ page }) => {
+test("renders the Georgian hero and switches locale", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/ka");
 
@@ -41,60 +53,41 @@ test("renders the Georgian sky hero and switches locale", async ({ page }) => {
     page.getByRole("heading", { level: 1, name: "შენი დრო ნამდვილ ცასთან." }),
   ).toBeVisible();
   await expect(
-    page.locator(".sky-hero").getByRole("link", { name: "დაჯავშნე სეანსი" }),
+    page.locator(".home-hero-actions").getByRole("link", { name: "დაჯავშნე სეანსი" }),
   ).toHaveAttribute("href", "/ka/app/book");
   await expect(
-    page.locator(".sky-hero").getByText("ილუსტრაცია — არა ტელესკოპის გამოსახულება"),
+    page.locator(".home-hero").getByText("ილუსტრაცია — არა ტელესკოპის გამოსახულება"),
   ).toBeVisible();
   // Mkhedruli has no capitals: the headline is never uppercased.
-  await expect(page.locator(".sky-hero-title em")).toHaveCSS("text-transform", "none");
+  await expect(page.locator(".home-hero-title")).toHaveCSS("text-transform", "none");
+  await expect(page.locator(".home-hero-title em")).toHaveCSS("text-transform", "none");
   await page.getByRole("link", { name: "ენა: English" }).click();
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("the public homepage: the sky, tonight, the steps, prices, and the rest", async ({
-  page,
-}) => {
+test("the public homepage: the hero, tonight, the steps, and the rest", async ({ page }) => {
   await page.goto("/en");
 
   await expect(
     page.getByRole("heading", { level: 2, name: "How it works" }),
   ).toBeVisible();
-  // The sky, tonight, the steps, prices, more, questions and a last call.
-  await expect(page.locator("main section")).toHaveCount(7);
-  // What a length costs, at the platform's rate by the minute (150 tetri on the fake):
-  // 30 minutes first, then whichever length is picked.
-  // The scroll reveal marks the page once its scripts run: from then on it answers clicks.
-  await expect(page.locator(".public-home[data-reveal]")).toHaveCount(1);
-  const picker = page.locator(".home-picker");
-  await expect(picker.locator(".home-price b")).toHaveText("GEL 45.00");
-  for (const [length, price, minutes] of [
-    ["15 min", "GEL 22.50", 15],
-    ["1 h", "GEL 90.00", 60],
-    ["2 h", "GEL 180.00", 120],
-  ] as const) {
-    await picker.getByRole("radio", { name: length }).click();
-    await expect(picker.locator(".home-price b")).toHaveText(price);
-    await expect(picker.getByRole("link", { name: `Book ${length}` })).toHaveAttribute(
-      "href",
-      `/en/app/book?length=${minutes}`,
-    );
-  }
+  // ADR-086: the hero, tonight, the steps, more, and questions. Prices sit on the hero.
+  await expect(page.locator("main section")).toHaveCount(5);
+  await expect(page.locator(".home-picker")).toHaveCount(0);
   await expect(page.locator(".home-faq details")).toHaveCount(4);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
-  // How a session works: four tabs, each step opening the page where it happens.
-  const tabs = page.locator("#about").getByRole("tab");
-  await expect(tabs).toHaveCount(4);
-  for (const [name, href] of [
+  // How a session works: four tiles, each opening the page where it happens.
+  const steps = page.locator("#about .home-step");
+  await expect(steps).toHaveCount(4);
+  for (const [index, [name, href]] of [
     ["Book", "/en/app/book"],
     ["Aim", "/en/observatory"],
     ["Watch", "/en/tonight"],
     ["Keep", "/en/app/collection"],
-  ]) {
-    await tabs.filter({ hasText: name }).click();
-    await expect(tabs.filter({ hasText: name })).toHaveAttribute("aria-selected", "true");
-    await expect(page.locator("#about .flight-plan-step")).toHaveAttribute("href", href);
+  ].entries()) {
+    await expect(steps.nth(index)).toContainText(name);
+    await expect(steps.nth(index)).toHaveAttribute("href", href);
   }
 
   // Tonight: the Moon and planets on one chart with the open times; picking a row
@@ -123,9 +116,10 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
         scrollWidth: document.documentElement.scrollWidth,
       }));
       expect(viewport.scrollWidth, `${locale} at ${width}px`).toBe(viewport.clientWidth);
-      await expect(page.locator(".sky-hero .button-primary")).toBeVisible();
-      // A phone has no sky, as on the Skychaser site: the words and the button only.
-      await expect(page.locator(".sky-hero .sky")).toBeHidden();
+      await expect(page.locator(".home-hero .button-primary")).toBeVisible();
+      // A phone keeps the planet and the panels; the side facts wait for a wide screen.
+      await expect(page.locator(".home-hero-field")).toBeVisible();
+      await expect(page.locator(".home-hero-rail")).toBeHidden();
     }
   }
 });

@@ -1,9 +1,9 @@
-import { FlightPlan } from "@/components/home/flight-plan";
+import { HomeHero } from "@/components/home/home-hero";
 import { HomeMore } from "@/components/home/home-more";
 import { HomeQuick } from "@/components/home/home-quick";
+import { HomeSteps } from "@/components/home/home-steps";
 import { NightChart } from "@/components/home/night-chart";
 import { ScrollReveal } from "@/components/home/scroll-reveal";
-import { SkyHero } from "@/components/home/sky-hero";
 import { Container } from "@/components/ui/container";
 import type { PricingFacts } from "@/features/pricing/read";
 import type { TonightSky } from "@/features/sky/tonight-sky";
@@ -12,17 +12,17 @@ import type { Dictionary } from "@/i18n/types";
 
 type HomeShellProps = {
   content: Dictionary["home"];
+  navigation: { live: string; sky: string };
   locale: Locale;
   pricing: PricingFacts;
   sky: TonightSky | null;
 };
 
 /**
- * The public homepage (ADR-076 to ADR-078): the sky, tonight (the planets and the open
- * times on one night chart), how a session works, prices, other ways in, questions,
- * and a last call.
+ * The public homepage (ADR-086): the hero with its panels, tonight (the planets and the
+ * open times on one night chart), how a session works, other ways in, and questions.
  */
-export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
+export function HomeShell({ content, navigation, locale, pricing, sky }: HomeShellProps) {
   // Each step opens the page where it happens.
   const stepPages = ["app/book", "observatory", "tonight", "app/collection"];
   const steps = content.howItWorks.steps.map((step, index) => ({
@@ -32,7 +32,16 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
 
   return (
     <main id="main-content" className="public-home">
-      <SkyHero content={content.hero} locale={locale} />
+      <HomeHero
+        content={content.hero}
+        steps={content.howItWorks.steps}
+        price={content.more.price}
+        navigation={navigation}
+        locale={locale}
+        pricing={pricing}
+        sky={sky}
+        timezone="Asia/Tbilisi"
+      />
 
       <section className="home-band" aria-labelledby="home-tonight-title">
         <Container>
@@ -62,11 +71,11 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
           <header className="home-head">
             <h2 id="steps-title">{content.howItWorks.title}</h2>
           </header>
-          <FlightPlan open={content.howItWorks.open} steps={steps} />
+          <HomeSteps steps={steps} />
         </Container>
       </section>
 
-      <HomeMore content={content.more} locale={locale} pricing={pricing} />
+      <HomeMore content={content.more} locale={locale} />
       <ScrollReveal />
     </main>
   );

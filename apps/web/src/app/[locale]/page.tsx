@@ -58,6 +58,7 @@ export default async function HomePage({ params }: HomePageProps) {
       <TonightBanner locale={locale} />
       <HomeShell
         content={dictionary.home}
+        navigation={{ live: dictionary.navigation.app.live, sky: dictionary.navigation.public.sky }}
         locale={locale}
         pricing={pricing}
         sky={sky}

@@ -1,5 +1,3 @@
-import type { SkyKind, SkyPlate } from "@/features/targets/homepage-data";
-
 export type HomepageDictionary = {
   hero: {
     /** The headline, then its last words in red. */
@@ -8,18 +6,11 @@ export type HomepageDictionary = {
     lede: string;
     cta: string;
     watch: string;
-    plates: Record<SkyPlate, string>;
-    /** What each plate is, written small above its name. */
-    kinds: Record<SkyKind, string>;
-    sky: {
-      label: string;
-      explore: string;
-      tap: string;
-      /** Around the count: "0/4 found" in English, "ნაპოვნია 0/4" in Georgian. */
-      foundBefore: string;
-      foundAfter: string;
-      illustration: string;
-    };
+    /** Under the drawn planet: it is a drawing, not the telescope's picture. */
+    illustration: string;
+    /** ADR-086: the hero's panels and the facts down its side. */
+    panels: { tonight: string; noTimes: string; upTonight: string };
+    rail: { aperture: string; perMinute: string; openWeek: string };
   };
   common: {
     minutes: string;
@@ -28,25 +19,17 @@ export type HomepageDictionary = {
   };
   howItWorks: {
     title: string;
-    /** The link on the open step to the page where it happens. */
-    open: string;
     steps: readonly { title: string; description: string }[];
   };
   tonight: { title: string };
   /** ADR-076: the sections under "how it works". */
   more: {
-    price: { title: string; perMinute: string; cloud: string; book: string };
+    price: { title: string; cloud: string };
     ways: {
       title: string;
       items: readonly { title: string; text: string; href: string }[];
     };
     faq: { title: string; items: readonly { q: string; a: string }[] };
-    closer: {
-      title: string;
-      sunset: string;
-      cta: string;
-      secondary: string;
-    };
   };
 };
 

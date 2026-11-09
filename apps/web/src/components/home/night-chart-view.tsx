@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 
 import { MoonGlyph } from "@/components/booking/moon-glyph";
 import { ButtonLink } from "@/components/ui/button";
@@ -55,6 +55,8 @@ function Orb({ o, big = false }: { o: NightChartModel["objects"][number]; big?: 
 
 /** The chart's rows, its open-time lane and the readout of the chosen object. */
 export function NightChartView({ copy, model }: { copy: Copy; model: NightChartModel }) {
+  // The readout is a landmark, so it is named by the body it shows (shell contract).
+  const readoutTitle = useId();
   const [active, setActive] = useState(model.first);
   const [slot, setSlot] = useState<number | null>(null);
   const [now, setNow] = useState<number | null>(null);
@@ -224,11 +226,11 @@ export function NightChartView({ copy, model }: { copy: Copy; model: NightChartM
         )}
       </div>
 
-      <aside className="night-readout" data-body={o.body} aria-live="polite">
+      <aside className="night-readout" data-body={o.body} aria-live="polite" aria-labelledby={readoutTitle}>
         <div className="night-readout-head" key={o.body}>
           <Orb o={o} big />
           <div>
-            <h3>{o.name}</h3>
+            <h3 id={readoutTitle}>{o.name}</h3>
             <span className="night-tag">{o.tag}</span>
           </div>
         </div>

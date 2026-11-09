@@ -52,36 +52,9 @@ const dictionary = {
       lede: "Book a real telescope in Georgia and watch the night sky live.",
       cta: "Book a session",
       watch: "Watch live",
-      plates: {
-        saturn: "Saturn",
-        jupiter: "Jupiter",
-        mars: "Mars",
-        venus: "Venus",
-        "moon-terminator": "The Moon",
-        "m42-orion-nebula": "Orion Nebula",
-        "m57-ring-nebula": "Ring Nebula",
-        "m27-dumbbell-nebula": "Dumbbell Nebula",
-        "m13-hercules-cluster": "Hercules Cluster",
-        albireo: "Albireo",
-        "mizar-alcor": "Mizar and Alcor",
-      },
-      kinds: {
-        planet: "Planet",
-        moon: "Our Moon",
-        nebula: "Nebula",
-        planetaryNebula: "Planetary nebula",
-        cluster: "Star cluster",
-        double: "Double star",
-      },
-      sky: {
-        label:
-          "A night sky. Move the pointer, or tap, to find the planets, nebulae and stars drawn in it. Every one is an illustration, not telescope output.",
-        explore: "Explore the sky",
-        tap: "Tap the sky",
-        foundBefore: "",
-        foundAfter: "found",
-        illustration: "Illustration — not telescope output",
-      },
+      illustration: "Illustration — not telescope output",
+      panels: { tonight: "Tonight", noTimes: "No open times tonight", upTonight: "{count} up tonight" },
+      rail: { aperture: "Aperture", perMinute: "A minute", openWeek: "Open this week" },
     },
     common: {
       minutes: "min",
@@ -90,7 +63,6 @@ const dictionary = {
     },
     howItWorks: {
       title: "How it works",
-      open: "Open",
       steps: [
         { title: "Book", description: "Pick a night and a time." },
         { title: "Aim", description: "The telescope turns to your target." },
@@ -102,9 +74,7 @@ const dictionary = {
     more: {
       price: {
         title: "Pay by the minute",
-        perMinute: "{price} a minute, from 15 minutes to 4 hours.",
         cloud: "Clouded out? Your next session is free.",
-        book: "Book {length}",
       },
       ways: {
         title: "More to explore",
@@ -144,12 +114,6 @@ const dictionary = {
             a: "Yes. Or we pick the best object in the sky.",
           },
         ],
-      },
-      closer: {
-        title: "The sky is open",
-        sunset: "tonight.",
-        cta: "Book a session",
-        secondary: "Try the observatory",
       },
     },
   },

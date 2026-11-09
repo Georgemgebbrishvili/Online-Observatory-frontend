@@ -67,11 +67,11 @@ import { roomSharingCopy } from "@/i18n/resources/room-sharing";
 import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { TargetPreview } from "@/components/room/target-preview";
-import { FlightPlan } from "@/components/home/flight-plan";
 import { PageGuide } from "@/components/guide/page-guide";
 import { HomeQuick } from "@/components/home/home-quick";
 import type { PricingFacts } from "@/features/pricing/read";
-import { SkyHero } from "@/components/home/sky-hero";
+import { HomeHero } from "@/components/home/home-hero";
+import { HomeSteps } from "@/components/home/home-steps";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -1539,7 +1539,18 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
           <div className="ds-home-specimen">
-            <SkyHero content={dictionary.home.hero} headingLevel={2} locale={locale} />
+            {/* No sky: the specimen draws Saturn with no almanac, so it never changes. */}
+            <HomeHero
+              content={dictionary.home.hero}
+              steps={dictionary.home.howItWorks.steps}
+              price={dictionary.home.more.price}
+              navigation={{ live: dictionary.navigation.app.live, sky: dictionary.navigation.public.sky }}
+              locale={locale}
+              pricing={quickPricingSpecimen(false)}
+              sky={null}
+              timezone="Asia/Tbilisi"
+              headingLevel={2}
+            />
           </div>
         </section>
 
@@ -1560,8 +1571,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             />
           </div>
           <div className="ds-home-specimen">
-            <FlightPlan
-              open={dictionary.home.howItWorks.open}
+            <HomeSteps
               steps={dictionary.home.howItWorks.steps.map((step) => ({
                 ...step,
                 href: `/${locale}/app/book`,
