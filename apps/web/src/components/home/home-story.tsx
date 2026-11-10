@@ -52,6 +52,8 @@ export type HomeStoryProps = {
     /** The aim step's line when tonight names it: its best time and height. Null for the stand-in. */
     line: string | null;
   };
+  /** Where the observatory stands, over the hero's headline. */
+  place: string;
   /** The open times on the hero's booking step. */
   booking: { night: string; times: StoryTime[] } | null;
   sky: StorySky | null;
@@ -160,6 +162,15 @@ export function StoryTicket({
   );
 }
 
+/** The horizon at the foot of the hero (ADR-088): a planet's limb, lit from behind. */
+export function StoryHorizon() {
+  return (
+    <div className="hs-horizon" aria-hidden="true">
+      <i />
+    </div>
+  );
+}
+
 /** The story's camera feed at one depth of stack, for the design system. */
 export function StoryFeedSpecimen({
   depth,
@@ -205,7 +216,7 @@ export function StoryFeedSpecimen({
  * the observatory's record.
  */
 export function HomeStory(props: HomeStoryProps) {
-  const { copy, hero, links, target, booking, sky, skyLabels, heroMinute, slides, night, session, faq, scope, ways } = props;
+  const { copy, hero, links, target, place, booking, sky, skyLabels, heroMinute, slides, night, session, faq, scope, ways } = props;
   const root = useRef<HTMLElement>(null);
 
   // The showpieces: the one the corners describe, faded out and back in on change.
@@ -649,6 +660,7 @@ export function HomeStory(props: HomeStoryProps) {
       {/* ── How a session goes ───────────────────────────── */}
       <section className="home-hero hs-hero" aria-labelledby="home-title">
         <canvas ref={heroCanvas} className="hs-hero-sky" aria-hidden="true" />
+        <div className="hs-hero-shade" />
         <div className="hs-hero-feed">
           <div className="hs-hero-turn">
             <canvas ref={feedCanvas} className="hs-feed" role="img" aria-label={`${copy.simulated}: ${target.name}`} />
@@ -684,7 +696,7 @@ export function HomeStory(props: HomeStoryProps) {
         {/* The reference picture the feed is drawn from; never shown as it is. */}
         {/* eslint-disable-next-line @next/next/no-img-element -- a canvas source, not a displayed image */}
         <img ref={feedImage} className="hs-feed-source" src={target.image} alt="" decoding="async" />
-        <div className="hs-hero-shade" />
+        <StoryHorizon />
         <p className="hs-illustration">{hero.illustration}</p>
 
         {booking && (
@@ -717,6 +729,7 @@ export function HomeStory(props: HomeStoryProps) {
               const Heading = i === 0 ? "h1" : "h2";
               return (
                 <div key={step.a} className="hs-ln">
+                  {i === 0 && place && <p className="hs-label hs-eyebrow">{place}</p>}
                   <Heading id={i === 0 ? "home-title" : undefined} className="home-hero-title hs-xl">
                     <Mask>{step.a}</Mask> <Mask accent>{step.b}</Mask>
                   </Heading>

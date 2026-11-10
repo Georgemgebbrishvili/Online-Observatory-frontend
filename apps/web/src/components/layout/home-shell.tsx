@@ -161,6 +161,7 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
             })
           : null,
       }}
+      place={site ?? ""}
       booking={
         pricing.reachable
           ? {

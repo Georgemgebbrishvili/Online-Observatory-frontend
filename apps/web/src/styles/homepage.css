@@ -2,12 +2,15 @@
  * The public homepage (ADR-087): one scroll story. Each scene fills the screen under the
  * site header and is pinned there while it plays; GSAP animates transform, opacity and
  * clip-path only, and never an element that also has a CSS transition on them. Tokens only.
+ * ADR-088 sets it: the hero centred over a lit horizon, medium-weight headlines, quiet
+ * hairline panels.
  */
 
 .hs {
   --hs-top: calc(var(--size-app-header) + 1px);
   --hs-h: calc(100svh - var(--hs-top));
   --hs-foot: calc(var(--tab-bar-space, 0rem) + clamp(1.5rem, 5vh, 3.25rem));
+  --hs-arc: calc(var(--tab-bar-space, 0rem) + clamp(3.25rem, 9svh, 5.25rem));
   --hs-ease: cubic-bezier(0.2, 0.7, 0.1, 1);
 
   position: relative;
@@ -31,7 +34,7 @@ html.lenis body {
   scroll-behavior: auto !important;
 }
 
-/* TYPE — Geist bold on the title gradient, as the site's headlines; labels in Oswald. */
+/* TYPE — Geist medium, set tight, on the title gradient; labels in Oswald. */
 .hs-title {
   margin: 0;
   background: var(--gradient-title);
@@ -39,8 +42,8 @@ html.lenis body {
   color: transparent;
   font-family: var(--font-body);
   font-size: var(--font-size-section);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.035em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.045em;
   line-height: 1.05;
   text-transform: none;
 }
@@ -61,6 +64,22 @@ html.lenis body {
   text-transform: uppercase;
 }
 
+/* A scene's first label opens with a short red rule. */
+:is(.hs-eyebrow, .hs-coll-head > .hs-label, .hs-night-head > .hs-label, .hs-session-text > .hs-label, .hs-scope .hs-label)::before,
+.hs-eyebrow::after {
+  display: inline-block;
+  width: var(--space-6);
+  height: 1px;
+  margin-right: var(--space-3);
+  background: var(--color-accent);
+  content: "";
+  vertical-align: middle;
+}
+
+.hs-eyebrow::after {
+  margin: 0 0 0 var(--space-3);
+}
+
 .hs-data {
   color: var(--color-text-secondary);
   font-family: var(--font-mono);
@@ -76,9 +95,8 @@ html.lenis body {
 
 .hs-glass {
   border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-large);
-  background: var(--gradient-tile);
-  box-shadow: var(--shadow-glass);
+  border-radius: var(--radius-panel);
+  background: var(--color-panel-quiet);
   backdrop-filter: var(--blur-glass);
 }
 
@@ -166,12 +184,13 @@ html.lenis body {
 /*
  * THE HERO — how a session goes, in five steps: the headline over tonight's drawn sky,
  * the open times, the dive onto the target and the raw feed, the stack settling, and the
- * frame kept as a capture.
+ * frame kept as a capture. Everything is centred: the picture above, the words under it,
+ * the horizon at the foot.
  */
 .hs-hero {
-  --cap-w: min(40vw, 68svh);
-  --cap-x: 67%;
-  --cap-y: 43%;
+  --cap-w: max(12rem, min(34vw, 100svh - 27rem));
+  --cap-x: 50%;
+  --cap-y: calc(1.5rem + var(--cap-edge) + var(--cap-w) * 0.375);
   --cap-edge: 0.875rem;
 
   position: relative;
@@ -299,43 +318,74 @@ html.lenis body {
 }
 
 .hs-hero-shade {
-  background:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--color-night) 82%, transparent) 0%,
-      color-mix(in srgb, var(--color-night) 30%, transparent) 40%,
-      transparent 64%
-    ),
-    linear-gradient(to top, color-mix(in srgb, var(--color-night) 92%, transparent) 0%, transparent 44%);
+  background: linear-gradient(to top, var(--color-night) 0%, var(--color-night) 42%, transparent 60%);
   pointer-events: none;
+}
+
+/* The horizon: a planet's limb at the foot of the hero, its light fading to the sides. */
+.hs-horizon {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  inset: 0;
+  mask-image: var(--mask-horizon);
+  pointer-events: none;
+}
+
+.hs-horizon i {
+  --d: max(220vw, 80rem);
+
+  position: absolute;
+  top: calc(100% - var(--hs-arc));
+  left: calc(50% - var(--d) / 2);
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  background: var(--color-mask);
+  box-shadow: var(--shadow-horizon);
 }
 
 /* Step two: tonight's open times, on glass. */
 .hs-slots {
   position: absolute;
   z-index: 4;
-  right: var(--space-page);
+  top: clamp(3rem, 11svh, 6rem);
   display: grid;
-  width: min(22rem, 30vw);
-  height: fit-content;
-  gap: var(--space-3);
-  margin-block: auto;
-  padding: var(--space-6);
+  width: min(36rem, calc(100% - 2 * var(--space-page)));
+  gap: var(--space-3) var(--space-4);
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  margin-inline: auto;
+  padding: var(--space-5);
   visibility: hidden;
-  inset-block: 0;
+  inset-inline: 0;
   opacity: 0;
+}
+
+.hs-slots > .hs-label {
+  grid-column: 1 / -1;
+}
+
+.hs-slots > :is(ul, p) {
+  grid-column: 1 / -1;
+}
+
+.hs-slots > .hs-more {
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
 }
 
 .hs-slots > b {
   font-size: var(--font-size-tile);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.02em;
 }
 
 .hs-slots ul {
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -379,14 +429,16 @@ html.lenis body {
   position: absolute;
   z-index: 4;
   right: var(--space-page);
-  bottom: var(--hs-foot);
+  bottom: calc(var(--hs-arc) + clamp(1rem, 3.5svh, 2.25rem));
   left: var(--space-page);
+  text-align: center;
 }
 
 .hs-steps {
   position: relative;
-  width: min(60rem, 100%);
-  height: calc(var(--font-size-hero-glass) * 2.2 + 6rem);
+  width: min(64rem, 100%);
+  height: calc(var(--font-size-hero-horizon) * 2.3 + 8rem);
+  margin-inline: auto;
 }
 
 .hs-ln {
@@ -397,25 +449,26 @@ html.lenis body {
 }
 
 .hs-xl {
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   background: none;
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  font-size: var(--font-size-hero-glass);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.045em;
-  line-height: 1.02;
+  font-size: var(--font-size-hero-horizon);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.05em;
+  line-height: 1.04;
   text-transform: none;
-  white-space: nowrap;
 }
 
-/* each headline line sits in a mask and slides through it */
+/* each half of the headline sits in a mask and slides through it; the two share a line when it fits */
 .hs-m {
-  display: block;
+  display: inline-block;
+  max-width: 100%;
   margin: -0.06em 0 -0.1em;
-  padding: 0.06em 0.08em 0.1em 0;
+  padding: 0.06em 0.04em 0.1em;
   overflow: hidden;
+  vertical-align: top;
 }
 
 .hs-m > span {
@@ -433,10 +486,18 @@ html.lenis body {
 
 .hs-ln p {
   max-width: 34rem;
-  margin: var(--space-5) 0 0;
-  color: var(--color-text-cream);
+  margin: var(--space-4) auto 0;
+  color: var(--color-text-secondary);
   font-size: var(--font-size-body-lg);
   line-height: 1.5;
+}
+
+.hs-ln .hs-eyebrow {
+  max-width: none;
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-small);
+  font-size: var(--font-size-label);
+  line-height: 1.3;
 }
 
 .hs-ln:not(:first-child) .hs-m > span {
@@ -475,6 +536,7 @@ html.lenis body {
 }
 
 .hs-hero .hs-acts {
+  justify-content: center;
   margin-top: var(--space-6);
 }
 
@@ -515,9 +577,9 @@ html.lenis body {
     display: block;
   }
 
-  /* The longest Georgian line (22 letters) fits 60rem at 5vw. */
+  /* The longest Georgian line (22 letters) fits 64rem at 4.6vw. */
   .hs-xl:lang(ka) {
-    font-size: min(var(--font-size-hero-glass), 5vw);
+    font-size: min(var(--font-size-hero-horizon), 4.6vw);
     letter-spacing: 0;
   }
 }
@@ -578,7 +640,7 @@ html.lenis body {
   position: absolute;
   top: 50%;
   left: 50%;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-text-primary) 20%, transparent), transparent 92%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-text-primary) 12%, transparent), transparent 92%);
   background-clip: text;
   color: transparent;
   font-family: var(--font-headline);
@@ -607,9 +669,9 @@ html.lenis body {
   border: 1px solid var(--color-glass-border);
   border-radius: 50%;
   background: var(--color-mask);
-  box-shadow:
-    var(--shadow-glass),
-    0 0 7.5rem color-mix(in srgb, var(--c) 24%, transparent);
+  box-shadow: 0 0 7.5rem color-mix(in srgb, var(--c) 24%, transparent);
+  outline: 1px solid var(--color-line);
+  outline-offset: var(--space-5);
 }
 
 .hs-eye img {
@@ -672,7 +734,7 @@ html.lenis body {
 
 .hs-bl b {
   font-size: var(--font-size-readout);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.02em;
 }
 
@@ -747,7 +809,7 @@ html.lenis body {
   font-family: var(--font-body);
   text-transform: none;
   font-size: var(--font-size-readout);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.02em;
 }
 
@@ -885,7 +947,7 @@ html.lenis body {
   font-family: var(--font-body);
   text-transform: none;
   font-size: var(--font-size-tile);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
@@ -1343,28 +1405,25 @@ html.lenis body {
 
 .hs-moon {
   position: relative;
-  width: 100%;
-  max-height: 76svh;
-  aspect-ratio: 1;
-  margin: 0;
-  overflow: hidden;
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-large);
-  background: var(--color-mask);
+  width: min(100%, 60svh);
+  aspect-ratio: 4 / 5;
+  margin: 0 auto;
 }
 
+/* The photograph has no frame: it is cut to the Moon's own disc. */
 .hs-moon img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  mask-image: radial-gradient(43.4% 34.7% at 50% 47.6%, var(--color-mask) 99%, transparent 100%);
 }
 
 .hs-moon figcaption {
   position: absolute;
-  right: var(--space-4);
+  right: 0;
   bottom: var(--space-4);
-  left: var(--space-4);
+  left: 0;
+  text-align: center;
   color: var(--color-text-small);
   font-size: var(--font-size-caption);
 }
@@ -1376,8 +1435,7 @@ html.lenis body {
   }
 
   .hs-moon {
-    aspect-ratio: 4 / 5;
-    margin-left: auto;
+    margin-right: 0;
   }
 }
 
@@ -1454,7 +1512,7 @@ html.lenis body {
 
 .hs-way b {
   font-size: var(--font-size-tile);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.02em;
 }
 
@@ -1522,6 +1580,19 @@ html.lenis body {
   font-size: var(--font-size-caption);
 }
 
+/* The design system's specimen of the horizon. */
+.hs-horizon-specimen {
+  --hs-arc: 5rem;
+
+  position: relative;
+  height: 12rem;
+  overflow: hidden;
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-night);
+  grid-column: 1 / -1;
+}
+
 /* PHONES — the copy keeps the foot of the screen; the pictures take the space above it. */
 @media (--below-md) {
   .hs-hero {
@@ -1532,16 +1603,7 @@ html.lenis body {
   }
 
   .hs-hero-shade {
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--color-night) 96%, transparent) 0%,
-      color-mix(in srgb, var(--color-night) 55%, transparent) 46%,
-      transparent 66%
-    );
-  }
-
-  .hs-xl {
-    white-space: normal;
+    background: linear-gradient(to top, var(--color-night) 0%, var(--color-night) 56%, transparent 70%);
   }
 
   .hs-xl:lang(ka) {
@@ -1549,7 +1611,7 @@ html.lenis body {
   }
 
   .hs-steps {
-    height: calc(var(--font-size-hero-glass) * 3.3 + 6.5rem);
+    height: calc(var(--font-size-hero-horizon) * 3.3 + 8rem);
   }
 
   .hs-ln p {
@@ -1570,15 +1632,7 @@ html.lenis body {
 
   .hs-slots {
     top: var(--space-12);
-    right: var(--space-page);
-    bottom: auto;
-    left: var(--space-page);
-    width: auto;
     padding: var(--space-4);
-  }
-
-  .hs-slots ul {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .hs-slots li a {
@@ -1700,8 +1754,14 @@ html.lenis body {
 
 .hs[data-still] .hs-hero-copy {
   position: relative;
+  right: auto;
   bottom: auto;
-  padding-block: 38svh var(--hs-foot);
+  left: auto;
+  padding: 38svh var(--space-page) calc(var(--hs-arc) + var(--space-8));
+}
+
+.hs[data-still] .hs-hero-shade {
+  background: linear-gradient(to top, var(--color-night) 0%, var(--color-night) 64%, transparent 84%);
 }
 
 .hs[data-still] .hs-steps {

@@ -186,6 +186,17 @@
       color-mix(in srgb, var(--st-amber) 22%, transparent),
       transparent 70%
     );
+  /* ADR-088: the horizon — a planet's limb under the homepage hero, lit from behind. */
+  --shadow-horizon:
+    0 0 0 1px color-mix(in srgb, var(--st-red-hi) 60%, transparent),
+    0 -2px 14px color-mix(in srgb, var(--st-amber) 55%, transparent),
+    0 -14px 56px color-mix(in srgb, var(--st-red) 62%, transparent),
+    0 -56px 180px color-mix(in srgb, var(--st-red) 34%, transparent),
+    inset 0 2px 6px color-mix(in srgb, var(--st-sun-1) 42%, transparent),
+    inset 0 26px 80px color-mix(in srgb, var(--st-red) 42%, transparent),
+    inset 0 100px 220px color-mix(in srgb, var(--st-red-deep) 34%, transparent);
+  --mask-horizon: radial-gradient(60% 100% at 50% 100%, var(--st-black) 46%, transparent 100%);
+  --color-panel-quiet: color-mix(in srgb, var(--st-bar) 68%, transparent);
   --gradient-meter: linear-gradient(90deg, var(--st-gd-mid), var(--st-sun-4));
   --gradient-numeral: linear-gradient(
     180deg,
@@ -555,6 +566,7 @@
   --font-size-section: clamp(1.875rem, 4vw, 3rem);
   --font-size-closer: clamp(2.25rem, 5.5vw, 4rem);
   --font-size-hero-glass: clamp(2.5rem, 7vw, 5.25rem);
+  --font-size-hero-horizon: clamp(2.25rem, min(5.4vw, 9svh), 5rem);
   --font-size-tile: 1.25rem;
   --font-size-time: 1.5rem;
   --font-size-price: clamp(1.5rem, 3vw, 2rem);
