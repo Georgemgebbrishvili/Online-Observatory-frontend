@@ -68,10 +68,8 @@ import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { TargetPreview } from "@/components/room/target-preview";
 import { PageGuide } from "@/components/guide/page-guide";
-import { HomeQuick } from "@/components/home/home-quick";
-import type { PricingFacts } from "@/features/pricing/read";
-import { HomeHero } from "@/components/home/home-hero";
-import { HomeSteps } from "@/components/home/home-steps";
+import { brand } from "@/brand";
+import { StoryFeedSpecimen, StoryTicket } from "@/components/home/home-story";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -121,26 +119,6 @@ import {
   stepSpecimenHistory,
   targetSpecimens,
 } from "./copy";
-
-const quickPricingSpecimen = (unreadable: boolean): PricingFacts => ({
-  slot: null,
-  tonight: unreadable
-    ? null
-    : {
-        date: "2026-10-28",
-        label: "Wednesday 28 October",
-        isToday: true,
-        timezone: "Asia/Tbilisi",
-        slots: ["15:45", "16:00", "17:30", "17:45"].map((time) => ({
-          startAt: `2026-10-28T${time}:00Z`,
-          price: "GEL 45.00",
-          durationMinutes: 30,
-        })),
-      },
-  openThisWeek: unreadable ? 0 : 4,
-  reachable: !unreadable,
-  loyalty: null,
-});
 
 type DesignSystemPageProps = {
   params: Promise<{ locale: string }>;
@@ -1538,45 +1516,32 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
 
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
-          <div className="ds-home-specimen">
-            {/* No sky: the specimen draws Saturn with no almanac, so it never changes. */}
-            <HomeHero
-              content={dictionary.home.hero}
-              steps={dictionary.home.howItWorks.steps}
-              price={dictionary.home.more.price}
-              navigation={{ live: dictionary.navigation.app.live, sky: dictionary.navigation.public.sky }}
-              locale={locale}
-              pricing={quickPricingSpecimen(false)}
-              sky={null}
-              timezone="Asia/Tbilisi"
-              headingLevel={2}
+          <div className="ds-home-specimen ds-story-specimens">
+            {/* The story's camera feed, a raw sub and the settled stack, always badged. */}
+            {[0, 1].map((depth) => (
+              <StoryFeedSpecimen
+                key={depth}
+                depth={depth}
+                image="/sky/targets/saturn.jpg"
+                name={dictionary.home.story.showpieces.names.saturn}
+                simulated={dictionary.home.story.simulated}
+                illustration={dictionary.home.hero.illustration}
+              />
+            ))}
+            <StoryTicket
+              brandName={locale === "ka" ? brand.ka.nominative : brand.en.name}
+              copy={dictionary.home.story.session.ticket}
+              night="28.10.2026"
+              target={dictionary.home.story.showpieces.names.saturn}
+              length={`30 ${dictionary.home.common.minutes}`}
+              price="GEL 45.00"
             />
           </div>
         </section>
 
         <section className="ds-section" aria-labelledby="homepage-title">
           <SectionHeader id="homepage-title" section={copy.sections.homepage} />
-          <div className="ds-home-specimen ds-quick-specimens">
-            <HomeQuick
-              locale={locale}
-              id="ds-quick-title"
-              specimen
-              pricing={quickPricingSpecimen(false)}
-            />
-            <HomeQuick
-              locale={locale}
-              id="ds-quick-unreachable"
-              specimen
-              pricing={quickPricingSpecimen(true)}
-            />
-          </div>
           <div className="ds-home-specimen">
-            <HomeSteps
-              steps={dictionary.home.howItWorks.steps.map((step) => ({
-                ...step,
-                href: `/${locale}/app/book`,
-              }))}
-            />
             <TonightList
               items={targetSpecimens}
               timezone="Asia/Tbilisi"

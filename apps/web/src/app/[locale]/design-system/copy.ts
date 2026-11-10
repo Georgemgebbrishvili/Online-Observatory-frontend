@@ -79,14 +79,14 @@ export const designSystemCopy = {
       ],
       showcase: [
         "11",
-        "The sky",
-        "The homepage hero: the Skychaser sky, where the pointer finds our drawn plates, captioned as illustrations; the headline's last words in red, one filled button.",
-        "as amended by ADR-052 — the homepage",
+        "The story",
+        "The homepage's scroll story (ADR-087): its camera feed as a raw sub and as the settled stack, badged Simulated and captioned as an illustration, and the session on the cream ticket.",
+        "as amended by ADR-087 — the homepage",
       ],
       homepage: [
         "12",
         "Homepage sections",
-        "How a session works as four steps between hairlines, each with where it stands today, and tonight's targets as ruled rows from the platform.",
+        "Tonight's targets as ruled rows from the platform, and the page guide.",
         "as amended by ADR-052 — the homepage",
       ],
       observatory: [
@@ -391,14 +391,14 @@ export const designSystemCopy = {
       ],
       showcase: [
         "11",
-        "ცა",
-        "მთავარი გვერდის პირველი ეკრანი: Skychaser-ის ცა, სადაც კურსორი ჩვენს დახატულ ფირფიტებს პოულობს, ილუსტრაციის წარწერით; სათაურის ბოლო სიტყვები წითლად, ერთი მთავარი ღილაკი.",
-        "as amended by ADR-052 — the homepage",
+        "ისტორია",
+        "მთავარი გვერდის სქროლის ისტორია (ADR-087): კამერის გამოსახულება ერთ ნედლ კადრად და დაწყობილ კადრად, სიმულაციის ნიშნით და ილუსტრაციის წარწერით, და სეანსი კრემისფერ ბილეთზე.",
+        "as amended by ADR-087 — the homepage",
       ],
       homepage: [
         "12",
         "მთავარი გვერდის სექციები",
-        "როგორ მიმდინარეობს სესია — ოთხი ნაბიჯი თხელ ხაზებს შორის, თითოეული იმით, სად დგას დღეს, და ამაღამინდელი ობიექტები პლატფორმიდან, ხაზებით გაყოფილ რიგებად.",
+        "ამაღამინდელი ობიექტები პლატფორმიდან, ხაზებით გაყოფილ რიგებად, და გვერდის მეგზური.",
         "as amended by ADR-052 — the homepage",
       ],
       observatory: [

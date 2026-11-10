@@ -12,7 +12,7 @@ test("communicates real telescope access in the English hero", async ({ page }) 
     page.getByRole("heading", { level: 1, name: "The real sky, live." }),
   ).toBeVisible();
   // ADR-052 §7: the last words in red, as the Skychaser headline sets its own.
-  await expect(hero.locator(".home-hero-title em")).toHaveText("live.");
+  await expect(hero.locator("h1 .hs-accent")).toHaveText("live.");
   await expect(hero.getByText(/Book a real telescope in Georgia/)).toBeVisible();
   await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
   const actions = hero.locator(".home-hero-actions");
@@ -28,21 +28,19 @@ test("communicates real telescope access in the English hero", async ({ page }) 
   await expect(hero.locator(".observatory-dome")).toHaveCount(0);
   await expect(hero.getByText("Online", { exact: true })).toHaveCount(0);
 
-  // ADR-086: tonight's planet is a drawing, and says so (CLAUDE.md, ADR-052 §7).
-  await expect(hero.locator(".home-hero-field img")).toBeVisible();
+  // ADR-087: the sky is a drawing and says so; the feed behind it is badged Simulated.
   await expect(hero.getByText("Illustration — not telescope output")).toBeVisible();
-  await expect(hero.locator(".home-hero-tag")).toHaveAttribute("href", "/en/sky");
-  // The observatory record's aperture down the side, never the maker's name.
-  await expect(hero.locator(".home-hero-rail")).toContainText("203 mm");
-
-  // Four panels: the booking board, the live view, the prices and the night sky.
-  const panels = hero.locator(".hero-panel");
-  await expect(panels).toHaveCount(4);
-  await expect(panels.nth(0)).toHaveAttribute("href", /^\/en\/app\/book/);
-  await expect(panels.nth(1)).toHaveAttribute("href", "/en/tonight");
-  await expect(panels.nth(2)).toHaveAttribute("href", "/en/pricing");
-  await expect(panels.nth(3)).toHaveAttribute("href", "/en/sky");
-  await expect(panels.nth(2)).toContainText("GEL 1.50");
+  await expect(hero.locator(".hs-hud-badge dd")).toHaveText("Simulated");
+  await expect(hero.locator(".hs-hero-feed")).toBeHidden();
+  // The four steps after the headline are headings a reader can reach.
+  for (const name of [
+    "Pick your time.",
+    "It turns to your target.",
+    "Watch it settle.",
+    "Keep the picture.",
+  ]) {
+    await expect(hero.getByRole("heading", { level: 2, name })).toBeAttached();
+  }
 });
 
 test("renders the Georgian hero and switches locale", async ({ page }) => {
@@ -58,51 +56,91 @@ test("renders the Georgian hero and switches locale", async ({ page }) => {
   await expect(
     page.locator(".home-hero").getByText("ილუსტრაცია — არა ტელესკოპის გამოსახულება"),
   ).toBeVisible();
-  // Mkhedruli has no capitals: the headline is never uppercased.
-  await expect(page.locator(".home-hero-title")).toHaveCSS("text-transform", "none");
-  await expect(page.locator(".home-hero-title em")).toHaveCSS("text-transform", "none");
+  // Mkhedruli has no capitals: the headline and the labels are never uppercased.
+  await expect(page.locator("h1.home-hero-title")).toHaveCSS("text-transform", "none");
+  await expect(page.locator(".hs-label").first()).toHaveCSS("text-transform", "none");
   await page.getByRole("link", { name: "ენა: English" }).click();
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("the public homepage: the hero, tonight, the steps, and the rest", async ({ page }) => {
+test("the public homepage: the story's scenes, with the platform's prices", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
 
-  await expect(
-    page.getByRole("heading", { level: 2, name: "How it works" }),
-  ).toBeVisible();
-  // ADR-086: the hero, tonight, the steps, more, and questions. Prices sit on the hero.
-  await expect(page.locator("main section")).toHaveCount(5);
-  await expect(page.locator(".home-picker")).toHaveCount(0);
-  await expect(page.locator(".home-faq details")).toHaveCount(4);
+  // ADR-087: the hero, tonight's showpieces, the night, the session, the telescope, the sign-off.
+  await expect(page.locator("main section")).toHaveCount(6);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
-  // How a session works: four tiles, each opening the page where it happens.
-  const steps = page.locator("#about .home-step");
-  await expect(steps).toHaveCount(4);
-  for (const [index, [name, href]] of [
-    ["Book", "/en/app/book"],
-    ["Aim", "/en/observatory"],
-    ["Watch", "/en/tonight"],
-    ["Keep", "/en/app/collection"],
-  ].entries()) {
-    await expect(steps.nth(index)).toContainText(name);
-    await expect(steps.nth(index)).toHaveAttribute("href", href);
-  }
-
-  // Tonight: the Moon and planets on one chart with the open times; picking a row
-  // shows that body and books the open time nearest its best.
-  const chart = page.getByRole("group", { name: "Tonight's sky from sunset to sunrise" });
-  const rows = chart.locator(".night-row");
-  expect(await rows.count()).toBeGreaterThan(0);
-  await rows.first().click();
-  await expect(rows.first()).toHaveAttribute("aria-pressed", "true");
-  const name = (await rows.first().innerText()).trim();
-  await expect(page.locator(".night-readout h3")).toHaveText(name);
-  await expect(page.getByRole("list", { name: "Open times" }).locator("a")).toHaveCount(4);
+  // Tonight's showpieces: each with its best time and a way to book.
+  const slides = page.locator(".hs-slide");
+  expect(await slides.count()).toBeGreaterThan(0);
+  await expect(slides.first().getByRole("link")).toHaveAttribute("href", /^\/en\/app\/book/);
   await expect(
-    page.getByRole("list", { name: "Open times" }).locator("a").first(),
-  ).toHaveAttribute("href", /\/en\/app\/book\?startAt=/);
+    page.locator(".hs-coll").getByText("Illustration — not telescope output"),
+  ).toBeAttached();
+
+  // The night: a clock on the observatory's time and the drawn sky it turns.
+  await expect(page.locator(".hs-clock")).toHaveText(/^\d\d:\d0$/);
+  await expect(page.getByRole("img", { name: "Tonight over Tbilisi" })).toBeAttached();
+
+  // The session: the fake platform's price by the minute, on the panel and the ticket.
+  const session = page.locator(".hs-session");
+  await expect(session.locator(".hs-price b")).toHaveText("GEL 45.00");
+  await expect(session.getByText("GEL 1.50 a minute")).toBeAttached();
+  await session.getByRole("button", { name: "60 min" }).dispatchEvent("click");
+  await expect(session.locator(".hs-price b")).toHaveText("GEL 90.00");
+  await expect(session.locator(".hs-ticket-foot b")).toHaveText("GEL 90.00");
+  const questions = session.locator(".hs-ask button");
+  await expect(questions).toHaveCount(4);
+  await questions.nth(2).dispatchEvent("click");
+  await expect(questions.nth(2)).toHaveAttribute("aria-expanded", "true");
+  await expect(questions.nth(0)).toHaveAttribute("aria-expanded", "false");
+
+  // The telescope: the observatory record's aperture, never the maker's name.
+  await expect(page.locator(".hs-scope")).toContainText("203 mm");
+  await expect(
+    page.locator(".hs-scope").getByRole("link", { name: "See the observatory" }),
+  ).toHaveAttribute("href", "/en/observatory");
+
+  // The other ways in.
+  const ways = page.getByRole("list", { name: "More to explore" }).getByRole("link");
+  await expect(ways).toHaveCount(4);
+  for (const [index, href] of [
+    "/en/vote",
+    "/en/gift",
+    "/en/explorer",
+    "/en/app/cards",
+  ].entries()) {
+    await expect(ways.nth(index)).toHaveAttribute("href", href);
+  }
+});
+
+test("the hero's story moves with the scroll, and stands still for reduced motion", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/en");
+  await expect(page.locator(".pin-spacer > .hs-hero")).toHaveCount(1);
+  await expect(page.locator(".hs-meta-num")).toHaveText("01 / 05");
+  await page.mouse.move(700, 500);
+  await page.mouse.wheel(0, 300);
+  // A short scroll snaps on to the second step: the open times.
+  await expect(page.locator(".hs-meta-num")).toHaveText("02 / 05");
+  await expect(page.locator(".hs-slots")).toBeVisible();
+  await expect(page.locator(".hs-slots a").first()).toHaveAttribute(
+    "href",
+    /^\/en\/app\/book/,
+  );
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.locator(".hs[data-still]")).toHaveCount(1);
+  await expect(page.locator(".pin-spacer")).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Watch it settle." }),
+  ).toBeVisible();
 });
 
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {
@@ -117,9 +155,9 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
       }));
       expect(viewport.scrollWidth, `${locale} at ${width}px`).toBe(viewport.clientWidth);
       await expect(page.locator(".home-hero .button-primary")).toBeVisible();
-      // A phone keeps the planet and the panels; the side facts wait for a wide screen.
-      await expect(page.locator(".home-hero-field")).toBeVisible();
-      await expect(page.locator(".home-hero-rail")).toBeHidden();
+      // A phone swipes the showpieces; the corners wait for a wide screen.
+      await expect(page.locator(".hs-corner").first()).toBeHidden();
+      await expect(page.locator(".hs-slide-info").first()).toBeAttached();
     }
   }
 });
@@ -583,29 +621,4 @@ test("keeps localized pricing inside the mobile viewport", async ({ page }) => {
     scrollWidth: document.documentElement.scrollWidth,
   }));
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
-});
-
-test("a phone gets tonight's chart and open times without moving sideways", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/en");
-
-  await expect(page.locator(".public-home[data-reveal]")).toHaveCount(1);
-  const chart = page.getByRole("group", { name: "Tonight's sky from sunset to sunrise" });
-  await chart.scrollIntoViewIfNeeded();
-  await expect(chart).toBeVisible();
-  const times = page.getByRole("list", { name: "Open times" }).getByRole("listitem");
-  expect(await times.count()).toBeGreaterThan(0);
-  expect(await times.count()).toBeLessThanOrEqual(4);
-  // A time opens the booking board with that start chosen.
-  await expect(times.first().getByRole("link")).toHaveAttribute(
-    "href",
-    /\/en\/app\/book\?startAt=/,
-  );
-  // A tap on a row shows that body in the readout under the chart.
-  const row = chart.locator(".night-row").last();
-  await row.click();
-  await expect(page.locator(".night-readout h3")).toHaveText((await row.innerText()).trim());
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });

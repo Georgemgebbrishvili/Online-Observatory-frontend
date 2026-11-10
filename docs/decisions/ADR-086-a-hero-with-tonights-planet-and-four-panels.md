@@ -1,7 +1,7 @@
 # ADR-086 — A hero with tonight's planet and four panels
 
 - **Date:** 2026-11-09
-- **Status:** APPROVED (2026-11-09)
+- **Status:** SUPERSEDED by `ADR-087` (2026-11-10); approved 2026-11-09
 - **Decided by:** project maintainer (Nika), in session: "make same style for Stellar
   observatory frontend website, but stellar style and typography stays", after the Skychaser
   homepage was rebuilt the same day (skychaser.io, a325662b).

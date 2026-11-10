@@ -57,11 +57,11 @@ nextjs-portal {
 }
 
 /*
- * What moves on its own: the homepage hero's words rise and its planet floats (ADR-086),
+ * What moves on its own: the homepage hero's words rise and its showpieces float (ADR-087),
  * the LIVE LED blinks, a loading button's sheen loops. Captured at rest.
  */
-.home-hero-lead > *,
-.home-hero-field img,
+.hs-ln *,
+.hs-eye img,
 .status-dot,
 .button-primary::after {
   animation: none !important;
@@ -132,4 +132,13 @@ nextjs-portal {
 
 .board-step .board-aside {
   display: none !important;
+}
+
+/*
+ * ADR-087: the homepage's drawn skies follow the server's tonight and fill their scenes.
+ * Hidden rather than masked, so the copy laid over them is still compared.
+ */
+.hs-hero-sky,
+.hs-night-sky {
+  visibility: hidden !important;
 }

@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { TonightBanner } from "@/components/tonight/tonight-banner";
 import { readPricing } from "@/features/pricing/read";
-import { tonightSky } from "@/features/sky/tonight-sky";
+import { storySky } from "@/features/sky/story-sky";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { siteUrl } from "@/lib/seo";
@@ -33,7 +33,7 @@ export default async function HomePage({ params }: HomePageProps) {
   ]);
   // Worked out per request, so the sky moves to the next night on its own each day.
   await connection();
-  const sky = tonightSky(new Date(), "Asia/Tbilisi");
+  const sky = storySky(new Date(), "Asia/Tbilisi");
   return (
     <div className="site-frame home-page">
       <JsonLd
@@ -58,7 +58,6 @@ export default async function HomePage({ params }: HomePageProps) {
       <TonightBanner locale={locale} />
       <HomeShell
         content={dictionary.home}
-        navigation={{ live: dictionary.navigation.app.live, sky: dictionary.navigation.public.sky }}
         locale={locale}
         pricing={pricing}
         sky={sky}

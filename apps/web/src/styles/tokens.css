@@ -564,6 +564,8 @@
   --font-size-price-big: clamp(2.5rem, 5vw, 3.5rem);
   --font-size-step: clamp(1.25rem, 2vw, 1.5rem);
   --font-size-numeral: clamp(5rem, 11vw, 8.5rem);
+  /* ADR-087: the name set large behind a showpiece and the sign-off; the script fits it. */
+  --font-size-story-word: clamp(5rem, 20vw, 20rem);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

@@ -80,14 +80,13 @@ function masks(page: Page) {
     page.locator(".cal-month"),
     page.locator(".cal-note"),
     page.locator(".cal-list"),
-    // ADR-086: the homepage hero draws tonight's best placed planet with its almanac, and
-    // its panels and side facts read the server's tonight: open times, counts, what is up.
-    page.locator(".home-hero-field"),
-    page.locator(".home-hero-tag"),
-    page.locator(".home-hero-rail dd"),
-    // Each figure on its own: a panel's time can run wider than the box around it.
-    page.locator(".hero-panel-foot > *"),
-    page.locator(".hero-panel-orbs"),
+    // ADR-087: the homepage's story reads the server's tonight: which planet the hero
+    // names, which showpieces are up, the night's clock and card, the ticket's night and
+    // target. Its drawn skies are hidden in visual.css, so the words over them still count.
+    page.locator(".hs-ln:nth-child(3) p"),
+    page.locator(".hs-track"),
+    page.locator(".hs-ncard"),
+    page.locator(".hs-ticket dd"),
   ];
 }
 
@@ -99,6 +98,9 @@ async function capture(
   label = route,
 ) {
   await page.clock.setFixedTime(fixedTime);
+  // ADR-087: the homepage is a pinned scroll story; it is captured still, as reduced
+  // motion shows it.
+  if (!route) await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(`/${locale}${route ? `/${route}` : ""}`);
   await expect(page.locator("h1").first()).toBeAttached();
   // Every image decoded. Not "networkidle": the dev server holds connections open,
