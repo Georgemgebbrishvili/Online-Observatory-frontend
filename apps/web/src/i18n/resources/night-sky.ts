@@ -6,7 +6,7 @@ import type { Locale } from "@/i18n/config";
 // names below are ours (no open dataset carries them) and await the maintainer's review.
 
 const en = {
-  metadataTitle: "Night Sky",
+  metadataTitle: `Night Sky · ${brand.en.name}`,
   metadataDescription: `The sky over ${brand.en.name}'s observatory, or over you, as it is right now: stars, planets and the Moon, computed live.`,
   title: "Night Sky",
   computed: "Computed sky, not a telescope view",
@@ -136,7 +136,7 @@ const en = {
 };
 
 const ka: typeof en = {
-  metadataTitle: "ღამის ცა",
+  metadataTitle: `ღამის ცა · ${brand.ka.nominative}`,
   metadataDescription: `ცა ${brand.ka.genitive} ობსერვატორიის, ან შენს თავზე, ზუსტად ახლა: ვარსკვლავები, პლანეტები და მთვარე, ცოცხლად გამოთვლილი.`,
   title: "ღამის ცა",
   computed: "გამოთვლილი ცა და არა ტელესკოპის გამოსახულება",

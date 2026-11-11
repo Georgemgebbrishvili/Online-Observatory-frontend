@@ -66,6 +66,18 @@ const config = {
       },
     },
     {
+      // ADR-083: the Observatory Hub cockpit over that console, on its own navy tokens and
+      // its own desk breakpoints (a wide-screen cockpit, not a page of the site).
+      files: ["apps/web/src/styles/observatory-hub.css"],
+      rules: {
+        "color-no-hex": null,
+        "function-disallowed-list": null,
+        "declaration-property-value-disallowed-list": null,
+        "declaration-property-value-allowed-list": null,
+        "media-feature-name-disallowed-list": null,
+      },
+    },
+    {
       files: ["apps/web/src/styles/tokens.css"],
       rules: {
         "color-no-hex": null,
@@ -80,6 +92,7 @@ const config = {
         ...awaitingV3Migration,
         "apps/web/src/styles/tokens.css",
         "apps/web/src/styles/observatory-console.css",
+        "apps/web/src/styles/observatory-hub.css",
         "apps/web/src/styles/skychaser-card.css",
       ],
       rules: {

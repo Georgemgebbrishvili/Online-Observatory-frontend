@@ -6,7 +6,7 @@ import type { Locale } from "@/i18n/config";
 // Georgian is never uppercased or tracked; the glossary is the site's (slot = სეანსი).
 export const loyaltyCopy = {
   en: {
-    metadataTitle: "Club",
+    metadataTitle: `Club · ${brand.en.name}`,
     title: `${brand.en.name} Club`,
     loading: "Reading your points",
     invited: "Invited by a member. You both get the referral bonus after your first paid booking.",
@@ -84,7 +84,7 @@ export const loyaltyCopy = {
     },
   },
   ka: {
-    metadataTitle: "კლუბი",
+    metadataTitle: `კლუბი · ${brand.ka.nominative}`,
     title: `${brand.ka.genitive} კლუბი`,
     loading: "ქულები იკითხება",
     invited: "მოგიწვია კლუბის წევრმა. პირველი გადახდილი ჯავშნის შემდეგ მოწვევის ბონუსს ორივე მიიღებთ.",

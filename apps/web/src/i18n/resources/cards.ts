@@ -1,5 +1,6 @@
 import type { CardPrizeKind, CardPrizeStatus, CardRarity } from "@darkview/contracts";
 
+import { brand } from "@/brand";
 import type { Locale } from "@/i18n/config";
 
 type PrizeFacts = { durationMinutes: number | null; percentOff: number | null };
@@ -64,7 +65,7 @@ export type CardsCopy = {
 
 export const cardsCopy: Record<Locale, CardsCopy> = {
   en: {
-    metadataTitle: "Weekly cards",
+    metadataTitle: `Weekly cards · ${brand.en.name}`,
     title: "Weekly cards",
     lede: "Turn one of three cards each week. Win a free session, seat or discount.",
     week: (range) => `This week · ${range}`,
@@ -150,7 +151,7 @@ export const cardsCopy: Record<Locale, CardsCopy> = {
     },
   },
   ka: {
-    metadataTitle: "კვირის ბარათები",
+    metadataTitle: `კვირის ბარათები · ${brand.ka.nominative}`,
     title: "კვირის ბარათები",
     lede: "ყოველ კვირა გადააბრუნე ერთი ბარათი სამიდან. მოიგე უფასო სეანსი, ადგილი ან ფასდაკლება.",
     week: (range) => `ეს კვირა · ${range}`,

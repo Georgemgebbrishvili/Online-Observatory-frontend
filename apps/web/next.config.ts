@@ -56,7 +56,8 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            // The Night Sky's "Use my location" asks this origin for a position; no frame may.
+            value: "camera=(), microphone=(), geolocation=(self)",
           },
           { key: "Content-Security-Policy", value: contentSecurityPolicy },
         ],

@@ -212,6 +212,27 @@ test.describe("the sky model's 8SE", () => {
     await expect(hand.getByRole("button", { name: "მონტირების პარამეტრები" })).toBeVisible();
   });
 
+  // Park and STOP once sat past the right edge of a phone, and the view tools stood taller
+  // than the picture: a control nobody can reach is not a control.
+  for (const [locale, width, height] of [["en", 390, 844], ["ka", 360, 740], ["en", 1280, 720]] as const) {
+    test(`every header and picture control is on the screen (${locale}, ${width} px)`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await page.goto(`/${locale}/observatory`);
+      await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
+      const stray = await page.evaluate(() => {
+        const out: string[] = [];
+        for (const el of document.querySelectorAll(".oh-head button, .oh-vtools button, .oh-otools button")) {
+          const r = el.getBoundingClientRect();
+          const host = el.closest(".sdo-view")?.getBoundingClientRect();
+          const off = r.left < 0 || r.right > window.innerWidth || (host !== undefined && (r.top < host.top || r.bottom > host.bottom));
+          if (off) out.push(el.getAttribute("aria-label") ?? el.textContent ?? "");
+        }
+        return out;
+      });
+      expect(stray).toEqual([]);
+    });
+  }
+
   test("the slew pad drives the model: the rate slider, a held arrow, a diagonal", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
