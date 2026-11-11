@@ -28,6 +28,8 @@ export type HubTarget = {
   up: boolean;
   /** Typed in by RA and Dec on the Custom tab. */
   custom?: boolean;
+  /** Its other names, for the search: the English one under a Georgian name. */
+  alias?: string;
 };
 type Filter = 'planet' | 'star' | 'deep' | 'custom' | 'all';
 type MoreTab = 'mount' | 'align' | 'focus' | 'setup' | 'log';
@@ -155,7 +157,7 @@ const Targets = memo(function Targets({ t, p }: { t: ConsoleCopy; p: ShellProps[
   const query = q.trim().toLowerCase();
   const rows = p.list.filter((x) =>
     query
-      ? `${x.name} ${x.sub}`.toLowerCase().includes(query)
+      ? `${x.name} ${x.sub} ${x.alias ?? ''}`.toLowerCase().includes(query)
       : filter === 'all' || (filter === 'custom' ? !!x.custom : !x.custom && (filter === 'planet' ? x.kind === 'planet' || x.kind === 'moon' : x.kind === filter)),
   );
   const filters: Filter[] = p.onCustom ? ['planet', 'star', 'deep', 'custom', 'all'] : ['planet', 'star', 'deep', 'all'];

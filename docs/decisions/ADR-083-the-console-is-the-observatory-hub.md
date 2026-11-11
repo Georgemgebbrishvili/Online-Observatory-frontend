@@ -95,3 +95,43 @@ The console's visual baselines change everywhere and need a refresh. The station
 start, five-step bar, target-search dialog, phone dock, hand-controller faceplate and the old
 camera panel are deleted, with their copy and CSS. The simulator's focuser is a model now: a
 position, a GoTo speed, hold rates, a best focus per optical train that drifts with the night.
+
+## Amendment — 2026-11-11
+
+Decided by the maintainer (Nika), in session: "now upgrade the Observatory, make sure
+everything works as it should".
+
+Found by running the console end to end, at its own pace and at `?turbo`, on a desk and on
+360 and 390 px phones, in both languages.
+
+- **Autofocus measured noise.** A star's half-flux radius summed everything above the
+  background's median, and half of pure noise is above it: on a faint field the radius read
+  5.6 px whatever the focus (a flat window's own mean distance), the V fitted nothing, and
+  the run could end hundreds of steps out, with the stars visibly rings. Only light three
+  sigma clear of the background counts now. A star is measured in a window 16 px out, so a
+  ring a dozen pixels wide is still measured; only the brightest are measured, one per
+  patch.
+- **A planet or a galaxy's core is not a star.** A patch still bright at the window's rim is
+  left out, so Saturn is focused by contrast, as decision 4 says, and Auto takes the
+  half-flux radius only where it changes by a fifth or more across the sweep.
+- **The sweep walks to focus.** Where the best sample is at the sweep's end, the sweep has
+  not crossed focus: it goes again around that sample, up to three times. The focus square
+  is 512 px, wide enough to hold field stars beside a galaxy's core.
+- **Measured after the change** (`?turbo`, the model's own best focus known): Saturn within
+  10 steps by contrast; Andromeda and the Hercules cluster at f/6.3 end with stars at 0.5 to
+  1.2 px half-flux radius, as sharp as the full frame shows. At f/6.3 the full frame cannot
+  tell positions within about 200 steps apart; a crop would, and the run does not change
+  the crop.
+- **Names in Georgian.** The targets list, the best three, the Autopilot, the status lines,
+  the refusal and the capture say a planet's, a named star's and a showpiece's Georgian
+  name; the rest of the catalogue goes by its designation. The search still finds the
+  English name and the designation.
+- **Nothing is cut short.** The filter and panel tabs no longer end in "…": they size to
+  their labels and the strip scrolls if it must; two Georgian labels are shortened so all
+  five fit a 360 px phone. A best-three tile's name takes two lines.
+- **The phone's tools are three rows of three, under the optics pills.** Two columns of
+  five ran under the pills on a 360 px phone.
+- **The idle card goes when the camera comes on.** While the mount aligns, the picture is
+  the field it slews across, not a card still asking for Find & Track.
+- **A capture's times are its exposure's.** A live stack that had stood finished for minutes
+  stamped the capture from the stack's start; the span is now the frames it holds.

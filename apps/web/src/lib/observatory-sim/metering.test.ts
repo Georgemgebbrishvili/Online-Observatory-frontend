@@ -23,6 +23,43 @@ describe('metering', () => {
     expect(mean(b)).toBeGreaterThan(mean(a) * 1.5);
   });
 
+  it('measures a faint star on a noisy sky by its light, not by the noise around it', () => {
+    // A seeded noise floor, as a long sub at high gain has it.
+    let seed = 7;
+    const noise = () => {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296 - 0.5;
+    };
+    const noisy = (sigma: number) => {
+      const img = starfield(sigma, 128, 128);
+      for (let i = 0; i < img.data.length; i += 1) img.data[i] += 0.04 * noise();
+      return img;
+    };
+    const hfr = (img: Lum) => {
+      const stars = findStars(img, frameStats(img), 15, 16);
+      return stars.reduce((t, x) => t + x.hfr, 0) / stars.length;
+    };
+    const sharp = hfr(noisy(1.2));
+    // Noise spread evenly over a 33 px window would read about 12 px whatever the focus.
+    expect(sharp).toBeLessThan(3);
+    expect(hfr(noisy(3))).toBeGreaterThan(sharp * 1.5);
+  });
+
+  it('does not take a planet\'s disc or a galaxy\'s core for a star', () => {
+    const w = 128;
+    const disc = new Float32Array(w * w).fill(0.05);
+    const core = new Float32Array(w * w).fill(0.05);
+    for (let y = 0; y < w; y += 1) for (let x = 0; x < w; x += 1) {
+      const d = Math.hypot(x - 64, y - 64);
+      if (d < 30) disc[y * w + x] = 0.7 - 0.002 * d;
+      core[y * w + x] += 0.6 * Math.exp(-d / 40);
+    }
+    for (const data of [disc, core]) {
+      const img = { data, width: w, height: w };
+      expect(findStars(img, frameStats(img), 15, 16)).toHaveLength(0);
+    }
+  });
+
   it('reads a sharper frame as more contrast', () => {
     expect(contrast(starfield(1.2))).toBeGreaterThan(contrast(starfield(3)) * 1.5);
   });

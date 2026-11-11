@@ -91,7 +91,7 @@ export function useAutoExposure(deps: AeDeps) {
     const img = grabLum(d.current.view());
     if (!img) return null;
     const s = frameStats(img);
-    const stars = findStars(img, s, 12).length;
+    const stars = findStars(img, s, 12, 7, false).length;
     const h = d.current.hint();
     const scene = mode === 'auto' ? classify(s, { ...h, stars }) : mode;
     return { s, scene, err: exposureError(s, scene) };
@@ -178,7 +178,10 @@ type AfDeps = {
   step: () => number;
 };
 
-const CROP = 256;
+/** The square read for focus: wide enough to hold field stars beside a galaxy's core. */
+const CROP = 512;
+/** The window a star is measured in: a ring a dozen pixels out is still a star, out of focus. */
+const STAR_WINDOW = 16;
 
 type Raw = { x: number; hfr: number; con: number; pass: 1 | 2 };
 
@@ -199,7 +202,7 @@ export function useAutofocus(deps: AfDeps) {
       const img = grabLum(d.current.view(), CROP);
       if (!img) continue;
       cons.push(contrast(img));
-      const stars = findStars(img, frameStats(img), 15);
+      const stars = findStars(img, frameStats(img), 15, STAR_WINDOW);
       if (stars.length >= 1) hfrs.push(median(stars.map((s) => s.hfr)));
     }
     return { hfr: hfrs.length ? median(hfrs) : NaN, con: cons.length ? median(cons) : NaN };
@@ -218,8 +221,10 @@ export function useAutofocus(deps: AfDeps) {
     const publish = () => setState((s) => ({ ...s, used, points: raw.filter((r) => Number.isFinite(y(r))).map((r) => ({ x: r.x, y: y(r), pass: r.pass })) }));
     const decide = () => {
       if (method !== 'auto') return;
-      const withStars = raw.filter((r) => Number.isFinite(r.hfr)).length;
-      used = withStars >= Math.max(5, Math.ceil(raw.length * 0.6)) ? 'hfr' : 'contrast';
+      const radii = raw.map((r) => r.hfr).filter(Number.isFinite);
+      // Stars at most positions, and a radius that changes with focus: a flat one is not measuring it.
+      const moves = radii.length > 0 && Math.max(...radii) >= 1.2 * Math.min(...radii);
+      used = radii.length >= Math.max(5, Math.ceil(raw.length * 0.6)) && moves ? 'hfr' : 'contrast';
     };
 
     const first = await sample();
@@ -260,11 +265,16 @@ export function useAutofocus(deps: AfDeps) {
     decide();
     publish();
     let coarse = fitOf(1);
-    const xs = raw.map((r) => r.x);
-    // A best focus outside the sweep: go again around the best sample.
-    if (!coarse || coarse.best < Math.min(...xs) || coarse.best > Math.max(...xs)) {
+    // Best focus at the sweep's edge, or past it: the sweep has not crossed focus yet. Go
+    // again around the best sample, up to three times, walking toward it.
+    for (let again = 0; again < 3; again += 1) {
+      const xs = raw.map((r) => r.x);
+      const lo = Math.min(...xs);
+      const hi = Math.max(...xs);
       const edge = bestSample(1);
       if (!edge) return fail('no measure');
+      const crossed = edge.x > lo && edge.x < hi && coarse !== null && coarse.best > lo && coarse.best < hi;
+      if (crossed) break;
       await sweep(edge.x, step, 9, 1);
       if (!alive()) return;
       decide();

@@ -47,41 +47,67 @@ export function frameStats(img: Lum): FrameStats {
 
 export type Star = { x: number; y: number; peak: number; hfr: number };
 
-/** Stars: local maxima well above the background, each measured by its half-flux radius. */
-export function findStars(img: Lum, stats: FrameStats, max = 40): Star[] {
+/**
+ * Stars: local maxima well above the background, each measured by its half-flux radius
+ * inside a window `r` pixels out. Only the brightest are measured, one per patch of sky, and
+ * a patch still bright at the window's edge is no star: a planet's disc, a galaxy's core, or
+ * a star thrown so far out of focus that its ring has left the window. Metering only counts
+ * points of light to name the scene, and passes `compact` false: a star out of focus is
+ * still a star to it.
+ */
+export function findStars(img: Lum, stats: FrameStats, max = 40, r = 7, compact = true): Star[] {
   const { data, width: w, height: h } = img;
   const floor = stats.median + Math.max(0.06, 6 * stats.sigma);
-  const r = 7;
-  const found: Star[] = [];
+  const peaks: Array<{ x: number; y: number; v: number }> = [];
   for (let y = r; y < h - r; y += 1) {
     for (let x = r; x < w - r; x += 1) {
       const v = data[y * w + x];
       if (v < floor) continue;
       let top = true;
       for (let dy = -2; dy <= 2 && top; dy += 1) for (let dx = -2; dx <= 2; dx += 1) if ((dx || dy) && data[(y + dy) * w + x + dx] > v) { top = false; break; }
-      if (!top) continue;
-      // Half-flux radius: the flux-weighted mean distance from the centroid.
-      let flux = 0;
-      let mx = 0;
-      let my = 0;
-      for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) {
-        const f = Math.max(0, data[(y + dy) * w + x + dx] - stats.median);
-        flux += f;
-        mx += f * dx;
-        my += f * dy;
-      }
-      if (flux <= 0) continue;
-      mx /= flux;
-      my /= flux;
-      let rad = 0;
-      for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) {
-        const f = Math.max(0, data[(y + dy) * w + x + dx] - stats.median);
-        rad += f * Math.hypot(dx - mx, dy - my);
-      }
-      found.push({ x: x + mx, y: y + my, peak: v, hfr: rad / flux });
+      if (top) peaks.push({ x, y, v });
     }
   }
-  return found.sort((a, b) => b.peak - a.peak).slice(0, max);
+  peaks.sort((a, b) => b.v - a.v);
+  const found: Star[] = [];
+  const taken: Array<{ x: number; y: number }> = [];
+  for (const { x, y, v } of peaks) {
+    if (found.length >= max || taken.length >= max * 4) break;
+    if (taken.some((t) => Math.abs(t.x - x) <= r && Math.abs(t.y - y) <= r)) continue;
+    taken.push({ x, y });
+    // The window's rim, against the peak: a star's light has died away by there.
+    let rim = 0;
+    let rimN = 0;
+    for (let d = -r; d <= r; d += 1) {
+      rim += data[(y - r) * w + x + d] + data[(y + r) * w + x + d] + data[(y + d) * w + x - r] + data[(y + d) * w + x + r];
+      rimN += 4;
+    }
+    if (compact && rim / rimN - stats.median > 0.3 * (v - stats.median)) continue;
+    // Half-flux radius: the flux-weighted mean distance from the centroid. Only light
+    // clear of the background's noise counts; noise alone, spread evenly over the window,
+    // would read as a wide star whatever the focus.
+    const cut = stats.median + 3 * stats.sigma;
+    const light = (v2: number) => (v2 > cut ? v2 - stats.median : 0);
+    let flux = 0;
+    let mx = 0;
+    let my = 0;
+    for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) {
+      const f = light(data[(y + dy) * w + x + dx]);
+      flux += f;
+      mx += f * dx;
+      my += f * dy;
+    }
+    if (flux <= 0) continue;
+    mx /= flux;
+    my /= flux;
+    let rad = 0;
+    for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) {
+      const f = light(data[(y + dy) * w + x + dx]);
+      rad += f * Math.hypot(dx - mx, dy - my);
+    }
+    found.push({ x: x + mx, y: y + my, peak: v, hfr: rad / flux });
+  }
+  return found;
 }
 
 export const median = (xs: number[]) => {

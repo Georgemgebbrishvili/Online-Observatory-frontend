@@ -5,6 +5,10 @@ import { createPortal } from 'react-dom';
 import type { Station } from '@/lib/observatory-sim/sim-stations';
 import { targetPosition, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
 import { exposureLabel } from '@/lib/observatory-sim/camera';
+import { SHOWPIECE_BY_ID } from '@/lib/observatory-sim/showpieces';
+import type { SkyBodyName } from '@/features/sky3d/astro';
+import type { Locale } from '@/i18n/config';
+import { nightSkyCopy, starKa } from '@/i18n/resources/night-sky';
 import { AltCurve } from './charts';
 import { useCopy } from './copy-context';
 import Icon from './icons';
@@ -59,9 +63,21 @@ function Modal({ width, head, tone = '#8fb0ff', night, onClose, labelledBy, chil
 }
 
 export const displayName = (t: TelescopeTarget) => (t.catalog && t.catalog !== t.name ? `${t.name} · ${t.catalog}` : t.name);
+
+/**
+ * A target's name as the console says it: in Georgian the planet's, the star's or the
+ * showpiece's Georgian name, and for the rest of the catalogue its designation.
+ */
+export function targetName(t: TelescopeTarget, locale: Locale): string {
+  const english = displayName(t).split(' · ')[0];
+  if (locale !== 'ka') return english;
+  if (t.body) return nightSkyCopy.ka.bodies[(t.id[0].toUpperCase() + t.id.slice(1)) as SkyBodyName] ?? english;
+  if (t.id.startsWith('star-')) return starKa[t.id.slice(5)] ?? english;
+  return SHOWPIECE_BY_ID.get(t.id)?.name.ka ?? t.catalog ?? english;
+}
 export type Refusal = { target: TelescopeTarget; reason: string };
 
-export function RefusedDialog({ night, station, refusal, onChoose, onClose }: { night: boolean; station: Station; refusal: Refusal; onChoose: () => void; onClose: () => void }) {
+export function RefusedDialog({ night, station, refusal, name, onChoose, onClose }: { night: boolean; station: Station; refusal: Refusal; name: string; onChoose: () => void; onClose: () => void }) {
   const t = useCopy();
   const [at] = useState(skyNow);
   const { target } = refusal;
@@ -70,7 +86,6 @@ export function RefusedDialog({ night, station, refusal, onChoose, onClose }: { 
   const path = useMemo(() => altitudePath(target, station, span, 30), [target, station, span]);
   const rises = useMemo(() => (altitude > 0 ? null : risesAt(target, station, new Date(at))), [altitude, target, station, at]);
   const best = bestOf(path);
-  const name = displayName(target).split(' · ')[0];
   const title = altitude <= 0 ? t.refused.notRisen(name) : t.refused.refused(name);
   const text = altitude <= 0 ? t.refused.below(station.name) : t.refused.reason(refusal.reason.replace(/^./, (c) => c.toUpperCase()));
   return (

@@ -16,9 +16,9 @@ import { SESSION_MINUTES, STATIONS as SIM_STATIONS, type Station } from '@/lib/o
 import { airmass, hourAngle, localSiderealHours } from '@/lib/observatory-sim/site-time';
 import { moonInSky, nearestObject, skyObjectsNear, tangentOffsetDeg } from '@/lib/observatory-sim/sky-field';
 import { SHOWPIECES, SHOWPIECE_BY_ID, aimPosition } from '@/lib/observatory-sim/showpieces';
-import { TELESCOPE_TARGET_BY_ID, gradeTargets, manualTarget, parseDec, parseRa, targetPosition, targetTitle, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
+import { TELESCOPE_TARGET_BY_ID, gradeTargets, manualTarget, parseDec, parseRa, targetPosition, type TelescopeTarget } from '@/lib/observatory-sim/telescope-targets';
 import { consoleCopy } from './copy';
-import { CaptureDialog, RefusedDialog, SheetDialog, displayName, type Frame, type Refusal } from './dialogs';
+import { CaptureDialog, RefusedDialog, SheetDialog, displayName, targetName, type Frame, type Refusal } from './dialogs';
 import LiveView, { type MountSample } from './LiveView';
 import { MountSettingsPanel } from './panels';
 import { PlatformConsole, type PlatformMission } from './platform-console';
@@ -88,7 +88,7 @@ const ARROWS: Record<string, { axis: Axis; dir: 1 | -1 }> = {
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 const typing = (el: EventTarget | null) => el instanceof HTMLElement && (el.isContentEditable || ['INPUT', 'SELECT', 'TEXTAREA'].includes(el.tagName));
-const shortName = (t: TelescopeTarget) => displayName(t).split(' · ')[0];
+const englishName = (t: TelescopeTarget) => displayName(t).split(' · ')[0];
 const hubKind = (t: TelescopeTarget): HubKind => (t.kind === 'planet' || t.kind === 'moon' || t.kind === 'star' ? t.kind : 'deep');
 const indexOf = (list: readonly number[], value: number) => Math.max(0, list.findIndex((v) => v >= value));
 
@@ -108,6 +108,8 @@ export default function ObservatoryConsole(props: ObservatoryConsoleProps) {
 
 function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, caption }: ObservatoryConsoleProps) {
   const t = consoleCopy[locale];
+  // The name the console says: Georgian for the planets, the named stars and the showpieces.
+  const shortName = useCallback((tg: TelescopeTarget) => targetName(tg, locale), [locale]);
   const STATIONS = useMemo(() => stationsFor(observatoryName), [observatoryName]);
   const [clockMs, setClockMs] = useState<number | null>(null);
   const now = clockMs ?? 0;
@@ -470,8 +472,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     setLive(null);
     setModal(null);
     setSynced(false);
-    setAcquisition(planAcquisition({ targetId: next.id, targetName: targetTitle(next), plan, warm: true, pace: mount.pace }));
-  }, [station, mount, targetFn, daytime]);
+    setAcquisition(planAcquisition({ targetId: next.id, targetName: shortName(next), plan, warm: true, pace: mount.pace }));
+  }, [station, mount, targetFn, daytime, shortName]);
 
   const cancelGoto = useCallback(() => {
     mount.abortSlew();
@@ -534,6 +536,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     capturingRef.current = true;
     try {
       const capturedAt = Date.now();
+      // The frames in the picture are the last `subs` the camera took: a live stack that
+      // stood finished for minutes did not spend those minutes exposing.
+      startedAtMs = Math.max(startedAtMs, capturedAt - subs * Math.max(exp, 1 / 30) * 1000);
       const provenance = simulated ? t.provenanceSimulated : station.name;
       const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'));
       if (!blob) return;
@@ -564,7 +569,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     } finally {
       capturingRef.current = false;
     }
-  }, [target, station, frames.length, exp, gain, focal, fRatio, fov.plateScaleArcsecPx, seeing, simulated, t]);
+  }, [target, station, frames.length, exp, gain, focal, fRatio, fov.plateScaleArcsecPx, seeing, simulated, t, shortName]);
 
   // Tracking follows the selector; the Moon takes the lunar rate when it is pointed at.
   useEffect(() => {
@@ -831,12 +836,12 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   // Every target the sky model knows, graded once a minute: up and safe first, highest first.
   const graded = useMemo(() => (clockMs === null ? [] : gradeTargets(node, new Date(minute * 60_000), { daytime })), [minute, node, clockMs === null, daytime]); // eslint-disable-line react-hooks/exhaustive-deps
   const hubTargets = useMemo<HubTarget[]>(() => graded
-    .map(({ target: tg, position, visible }) => ({ id: tg.id, name: shortName(tg), sub: tg.catalog && tg.catalog !== shortName(tg) ? tg.catalog : t.targets.kinds[tg.kind], kind: hubKind(tg), altitude: position.altitude, up: visible }))
+    .map(({ target: tg, position, visible }): HubTarget => ({ id: tg.id, name: shortName(tg), sub: tg.catalog && tg.catalog !== shortName(tg) ? tg.catalog : t.targets.kinds[tg.kind], kind: hubKind(tg), altitude: position.altitude, up: visible, alias: `${englishName(tg)} ${tg.catalog ?? ''}` }))
     .concat(custom.map((tg) => {
       const position = targetPosition(tg, node, new Date(minute * 60_000));
       return { id: tg.id, name: tg.name, sub: t.hub.targets.filters.custom, kind: 'star' as const, altitude: position.altitude, up: position.altitude > 0, custom: true };
     }))
-    .sort((x, y) => Number(y.up) - Number(x.up) || y.altitude - x.altitude), [graded, custom, node, minute, t]);
+    .sort((x, y) => Number(y.up) - Number(x.up) || y.altitude - x.altitude), [graded, custom, node, minute, t, shortName]);
   const bestTargets = useMemo(() => {
     const show = new Set(SHOWPIECES.map((sp) => sp.id));
     return hubTargets.filter((h) => h.up && show.has(h.id)).slice(0, 3);
@@ -863,7 +868,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     : cal === 'done' ? t.status.ready
     : park === 'done' ? t.status.parked
     : t.status.connected;
-  const idle = step >= 3 ? null
+  // While it aligns the camera is already on: the field it slews across is the picture.
+  const idle = step >= 3 || (cal === 'running' && cameraOn) ? null
     : step < 2 || !cameraOn
       ? { title: t.observatory, text: t.idle.text(pickedTarget ? shortName(pickedTarget) : null), note: simulated ? t.simulated : observatoryName }
       : { title: t.idle.ready, text: pickedTarget ? t.idle.pointTo(shortName(pickedTarget)) : t.idle.chooseRisen };
@@ -975,7 +981,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const modals = (
     <>
       {modal === 'refused' && refusal && (
-        <RefusedDialog night={night} station={station ?? node} refusal={refusal} onChoose={closeModal} onClose={closeModal} />
+        <RefusedDialog night={night} station={station ?? node} refusal={refusal} name={shortName(refusal.target)} onChoose={closeModal} onClose={closeModal} />
       )}
       {modal === 'capture' && viewing && <CaptureDialog night={night} frame={viewing} onClose={closeModal} />}
       {modal === 'mount' && (

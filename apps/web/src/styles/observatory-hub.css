@@ -490,11 +490,15 @@
   align-items: center;
   gap: 3px;
 }
+/* A name takes two lines before it is cut: "Andromeda Galaxy" reads whole. */
 .oh-best button > span {
   max-width: 100%;
+  min-height: 2.4em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 .oh-best button small {
   color: var(--mute);
@@ -528,6 +532,7 @@
 .oh-search[aria-invalid="true"] {
   border-color: #ff7a6b;
 }
+/* A label is never cut short: the strip scrolls sideways when its tabs do not fit. */
 .oh-tabs {
   display: flex;
   gap: 2px;
@@ -536,21 +541,21 @@
   border-radius: 11px;
   margin-bottom: 8px;
   border: 1px solid var(--line);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
 }
 .oh-tabs button {
-  flex: 1;
+  flex: 1 0 auto;
   background: none;
   border: 1px solid transparent;
   color: var(--mute);
-  padding: 7px 4px;
+  padding: 7px 6px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .oh-tabs button:hover:not(:disabled) {
   color: var(--ink);
@@ -1935,13 +1940,16 @@
       0 0 0 2px rgba(var(--bg-rgb), 0.65),
       0 0 0 3px var(--line2);
   }
-  /* nine tools in one column are taller than the phone's picture: two columns of five */
+  /* nine tools in one column are taller than the phone's picture, and two columns of five
+     run under the optics pills on a 360 px phone: three rows of three, below the pills */
   .oh-vtools {
     left: 8px;
+    top: 50px;
+    transform: none;
     padding: 3px;
     display: grid;
     grid-auto-flow: column;
-    grid-template-rows: repeat(5, 32px);
+    grid-template-rows: repeat(3, 32px);
     gap: 2px;
     border-radius: 18px;
   }
@@ -1954,9 +1962,9 @@
   }
   /* the idle card clears the tools: no icon, less padding, shifted off the rail */
   .oh .sdo-idle {
-    left: calc(50% + 38px);
-    width: calc(100% - 100px);
-    padding: 12px 14px;
+    left: calc(50% + 56px);
+    width: calc(100% - 136px);
+    padding: 12px 10px;
     gap: 6px;
   }
   .oh .sdo-idle__icon {
@@ -1970,6 +1978,12 @@
     padding: 4px 7px;
     font-size: 13px;
     min-height: 32px;
+  }
+  .oh-tabs {
+    gap: 0;
+  }
+  .oh-tabs button {
+    padding: 8px 3px;
   }
   .oh .sdo-hud--tl,
   .oh .sdo-hud--bl,
