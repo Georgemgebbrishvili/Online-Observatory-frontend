@@ -19,7 +19,7 @@ describe("frameNote", () => {
         roomCopy.ka.live.frame,
         "ka",
       ),
-    ).toBe("3 × 2,5 წმ დაჯამებული · გაძლიერება 200");
+    ).toBe("3 × 2,5 წმ დაგროვებული · გაძლიერება 200");
   });
 
   it("says a single sub-exposure is one, in milliseconds when short", () => {

@@ -8,7 +8,9 @@
  * looking down -z, faces north.
  */
 import {
+  BaryState,
   Body,
+  C_AUDAY,
   DefineStar,
   Equator,
   GeoVector,
@@ -58,9 +60,64 @@ export function refraction(alt: number) {
   return Refraction("normal", alt);
 }
 
-/** Apparent alt/az of a J2000 direction through the matrix, as the shader computes it. */
-export function horizontal(vec: Vec3, matrix: number[]): AltAz {
-  const [x, y, z] = vec;
+/**
+ * Annual aberration: the Earth's velocity over the speed of light, J2000. Added to a star's
+ * unit vector it leans the star up to 20.5″ the way the Earth is going, as astronomy-engine
+ * already leans the planets, so a star and a planet keep their true distance apart.
+ */
+export function aberration(date: Date): Vec3 {
+  const earth = BaryState(Body.Earth, MakeTime(date));
+  return [earth.vx / C_AUDAY, earth.vy / C_AUDAY, earth.vz / C_AUDAY];
+}
+
+/** Floats per star in stars.bin: x, y, z, V, B−V, then the proper motions in ″ a year. */
+const CATALOGUE_RECORD = 7;
+const ARCSEC = DEG / 3600;
+const J2000_MS = Date.UTC(2000, 0, 1, 12);
+const YEAR_MS = 365.25 * 86_400_000;
+
+/**
+ * The catalogue moved to a date: each star's J2000 unit vector carried along its proper
+ * motion from epoch 2000, as records of [x, y, z, V, B−V]. Arcturus has gone a full
+ * arcminute since 2000; a view a few arcminutes wide shows it.
+ */
+export function starsAtDate(catalogue: Float32Array, date: Date): Float32Array {
+  const years = (date.getTime() - J2000_MS) / YEAR_MS;
+  const count = Math.floor(catalogue.length / CATALOGUE_RECORD);
+  const out = new Float32Array(count * 5);
+  for (let i = 0; i < count; i++) {
+    const at = i * CATALOGUE_RECORD;
+    const x = catalogue[at];
+    const y = catalogue[at + 1];
+    const z = catalogue[at + 2];
+    const east = catalogue[at + 5] * ARCSEC * years;
+    const north = catalogue[at + 6] * ARCSEC * years;
+    const flat = Math.hypot(x, y) || 1;
+    // East and north on the sky at the star: (−sin RA, cos RA, 0) and the rest.
+    const nx = x - (y / flat) * east - ((z * x) / flat) * north;
+    const ny = y + (x / flat) * east - ((z * y) / flat) * north;
+    const nz = z + flat * north;
+    const length = Math.hypot(nx, ny, nz) || 1;
+    out.set([nx / length, ny / length, nz / length, catalogue[at + 3], catalogue[at + 4]], i * 5);
+  }
+  return out;
+}
+
+/**
+ * Apparent alt/az of a J2000 direction through the matrix, as the shader computes it. With
+ * `lean` (see `aberration`) the direction is the star's as the moving Earth sees it.
+ */
+export function horizontal(vec: Vec3, matrix: number[], lean?: Vec3): AltAz {
+  let [x, y, z] = vec;
+  if (lean) {
+    x += lean[0];
+    y += lean[1];
+    z += lean[2];
+    const length = Math.hypot(x, y, z);
+    x /= length;
+    y /= length;
+    z /= length;
+  }
   const north = matrix[0] * x + matrix[3] * y + matrix[6] * z;
   const west = matrix[1] * x + matrix[4] * y + matrix[7] * z;
   const up = matrix[2] * x + matrix[5] * y + matrix[8] * z;
@@ -333,34 +390,27 @@ export function skyPath(
   site: Site,
 ): PathPoint[] {
   const observer = observerOf(site);
-  let body: Body;
-  if ("body" in target) {
-    body = Body[target.body];
-  } else {
-    DefineStar(STAR_SLOT, target.raHours, target.decDeg, 1000);
-    body = STAR_SLOT;
-  }
   const points: PathPoint[] = [];
-  // A star's aberration is left out, as fixedAltAz leaves it out, so the path runs
-  // through the very point the panel gives.
-  const aberration = "body" in target;
   const steps = Math.round((hours * 60) / stepMinutes);
   for (let i = 0; i <= steps; i++) {
     const at = from.getTime() + i * stepMinutes * 60_000;
-    const time = MakeTime(new Date(at));
-    const eq = Equator(body, time, observer, true, aberration);
-    const hor = Horizon(time, observer, eq.ra, eq.dec, "normal");
-    points.push({ at, alt: hor.altitude, az: hor.azimuth });
+    if ("body" in target) {
+      const time = MakeTime(new Date(at));
+      const eq = Equator(Body[target.body], time, observer, true, true);
+      const hor = Horizon(time, observer, eq.ra, eq.dec, "normal");
+      points.push({ at, alt: hor.altitude, az: hor.azimuth });
+    } else {
+      // The very point the panel and the drawn star give.
+      points.push({ at, ...fixedAltAz(target.raHours, target.decDeg, new Date(at), site) });
+    }
   }
   return points;
 }
 
-/** Of-date apparent position of a J2000 object, through astronomy-engine's own Horizon. */
+/**
+ * Apparent position of a J2000 object: precessed, nutated, leaned by aberration and
+ * refracted, the same sum the star shader draws.
+ */
 export function fixedAltAz(raHours: number, decDeg: number, date: Date, site: Site): AltAz {
-  DefineStar(STAR_SLOT, raHours, decDeg, 1000);
-  const time = MakeTime(date);
-  const observer = observerOf(site);
-  const eq = Equator(STAR_SLOT, time, observer, true, false);
-  const hor = Horizon(time, observer, eq.ra, eq.dec, "normal");
-  return { alt: hor.altitude, az: hor.azimuth };
+  return horizontal(unitJ2000(raHours, decDeg), horizonMatrix(date, site), aberration(date));
 }

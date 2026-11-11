@@ -44,6 +44,7 @@ import {
 
 import {
   POLES,
+  aberration,
   bodies,
   colourOfBv,
   horizonMatrix,
@@ -117,6 +118,7 @@ const DEG = Math.PI / 180;
 
 const REFRACT = /* glsl */ `
   uniform mat3 uEqjHor;
+  uniform vec3 uLean;
   float refr(float alt) {
     if (alt < -90.0 || alt > 90.0) return 0.0;
     float hd = max(alt, -1.0);
@@ -124,9 +126,10 @@ const REFRACT = /* glsl */ `
     if (alt < -1.0) r *= (alt + 90.0) / 89.0;
     return r;
   }
-  // J2000 unit vector -> world (x east, y up, z south), apparent (refracted).
+  // J2000 unit vector -> world (x east, y up, z south), apparent: leaned by aberration
+  // (uLean, the Earth's velocity over light's) and refracted.
   vec3 toWorld(vec3 j) {
-    vec3 h = uEqjHor * j;
+    vec3 h = uEqjHor * normalize(j + uLean);
     float alt = degrees(asin(clamp(h.z, -1.0, 1.0)));
     float a2 = radians(alt + refr(alt));
     vec2 flat2 = h.xy;
@@ -146,11 +149,11 @@ const STAR_FRAGMENT = /* glsl */ `
     vec2 p = gl_PointCoord * 2.0 - 1.0;
     float r2 = dot(p, p);
     if (r2 > 1.0) discard;
-    float sharp = mix(4.0, 9.0, vHalo);
-    float core = exp(-r2 * sharp);
-    float halo = vHalo * 0.55 * exp(-r2 * 2.6) * (1.0 - r2);
-    float light = core + halo;
-    gl_FragColor = vec4(vTint * light, light * vAlpha);
+    // The core is whiter and tighter the brighter the star; its colour lives in the glow.
+    float core = exp(-r2 * mix(2.4, 9.0, vHalo));
+    float glow = (0.22 + 0.4 * vHalo) * exp(-r2 * 1.8) * (1.0 - r2) * (1.0 - r2);
+    vec3 colour = mix(vTint, vec3(1.0), core * (0.25 + 0.6 * vHalo)) * core + vTint * glow;
+    gl_FragColor = vec4(colour * vAlpha, (core + glow) * vAlpha);
   }
 `;
 
@@ -158,6 +161,7 @@ function starMaterial() {
   return new ShaderMaterial({
     uniforms: {
       uEqjHor: { value: new Matrix3() },
+      uLean: { value: new Vector3() },
       uLimit: { value: 6.5 },
       uScale: { value: 1 },
       uBelow: { value: 0 },
@@ -189,10 +193,12 @@ function starMaterial() {
         float seed = fract(sin(dot(position.xy, vec2(12.9898, 78.233))) * 43758.5453);
         float low = clamp((airmass - 1.0) / 4.0 + 0.12, 0.0, 1.0);
         float twinkle = 1.0 + uTwinkle * low * 0.45 * sin(uTime * (5.0 + seed * 9.0) + seed * 60.0);
-        vAlpha = clamp(d, 0.0, 1.0) * twinkle * ((w.y < 0.0 && uBelow < 0.5) ? 0.0 : 1.0);
-        vHalo = clamp((d - 3.2) / 4.0, 0.0, 1.0);
+        // A star at the limit is a faint point; one magnitude brighter it is plain.
+        vAlpha = clamp(0.35 + 0.65 * d, 0.0, 1.0) * step(0.0, d) * twinkle * ((w.y < 0.0 && uBelow < 0.5) ? 0.0 : 1.0);
+        vHalo = clamp((d - 2.0) / 5.0, 0.0, 1.0);
         vTint = mix(tint, tint * vec3(1.0, 0.82, 0.62), uExtinction * clamp((airmass - 2.0) / 10.0, 0.0, 0.8));
-        gl_PointSize = vAlpha <= 0.0 ? 0.0 : clamp(1.9 + d + 7.0 * vHalo, 1.9, 34.0) * uScale;
+        // Wider by the magnitude: each step down the scale is a visibly bigger star.
+        gl_PointSize = vAlpha <= 0.0 ? 0.0 : clamp(2.6 + 1.25 * d + 0.5 * d * d * vHalo, 2.6, 46.0) * uScale;
         gl_Position = projectionMatrix * viewMatrix * vec4(w * ${D.sky.toFixed(3)}, 1.0);
       }
     `,
@@ -231,7 +237,12 @@ function glowMaterial() {
 
 function lineMaterial(colour: string) {
   return new ShaderMaterial({
-    uniforms: { uEqjHor: { value: new Matrix3() }, uColour: { value: new Color(colour) }, uAlpha: { value: 0.5 } },
+    uniforms: {
+      uEqjHor: { value: new Matrix3() },
+      uLean: { value: new Vector3() },
+      uColour: { value: new Color(colour) },
+      uAlpha: { value: 0.5 },
+    },
     vertexShader: /* glsl */ `
       ${REFRACT}
       void main() { gl_Position = projectionMatrix * viewMatrix * vec4(toWorld(position) * ${D.lines.toFixed(3)}, 1.0); }
@@ -248,21 +259,37 @@ function lineMaterial(colour: string) {
 
 function milkyMaterial() {
   return new ShaderMaterial({
-    uniforms: { uEqjHor: { value: new Matrix3() }, uMap: { value: null }, uAlpha: { value: 0.5 } },
+    uniforms: {
+      uEqjHor: { value: new Matrix3() },
+      uLean: { value: new Vector3() },
+      uMap: { value: null },
+      uAlpha: { value: 0.5 },
+      uHaze: { value: 1 },
+    },
     vertexShader: /* glsl */ `
       ${REFRACT}
       varying vec3 vJ;
-      void main() { vJ = position; gl_Position = projectionMatrix * viewMatrix * vec4(toWorld(position) * ${D.milky.toFixed(3)}, 1.0); }
+      varying float vUp;
+      void main() {
+        vec3 w = toWorld(position);
+        vJ = position;
+        vUp = w.y;
+        gl_Position = projectionMatrix * viewMatrix * vec4(w * ${D.milky.toFixed(3)}, 1.0);
+      }
     `,
     fragmentShader: /* glsl */ `
       uniform sampler2D uMap;
       uniform float uAlpha;
+      uniform float uHaze;
       varying vec3 vJ;
+      varying float vUp;
       void main() {
         vec3 j = normalize(vJ);
         vec2 uv = vec2(atan(j.y, j.x) / 6.2831853 + 0.5, asin(clamp(j.z, -1.0, 1.0)) / 3.1415927 + 0.5);
-        float v = texture2D(uMap, uv).r;
-        gl_FragColor = vec4(vec3(0.80, 0.84, 0.95) * v, v * uAlpha);
+        // The photograph's own colours, cooled a little toward the night's blue.
+        vec3 c = texture2D(uMap, uv).rgb * vec3(0.92, 0.96, 1.08);
+        // Low down it shines through more air and goes out before the horizon.
+        gl_FragColor = vec4(c * uAlpha * mix(1.0, smoothstep(0.0, 0.3, vUp), uHaze), 1.0);
       }
     `,
     transparent: true,
@@ -664,6 +691,7 @@ export class SkyRenderer {
   private loader = new TextureLoader();
   private labels = new Map<string, HTMLSpanElement>();
   private matrix: number[] = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+  private lean: Vec3 = [0, 0, 0];
   private states: BodyState[] = [];
   private shown = new Map<string, { world: Vec3; radiusPx: number }>();
   private path: PathOverlay | null = null;
@@ -888,7 +916,7 @@ export class SkyRenderer {
 
   /** The apparent world direction of a J2000 vector this frame. */
   worldOfJ2000(vec: Vec3): Vec3 {
-    return worldOf(horizontal(vec, this.matrix));
+    return worldOf(horizontal(vec, this.matrix, this.lean));
   }
 
   bodyStates() {
@@ -902,15 +930,15 @@ export class SkyRenderer {
     if (kind === "body") return this.states.find((state) => state.name === id) ?? null;
     if (kind === "fixed") {
       const thing = this.things.find((t) => t.kind === "fixed" && t.id === id);
-      return thing && thing.kind === "fixed" ? horizontal(unit(thing.raHours, thing.decDeg), this.matrix) : null;
+      return thing && thing.kind === "fixed" ? horizontal(unit(thing.raHours, thing.decDeg), this.matrix, this.lean) : null;
     }
     if (kind === "star") {
       const i = Number(id) * 5;
-      return horizontal([this.starData[i], this.starData[i + 1], this.starData[i + 2]], this.matrix);
+      return horizontal([this.starData[i], this.starData[i + 1], this.starData[i + 2]], this.matrix, this.lean);
     }
     if (kind === "constellation") {
       const thing = this.things.find((t) => t.kind === "constellation" && t.id === id);
-      return thing && thing.kind === "constellation" ? horizontal(thing.label, this.matrix) : null;
+      return thing && thing.kind === "constellation" ? horizontal(thing.label, this.matrix, this.lean) : null;
     }
     return null;
   }
@@ -949,6 +977,7 @@ export class SkyRenderer {
     const { date, site, toggles } = frame;
     let { view } = frame;
     this.matrix = horizonMatrix(date, site);
+    this.lean = aberration(date);
     this.states = bodies(date, site);
     this.shown.clear();
     const target = frame.selected ? this.whereIs(frame.selected) : null;
@@ -979,6 +1008,7 @@ export class SkyRenderer {
     const m3 = new Matrix3().fromArray(this.matrix);
     const starUniforms = (this.stars.material as ShaderMaterial).uniforms;
     starUniforms.uEqjHor.value.copy(m3);
+    starUniforms.uLean.value.set(...this.lean);
     starUniforms.uLimit.value = effectiveLimit;
     // Stars grow a little as the view narrows, so a double's colours read when split.
     starUniforms.uScale.value = ratio * Math.min(3, 0.85 + 0.25 * zoomGain);
@@ -989,14 +1019,17 @@ export class SkyRenderer {
 
     const lines = this.lines.material as ShaderMaterial;
     lines.uniforms.uEqjHor.value.copy(m3);
-    lines.uniforms.uAlpha.value = 0.5 * (1 - bright * 0.8);
+    lines.uniforms.uLean.value.set(...this.lean);
+    lines.uniforms.uAlpha.value = 0.36 * (1 - bright * 0.8);
     this.lines.visible = toggles.lines;
 
     const milky = this.milky.material as ShaderMaterial;
     milky.uniforms.uEqjHor.value.copy(m3);
+    milky.uniforms.uLean.value.set(...this.lean);
     // The Milky Way is a glow across tens of degrees; in a narrow view it would only grey
     // the background, so it fades out below a 12° field.
-    milky.uniforms.uAlpha.value = 0.6 * Math.max(0, 1 - bright * 4) * smooth(3, 12, view.fov);
+    milky.uniforms.uAlpha.value = 0.42 * Math.max(0, 1 - bright * 9) * smooth(3, 12, view.fov);
+    milky.uniforms.uHaze.value = toggles.atmosphere ? 1 : 0;
     this.milky.visible = toggles.milkyway;
 
     // The equatorial grid is the equator of date: its own EQD -> HOR rotation.
@@ -1095,9 +1128,9 @@ export class SkyRenderer {
       const tint = asWritten(BODY_COLOUR[state.name]);
       glowTint.setXYZ(index, tint.r, tint.g, tint.b);
       // Sized as the star shader sizes a star of the same magnitude.
-      const halo = Math.max(0, Math.min(1, (d - 3.2) / 4));
-      glowSize.setX(index, Math.min(34, 1.9 + d + 7 * halo) * ratio * Math.min(1.6, 0.85 + 0.25 * zoomGain));
-      glowAlpha.setX(index, up && !big ? Math.max(0, Math.min(1, d)) * (1 - resolved) : 0);
+      const halo = Math.max(0, Math.min(1, (d - 2) / 5));
+      glowSize.setX(index, Math.min(46, Math.max(2.6, 2.6 + 1.25 * d + 0.5 * d * d * halo)) * ratio * Math.min(1.6, 0.85 + 0.25 * zoomGain));
+      glowAlpha.setX(index, up && !big && d > 0 ? Math.min(1, 0.35 + 0.65 * d) * (1 - resolved) : 0);
       glowHalo.setX(index, halo);
 
       const shownPx = discShown ? discPx * (state.name === "Saturn" ? 2.27 : 1) : Math.max(3, 1 + 0.6 * d);
@@ -1106,7 +1139,10 @@ export class SkyRenderer {
         `body:${state.name}`,
         `sky-label sky-label-body${frame.selected === `body:${state.name}` ? " is-selected" : ""}${state.alt < 0 ? " is-below" : ""}`,
         this.names.get(`body:${state.name}`) ?? state.name,
-        up && (toggles.planets || frame.selected === `body:${state.name}`) ? offset(world, (shownPx + 2) * degPerPx) : null,
+        // A planet the sky is too bright to show (Neptune at any wide view) goes unlabelled.
+        up && (frame.selected === `body:${state.name}` || (toggles.planets && (big || discShown || d > -0.5)))
+          ? offset(world, (shownPx + 2) * degPerPx)
+          : null,
       );
 
       if (state.name === "Sun" || state.name === "Moon") {
@@ -1147,7 +1183,7 @@ export class SkyRenderer {
         this.place(key, "sky-label sky-label-constellation", thing.name, toggles.names ? this.visible(this.worldOfJ2000(thing.label), toggles) : null);
       } else if (thing.kind === "fixed") {
         const selected = frame.selected === key;
-        const where = horizontal(unit(thing.raHours, thing.decDeg), this.matrix);
+        const where = horizontal(unit(thing.raHours, thing.decDeg), this.matrix, this.lean);
         const world = worldOf(where);
         const plate = this.plates.get(thing.id);
         let radiusPx = thing.type === "star" ? 6 : 9;
@@ -1175,7 +1211,8 @@ export class SkyRenderer {
           key,
           `sky-label ${thing.type === "star" ? "sky-label-star" : "sky-label-showpiece"}${selected ? " is-selected" : ""}${where.alt < 0 ? " is-below" : ""}${radiusPx > 12 ? " is-framed" : ""}`,
           thing.name,
-          show ? this.visible(radiusPx > 12 ? offset(world, (radiusPx + 4) * degPerPx) : world, toggles) : null,
+          // Framed or picked, the name stands clear of the object and its marker.
+          show ? this.visible(radiusPx > 12 ? offset(world, (radiusPx + 4) * degPerPx) : selected ? offset(world, 26 * degPerPx) : world, toggles) : null,
         );
       }
     }

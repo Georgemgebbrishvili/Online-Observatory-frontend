@@ -38,11 +38,11 @@ export const roomSharingCopy: Record<"en" | "ka", RoomSharingCopy> = {
   },
   ka: {
     title: "გაზიარება",
-    private: "ამ ეთერს მხოლოდ შენ ხედავ.",
+    private: "ამ სეანსს მხოლოდ შენ ხედავ.",
     open: "სხვებს შეუძლიათ უყურონ.",
     seats: "დაკავებულია {count} ადგილი {capacity}-დან.",
-    openAction: "სხვებსაც აყურებინე",
-    copyLink: "სანახავი ბმულის კოპირება",
+    openAction: "გაუზიარე სხვებს",
+    copyLink: "ბმულის კოპირება",
     copied: "ბმული დაკოპირდა",
     closeAction: "გაზიარების შეწყვეტა",
     closeQuestion: "შევწყვიტოთ გაზიარება?",
@@ -51,7 +51,7 @@ export const roomSharingCopy: Record<"en" | "ka", RoomSharingCopy> = {
     closeConfirm: "შეწყვეტა",
     closeKeep: "გაგრძელება",
     saving: "ინახება",
-    ended: "ეთერი დასრულდა.",
+    ended: "სეანსი დასრულდა.",
     failed: "რაღაც შეფერხდა. სცადე თავიდან.",
   },
 };

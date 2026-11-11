@@ -86,7 +86,7 @@ export const loyaltyCopy = {
   ka: {
     metadataTitle: `კლუბი · ${brand.ka.nominative}`,
     title: `${brand.ka.genitive} კლუბი`,
-    loading: "ქულები იკითხება",
+    loading: "ქულები იტვირთება",
     invited: "მოგიწვია კლუბის წევრმა. პირველი გადახდილი ჯავშნის შემდეგ მოწვევის ბონუსს ორივე მიიღებთ.",
     card: {
       kicker: "წევრის ბარათი",
@@ -111,7 +111,7 @@ export const loyaltyCopy = {
       rate: (points: number) => `${points} ქულა ყოველ გადახდილ ლარზე`,
       welcome: (points: number) => `${points} ქულა ელფოსტის დადასტურებაზე`,
       referral: (points: number) =>
-        `${points}-${points} ქულა შენც და მოწვეულ მეგობარსაც, მისი პირველი გადახდილი ჯავშნის შემდეგ`,
+        `${points}-${points} ქულა შენ და მოწვეულ მეგობარს, მისი პირველი გადახდილი ჯავშნის შემდეგ`,
       spend: (points: number) => `${points} ქულა = 1 ლარი ფასდაკლება ჯავშანზე, ვებსაიტზე`,
       rules: "დონეს მხოლოდ დასრულებული გადახდები ზრდის. ბონუსები და კორექტირებები — არასდროს. ქულებს ვადა არ გასდით.",
     },
@@ -141,7 +141,7 @@ export const loyaltyCopy = {
       ADMIN_ADJUSTMENT: "ობსერვატორიის კორექტირება",
     } satisfies Record<LoyaltyEntryKind, string>,
     unreachable: {
-      title: "კლუბის წაკითხვა ახლა ვერ ხერხდება",
+      title: "კლუბი ახლა ვერ იტვირთება",
       description:
         "პლატფორმა არ პასუხობს, ამიტომ ქულებს ვერ გაჩვენებთ. შენს ანგარიშზე არაფერი შეცვლილა. სცადე წუთში.",
     },

@@ -14,6 +14,7 @@ import {
   nextRise,
   skyPath,
   skyState,
+  starsAtDate,
   type BodyState,
   type Site,
   type SkyBodyName,
@@ -77,19 +78,34 @@ function separation(ra1: number, dec1: number, ra2: number, dec2: number) {
   return Math.acos(Math.min(1, cos)) / DEG;
 }
 
+/** The brightest catalogue star within 3′ of a J2000 place, as RA and Dec; null if none. */
+function catalogueStar(stars: Float32Array, raHours: number, decDeg: number) {
+  const ra = raHours * 15 * DEG;
+  const dec = decDeg * DEG;
+  const [x, y, z] = [Math.cos(dec) * Math.cos(ra), Math.cos(dec) * Math.sin(ra), Math.sin(dec)];
+  const near = Math.cos(0.05 * DEG);
+  // Sorted brightest first: the first one close enough is the star.
+  for (let i = 0; i < stars.length; i += 5) {
+    if (stars[i] * x + stars[i + 1] * y + stars[i + 2] * z < near) continue;
+    return { raHours: ((Math.atan2(stars[i + 1], stars[i]) / DEG / 15) + 24) % 24, decDeg: Math.asin(stars[i + 2]) / DEG };
+  }
+  return null;
+}
+
 function clock(at: Date, timeZone: string) {
   return new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone }).format(at);
 }
 
 function raText(hours: number) {
-  const h = ((hours % 24) + 24) % 24;
-  const m = (h - Math.floor(h)) * 60;
-  return `${Math.floor(h)}h ${m.toFixed(1).padStart(4, "0")}m`;
+  // Tenths of a minute first, so 5h 59.96m reads 6h 00.0m and never 5h 60.0m.
+  const tenths = Math.round((((hours % 24) + 24) % 24) * 600) % 14_400;
+  return `${Math.floor(tenths / 600)}h ${((tenths % 600) / 10).toFixed(1).padStart(4, "0")}m`;
 }
 
 function decText(deg: number) {
-  const a = Math.abs(deg);
-  return `${deg < 0 ? "−" : "+"}${Math.floor(a)}° ${String(Math.round((a % 1) * 60)).padStart(2, "0")}′`;
+  // Whole arcminutes first, so 45° 59.9′ reads 46° 00′ and never 45° 60′.
+  const minutes = Math.round(Math.abs(deg) * 60);
+  return `${deg < 0 ? "−" : "+"}${Math.floor(minutes / 60)}° ${String(minutes % 60).padStart(2, "0")}′`;
 }
 
 /** What an object's key points at, for the astronomy: a body, or a fixed J2000 place. */
@@ -141,7 +157,9 @@ export function NightSky({
   const rendererRef = useRef<SkyRenderer | null>(null);
   const starsRef = useRef<Float32Array | null>(null);
 
-  // Time: the simulated instant runs from an anchor at a speed, or stands still.
+  // Time: the simulated instant runs from an anchor at a speed, or stands still. The anchor
+  // is on the wall clock, not the page's own timer, which stops while a laptop sleeps: a
+  // tab left open overnight still shows this morning's sky.
   const time = useRef({ anchorSim: openedAt, anchorReal: 0, speed: 1, playing: true });
   // South, low enough that the horizon shows above the time bar.
   const viewRef = useRef<View>({ alt: 16, az: 180, fov: 75 });
@@ -188,13 +206,13 @@ export function NightSky({
 
   const simDate = useCallback(() => {
     const t = time.current;
-    return new Date(t.playing ? t.anchorSim + (performance.now() - t.anchorReal) * t.speed : t.anchorSim);
+    return new Date(t.playing ? t.anchorSim + (Date.now() - t.anchorReal) * t.speed : t.anchorSim);
   }, []);
   const setSimTime = useCallback(
     (at: number, next?: { speed?: number; playing?: boolean }) => {
       const t = time.current;
       t.anchorSim = at;
-      t.anchorReal = performance.now();
+      t.anchorReal = Date.now();
       if (next?.speed !== undefined) t.speed = next.speed;
       if (next?.playing !== undefined) t.playing = next.playing;
       setNow(new Date(at));
@@ -206,13 +224,15 @@ export function NightSky({
   const things = useMemo<SkyThing[]>(() => {
     const list: SkyThing[] = [];
     for (const star of BRIGHT_STARS) {
+      // The named star is the catalogue's own, where its proper motion has taken it.
+      const at = starData ? catalogueStar(starData, star.ra, star.dec) : null;
       list.push({
         kind: "fixed",
         id: star.id,
         name: locale === "ka" ? (starKa[star.id] ?? star.name) : star.name,
         type: "star",
-        raHours: star.ra,
-        decDeg: star.dec,
+        raHours: at?.raHours ?? star.ra,
+        decDeg: at?.decDeg ?? star.dec,
         magnitude: star.mag,
         labelled: true,
       });
@@ -243,14 +263,14 @@ export function NightSky({
       });
     }
     return list;
-  }, [constellations, locale]);
+  }, [constellations, locale, starData]);
 
   const bodyName = useCallback((name: SkyBodyName) => copy.bodies[name], [copy]);
 
   // Load the data and the renderer; fall back to the list without WebGL.
   useEffect(() => {
     reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    time.current.anchorReal = performance.now();
+    time.current.anchorReal = Date.now();
     const stored = readToggles();
     // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only storage, read once on mount
     setToggles(stored);
@@ -265,7 +285,8 @@ export function NightSky({
           fetch("/sky/data/constellations.json").then((r) => r.json() as Promise<Constellation[]>),
         ]);
         if (cancelled) return;
-        starsRef.current = new Float32Array(stars);
+        // Each star carried along its proper motion to the day the page opens.
+        starsRef.current = starsAtDate(new Float32Array(stars), new Date(openedAt));
         setStarData(starsRef.current);
         setConstellations(figures);
         rendererRef.current = new module.SkyRenderer(
@@ -277,7 +298,11 @@ export function NightSky({
           [],
         );
         rendererRef.current.setMotion(!reduceMotion.current);
-        time.current.anchorReal = performance.now();
+        // The page was rendered a moment ago, or restored from a cache long after: start
+        // from the visitor's own clock, unless it runs behind the server's.
+        const clientNow = Date.now();
+        if (clientNow > openedAt - 300_000) time.current.anchorSim = clientNow;
+        time.current.anchorReal = clientNow;
         setPhase("ready");
       } catch {
         if (!cancelled) setPhase("no-webgl");
@@ -288,7 +313,7 @@ export function NightSky({
       rendererRef.current?.dispose();
       rendererRef.current = null;
     };
-  }, []);
+  }, [openedAt]);
 
   // The renderer learns the named things and their names once the figures are in.
   useEffect(() => {
@@ -1135,7 +1160,7 @@ export function NightSky({
             {picked.magnitude !== null && (
               <div>
                 <dt>{copy.panel.magnitude}</dt>
-                <dd>{picked.magnitude.toFixed(1)}</dd>
+                <dd>{picked.magnitude.toFixed(1).replace("-", "−")}</dd>
               </div>
             )}
             {picked.lit !== null && (
@@ -1146,7 +1171,7 @@ export function NightSky({
             )}
             <div>
               <dt>{copy.panel.altitude}</dt>
-              <dd>{picked.alt.toFixed(1)}°</dd>
+              <dd>{picked.alt.toFixed(1).replace("-", "−")}°</dd>
             </div>
             <div>
               <dt>{copy.panel.azimuth}</dt>

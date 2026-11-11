@@ -97,7 +97,7 @@ test("on a phone a closer look folds the panel so the object shows", async ({ pa
 test("the Night Sky reads in Georgian", async ({ page }) => {
   await page.goto("/ka/sky");
   await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
-  await expect(page.getByText("გამოთვლილი ცა და არა ტელესკოპის გამოსახულება")).toBeVisible();
+  await expect(page.getByText("გამოთვლილი ცა, არა ტელესკოპის ხედი")).toBeVisible();
   await expect(page.getByRole("group", { name: "დრო" })).toBeVisible();
   const search = page.getByRole("combobox", { name: "იპოვე ცაზე" });
   await search.fill("ვეგა");

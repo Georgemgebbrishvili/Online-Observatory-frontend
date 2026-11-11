@@ -108,7 +108,7 @@ export const statusCopy = {
   en,
   ka: {
     metadataTitle: `ობსერვატორიის სტატუსი · ${brand.ka.nominative}`,
-    metadataDescription: `ობსერვატორიის სტატუსი და ამაღამინდელი ცა.`,
+    metadataDescription: `ობსერვატორიის სტატუსი და ამაღამის ცა.`,
     title: "ტელესკოპის სტატუსი",
     updated: "მიღებულია {age} წინ",
     age: { seconds: "{value} წმ", minutes: "{value} წთ", hours: "{value} სთ" },
@@ -158,7 +158,7 @@ export const statusCopy = {
     },
     weatherSource: { OPERATOR: "ოპერატორი", SENSOR: "ობსერვატორიის სენსორი" },
     conditions: {
-      title: "ამაღამინდელი პირობები",
+      title: "ამაღამის პირობები",
       detail:
         "საათობრივი პროგნოზი. მხოლოდ ორიენტირისთვის; პაუზაზე ოპერატორი წყვეტს.",
       empty: "ამაღამ დასაჯავშნი საათები არ არის.",

@@ -7,12 +7,21 @@ Built by `scripts/build-sky-data.mjs`.
 The Bright Star Catalogue, 5th Revised Edition (Preliminary Version). Hoffleit D., Warren
 Jr W.H., Astronomical Data Center, NSSDC/ADC (1991); CDS catalogue V/50. Copy used: the
 Harvard–Smithsonian Telescope Data Center's `bsc5.dat.gz`. Distributed by the Astronomical
-Data Center without restriction. Positions are J2000; magnitudes V; colours B−V.
+Data Center without restriction. Positions are J2000 at epoch 2000; magnitudes V; colours
+B−V; proper motions in arcseconds a year, which the page applies to the day it is opened.
 
-## constellations.json, milkyway.webp
+## milkyway.webp
+
+Deep Star Maps 2020, the Milky Way in celestial coordinates (`milkyway_2020_4k.exr`),
+https://svs.gsfc.nasa.gov/4851/. Credit: NASA/Goddard Space Flight Center Scientific
+Visualization Studio. Gaia DR2: ESA/Gaia/DPAC. NASA's media are not copyrighted and may be
+used with this credit, which the page carries. Tone-mapped and mirrored by the build script.
+
+## constellations.json
+
 
 From d3-celestial, https://github.com/ofrohn/d3-celestial (`data/constellations.json`,
-`data/constellations.lines.json`, `data/mw.json`):
+`data/constellations.lines.json`):
 
 Copyright (c) 2015, Olaf Frohn
 All rights reserved.
@@ -39,5 +48,4 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABI
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-The constellation figures follow the IAU's; the Milky Way outlines are J. R. Vieira's Milky
-Way Outline Catalog (skymap.com), whose own terms the maintainer confirms before launch.
+The constellation figures follow the IAU's.

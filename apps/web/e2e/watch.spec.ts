@@ -169,7 +169,7 @@ test("the owner is sent to the live room", async ({ page }) => {
 test("the Georgian owner is sent to the live room", async ({ page }) => {
   await page.goto(`/ka/app/missions/${observing}/watch`);
   await expect(
-    page.getByRole("heading", { level: 1, name: "ეს შენი ეთერია." }),
+    page.getByRole("heading", { level: 1, name: "ეს შენი სეანსია." }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "სეანსზე გადასვლა" }),

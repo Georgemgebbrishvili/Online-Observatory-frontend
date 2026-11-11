@@ -142,7 +142,7 @@ export const voteCopy: Record<"en" | "ka", VoteCopy> = {
       cast: (name) => `შენი ხმა: ${name}.`,
       locked: "კვირის კენჭისყრა დაიხურა.",
       notCandidate: "ეს ობიექტი ამ კვირის ბიულეტენში არ არის.",
-      failed: "ხმა ვერ შეინახა. სცადე თავიდან.",
+      failed: "ხმის შენახვა ვერ მოხერხდა. სცადე თავიდან.",
       targetPage: (name) => `${name}, ობიექტის გვერდი`,
     },
     chart: {

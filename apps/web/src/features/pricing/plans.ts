@@ -28,18 +28,18 @@ export const pricingOfferings: PricingOffering[] = [
     },
     price: { kind: "FREE" },
     features: [
-      { en: "Tonight's sky, hour by hour", ka: "ამაღამინდელი ცა, საათობრივად" },
+      { en: "Tonight's sky, hour by hour", ka: "ამაღამის ცა, საათობრივად" },
       { en: "The full target catalogue", ka: "ობიექტების სრული კატალოგი" },
       { en: "The observatory's live status", ka: "ობსერვატორიის მიმდინარე მდგომარეობა" },
     ],
     action: {
       href: "app/missions",
-      label: { en: "Explore tonight's sky", ka: "ამაღამინდელი ცის ნახვა" },
+      label: { en: "Explore tonight's sky", ka: "ამაღამის ცის ნახვა" },
     },
   },
   {
     id: "seat",
-    name: { en: "Watch a live session", ka: "უყურე პირდაპირ ეთერს" },
+    name: { en: "Watch a live session", ka: "უყურე პირდაპირ სეანსს" },
     description: {
       en: "Take a seat in somebody else's observation, from the link they share with you.",
       ka: "დაიკავე ადგილი სხვის დაკვირვებაზე, იმ ბმულით, რომელსაც გაგიზიარებენ.",
@@ -47,7 +47,7 @@ export const pricingOfferings: PricingOffering[] = [
     price: { kind: "PER_SEAT" },
     features: [
       { en: "The same live picture as the host", ka: "იგივე პირდაპირი გამოსახულება, რასაც მასპინძელი ხედავს" },
-      { en: "Up to ten seats in each session", ka: "თითო ეთერში ათამდე ადგილი" },
+      { en: "Up to ten seats in each session", ka: "თითო სეანსზე ათამდე ადგილი" },
       { en: "The telescope stays with the host", ka: "ტელესკოპს მასპინძელი მართავს" },
     ],
   },
@@ -60,10 +60,10 @@ export const pricingOfferings: PricingOffering[] = [
     },
     price: { kind: "PER_SLOT" },
     features: [
-      { en: "The telescope to yourself for the slot", ka: "მთელი სეანსის განმავლობაში ტელესკოპი მხოლოდ შენია" },
-      { en: "Your target slewed to and centred", ka: "ტელესკოპი თავად მობრუნდება შენი ობიექტისკენ და ცენტრში მოაქცევს" },
+      { en: "The telescope to yourself for the slot", ka: "სეანსის განმავლობაში ტელესკოპი მხოლოდ შენია" },
+      { en: "Your target slewed to and centred", ka: "ტელესკოპი თავად პოულობს და აცენტრებს შენს ობიექტს" },
       { en: "Captures kept in your Collection", ka: "გადაღებული კადრები შენს კოლექციაში ინახება" },
-      { en: "A watch link for up to ten friends", ka: "სანახავი ბმული ათამდე მეგობრისთვის" },
+      { en: "A watch link for up to ten friends", ka: "ბმული ათამდე მეგობრისთვის" },
     ],
     action: {
       href: "app/book",

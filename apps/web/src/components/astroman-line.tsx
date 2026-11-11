@@ -14,7 +14,7 @@ export function AstromanLine({
   const instrument = `${telescope.manufacturer} ${telescope.model}`;
   return (
     <p className="astroman-line">
-      {locale === "ka" ? `დანახულია ${instrument}-ით.` : `Seen through a ${instrument}.`}{" "}
+      {locale === "ka" ? `ნანახია ${instrument}-ით.` : `Seen through a ${instrument}.`}{" "}
       <a href="https://astroman.ge" rel="noopener" target="_blank">
         {locale === "ka" ? "ასტრომანი" : "Telescopes at Astroman"}
         <span className="visually-hidden">

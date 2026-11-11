@@ -107,7 +107,7 @@ export const roomControlsCopy: Record<"en" | "ka", RoomControlsCopy> = {
   ka: {
     title: "მართვა",
     sessionTitle: "სეანსი",
-    step: "{step} რკალური წუთი",
+    step: "{step} კუთხური წუთი",
     labels: {
       up: "მაღლა",
       down: "დაბლა",

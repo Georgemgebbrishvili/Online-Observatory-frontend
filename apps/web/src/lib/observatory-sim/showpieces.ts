@@ -45,7 +45,7 @@ export const SHOWPIECES: Showpiece[] = [
   { id: 'm31', name: { en: 'Andromeda Galaxy', ka: 'ანდრომედას გალაქტიკა' }, recipe: { train: 'F6_3_REDUCER', roi: 'full', exposureS: 4, gain: 300, stack: 8 } },
   { id: 'm57', name: { en: 'Ring Nebula', ka: 'რგოლის ნისლეული' }, recipe: { train: 'F10_NATIVE', roi: 'full', exposureS: 4, gain: 300, stack: 8 } },
   { id: 'm27', name: { en: 'Dumbbell Nebula', ka: 'ჰანტელის ნისლეული' }, recipe: { train: 'F10_NATIVE', roi: 'full', exposureS: 4, gain: 300, stack: 8 } },
-  { id: 'm1', name: { en: 'Crab Nebula', ka: 'კიბორჩხალას ნისლეული' }, recipe: { train: 'F10_NATIVE', roi: 'full', exposureS: 4, gain: 400, stack: 8 } },
+  { id: 'm1', name: { en: 'Crab Nebula', ka: 'კიბორჩხალისებრი ნისლეული' }, recipe: { train: 'F10_NATIVE', roi: 'full', exposureS: 4, gain: 400, stack: 8 } },
   { id: 'm13', name: { en: 'Hercules Cluster', ka: 'ჰერკულესის გროვა' }, recipe: { train: 'F6_3_REDUCER', roi: 'full', exposureS: 2, gain: 300, stack: 8 } },
   { id: 'm15', name: { en: 'Pegasus Cluster', ka: 'პეგასის გროვა' }, recipe: { train: 'F10_NATIVE', roi: 'full', exposureS: 2, gain: 300, stack: 8 } },
   { id: 'ngc869', name: { en: 'Double Cluster', ka: 'ორმაგი გროვა' }, recipe: { train: 'F6_3_REDUCER', roi: 'full', exposureS: 1, gain: 250, stack: 8 } },

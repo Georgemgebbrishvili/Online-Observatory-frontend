@@ -86,7 +86,7 @@ test("renders in Georgian", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible({
     timeout: firstCompile,
   });
-  await expect(page.getByText("ამაღამინდელი პირობები")).toBeVisible();
+  await expect(page.getByText("ამაღამის პირობები")).toBeVisible();
   await shoot(page, `${evidence}/02-status-georgian.png`);
 });
 

@@ -75,7 +75,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
   },
   ka: {
     metadataTitle: `მთავარი · ${brand.ka.nominative}`,
-    metadataDescription: "ამაღამინდელი ცა, სეანსები და კოლექცია.",
+    metadataDescription: "ამაღამის ცა, სეანსები და კოლექცია.",
     greeting: (name) =>
       name ? `გამარჯობა, ${name}!` : "გამარჯობა!",
     tonight: "ამაღამ",

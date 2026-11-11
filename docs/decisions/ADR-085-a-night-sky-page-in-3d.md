@@ -152,3 +152,44 @@ looks … it should also indicate which ones are above the horizon".
 - **On a phone** "Look closer" folds the panel to its head (Details unfolds it), so the
   object shows above it; an opened list sits above the panel, and the desk panel ends above
   the time bar and the list button instead of covering them.
+
+## Amendment — 2026-11-11
+
+Decided by the maintainer (Nika), in session: "Upgrade the night sky experience, its graphic
+and accuracy. Make sure it's accurate every day."
+
+- **Stars move to the day.** `stars.bin` now carries each star's proper motion (seven
+  numbers a star). The page carries every star from epoch 2000 to the day it opens
+  (`starsAtDate`); Arcturus has gone an arcminute since 2000, which a close view shows. This
+  replaces decision 3's "proper motion is ignored". A named star takes the catalogue star's
+  moved place.
+- **Stars lean by aberration.** The Earth's velocity over light's (`aberration`,
+  astronomy-engine's `BaryState`) is added to every star, line and Milky Way direction in the
+  shader and in `horizontal()`, up to 20.5″, as astronomy-engine already leans the planets.
+  A star and a planet now keep their true distance apart. `fixedAltAz` and a star's path
+  go through the same sum as the shader.
+- **The clock is the wall clock.** The simulated instant is anchored to `Date.now()`, not
+  `performance.now()`, which stops while a laptop sleeps: a tab left open overnight shows the
+  sky of the moment, not of the evening before. The page starts from the visitor's clock
+  unless it runs more than five minutes behind the server's.
+- **A test against JPL.** `accuracy.test.ts` holds the Sun, Moon and planets to NASA JPL
+  Horizons at nine instants each from November 2026 to June 2030 (apparent, topocentric):
+  within 30″ and 0.25 magnitude. Measured on the day: 20″ at worst (Saturn), under 12″ for
+  the Sun, Moon, Mercury, Mars and Jupiter. The reference values are a fixture in the
+  repository; the test needs no network.
+- **Coordinates round whole.** The panel rounded minutes after splitting off the degrees and
+  could print `+45° 60′`; it now rounds first.
+- **The Milky Way is NASA's.** Deep Star Maps 2020 (NASA/Goddard Space Flight Center
+  Scientific Visualization Studio; Gaia DR2: ESA/Gaia/DPAC; not copyrighted, credited on the
+  page), tone-mapped to a 2048 × 1024 texture in colour, with its dust lanes. It replaces the
+  five outline steps of d3-celestial's `mw.json` and with them decision 4's open licence
+  question about the outline catalogue. It fades toward the horizon and with twilight. The
+  build script decodes the OpenEXR source with `ffmpeg`.
+- **Stars read as stars.** A star's drawn size and glow grow with its brightness along the
+  whole scale, the core whitens and the colour lives in the glow; a star at the limiting
+  magnitude is a faint point instead of nothing. Constellation lines are fainter than the
+  stars they join.
+- **A planet the sky hides is not labelled.** Neptune, at any wide view, has no label until
+  the view is narrow enough to show it, or it is picked.
+- **The time bar is one row shorter on a desk.**
+- **Data size.** `stars.bin` 255 KB and `milkyway.webp` 157 KB before transfer compression.

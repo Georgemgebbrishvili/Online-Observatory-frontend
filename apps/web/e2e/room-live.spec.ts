@@ -56,12 +56,12 @@ test("the Georgian live room fits a phone", async ({ page }) => {
   await page.goto(`/ka/app/missions/${observing}/session`);
 
   await expect(
-    page.getByRole("img", { name: "სიმულირებული პირდაპირი ეთერი: ჰერკულესის გროვა" }),
+    page.getByRole("img", { name: "სიმულირებული პირდაპირი გამოსახულება: ჰერკულესის გროვა" }),
   ).toBeVisible();
   await expect(page.locator(".live-feed").getByText("სიმულირებული")).toBeVisible();
   await expect(page.locator(".live-feed").getByText(/დარჩენილი დრო/)).toBeVisible();
   await expect(page.locator(".live-feed [data-live-frame]")).toHaveText(
-    "12 × 2 წმ დაჯამებული · გაძლიერება 200",
+    "12 × 2 წმ დაგროვებული · გაძლიერება 200",
   );
 
   const viewport = await page.evaluate(() => ({

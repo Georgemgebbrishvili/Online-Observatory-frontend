@@ -51,6 +51,14 @@ This document is the review source for Georgian product and astronomy language. 
 | exposure            | ექსპოზიცია                  | Established photography/astronomy term                                                        |
 | camera              | კამერა                      | Standard term                                                                                 |
 | optics              | ოპტიკა                      | Standard term                                                                                 |
+| right ascension     | პირდაპირი აღვლენა           | Night Sky panel; `RA` stays in compact technical rows                                         |
+| declination         | დახრილობა                   | Night Sky panel                                                                               |
+| culmination         | კულმინაცია                  | The Night Sky's "Highest" (upper transit)                                                     |
+| airmass             | ჰაერის მასა                 | Console                                                                                       |
+| arcminute           | კუთხური წუთი                | Standard term                                                                                 |
+| stacking (frames)   | დაგროვება                   | One word site-wide since 2026-11-11: „კადრები გროვდება“; not „დაჯამება“ or „დაწყობა“          |
+| live picture        | პირდაპირი გამოსახულება      | The feed; a shared session is „სეანსი“, never „ეთერი“                                         |
+| tonight's …         | ამაღამის …                  | One form site-wide: „ამაღამის ცა“, „ამაღამის ობიექტები“                                       |
 
 ## Human review required
 

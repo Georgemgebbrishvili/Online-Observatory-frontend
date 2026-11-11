@@ -621,6 +621,21 @@
   color: var(--color-text-secondary);
 }
 
+/* A desk: the time steps and the speeds share one row, so the bar hides less sky. */
+@media (--md) {
+  .sky-time {
+    grid-template-columns: auto 1fr;
+  }
+
+  .sky-clock {
+    grid-column: 1 / -1;
+  }
+
+  .sky-speed {
+    justify-content: flex-end;
+  }
+}
+
 /* A phone: the panel is a sheet over the time bar, the toggles fold away. */
 @media (--below-md) {
   .sky-panel {

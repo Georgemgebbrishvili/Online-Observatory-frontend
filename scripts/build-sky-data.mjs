@@ -1,17 +1,25 @@
 // Builds the Night Sky page's data (ADR-085) into apps/web/public/sky/data/:
 //
 //   stars.bin            the Yale Bright Star Catalogue, 5th rev. (Hoffleit & Warren 1991,
-//                        CDS/ADC V/50): Float32 records [x, y, z, V, B-V], x/y/z the J2000
-//                        unit vector, brightest first
+//                        CDS/ADC V/50): Float32 records [x, y, z, V, B-V, pmRA, pmDec],
+//                        x/y/z the J2000 unit vector at epoch 2000, the proper motions in
+//                        arcseconds a year (pmRA is on the sky, already times cos Dec),
+//                        brightest first. The page moves each star to today's date.
 //   constellations.json  d3-celestial's lines and label points (BSD 3-Clause, Olaf Frohn)
-//   milkyway.webp        d3-celestial's mw.json (five brightness steps of J. R. Vieira's
-//                        outline catalogue) rasterised equirectangular: u = (RA+180°)/360°
-//                        with RA in -180..180, v = (90° - Dec)/180°
+//   milkyway.webp        NASA's Deep Star Maps 2020 Milky Way (NASA/Goddard Space Flight
+//                        Center Scientific Visualization Studio; Gaia DR2: ESA/Gaia/DPAC;
+//                        public domain), tone-mapped and turned to this page's
+//                        equirectangular: u = (RA+180°)/360° with RA in -180..180,
+//                        v = (90° - Dec)/180°
 //
 // Run from the repository root: `node scripts/build-sky-data.mjs [sourceDir]`. Without a
 // sourceDir it downloads the sources; with one it reads bsc5.dat.gz, constellations.json,
-// constellations.lines.json and mw.json from there.
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+// constellations.lines.json and milkyway_2020_4k.exr from there. The Milky Way is an
+// OpenEXR picture, decoded by `ffmpeg`, which must be installed.
+import { execFileSync } from "node:child_process";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import sharp from "sharp";
 
@@ -22,7 +30,8 @@ const sources = {
     "https://raw.githubusercontent.com/ofrohn/d3-celestial/master/data/constellations.json",
   "constellations.lines.json":
     "https://raw.githubusercontent.com/ofrohn/d3-celestial/master/data/constellations.lines.json",
-  "mw.json": "https://raw.githubusercontent.com/ofrohn/d3-celestial/master/data/mw.json",
+  "milkyway_2020_4k.exr":
+    "https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004851/milkyway_2020_4k.exr",
 };
 
 async function source(name) {
@@ -57,12 +66,19 @@ for (const line of gunzipSync(await source("bsc5.dat.gz")).toString("latin1").sp
     sign *
     (Number(field(line, 85, 86)) + Number(field(line, 87, 88)) / 60 + Number(field(line, 89, 90)) / 3600);
   const bv = field(line, 110, 114);
-  stars.push({ ra, dec, v: Number(vmag), bv: bv === "" ? 0.6 : Number(bv) });
+  stars.push({
+    ra,
+    dec,
+    v: Number(vmag),
+    bv: bv === "" ? 0.6 : Number(bv),
+    pmRa: Number(field(line, 149, 154)) || 0,
+    pmDec: Number(field(line, 155, 160)) || 0,
+  });
 }
 stars.sort((a, b) => a.v - b.v);
-const records = new Float32Array(stars.length * 5);
+const records = new Float32Array(stars.length * 7);
 stars.forEach((star, index) => {
-  records.set([...unit(star.ra, star.dec), star.v, star.bv], index * 5);
+  records.set([...unit(star.ra, star.dec), star.v, star.bv, star.pmRa, star.pmDec], index * 7);
 });
 await writeFile(new URL("stars.bin", out), Buffer.from(records.buffer));
 
@@ -84,51 +100,35 @@ const constellations = lines.features.map((feature) => {
 });
 await writeFile(new URL("constellations.json", out), JSON.stringify(constellations));
 
-// The Milky Way, five layers of outline, each brighter step on top, softened.
+// The Milky Way: NASA's map is linear light, centred on RA 0h with RA growing to the left.
+// Decoded to 16-bit by ffmpeg, mirrored so RA grows to the right, then tone-mapped: the
+// sky's own floor taken off so the background is black, the faint outer band lifted, the
+// bright centre held under white.
 const W = 2048;
 const H = 1024;
-const milky = JSON.parse(await source("mw.json"));
-const toXY = ([lon, lat]) => [((lon + 180) / 360) * W, ((90 - lat) / 180) * H];
-// A ring that crosses RA ±180° jumps a whole width: unwrap it so each step is under half a
-// turn, and draw the layer three times, a width apart, so whatever spills off one edge
-// comes back on the other.
-// The faintest layer's two edges each run once around the sky: closing both through the
-// north pole makes the even-odd fill the band between them.
-const unwrap = (ring) => {
-  let last = ring[0][0];
-  const points = ring.map(([lon, lat]) => {
-    while (lon - last > 180) lon -= 360;
-    while (lon - last < -180) lon += 360;
-    last = lon;
-    return [lon, lat];
-  });
-  const first = points[0][0];
-  return Math.abs(last - first) > 180 ? [...points, [last, 90], [first, 90]] : points;
-};
-const paths = milky.features
-  .map((feature) => {
-    // All three copies in one path, so the even-odd rule works across them too.
-    const d = [-360, 0, 360]
-      .flatMap((shift) =>
-        feature.geometry.coordinates.flatMap((polygon) =>
-          polygon.map(
-            (ring) =>
-              unwrap(ring)
-                .map(([lon, lat], i) => `${i ? "L" : "M"}${toXY([lon + shift, lat]).map((n) => n.toFixed(1)).join(" ")}`)
-                .join("") + "Z",
-          ),
-        ),
-      )
-      .join("");
-    return `<path d="${d}" fill="#fff" fill-opacity="0.2" fill-rule="evenodd"/>`;
-  })
-  .join("");
-const svg = Buffer.from(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#000"/>${paths}</svg>`,
-);
+const work = await mkdtemp(join(tmpdir(), "sky-"));
+const exr = join(work, "milkyway.exr");
+const png = join(work, "milkyway.png");
+await writeFile(exr, await source("milkyway_2020_4k.exr"));
+execFileSync("ffmpeg", ["-v", "error", "-y", "-i", exr, "-frames:v", "1", "-pix_fmt", "rgb48be", png]);
+const { data, info } = await sharp(png)
+  .resize(W, H, { kernel: "lanczos3" })
+  .flop()
+  .toColourspace("rgb16")
+  .raw({ depth: "ushort" })
+  .toBuffer({ resolveWithObject: true });
+await rm(work, { recursive: true });
+const linear = new Uint16Array(data.buffer, data.byteOffset, data.length / 2);
+const toned = Buffer.alloc(linear.length);
+for (let i = 0; i < linear.length; i++) {
+  const light = Math.max(0, linear[i] / 65535 - 0.02);
+  toned[i] = Math.round(255 * (1 - Math.exp(-light * 2.2)) ** (1 / 2.2));
+}
 await writeFile(
   new URL("milkyway.webp", out),
-  await sharp(svg).blur(6).grayscale().webp({ quality: 70 }).toBuffer(),
+  await sharp(toned, { raw: { width: info.width, height: info.height, channels: info.channels } })
+    .webp({ quality: 62 })
+    .toBuffer(),
 );
 
 console.log(

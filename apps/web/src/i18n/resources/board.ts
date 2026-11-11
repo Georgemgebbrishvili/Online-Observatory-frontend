@@ -162,7 +162,7 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
     anySub: "ჩვენ ავარჩევთ",
     forecast: {
       label: "პროგნოზი",
-      cloud: (percent) => `${percent}% ღრუბელი`,
+      cloud: (percent) => `${percent}% ღრუბლიანობა`,
       unknown: "პროგნოზი ჯერ არ არის",
     },
     waitlist: {

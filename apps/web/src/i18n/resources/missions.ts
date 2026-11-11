@@ -25,7 +25,7 @@ export const missionBrowserCopy = {
   ka: {
     metadataTitle: `მისიები · ${brand.ka.nominative}`,
     metadataDescription: "აირჩიე ამაღამ დაკვირვებისთვის ხელმისაწვდომი ობიექტი.",
-    title: "ამაღამინდელი ობიექტები",
+    title: "ამაღამის ობიექტები",
     types: {
       Planet: "პლანეტა",
       Moon: "მთვარე",
@@ -69,7 +69,7 @@ export const missionDetailCopy = {
   ka: {
     back: "ყველა მისია",
     description: "ობიექტის შესახებ",
-    visibility: "ამაღამინდელი ხილვადობა",
+    visibility: "ამაღამის ხილვადობა",
     window: "ხილვადობის დრო ამაღამ",
     altitude: "მიმდინარე სიმაღლე",
     duration: "მისიის ხანგრძლივობა",
@@ -77,7 +77,7 @@ export const missionDetailCopy = {
     observatory: "ობსერვატორია",
     observatoryName: `${brand.ka.genitive} ობსერვატორია`,
     book: "დაჯავშნე დაკვირვება",
-    visibilityUnknown: "ამაღამინდელი ხილვადობის მონაცემები ვერ მივიღეთ.",
+    visibilityUnknown: "ამაღამის ხილვადობის მონაცემები ვერ მივიღეთ.",
     technical: "ტექნიკური ინფორმაცია",
     catalog: "კატალოგის ID",
     coordinates: "კოორდინატები (RA / Dec)",

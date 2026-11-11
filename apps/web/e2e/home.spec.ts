@@ -362,7 +362,7 @@ test("keeps missions usable inside a mobile viewport", async ({ page }) => {
   await page.goto("/ka/app/missions");
 
   await expect(
-    page.getByRole("heading", { name: "ამაღამინდელი ობიექტები" }),
+    page.getByRole("heading", { name: "ამაღამის ობიექტები" }),
   ).toBeVisible();
   await page.getByRole("link", { name: "ობიექტის ნახვა" }).first().click();
   await expect(page.getByRole("link", { name: "დაჯავშნე დაკვირვება" })).toBeVisible();
