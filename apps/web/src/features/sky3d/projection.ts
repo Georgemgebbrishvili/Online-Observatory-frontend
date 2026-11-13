@@ -45,3 +45,59 @@ export function clampView(view: View): View {
     fov: Math.max(FOV.min, Math.min(FOV.max, view.fov)),
   };
 }
+
+const RAD = Math.PI / 180;
+
+/** The world direction under a screen point (x, y, from the top left): screenOf undone. */
+export function directionAt(view: View, x: number, y: number, width: number, height: number): Vec3 {
+  const { forward, right, up } = basis(view);
+  const t = Math.tan((view.fov * RAD) / 2);
+  const across = ((2 * x) / width - 1) * (width / height) * t;
+  const down = (1 - (2 * y) / height) * t;
+  return normal([
+    forward[0] + right[0] * across + up[0] * down,
+    forward[1] + right[1] * across + up[1] * down,
+    forward[2] + right[2] * across + up[2] * down,
+  ]);
+}
+
+/**
+ * The view at a new field, turned so the sky under a screen point (x, y) stays under it:
+ * a wheel or a pinch zooms where it is aimed, not at the middle. Solved by Newton's
+ * method on the view's altitude and azimuth, with the screen's slopes measured.
+ */
+export function zoomAbout(view: View, fov: number, x: number, y: number, width: number, height: number): View {
+  return aimAt({ ...view, fov }, directionAt(view, x, y, width, height), x, y, width, height);
+}
+
+/**
+ * The view, at its own field, turned so a world direction falls on a screen point: a drag
+ * keeps the star it took hold of under the finger, near the zenith too.
+ */
+export function aimAt(view: View, target: Vec3, x: number, y: number, width: number, height: number): View {
+  let next = clampView(view);
+  const h = Math.min(0.01, next.fov / 1000);
+  for (let i = 0; i < 8; i++) {
+    const at = screenOf(target, next, width, height);
+    if (!at) break;
+    const ex = at.x - x;
+    const ey = at.y - y;
+    if (Math.hypot(ex, ey) < 0.02) break;
+    const byAlt = screenOf(target, { ...next, alt: next.alt + h }, width, height);
+    const byAz = screenOf(target, { ...next, az: next.az + h }, width, height);
+    if (!byAlt || !byAz) break;
+    const [a, b, c, d] = [(byAlt.x - at.x) / h, (byAz.x - at.x) / h, (byAlt.y - at.y) / h, (byAz.y - at.y) / h];
+    const det = a * d - b * c;
+    if (Math.abs(det) < 1e-9) break;
+    const dAlt = (d * ex - b * ey) / det;
+    const dAz = (a * ey - c * ex) / det;
+    // Never more than a fifth of the field in one step, so a far start cannot overshoot.
+    const cap = next.fov / 5;
+    next = clampView({
+      ...next,
+      alt: next.alt - Math.max(-cap, Math.min(cap, dAlt)),
+      az: next.az - Math.max(-cap, Math.min(cap, dAz)),
+    });
+  }
+  return next;
+}

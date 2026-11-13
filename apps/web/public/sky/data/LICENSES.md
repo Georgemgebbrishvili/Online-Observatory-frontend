@@ -2,7 +2,7 @@
 
 Built by `scripts/build-sky-data.mjs`.
 
-## stars.bin
+## stars-v2.bin
 
 The Bright Star Catalogue, 5th Revised Edition (Preliminary Version). Hoffleit D., Warren
 Jr W.H., Astronomical Data Center, NSSDC/ADC (1991); CDS catalogue V/50. Copy used: the

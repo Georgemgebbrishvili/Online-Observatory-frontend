@@ -12,6 +12,9 @@ import {
   bodyState,
   constellationAt,
   constellationOfBody,
+  FIGURES_URL,
+  STARS_URL,
+  decodeCatalogue,
   events,
   fixedAltAz,
   nextRise,
@@ -23,7 +26,7 @@ import {
   type SkyBodyName,
   type Vec3,
 } from "@/features/sky3d/astro";
-import { clampView, type View } from "@/features/sky3d/projection";
+import { aimAt, clampView, directionAt, zoomAbout, type View } from "@/features/sky3d/projection";
 import { dayMonth } from "@/features/cards/dates";
 import type { Locale } from "@/i18n/config";
 import { constellationKa, nightSkyCopy, starKa } from "@/i18n/resources/night-sky";
@@ -61,6 +64,26 @@ const TOOLS: (keyof Toggles)[] = ["lines", "names", "dso", "atmosphere", "ground
 const DEG = Math.PI / 180;
 /** Half the time slider's reach either side of the present, minutes. */
 const SCRUB = 720;
+
+type Loaded = [typeof import("./renderer"), ArrayBuffer, Constellation[]];
+let loading: Promise<Loaded> | null = null;
+/**
+ * The renderer's code, the stars and the figures, all at once. Started as soon as this
+ * module runs in the browser -- before the page has hydrated -- so the three arrive
+ * together instead of one after another; a failed load is tried again on the next mount.
+ */
+function load() {
+  loading ??= Promise.all([
+    import("./renderer"),
+    fetch(STARS_URL).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`stars ${r.status}`)))),
+    fetch(FIGURES_URL).then((r) => (r.ok ? (r.json() as Promise<Constellation[]>) : Promise.reject(new Error(`figures ${r.status}`)))),
+  ]).catch((error: unknown) => {
+    loading = null;
+    throw error;
+  });
+  return loading;
+}
+if (typeof window !== "undefined") void load().catch(() => {});
 
 /** A Messier object as scripts/build-sky-data.mjs writes it. */
 type Messier = {
@@ -199,7 +222,12 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
   const time = useRef({ anchorSim: openedAt, anchorReal: 0, speed: 1, playing: true });
   // South, low enough that the horizon shows above the time bar.
   const viewRef = useRef<View>({ alt: 20, az: 180, fov: 75 });
+  // Inertia after a drag, in degrees a millisecond, and a zoom easing toward its goal while
+  // the point under the pointer stays put.
   const velocity = useRef({ alt: 0, az: 0 });
+  const zoomGoal = useRef<{ fov: number; x: number; y: number } | null>(null);
+  // A finger or button is down on the sky: the view is the hand's, and does not coast.
+  const pressed = useRef(false);
   const fly = useRef<{ from: View; to: View; start: number; duration: number } | null>(null);
   // Following the selected object as the sky turns: after a search or a closer look.
   const track = useRef(false);
@@ -348,16 +376,12 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
       try {
         const probe = document.createElement("canvas");
         if (!(probe.getContext("webgl2") ?? probe.getContext("webgl"))) throw new Error("no webgl");
-        const [module, stars, figures] = await Promise.all([
-          import("./renderer"),
-          fetch("/sky/data/stars.bin").then((r) => r.arrayBuffer()),
-          fetch("/sky/data/constellations.json").then((r) => r.json() as Promise<Constellation[]>),
-        ]);
+        const [module, stars, figures] = await load();
         if (cancelled) return;
         // A phone held upright sees a narrow strip of a desk's view: open it wider.
         if (window.innerWidth < 768) viewRef.current = { alt: 33, az: 180, fov: 100 };
         // Each star carried along its proper motion to the day the page opens.
-        starsRef.current = starsAtDate(new Float32Array(stars), new Date(openedAt));
+        starsRef.current = starsAtDate(decodeCatalogue(stars), new Date(openedAt));
         setStarData(starsRef.current);
         setConstellations(figures);
         rendererRef.current = new module.SkyRenderer(
@@ -382,11 +406,25 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
         setPhase("no-webgl");
       }
     })();
-    // Neither of these holds the first frame up: Messier's list, and what can be booked.
+    // Messier's list never holds the first frame up.
     fetch("/sky/data/messier.json")
       .then((r) => r.json() as Promise<Messier[]>)
       .then((list) => !cancelled && setMessier(list))
       .catch(() => {});
+    return () => {
+      cancelled = true;
+      rendererRef.current?.dispose();
+      rendererRef.current = null;
+    };
+  }, [openedAt]);
+
+  // What the observatory can be booked for matters only once something is picked: ask then,
+  // once, so a visitor who only looks never loads the contract's validators.
+  const askedBookable = useRef(false);
+  useEffect(() => {
+    if (!selected || askedBookable.current) return;
+    askedBookable.current = true;
+    let cancelled = false;
     import("@darkview/contracts/zod")
       .then(({ zListTargetsResponse }) => apiRequest("/targets?limit=100", { schema: zListTargetsResponse }))
       .then(({ items }) => {
@@ -402,13 +440,13 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
             })),
         );
       })
-      .catch(() => {});
+      .catch(() => {
+        askedBookable.current = false;
+      });
     return () => {
       cancelled = true;
-      rendererRef.current?.dispose();
-      rendererRef.current = null;
     };
-  }, [openedAt]);
+  }, [selected]);
 
   // The renderer learns the named things and their names once the figures are in.
   useEffect(() => {
@@ -436,13 +474,20 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     const observer = new ResizeObserver(resize);
     observer.observe(stage);
 
+    let last = 0;
+    let lastSecond = 0;
     const frame = (t: number) => {
-      // Inertia, and the flight to a searched object.
+      // A frame's time step, held short so a tab coming back does not lurch.
+      const dt = last ? Math.min(50, t - last) : 16;
+      last = t;
+      const v = velocity.current;
+      // The flight to a searched object; else a zoom easing to its goal; and inertia.
       const flying = fly.current;
       if (flying) {
         if (flying.start < 0) flying.start = t;
         const k = Math.min(1, (t - flying.start) / flying.duration);
-        const e = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+        // Ease in and out on a quintic, so a flight starts and lands softly.
+        const e = k < 0.5 ? 16 * k ** 5 : 1 - (-2 * k + 2) ** 5 / 2;
         const { from, to } = flying;
         let dAz = to.az - from.az;
         if (dAz > 180) dAz -= 360;
@@ -455,14 +500,30 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
           fov: from.fov * (to.fov / from.fov) ** e,
         });
         if (k >= 1) fly.current = null;
-      } else if (!reduceMotion.current && (Math.abs(velocity.current.alt) > 0.001 || Math.abs(velocity.current.az) > 0.001)) {
-        viewRef.current = clampView({
-          ...viewRef.current,
-          alt: viewRef.current.alt + velocity.current.alt,
-          az: viewRef.current.az + velocity.current.az,
-        });
-        velocity.current.alt *= 0.92;
-        velocity.current.az *= 0.92;
+      } else {
+        const goal = zoomGoal.current;
+        if (goal) {
+          const now = viewRef.current;
+          const step = reduceMotion.current ? 1 : 1 - Math.exp(-dt / 80);
+          let fov = now.fov * (goal.fov / now.fov) ** step;
+          const done = Math.abs(Math.log(goal.fov / fov)) < 0.003;
+          if (done) fov = goal.fov;
+          viewRef.current = track.current
+            ? clampView({ ...now, fov })
+            : zoomAbout(now, fov, goal.x, goal.y, stage.clientWidth, stage.clientHeight);
+          if (done) zoomGoal.current = null;
+        }
+        // Coasting after a drag fades over about a third of a second, as a phone's lists do.
+        const speed = Math.hypot(v.alt, v.az);
+        if (speed > 0 && !pressed.current) {
+          if (reduceMotion.current || speed * 1000 < viewRef.current.fov * 0.004) {
+            velocity.current = { alt: 0, az: 0 };
+          } else {
+            viewRef.current = clampView({ ...viewRef.current, alt: viewRef.current.alt + v.alt * dt, az: viewRef.current.az + v.az * dt });
+            const fade = Math.exp(-dt / 325);
+            velocity.current = { alt: v.alt * fade, az: v.az * fade };
+          }
+        }
       }
       const date = simDate();
       const following = track.current && !flying;
@@ -489,7 +550,10 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
         close = isClose;
         if (stage.parentElement) stage.parentElement.dataset.close = isClose;
       }
-      if (t - lastClock > 250) {
+      // The clock's second, as it turns; a fast clock four times a second at most.
+      const second = Math.floor(date.getTime() / 1000);
+      if (second !== lastSecond && t - lastClock > 240) {
+        lastSecond = second;
         lastClock = t;
         setNow(date);
         setOffset(Math.round((date.getTime() - Date.now()) / 60_000));
@@ -509,68 +573,127 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     };
   }, [phase, simDate, copy]);
 
-  // Look around: drag, pinch, wheel, keys; a tap picks.
+  // Look around: drag, pinch, wheel, keys; a tap picks, a double tap looks closer.
   useEffect(() => {
     if (phase !== "ready") return;
     const stage = stageRef.current!;
     const pointers = new Map<number, { x: number; y: number }>();
     let downAt = { x: 0, y: 0, t: 0 };
     let lastTap = { x: 0, y: 0, t: 0 };
-    let pinch = 0;
-    const perPx = () => viewRef.current.fov / stage.clientHeight;
+    let lastMove = 0;
+    // What the finger took hold of: the sky's direction under it, held under it as it moves.
+    let held: Vec3 | null = null;
+    // Two fingers: their spread at the start and the field then; a gesture that had two is
+    // never a tap.
+    let pinch: { spread: number; fov: number } | null = null;
+    let multi = false;
+    const local = (event: { clientX: number; clientY: number }) => {
+      const rect = stage.getBoundingClientRect();
+      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    };
+    const size = () => [stage.clientWidth, stage.clientHeight] as const;
+    const middle = () => {
+      const [a, b] = [...pointers.values()];
+      return local({ clientX: (a.x + b.x) / 2, clientY: (a.y + b.y) / 2 });
+    };
+    const spread = () => {
+      const [a, b] = [...pointers.values()];
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    };
+    const hold = (at: { x: number; y: number }) => {
+      held = directionAt(viewRef.current, at.x, at.y, ...size());
+    };
 
     const down = (event: PointerEvent) => {
       stage.setPointerCapture(event.pointerId);
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-      downAt = { x: event.clientX, y: event.clientY, t: performance.now() };
+      pressed.current = true;
+      if (pointers.size === 1) {
+        downAt = { x: event.clientX, y: event.clientY, t: performance.now() };
+        multi = false;
+        hold(local(event));
+      }
       setOpen(null);
       searchRef.current?.blur();
       velocity.current = { alt: 0, az: 0 };
+      zoomGoal.current = null;
       fly.current = null;
       if (pointers.size === 2) {
-        const [a, b] = [...pointers.values()];
-        pinch = Math.hypot(a.x - b.x, a.y - b.y);
+        multi = true;
+        pinch = { spread: spread(), fov: viewRef.current.fov };
+        hold(middle());
       }
     };
     const move = (event: PointerEvent) => {
-      const last = pointers.get(event.pointerId);
-      if (!last || orientation.current) return;
-      const dx = event.clientX - last.x;
-      const dy = event.clientY - last.y;
+      const before = pointers.get(event.pointerId);
+      if (!before || orientation.current) return;
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-      if (pointers.size === 1) {
-        const k = perPx();
+      // One finger turns the sky, also the one left after a pinch.
+      if (pointers.size === 1 && held) {
         if (Math.hypot(event.clientX - downAt.x, event.clientY - downAt.y) > 6) track.current = false;
-        velocity.current = { alt: dy * k, az: -dx * k };
-        viewRef.current = clampView({ ...viewRef.current, alt: viewRef.current.alt + dy * k, az: viewRef.current.az - dx * k });
-      } else if (pointers.size === 2) {
-        const [a, b] = [...pointers.values()];
-        const distance = Math.hypot(a.x - b.x, a.y - b.y);
-        if (pinch > 0) viewRef.current = clampView({ ...viewRef.current, fov: viewRef.current.fov * (pinch / distance) });
-        pinch = distance;
+        if (track.current) return;
+        const before = viewRef.current;
+        const at = local(event);
+        viewRef.current = aimAt(before, held, at.x, at.y, ...size());
+        // The release speed, smoothed over the last few moves.
+        const now = performance.now();
+        const dt = Math.max(8, now - lastMove);
+        lastMove = now;
+        let dAz = viewRef.current.az - before.az;
+        if (dAz > 180) dAz -= 360;
+        if (dAz < -180) dAz += 360;
+        const v = velocity.current;
+        velocity.current = {
+          alt: 0.6 * ((viewRef.current.alt - before.alt) / dt) + 0.4 * v.alt,
+          az: 0.6 * (dAz / dt) + 0.4 * v.az,
+        };
+      } else if (pointers.size === 2 && pinch && held) {
+        // Two fingers zoom by their spread and carry the sky held between them.
+        const fov = clampView({ ...viewRef.current, fov: pinch.fov * (pinch.spread / Math.max(1, spread())) }).fov;
+        const mid = middle();
+        viewRef.current = track.current
+          ? clampView({ ...viewRef.current, fov })
+          : aimAt({ ...viewRef.current, fov }, held, mid.x, mid.y, ...size());
       }
     };
     const up = (event: PointerEvent) => {
       pointers.delete(event.pointerId);
-      if (pointers.size < 2) pinch = 0;
+      if (pointers.size < 2) pinch = null;
+      // One finger left of two takes hold again where it is.
+      if (pointers.size === 1) {
+        const [only] = [...pointers.values()];
+        hold(local({ clientX: only.x, clientY: only.y }));
+      }
+      if (pointers.size > 0) return;
+      pressed.current = false;
+      // Let go after resting: no coast.
+      if (multi || performance.now() - lastMove > 70) velocity.current = { alt: 0, az: 0 };
       const moved = Math.hypot(event.clientX - downAt.x, event.clientY - downAt.y);
-      if (moved < 6 && performance.now() - downAt.t < 500) {
-        velocity.current = { alt: 0, az: 0 };
-        const rect = stage.getBoundingClientRect();
-        const hit = rendererRef.current?.pick(event.clientX - rect.left, event.clientY - rect.top) ?? null;
-        const now = performance.now();
-        const again = now - lastTap.t < 380 && Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < 30;
-        lastTap = { x: event.clientX, y: event.clientY, t: again ? 0 : now };
-        if (again && (hit ?? selectedRef.current)) lookCloserRef.current(hit ?? selectedRef.current!);
-        else {
-          setSelected(hit);
-          setFolded(true);
-        }
+      if (multi || event.type === "pointercancel" || moved >= 6 || performance.now() - downAt.t >= 500) return;
+      velocity.current = { alt: 0, az: 0 };
+      const at = local(event);
+      const hit = rendererRef.current?.pick(at.x, at.y) ?? null;
+      const now = performance.now();
+      const again = now - lastTap.t < 380 && Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < 30;
+      lastTap = { x: event.clientX, y: event.clientY, t: again ? 0 : now };
+      if (again && (hit ?? selectedRef.current)) lookCloserRef.current(hit ?? selectedRef.current!);
+      else if (again) {
+        // A double tap on open sky zooms in there.
+        track.current = false;
+        zoomGoal.current = { fov: clampView({ ...viewRef.current, fov: viewRef.current.fov / 2.2 }).fov, ...at };
+      } else {
+        setSelected(hit);
+        setFolded(true);
       }
     };
     const wheel = (event: WheelEvent) => {
       event.preventDefault();
-      viewRef.current = clampView({ ...viewRef.current, fov: viewRef.current.fov * Math.exp(event.deltaY * 0.0012) });
+      fly.current = null;
+      // Lines and pages to pixels; a trackpad's pinch comes as a small wheel with ctrl held.
+      const delta = event.deltaY * (event.deltaMode === 1 ? 33 : event.deltaMode === 2 ? stage.clientHeight : 1);
+      const factor = Math.exp(Math.max(-300, Math.min(300, delta)) * (event.ctrlKey ? 0.01 : 0.0016));
+      const from = zoomGoal.current?.fov ?? viewRef.current.fov;
+      zoomGoal.current = { fov: clampView({ ...viewRef.current, fov: from * factor }).fov, ...local(event) };
     };
     stage.addEventListener("pointerdown", down);
     stage.addEventListener("pointermove", move);
@@ -594,11 +717,12 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
       ArrowRight: { ...v, az: v.az + step },
       ArrowUp: { ...v, alt: v.alt + step },
       ArrowDown: { ...v, alt: v.alt - step },
-      "+": { ...v, fov: v.fov / 1.25 },
-      "=": { ...v, fov: v.fov / 1.25 },
-      "-": { ...v, fov: v.fov * 1.25 },
     };
-    if (next[event.key]) {
+    const factor = ({ "+": 1 / 1.4, "=": 1 / 1.4, "-": 1.4 } as Record<string, number>)[event.key];
+    if (factor) {
+      event.preventDefault();
+      zoom(factor);
+    } else if (next[event.key]) {
       event.preventDefault();
       fly.current = null;
       if (event.key.startsWith("Arrow")) track.current = false;
@@ -606,9 +730,16 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     }
   };
 
+  // The buttons and keys zoom about the middle, easing there.
   const zoom = (factor: number) => {
     fly.current = null;
-    viewRef.current = clampView({ ...viewRef.current, fov: viewRef.current.fov * factor });
+    const stage = stageRef.current;
+    const from = zoomGoal.current?.fov ?? viewRef.current.fov;
+    zoomGoal.current = {
+      fov: clampView({ ...viewRef.current, fov: from * factor }).fov,
+      x: (stage?.clientWidth ?? 0) / 2,
+      y: (stage?.clientHeight ?? 0) / 2,
+    };
   };
 
   const changeToggle = (key: keyof Toggles) => {
@@ -781,6 +912,8 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
       viewRef.current = to;
       return;
     }
+    zoomGoal.current = null;
+    velocity.current = { alt: 0, az: 0 };
     const zoomSteps = Math.abs(Math.log2(to.fov / viewRef.current.fov));
     // The frame loop stamps the start on the flight's first frame.
     fly.current = { from: viewRef.current, to, start: -1, duration: Math.min(2400, 900 + 200 * zoomSteps) };

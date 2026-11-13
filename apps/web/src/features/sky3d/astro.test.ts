@@ -21,7 +21,7 @@ import {
   unitJ2000,
   worldOf,
 } from "./astro";
-import { screenOf } from "./projection";
+import { MAX_ALT, directionAt, screenOf, zoomAbout } from "./projection";
 
 // ADR-085's proof. The fixed instant: 2026-11-07 20:00 Asia/Tbilisi (UTC+4), at the site.
 const at = new Date("2026-11-07T16:00:00Z");
@@ -140,6 +140,31 @@ describe("projection", () => {
   });
 });
 
+describe("zooming where it is aimed", () => {
+  // A wheel or a pinch zooms about the pointer: the sky under it stays under it.
+  const [width, height] = [1440, 723];
+  const cases = [
+    { alt: 20, az: 180, fov: 75, x: 668, y: 366 },
+    { alt: 20, az: 180, fov: 75, x: 200, y: 150 },
+    { alt: 60, az: 90, fov: 40, x: 1200, y: 600 },
+    { alt: 5, az: 10, fov: 100, x: 100, y: 700 },
+    { alt: 30, az: 300, fov: 0.5, x: 1000, y: 100 },
+  ];
+  for (const { x, y, ...view } of cases) {
+    it(`holds the point under (${x}, ${y}) at alt ${view.alt}, field ${view.fov}°`, () => {
+      const under = directionAt(view, x, y, width, height);
+      const back = screenOf(under, view, width, height)!;
+      expect(Math.hypot(back.x - x, back.y - y)).toBeLessThan(0.01);
+      for (const factor of [1 / 2.6, 2]) {
+        const zoomed = zoomAbout(view, view.fov * factor, x, y, width, height);
+        const at = screenOf(under, zoomed, width, height)!;
+        // Zooming out may need the view past the zenith, which it stops short of.
+        if (Math.abs(zoomed.alt) < MAX_ALT) expect(Math.hypot(at.x - x, at.y - y)).toBeLessThan(1);
+      }
+    });
+  }
+});
+
 describe("the sky's state", () => {
   it("switches at −0.833°, −6°, −12° and −18°", () => {
     expect(skyState(-0.8)).toBe("day");
@@ -159,6 +184,10 @@ describe("the sky's state", () => {
     expect(skyBrightness(-25, { alt: -5, litFraction: 1 })).toBe(0);
     expect(limitingMagnitude(0)).toBe(6.5);
     expect(limitingMagnitude(1)).toBeLessThan(-1);
+    // The bright stars are out as civil twilight ends, and most stars by nautical's end.
+    expect(limitingMagnitude(skyBrightness(-6))).toBeGreaterThan(2);
+    expect(limitingMagnitude(skyBrightness(-6))).toBeLessThan(3);
+    expect(limitingMagnitude(skyBrightness(-12))).toBeGreaterThan(4.5);
   });
 
   it("colours a hot star blue and a cool one orange", () => {

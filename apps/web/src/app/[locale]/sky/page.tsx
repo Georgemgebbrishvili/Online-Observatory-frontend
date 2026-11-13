@@ -4,6 +4,7 @@ import { preload } from "react-dom";
 
 import { SiteHeader } from "@/components/layout/site-header";
 import { NightSky } from "@/components/sky3d/night-sky";
+import { FIGURES_URL, STARS_URL } from "@/features/sky3d/astro";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { nightSkyCopy } from "@/i18n/resources/night-sky";
@@ -40,8 +41,8 @@ export default async function SkyPage({ params }: SkyPageProps) {
 
   const dictionary = await getDictionary(locale);
   // The catalogue and the figures start loading with the page, not after its script runs.
-  preload("/sky/data/stars.bin", { as: "fetch", crossOrigin: "anonymous" });
-  preload("/sky/data/constellations.json", { as: "fetch", crossOrigin: "anonymous" });
+  preload(STARS_URL, { as: "fetch", crossOrigin: "anonymous" });
+  preload(FIGURES_URL, { as: "fetch", crossOrigin: "anonymous" });
 
   return (
     <div className="site-frame sky-frame">

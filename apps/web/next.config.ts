@@ -62,6 +62,12 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: contentSecurityPolicy },
         ],
       },
+      {
+        // The Night Sky's data and pictures change only with a rebuilt file, which takes a
+        // new name when its layout changes: a day fresh, then a week served while checked.
+        source: "/sky/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+      },
     ];
   },
   // Design slice B4: /network was one site drawn as a network. Its content is a

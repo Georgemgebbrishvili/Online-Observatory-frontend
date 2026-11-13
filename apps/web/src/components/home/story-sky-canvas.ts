@@ -1,4 +1,5 @@
 import { precess, type StorySky } from "@/features/sky/story-sky";
+import { FIGURES_URL, STARS_URL, decodeCatalogue, starsAtDate } from "@/features/sky3d/astro";
 import { palette, withAlpha } from "@/styles/tokens";
 
 /**
@@ -367,11 +368,15 @@ export function createSky(canvas: HTMLCanvasElement, sky: StorySky, plan: SkyAim
 }
 
 let catalogue: Promise<SkyCatalogue> | null = null;
-/** The Night Sky page's star data (ADR-085), fetched once for every drawn sky on the page. */
+/**
+ * The Night Sky page's star data (ADR-085), fetched once for every drawn sky on the page,
+ * as five numbers a star (x, y, z, V, B−V) moved to today. The file holds seven a star
+ * since 2026-11-11, which read five at a time had scrambled this sky.
+ */
 export function loadCatalogue(): Promise<SkyCatalogue> {
   catalogue ??= Promise.all([
-    fetch("/sky/data/stars.bin").then((r) => r.arrayBuffer()),
-    fetch("/sky/data/constellations.json").then((r) => r.json() as Promise<SkyCatalogue["figures"]>),
-  ]).then(([stars, figures]) => ({ stars: new Float32Array(stars), figures }));
+    fetch(STARS_URL).then((r) => r.arrayBuffer()),
+    fetch(FIGURES_URL).then((r) => r.json() as Promise<SkyCatalogue["figures"]>),
+  ]).then(([stars, figures]) => ({ stars: starsAtDate(decodeCatalogue(stars), new Date()), figures }));
   return catalogue;
 }

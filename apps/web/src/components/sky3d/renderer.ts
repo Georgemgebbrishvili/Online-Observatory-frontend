@@ -9,7 +9,6 @@
  * pole and lit from the Sun's side, so its phase is right; Saturn is a globe and rings in
  * 3D, so their tilt is right; deep-sky showpieces are their painted plates at true size.
  */
-import { MakeTime, Rotation_EQD_HOR } from "astronomy-engine";
 import {
   AdditiveBlending,
   BackSide,
@@ -44,16 +43,14 @@ import {
 
 import {
   POLES,
-  aberration,
-  bodies,
   colourOfBv,
-  horizonMatrix,
   horizontal,
-  jupiterMoons,
   limitingMagnitude,
-  observerOf,
+  skyAt,
   skyBrightness,
+  skySnapshot,
   worldOf,
+  type SkySnapshot,
   type AltAz,
   type BodyState,
   type MoonOfJupiter,
@@ -332,7 +329,10 @@ function atmosphereMaterial() {
         vec3 night = mix(vec3(0.016, 0.022, 0.048), vec3(0.118, 0.128, 0.182), low);
         night += vec3(0.030, 0.030, 0.036) * exp(-h * 16.0);
         vec3 day = mix(vec3(0.16, 0.36, 0.74), vec3(0.72, 0.81, 0.93), pow(1.0 - h, 3.0));
-        vec3 sky = mix(night, day, uBright);
+        // Twilight is a deep blue before it is a day's: night, then dusk, then day.
+        vec3 dusk = mix(vec3(0.035, 0.068, 0.19), vec3(0.22, 0.30, 0.50), pow(1.0 - h, 2.5));
+        vec3 sky = mix(night, dusk, smoothstep(0.0, 0.22, uBright));
+        sky = mix(sky, day, smoothstep(0.18, 0.85, uBright));
         // Twilight: strongest with the Sun a few degrees down, on its side of the sky.
         float sunAlt = sun.y;
         float twilight = smoothstep(-0.31, -0.06, sunAlt) * (1.0 - smoothstep(0.02, 0.22, sunAlt));
@@ -644,13 +644,15 @@ function sequence(seed: number) {
 }
 
 /** Stands of trees by compass bearing: from, to, the tallest tree in degrees, how many. */
+// No crown above 3.4°, so an object the page calls "up" is not hidden for long (and close
+// up the landscape fades; see render).
 const STANDS: [from: number, to: number, height: number, count: number][] = [
-  [14, 66, 6.2, 34],
-  [92, 132, 4.4, 22],
-  [146, 163, 2.9, 9],
-  [197, 216, 3.3, 11],
-  [228, 266, 5.2, 26],
-  [284, 322, 6.6, 28],
+  [14, 66, 3.3, 34],
+  [92, 132, 2.6, 22],
+  [146, 163, 1.8, 9],
+  [197, 216, 2.0, 11],
+  [228, 266, 2.9, 26],
+  [284, 322, 3.4, 28],
 ];
 
 /**
@@ -780,6 +782,7 @@ export class SkyRenderer {
   private matrix: number[] = [1, 0, 0, 0, 1, 0, 0, 0, 1];
   private lean: Vec3 = [0, 0, 0];
   private states: BodyState[] = [];
+  private snapshot: SkySnapshot | null = null;
   private shown = new Map<string, { world: Vec3; radiusPx: number }>();
   private path: PathOverlay | null = null;
   private marks: { x: number; y: number; radius: number; flat: number; shape: DsoShape; showpiece: boolean; alpha: number }[] = [];
@@ -888,7 +891,8 @@ export class SkyRenderer {
       if (name === "Saturn") continue;
       const material = discMaterial();
       material.uniforms.uColour.value.copy(asWritten(BODY_COLOUR[name]));
-      material.uniforms.uMode.value = name === "Sun" ? 2 : PHOTOS[name] ? 0 : 1;
+      // A plain disc of the body's colour until its photograph is in (see render).
+      material.uniforms.uMode.value = name === "Sun" ? 2 : 1;
       const photo = PHOTOS[name];
       if (photo) {
         material.uniforms.uRect.value.set(photo.cx / photo.w, 1 - photo.cy / photo.h, photo.rx / photo.w, photo.ry / photo.h);
@@ -1064,9 +1068,21 @@ export class SkyRenderer {
   render(frame: Frame, orientation?: Quaternion | null) {
     const { date, site, toggles } = frame;
     let { view } = frame;
-    this.matrix = horizonMatrix(date, site);
-    this.lean = aberration(date);
-    this.states = bodies(date, site);
+    // The slow parts of the sky once a second of sky time; each frame turns them with the
+    // Earth (astro.ts, skyAt), the only motion a second can show.
+    const snap = this.snapshot;
+    if (
+      !snap ||
+      Math.abs(date.getTime() - snap.at) > 1000 ||
+      snap.site.latitude !== site.latitude ||
+      snap.site.longitude !== site.longitude
+    ) {
+      this.snapshot = skySnapshot(date, site);
+    }
+    const sky = skyAt(this.snapshot!, date);
+    this.matrix = sky.matrix;
+    this.lean = sky.lean;
+    this.states = sky.states;
     this.shown.clear();
     this.marks.length = 0;
     const target = frame.selected ? this.whereIs(frame.selected) : null;
@@ -1125,9 +1141,8 @@ export class SkyRenderer {
     this.milky.visible = toggles.milkyway;
 
     // The equatorial grid is the equator of date: its own EQD -> HOR rotation.
-    const { rot } = Rotation_EQD_HOR(MakeTime(date), observerOf(site));
     const eq = this.equatorial.material as ShaderMaterial;
-    eq.uniforms.uEqjHor.value.fromArray([...rot[0], ...rot[1], ...rot[2]]);
+    eq.uniforms.uEqjHor.value.fromArray(sky.eqdMatrix);
     eq.uniforms.uAlpha.value = 0.4;
     this.equatorial.visible = toggles.equatorial;
     this.altaz.visible = toggles.altaz;
@@ -1137,19 +1152,24 @@ export class SkyRenderer {
     atmosphere.uniforms.uBright.value = bright;
     atmosphere.uniforms.uOn.value = toggles.atmosphere ? 1 : 0;
 
-    // The ground and the horizon's silhouette, lit a little by the sky.
+    // The ground and the horizon's silhouette, lit a little by the sky. Close up, the
+    // drawn hills and trees fade: they are an illustration, and must not hide a real object.
     const groundOpacity = toggles.ground ? 0.25 : 1;
+    const ridgeOpacity = groundOpacity * (0.12 + 0.88 * smooth(2.5, 14, view.fov));
     const groundColour = new Color(nightSkyArt.ground).lerp(new Color(nightSkyArt.groundDay), toggles.atmosphere ? bright : 0);
     const hillColour = new Color(nightSkyArt.hills).lerp(new Color(nightSkyArt.hillsDay), toggles.atmosphere ? bright : 0);
-    for (const [mesh, colour] of [
-      [this.ground, groundColour],
-      [this.trees, groundColour],
-      [this.hills, hillColour],
+    for (const [mesh, colour, opacity] of [
+      [this.ground, groundColour, groundOpacity],
+      [this.trees, groundColour, ridgeOpacity],
+      [this.hills, hillColour, ridgeOpacity],
     ] as const) {
       const material = mesh.material as MeshBasicMaterial;
-      material.opacity = groundOpacity;
+      material.opacity = opacity;
       material.color.copy(colour);
     }
+    // Constellation names give way to daylight, as the figures do.
+    const names = (1 - smooth(0.25, 0.7, bright)).toFixed(2);
+    if (this.labelLayer.style.getPropertyValue("--sky-names") !== names) this.labelLayer.style.setProperty("--sky-names", names);
 
     // Bodies.
     const degPerPx = view.fov / this.height;
@@ -1204,7 +1224,11 @@ export class SkyRenderer {
           material.uniforms.uSun.value.set(sunward.dot(frame3.right), sunward.dot(frame3.up), sunward.dot(frame3.toViewer));
           material.uniforms.uEdge.value = Math.min(0.5, 1.2 / Math.max(discPx, 1));
           material.uniforms.uSky.value = Math.min(1, bright * 3);
-          if (photo && !material.uniforms.uMap.value) {
+          // Earthshine: the Moon's night side lit faintly by the Earth, brightest at a crescent.
+          if (state.name === "Moon") material.uniforms.uAmbient.value = (0.012 + 0.07 * (1 - state.litFraction)) * (1 - bright);
+          // The photograph only once the disc is big enough to show it: a wide view never
+          // waits on the Moon's 90 KB.
+          if (photo && !material.uniforms.uMap.value && discPx >= 12) {
             const texture = this.texture(photo.src);
             if (texture) material.uniforms.uMap.value = texture;
             // Until the photograph is in, a plain disc of the body's colour.
@@ -1251,7 +1275,7 @@ export class SkyRenderer {
     const jupiter = this.states.find((state) => state.name === "Jupiter")!;
     const jupiterWorld = new Vector3(...worldOf(jupiter));
     const moonsAlpha = (toggles.ground || jupiter.alt > 0 ? 1 : 0) * smooth(4, 1.5, view.fov);
-    jupiterMoons(date).forEach((moon, i) => {
+    sky.moons.forEach((moon, i) => {
       const index = 9 + i;
       const world = jupiterWorld.clone().add(this.turn(moon.offset)).normalize();
       glowPosition.setXYZ(index, world.x * (D.bodies - 0.002), world.y * (D.bodies - 0.002), world.z * (D.bodies - 0.002));
@@ -1433,7 +1457,7 @@ export class SkyRenderer {
           add(a: Point | null, b: Point | null) {
             if (!a || !b) return;
             const length = Math.hypot(b.x - a.x, b.y - a.y);
-            if (length > leap) {
+            if (length > leap && !(onScreen(a) && onScreen(b))) {
               // A step that leaps across the screen from off it has wrapped behind the eye.
               // One that leaves from on the screen is a close view's: drawn to just past the edge.
               const from = onScreen(a) ? a : onScreen(b) ? b : null;

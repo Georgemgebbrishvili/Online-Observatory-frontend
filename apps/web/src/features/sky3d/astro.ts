@@ -22,7 +22,11 @@ import {
   MakeTime,
   Observer,
   Refraction,
+  CombineRotation,
+  Rotation_EQD_HOR,
+  Rotation_EQJ_EQD,
   Rotation_EQJ_HOR,
+  RotationMatrix,
   SearchHourAngle,
   SearchRiseSet,
 } from "astronomy-engine";
@@ -71,8 +75,29 @@ export function aberration(date: Date): Vec3 {
   return [earth.vx / C_AUDAY, earth.vy / C_AUDAY, earth.vz / C_AUDAY];
 }
 
-/** Floats per star in stars.bin: x, y, z, V, B−V, then the proper motions in ″ a year. */
+/** The sky's data files (scripts/build-sky-data.mjs). A new layout takes a new name. */
+export const STARS_URL = "/sky/data/stars-v2.bin";
+export const FIGURES_URL = "/sky/data/constellations.json";
+
+/** Floats per decoded star: x, y, z, V, B−V, then the proper motions in ″ a year. */
 const CATALOGUE_RECORD = 7;
+
+/**
+ * stars-v2.bin (scripts/build-sky-data.mjs) as records of seven floats: the J2000 unit
+ * vector at epoch 2000, V, B−V, and the proper motions in RA (on the sky) and Dec, ″ a year.
+ */
+export function decodeCatalogue(file: ArrayBuffer): Float32Array {
+  const n = file.byteLength / 16;
+  const ra = new Uint32Array(file, 0, n);
+  const dec = new Int32Array(file, 4 * n, n);
+  const [v, bv, pmRa, pmDec] = [8, 10, 12, 14].map((at) => new Int16Array(file, at * n, n));
+  const out = new Float32Array(n * CATALOGUE_RECORD);
+  for (let i = 0; i < n; i++) {
+    const [x, y, z] = unitJ2000(ra[i] / 360_000, dec[i] / 36_000);
+    out.set([x, y, z, v[i] / 100, bv[i] / 1000, pmRa[i] / 1000, pmDec[i] / 1000], i * CATALOGUE_RECORD);
+  }
+  return out;
+}
 const ARCSEC = DEG / 3600;
 const J2000_MS = Date.UTC(2000, 0, 1, 12);
 const YEAR_MS = 365.25 * 86_400_000;
@@ -306,7 +331,9 @@ export function skyState(sunAlt: number): SkyState {
  * ramp through twilight, and the Moon's light by its phase and height.
  */
 export function skyBrightness(sunAlt: number, moon?: { alt: number; litFraction: number }) {
-  const sun = Math.min(1, Math.max(0, (sunAlt + 18) / 18.833)) ** 2.2;
+  // Steep through twilight, as the sky's light falls about tenfold for every two or three
+  // degrees the Sun sinks: by the end of civil twilight the second-magnitude stars are out.
+  const sun = Math.min(1, Math.max(0, (sunAlt + 18) / 18.833)) ** 3.2;
   const moonLight = moon && moon.alt > 0 ? 0.12 * moon.litFraction * Math.sin(Math.min(moon.alt, 60) * DEG) / Math.sin(60 * DEG) : 0;
   return Math.min(1, sun + moonLight);
 }
@@ -429,4 +456,68 @@ export function skyPath(
  */
 export function fixedAltAz(raHours: number, decDeg: number, date: Date, site: Site): AltAz {
   return horizontal(unitJ2000(raHours, decDeg), horizonMatrix(date, site), aberration(date));
+}
+
+/** The Earth's turn against the stars, radians a millisecond. */
+const SIDEREAL_PER_MS = (2 * Math.PI * 1.00273781191135448) / 86_400_000;
+
+const flat = (rotation: RotationMatrix) => [...rotation.rot[0], ...rotation.rot[1], ...rotation.rot[2]];
+
+/**
+ * The sky worked out in full at one instant: the slow parts -- precession and nutation,
+ * aberration, the bodies' places among the stars, Jupiter's moons -- that a frame a few
+ * hundred milliseconds later can reuse (see `skyAt`).
+ */
+export type SkySnapshot = {
+  at: number;
+  site: Site;
+  eqjEqd: RotationMatrix;
+  eqdHor: RotationMatrix;
+  lean: Vec3;
+  states: BodyState[];
+  /** Each body's direction of date (topocentric, apparent), unrefracted. */
+  directions: Vec3[];
+  moons: ReturnType<typeof jupiterMoons>;
+};
+
+export function skySnapshot(date: Date, site: Site): SkySnapshot {
+  const time = MakeTime(date);
+  const states = bodies(date, site);
+  return {
+    at: date.getTime(),
+    site,
+    eqjEqd: Rotation_EQJ_EQD(time),
+    eqdHor: Rotation_EQD_HOR(time, observerOf(site)),
+    lean: aberration(date),
+    states,
+    directions: states.map((state) => unitJ2000(state.raHours, state.decDeg)),
+    moons: jupiterMoons(date),
+  };
+}
+
+/**
+ * The sky at `date` from a snapshot taken within a second or so: the snapshot's frame
+ * turned by the Earth's rotation since, which is all that changes visibly in that time.
+ * The Moon, the fastest, moves half an arcsecond a second against the stars.
+ */
+export function skyAt(snapshot: SkySnapshot, date: Date) {
+  const angle = (date.getTime() - snapshot.at) * SIDEREAL_PER_MS;
+  const c = Math.cos(angle);
+  const s = Math.sin(angle);
+  // Equator of date turned east by the Earth's spin, then to the horizon.
+  const eqdHor = CombineRotation(
+    new RotationMatrix([
+      [c, -s, 0],
+      [s, c, 0],
+      [0, 0, 1],
+    ]),
+    snapshot.eqdHor,
+  );
+  const matrix = flat(CombineRotation(snapshot.eqjEqd, eqdHor));
+  const eqd = flat(eqdHor);
+  const states = snapshot.states.map((state, i) => {
+    const { alt, az } = horizontal(snapshot.directions[i], eqd);
+    return { ...state, alt, az };
+  });
+  return { matrix, eqdMatrix: eqd, lean: snapshot.lean, states, moons: snapshot.moons };
 }

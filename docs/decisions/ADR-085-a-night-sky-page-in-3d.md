@@ -243,3 +243,45 @@ its path, past movement as a full line and future movement as a split line; go a
 - **A fix.** A wide view no longer cuts the ground off at the screen's corners (the camera's
   near plane is close in a wide view, far only in a narrow one, where Saturn's rings need
   the depth).
+
+## Amendment — 2026-11-13, later
+
+Decided by the maintainer (Nika), in session: "test your assumptions, find mistakes and fix,
+optimize all, then make it live; more on visuals and loading speed, and smooth, easy,
+comfortable movement."
+
+- **The star file is whole numbers.** `stars-v2.bin` holds the catalogue as six columns at
+  its own precision (RA to 0.01 s, Dec to 0.1″, magnitudes, colours and proper motions to
+  0.01 and 0.001): 146 KB, 85 KB with Brotli, where `stars.bin`'s floats were 255 KB and
+  153–183 KB. Positions agree with the old file within 0.2″. `decodeCatalogue` reads it for
+  this page and for the homepage's night sky, which had read the seven-number records of
+  2026-11-11 five at a time and drawn its stars scrambled since.
+- **Loading.** The renderer's code, the stars and the figures start together as soon as the
+  page's script runs, not after it hydrates. The contract's validators and the platform's
+  targets wait until something is picked. A planet's photograph loads once its disc is 12 px
+  across, so a wide view never waits on the Moon's 90 KB. Everything under `/sky/` is cached a
+  day and then served while it is checked for a week; a file whose layout changes takes a
+  new name.
+- **A frame does less.** The bodies, precession and nutation, aberration and Jupiter's moons
+  are worked out once a second of sky time; each frame between turns them with the Earth.
+  The stars are exact (the turned matrix matches astronomy-engine's to 0.01″) and the bodies
+  within their own second's motion (the Moon's 0.5″), held by test. The page's clock re-renders
+  once a second instead of four times. Measured on the 2017 MacBook Pro's GPU, the frame's own
+  script fell from about a quarter of each frame to about 1 %; under a 4× slowed CPU with
+  software rendering, 18 frames a second became 43.
+- **Movement.** A drag holds the sky it took hold of under the finger, exactly, near the
+  zenith and in a wide phone view too (Newton's method on the view, `aimAt`); before, the sky
+  ran ahead of the finger because the coast was applied while it was still down. On release
+  it coasts and fades over about a third of a second. The wheel, a trackpad pinch and two
+  fingers zoom about the pointer or the fingers' midpoint, easing there; two fingers also
+  carry the sky. The zoom buttons and keys ease too. A double tap on open sky zooms in there.
+  Flights ease in and out on a quintic. Controls take no double-tap page zoom, and a long
+  press selects no text.
+- **The landscape gives way.** The tree stands are lowered to at most 3.4°, and close up
+  the hills and trees fade to an outline, so a "Look closer" at the Moon three degrees up shows
+  the Moon, not a tree. This comes back toward the 2026-11-08 rule that an object the page
+  calls up is not hidden.
+- **Twilight.** The sky's brightness falls more steeply as the Sun sinks, and twilight is a
+  deep blue before it becomes day's: the second-magnitude stars are out as civil twilight
+  ends, held by test. Constellation names fade by day as the figures do. The Moon's night
+  side shows a faint earthshine, strongest at a crescent.

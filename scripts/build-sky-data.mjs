@@ -1,10 +1,15 @@
 // Builds the Night Sky page's data (ADR-085) into apps/web/public/sky/data/:
 //
-//   stars.bin            the Yale Bright Star Catalogue, 5th rev. (Hoffleit & Warren 1991,
-//                        CDS/ADC V/50): Float32 records [x, y, z, V, B-V, pmRA, pmDec],
-//                        x/y/z the J2000 unit vector at epoch 2000, the proper motions in
-//                        arcseconds a year (pmRA is on the sky, already times cos Dec),
-//                        brightest first. The page moves each star to today's date.
+//   stars-v2.bin         the Yale Bright Star Catalogue, 5th rev. (Hoffleit & Warren 1991,
+//                        CDS/ADC V/50), brightest first, as six little-endian columns of n
+//                        stars each (16 bytes a star): RA J2000 in hundredths of a second of
+//                        time (Uint32), Dec in tenths of an arcsecond (Int32), V in hundredths
+//                        (Int16), B-V in thousandths (Int16), the proper motions in RA (on
+//                        the sky, already times cos Dec) and Dec in thousandths of an
+//                        arcsecond a year (Int16 each). Whole numbers at the catalogue's own
+//                        precision compress far better than floats did. The pages decode it
+//                        (decodeCatalogue) and move each star to the day. A new layout takes
+//                        a new name, since the file is cached for a day.
 //   constellations.json  d3-celestial's lines and label points (BSD 3-Clause, Olaf Frohn)
 //   milkyway.webp        NASA's Deep Star Maps 2020 Milky Way (NASA/Goddard Space Flight
 //                        Center Scientific Visualization Studio; Gaia DR2: ESA/Gaia/DPAC;
@@ -88,12 +93,21 @@ if (wanted("stars")) {
     });
   }
   stars.sort((a, b) => a.v - b.v);
-  const records = new Float32Array(stars.length * 7);
-  stars.forEach((star, index) => {
-    records.set([...unit(star.ra, star.dec), star.v, star.bv, star.pmRa, star.pmDec], index * 7);
+  const n = stars.length;
+  const file = new ArrayBuffer(n * 16);
+  const ra = new Uint32Array(file, 0, n);
+  const dec = new Int32Array(file, 4 * n, n);
+  const columns = [8, 10, 12, 14].map((at) => new Int16Array(file, at * n, n));
+  stars.forEach((star, i) => {
+    ra[i] = Math.round((star.ra / 15) * 360_000) % 8_640_000;
+    dec[i] = Math.round(star.dec * 36_000);
+    columns[0][i] = Math.round(star.v * 100);
+    columns[1][i] = Math.round(star.bv * 1000);
+    columns[2][i] = Math.round(star.pmRa * 1000);
+    columns[3][i] = Math.round(star.pmDec * 1000);
   });
-  await writeFile(new URL("stars.bin", out), Buffer.from(records.buffer));
-  built.push(`stars.bin: ${stars.length} stars to V ${stars.at(-1).v}`);
+  await writeFile(new URL("stars-v2.bin", out), Buffer.from(file));
+  built.push(`stars-v2.bin: ${stars.length} stars to V ${stars.at(-1).v}`);
 }
 
 // Constellations: each figure's polylines as flat J2000 unit vectors, and its label point.

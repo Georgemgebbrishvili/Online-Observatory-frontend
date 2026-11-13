@@ -3,10 +3,25 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { SITE, aberration, bodyState, fixedAltAz, horizonMatrix, horizontal, starsAtDate, unitJ2000, type SkyBodyName } from "./astro";
+import {
+  SITE,
+  aberration,
+  bodies,
+  bodyState,
+  decodeCatalogue,
+  fixedAltAz,
+  horizonMatrix,
+  horizontal,
+  skyAt,
+  skySnapshot,
+  starsAtDate,
+  unitJ2000,
+  type SkyBodyName,
+} from "./astro";
 import reference from "./jpl-horizons.fixture.json";
 
 const DEG = Math.PI / 180;
+const ARCSEC_RAD = DEG / 3600;
 
 /** Great-circle separation of two RA/Dec places (degrees), in arcseconds. */
 function apart(ra1: number, dec1: number, ra2: number, dec2: number) {
@@ -74,13 +89,35 @@ describe("the stars on the day", () => {
     }
   });
 
-  it("ships the catalogue with proper motions: seven numbers a star, Sirius first", () => {
-    const file = readFileSync(join(__dirname, "../../../public/sky/data/stars.bin"));
-    const catalogue = new Float32Array(file.buffer, file.byteOffset, file.byteLength / 4);
+  it("ships the catalogue with proper motions, Sirius first, at the catalogue's precision", () => {
+    const file = readFileSync(join(__dirname, "../../../public/sky/data/stars-v2.bin"));
+    const catalogue = decodeCatalogue(file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength));
     expect(catalogue.length % 7).toBe(0);
     expect(catalogue.length / 7).toBeGreaterThan(9000);
+    // Sirius, BSC 2491: 6h 45m 08.9s, −16° 42′ 58″.
+    const sirius = { ra: (Math.atan2(catalogue[1], catalogue[0]) / DEG + 360) % 360, dec: Math.asin(catalogue[2]) / DEG };
+    expect(apart(sirius.ra, sirius.dec, (6 + 45 / 60 + 8.9 / 3600) * 15, -(16 + 42 / 60 + 58 / 3600))).toBeLessThan(0.2);
     expect(catalogue[3]).toBeCloseTo(-1.46, 2);
     expect(catalogue[5]).toBeCloseTo(-0.553, 3);
     expect(catalogue[6]).toBeCloseTo(-1.205, 3);
   });
+});
+
+describe("a frame between snapshots", () => {
+  // The renderer works the sky out in full once a second and turns it with the Earth in
+  // between: the stars exactly, the bodies within their own second's motion.
+  const t0 = new Date("2026-11-13T18:00:00Z");
+  const snapshot = skySnapshot(t0, SITE);
+  for (const ms of [250, 1000]) {
+    it(`holds stars and bodies ${ms} ms on`, () => {
+      const at = new Date(t0.getTime() + ms);
+      const fast = skyAt(snapshot, at);
+      const exact = horizonMatrix(at, SITE);
+      expect(Math.max(...fast.matrix.map((value, i) => Math.abs(value - exact[i]))) / ARCSEC_RAD).toBeLessThan(0.01);
+      bodies(at, SITE).forEach((body, i) => {
+        const drawn = fast.states[i];
+        expect(apart(drawn.az, drawn.alt, body.az, body.alt)).toBeLessThan(0.6);
+      });
+    });
+  }
 });
