@@ -11,6 +11,7 @@ import {
   BaryState,
   Body,
   C_AUDAY,
+  Constellation,
   DefineStar,
   Equator,
   GeoVector,
@@ -175,7 +176,7 @@ const RADIUS_KM: Record<SkyBodyName, number> = {
   Uranus: 25_559,
   Neptune: 24_764,
 };
-const AU_KM = 149_597_870.7;
+export const AU_KM = 149_597_870.7;
 
 export type BodyState = {
   name: SkyBodyName;
@@ -188,6 +189,8 @@ export type BodyState = {
   magnitude: number;
   /** Apparent radius, degrees. */
   radiusDeg: number;
+  /** From the observer, astronomical units. */
+  distanceAu: number;
   /** 0..1 lit; the phase angle in degrees. */
   litFraction: number;
   phaseAngle: number;
@@ -215,11 +218,24 @@ export function bodyState(name: SkyBodyName, date: Date, site: Site): BodyState 
     decDeg: eq.dec,
     magnitude: ill.mag,
     radiusDeg: Math.atan(RADIUS_KM[name] / (eq.dist * AU_KM)) / DEG,
+    distanceAu: eq.dist,
     litFraction: name === "Sun" ? 1 : ill.phase_fraction,
     phaseAngle: name === "Sun" ? 0 : ill.phase_angle,
     ...(ill.ring_tilt !== undefined && { ringTilt: ill.ring_tilt }),
     sunward: [-helio.x / length, -helio.y / length, -helio.z / length],
   };
+}
+
+/** The constellation a J2000 place lies in, by its IAU abbreviation and Latin name. */
+export function constellationAt(raHours: number, decDeg: number) {
+  const { symbol, name } = Constellation(raHours, decDeg);
+  return { id: symbol, name };
+}
+
+/** The constellation a body stands in at an instant. */
+export function constellationOfBody(name: SkyBodyName, date: Date, site: Site) {
+  const eq = Equator(Body[name], MakeTime(date), observerOf(site), false, true);
+  return constellationAt(eq.ra, eq.dec);
 }
 
 export function bodies(date: Date, site: Site) {

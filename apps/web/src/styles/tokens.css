@@ -398,6 +398,16 @@
   --color-sky-blue: color-mix(in srgb, var(--st-sky-blue) 10%, transparent);
   --color-sky-violet: color-mix(in srgb, var(--st-sky-violet) 7%, transparent);
   --color-sky-red: color-mix(in srgb, var(--st-red) 20%, transparent);
+  /* The Night Sky (ADR-085): the night its renderer draws, shown before the first frame --
+     deep blue overhead, a haze along the horizon, the ground -- and its deep-sky labels. */
+  --gradient-night-sky: linear-gradient(
+    to bottom,
+    #04060c 0%,
+    #0a0e1a 42%,
+    #1c2030 73%,
+    #0b0a09 73.2%
+  );
+  --color-sky-dso: #8fb4ea;
   --color-star-warm: color-mix(in srgb, var(--st-sun-1) 75%, transparent);
   --color-star-cool: color-mix(in srgb, var(--st-white) 75%, transparent);
   /*

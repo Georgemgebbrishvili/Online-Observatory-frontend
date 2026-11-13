@@ -49,3 +49,9 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF TH
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The constellation figures follow the IAU's.
+
+## messier.json
+
+The 110 Messier objects, from d3-celestial's `data/messier.json` (BSD 3-Clause, Olaf Frohn;
+the notice above covers it): number, NGC designation, common name, kind, magnitude, size
+and J2000 position.

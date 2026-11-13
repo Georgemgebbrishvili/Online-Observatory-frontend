@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 // ADR-085: the Night Sky. A smoke test: the page draws (or keeps its list without WebGL),
-// the time bar moves time, and search flies to an object and opens its panel, whose
+// the clock's sheet moves time, and search flies to an object and opens its panel, whose
 // "Observe it with Stellar" links to the booking board with the object chosen.
 
 const firstCompile = 90_000;
@@ -13,8 +13,10 @@ test("the Night Sky draws, its time bar moves time, and search finds Saturn", as
   await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
   await expect(page.getByText("Computed sky, not a telescope view")).toBeVisible();
 
+  await page.getByRole("button", { name: "Time and date" }).click();
   const timeBar = page.getByRole("group", { name: "Time" });
   await expect(timeBar).toBeVisible();
+  await expect(timeBar.getByRole("slider", { name: "Hours from now" })).toBeVisible();
   const clock = timeBar.locator(".sky-clock b").first();
   const before = await clock.textContent();
   await timeBar.getByRole("button", { name: "One hour later" }).click();
@@ -29,6 +31,7 @@ test("the Night Sky draws, its time bar moves time, and search finds Saturn", as
   const panel = page.getByRole("complementary", { name: "Saturn" });
   await expect(panel).toBeVisible();
   await expect(panel).toContainText("Planet");
+  await expect(panel).toContainText("Distance");
   await expect(panel).toContainText("Right ascension");
   await expect(panel).toContainText("Illustration — not telescope output");
   await expect(panel.getByRole("link", { name: "Observe it with Stellar" })).toHaveAttribute(
@@ -55,17 +58,17 @@ test("the Night Sky says what is up, and looks closer at what is picked", async 
   await expect(panel).toContainText(/Above the horizon · \d+° up, N/);
   await expect(panel).toContainText("never sets here");
 
-  // A closer look narrows the view onto it, and the time bar then names what is drawn.
-  const timeBar = page.getByRole("group", { name: "Time" });
-  await expect(timeBar).toContainText("Computed sky, not a telescope view");
+  // A closer look narrows the view onto it, and the line under the search then names what is drawn.
+  const caption = page.locator(".sky-computed");
+  await expect(caption).toContainText("Computed sky, not a telescope view");
   await panel.getByRole("button", { name: "Look closer" }).click();
   await expect(page.locator(".sky")).toHaveAttribute("data-close", "true", { timeout: 10_000 });
-  await expect(timeBar).toContainText("Illustration — not telescope output");
+  await expect(caption).toContainText("Illustration — not telescope output");
   await panel.getByRole("button", { name: "Whole sky" }).click();
   await expect(page.locator(".sky")).toHaveAttribute("data-close", "false", { timeout: 10_000 });
 
   // The list: what is up, by height, and what is below with its next rise; each one a way there.
-  await page.getByText("What is up, as a list").click();
+  await page.getByRole("button", { name: "What is up now" }).click();
   const list = page.locator(".sky-list");
   await expect(list.getByRole("heading", { name: /Up now|Below the horizon/ }).first()).toBeVisible();
   await expect(list.locator(".sky-roster button").first()).toBeVisible();
@@ -75,29 +78,51 @@ test("the Night Sky says what is up, and looks closer at what is picked", async 
   await expect(page.getByRole("complementary", { name })).toBeVisible();
 });
 
-test("on a phone a closer look folds the panel so the object shows", async ({ page }) => {
+test("on a phone the sky is the whole screen, and the panel opens folded", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/en/sky");
   await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
+  // No header and no tab bar over the sky: the stage is the screen, with a way back.
+  const stage = await page.locator(".sky-stage").boundingBox();
+  expect(stage).toMatchObject({ x: 0, y: 0, width: 390, height: 844 });
+  await expect(page.locator("nav.phone-tab-bar")).toBeHidden();
+  await expect(page.getByRole("link", { name: "Back to Stellar" })).toHaveAttribute("href", "/en");
+
   const search = page.getByRole("combobox", { name: "Find in the sky" });
   await search.fill("Polaris");
   await search.press("Enter");
+  // Folded to its head, so the object and its path show above it; Details unfolds it.
   const panel = page.getByRole("complementary", { name: "Polaris" });
-  await expect(panel.locator("dl")).toBeVisible();
-  await panel.getByRole("button", { name: "Look closer" }).click();
   await expect(panel).toHaveAttribute("data-folded", "true");
   await expect(panel.locator("dl")).toBeHidden();
   const details = panel.getByRole("button", { name: "Details" });
   await expect(details).toHaveAttribute("aria-expanded", "false");
   await details.click();
   await expect(panel.locator("dl")).toBeVisible();
+  await panel.getByRole("button", { name: "Look closer" }).click();
+  await expect(panel).toHaveAttribute("data-folded", "true");
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+});
+
+test("search offers what is up before a letter is typed, and finds Messier's list", async ({ page }) => {
+  await page.goto("/en/sky");
+  await expect(page.locator(".sky")).toHaveAttribute("data-phase", "ready", { timeout: firstCompile });
+  const search = page.getByRole("combobox", { name: "Find in the sky" });
+  await search.focus();
+  // Polaris country: something on the list is always well up from Tbilisi.
+  await expect(page.getByRole("option").first()).toContainText(/Up \d+°/);
+  await search.fill("M81");
+  await search.press("Enter");
+  const panel = page.getByRole("complementary", { name: /M81/ });
+  await expect(panel).toContainText("Galaxy");
+  await expect(panel).toContainText("NGC 3031");
 });
 
 test("the Night Sky reads in Georgian", async ({ page }) => {
   await page.goto("/ka/sky");
   await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
   await expect(page.getByText("გამოთვლილი ცა, არა ტელესკოპის ხედი")).toBeVisible();
+  await page.getByRole("button", { name: "დრო და თარიღი" }).click();
   await expect(page.getByRole("group", { name: "დრო" })).toBeVisible();
   const search = page.getByRole("combobox", { name: "იპოვე ცაზე" });
   await search.fill("ვეგა");
@@ -115,19 +140,12 @@ test("the header and /tonight lead to the Night Sky", async ({ page }) => {
   ).toHaveAttribute("href", "/en/sky");
 });
 
-test("on a phone the tab bar leads to the Night Sky, and lights it there", async ({ page }) => {
+test("on a phone the tab bar leads to the Night Sky", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
   await page.goto("/en/observatory");
   const sky = page.locator("nav.phone-tab-bar").getByRole("link", { name: "Night Sky" });
   await expect(sky).toBeVisible({ timeout: firstCompile });
   await expect(sky).toHaveAttribute("href", "/en/sky");
-  await sky.click();
-  await expect(page).toHaveURL(/\/en\/sky$/);
-  await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
-  await expect(page.locator("nav.phone-tab-bar").getByRole("link", { name: "Night Sky" })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
   // Four tabs on a 360 px phone: every label shows whole -- none cut to an ellipsis --
   // and none spills off the bar.
   for (const label of await page.locator("nav.phone-tab-bar .phone-tab-label").all()) {
@@ -135,6 +153,9 @@ test("on a phone the tab bar leads to the Night Sky, and lights it there", async
     expect(box && box.x >= 0 && box.x + box.width <= 360).toBe(true);
     expect(await label.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
   }
+  await sky.click();
+  await expect(page).toHaveURL(/\/en\/sky$/);
+  await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
 });
 
 test.describe("a visitor outside Tbilisi", () => {
@@ -151,6 +172,7 @@ test.describe("a visitor outside Tbilisi", () => {
     });
     await page.goto("/en/sky");
     await expect(page.locator("canvas.sky-canvas")).toBeAttached({ timeout: firstCompile });
+    await page.getByRole("button", { name: "Time and date" }).click();
     await expect(page.getByRole("group", { name: "Time" })).toContainText("Your time");
     expect(errors.filter((error) => /hydrat|#418|did not match/i.test(error))).toEqual([]);
   });

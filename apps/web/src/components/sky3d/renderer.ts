@@ -68,7 +68,7 @@ import { nightSkyArt, withAlpha } from "@/styles/tokens";
 export type Toggles = {
   lines: boolean;
   names: boolean;
-  planets: boolean;
+  dso: boolean;
   path: boolean;
   altaz: boolean;
   equatorial: boolean;
@@ -76,6 +76,8 @@ export type Toggles = {
   atmosphere: boolean;
   ground: boolean;
 };
+
+export type DsoShape = "galaxy" | "globular" | "open" | "nebula";
 
 export type Constellation = { id: string; name: string; label: Vec3; lines: number[][] };
 
@@ -92,6 +94,8 @@ export type SkyThing =
       magnitude: number | null;
       /** Labelled even when not picked (named stars, showpieces). */
       labelled: boolean;
+      /** A deep-sky object's symbol on the sky: its kind and its size in arcminutes. */
+      mark?: { shape: DsoShape; major: number; minor: number };
     }
   | { kind: "constellation"; id: string; name: string; label: Vec3 };
 
@@ -323,8 +327,10 @@ function atmosphereMaterial() {
         if (uOn < 0.5) { gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); return; }
         vec3 sun = normalize(uSun);
         float h = clamp(vDir.y, 0.0, 1.0);
-        float low = exp(-h * 7.0);
-        vec3 night = mix(vec3(0.006, 0.009, 0.022), vec3(0.050, 0.056, 0.082), low);
+        // Night: deep blue overhead, lifting to a grey-blue haze along the horizon.
+        float low = exp(-h * 4.2);
+        vec3 night = mix(vec3(0.016, 0.022, 0.048), vec3(0.118, 0.128, 0.182), low);
+        night += vec3(0.030, 0.030, 0.036) * exp(-h * 16.0);
         vec3 day = mix(vec3(0.16, 0.36, 0.74), vec3(0.72, 0.81, 0.93), pow(1.0 - h, 3.0));
         vec3 sky = mix(night, day, uBright);
         // Twilight: strongest with the Sun a few degrees down, on its side of the sky.
@@ -576,18 +582,30 @@ function outline(az: number, waves: [number, number, number][]) {
   return sum;
 }
 
+/** Repeatable noise around the horizon, 0..1: `cells` lumps to the full circle. */
+function lumps(az: number, cells: number, seed: number) {
+  const x = (az / 360) * cells;
+  const i = Math.floor(x);
+  const t = x - i;
+  const at = (n: number) => {
+    const v = Math.sin((((n % cells) + cells) % cells) * 127.1 + seed * 311.7) * 43758.5453;
+    return v - Math.floor(v);
+  };
+  return at(i) + (at(i + 1) - at(i)) * t * t * (3 - 2 * t);
+}
+
 /**
- * The horizon's silhouette: distant hills and a near tree line, never more than 2.4° high,
- * so nothing the page calls "up" hides behind them for long. An illustration of a horizon,
- * not the observatory's measured one.
+ * The horizon's silhouette as a strip from its outline down under the horizon. An
+ * illustration of a horizon, not the observatory's measured one: rise and set stay
+ * geometric, and the south, where the planets cross, is kept low.
  */
 function landscape(profile: (az: number) => number, radius: number) {
   const positions: number[] = [];
   const index: number[] = [];
-  const steps = 1440;
+  const steps = NEAR_STEPS;
   for (let i = 0; i <= steps; i++) {
     const az = (i / steps) * 360;
-    for (const alt of [profile(az), -3]) positions.push(...worldOf({ alt, az }).map((v) => v * radius));
+    for (const alt of [profile(az), -4]) positions.push(...worldOf({ alt, az }).map((v) => v * radius));
     if (i < steps) {
       const a = i * 2;
       index.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
@@ -599,25 +617,94 @@ function landscape(profile: (az: number) => number, radius: number) {
   return geometry;
 }
 
+/** A far ridge, a degree or two high, hazed by distance. */
 const farHills = (az: number) =>
   Math.max(
-    0.15,
-    0.75 +
+    0.2,
+    1.05 +
       outline(az, [
-        [2, 0.55, 0.4],
-        [3, 0.45, 1.9],
-        [5, 0.35, 4.1],
-        [9, 0.18, 2.2],
-        [17, 0.08, 0.7],
-      ]),
+        [2, 0.6, 0.4],
+        [3, 0.5, 1.9],
+        [5, 0.38, 4.1],
+        [9, 0.2, 2.2],
+        [17, 0.09, 0.7],
+      ]) +
+      0.25 * lumps(az, 90, 3),
   );
 
-const treeLine = (az: number) => {
-  const rolling = 0.35 + outline(az, [[4, 0.18, 2.8], [7, 0.12, 0.3], [11, 0.08, 5.1]]);
-  const crowns = Math.abs(Math.sin(az * 7.3 * DEG * 6)) ** 3 * 0.32 + Math.abs(Math.sin(az * 19.7 * DEG * 4 + 1.3)) ** 6 * 0.22;
-  const clearing = Math.sin(az * 3 * DEG + 0.9) > 0.55 ? 0.15 : 1;
-  return Math.min(2.4, Math.max(0.08, rolling + crowns * clearing));
-};
+/** A repeatable sequence of numbers in 0..1 (mulberry32), so the horizon is the same every visit. */
+function sequence(seed: number) {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Stands of trees by compass bearing: from, to, the tallest tree in degrees, how many. */
+const STANDS: [from: number, to: number, height: number, count: number][] = [
+  [14, 66, 6.2, 34],
+  [92, 132, 4.4, 22],
+  [146, 163, 2.9, 9],
+  [197, 216, 3.3, 11],
+  [228, 266, 5.2, 26],
+  [284, 322, 6.6, 28],
+];
+
+/**
+ * The near ground, sampled every eighth of a degree: a rolling field, stands of
+ * broadleaves and a few firs, each tree its own crown, and the observatory's dome to the
+ * north-north-west.
+ */
+const NEAR_STEPS = 2880;
+const nearOutline = (() => {
+  const outlineAt = new Float32Array(NEAR_STEPS);
+  for (let i = 0; i < NEAR_STEPS; i++) {
+    const az = (i / NEAR_STEPS) * 360;
+    outlineAt[i] = Math.max(0.12, 0.5 + outline(az, [[3, 0.2, 2.8], [7, 0.13, 0.3], [11, 0.08, 5.1]]) + 0.1 * lumps(az, 240, 5));
+  }
+  const next = sequence(20261113);
+  const plant = (at: number, height: number, half: number, fir: boolean) => {
+    const from = Math.floor(((at - half) / 360) * NEAR_STEPS);
+    const to = Math.ceil(((at + half) / 360) * NEAR_STEPS);
+    for (let i = from; i <= to; i++) {
+      const az = (i / NEAR_STEPS) * 360;
+      const d = Math.abs(az - at) / half;
+      if (d >= 1) continue;
+      const top = fir
+        ? height * (1 - d) ** 0.85 * (0.86 + 0.14 * Math.abs(Math.sin(d * 14)))
+        : height * (1 - d ** 2.6) ** 0.55 * (0.8 + 0.14 * lumps(az, 520, Math.round(at)) + 0.06 * lumps(az, 1700, Math.round(at) + 1));
+      const slot = ((i % NEAR_STEPS) + NEAR_STEPS) % NEAR_STEPS;
+      outlineAt[slot] = Math.max(outlineAt[slot], 0.3 + top);
+    }
+  };
+  for (const [from, to, height, count] of STANDS) {
+    for (let k = 0; k < count; k++) {
+      const at = from + (to - from) * next();
+      // Taller toward the middle of a stand, so it reads as a wood and not a hedge.
+      const middle = 1 - Math.abs((at - from) / (to - from) - 0.5) * 1.1;
+      const tall = height * (0.45 + 0.55 * next()) * (0.55 + 0.45 * middle);
+      const fir = next() < 0.22;
+      plant(at, tall, tall * (fir ? 0.22 : 0.5 + 0.25 * next()), fir);
+    }
+    // The undergrowth the trees stand in.
+    for (let az = from; az <= to; az += 360 / NEAR_STEPS) {
+      const edge = Math.min(1, (az - from) / 2, (to - az) / 2);
+      const slot = Math.round((az / 360) * NEAR_STEPS) % NEAR_STEPS;
+      outlineAt[slot] = Math.max(outlineAt[slot], 0.3 + height * 0.2 * edge * (0.7 + 0.3 * lumps(az, 900, from)));
+    }
+  }
+  // The dome: a low wall and a half-round roof, 3.4 degrees across.
+  for (let i = 0; i < NEAR_STEPS; i++) {
+    const d = Math.abs((((i / NEAR_STEPS) * 360 - 338 + 540) % 360) - 180);
+    if (d < 2.3) outlineAt[i] = Math.max(outlineAt[i], d < 1.7 ? 0.95 + Math.sqrt(1.7 * 1.7 - d * d) * 0.95 : 0.95);
+  }
+  return outlineAt;
+})();
+
+const nearGround = (az: number) => nearOutline[Math.round((az / 360) * NEAR_STEPS) % NEAR_STEPS];
 
 const BODY_COLOUR: Record<SkyBodyName, string> = {
   Sun: nightSkyArt.sun,
@@ -695,6 +782,7 @@ export class SkyRenderer {
   private states: BodyState[] = [];
   private shown = new Map<string, { world: Vec3; radiusPx: number }>();
   private path: PathOverlay | null = null;
+  private marks: { x: number; y: number; radius: number; flat: number; shape: DsoShape; showpiece: boolean; alpha: number }[] = [];
   private overlayContext: CanvasRenderingContext2D | null;
   private font = "sans-serif";
   private motion = true;
@@ -711,7 +799,7 @@ export class SkyRenderer {
     private things: SkyThing[],
   ) {
     this.starData = starData;
-    this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
+    this.renderer = new WebGLRenderer({ canvas, antialias: (window.devicePixelRatio || 1) < 2, alpha: false, powerPreference: "high-performance" });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.outputColorSpace = SRGBColorSpace;
     this.camera.up.set(0, 1, 0);
@@ -846,7 +934,7 @@ export class SkyRenderer {
     this.ground.renderOrder = 5;
     this.scene.add(this.ground);
     this.hills = new Mesh(landscape(farHills, 0.895), new MeshBasicMaterial({ color: nightSkyArt.hills, side: DoubleSide, transparent: true }));
-    this.trees = new Mesh(landscape(treeLine, 0.89), new MeshBasicMaterial({ color: nightSkyArt.ground, side: DoubleSide, transparent: true }));
+    this.trees = new Mesh(landscape(nearGround, 0.89), new MeshBasicMaterial({ color: nightSkyArt.ground, side: DoubleSide, transparent: true }));
     this.hills.renderOrder = 5;
     this.trees.renderOrder = 6;
     for (const layer of [this.hills, this.trees]) {
@@ -980,6 +1068,7 @@ export class SkyRenderer {
     this.lean = aberration(date);
     this.states = bodies(date, site);
     this.shown.clear();
+    this.marks.length = 0;
     const target = frame.selected ? this.whereIs(frame.selected) : null;
     if (frame.track && target && !orientation && (target.alt > -1 || toggles.ground)) {
       view = clampView({ ...view, alt: target.alt, az: target.az });
@@ -996,6 +1085,9 @@ export class SkyRenderer {
 
     // Camera.
     this.camera.fov = view.fov;
+    // A wide view reaches the ground at the screen's corners, nearer than a narrow one
+    // needs; a narrow one wants the depth to sort Saturn's rings against its globe.
+    this.camera.near = view.fov < 20 ? 0.5 : 0.05;
     this.camera.updateProjectionMatrix();
     if (orientation) {
       this.camera.quaternion.copy(orientation);
@@ -1028,7 +1120,7 @@ export class SkyRenderer {
     milky.uniforms.uLean.value.set(...this.lean);
     // The Milky Way is a glow across tens of degrees; in a narrow view it would only grey
     // the background, so it fades out below a 12° field.
-    milky.uniforms.uAlpha.value = 0.42 * Math.max(0, 1 - bright * 9) * smooth(3, 12, view.fov);
+    milky.uniforms.uAlpha.value = 0.3 * Math.max(0, 1 - bright * 9) * smooth(3, 12, view.fov);
     milky.uniforms.uHaze.value = toggles.atmosphere ? 1 : 0;
     this.milky.visible = toggles.milkyway;
 
@@ -1140,8 +1232,8 @@ export class SkyRenderer {
         `sky-label sky-label-body${frame.selected === `body:${state.name}` ? " is-selected" : ""}${state.alt < 0 ? " is-below" : ""}`,
         this.names.get(`body:${state.name}`) ?? state.name,
         // A planet the sky is too bright to show (Neptune at any wide view) goes unlabelled.
-        up && (frame.selected === `body:${state.name}` || (toggles.planets && (big || discShown || d > -0.5)))
-          ? offset(world, (shownPx + 2) * degPerPx)
+        up && (frame.selected === `body:${state.name}` || big || discShown || d > -0.5)
+          ? offset(world, (shownPx + (frame.selected === `body:${state.name}` ? 14 : 2)) * degPerPx)
           : null,
       );
 
@@ -1185,12 +1277,24 @@ export class SkyRenderer {
         const selected = frame.selected === key;
         const where = horizontal(unit(thing.raHours, thing.decDeg), this.matrix, this.lean);
         const world = worldOf(where);
+        const up = toggles.ground || where.alt > 0;
+        // A deep-sky object shows by its brightness: the showpieces from a wide view, the
+        // rest of Messier's list as the view narrows onto them.
+        const reach = (thing.magnitude ?? 9) - 1.5 * zoomGain;
+        const marked =
+          thing.mark !== undefined && (selected || (toggles.dso && up && bright < 0.35 && (thing.labelled ? view.fov <= 75 : reach <= 4.6)));
+        if (thing.mark && !thing.labelled && !marked) {
+          this.shown.delete(key);
+          this.place(key, "sky-label sky-label-dso", thing.name, null);
+          continue;
+        }
         const plate = this.plates.get(thing.id);
         let radiusPx = thing.type === "star" ? 6 : 9;
+        let framed = false;
         if (plate) {
           const spec = PLATES[thing.id];
           const widthPx = spec.widthArcmin / 60 / degPerPx;
-          const alpha = (toggles.ground || where.alt > 0 ? 1 : 0) * smooth(10, 44, widthPx) * Math.max(0, 1 - bright * 1.6);
+          const alpha = (up ? 1 : 0) * smooth(10, 44, widthPx) * Math.max(0, 1 - bright * 1.6);
           plate.visible = alpha > 0.01;
           if (plate.visible) {
             const material = plate.material as ShaderMaterial;
@@ -1202,17 +1306,39 @@ export class SkyRenderer {
             this.billboard(plate, world, north, D.plates, half(spec.widthArcmin), half(spec.heightArcmin));
           }
           radiusPx = Math.max(radiusPx, widthPx * 0.22);
+          framed = alpha > 0.5;
+        }
+        if (thing.mark && marked) {
+          const markPx = Math.max(6.5, Math.min(thing.mark.major / 120 / degPerPx, this.height * 0.4));
+          radiusPx = Math.max(radiusPx, markPx);
+          const point = screenOf(world, view, this.width, this.height);
+          // Its picture, once it is drawn, stands for it; until then its symbol does.
+          if (point && !framed) {
+            this.marks.push({
+              x: point.x,
+              y: point.y,
+              radius: markPx,
+              flat: Math.max(0.36, thing.mark.minor / thing.mark.major),
+              shape: thing.mark.shape,
+              showpiece: thing.labelled,
+              alpha: (where.alt < 0 ? 0.4 : 0.85) * (selected ? 1 : smooth(0.35, 0.15, bright)),
+            });
+          }
         }
         this.shown.set(key, { world, radiusPx });
         const show =
           selected ||
-          (thing.labelled && (thing.type !== "star" ? view.fov <= 75 : (thing.magnitude ?? 9) <= Math.min(effectiveLimit, 1.6 + 1.2 * zoomGain)));
+          (thing.type === "star"
+            ? thing.labelled && (thing.magnitude ?? 9) <= Math.min(effectiveLimit, 1.6 + 1.2 * zoomGain)
+            : thing.labelled
+              ? toggles.dso && view.fov <= 75
+              : reach <= 3.6);
         this.place(
           key,
-          `sky-label ${thing.type === "star" ? "sky-label-star" : "sky-label-showpiece"}${selected ? " is-selected" : ""}${where.alt < 0 ? " is-below" : ""}${radiusPx > 12 ? " is-framed" : ""}`,
+          `sky-label ${thing.type === "star" ? "sky-label-star" : thing.labelled ? "sky-label-showpiece" : "sky-label-dso"}${selected ? " is-selected" : ""}${where.alt < 0 ? " is-below" : ""}`,
           thing.name,
-          // Framed or picked, the name stands clear of the object and its marker.
-          show ? this.visible(radiusPx > 12 ? offset(world, (radiusPx + 4) * degPerPx) : selected ? offset(world, 26 * degPerPx) : world, toggles) : null,
+          // The name stands clear of the object's symbol, and of the marker when picked.
+          show ? this.visible(thing.type === "star" && !selected ? world : offset(world, (radiusPx + (selected ? 12 : 3)) * degPerPx), toggles) : null,
         );
       }
     }
@@ -1223,7 +1349,7 @@ export class SkyRenderer {
     this.place("compass:W", "sky-label sky-compass", compass.W, [-1, 0.01, 0]);
 
     this.renderer.render(this.scene, this.camera);
-    this.drawOverlay(frame, seconds);
+    this.drawOverlay(frame, seconds, target);
     return { bright, sun, moon, view, target };
   }
 
@@ -1246,8 +1372,12 @@ export class SkyRenderer {
     return 1.5;
   }
 
-  /** The selected object's path across the sky, its hours and events, and its marker. */
-  private drawOverlay(frame: Frame, seconds: number) {
+  /**
+   * The deep-sky symbols, then the selected object's path across the sky -- where it has
+   * been as a full line, where it is going as a broken one -- its hours and events, and
+   * its marker.
+   */
+  private drawOverlay(frame: Frame, seconds: number, target: AltAz | null) {
     const context = this.overlayContext;
     if (!context) return;
     const ratio = this.renderer.getPixelRatio();
@@ -1258,34 +1388,119 @@ export class SkyRenderer {
     const onScreen = (p: { x: number; y: number }, margin = 0) =>
       p.x > -margin && p.y > -margin && p.x < this.width + margin && p.y < this.height + margin;
 
+    // Deep-sky symbols, after the charts: an ellipse for a galaxy, a crossed circle for a
+    // globular cluster, a broken circle for an open one, a square for a nebula.
+    context.lineWidth = 1.3;
+    for (const mark of this.marks) {
+      if (!onScreen(mark, mark.radius)) continue;
+      context.strokeStyle = withAlpha(mark.showpiece ? nightSkyArt.showpiece : nightSkyArt.dso, mark.alpha);
+      context.setLineDash(mark.shape === "open" ? [3, 3] : []);
+      context.beginPath();
+      if (mark.shape === "galaxy") {
+        context.ellipse(mark.x, mark.y, mark.radius, mark.radius * mark.flat, -0.5, 0, Math.PI * 2);
+      } else if (mark.shape === "nebula") {
+        context.roundRect(mark.x - mark.radius, mark.y - mark.radius, mark.radius * 2, mark.radius * 2, mark.radius * 0.3);
+      } else {
+        context.arc(mark.x, mark.y, mark.radius, 0, Math.PI * 2);
+        if (mark.shape === "globular") {
+          context.moveTo(mark.x - mark.radius, mark.y);
+          context.lineTo(mark.x + mark.radius, mark.y);
+          context.moveTo(mark.x, mark.y - mark.radius);
+          context.lineTo(mark.x, mark.y + mark.radius);
+        }
+      }
+      context.stroke();
+    }
+    context.setLineDash([]);
+
+    // The marker round the selected object; the path stops at it and starts again past it.
+    const selected = frame.selected ? this.shown.get(frame.selected) ?? this.markerOf(frame.selected) : null;
+    const markerAt = selected && (seeBelow || selected.world[1] > -0.01) ? screenOf(selected.world, this.view, this.width, this.height) : null;
+    const markerRadius = selected ? Math.min(Math.max(selected.radiusPx + 8, 14), Math.min(this.width, this.height) * 0.45) : 0;
+
     if (this.path && frame.toggles.path && frame.selected) {
+      const now = frame.date.getTime();
+      const here = target ? project(target.alt, target.az) : null;
       const points = this.path.points.map((point) => ({ ...point, screen: project(point.alt, point.az) }));
-      const above = new Path2D();
-      const below = new Path2D();
+      const leap = Math.max(this.width, this.height);
+      type Point = { x: number; y: number };
+      // One unbroken line per run of steps, so a dash pattern keeps its rhythm.
+      const trail = () => {
+        const line = new Path2D();
+        let end: Point | null = null;
+        return {
+          line,
+          add(a: Point | null, b: Point | null) {
+            if (!a || !b) return;
+            const length = Math.hypot(b.x - a.x, b.y - a.y);
+            if (length > leap) {
+              // A step that leaps across the screen from off it has wrapped behind the eye.
+              // One that leaves from on the screen is a close view's: drawn to just past the edge.
+              const from = onScreen(a) ? a : onScreen(b) ? b : null;
+              if (!from) return;
+              const to = from === a ? b : a;
+              const reach = (2 * leap) / length;
+              const edge = { x: from.x + (to.x - from.x) * reach, y: from.y + (to.y - from.y) * reach };
+              line.moveTo(from.x, from.y);
+              line.lineTo(edge.x, edge.y);
+              end = null;
+              return;
+            }
+            if (!end || end.x !== a.x || end.y !== a.y) line.moveTo(a.x, a.y);
+            line.lineTo(b.x, b.y);
+            end = b;
+          },
+        };
+      };
+      const past = { up: trail(), down: trail() };
+      const future = { up: trail(), down: trail() };
       for (let i = 1; i < points.length; i++) {
         const a = points[i - 1];
         const b = points[i];
-        if (!a.screen || !b.screen) continue;
-        // A step that leaps across the screen has wrapped behind the eye.
-        if (Math.hypot(b.screen.x - a.screen.x, b.screen.y - a.screen.y) > Math.max(this.width, this.height)) continue;
-        const target = (a.alt + b.alt) / 2 > 0 ? above : below;
-        target.moveTo(a.screen.x, a.screen.y);
-        target.lineTo(b.screen.x, b.screen.y);
+        const side = (a.alt + b.alt) / 2 > 0 ? "up" : "down";
+        if (b.at <= now) past[side].add(a.screen, b.screen);
+        else if (a.at >= now) future[side].add(a.screen, b.screen);
+        else {
+          // The step the object is in: the full line ends on it, the broken one starts there.
+          const split = here ?? b.screen;
+          past[side].add(a.screen, split);
+          future[side].add(split, b.screen);
+        }
+      }
+      // The lines stop at the object's marker and start again past it.
+      context.save();
+      if (markerAt) {
+        const around = new Path2D();
+        around.rect(0, 0, this.width, this.height);
+        around.arc(markerAt.x, markerAt.y, markerRadius + 3, 0, Math.PI * 2);
+        context.clip(around, "evenodd");
       }
       context.lineCap = "round";
+      context.lineJoin = "round";
       if (seeBelow) {
-        context.setLineDash([3, 5]);
-        context.lineWidth = 1.5;
-        context.strokeStyle = withAlpha(nightSkyArt.path, 0.4);
-        context.stroke(below);
+        context.lineWidth = 1.3;
+        context.strokeStyle = withAlpha(nightSkyArt.path, 0.38);
+        context.stroke(past.down.line);
+        context.setLineDash([2, 7]);
+        context.stroke(future.down.line);
         context.setLineDash([]);
       }
-      context.lineWidth = 4;
-      context.strokeStyle = withAlpha(nightSkyArt.path, 0.16);
-      context.stroke(above);
-      context.lineWidth = 1.6;
-      context.strokeStyle = withAlpha(nightSkyArt.path, 0.9);
-      context.stroke(above);
+      // Where it has been: a full line with a soft glow.
+      context.lineWidth = 6;
+      context.strokeStyle = withAlpha(nightSkyArt.path, 0.14);
+      context.stroke(past.up.line);
+      context.lineWidth = 2;
+      context.strokeStyle = withAlpha(nightSkyArt.path, 0.95);
+      context.stroke(past.up.line);
+      // Where it is going: a broken line.
+      context.lineCap = "butt";
+      context.setLineDash([8, 7]);
+      context.lineWidth = 1.8;
+      context.strokeStyle = withAlpha(nightSkyArt.path, 0.85);
+      context.stroke(future.up.line);
+      context.setLineDash([]);
+      context.lineCap = "round";
+      context.restore();
 
       // Whole hours: a dot each, a label where there is room, an arrow every third.
       context.font = `600 13px ${this.font}`;
@@ -1296,6 +1511,8 @@ export class SkyRenderer {
         const point = points[i];
         if (point.at % 3_600_000 !== 0 || !point.screen || !onScreen(point.screen, 20)) continue;
         if (point.alt < 0 && !seeBelow) continue;
+        // The hour the object stands on is its marker's.
+        if (markerAt && Math.hypot(point.screen.x - markerAt.x, point.screen.y - markerAt.y) < markerRadius + 6) continue;
         const next = points[Math.min(points.length - 1, i + 1)].screen ?? point.screen;
         const previous = points[Math.max(0, i - 1)].screen ?? point.screen;
         const dx = next.x - previous.x;
@@ -1303,9 +1520,20 @@ export class SkyRenderer {
         const length = Math.hypot(dx, dy) || 1;
         const alpha = point.alt < 0 ? 0.45 : 1;
         context.fillStyle = withAlpha(nightSkyArt.path, alpha);
+        context.strokeStyle = withAlpha(nightSkyArt.path, alpha);
+        context.lineWidth = 1.5;
         context.beginPath();
-        context.arc(point.screen.x, point.screen.y, 2.6, 0, Math.PI * 2);
-        context.fill();
+        // Hours gone by are full dots; hours to come are rings.
+        if (point.at <= now) {
+          context.arc(point.screen.x, point.screen.y, 3, 0, Math.PI * 2);
+          context.fill();
+        } else {
+          context.fillStyle = withAlpha(nightSkyArt.scrim, 0.85);
+          context.arc(point.screen.x, point.screen.y, 3.2, 0, Math.PI * 2);
+          context.fill();
+          context.stroke();
+          context.fillStyle = withAlpha(nightSkyArt.path, alpha);
+        }
         if (Math.round(point.at / 3_600_000) % 3 === 0 && length > 4) {
           // An arrowhead half an hour on, pointing the way the object goes.
           const half = points[Math.min(points.length - 1, i + 3)].screen;
@@ -1352,12 +1580,11 @@ export class SkyRenderer {
       }
     }
 
-    // The marker round the selected object: four arcs, turning slowly.
-    const selected = frame.selected ? this.shown.get(frame.selected) ?? this.markerOf(frame.selected) : null;
-    if (selected && (seeBelow || selected.world[1] > -0.01)) {
-      const point = screenOf(selected.world, this.view, this.width, this.height);
-      if (point && onScreen(point, 30)) {
-        const radius = Math.min(Math.max(selected.radiusPx + 8, 14), Math.min(this.width, this.height) * 0.45);
+    // Four arcs, turning slowly.
+    if (markerAt) {
+      const point = markerAt;
+      if (onScreen(point, 30)) {
+        const radius = markerRadius;
         const spin = this.motion ? seconds * 0.5 : 0;
         context.lineWidth = 2;
         context.strokeStyle = nightSkyArt.reticle;
@@ -1425,6 +1652,7 @@ export class SkyRenderer {
     for (const thing of this.things) {
       if (thing.kind === "fixed") {
         const shown = this.shown.get(`fixed:${thing.id}`);
+        if (thing.mark && !thing.labelled && !shown) continue;
         consider(`fixed:${thing.id}`, this.worldOfJ2000(unit(thing.raHours, thing.decDeg)), thing.type === "star" ? 0 : -4, Math.max(radius, shown?.radiusPx ?? 0));
       }
     }

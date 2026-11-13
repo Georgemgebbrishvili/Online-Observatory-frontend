@@ -193,3 +193,53 @@ and accuracy. Make sure it's accurate every day."
   the view is narrow enough to show it, or it is picked.
 - **The time bar is one row shorter on a desk.**
 - **Data size.** `stars.bin` 255 KB and `milkyway.webp` 157 KB before transfer compression.
+
+## Amendment — 2026-11-13
+
+Decided by the maintainer (Nika), in session: "upgrade visuals and experience to be like the
+Stellarium app, both on mobile and on web; on mobile it should launch full screen and load
+fast; planets zoom in and give information when tapped; search a specific object and see
+its path, past movement as a full line and future movement as a split line; go all out."
+
+- **The path is past and future.** Where the selected object has been in the last twelve
+  hours is a full line; where it goes in the next twelve is a broken one. Hours gone by are
+  full dots, hours to come are rings. This replaces the 2026-11-08 rule (full above the
+  horizon, broken below): below the horizon both are fainter, and show only with the
+  landscape off. The lines stop at the object's marker, and in a close view run to the
+  screen's edge.
+- **The controls are a planetarium's.** A search field at the top; a dock at the foot with
+  the place on its left, a row of icon switches in the middle and the clock on its right.
+  The place, the time and the list of what is up each open as one sheet above the dock. The
+  time sheet gains a slider, twelve hours either side of the present. The "Show" checklist,
+  the standing time bar and the list button are gone. The planet-label switch is gone:
+  planets are always named. "See through the ground" is now the Landscape switch, lit while
+  the ground is solid.
+- **A phone gets the whole screen.** Under 768 px the page covers the site header and the
+  phone tab bar is not drawn; a round button leads back to the homepage. The panel of what
+  is picked opens folded to its head, so the object and its path show; Details unfolds it.
+  This amends the 2026-11-08 amendment (the tab bar still leads here; it is not drawn here).
+  On a desk a button puts the page in full screen.
+- **Search offers before it is asked.** Focused and empty, the field lists the Moon, the
+  planets and the showpieces that are well up. Arrow keys move through results.
+- **Messier's list.** The 110 Messier objects (d3-celestial, BSD 3-Clause;
+  `public/sky/data/messier.json`, 12 KB, built by `scripts/build-sky-data.mjs
+  --only=messier`) are found by search and drawn with the charts' symbols: an ellipse for
+  a galaxy, a crossed circle for a globular cluster, a broken circle for an open one, a
+  square for a nebula. The showpieces keep gold; the rest are blue and appear by magnitude
+  as the view narrows. A new switch, "Deep-sky objects", hides them all.
+- **The panel says more.** A small picture where one exists, the constellation the object
+  stands in (astronomy-engine's `Constellation`), a planet's distance and apparent size, a
+  line about each body, and a Messier object's size and NGC number.
+- **The landscape is taller.** A far ridge, stands of trees up to about 6° high and the
+  observatory's dome to the north-north-west, drawn from a fixed seed. This replaces the
+  2.4° ceiling of 2026-11-08: the south, where the planets cross, stays low, and rise and
+  set stay geometric. The night sky is a deep blue that lifts to a haze along the horizon.
+- **The page no longer waits on the platform.** Rendering it made a request for the
+  targets and held the whole page until the API answered, fifteen seconds on a cold start.
+  Now the server asks the platform for nothing, and the browser fetches what can be booked
+  from `/api/targets` once the sky is up. The star catalogue and the figures are preloaded with the page. Before
+  the first frame the stage already shows a night gradient, and the sky fades in over it.
+  On a phone the glass is not blurred and the canvas is not anti-aliased at 2× density.
+- **A fix.** A wide view no longer cuts the ground off at the screen's corners (the camera's
+  near plane is close in a wide view, far only in a narrow one, where Saturn's rings need
+  the depth).

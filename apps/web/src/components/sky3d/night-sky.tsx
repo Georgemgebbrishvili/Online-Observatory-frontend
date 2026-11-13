@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import {
+  AU_KM,
   SITE,
   SKY_BODIES,
   bodies,
   bodyState,
+  constellationAt,
+  constellationOfBody,
   events,
   fixedAltAz,
   nextRise,
@@ -27,8 +30,10 @@ import { constellationKa, nightSkyCopy, starKa } from "@/i18n/resources/night-sk
 import { SHOWPIECES } from "@/lib/observatory-sim/showpieces";
 import { BRIGHT_STARS } from "@/lib/observatory-sim/stars";
 import { TELESCOPE_TARGET_BY_ID } from "@/lib/observatory-sim/telescope-targets";
+import { apiRequest } from "@/lib/platform/browser";
 
-import type { Constellation, PathOverlay, SkyRenderer, SkyThing, Toggles } from "./renderer";
+import type { Constellation, DsoShape, PathOverlay, SkyRenderer, SkyThing, Toggles } from "./renderer";
+import { SkyIcon } from "./sky-icons";
 
 /** A platform target, for the panel's booking link. */
 export type Bookable = {
@@ -43,7 +48,7 @@ const TOGGLES_KEY = "stellar-sky-toggles";
 const DEFAULT_TOGGLES: Toggles = {
   lines: true,
   names: true,
-  planets: true,
+  dso: true,
   path: true,
   altaz: false,
   equatorial: false,
@@ -51,7 +56,26 @@ const DEFAULT_TOGGLES: Toggles = {
   atmosphere: true,
   ground: false,
 };
+/** The dock's switches, in order. `ground` is the landscape: lit while the ground is solid. */
+const TOOLS: (keyof Toggles)[] = ["lines", "names", "dso", "atmosphere", "ground", "altaz", "equatorial", "milkyway", "path"];
 const DEG = Math.PI / 180;
+/** Half the time slider's reach either side of the present, minutes. */
+const SCRUB = 720;
+
+/** A Messier object as scripts/build-sky-data.mjs writes it. */
+type Messier = {
+  id: string;
+  ngc: string | null;
+  name: string | null;
+  kind: DsoShape;
+  mag: number;
+  size: [number, number];
+  ra: number;
+  dec: number;
+};
+
+/** The objects with a small picture for the panel's head (public/sky/targets/icons). */
+const PICTURED = new Set(["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune", "m31", "m42", "m57", "sirius", "arcturus"]);
 
 function readToggles(): Toggles {
   try {
@@ -92,8 +116,19 @@ function catalogueStar(stars: Float32Array, raHours: number, decDeg: number) {
   return null;
 }
 
-function clock(at: Date, timeZone: string) {
-  return new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone }).format(at);
+function clock(at: Date, timeZone: string, seconds = false) {
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    ...(seconds && { second: "2-digit" }),
+    hourCycle: "h23",
+    timeZone,
+  }).format(at);
+}
+
+/** An apparent width: arcseconds under an arcminute, arcminutes above. */
+function sizeText(degrees: number) {
+  return degrees < 1 / 60 ? `${(degrees * 3600).toFixed(1)}″` : `${(degrees * 60).toFixed(1)}′`;
 }
 
 function raText(hours: number) {
@@ -124,6 +159,14 @@ type Picked = {
   epoch: "J2000" | "date";
   lit: number | null;
   slug: string | null;
+  /** The constellation it stands in, by IAU abbreviation and Latin name. */
+  within: { id: string; name: string } | null;
+  distanceAu: number | null;
+  /** Apparent size, worded. */
+  size: string | null;
+  catalogue: string | null;
+  about: string | null;
+  picture: string | null;
 };
 
 /** Apparent alt/az of a target at an instant. */
@@ -140,20 +183,13 @@ const observatoryZone = () => "Asia/Tbilisi";
  * is tapped, and toggles. The three.js scene is imported in the browser only; without
  * WebGL the page keeps the list of what is up.
  */
-export function NightSky({
-  bookable,
-  locale,
-  openedAt,
-}: {
-  bookable: Bookable[];
-  locale: Locale;
-  openedAt: number;
-}) {
+export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: number }) {
   const copy = nightSkyCopy[locale];
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
   const labelsRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
   const rendererRef = useRef<SkyRenderer | null>(null);
   const starsRef = useRef<Float32Array | null>(null);
 
@@ -162,7 +198,7 @@ export function NightSky({
   // tab left open overnight still shows this morning's sky.
   const time = useRef({ anchorSim: openedAt, anchorReal: 0, speed: 1, playing: true });
   // South, low enough that the horizon shows above the time bar.
-  const viewRef = useRef<View>({ alt: 16, az: 180, fov: 75 });
+  const viewRef = useRef<View>({ alt: 20, az: 180, fov: 75 });
   const velocity = useRef({ alt: 0, az: 0 });
   const fly = useRef<{ from: View; to: View; start: number; duration: number } | null>(null);
   // Following the selected object as the sky turns: after a search or a closer look.
@@ -188,10 +224,19 @@ export function NightSky({
   const [constellations, setConstellations] = useState<Constellation[]>([]);
   // The catalogue, for the panel of a tapped star; the renderer keeps its own copy.
   const [starData, setStarData] = useState<Float32Array | null>(null);
-  const [listOpen, setListOpen] = useState(false);
-  const listRef = useRef<HTMLDetailsElement>(null);
-  // On a phone the panel is a sheet over the sky; for a closer look it folds to its head.
-  const [folded, setFolded] = useState(false);
+  const [messier, setMessier] = useState<Messier[]>([]);
+  // What the observatory offers, for the panel's booking link: asked for once the sky is up.
+  const [bookable, setBookable] = useState<Bookable[]>([]);
+  // One sheet open at a time over the dock: the place, the time, or the list of what is up.
+  const [open, setOpen] = useState<"place" | "time" | "list" | null>(null);
+  const [full, setFull] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [active, setActive] = useState(0);
+  // The simulated instant against the wall clock, minutes: where the time slider stands.
+  const [offset, setOffset] = useState(0);
+  // On a phone the panel is a sheet over the sky: it opens folded to its head, so the
+  // object and its path show, and Details unfolds it.
+  const [folded, setFolded] = useState(true);
 
   useEffect(() => {
     togglesRef.current = toggles;
@@ -216,6 +261,7 @@ export function NightSky({
       if (next?.speed !== undefined) t.speed = next.speed;
       if (next?.playing !== undefined) t.playing = next.playing;
       setNow(new Date(at));
+      setOffset(Math.round((at - t.anchorReal) / 60_000));
     },
     [],
   );
@@ -237,9 +283,12 @@ export function NightSky({
         labelled: true,
       });
     }
+    const catalogue = new Map(messier.map((object) => [object.id.toLowerCase(), object]));
     for (const showpiece of SHOWPIECES) {
       const target = TELESCOPE_TARGET_BY_ID.get(showpiece.id);
       if (!target || target.ra === undefined || target.dec === undefined || target.kind === "star") continue;
+      const listed = catalogue.get(showpiece.id);
+      catalogue.delete(showpiece.id);
       list.push({
         kind: "fixed",
         id: showpiece.id,
@@ -247,8 +296,27 @@ export function NightSky({
         type: target.kind === "galaxy" ? "galaxy" : target.kind === "nebula" ? "nebula" : "cluster",
         raHours: target.ra,
         decDeg: target.dec,
-        magnitude: null,
+        magnitude: listed?.mag ?? null,
         labelled: true,
+        mark: {
+          shape: listed?.kind ?? (target.kind === "galaxy" ? "galaxy" : target.kind === "nebula" ? "nebula" : "open"),
+          major: listed?.size[0] ?? 10,
+          minor: listed?.size[1] ?? 10,
+        },
+      });
+    }
+    // The rest of Messier's list: found by search, and drawn as the view narrows onto them.
+    for (const object of catalogue.values()) {
+      list.push({
+        kind: "fixed",
+        id: object.id.toLowerCase(),
+        name: object.name && locale === "en" ? `${object.name} · ${object.id}` : object.id,
+        type: object.kind === "galaxy" ? "galaxy" : object.kind === "nebula" ? "nebula" : "cluster",
+        raHours: object.ra,
+        decDeg: object.dec,
+        magnitude: object.mag,
+        labelled: false,
+        mark: { shape: object.kind, major: object.size[0], minor: object.size[1] },
       });
     }
     const seen = new Set<string>();
@@ -263,7 +331,8 @@ export function NightSky({
       });
     }
     return list;
-  }, [constellations, locale, starData]);
+  }, [constellations, locale, starData, messier]);
+  const messierById = useMemo(() => new Map(messier.map((object) => [object.id.toLowerCase(), object])), [messier]);
 
   const bodyName = useCallback((name: SkyBodyName) => copy.bodies[name], [copy]);
 
@@ -285,6 +354,8 @@ export function NightSky({
           fetch("/sky/data/constellations.json").then((r) => r.json() as Promise<Constellation[]>),
         ]);
         if (cancelled) return;
+        // A phone held upright sees a narrow strip of a desk's view: open it wider.
+        if (window.innerWidth < 768) viewRef.current = { alt: 33, az: 180, fov: 100 };
         // Each star carried along its proper motion to the day the page opens.
         starsRef.current = starsAtDate(new Float32Array(stars), new Date(openedAt));
         setStarData(starsRef.current);
@@ -305,9 +376,33 @@ export function NightSky({
         time.current.anchorReal = clientNow;
         setPhase("ready");
       } catch {
-        if (!cancelled) setPhase("no-webgl");
+        if (cancelled) return;
+        // The list stands in for the sky, and reads the visitor's clock itself.
+        setNow(new Date());
+        setPhase("no-webgl");
       }
     })();
+    // Neither of these holds the first frame up: Messier's list, and what can be booked.
+    fetch("/sky/data/messier.json")
+      .then((r) => r.json() as Promise<Messier[]>)
+      .then((list) => !cancelled && setMessier(list))
+      .catch(() => {});
+    import("@darkview/contracts/zod")
+      .then(({ zListTargetsResponse }) => apiRequest("/targets?limit=100", { schema: zListTargetsResponse }))
+      .then(({ items }) => {
+        if (cancelled) return;
+        setBookable(
+          items
+            .filter((target) => target.enabled)
+            .map((target) => ({
+              slug: target.slug,
+              body: target.solarSystemBody ?? null,
+              raHours: target.coordinates?.raHours ?? null,
+              decDeg: target.coordinates?.decDegrees ?? null,
+            })),
+        );
+      })
+      .catch(() => {});
     return () => {
       cancelled = true;
       rendererRef.current?.dispose();
@@ -397,6 +492,7 @@ export function NightSky({
       if (t - lastClock > 250) {
         lastClock = t;
         setNow(date);
+        setOffset(Math.round((date.getTime() - Date.now()) / 60_000));
       }
       raf = requestAnimationFrame(frame);
     };
@@ -427,6 +523,8 @@ export function NightSky({
       stage.setPointerCapture(event.pointerId);
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       downAt = { x: event.clientX, y: event.clientY, t: performance.now() };
+      setOpen(null);
+      searchRef.current?.blur();
       velocity.current = { alt: 0, az: 0 };
       fly.current = null;
       if (pointers.size === 2) {
@@ -466,7 +564,7 @@ export function NightSky({
         if (again && (hit ?? selectedRef.current)) lookCloserRef.current(hit ?? selectedRef.current!);
         else {
           setSelected(hit);
-          setFolded(false);
+          setFolded(true);
         }
       }
     };
@@ -603,11 +701,18 @@ export function NightSky({
           ? [thing.name, thing.id, constellations.find((c) => c.id === thing.id)?.name ?? "", constellationKa[thing.id] ?? ""]
           : thing.type === "star"
             ? [BRIGHT_STARS.find((s) => s.id === thing.id)?.name ?? "", starKa[thing.id] ?? ""]
-            : [showpiece?.name.en ?? "", showpiece?.name.ka ?? "", TELESCOPE_TARGET_BY_ID.get(thing.id)?.catalog ?? "", thing.id];
+            : [
+                showpiece?.name.en ?? "",
+                showpiece?.name.ka ?? "",
+                TELESCOPE_TARGET_BY_ID.get(thing.id)?.catalog ?? "",
+                thing.id,
+                messierById.get(thing.id)?.name ?? "",
+                messierById.get(thing.id)?.ngc ?? "",
+              ];
       list.push({ key: `${thing.kind}:${thing.id}`, label: thing.name, names: names.filter(Boolean) });
     }
     return list;
-  }, [things, copy, constellations]);
+  }, [things, copy, constellations, messierById]);
   // An exact name first, then a name that starts with the query, then any match.
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -625,6 +730,23 @@ export function NightSky({
       .slice(0, 8)
       .map((entry) => entry.item);
   }, [query, searchable]);
+
+  // Before a letter is typed: the Moon, the planets and the showpieces that are well up now.
+  const tenMinutes = Math.floor(now.getTime() / 600_000);
+  const suggestions = useMemo(() => {
+    if (!searching || query.trim()) return [];
+    const at = new Date(tenMinutes * 600_000);
+    const list: { key: string; label: string; alt: number }[] = [];
+    for (const state of bodies(at, site.site)) {
+      if (state.name !== "Sun") list.push({ key: `body:${state.name}`, label: copy.bodies[state.name], alt: state.alt });
+    }
+    for (const thing of things) {
+      if (thing.kind !== "fixed" || thing.type === "star" || !thing.labelled) continue;
+      list.push({ key: `fixed:${thing.id}`, label: thing.name, alt: fixedAltAz(thing.raHours, thing.decDeg, at, site.site).alt });
+    }
+    return list.filter((item) => item.alt > 8).sort((a, b) => b.alt - a.alt).slice(0, 6);
+  }, [searching, query, tenMinutes, site.site, copy, things]);
+  const offered = query.trim() ? results : suggestions;
 
   // Where a key points, this instant.
   const locate = useCallback(
@@ -667,9 +789,11 @@ export function NightSky({
   const goTo = (key: string) => {
     const where = locate(key, simDate());
     setQuery("");
+    setOpen(null);
+    searchRef.current?.blur();
     if (!where) return setSearchNote(copy.search.none);
     setSelected(key);
-    setFolded(false);
+    setFolded(true);
     setSearchNote(where.alt < 0 ? copy.search.below : null);
     const fov = key.startsWith("constellation:") ? 60 : key.startsWith("body:") ? 25 : 30;
     track.current = where.alt > 0 && !key.startsWith("constellation:");
@@ -693,10 +817,6 @@ export function NightSky({
   });
 
   // A pick from the list flies there and folds the list away, so the panel shows.
-  const pickFromList = (key: string) => {
-    if (phase === "ready" && listRef.current) listRef.current.open = false;
-    goTo(key);
-  };
 
   const wholeSky = () => {
     track.current = false;
@@ -743,6 +863,12 @@ export function NightSky({
         epoch: "date",
         lit: state.name === "Sun" ? null : Math.round(state.litFraction * 100),
         slug,
+        within: constellationOfBody(state.name, now, site.site),
+        distanceAu: state.distanceAu,
+        size: sizeText(state.radiusDeg * 2),
+        catalogue: null,
+        about: copy.about[state.name],
+        picture: `/sky/targets/icons/${id.toLowerCase()}.png`,
       };
     }
     let ra: number;
@@ -750,6 +876,7 @@ export function NightSky({
     let name: string;
     let type: Picked["type"];
     let magnitude: number | null;
+    let size: string | null = null;
     if (kind === "star" && starData) {
       const i = Number(id) * 5;
       const [x, y, z, v] = starData.subarray(i, i + 4);
@@ -774,6 +901,7 @@ export function NightSky({
         name = thing.name;
         type = thing.type;
         magnitude = thing.magnitude;
+        if (thing.mark) size = thing.mark.major === thing.mark.minor ? `${thing.mark.major}′` : `${thing.mark.major}′ × ${thing.mark.minor}′`;
       }
     }
     const where = fixedAltAz(ra, dec, now, site.site);
@@ -798,12 +926,17 @@ export function NightSky({
       epoch: "J2000",
       lit: null,
       slug,
+      within: type === "constellation" ? null : constellationAt(ra, dec),
+      distanceAu: null,
+      size,
+      catalogue: messierById.get(id)?.ngc ?? null,
+      about: null,
+      picture: PICTURED.has(id) ? `/sky/targets/icons/${id}.png` : null,
     };
     // `now` ticks four times a second; the panel follows it.
-  }, [selected, now, states, things, bookable, copy, site.site, starData]);
+  }, [selected, now, states, things, bookable, copy, site.site, starData, messierById]);
 
   // Rise, transit and set are searches: once per object and ten minutes of sky time.
-  const tenMinutes = Math.floor(now.getTime() / 600_000);
   const pickedType = picked?.type;
   const pickedRa = picked?.raHours;
   const pickedDec = picked?.decDeg;
@@ -856,19 +989,19 @@ export function NightSky({
   // The list: the Moon, the planets and the showpieces, up first by height, then the rest
   // with their next rise (searched once per hour of sky time, and only while it is open).
   const roster = useMemo(() => {
-    if (!listOpen && phase !== "no-webgl") return [];
+    if (open !== "list" && phase !== "no-webgl") return [];
     const list: { key: string; label: string; target: Target }[] = SKY_BODIES.filter((name) => name !== "Sun").map((name) => ({
       key: `body:${name}`,
       label: copy.bodies[name],
       target: { body: name },
     }));
     for (const thing of things) {
-      if (thing.kind === "fixed" && thing.type !== "star") {
+      if (thing.kind === "fixed" && thing.type !== "star" && thing.labelled) {
         list.push({ key: `fixed:${thing.id}`, label: thing.name, target: { raHours: thing.raHours, decDeg: thing.decDeg } });
       }
     }
     return list;
-  }, [listOpen, phase, copy, things]);
+  }, [open, phase, copy, things]);
   const hourOfSky = Math.floor(now.getTime() / 3_600_000);
   const rises = useMemo(
     () => new Map(roster.map((item) => [item.key, nextRise(item.target, new Date(hourOfSky * 3_600_000), site.site)])),
@@ -885,6 +1018,34 @@ export function NightSky({
     at ? `${dayMonth(at, locale, "Asia/Tbilisi")}, ${clock(at, "Asia/Tbilisi")}` : copy.panel.never;
 
   const shift = (ms: number) => setSimTime(simDate().getTime() + ms, { playing: time.current.playing });
+  const scrub = (minutes: number) => setSimTime(Date.now() + minutes * 60_000, { playing: time.current.playing });
+  const sheet = (name: "place" | "time" | "list") => setOpen((current) => (current === name ? null : name));
+
+  // Full screen on a desk: the browser's own where it allows, the page's otherwise.
+  const toggleFull = () => {
+    const next = !full;
+    setFull(next);
+    if (next) void document.documentElement.requestFullscreen?.().catch(() => {});
+    else if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+  };
+  useEffect(() => {
+    const left = () => {
+      if (!document.fullscreenElement) setFull(false);
+    };
+    document.addEventListener("fullscreenchange", left);
+    return () => document.removeEventListener("fullscreenchange", left);
+  }, []);
+
+  const figures = (value: number, digits: number) => {
+    const text = value.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    return locale === "ka" ? text.replaceAll(",", " ") : text;
+  };
+  const distanceText = (au: number) =>
+    au < 0.01
+      ? copy.panel.km(figures(Math.round((au * AU_KM) / 100) * 100, 0))
+      : `${copy.panel.au(figures(au, 2))} · ${copy.panel.millionKm(figures((au * AU_KM) / 1e6, au < 2 ? 1 : 0))}`;
+  const constellationName = (within: { id: string; name: string }) =>
+    locale === "ka" ? (constellationKa[within.id] ?? within.name) : within.name;
   const toNow = () => {
     setSimTime(Date.now(), { speed: 1, playing: true });
     setSpeed(1);
@@ -892,7 +1053,17 @@ export function NightSky({
   };
 
   return (
-    <div className="sky" data-sky-state={sky}>
+    <div
+      className="sky"
+      data-sky-state={sky}
+      data-phase={phase}
+      data-full={full}
+      onKeyDown={(event) => {
+        if (event.key !== "Escape") return;
+        if (open) setOpen(null);
+        else if (full) toggleFull();
+      }}
+    >
       <div
         className="sky-stage"
         ref={stageRef}
@@ -912,43 +1083,87 @@ export function NightSky({
         )}
       </div>
 
-      {/* The top controls and the side ones stack in flow, so a row that wraps (Georgian,
-          a narrow phone) pushes the next down instead of running into it. */}
+      {/* The top bar: the way back, the search, and the view's own switch. */}
       <div className="sky-head">
         <div className="sky-top">
+          <Link className="sky-round sky-back" href={`/${locale}`} aria-label={copy.back} title={copy.back}>
+            <SkyIcon name="back" />
+          </Link>
           <div className="sky-search" role="search">
+            <SkyIcon name="search" />
             <label className="visually-hidden" htmlFor="sky-search-input">
               {copy.search.label}
             </label>
             <input
               id="sky-search-input"
+              ref={searchRef}
               className="sky-input"
               type="search"
               value={query}
               placeholder={copy.search.placeholder}
               autoComplete="off"
+              enterKeyHint="search"
               role="combobox"
-              aria-expanded={results.length > 0}
+              aria-expanded={searching && offered.length > 0}
               aria-controls="sky-search-results"
+              aria-activedescendant={searching && offered[active] ? `sky-result-${active}` : undefined}
+              onFocus={() => {
+                setSearching(true);
+                setOpen(null);
+              }}
+              onBlur={() => setSearching(false)}
               onChange={(event) => {
                 setQuery(event.target.value);
+                setActive(0);
                 setSearchNote(null);
               }}
               onKeyDown={(event) => {
-                if (event.key === "Enter") {
+                if (event.key === "ArrowDown" || event.key === "ArrowUp") {
                   event.preventDefault();
-                  if (results[0]) goTo(results[0].key);
+                  if (offered.length) setActive((active + (event.key === "ArrowDown" ? 1 : offered.length - 1)) % offered.length);
+                } else if (event.key === "Enter") {
+                  event.preventDefault();
+                  const choice = offered[active] ?? offered[0];
+                  if (choice) goTo(choice.key);
                   else if (query.trim()) setSearchNote(copy.search.none);
+                } else if (event.key === "Escape") {
+                  event.currentTarget.blur();
                 }
               }}
             />
-            {results.length > 0 && (
-              <ul id="sky-search-results" className="sky-results" role="listbox" aria-label={copy.search.label}>
-                {results.map((item) => {
+            {query && (
+              <button
+                type="button"
+                className="sky-search-clear"
+                aria-label={copy.search.clear}
+                onPointerDown={(event) => event.preventDefault()}
+                onClick={() => {
+                  setQuery("");
+                  setSearchNote(null);
+                }}
+              >
+                <SkyIcon name="clear" />
+              </button>
+            )}
+            {searching && offered.length > 0 && (
+              // The pointer never takes the focus from the field, so a press lands as a click.
+              <ul
+                id="sky-search-results"
+                className="sky-results"
+                role="listbox"
+                aria-label={copy.search.label}
+                onPointerDown={(event) => event.preventDefault()}
+              >
+                {!query.trim() && (
+                  <li className="sky-results-title" role="presentation">
+                    {copy.search.suggested}
+                  </li>
+                )}
+                {offered.map((item, index) => {
                   const where = positionNow(item.key);
                   return (
-                    <li key={item.key} role="option" aria-selected={false}>
-                      <button type="button" onClick={() => goTo(item.key)}>
+                    <li key={item.key} id={`sky-result-${index}`} role="option" aria-selected={index === active}>
+                      <button type="button" tabIndex={-1} onClick={() => goTo(item.key)}>
                         <span>{item.label}</span>
                         {where && (
                           <span className={`sky-status ${where.alt > 0 ? "is-up" : "is-down"}`}>
@@ -962,168 +1177,261 @@ export function NightSky({
               </ul>
             )}
             {searchNote && (
-              <p className="sky-note" role="status">
+              <p className="sky-note sky-search-note" role="status">
                 {searchNote}
               </p>
             )}
           </div>
-          <div className="sky-place">
-            <span>{site.mine ? copy.yours : copy.site}</span>
-            {!site.mine && (
+          {phase === "ready" && (
+            <button
+              type="button"
+              className="sky-round sky-point"
+              aria-pressed={pointing === "on"}
+              aria-label={pointing === "on" ? copy.view.stopPointing : copy.view.point}
+              title={pointing === "on" ? copy.view.stopPointing : copy.view.point}
+              onClick={() => void togglePointing()}
+            >
+              <SkyIcon name="point" />
+            </button>
+          )}
+          <button
+            type="button"
+            className="sky-round sky-full"
+            aria-pressed={full}
+            aria-label={full ? copy.exitFullscreen : copy.fullscreen}
+            title={full ? copy.exitFullscreen : copy.fullscreen}
+            onClick={toggleFull}
+          >
+            <SkyIcon name={full ? "unfull" : "full"} />
+          </button>
+        </div>
+        {/* Close up, what is drawn is a disc or a plate: an illustration (CLAUDE.md). */}
+        <p className="sky-computed">
+          {phase !== "loading" && (
+            <span className="sky-computed-time">
+              {clock(now, "Asia/Tbilisi")} · {dayMonth(now, locale, "Asia/Tbilisi")}
+            </span>
+          )}
+          <span className="sky-computed-wide">{copy.computed}</span>
+          <span className="sky-computed-close">{copy.panel.illustration}</span>
+        </p>
+        {pointing === "refused" && <p className="sky-note sky-head-note">{copy.view.pointRefused}</p>}
+      </div>
+
+      <div className="sky-zoom">
+        <button type="button" className="sky-round" aria-label={copy.view.zoomIn} title={copy.view.zoomIn} onClick={() => zoom(1 / 1.4)}>
+          <SkyIcon name="plus" />
+        </button>
+        <button type="button" className="sky-round" aria-label={copy.view.zoomOut} title={copy.view.zoomOut} onClick={() => zoom(1.4)}>
+          <SkyIcon name="minus" />
+        </button>
+      </div>
+
+      {/* The dock: where, what is drawn, and when. Its sheets open above it, one at a time. */}
+      <div className="sky-foot">
+        <div className="sky-dock">
+          <button
+            type="button"
+            className="sky-pill sky-dock-place"
+            aria-expanded={open === "place"}
+            aria-label={`${copy.place}: ${site.mine ? copy.yours : copy.site}`}
+            onClick={() => sheet("place")}
+          >
+            <SkyIcon name="pin" />
+            <span className="sky-dock-text">{site.mine ? copy.yoursShort : copy.siteShort}</span>
+          </button>
+          <div className="sky-tools" role="toolbar" aria-label={copy.toggles.label}>
+            <button
+              type="button"
+              className="sky-tool"
+              aria-expanded={open === "list"}
+              aria-label={copy.listTitle}
+              title={copy.listTitle}
+              onClick={() => sheet("list")}
+            >
+              <SkyIcon name="list" />
+            </button>
+            <span className="sky-tools-rule" aria-hidden="true" />
+            {TOOLS.map((key) => (
+              <button
+                key={key}
+                type="button"
+                className="sky-tool"
+                aria-pressed={key === "ground" ? !toggles.ground : toggles[key]}
+                aria-label={copy.toggles[key]}
+                title={copy.toggles[key]}
+                onClick={() => changeToggle(key)}
+              >
+                <SkyIcon name={key} />
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="sky-pill sky-dock-clock"
+            aria-expanded={open === "time"}
+            aria-label={copy.time.open}
+            onClick={() => sheet("time")}
+          >
+            <SkyIcon name="clock" />
+            {/* The clock shows once the browser has set it, never the server's instant. */}
+            <span className="sky-dock-time">{phase === "loading" ? " " : clock(now, "Asia/Tbilisi", true)}</span>
+            <span className="sky-dock-date">{phase === "loading" ? " " : dayMonth(now, locale, "Asia/Tbilisi")}</span>
+          </button>
+        </div>
+
+        {open === "place" && (
+          <div className="sky-sheet sky-sheet-place">
+            <p className="sky-sheet-title">{site.mine ? copy.yours : copy.site}</p>
+            {site.mine ? (
+              <button type="button" className="sky-chip" onClick={() => setSite({ site: SITE, mine: false })}>
+                {copy.site}
+              </button>
+            ) : (
               <button type="button" className="sky-chip" onClick={useMyLocation} disabled={locating === "asking"}>
                 {locating === "asking" ? copy.locating : copy.useLocation}
               </button>
             )}
-            {locating === "refused" && <span className="sky-note">{copy.locationRefused}</span>}
-            {site.mine && <span className="sky-note">{copy.locationNote}</span>}
+            {locating === "refused" && <p className="sky-note">{copy.locationRefused}</p>}
+            <p className="sky-note">{copy.locationNote}</p>
           </div>
-        </div>
+        )}
 
-        <div className="sky-side">
-          <details className="sky-toggles">
-            <summary>{copy.toggles.label}</summary>
-            <fieldset>
-              <legend className="visually-hidden">{copy.toggles.label}</legend>
-              {(Object.keys(DEFAULT_TOGGLES) as (keyof Toggles)[]).map((key) => (
-                <label key={key} className="sky-toggle">
-                  <input type="checkbox" checked={toggles[key]} onChange={() => changeToggle(key)} />
-                  <span>{copy.toggles[key]}</span>
-                </label>
-              ))}
-            </fieldset>
-          </details>
-          <div className="sky-zoom">
-            <button type="button" className="sky-chip" aria-label={copy.view.zoomIn} onClick={() => zoom(1 / 1.4)}>
-              +
-            </button>
-            <button type="button" className="sky-chip" aria-label={copy.view.zoomOut} onClick={() => zoom(1.4)}>
-              −
-            </button>
-          </div>
-          {phase === "ready" && (
-            <button type="button" className="sky-chip sky-point" aria-pressed={pointing === "on"} onClick={() => void togglePointing()}>
-              {pointing === "on" ? copy.view.stopPointing : copy.view.point}
-            </button>
-          )}
-          {pointing === "refused" && <p className="sky-note">{copy.view.pointRefused}</p>}
-        </div>
-      </div>
-
-      {/* The time bar, and the list button above it however tall the bar grows. */}
-      <div className="sky-foot">
-        <div className="sky-time" role="group" aria-label={copy.time.label}>
-          <div className="sky-clock">
-            <span>
-              <b>{clock(now, "Asia/Tbilisi")}</b> {copy.time.tbilisi} · {dayMonth(now, locale, "Asia/Tbilisi")}
-            </span>
-            {zone !== "Asia/Tbilisi" && (
+        {open === "time" && (
+          <div className="sky-sheet sky-sheet-time sky-time" role="group" aria-label={copy.time.label}>
+            <div className="sky-clock">
               <span>
-                <b>{clock(now, zone)}</b> {copy.time.yourZone}
+                <b>{clock(now, "Asia/Tbilisi")}</b> {copy.time.tbilisi} · {dayMonth(now, locale, "Asia/Tbilisi")}
               </span>
-            )}
-            <span className="sky-state">{copy.state[sky]}</span>
-            {/* Close up, what is drawn is a disc or a plate: an illustration (CLAUDE.md). */}
-            <span className="sky-computed sky-computed-wide">{copy.computed}</span>
-            <span className="sky-computed sky-computed-close">{copy.panel.illustration}</span>
-          </div>
-          <div className="sky-steps">
-            <button type="button" className="sky-chip" aria-label={copy.time.dayBackLabel} onClick={() => shift(-86_400_000)}>
-              {copy.time.dayBack}
-            </button>
-            <button type="button" className="sky-chip" aria-label={copy.time.hourBackLabel} onClick={() => shift(-3_600_000)}>
-              {copy.time.hourBack}
-            </button>
-            <button
-              type="button"
-              className="sky-chip"
-              aria-pressed={!playing}
-              onClick={() => {
-                const next = !playing;
-                setSimTime(simDate().getTime(), { playing: next });
-                setPlaying(next);
-              }}
-            >
-              {playing ? copy.time.pause : copy.time.play}
-            </button>
-            <button type="button" className="sky-chip sky-now" onClick={toNow}>
-              {copy.time.now}
-            </button>
-            <button type="button" className="sky-chip" aria-label={copy.time.hourOnLabel} onClick={() => shift(3_600_000)}>
-              {copy.time.hourOn}
-            </button>
-            <button type="button" className="sky-chip" aria-label={copy.time.dayOnLabel} onClick={() => shift(86_400_000)}>
-              {copy.time.dayOn}
-            </button>
-          </div>
-          <div className="sky-speed" role="radiogroup" aria-label={copy.time.speed}>
-            {SPEEDS.map((value) => (
+              {zone !== "Asia/Tbilisi" && (
+                <span>
+                  <b>{clock(now, zone)}</b> {copy.time.yourZone}
+                </span>
+              )}
+              <span className="sky-state">{copy.state[sky]}</span>
+            </div>
+            <input
+              className="sky-scrub"
+              type="range"
+              min={-SCRUB}
+              max={SCRUB}
+              step={10}
+              value={Math.max(-SCRUB, Math.min(SCRUB, offset))}
+              aria-label={copy.time.scrub}
+              onChange={(event) => scrub(Number(event.target.value))}
+            />
+            <div className="sky-scrub-scale" aria-hidden="true">
+              <span>−12 {copy.time.hourOn.replace(/^\+1\s*/, "")}</span>
+              <span>{copy.time.now}</span>
+              <span>+12 {copy.time.hourOn.replace(/^\+1\s*/, "")}</span>
+            </div>
+            <div className="sky-steps">
+              <button type="button" className="sky-chip" aria-label={copy.time.dayBackLabel} onClick={() => shift(-86_400_000)}>
+                {copy.time.dayBack}
+              </button>
+              <button type="button" className="sky-chip" aria-label={copy.time.hourBackLabel} onClick={() => shift(-3_600_000)}>
+                {copy.time.hourBack}
+              </button>
               <button
-                key={value}
                 type="button"
-                role="radio"
-                aria-checked={speed === value}
-                className="sky-chip"
+                className="sky-chip sky-playpause"
+                aria-pressed={!playing}
+                aria-label={playing ? copy.time.pause : copy.time.play}
                 onClick={() => {
-                  setSimTime(simDate().getTime(), { speed: value, playing: true });
-                  setSpeed(value);
-                  setPlaying(true);
+                  const next = !playing;
+                  setSimTime(simDate().getTime(), { playing: next });
+                  setPlaying(next);
                 }}
               >
-                ×{value}
+                <SkyIcon name={playing ? "pause" : "play"} />
               </button>
-            ))}
-          </div>
-        </div>
-        <details
-          ref={listRef}
-          className="sky-list"
-          open={phase === "no-webgl" || undefined}
-          onToggle={(event) => setListOpen(event.currentTarget.open)}
-        >
-          <summary>{phase === "no-webgl" ? copy.noWebgl : copy.listTitle}</summary>
-          <h2 className="sky-list-title">{copy.upNow}</h2>
-          {above.length === 0 ? (
-            <p>{copy.upNowEmpty}</p>
-          ) : (
-            <ul className="sky-roster">
-              {above.map((item) => (
-                <li key={item.key}>
-                  <button type="button" onClick={() => pickFromList(item.key)}>
-                    <span className="sky-status is-up">{item.label}</span>
-                    <span>{copy.status.high(Math.round(item.where.alt), direction(item.where.az))}</span>
-                  </button>
-                </li>
+              <button type="button" className="sky-chip sky-now" onClick={toNow}>
+                {copy.time.now}
+              </button>
+              <button type="button" className="sky-chip" aria-label={copy.time.hourOnLabel} onClick={() => shift(3_600_000)}>
+                {copy.time.hourOn}
+              </button>
+              <button type="button" className="sky-chip" aria-label={copy.time.dayOnLabel} onClick={() => shift(86_400_000)}>
+                {copy.time.dayOn}
+              </button>
+            </div>
+            <div className="sky-speed" role="radiogroup" aria-label={copy.time.speed}>
+              {SPEEDS.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={speed === value}
+                  className="sky-chip"
+                  onClick={() => {
+                    setSimTime(simDate().getTime(), { speed: value, playing: true });
+                    setSpeed(value);
+                    setPlaying(true);
+                  }}
+                >
+                  ×{value}
+                </button>
               ))}
-            </ul>
-          )}
-          {belowList.length > 0 && (
-            <>
-              <h2 className="sky-list-title">{copy.belowNow}</h2>
+            </div>
+          </div>
+        )}
+
+        {(open === "list" || phase === "no-webgl") && (
+          <div className="sky-sheet sky-sheet-list sky-list">
+            <h2 className="sky-list-title">{phase === "no-webgl" ? copy.noWebgl : copy.upNow}</h2>
+            {above.length === 0 ? (
+              <p>{copy.upNowEmpty}</p>
+            ) : (
               <ul className="sky-roster">
-                {belowList.map((item) => {
-                  const rise = rises.get(item.key);
-                  return (
-                    <li key={item.key}>
-                      <button type="button" onClick={() => pickFromList(item.key)}>
-                        <span className="sky-status is-down">{item.label}</span>
-                        <span>{rise ? copy.status.rises(clock(rise, "Asia/Tbilisi")) : copy.status.never}</span>
-                      </button>
-                    </li>
-                  );
-                })}
+                {above.map((item) => (
+                  <li key={item.key}>
+                    <button type="button" onClick={() => goTo(item.key)}>
+                      <span className="sky-status is-up">{item.label}</span>
+                      <span>{copy.status.high(Math.round(item.where.alt), direction(item.where.az))}</span>
+                    </button>
+                  </li>
+                ))}
               </ul>
-            </>
-          )}
-          <p className="sky-credits">{copy.credits}</p>
-        </details>
+            )}
+            {belowList.length > 0 && (
+              <>
+                <h2 className="sky-list-title">{copy.belowNow}</h2>
+                <ul className="sky-roster">
+                  {belowList.map((item) => {
+                    const rise = rises.get(item.key);
+                    return (
+                      <li key={item.key}>
+                        <button type="button" onClick={() => goTo(item.key)}>
+                          <span className="sky-status is-down">{item.label}</span>
+                          <span>{rise ? copy.status.rises(clock(rise, "Asia/Tbilisi")) : copy.status.never}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
+            )}
+            <p className="sky-credits">{copy.credits}</p>
+          </div>
+        )}
       </div>
 
       {picked && (
         <aside className="sky-panel" aria-labelledby="sky-panel-title" data-picked={picked.key} data-folded={folded}>
           <header>
-            <h2 id="sky-panel-title">{picked.name}</h2>
-            <button type="button" className="sky-chip" onClick={() => setSelected(null)}>
-              {copy.panel.close}
+            {picked.picture && (
+              // eslint-disable-next-line @next/next/no-img-element -- a 96 px icon from this site's own public folder
+              <img className="sky-panel-picture" src={picked.picture} alt="" width={48} height={48} decoding="async" />
+            )}
+            <div className="sky-panel-name">
+              <h2 id="sky-panel-title">{picked.name}</h2>
+              <p className="sky-kind">
+                {copy.types[picked.type]}
+                {picked.within && picked.type !== "sun" ? ` · ${copy.panel.within(constellationName(picked.within))}` : ""}
+              </p>
+            </div>
+            <button type="button" className="sky-round sky-panel-close" aria-label={copy.panel.close} onClick={() => setSelected(null)}>
+              <SkyIcon name="close" />
             </button>
           </header>
           <p className={`sky-status sky-status-line ${picked.alt > 0 ? "is-up" : "is-down"}`}>
@@ -1152,11 +1460,8 @@ export function NightSky({
               </button>
             </div>
           )}
+          {picked.about && <p className="sky-about">{picked.about}</p>}
           <dl>
-            <div>
-              <dt>{copy.panel.type}</dt>
-              <dd>{copy.types[picked.type]}</dd>
-            </div>
             {picked.magnitude !== null && (
               <div>
                 <dt>{copy.panel.magnitude}</dt>
@@ -1167,6 +1472,24 @@ export function NightSky({
               <div>
                 <dt>{copy.panel.phase}</dt>
                 <dd>{copy.panel.lit(picked.lit)}</dd>
+              </div>
+            )}
+            {picked.distanceAu !== null && (
+              <div>
+                <dt>{copy.panel.distance}</dt>
+                <dd>{distanceText(picked.distanceAu)}</dd>
+              </div>
+            )}
+            {picked.size && (
+              <div>
+                <dt>{copy.panel.size}</dt>
+                <dd>{picked.size}</dd>
+              </div>
+            )}
+            {picked.catalogue && (
+              <div>
+                <dt>{copy.panel.catalogue}</dt>
+                <dd>{picked.catalogue}</dd>
               </div>
             )}
             <div>
@@ -1215,7 +1538,6 @@ export function NightSky({
           {picked.type !== "star" && picked.type !== "constellation" && <p className="sky-caption">{copy.panel.illustration}</p>}
         </aside>
       )}
-
     </div>
   );
 }

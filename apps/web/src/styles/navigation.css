@@ -510,7 +510,7 @@ html:has(.public-mobile-menu[data-open]) {
 
 /* The phone tab bar: a glass capsule floating above the foot of the screen, its three
    tabs sharing the width equally. Hidden in the live room, whose own dock owns the foot,
-   in a full-screen view, and while the menu sheet is open. */
+   in a full-screen view, on the Night Sky, and while the menu sheet is open. */
 .phone-tab-bar {
   display: none;
 }
@@ -524,6 +524,12 @@ html:has(.public-mobile-menu[data-open]) {
   body:has(.room.room-console),
   body:has(.sdo-view.is-full) {
     --tab-bar-space: 0rem;
+  }
+
+  /* The Night Sky fills a phone's screen (ADR-085): no bar, and no room kept for one. */
+  body:has(.sky-page) {
+    --tab-bar-space: 0rem;
+    padding-bottom: 0;
   }
 
   .phone-tab-bar {
@@ -549,6 +555,7 @@ html:has(.public-mobile-menu[data-open]) {
 
   body:has(.room.room-console) .phone-tab-bar,
   body:has(.sdo-view.is-full) .phone-tab-bar,
+  body:has(.sky-page) .phone-tab-bar,
   body:has(.public-mobile-menu[data-open]) .phone-tab-bar {
     display: none;
   }

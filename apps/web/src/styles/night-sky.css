@@ -1,16 +1,16 @@
 /*
- * The Night Sky (ADR-085): the sky fills the window under the header; the controls float
- * over it on glass, the time bar at the foot, the panel at the side (a sheet on a phone).
+ * The Night Sky (ADR-085): the sky fills the window -- the whole screen on a phone -- and
+ * the controls float over it on glass: the search at the top, a dock of switches at the
+ * foot with the place on its left and the clock on its right, the panel of what is picked
+ * at the side (a sheet on a phone).
  */
 .sky-page {
-  /* The header's bar and its 1px rule: 56px on a phone, 76px from --lg (globals.css).
-     Counting only 56 left the desk's time bar 9px below the window's edge. */
+  /* The header's bar and its 1px rule: 56px on a phone, 76px from --lg (globals.css). */
   --sky-header: calc(var(--size-app-header) + 1px);
+  /* The dock's height: a 2.75rem switch inside 0.25rem of glass either side. */
+  --sky-dock: 3.25rem;
   position: relative;
-  /* Above the phone tab bar, which the body pads for (navigation.css). */
-  height: calc(
-    100dvh - var(--sky-header) - var(--tab-bar-space, 0rem) - env(safe-area-inset-bottom, 0rem)
-  );
+  height: calc(100dvh - var(--sky-header));
   min-height: 28rem;
   overflow: hidden;
   background: var(--color-surface-base);
@@ -20,6 +20,24 @@
   .sky-page {
     --sky-header: calc(var(--size-bar) + 1px);
   }
+}
+
+/* A phone, and a desk in full screen: the sky is the screen, over the header. */
+@media (--below-md) {
+  .sky-page {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: 100dvh;
+    min-height: 0;
+  }
+}
+
+.sky-page:has(.sky[data-full="true"]) {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  height: 100dvh;
 }
 
 /* The frame is exactly the window: the page does not grow to fill it (main's flex: 1). */
@@ -34,11 +52,14 @@
 .sky {
   position: absolute;
   inset: 0;
+  color: var(--color-text-primary);
 }
 
+/* Before the first frame the stage is already a night sky, so nothing flashes black. */
 .sky-stage {
   position: absolute;
   inset: 0;
+  background: var(--gradient-night-sky);
   touch-action: none;
   cursor: grab;
   outline: none;
@@ -49,7 +70,18 @@
 }
 
 .sky-stage:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--focus-ring);
+  box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+}
+
+.sky-canvas,
+.sky-overlay,
+.sky-labels {
+  opacity: 0;
+  transition: opacity 700ms var(--ease-sky);
+}
+
+.sky[data-phase="ready"] :is(.sky-canvas, .sky-overlay, .sky-labels) {
+  opacity: 1;
 }
 
 .sky-canvas {
@@ -80,7 +112,7 @@
   font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
   white-space: nowrap;
-  text-shadow: 0 1px 2px var(--color-scrim);
+  text-shadow: 0 1px 3px var(--color-scrim-strong);
   translate: -50% 0.35rem;
   will-change: transform;
 }
@@ -91,17 +123,19 @@
 
 .sky-label-body {
   color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-label);
 }
 
 .sky-label-constellation {
-  color: var(--color-sky-blue);
+  color: var(--color-sky-dso);
+  opacity: 0.5;
   translate: -50% -50%;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
-:lang(ka) .sky-label-constellation {
+:lang(ka) :is(.sky-label-constellation, .sky-label-body) {
   letter-spacing: normal;
   text-transform: none;
 }
@@ -110,20 +144,8 @@
   color: var(--color-gold);
 }
 
-.sky-label-showpiece::before {
-  content: "";
-  position: absolute;
-  top: -1.1rem;
-  left: 50%;
-  width: 0.7rem;
-  height: 0.7rem;
-  border: 1px solid var(--color-gold);
-  border-radius: var(--radius-full);
-  translate: -50% 0;
-}
-
-.sky-label-showpiece.is-framed::before {
-  display: none;
+.sky-label-dso {
+  color: var(--color-sky-dso);
 }
 
 .sky-label.is-below {
@@ -137,118 +159,232 @@
 }
 
 .sky-label.is-selected {
-  color: var(--color-accent);
+  color: var(--color-accent-ink);
   font-weight: var(--font-weight-bold);
+  opacity: 1;
 }
 
+/* A compass point: its letter under a dot that sits on the horizon. */
 .sky-compass {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
   color: var(--color-accent);
   font-family: var(--font-label);
-  font-size: var(--font-size-label);
+  font-size: var(--font-size-body-lg);
   font-weight: var(--font-weight-bold);
-  translate: -50% -110%;
+  translate: -50% -0.2rem;
+}
+
+.sky-compass::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: var(--radius-full);
+  background: currentcolor;
 }
 
 .sky-loading {
   position: absolute;
+  inset: 44% auto auto 50%;
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
-}
-
-.sky-loading {
-  inset: 50% auto auto 50%;
   translate: -50% -50%;
+  animation: sky-breathe 1.6s ease-in-out infinite alternate;
 }
 
-.sky-computed {
-  margin-inline-start: auto;
-  color: var(--color-text-tertiary);
+@keyframes sky-breathe {
+  from {
+    opacity: 0.45;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-.sky-computed-close,
-.sky[data-close="true"] .sky-computed-wide {
-  display: none;
+@media (prefers-reduced-motion: reduce) {
+  .sky-loading {
+    animation: none;
+  }
+
+  .sky-canvas,
+  .sky-overlay,
+  .sky-labels {
+    transition: none;
+  }
 }
 
-.sky[data-close="true"] .sky-computed-close {
-  display: inline;
-  color: var(--color-text-secondary);
+.sky-icon {
+  flex: none;
+  width: 1.375rem;
+  height: 1.375rem;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /*
- * The controls float over the sky in two stacks, top and foot. Each stacks in flow, so a
- * row that wraps -- Georgian, a narrow phone -- pushes the next one along instead of
- * running into it. Neither stack takes the pointer; the controls in them do.
+ * The glass every control sits on. On a phone it is not blurred: a blur over a canvas
+ * that redraws every frame costs a mid-range phone a third of its frames.
  */
-.sky-head,
-.sky-foot {
+.sky-round,
+.sky-pill,
+.sky-tools,
+.sky-input,
+.sky-chip {
+  border: 1px solid var(--color-glass-border);
+  background: var(--color-glass);
+  color: var(--color-text-primary);
+}
+
+@media (--md) {
+  .sky-round,
+  .sky-pill,
+  .sky-tools,
+  .sky-input {
+    backdrop-filter: var(--blur-glass);
+  }
+}
+
+.sky-round {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--sky-dock);
+  height: var(--sky-dock);
+  padding: 0;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.sky-round:hover,
+.sky-pill:hover,
+.sky-chip:hover:not(:disabled) {
+  border-color: var(--color-glass-border-hover);
+}
+
+:is(.sky-round, .sky-pill, .sky-chip, .sky-tool, .sky-search-clear):focus-visible {
+  outline: 2px solid var(--color-accent-ink);
+  outline-offset: 2px;
+}
+
+.sky-round[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+/*
+ * The top: the way back, the search, the view's switch, and under them the line that
+ * says what is drawn. The stack takes no pointer; its controls do.
+ */
+.sky-head {
   position: absolute;
-  left: var(--space-3);
-  right: var(--space-3);
-  display: flex;
+  top: calc(var(--space-3) + env(safe-area-inset-top, 0rem));
+  left: calc(var(--space-3) + env(safe-area-inset-left, 0rem));
+  right: calc(var(--space-3) + env(safe-area-inset-right, 0rem));
+  z-index: 6;
+  display: grid;
+  justify-items: center;
   gap: var(--space-2);
   pointer-events: none;
 }
 
-.sky-head {
-  top: var(--space-3);
-  flex-direction: column;
-}
-
-/* The list button sits on the time bar, which comes first in reading order. */
-.sky-foot {
-  bottom: var(--space-3);
-  flex-direction: column-reverse;
-  align-items: flex-start;
-}
-
 .sky-top {
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-start;
-  gap: var(--space-3);
-  pointer-events: none;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
 }
 
 .sky-top > *,
-.sky-side > *,
-.sky-time,
-.sky-panel,
-.sky-list {
+.sky-zoom > *,
+.sky-dock > *,
+.sky-sheet,
+.sky-panel {
   pointer-events: auto;
 }
 
 .sky-search {
   position: relative;
-  flex: 1 1 14rem;
-  max-width: 22rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 30rem;
+}
+
+.sky-search > .sky-icon {
+  position: absolute;
+  top: calc(var(--sky-dock) / 2);
+  left: var(--space-4);
+  /* Over the field, whose glass is its own layer. */
+  z-index: 1;
+  color: var(--color-text-secondary);
+  translate: 0 -50%;
+  pointer-events: none;
 }
 
 .sky-input {
   width: 100%;
-  min-height: 2.75rem;
-  padding: 0 var(--space-4);
-  border: 1px solid var(--color-glass-border);
+  height: var(--sky-dock);
+  padding: 0 2.75rem 0 3rem;
   border-radius: var(--radius-full);
-  background: var(--color-glass);
-  backdrop-filter: blur(var(--blur-glass));
-  color: var(--color-text-primary);
   font: inherit;
+  font-size: var(--font-size-body);
+}
+
+.sky-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.sky-input:focus-visible {
+  border-color: var(--color-glass-border-hover);
+  outline: 2px solid var(--color-accent-ink);
+  outline-offset: 2px;
+}
+
+/* The field has its own clear button. */
+.sky-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.sky-search-clear {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
 }
 
 .sky-results {
   position: absolute;
-  top: calc(100% + var(--space-1));
+  top: calc(100% + var(--space-2));
   left: 0;
   right: 0;
-  z-index: 3;
   margin: 0;
-  padding: var(--space-1);
+  padding: var(--space-2);
   list-style: none;
   border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-medium);
+  border-radius: var(--radius-large);
   background: var(--color-surface-raised);
+  box-shadow: var(--shadow-dialog);
+}
+
+.sky-results-title {
+  padding: var(--space-1) var(--space-3) var(--space-2);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-kicker);
 }
 
 .sky-results button {
@@ -260,7 +396,7 @@
   min-height: 2.75rem;
   padding: 0 var(--space-3);
   border: 0;
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-medium);
   background: none;
   color: var(--color-text-primary);
   font: inherit;
@@ -269,8 +405,8 @@
 }
 
 .sky-results button:hover,
-.sky-results button:focus-visible {
-  background: var(--color-overlay-hover);
+.sky-results [aria-selected="true"] button {
+  background: var(--color-overlay-active);
 }
 
 /* Up or down: a lit dot for above the horizon, a hollow one for below. */
@@ -303,6 +439,356 @@
   font-size: var(--font-size-kicker);
 }
 
+.sky-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-search-note,
+.sky-head-note {
+  width: fit-content;
+  margin: var(--space-2) auto 0;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-scrim);
+}
+
+.sky-computed {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-kicker);
+  text-align: center;
+  text-shadow: 0 1px 3px var(--color-scrim-strong);
+}
+
+.sky-computed-close,
+.sky[data-close="true"] .sky-computed-wide {
+  display: none;
+}
+
+.sky[data-close="true"] .sky-computed-close {
+  display: inline;
+}
+
+/* A desk keeps the site's header, so the way back and the phone's compass are a phone's. */
+.sky-back,
+.sky-point {
+  display: none;
+}
+
+.sky-full {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.sky-zoom {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--space-3) + env(safe-area-inset-right, 0rem));
+  display: grid;
+  gap: var(--space-2);
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+/*
+ * The foot: the dock, and above it the one sheet that is open. Stacked from the bottom,
+ * so a taller sheet grows upward.
+ */
+.sky-foot {
+  position: absolute;
+  left: calc(var(--space-3) + env(safe-area-inset-left, 0rem));
+  right: calc(var(--space-3) + env(safe-area-inset-right, 0rem));
+  bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0rem));
+  z-index: 5;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.sky-dock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.sky-pill {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--sky-dock);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  font: inherit;
+  font-size: var(--font-size-caption);
+  cursor: pointer;
+}
+
+.sky-pill[aria-expanded="true"] {
+  border-color: var(--color-glass-border-hover);
+  background: var(--color-surface-raised);
+}
+
+/* The clock, as an instrument reads: the time over the date. */
+.sky-dock-clock {
+  display: grid;
+  justify-items: end;
+  gap: 0;
+  min-width: 7.5rem;
+  line-height: 1.2;
+}
+
+.sky-dock-clock .sky-icon {
+  display: none;
+}
+
+.sky-dock-time {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.sky-dock-date {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-kicker);
+}
+
+.sky-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  min-width: 0;
+  padding: 0.1875rem;
+  border-radius: var(--radius-full);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.sky-tool {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.sky-tool:hover {
+  color: var(--color-text-primary);
+}
+
+/* A switch that is on is lit; one that is off is grey, as on a planetarium's bar. */
+.sky-tool[aria-pressed="true"],
+.sky-tool[aria-expanded="true"] {
+  background: var(--color-overlay-active);
+  color: var(--color-text-primary);
+}
+
+.sky-tool .sky-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.sky-tools-rule {
+  flex: none;
+  width: 1px;
+  height: 1.5rem;
+  margin-inline: var(--space-1);
+  background: var(--color-glass-border);
+}
+
+.sky-sheet {
+  width: min(24rem, 100%);
+  max-height: min(60dvh, 30rem);
+  overflow-y: auto;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-dialog);
+  font-size: var(--font-size-caption);
+  animation: sky-rise var(--duration-state) var(--ease-sky);
+}
+
+@keyframes sky-rise {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-sheet,
+  .sky-panel {
+    animation: none;
+  }
+}
+
+.sky-sheet-place,
+.sky-sheet-list {
+  align-self: flex-start;
+}
+
+.sky-sheet-time {
+  align-self: flex-end;
+  width: min(27rem, 100%);
+}
+
+.sky-sheet-title {
+  margin: 0;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+}
+
+.sky-chip {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  font: inherit;
+  font-size: var(--font-size-caption);
+  cursor: pointer;
+}
+
+.sky-chip[aria-pressed="true"],
+.sky-chip[aria-checked="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.sky-clock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  color: var(--color-text-secondary);
+}
+
+.sky-clock b {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-time);
+  font-variant-numeric: tabular-nums;
+}
+
+.sky-state {
+  margin-inline-start: auto;
+  color: var(--color-gold);
+}
+
+/* The slider: twelve hours either side of the present. */
+.sky-scrub {
+  width: 100%;
+  height: 2.75rem;
+  margin: 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.sky-scrub-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: calc(var(--space-3) * -1);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-kicker);
+}
+
+.sky-steps,
+.sky-speed {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.sky-steps .sky-chip,
+.sky-speed .sky-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.sky-playpause {
+  display: grid;
+  place-items: center;
+}
+
+.sky-now {
+  border-color: var(--color-accent-border);
+}
+
+/* The panel of what is picked. */
+.sky-panel {
+  position: absolute;
+  top: calc(var(--space-3) + var(--sky-dock) + var(--space-3));
+  left: var(--space-3);
+  z-index: 4;
+  width: min(22rem, calc(100% - var(--space-6)));
+  /* Ends above the dock, and scrolls inside. */
+  max-height: calc(100% - var(--sky-dock) * 2 - var(--space-3) * 5);
+  overflow-y: auto;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-dialog);
+  animation: sky-rise var(--duration-state) var(--ease-sky);
+}
+
+.sky-panel header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sky-panel-picture {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.sky-panel-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sky-panel h2 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+  line-height: 1.2;
+}
+
+.sky-kind {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.sky-panel-close {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: none;
+}
+
 .sky-status-line {
   margin: 0;
   color: var(--color-text-secondary);
@@ -329,181 +815,15 @@
   display: none;
 }
 
-.sky-note {
-  margin: var(--space-1) 0 0;
+.sky-about {
+  margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
-}
-
-.sky-place {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-3);
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-full);
-  background: var(--color-glass);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-caption);
-}
-
-.sky-place .sky-note {
-  margin: 0;
-  flex-basis: 100%;
-  padding-bottom: var(--space-1);
-}
-
-.sky-chip {
-  min-height: 2.75rem;
-  min-width: 2.75rem;
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-full);
-  background: var(--color-glass);
-  color: var(--color-text-primary);
-  font: inherit;
-  font-size: var(--font-size-caption);
-  cursor: pointer;
-}
-
-.sky-chip:hover:not(:disabled) {
-  border-color: var(--color-glass-border-hover);
-}
-
-.sky-chip:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.sky-chip[aria-pressed="true"],
-.sky-chip[aria-checked="true"] {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.sky-side {
-  align-self: flex-end;
-  display: grid;
-  justify-items: end;
-  gap: var(--space-2);
-}
-
-.sky-zoom {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.sky-toggles {
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-medium);
-  background: var(--color-glass);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-caption);
-}
-
-.sky-toggles summary {
-  min-height: 2.75rem;
-  display: flex;
-  align-items: center;
-  padding: 0 var(--space-3);
-  cursor: pointer;
-}
-
-.sky-toggles fieldset {
-  display: grid;
-  gap: var(--space-1);
-  margin: 0;
-  padding: 0 var(--space-3) var(--space-3);
-  border: 0;
-}
-
-.sky-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 2.25rem;
-  cursor: pointer;
-}
-
-.sky-toggle input {
-  accent-color: var(--color-accent);
-}
-
-.sky-time {
-  align-self: stretch;
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-medium);
-  background: var(--color-glass);
-  backdrop-filter: blur(var(--blur-glass));
-}
-
-.sky-clock {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-4);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-}
-
-.sky-clock b {
-  color: var(--color-text-primary);
-  font-family: var(--font-mono);
-}
-
-.sky-state {
-  color: var(--color-gold);
-}
-
-.sky-steps,
-.sky-speed {
-  display: flex;
-  gap: var(--space-2);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-}
-
-.sky-now {
-  border-color: var(--color-accent-border);
-}
-
-.sky-panel {
-  position: absolute;
-  top: calc(var(--space-3) + 3.5rem);
-  left: var(--space-3);
-  z-index: 4;
-  width: min(22rem, calc(100% - var(--space-6)));
-  /* Ends above the foot -- the time bar and the list button under it -- and scrolls inside. */
-  max-height: calc(100% - 18.5rem);
-  overflow-y: auto;
-  display: grid;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface-raised);
-  color: var(--color-text-primary);
-}
-
-.sky-panel header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.sky-panel h2 {
-  margin: 0;
-  font-size: var(--font-size-h3);
+  line-height: 1.5;
 }
 
 .sky-panel dl {
   display: grid;
-  gap: var(--space-1);
   margin: 0;
   font-size: var(--font-size-caption);
 }
@@ -512,6 +832,8 @@
   display: flex;
   justify-content: space-between;
   gap: var(--space-3);
+  padding-block: var(--space-2);
+  border-top: 1px solid var(--color-line);
 }
 
 .sky-panel dt {
@@ -539,51 +861,18 @@
 }
 
 .sky-list {
-  max-width: min(24rem, calc(100% - var(--space-6)));
   color: var(--color-text-primary);
-  font-size: var(--font-size-caption);
-}
-
-.sky-list summary {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-full);
-  background: var(--color-glass);
-  cursor: pointer;
-}
-
-.sky-list[open] {
-  /* Opened, the list is what the visitor asked for: above the panel, never under it. */
-  position: relative;
-  z-index: 5;
-  max-height: 50dvh;
-  overflow-y: auto;
-  padding: 0 var(--space-3) var(--space-3);
-  border-radius: var(--radius-medium);
-  background: var(--color-surface-raised);
-}
-
-.sky-list[open] summary {
-  margin: var(--space-2) 0;
 }
 
 .sky-list-title {
-  margin: 0 0 var(--space-2);
+  margin: 0;
   font-size: var(--font-size-body);
 }
 
-.sky-list ul {
-  margin: 0;
-  padding-inline-start: var(--space-4);
-}
-
-.sky-list .sky-roster {
+.sky-roster {
   display: grid;
   gap: var(--space-1);
-  margin: 0 0 var(--space-3);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -598,7 +887,7 @@
   min-height: 2.75rem;
   padding: var(--space-1) var(--space-2);
   border: 0;
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-medium);
   background: none;
   color: var(--color-text-secondary);
   font: inherit;
@@ -618,33 +907,69 @@
 }
 
 .sky-credits {
+  margin: 0;
   color: var(--color-text-secondary);
 }
 
-/* A desk: the time steps and the speeds share one row, so the bar hides less sky. */
-@media (--md) {
-  .sky-time {
-    grid-template-columns: auto 1fr;
-  }
-
-  .sky-clock {
-    grid-column: 1 / -1;
-  }
-
-  .sky-speed {
-    justify-content: flex-end;
-  }
-}
-
-/* A phone: the panel is a sheet over the time bar, the toggles fold away. */
+/*
+ * A phone: the way back and the compass flank the search, the dock is two round buttons
+ * round a row of switches that scrolls, and the panel is a sheet over the dock.
+ */
 @media (--below-md) {
+  .sky-back,
+  .sky-point {
+    display: grid;
+  }
+
+  .sky-full,
+  .sky-zoom {
+    display: none;
+  }
+
+  .sky-head,
+  .sky-foot {
+    left: calc(var(--space-2) + env(safe-area-inset-left, 0rem));
+    right: calc(var(--space-2) + env(safe-area-inset-right, 0rem));
+  }
+
+  .sky-pill {
+    justify-content: center;
+    width: var(--sky-dock);
+    min-width: 0;
+    padding: 0;
+  }
+
+  .sky-dock-clock {
+    display: inline-flex;
+  }
+
+  .sky-dock-clock .sky-icon {
+    display: block;
+  }
+
+  /* The time moves to the line under the search, where there is room to read it. */
+  .sky-dock-text,
+  .sky-dock-time,
+  .sky-dock-date {
+    display: none;
+  }
+
+  .sky-tools {
+    flex: 1 1 auto;
+  }
+
+  .sky-sheet,
+  .sky-sheet-time {
+    width: 100%;
+  }
+
   .sky-panel {
     top: auto;
     left: var(--space-2);
     right: var(--space-2);
-    bottom: var(--space-2);
+    bottom: calc(var(--space-3) + var(--sky-dock) + var(--space-2) + env(safe-area-inset-bottom, 0rem));
     width: auto;
-    max-height: 70%;
+    max-height: 56%;
   }
 
   .sky-unfold {
@@ -654,21 +979,18 @@
   .sky-panel[data-folded="true"] > :not(header, .sky-status-line, .sky-look, .sky-caption) {
     display: none;
   }
+}
 
-  /* The time steps share the width, so six fit a 360 px phone on one line -- in
-     Georgian too, where "+1 დღე" needs 43px of the 48 each step gets. */
-  .sky-steps {
-    gap: var(--space-1);
-  }
+/* The phone's line under the search carries the clock the dock has no room for. */
+.sky-computed-time {
+  display: none;
+}
 
-  .sky-steps .sky-chip {
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 0;
-    white-space: nowrap;
-  }
-
-  .sky-search {
-    max-width: none;
+@media (--below-md) {
+  .sky-computed-time {
+    display: block;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-caption);
   }
 }
