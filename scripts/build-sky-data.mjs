@@ -11,7 +11,8 @@
 //                        (decodeCatalogue) and move each star to the day. A new layout takes
 //                        a new name, since the file is cached for a day.
 //   constellations.json  d3-celestial's lines and label points (BSD 3-Clause, Olaf Frohn)
-//   milkyway.webp        NASA's Deep Star Maps 2020 Milky Way (NASA/Goddard Space Flight
+//   milkyway.webp        (and milkyway-1k.webp, half the size each way, for phones)
+//                        NASA's Deep Star Maps 2020 Milky Way (NASA/Goddard Space Flight
 //                        Center Scientific Visualization Studio; Gaia DR2: ESA/Gaia/DPAC;
 //                        public domain), tone-mapped and turned to this page's
 //                        equirectangular: u = (RA+180°)/360° with RA in -180..180,
@@ -185,6 +186,14 @@ if (wanted("milkyway")) {
     new URL("milkyway.webp", out),
     await sharp(toned, { raw: { width: info.width, height: info.height, channels: info.channels } })
       .webp({ quality: 62 })
+      .toBuffer(),
+  );
+  // Phones take a quarter of the pixels: the upload alone took them half a second.
+  await writeFile(
+    new URL("milkyway-1k.webp", out),
+    await sharp(toned, { raw: { width: info.width, height: info.height, channels: info.channels } })
+      .resize(W / 2, H / 2, { kernel: "lanczos3" })
+      .webp({ quality: 70 })
       .toBuffer(),
   );
   built.push(`milkyway.webp: ${W}x${H}`);

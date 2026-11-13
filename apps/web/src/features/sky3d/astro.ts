@@ -92,9 +92,20 @@ export function decodeCatalogue(file: ArrayBuffer): Float32Array {
   const dec = new Int32Array(file, 4 * n, n);
   const [v, bv, pmRa, pmDec] = [8, 10, 12, 14].map((at) => new Int16Array(file, at * n, n));
   const out = new Float32Array(n * CATALOGUE_RECORD);
-  for (let i = 0; i < n; i++) {
-    const [x, y, z] = unitJ2000(ra[i] / 360_000, dec[i] / 36_000);
-    out.set([x, y, z, v[i] / 100, bv[i] / 1000, pmRa[i] / 1000, pmDec[i] / 1000], i * CATALOGUE_RECORD);
+  // Written in place: nine thousand stars, no array made for each.
+  const raStep = (15 / 360_000) * DEG;
+  const decStep = DEG / 36_000;
+  for (let i = 0, at = 0; i < n; i++, at += CATALOGUE_RECORD) {
+    const a = ra[i] * raStep;
+    const d = dec[i] * decStep;
+    const c = Math.cos(d);
+    out[at] = c * Math.cos(a);
+    out[at + 1] = c * Math.sin(a);
+    out[at + 2] = Math.sin(d);
+    out[at + 3] = v[i] / 100;
+    out[at + 4] = bv[i] / 1000;
+    out[at + 5] = pmRa[i] / 1000;
+    out[at + 6] = pmDec[i] / 1000;
   }
   return out;
 }
@@ -123,8 +134,13 @@ export function starsAtDate(catalogue: Float32Array, date: Date): Float32Array {
     const nx = x - (y / flat) * east - ((z * x) / flat) * north;
     const ny = y + (x / flat) * east - ((z * y) / flat) * north;
     const nz = z + flat * north;
-    const length = Math.hypot(nx, ny, nz) || 1;
-    out.set([nx / length, ny / length, nz / length, catalogue[at + 3], catalogue[at + 4]], i * 5);
+    const length = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+    const to = i * 5;
+    out[to] = nx / length;
+    out[to + 1] = ny / length;
+    out[to + 2] = nz / length;
+    out[to + 3] = catalogue[at + 3];
+    out[to + 4] = catalogue[at + 4];
   }
   return out;
 }

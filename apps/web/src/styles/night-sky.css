@@ -79,6 +79,23 @@
   outline: none;
 }
 
+/* Until the first frame, the site's own star tile over the placeholder's sky. */
+.sky-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 28%;
+  background:
+    var(--gradient-stars) 0 0 / 340px 300px,
+    var(--gradient-stars) 170px 120px / 520px 460px;
+  opacity: 0.8;
+  transition: opacity 700ms var(--ease-sky);
+  pointer-events: none;
+}
+
+.sky[data-phase="ready"] .sky-stage::before {
+  opacity: 0;
+}
+
 .sky-stage:active {
   cursor: grabbing;
 }

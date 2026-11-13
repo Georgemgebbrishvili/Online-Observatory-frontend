@@ -328,6 +328,8 @@ function atmosphereMaterial() {
         float low = exp(-h * 4.2);
         vec3 night = mix(vec3(0.016, 0.022, 0.048), vec3(0.118, 0.128, 0.182), low);
         night += vec3(0.030, 0.030, 0.036) * exp(-h * 16.0);
+        // Below the horizon line the haze holds its colour, so the ground meets a glow.
+        if (vDir.y < 0.0) night = vec3(0.148, 0.158, 0.218);
         vec3 day = mix(vec3(0.16, 0.36, 0.74), vec3(0.72, 0.81, 0.93), pow(1.0 - h, 3.0));
         // Twilight is a deep blue before it is a day's: night, then dusk, then day.
         vec3 dusk = mix(vec3(0.035, 0.068, 0.19), vec3(0.22, 0.30, 0.50), pow(1.0 - h, 2.5));
@@ -349,6 +351,65 @@ function atmosphereMaterial() {
     side: BackSide,
     depthWrite: false,
   });
+}
+
+/**
+ * The ground: it catches the horizon's light near the horizon and darkens toward the feet,
+ * with a faint field drawn on it in perspective, finer as it recedes. Colours are given as
+ * written (see asWritten).
+ */
+function groundMaterial() {
+  return new ShaderMaterial({
+    uniforms: {
+      uBase: { value: new Vector3() },
+      uHorizon: { value: new Vector3() },
+      uOpacity: { value: 1 },
+    },
+    vertexShader: /* glsl */ `
+      varying vec3 vDir;
+      void main() { vDir = normalize(position); gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0); }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uBase;
+      uniform vec3 uHorizon;
+      uniform float uOpacity;
+      varying vec3 vDir;
+      float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0)), f.x), f.y);
+      }
+      void main() {
+        float down = clamp(-vDir.y, 0.0, 1.0);
+        // The ground's own plane, so its pattern shrinks toward the horizon.
+        vec2 plane = vDir.xz / max(down, 0.035);
+        float field = 0.5 * noise(plane * 1.7) + 0.3 * noise(plane * 5.3) + 0.2 * noise(plane * 17.0);
+        float near = smoothstep(0.03, 0.25, down);
+        vec3 colour = mix(uHorizon * 0.3 + uBase * 0.7, uBase, smoothstep(0.0, 0.16, down));
+        colour *= mix(1.0, 0.72 + 0.56 * field, near);
+        colour *= 1.0 - 0.35 * smoothstep(0.35, 1.0, down);
+        gl_FragColor = vec4(colour, uOpacity);
+      }
+    `,
+    transparent: true,
+    side: DoubleSide,
+  });
+}
+
+/** The sky's colour just above the horizon, as the atmosphere shader paints it. */
+function horizonColour(bright: number): [number, number, number] {
+  const step = (from: number, to: number, x: number) => {
+    const t = Math.min(1, Math.max(0, (x - from) / (to - from)));
+    return t * t * (3 - 2 * t);
+  };
+  const night = [0.148, 0.158, 0.218];
+  const dusk = [0.22, 0.3, 0.5];
+  const day = [0.72, 0.81, 0.93];
+  const a = step(0, 0.22, bright);
+  const b = step(0.18, 0.85, bright);
+  return [0, 1, 2].map((k) => (night[k] + (dusk[k] - night[k]) * a) * (1 - b) + day[k] * b) as [number, number, number];
 }
 
 /**
@@ -605,7 +666,8 @@ function landscape(profile: (az: number) => number, radius: number) {
   const steps = NEAR_STEPS;
   for (let i = 0; i <= steps; i++) {
     const az = (i / steps) * 360;
-    for (const alt of [profile(az), -4]) positions.push(...worldOf({ alt, az }).map((v) => v * radius));
+    // Down just past the horizon, where the ground takes over: a deeper strip shows as a band.
+    for (const alt of [profile(az), -0.6]) positions.push(...worldOf({ alt, az }).map((v) => v * radius));
     if (i < steps) {
       const a = i * 2;
       index.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
@@ -787,6 +849,10 @@ export class SkyRenderer {
   private path: PathOverlay | null = null;
   private marks: { x: number; y: number; radius: number; flat: number; shape: DsoShape; showpiece: boolean; alpha: number }[] = [];
   private overlayContext: CanvasRenderingContext2D | null;
+  private milkyMaterial: ShaderMaterial;
+  private drawnOnce = false;
+  /** When the Milky Way's picture arrived: it fades in over a second. */
+  private milkyAt = 0;
   private font = "sans-serif";
   private motion = true;
   private started = performance.now();
@@ -819,11 +885,9 @@ export class SkyRenderer {
     this.milky = new Mesh(new IcosahedronGeometry(1, 6), milkyMaterialInstance);
     this.milky.renderOrder = -5;
     this.milky.frustumCulled = false;
-    this.loader.load("/sky/data/milkyway.webp", (texture) => {
-      texture.minFilter = LinearFilter;
-      texture.generateMipmaps = false;
-      milkyMaterialInstance.uniforms.uMap.value = texture;
-    });
+    // The Milky Way's picture waits for the first frame, so its upload never holds the sky
+    // up; a phone takes the half-size one (render, below).
+    this.milkyMaterial = milkyMaterialInstance;
     this.scene.add(this.milky);
 
     // Stars: one draw.
@@ -933,7 +997,7 @@ export class SkyRenderer {
     // The ground: the lower hemisphere, then hills and a tree line along the horizon.
     this.ground = new Mesh(
       new SphereGeometry(D.ground, 64, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2),
-      new MeshBasicMaterial({ color: nightSkyArt.ground, side: DoubleSide, transparent: true, opacity: 1 }),
+      groundMaterial(),
     );
     this.ground.renderOrder = 5;
     this.scene.add(this.ground);
@@ -985,6 +1049,18 @@ export class SkyRenderer {
     this.overlay.height = Math.round(this.height * ratio);
     this.camera.aspect = this.width / this.height;
     this.camera.updateProjectionMatrix();
+  }
+
+  /**
+   * Compiles the scene's shaders before the first frame, without blocking the page while
+   * the GPU links them (KHR_parallel_shader_compile where the browser has it).
+   */
+  async warm(view: View) {
+    this.view = view;
+    this.camera.fov = view.fov;
+    this.camera.updateProjectionMatrix();
+    this.camera.lookAt(new Vector3(...worldOf(view)));
+    await this.renderer.compileAsync(this.scene, this.camera);
   }
 
   /** Reduced motion: no twinkling, no turning marker. */
@@ -1128,7 +1204,7 @@ export class SkyRenderer {
     const lines = this.lines.material as ShaderMaterial;
     lines.uniforms.uEqjHor.value.copy(m3);
     lines.uniforms.uLean.value.set(...this.lean);
-    lines.uniforms.uAlpha.value = 0.36 * (1 - bright * 0.8);
+    lines.uniforms.uAlpha.value = 0.36 * (1 - smooth(0.2, 0.75, bright));
     this.lines.visible = toggles.lines;
 
     const milky = this.milky.material as ShaderMaterial;
@@ -1136,7 +1212,7 @@ export class SkyRenderer {
     milky.uniforms.uLean.value.set(...this.lean);
     // The Milky Way is a glow across tens of degrees; in a narrow view it would only grey
     // the background, so it fades out below a 12° field.
-    milky.uniforms.uAlpha.value = 0.3 * Math.max(0, 1 - bright * 9) * smooth(3, 12, view.fov);
+    milky.uniforms.uAlpha.value = 0.36 * (this.milkyAt ? smooth(0, 1000, performance.now() - this.milkyAt) : 0) * Math.max(0, 1 - bright * 9) * smooth(3, 12, view.fov);
     milky.uniforms.uHaze.value = toggles.atmosphere ? 1 : 0;
     this.milky.visible = toggles.milkyway;
 
@@ -1156,11 +1232,20 @@ export class SkyRenderer {
     // drawn hills and trees fade: they are an illustration, and must not hide a real object.
     const groundOpacity = toggles.ground ? 0.25 : 1;
     const ridgeOpacity = groundOpacity * (0.12 + 0.88 * smooth(2.5, 14, view.fov));
-    const groundColour = new Color(nightSkyArt.ground).lerp(new Color(nightSkyArt.groundDay), toggles.atmosphere ? bright : 0);
-    const hillColour = new Color(nightSkyArt.hills).lerp(new Color(nightSkyArt.hillsDay), toggles.atmosphere ? bright : 0);
+    const lit = toggles.atmosphere ? bright : 0;
+    const groundColour = new Color(nightSkyArt.ground).lerp(new Color(nightSkyArt.groundDay), lit);
+    // Distance hazes the far hills toward the horizon's colour, as it does a real ridge.
+    const [hr, hg, hb] = horizonColour(lit);
+    const haze = new Color().setRGB(hr, hg, hb, SRGBColorSpace);
+    const hillColour = new Color(nightSkyArt.hills).lerp(new Color(nightSkyArt.hillsDay), lit).lerp(haze, 0.22);
+    const treeColour = groundColour.clone().lerp(haze, 0.05);
+    const ground = (this.ground.material as ShaderMaterial).uniforms;
+    const base = groundColour.clone().convertLinearToSRGB();
+    ground.uBase.value.set(base.r, base.g, base.b);
+    ground.uHorizon.value.set(hr, hg, hb);
+    ground.uOpacity.value = groundOpacity;
     for (const [mesh, colour, opacity] of [
-      [this.ground, groundColour, groundOpacity],
-      [this.trees, groundColour, ridgeOpacity],
+      [this.trees, treeColour, ridgeOpacity],
       [this.hills, hillColour, ridgeOpacity],
     ] as const) {
       const material = mesh.material as MeshBasicMaterial;
@@ -1354,9 +1439,7 @@ export class SkyRenderer {
           selected ||
           (thing.type === "star"
             ? thing.labelled && (thing.magnitude ?? 9) <= Math.min(effectiveLimit, 1.6 + 1.2 * zoomGain)
-            : thing.labelled
-              ? toggles.dso && view.fov <= 75
-              : reach <= 3.6);
+            : bright < 0.35 && toggles.dso && (thing.labelled ? view.fov <= 75 : reach <= 3.6));
         this.place(
           key,
           `sky-label ${thing.type === "star" ? "sky-label-star" : thing.labelled ? "sky-label-showpiece" : "sky-label-dso"}${selected ? " is-selected" : ""}${where.alt < 0 ? " is-below" : ""}`,
@@ -1374,6 +1457,18 @@ export class SkyRenderer {
 
     this.renderer.render(this.scene, this.camera);
     this.drawOverlay(frame, seconds, target);
+    if (!this.drawnOnce) {
+      this.drawnOnce = true;
+      const small = window.matchMedia("(pointer: coarse)").matches || Math.max(this.width, this.height) < 900;
+      setTimeout(() => {
+        this.loader.load(`/sky/data/milkyway${small ? "-1k" : ""}.webp`, (texture) => {
+          texture.minFilter = LinearFilter;
+          texture.generateMipmaps = false;
+          this.milkyMaterial.uniforms.uMap.value = texture;
+          this.milkyAt = performance.now();
+        });
+      }, 250);
+    }
     return { bright, sun, moon, view, target };
   }
 

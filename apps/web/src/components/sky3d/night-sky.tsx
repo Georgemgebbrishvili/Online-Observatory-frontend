@@ -33,7 +33,6 @@ import { constellationKa, nightSkyCopy, starKa } from "@/i18n/resources/night-sk
 import { SHOWPIECES } from "@/lib/observatory-sim/showpieces";
 import { BRIGHT_STARS } from "@/lib/observatory-sim/stars";
 import { TELESCOPE_TARGET_BY_ID } from "@/lib/observatory-sim/telescope-targets";
-import { apiRequest } from "@/lib/platform/browser";
 
 import type { Constellation, DsoShape, PathOverlay, SkyRenderer, SkyThing, Toggles } from "./renderer";
 import { SkyIcon } from "./sky-icons";
@@ -376,8 +375,10 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
       try {
         const probe = document.createElement("canvas");
         if (!(probe.getContext("webgl2") ?? probe.getContext("webgl"))) throw new Error("no webgl");
+        performance.mark("sky:mounted");
         const [module, stars, figures] = await load();
         if (cancelled) return;
+        performance.mark("sky:loaded");
         // A phone held upright sees a narrow strip of a desk's view: open it wider.
         if (window.innerWidth < 768) viewRef.current = { alt: 33, az: 180, fov: 100 };
         // Each star carried along its proper motion to the day the page opens.
@@ -393,11 +394,14 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
           [],
         );
         rendererRef.current.setMotion(!reduceMotion.current);
+        await rendererRef.current.warm(viewRef.current).catch(() => {});
+        if (cancelled) return;
         // The page was rendered a moment ago, or restored from a cache long after: start
         // from the visitor's own clock, unless it runs behind the server's.
         const clientNow = Date.now();
         if (clientNow > openedAt - 300_000) time.current.anchorSim = clientNow;
         time.current.anchorReal = clientNow;
+        performance.mark("sky:built");
         setPhase("ready");
       } catch {
         if (cancelled) return;
@@ -425,8 +429,9 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     if (!selected || askedBookable.current) return;
     askedBookable.current = true;
     let cancelled = false;
-    import("@darkview/contracts/zod")
-      .then(({ zListTargetsResponse }) => apiRequest("/targets?limit=100", { schema: zListTargetsResponse }))
+    // Both modules load here and only here: the API client pulls in every contract schema.
+    Promise.all([import("@darkview/contracts/zod"), import("@/lib/platform/browser")])
+      .then(([{ zListTargetsResponse }, { apiRequest }]) => apiRequest("/targets?limit=100", { schema: zListTargetsResponse }))
       .then(({ items }) => {
         if (cancelled) return;
         setBookable(
@@ -476,6 +481,7 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
 
     let last = 0;
     let lastSecond = 0;
+    let drewFirst = false;
     const frame = (t: number) => {
       // A frame's time step, held short so a tab coming back does not lurch.
       const dt = last ? Math.min(50, t - last) : 16;
@@ -540,6 +546,10 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
         orientation.current,
       );
       if (following) viewRef.current = drawn.view;
+      if (!drewFirst) {
+        drewFirst = true;
+        performance.mark("sky:first-frame");
+      }
       // In flight, aim at where the object is now, not where it was at take-off.
       if (flying && track.current && drawn.target && drawn.target.alt > -1) {
         flying.to = clampView({ ...flying.to, alt: drawn.target.alt, az: drawn.target.az });

@@ -285,3 +285,30 @@ comfortable movement."
   deep blue before it becomes day's: the second-magnitude stars are out as civil twilight
   ends, held by test. Constellation names fade by day as the figures do. The Moon's night
   side shows a faint earthshine, strongest at a crescent.
+
+## Amendment — 2026-11-13, evening
+
+Decided by the maintainer (Nika), in session: "make it visually better, load faster, make it
+very good."
+
+- **What held a phone's first frame up was its own work, not the network.** Measured on a
+  phone profile (4G, CPU slowed 4×), the files were in by about 6.5 s and the sky drew at
+  about 11 s. Three causes, each fixed:
+  - **The contract's validators.** `lib/platform/browser.ts` imports every contract schema
+    (132 KB of script), so the page carried and ran them although only the booking link
+    needs them. The API client now loads with the schema, once something is picked.
+  - **The Milky Way's upload.** Half a second of main thread for a 2048 × 1024 picture. It
+    now loads after the first frame and fades in over a second; a phone (a coarse pointer, or
+    a screen under 900 px) takes `milkyway-1k.webp`, 30 KB instead of 157 KB.
+  - **The rest.** The star file decodes in place, with no array made for each star; the
+    shaders compile before the first frame (`compileAsync`), where the browser can link them
+    in parallel.
+  On the same profile the sky now draws in about 2–4 s. The page marks `sky:mounted`,
+  `sky:loaded`, `sky:built` and `sky:first-frame`, for measuring it again.
+- **The ground.** Its own shader: it takes up the horizon's light near the horizon and
+  darkens toward the feet, with a faint field drawn in perspective; by day it is a meadow.
+  The far hills haze toward the horizon's colour. The landscape strips stop just under the
+  horizon, where the ground takes over, so no band shows between them.
+- **Until the first frame** the placeholder sky carries the site's star tile, which fades
+  as the drawn sky comes in.
+- **By day** the constellation figures and every deep-sky name and symbol give way.
