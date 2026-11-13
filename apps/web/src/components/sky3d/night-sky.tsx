@@ -14,6 +14,7 @@ import {
   constellationOfBody,
   FIGURES_URL,
   STARS_URL,
+  declinationAt,
   decodeCatalogue,
   events,
   fixedAltAz,
@@ -232,6 +233,7 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
   const track = useRef(false);
   const lookCloserRef = useRef<(key: string) => void>(() => {});
   const orientation = useRef<import("three").Quaternion | null>(null);
+  const pointer = useRef<import("./pointing").Pointing | null>(null);
   const reduceMotion = useRef(false);
 
   const [phase, setPhase] = useState<"loading" | "ready" | "no-webgl">("loading");
@@ -270,6 +272,7 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
   }, [toggles]);
   useEffect(() => {
     siteRef.current = site.site;
+    pointer.current?.setDeclination(declinationAt(site.site));
   }, [site]);
   useEffect(() => {
     selectedRef.current = selected;
@@ -402,6 +405,11 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
         if (clientNow > openedAt - 300_000) time.current.anchorSim = clientNow;
         time.current.anchorReal = clientNow;
         performance.mark("sky:built");
+        // Development only: the view and the camera's projection, for sensor tests.
+        if (process.env.NODE_ENV !== "production") {
+          const renderer = rendererRef.current;
+          Object.assign(window, { __sky: { view: () => viewRef.current, screenAt: (world: Vec3) => renderer.screenAt(world) } });
+        }
         setPhase("ready");
       } catch {
         if (cancelled) return;
@@ -474,7 +482,14 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     let raf = 0;
     let lastClock = 0;
     let close = "";
-    const resize = () => renderer.resize(stage.clientWidth, stage.clientHeight);
+    // The stage's size, kept by the observer: read in the loop it would force a layout a frame.
+    let width = stage.clientWidth;
+    let height = stage.clientHeight;
+    const resize = () => {
+      width = stage.clientWidth;
+      height = stage.clientHeight;
+      renderer.resize(width, height);
+    };
     resize();
     const observer = new ResizeObserver(resize);
     observer.observe(stage);
@@ -516,7 +531,7 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
           if (done) fov = goal.fov;
           viewRef.current = track.current
             ? clampView({ ...now, fov })
-            : zoomAbout(now, fov, goal.x, goal.y, stage.clientWidth, stage.clientHeight);
+            : zoomAbout(now, fov, goal.x, goal.y, width, height);
           if (done) zoomGoal.current = null;
         }
         // Coasting after a drag fades over about a third of a second, as a phone's lists do.
@@ -530,6 +545,22 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
             velocity.current = { alt: v.alt * fade, az: v.az * fade };
           }
         }
+      }
+      // Pointing: the filtered camera, and the alt-az it looks at for everything else.
+      const aimed = pointer.current?.step(dt) ?? null;
+      orientation.current = aimed;
+      if (aimed) {
+        const ahead = { x: 0, y: 0, z: -1 };
+        // Forward (0, 0, -1) turned by the quaternion, written out.
+        const { x, y, z, w } = aimed;
+        ahead.x = -(2 * (x * z + w * y));
+        ahead.y = -(2 * (y * z - w * x));
+        ahead.z = -(1 - 2 * (x * x + y * y));
+        viewRef.current = clampView({
+          ...viewRef.current,
+          alt: Math.asin(Math.max(-1, Math.min(1, ahead.y))) / DEG,
+          az: Math.atan2(ahead.x, -ahead.z) / DEG,
+        });
       }
       const date = simDate();
       const following = track.current && !flying;
@@ -597,11 +628,14 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     // never a tap.
     let pinch: { spread: number; fov: number } | null = null;
     let multi = false;
-    const local = (event: { clientX: number; clientY: number }) => {
-      const rect = stage.getBoundingClientRect();
-      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    // The stage's box, read once a gesture: reading it on every move made the browser lay the
+    // page out again mid-drag, after each frame's label changes.
+    let box = stage.getBoundingClientRect();
+    const measure = () => {
+      box = stage.getBoundingClientRect();
     };
-    const size = () => [stage.clientWidth, stage.clientHeight] as const;
+    const local = (event: { clientX: number; clientY: number }) => ({ x: event.clientX - box.left, y: event.clientY - box.top });
+    const size = () => [box.width, box.height] as const;
     const middle = () => {
       const [a, b] = [...pointers.values()];
       return local({ clientX: (a.x + b.x) / 2, clientY: (a.y + b.y) / 2 });
@@ -616,6 +650,7 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
 
     const down = (event: PointerEvent) => {
       stage.setPointerCapture(event.pointerId);
+      if (pointers.size === 0) measure();
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       pressed.current = true;
       if (pointers.size === 1) {
@@ -636,8 +671,15 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     };
     const move = (event: PointerEvent) => {
       const before = pointers.get(event.pointerId);
-      if (!before || orientation.current) return;
+      if (!before) return;
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      // While the phone points the camera, fingers only zoom.
+      if (pointer.current) {
+        if (pointers.size === 2 && pinch) {
+          viewRef.current = clampView({ ...viewRef.current, fov: pinch.fov * (pinch.spread / Math.max(1, spread())) });
+        }
+        return;
+      }
       // One finger turns the sky, also the one left after a pinch.
       if (pointers.size === 1 && held) {
         if (Math.hypot(event.clientX - downAt.x, event.clientY - downAt.y) > 6) track.current = false;
@@ -698,9 +740,10 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     };
     const wheel = (event: WheelEvent) => {
       event.preventDefault();
+      if (!zoomGoal.current) measure();
       fly.current = null;
       // Lines and pages to pixels; a trackpad's pinch comes as a small wheel with ctrl held.
-      const delta = event.deltaY * (event.deltaMode === 1 ? 33 : event.deltaMode === 2 ? stage.clientHeight : 1);
+      const delta = event.deltaY * (event.deltaMode === 1 ? 33 : event.deltaMode === 2 ? box.height : 1);
       const factor = Math.exp(Math.max(-300, Math.min(300, delta)) * (event.ctrlKey ? 0.01 : 0.0016));
       const from = zoomGoal.current?.fov ?? viewRef.current.fov;
       zoomGoal.current = { fov: clampView({ ...viewRef.current, fov: from * factor }).fov, ...local(event) };
@@ -780,43 +823,34 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     );
   };
 
-  // "Point at the sky": the phone's orientation drives the camera (iOS asks first).
+  // "Point at the sky": the phone's orientation drives the camera (iOS asks first). The
+  // readings go to a filter (pointing.ts) that the frame loop steps.
   const togglePointing = async () => {
     if (pointing === "on") {
-      orientation.current = null;
       setPointing("off");
       return;
     }
     const request = (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission;
     if (request && (await request().catch(() => "denied")) !== "granted") return setPointing("refused");
-    const { Euler, Quaternion, Vector3 } = await import("three");
-    const euler = new Euler();
-    const screenTurn = new Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
-    const zee = new Vector3(0, 0, 1);
-    const onOrientation = (event: DeviceOrientationEvent & { webkitCompassHeading?: number }) => {
-      if (event.beta === null || event.gamma === null) return;
-      // Compass-true yaw: iOS gives a heading, Android's absolute event an alpha.
-      const alpha = event.webkitCompassHeading !== undefined ? 360 - event.webkitCompassHeading : (event.alpha ?? 0);
-      euler.set(event.beta * DEG, alpha * DEG, -event.gamma * DEG, "YXZ");
-      const q = new Quaternion().setFromEuler(euler).multiply(screenTurn);
-      const turn = (screen.orientation?.angle ?? 0) * DEG;
-      q.multiply(new Quaternion().setFromAxisAngle(zee, -turn));
-      orientation.current = q;
-      const forward = new Vector3(0, 0, -1).applyQuaternion(q);
-      viewRef.current = clampView({
-        ...viewRef.current,
-        alt: Math.asin(Math.max(-1, Math.min(1, forward.y))) / DEG,
-        az: Math.atan2(forward.x, -forward.z) / DEG,
-      });
-    };
-    const kind = "ondeviceorientationabsolute" in window ? "deviceorientationabsolute" : "deviceorientation";
-    window.addEventListener(kind, onOrientation as EventListener);
+    const { Pointing } = await import("./pointing");
+    const absolute = "ondeviceorientationabsolute" in window;
+    const filter = new Pointing(declinationAt(siteRef.current), absolute);
+    const onOrientation = (event: Event) => filter.take(event as DeviceOrientationEvent);
+    const kind = absolute ? "deviceorientationabsolute" : "deviceorientation";
+    window.addEventListener(kind, onOrientation);
+    pointer.current = filter;
+    track.current = false;
+    fly.current = null;
+    zoomGoal.current = null;
+    velocity.current = { alt: 0, az: 0 };
+    // A window onto the sky, as a phone held up shows it: no wider than 75°.
+    if (viewRef.current.fov > 75) zoom(75 / viewRef.current.fov);
     setPointing("on");
-    const stop = () => {
-      window.removeEventListener(kind, onOrientation as EventListener);
+    stopPointing.current = () => {
+      window.removeEventListener(kind, onOrientation);
+      pointer.current = null;
       orientation.current = null;
     };
-    stopPointing.current = stop;
   };
   const stopPointing = useRef<() => void>(() => {});
   useEffect(() => {

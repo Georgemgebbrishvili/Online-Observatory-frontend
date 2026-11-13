@@ -3,7 +3,7 @@
  * in the browser. Stars and constellation lines are J2000 unit vectors uploaded once; each
  * frame one EQJ->HOR matrix turns them, and the shader adds astronomy-engine's refraction
  * (the same sum as `horizontal()` in features/sky3d/astro.ts). Labels are DOM, placed with
- * `screenOf`; the selected object's path and marker are drawn on a 2D overlay the same way.
+ * `screenAt`; the selected object's path and marker are drawn on a 2D overlay the same way.
  *
  * Close up, a planet is its photograph on a disc at its true apparent size, turned to its
  * pole and lit from the Sun's side, so its phase is right; Saturn is a globe and rings in
@@ -58,7 +58,7 @@ import {
   type SkyBodyName,
   type Vec3,
 } from "@/features/sky3d/astro";
-import { FOV, clampView, screenOf, type View } from "@/features/sky3d/projection";
+import { FOV, clampView, type View } from "@/features/sky3d/projection";
 import { PLATE_SPAN_ARCMIN } from "@/lib/observatory-sim/sky-field";
 import { nightSkyArt, withAlpha } from "@/styles/tokens";
 
@@ -853,6 +853,7 @@ export class SkyRenderer {
   private drawnOnce = false;
   /** When the Milky Way's picture arrived: it fades in over a second. */
   private milkyAt = 0;
+  private overlayDirty = true;
   private font = "sans-serif";
   private motion = true;
   private started = performance.now();
@@ -1027,15 +1028,17 @@ export class SkyRenderer {
 
   private place(id: string, className: string, text: string, world: Vec3 | null) {
     const span = this.label(id, className);
-    const point = world ? screenOf(world, this.view, this.width, this.height) : null;
+    const point = world ? this.screenAt(world) : null;
     if (!point || point.x < -40 || point.y < -20 || point.x > this.width + 40 || point.y > this.height + 20) {
-      span.hidden = true;
+      if (!span.hidden) span.hidden = true;
       return;
     }
-    span.hidden = false;
+    if (span.hidden) span.hidden = false;
     if (span.className !== className) span.className = className;
     if (span.textContent !== text) span.textContent = text;
-    span.style.transform = `translate(${point.x.toFixed(1)}px, ${point.y.toFixed(1)}px)`;
+    // Written only when it moved: a still sky touches no label.
+    const transform = `translate(${point.x.toFixed(1)}px, ${point.y.toFixed(1)}px)`;
+    if (span.style.transform !== transform) span.style.transform = transform;
   }
 
   private view: View = { alt: 25, az: 180, fov: 70 };
@@ -1070,6 +1073,19 @@ export class SkyRenderer {
 
   setPath(path: PathOverlay | null) {
     this.path = path;
+  }
+
+  private scratch = new Vector3();
+  /**
+   * Pixel position of a world direction through the camera as it was last drawn -- the
+   * phone's own, roll and all, when it points the view -- or null behind it. Labels, the
+   * path, the marker and a tap all go through here, so they stay on what they name.
+   */
+  screenAt(world: Vec3) {
+    const v = this.scratch.set(world[0], world[1], world[2]).applyMatrix4(this.camera.matrixWorldInverse);
+    if (v.z > -1e-6) return null;
+    v.applyMatrix4(this.camera.projectionMatrix);
+    return { x: ((v.x + 1) / 2) * this.width, y: ((1 - v.y) / 2) * this.height };
   }
 
   /** J2000 direction -> world, no refraction: for directions such as a pole. */
@@ -1140,8 +1156,45 @@ export class SkyRenderer {
     return { right, up, toViewer };
   }
 
+  // Adaptive resolution: a phone that cannot keep up draws fewer pixels, then more again.
+  private ratioCap = Math.min(window.devicePixelRatio || 1, 2);
+  private gaps: number[] = [];
+  private lastAt = 0;
+  private goodWindows = 0;
+
+  private adapt(now: number) {
+    const gap = now - this.lastAt;
+    this.lastAt = now;
+    if (gap <= 0 || gap > 250) return;
+    this.gaps.push(gap);
+    if (this.gaps.length < 45) return;
+    const sorted = [...this.gaps].sort((a, b) => a - b);
+    const typical = sorted[Math.floor(sorted.length / 2)];
+    this.gaps.length = 0;
+    const ratio = this.renderer.getPixelRatio();
+    // Under about 40 frames a second: a quarter step down, never below one pixel a point.
+    if (typical > 25 && ratio > 1) {
+      this.setRatio(Math.max(1, ratio - 0.25));
+      this.goodWindows = 0;
+    } else if (typical < 17.5 && ratio < this.ratioCap) {
+      // Three smooth windows in a row before trying a finer picture again.
+      if (++this.goodWindows >= 3) {
+        this.setRatio(Math.min(this.ratioCap, ratio + 0.25));
+        this.goodWindows = 0;
+      }
+    } else {
+      this.goodWindows = 0;
+    }
+  }
+
+  private setRatio(ratio: number) {
+    this.renderer.setPixelRatio(ratio);
+    this.resize(this.width, this.height);
+  }
+
   /** Draws one frame. `orientation` overrides the alt-az camera (phone pointing). */
   render(frame: Frame, orientation?: Quaternion | null) {
+    this.adapt(performance.now());
     const { date, site, toggles } = frame;
     let { view } = frame;
     // The slow parts of the sky once a second of sky time; each frame turns them with the
@@ -1420,7 +1473,7 @@ export class SkyRenderer {
         if (thing.mark && marked) {
           const markPx = Math.max(6.5, Math.min(thing.mark.major / 120 / degPerPx, this.height * 0.4));
           radiusPx = Math.max(radiusPx, markPx);
-          const point = screenOf(world, view, this.width, this.height);
+          const point = this.screenAt(world);
           // Its picture, once it is drawn, stands for it; until then its symbol does.
           if (point && !framed) {
             this.marks.push({
@@ -1499,11 +1552,16 @@ export class SkyRenderer {
   private drawOverlay(frame: Frame, seconds: number, target: AltAz | null) {
     const context = this.overlayContext;
     if (!context) return;
+    // Nothing to draw, and nothing drawn last frame: leave the overlay be.
+    const busy = this.marks.length > 0 || frame.selected !== null;
+    if (!busy && !this.overlayDirty) return;
+    this.overlayDirty = busy;
     const ratio = this.renderer.getPixelRatio();
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, this.width, this.height);
+    if (!busy) return;
     const seeBelow = frame.toggles.ground;
-    const project = (alt: number, az: number) => screenOf(worldOf({ alt, az }), this.view, this.width, this.height);
+    const project = (alt: number, az: number) => this.screenAt(worldOf({ alt, az }));
     const onScreen = (p: { x: number; y: number }, margin = 0) =>
       p.x > -margin && p.y > -margin && p.x < this.width + margin && p.y < this.height + margin;
 
@@ -1534,7 +1592,7 @@ export class SkyRenderer {
 
     // The marker round the selected object; the path stops at it and starts again past it.
     const selected = frame.selected ? this.shown.get(frame.selected) ?? this.markerOf(frame.selected) : null;
-    const markerAt = selected && (seeBelow || selected.world[1] > -0.01) ? screenOf(selected.world, this.view, this.width, this.height) : null;
+    const markerAt = selected && (seeBelow || selected.world[1] > -0.01) ? this.screenAt(selected.world) : null;
     const markerRadius = selected ? Math.min(Math.max(selected.radiusPx + 8, 14), Math.min(this.width, this.height) * 0.45) : 0;
 
     if (this.path && frame.toggles.path && frame.selected) {
@@ -1759,7 +1817,7 @@ export class SkyRenderer {
     let best: { id: string; d: number } | null = null;
     const consider = (id: string, world: Vec3 | null, bias = 0, reach = radius) => {
       if (!world) return;
-      const point = screenOf(world, this.view, this.width, this.height);
+      const point = this.screenAt(world);
       if (!point) return;
       const d = Math.hypot(point.x - x, point.y - y) + bias;
       if (d <= reach && (!best || d < best.d)) best = { id, d };

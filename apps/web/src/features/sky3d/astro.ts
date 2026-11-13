@@ -537,3 +537,13 @@ export function skyAt(snapshot: SkySnapshot, date: Date) {
   });
   return { matrix, eqdMatrix: eqd, lean: snapshot.lean, states, moons: snapshot.moons };
 }
+
+/**
+ * Magnetic declination, degrees east, for "Point at the sky": a phone's compass points to
+ * magnetic north. Georgia's is 7° E on the Tbilisi aerodrome chart (UGTB, variation 7° E,
+ * epoch 2020; it changes by about a tenth of a degree a year). Elsewhere the page knows
+ * none, and the sky follows magnetic north.
+ */
+export function declinationAt(site: Site) {
+  return site.latitude > 38 && site.latitude < 46 && site.longitude > 38 && site.longitude < 51 ? 7 : 0;
+}

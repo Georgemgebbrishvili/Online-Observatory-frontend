@@ -312,3 +312,34 @@ very good."
 - **Until the first frame** the placeholder sky carries the site's star tile, which fades
   as the drawn sky comes in.
 - **By day** the constellation figures and every deep-sky name and symbol give way.
+
+## Amendment — 2026-11-13, night
+
+Decided by the maintainer (Nika), in session: "navigation is lagging; when I rotate the phone
+the night sky turns upside down sometimes; pointing the phone should be precise, like
+SkyView/Skylight -- now it is wobbly and vibrating and not accurate."
+
+- **Labels, the path, the marker and a tap go through the camera itself** (`screenAt`).
+  They were placed by an alt-az projection that has no roll, while the 3D sky took the
+  phone's whole orientation: tilted, or in landscape, every name sat off its star.
+- **One sensor frame on iOS** (`components/sky3d/pointing.ts`). iOS gives `alpha` from an
+  arbitrary start and a magnetic `webkitCompassHeading` for the top edge, which turns half a
+  circle as the phone leans back past upright -- the pose of a phone held up to the sky.
+  The page mixed that heading with the tilt, and the sky flipped. The heading now only
+  teaches an offset for `alpha`, learned while the phone is between flat and upright where
+  every reading agrees; the camera turns with `alpha`, which never jumps. Android's absolute
+  event is north-referenced and used as it is. The screen's turn is read from
+  `screen.orientation`, or `window.orientation` on older iPhones.
+- **True north.** A phone's compass points to magnetic north; in Georgia the page adds 7° E,
+  the variation on the Tbilisi aerodrome chart (UGTB, epoch 2020). Elsewhere it knows none.
+- **Steady, and exact where it stops.** Readings set a goal; each frame the camera turns
+  toward it by a filter that follows how fast the phone is turning: held still, readings are
+  averaged over about a fifth of a second; turning, over a few hundredths. Held by test
+  (`pointing.test.ts`): a degree of shake moves the view under 0.3°, a 90° turn is followed
+  within 250 ms, and the view settles within 0.05° of where the phone points.
+- **Two fingers zoom while the phone points**; starting to point eases to a 75° field.
+- **Lag.** The renderer measures its own frame rate and draws fewer pixels when a phone
+  cannot keep up (in quarter steps, never below one pixel a point), and more again after
+  three smooth seconds. The page no longer reads the stage's box on every pointer move or
+  zoom frame (each read laid the page out again), a label is rewritten only when it moves,
+  and an empty overlay is not cleared each frame.
