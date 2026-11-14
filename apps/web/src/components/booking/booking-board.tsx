@@ -964,7 +964,7 @@ export function BookingBoard({
               <label className="field">
                 <span className="field-label">{gifts.field}</span>
                 <input
-                  className="field-input data"
+                  className="input data"
                   name="giftCode"
                   disabled={lock.voucherLocked}
                   value={giftCode}
@@ -977,7 +977,7 @@ export function BookingBoard({
                   spellCheck={false}
                   maxLength={40}
                 />
-                {gift && <span className="field-hint">{gifts.note}</span>}
+                {gift && <span className="field-message">{gifts.note}</span>}
               </label>
             </details>
           )}

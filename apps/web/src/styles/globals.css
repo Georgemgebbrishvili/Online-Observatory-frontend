@@ -37,6 +37,8 @@ body {
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   line-height: var(--leading-body);
+  /* A word longer than its column (Georgian runs long; a 320 px phone) breaks, not spills. */
+  overflow-wrap: break-word;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }

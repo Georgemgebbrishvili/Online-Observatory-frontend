@@ -350,6 +350,61 @@ export function HomeStory(props: HomeStoryProps) {
       }
       return { x: x + node.clientLeft, y: y + node.clientTop, w: node.clientWidth, h: node.clientHeight };
     };
+    // On a phone the pictures take the space above the words: the print and the feed sit
+    // over the tallest headline after the first, the sky's reticle over the first. Where a
+    // short screen leaves too little, the later steps drop their line of text and the open
+    // times stay hidden, rather than either landing on the words.
+    const fitPhone = () => {
+      // Reduced motion lays the story out still, one scene under the next: nothing to fit.
+      const phone =
+        window.matchMedia("(max-width: 47.999rem)").matches &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const lns = Array.from(hero.querySelectorAll<HTMLElement>(".hs-ln"));
+      const slots = hero.querySelector<HTMLElement>(".hs-slots");
+      const topOf = (node: HTMLElement) => node.getBoundingClientRect().top - hero.getBoundingClientRect().top;
+      const roomUnder = () => Math.min(hero.clientHeight, ...lns.slice(1).map(topOf));
+      delete hero.dataset.short;
+      delete hero.dataset.tight;
+      if (phone && roomUnder() < 300) hero.dataset.short = "";
+      if (phone && slots && lns[1] && topOf(slots) + slots.offsetHeight + 12 > topOf(lns[1])) hero.dataset.tight = "";
+      hero.style.setProperty("--cap-room", `${Math.round(roomUnder())}px`);
+      if (lns[0]) hero.style.setProperty("--sky-room", `${Math.round(topOf(lns[0]))}px`);
+      heroSky?.resize();
+      drawHero();
+
+      // The showpieces: the eyepiece between the heading and the words under it; where a
+      // short screen has no such gap it stays behind the words, dimmed.
+      const coll = el.querySelector<HTMLElement>(".hs-coll");
+      const head = coll?.querySelector<HTMLElement>(".hs-coll-head");
+      const slide = coll?.querySelector<HTMLElement>(".hs-slide");
+      if (coll && head && slide) {
+        delete coll.dataset.fit;
+        delete coll.dataset.dim;
+        if (phone) {
+          const base = slide.getBoundingClientRect().top;
+          const ring = 28;
+          const top = head.getBoundingClientRect().bottom - base + ring;
+          const infos = Array.from(coll.querySelectorAll<HTMLElement>(".hs-slide-info"));
+          const bottom = Math.min(slide.clientHeight, ...infos.map((i) => i.getBoundingClientRect().top - base)) - ring;
+          const size = Math.min(bottom - top, window.innerWidth * 0.78, window.innerHeight * 0.4);
+          if (size >= 160) {
+            coll.dataset.fit = "";
+            coll.style.setProperty("--eye-h", `${Math.round(size)}px`);
+            coll.style.setProperty("--eye-top", `${Math.round(top + (bottom - top - size) / 2)}px`);
+          } else coll.dataset.dim = "";
+        }
+      }
+
+      // The night: on a short screen the clock card needs the heading's place.
+      const night = el.querySelector<HTMLElement>(".hs-night");
+      const nhead = night?.querySelector<HTMLElement>(".hs-night-head");
+      const ncard = night?.querySelector<HTMLElement>(".hs-ncard");
+      if (night && nhead && ncard) {
+        delete night.dataset.tight;
+        if (phone && ncard.getBoundingClientRect().top < nhead.getBoundingClientRect().bottom + 12) night.dataset.tight = "";
+      }
+    };
+    fitPhone();
     const state = { depth: 0, on: false };
     const started = performance.now();
     const drawFeed = () => {
@@ -369,6 +424,7 @@ export function HomeStory(props: HomeStoryProps) {
 
     const onResize = () => {
       fitWords();
+      fitPhone();
       heroSky?.resize();
       nightSky.current?.resize();
       feed?.resize();
@@ -616,12 +672,14 @@ export function HomeStory(props: HomeStoryProps) {
     // (refreshPriority), then the plain triggers below them.
     const refresh = () => {
       fitWords();
+      fitPhone();
       ScrollTrigger.sort();
       ScrollTrigger.refresh();
       drawFeed();
     };
     refresh();
     ScrollTrigger.addEventListener("refreshInit", fitWords);
+    ScrollTrigger.addEventListener("refreshInit", fitPhone);
     if (document.readyState !== "complete") window.addEventListener("load", refresh, { once: true });
     document.fonts?.ready.then(refresh);
     // The live banner above the page arrives late and moves every scene down.
@@ -638,6 +696,7 @@ export function HomeStory(props: HomeStoryProps) {
       moved.disconnect();
       window.removeEventListener("load", refresh);
       ScrollTrigger.removeEventListener("refreshInit", fitWords);
+      ScrollTrigger.removeEventListener("refreshInit", fitPhone);
       mm.revert();
       ctx.revert();
       gsap.ticker.remove(raf);

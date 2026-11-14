@@ -245,6 +245,15 @@
   text-transform: none;
 }
 
+/* On a phone the still sits under the words, so the note never lands on the ship's engines. */
+@media (--below-md) {
+  .explorer-scene img {
+    top: auto;
+    height: 72%;
+    mask-image: linear-gradient(to bottom, transparent, var(--color-mask) 22%);
+  }
+}
+
 @media (--md) {
   .explorer-scene::after {
     background: var(--gradient-explorer-fade);

@@ -51,7 +51,7 @@ export function ReferralShare({ code, locale }: { code: string; locale: Locale }
         </strong>
       </p>
       <input
-        className="field-input data club-link"
+        className="input data club-link"
         readOnly
         value={link}
         aria-label={copy.copy}

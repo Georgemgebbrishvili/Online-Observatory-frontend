@@ -1595,10 +1595,13 @@ html.lenis body {
 
 /* PHONES — the copy keeps the foot of the screen; the pictures take the space above it. */
 @media (--below-md) {
+  /* --cap-room: the height above the tallest headline, measured by home-story.tsx. The
+     print (window, 0.625rem edge, 4.75rem foot) fits between 2.75rem from the top and
+     1.25rem above the words, centred in that space; its width cancels out of the centre. */
   .hs-hero {
-    --cap-w: 66vw;
+    --cap-w: min(66vw, (var(--cap-room, 60svh) - 9.375rem) / 0.75);
     --cap-x: 50%;
-    --cap-y: 29%;
+    --cap-y: calc(var(--cap-room, 60svh) / 2 - 1.3125rem);
     --cap-edge: 0.625rem;
   }
 
@@ -1606,8 +1609,24 @@ html.lenis body {
     background: linear-gradient(to top, var(--color-night) 0%, var(--color-night) 56%, transparent 70%);
   }
 
-  .hs-xl:lang(ka) {
+  /* A short phone (an iPhone SE under Safari's bars) keeps the horizon low and the
+     headline in proportion to the height, not the width. */
+  .hs {
+    --hs-arc: calc(var(--tab-bar-space, 0rem) + clamp(1.75rem, 14svh - 3.5rem, 5.25rem));
+  }
+
+  .hs-hero .hs-xl {
+    font-size: var(--font-size-hero-phone);
+  }
+
+  .hs-hero .hs-xl:lang(ka) {
+    font-size: var(--font-size-hero-phone-ka);
     letter-spacing: 0;
+  }
+
+  .hs-hero[data-short] .hs-ln:not(:first-child) > p,
+  .hs-hero[data-tight] .hs-slots {
+    display: none;
   }
 
   .hs-steps {
@@ -1619,8 +1638,15 @@ html.lenis body {
     font-size: var(--font-size-body);
   }
 
+  /* One row of buttons, even in Georgian: a second row would push the words up into the sky. */
   .hs-hero .hs-acts {
+    flex-wrap: nowrap;
     margin-top: var(--space-4);
+  }
+
+  .hs-hero .hs-acts > .button {
+    min-width: 0;
+    padding-inline: var(--space-4);
   }
 
   .hs-hud {
@@ -1651,8 +1677,21 @@ html.lenis body {
     border-bottom-width: 4.75rem;
   }
 
+  /* The print is narrow on a phone: name, then frames, then "saved", one to a line. */
   .hs-capture-note {
     height: 4.75rem;
+    gap: 0.125rem;
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 0.125rem;
+    line-height: 1.25;
+  }
+
+  .hs-capture-note b {
+    font-size: var(--font-size-body);
+  }
+
+  .hs-capture-note span {
+    text-align: left;
   }
 
   .hs-coll {
@@ -1682,6 +1721,17 @@ html.lenis body {
     margin-top: -14svh;
   }
 
+  /* Sized and placed by home-story.tsx into the gap between the heading and the words. */
+  .hs-coll[data-fit] .hs-eye {
+    height: var(--eye-h);
+    margin-top: var(--eye-top);
+    align-self: start;
+  }
+
+  .hs-coll[data-dim] .hs-eye {
+    opacity: 0.35;
+  }
+
   .hs-coll-head {
     top: var(--space-8);
     pointer-events: none;
@@ -1699,6 +1749,20 @@ html.lenis body {
 
   .hs-night-head p {
     display: none;
+  }
+
+  /* The heading sits over the top of the sky on a phone: the sky darkens under it. */
+  .hs-night-shade {
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--color-night) 82%, transparent) 0%, transparent 32%);
+  }
+
+  /* No room above the card: the heading stays for screen readers only. */
+  .hs-night[data-tight] .hs-night-head {
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .hs-ncard {

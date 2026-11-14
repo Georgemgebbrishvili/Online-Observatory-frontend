@@ -412,12 +412,11 @@
   padding-right: var(--space-4);
 }
 
+/* Names wrap rather than clip: two to a row on a phone leaves "Hercules Cluster" no room. */
 .board-target-name,
 .board-target-sub,
 .board-target-state {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .board-target-name {
@@ -718,11 +717,11 @@
   color: var(--color-on-paper);
 }
 
-.board-sum :is(.field-label, .field-hint) {
+.board-sum :is(.field-label, .field-message) {
   color: var(--color-on-paper-2);
 }
 
-.board-sum :is(.field-input, select) {
+.board-sum :is(.input, select) {
   border-color: var(--color-paper-rule);
   background: var(--color-text-primary);
   color: var(--color-on-paper);

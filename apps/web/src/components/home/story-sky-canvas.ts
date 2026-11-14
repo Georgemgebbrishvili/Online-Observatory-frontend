@@ -112,6 +112,7 @@ export function createSky(canvas: HTMLCanvasElement, sky: StorySky, plan: SkyAim
   let H = 0;
   let dpr = 1;
   let H0 = 0;
+  let floor = Infinity;
   let sc = 8;
   let cx = 0;
   let font = "sans-serif";
@@ -155,6 +156,9 @@ export function createSky(canvas: HTMLCanvasElement, sky: StorySky, plan: SkyAim
     canvas.height = H;
     phone = canvas.clientWidth < 768;
     H0 = H * (phone ? 0.52 : 0.8);
+    // A phone's headline sits over the lower sky: the reticle and its label stay above it.
+    const room = phone ? parseFloat(getComputedStyle(canvas).getPropertyValue("--sky-room")) * dpr : NaN;
+    floor = room > 0 ? Math.max(room - 56 * dpr, 96 * dpr) : Infinity;
     sc = H0 / 84;
     cx = W * (phone ? 0.5 : 0.56);
     font = getComputedStyle(canvas).fontFamily || font;
@@ -166,7 +170,7 @@ export function createSky(canvas: HTMLCanvasElement, sky: StorySky, plan: SkyAim
     const view = aimAt(min, VIEW_SLEW)[1];
     const [aAlt, aAz, aim, slewing] = aimAt(min, RETICLE_SLEW);
     // Following a high target, the view tilts up and the roofs sink out of frame.
-    const hz = Math.max(H0, aAlt * sc + H * (phone ? 0.3 : 0.26));
+    const hz = Math.min(Math.max(H0, aAlt * sc + H * (phone ? 0.3 : 0.26)), floor + aAlt * sc);
     const proj = (alt: number, az: number): [number, number] => [cx + wrap(az - view) * sc, hz - alt * sc];
     const k = clamp(sc / (8 * dpr), 0.75, 1.25) * dpr;
     const text = TEXT * dpr;

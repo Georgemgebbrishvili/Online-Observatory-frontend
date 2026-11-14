@@ -233,6 +233,20 @@
   .status-chart-value {
     visibility: hidden;
   }
+
+  /* Seven columns do not fit a phone: the hour stays put while the figures scroll past it. */
+  .status-table th,
+  .status-table td {
+    padding: var(--space-3);
+  }
+
+  .status-table :is(thead th:first-child, tbody th) {
+    position: sticky;
+    z-index: 1;
+    left: 0;
+    background: var(--color-night);
+    box-shadow: 1px 0 0 var(--color-border-subtle);
+  }
 }
 
 @media (--below-md) {

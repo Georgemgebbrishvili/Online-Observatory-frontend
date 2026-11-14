@@ -98,7 +98,7 @@ export function GiftFormView({
         <label className="field">
           <span className="field-label">{copy.form.name}</span>
           <input
-            className="field-input"
+            className="input"
             name="recipientName"
             maxLength={100}
             autoComplete="off"
@@ -107,18 +107,18 @@ export function GiftFormView({
         <label className="field">
           <span className="field-label">{copy.form.email}</span>
           <input
-            className="field-input"
+            className="input"
             name="recipientEmail"
             type="email"
             maxLength={254}
             autoComplete="off"
           />
-          <span className="field-hint">{copy.form.emailHint}</span>
+          <span className="field-message">{copy.form.emailHint}</span>
         </label>
         <label className="field">
           <span className="field-label">{copy.form.message}</span>
-          <textarea className="field-input" name="message" maxLength={500} rows={3} />
-          <span className="field-hint">{copy.form.messageHint}</span>
+          <textarea className="textarea" name="message" maxLength={500} rows={3} />
+          <span className="field-message">{copy.form.messageHint}</span>
         </label>
       </fieldset>
       <Button type="submit" size="large" loading={busy} disabled={busy}>

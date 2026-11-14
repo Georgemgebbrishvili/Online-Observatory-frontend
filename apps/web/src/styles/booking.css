@@ -270,6 +270,23 @@ html[lang="ka"] .booking-hero h1 {
   color: var(--color-text-tertiary);
 }
 
+/* A phone: name and price on top, the slot across the row under them, then the status. */
+@media (--below-md) {
+  .booking-row a {
+    padding: var(--space-4);
+  }
+
+  .booking-row-slot,
+  .booking-row-status {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .booking-row-status {
+    margin-top: var(--space-1);
+  }
+}
+
 @media (--md) {
   .booking-row a {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 7rem 14rem;
