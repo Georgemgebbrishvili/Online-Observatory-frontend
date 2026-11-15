@@ -59,6 +59,7 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
         <div className="ds-console-grid">
           <figure>
             <ExposurePanel
+              label={`${t.camera.title} · ${labels.live}`}
               exposureS={exp}
               onExposure={setExp}
               gain={gain}
@@ -75,11 +76,12 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
             </figcaption>
           </figure>
           <figure>
-            <ExposurePanel exposureS={exp} onExposure={null} gain={gain} onGain={null} subs={subs} onSubs={null} total={total} locked={false} histogram={null} ae={null} />
+            <ExposurePanel label={`${t.camera.title} · ${labels.noFrame}`} exposureS={exp} onExposure={null} gain={gain} onGain={null} subs={subs} onSubs={null} total={total} locked={false} histogram={null} ae={null} />
             <figcaption id={`${id}-none`}>{labels.noFrame}</figcaption>
           </figure>
           <figure>
             <ExposurePanel
+              label={`${t.camera.title} · ${labels.stacking}`}
               exposureS={exp}
               onExposure={noop}
               gain={gain}
@@ -102,11 +104,11 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
             <figcaption>{t.hub.focuser.title}</figcaption>
           </figure>
           <figure>
-            <SkyDome locale={locale} station={domeStation} minuteMs={DOME_NIGHT_MS} pointing={null} targetId={null} onPick={noop} />
+            <SkyDome label={`${t.dome.title} · ${labels.domeStandby}`} locale={locale} station={domeStation} minuteMs={DOME_NIGHT_MS} pointing={null} targetId={null} onPick={noop} />
             <figcaption>{labels.domeStandby}</figcaption>
           </figure>
           <figure>
-            <SkyDome locale={locale} station={domeStation} minuteMs={DOME_NIGHT_MS} pointing={domePointing} targetId={domeTarget.id} onPick={noop} />
+            <SkyDome label={`${t.dome.title} · ${labels.domeOnTarget}`} locale={locale} station={domeStation} minuteMs={DOME_NIGHT_MS} pointing={domePointing} targetId={domeTarget.id} onPick={noop} />
             <figcaption>{labels.domeOnTarget}</figcaption>
           </figure>
           <figure>

@@ -39,6 +39,8 @@ export type SkyDomeProps = {
   onPick: (t: TelescopeTarget) => void;
   /** Daytime observing: the night gate is waived, the Sun's keep-out is not. */
   daytime?: boolean;
+  /** The region's name when several domes share a page (the design system's specimens). */
+  label?: string;
 };
 
 /**
@@ -47,7 +49,7 @@ export type SkyDomeProps = {
  * behind the horizon mask stay pressable so the refusal can say why; objects below the
  * horizon are counted, not drawn.
  */
-function SkyDome({ locale, station, minuteMs, pointing, targetId, onPick, daytime = false }: SkyDomeProps) {
+function SkyDome({ locale, station, minuteMs, pointing, targetId, onPick, daytime = false, label }: SkyDomeProps) {
   const t = useCopy();
   const [hover, setHover] = useState<string | null>(null);
   const id = useId();
@@ -69,7 +71,7 @@ function SkyDome({ locale, station, minuteMs, pointing, targetId, onPick, daytim
   const named = hover ?? targetId;
 
   return (
-    <section className="sdo-panel sdo-dome" aria-labelledby={`${id}-t`}>
+    <section className="sdo-panel sdo-dome" aria-label={label} aria-labelledby={label ? undefined : `${id}-t`}>
       <div className="sdo-ph">
         <h2 id={`${id}-t`} className="sdo-ph__t"><Icon name="target" size={15} />{t.dome.title}</h2>
         <span className="sdo-ph__id">{t.dome.up(up.length)}</span>
@@ -97,7 +99,7 @@ function SkyDome({ locale, station, minuteMs, pointing, targetId, onPick, daytim
           })}
         </g>
         {scope && (
-          <g className="sdo-dome__scope" transform={`translate(${scope.x.toFixed(1)} ${scope.y.toFixed(1)})`} aria-label={t.dome.scope}>
+          <g className="sdo-dome__scope" transform={`translate(${scope.x.toFixed(1)} ${scope.y.toFixed(1)})`} role="img" aria-label={t.dome.scope}>
             <circle r="9" fill="none" />
             <path d="M-14 0h8M6 0h8M0 -14v8M0 6v8" />
           </g>

@@ -201,7 +201,7 @@ test("the owner's switch in Georgian, and a refusal said plainly", async ({ page
   );
   await page.goto(`/ka/app/missions/${observing}/session`, { timeout: firstCompile });
   const panel = page.getByRole("region", { name: "ამაღამ, პირდაპირ" });
-  await panel.getByRole("button", { name: "გამოჩენა „ამაღამ, პირდაპირ“-ზე" }).click();
+  await panel.getByRole("button", { name: "ჩვენება „ამაღამ, პირდაპირ“-ზე" }).click();
   await expect(panel.getByRole("alert")).toHaveText("შენახვა ვერ მოხერხდა. სცადე თავიდან.");
   await expect(panel).toContainText(
     "ამას მხოლოდ შენ და შენი სტუმრები ხედავთ.",

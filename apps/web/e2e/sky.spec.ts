@@ -142,7 +142,8 @@ test("the header and /tonight lead to the Night Sky", async ({ page }) => {
 
 test("on a phone the tab bar leads to the Night Sky", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
-  await page.goto("/en/observatory");
+  // Not /observatory: the console has its own tabs at the thumb and hides this bar.
+  await page.goto("/en");
   const sky = page.locator("nav.phone-tab-bar").getByRole("link", { name: "Night Sky" });
   await expect(sky).toBeVisible({ timeout: firstCompile });
   await expect(sky).toHaveAttribute("href", "/en/sky");

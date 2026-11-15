@@ -13,6 +13,8 @@
   --ink-rgb: 230, 237, 255;
   --bg-rgb: 6, 10, 28;
   --acc: rgb(var(--acc-rgb));
+  /* White text on the plain accent is 4.3:1; a filled control darkens it to pass AA. */
+  --acc-fill: color-mix(in srgb, var(--acc) 82%, #000);
   --ink: rgb(var(--ink-rgb));
   --mute: rgba(var(--ink-rgb), 0.68);
   --dim: rgba(var(--ink-rgb), 0.5);
@@ -222,7 +224,7 @@
   color: var(--ink);
 }
 .oh-stepnav button.is-on {
-  background: var(--acc);
+  background: var(--acc-fill);
   color: #fff;
   box-shadow: 0 6px 18px rgba(var(--acc-rgb), 0.4);
 }
@@ -949,7 +951,7 @@
   color: var(--ink);
 }
 .oh-speed__segs button.is-on {
-  background: var(--acc);
+  background: var(--acc-fill);
   border-color: transparent;
   color: #fff;
   box-shadow: 0 0 0 2px rgba(var(--acc-rgb), 0.35);
@@ -1380,8 +1382,9 @@
   border-radius: 10px;
   padding: 3px;
   min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
+  /* Wraps rather than scrolls: a locked camera disables every button, and a scroller
+     with nothing focusable in it cannot be reached from the keyboard. */
+  flex-wrap: wrap;
 }
 .oh-ae__modes button {
   flex: 1 0 auto;
