@@ -343,3 +343,31 @@ SkyView/Skylight -- now it is wobbly and vibrating and not accurate."
   three smooth seconds. The page no longer reads the stage's box on every pointer move or
   zoom frame (each read laid the page out again), a label is rewritten only when it moves,
   and an empty overlay is not cleared each frame.
+
+## Amendment — 2026-11-15
+
+Nika could not find the compass button, and wanted it to show the phone's back camera with the
+planets on it.
+
+- **Found.** The round compass icon is now the bar's one lit control, a pill with a camera icon
+  and "Live" ("კამერა"; icon alone on a 320 px phone), ringing slowly three times on arrival.
+  It shows wherever there is a touch screen: a phone held either way (new `--handheld` custom
+  media: under --md, or a coarse pointer under 30rem tall; a big phone's landscape is 932 px
+  wide and used to get the desk layout, header and no button) and a tablet.
+- **The live view.** One tap asks for the motion sensors and the back camera together (iOS
+  allows a motion request only inside the tap). The camera picture (`object-fit: cover`,
+  dimmed a little) sits behind the canvas, which is `mix-blend-mode: screen`: the renderer, in
+  `live` mode, turns the atmosphere off and hides the drawn ground, so its background is black
+  and only the sky's light shows over the picture. The view's field is fixed to the camera's
+  (`cameraFov`: 64° across the picture's long side, a 26 mm-equivalent main camera, then the
+  crop of `cover`); pinch does not zoom while live. If the camera is refused the sky still
+  follows the phone, and says so. A ring marks the aim; a hint says to hold the phone up and
+  wave it in a figure eight if it drifts.
+- **Finding a planet.** A search while live selects the object without flying (the phone is
+  the view); an arrow at the screen's edge points the way to it until it is in the picture.
+- `Permissions-Policy` is now `camera=(self)`.
+- Motion: presses scale to 0.94 on a spring; on a phone the sheets and the panel rise from the
+  dock with a little give; all off under reduced motion.
+
+The 64° is an assumption: phones differ by a few degrees, so the drawn sky can sit a little
+large or small on the picture toward the edges; the centre is right.

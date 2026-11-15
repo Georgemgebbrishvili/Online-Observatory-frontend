@@ -177,3 +177,43 @@ test.describe("a visitor outside Tbilisi", () => {
     expect(errors.filter((error) => /hydrat|#418|did not match/i.test(error))).toEqual([]);
   });
 });
+
+test.describe("the live view on a phone", () => {
+  // The motion sensors granted (a real phone asks), and a painted canvas for the camera.
+  test.use({
+    hasTouch: true,
+    isMobile: true,
+    viewport: { width: 390, height: 844 },
+    permissions: ["accelerometer", "gyroscope", "magnetometer"],
+  });
+
+  test("shows the back camera behind the sky, and points the way to what is searched", async ({ page }) => {
+    await page.addInitScript(() => {
+      navigator.mediaDevices.getUserMedia = async () => {
+        const canvas = Object.assign(document.createElement("canvas"), { width: 640, height: 480 });
+        const context = canvas.getContext("2d")!;
+        setInterval(() => context.fillRect(0, 0, 640, 480), 100);
+        return canvas.captureStream(10);
+      };
+    });
+    await page.goto("/en/sky");
+    await expect(page.locator('.sky[data-phase="ready"]')).toBeAttached({ timeout: firstCompile });
+    const live = page.getByRole("button", { name: "Live view: the camera, with the sky drawn on it" });
+    await expect(live).toBeVisible();
+    await live.click();
+    await expect(page.locator(".sky")).toHaveAttribute("data-live", "true");
+    expect(await page.locator(".sky-camera").evaluate((video: HTMLVideoElement) => video.videoWidth)).toBeGreaterThan(0);
+    await expect(page.getByRole("status").filter({ hasText: "Hold your phone up to the sky" })).toBeVisible();
+
+    // A search while live picks the object and keeps the camera: the phone is the view.
+    const search = page.getByRole("combobox", { name: "Find in the sky" });
+    await search.fill("Saturn");
+    await search.press("Enter");
+    await expect(page.getByRole("complementary", { name: "Saturn" })).toBeVisible();
+    await expect(page.locator(".sky")).toHaveAttribute("data-live", "true");
+
+    await page.getByRole("button", { name: "Close the live view" }).click();
+    await expect(page.locator(".sky")).toHaveAttribute("data-live", "false");
+    expect(await page.locator(".sky-camera").evaluate((video: HTMLVideoElement) => video.srcObject)).toBeNull();
+  });
+});

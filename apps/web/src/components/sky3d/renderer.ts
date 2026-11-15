@@ -105,6 +105,12 @@ export type Frame = {
   selected: string | null;
   /** Keep the selected object at the centre: the view follows it as the sky turns. */
   track?: boolean;
+  /**
+   * The phone's camera shows behind the sky: no atmosphere and no drawn ground (the real
+   * ones are in the picture), the background black so the page can screen it over the
+   * video, and an arrow at the edge toward a picked object that is off screen.
+   */
+  live?: boolean;
 };
 
 /** The selected object's path for the overlay: steps across the sky, and its events. */
@@ -1195,7 +1201,8 @@ export class SkyRenderer {
   /** Draws one frame. `orientation` overrides the alt-az camera (phone pointing). */
   render(frame: Frame, orientation?: Quaternion | null) {
     this.adapt(performance.now());
-    const { date, site, toggles } = frame;
+    const { date, site } = frame;
+    const toggles = frame.live ? { ...frame.toggles, atmosphere: false, ground: true } : frame.toggles;
     let { view } = frame;
     // The slow parts of the sky once a second of sky time; each frame turns them with the
     // Earth (astro.ts, skyAt), the only motion a second can show.
@@ -1297,6 +1304,7 @@ export class SkyRenderer {
     ground.uBase.value.set(base.r, base.g, base.b);
     ground.uHorizon.value.set(hr, hg, hb);
     ground.uOpacity.value = groundOpacity;
+    this.ground.visible = this.hills.visible = this.trees.visible = !frame.live;
     for (const [mesh, colour, opacity] of [
       [this.trees, treeColour, ridgeOpacity],
       [this.hills, hillColour, ridgeOpacity],
@@ -1560,7 +1568,7 @@ export class SkyRenderer {
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, this.width, this.height);
     if (!busy) return;
-    const seeBelow = frame.toggles.ground;
+    const seeBelow = frame.toggles.ground || frame.live === true;
     const project = (alt: number, az: number) => this.screenAt(worldOf({ alt, az }));
     const onScreen = (p: { x: number; y: number }, margin = 0) =>
       p.x > -margin && p.y > -margin && p.x < this.width + margin && p.y < this.height + margin;
@@ -1772,6 +1780,42 @@ export class SkyRenderer {
           context.stroke();
         }
       }
+    }
+
+    // Live: an arrow at the edge of the screen, toward a picked object out of the picture.
+    if (frame.live && selected && !(markerAt && onScreen(markerAt, -24))) {
+      const v = this.scratch.set(...selected.world).applyMatrix4(this.camera.matrixWorldInverse);
+      // On screen, x is right and y is down; straight behind, with no side to it: down.
+      const ahead = Math.hypot(v.x, v.y) < 1e-3;
+      const angle = ahead ? Math.PI / 2 : Math.atan2(-v.y, v.x);
+      const cx = this.width / 2;
+      const cy = this.height / 2;
+      // Where the ray from the centre leaves a frame inset from the edges.
+      const inset = 56;
+      const reach = Math.min(
+        (cx - inset) / Math.max(Math.abs(Math.cos(angle)), 1e-6),
+        (cy - inset * 1.6) / Math.max(Math.abs(Math.sin(angle)), 1e-6),
+      );
+      const x = cx + Math.cos(angle) * reach;
+      const y = cy + Math.sin(angle) * reach;
+      const pulse = this.motion ? 1 + 0.12 * Math.sin(seconds * 4) : 1;
+      context.save();
+      context.translate(x, y);
+      context.rotate(angle);
+      context.scale(pulse, pulse);
+      context.fillStyle = withAlpha(nightSkyArt.scrim, 0.55);
+      context.beginPath();
+      context.arc(0, 0, 22, 0, Math.PI * 2);
+      context.fill();
+      context.fillStyle = nightSkyArt.reticle;
+      context.beginPath();
+      context.moveTo(13, 0);
+      context.lineTo(-7, -10);
+      context.lineTo(-2, 0);
+      context.lineTo(-7, 10);
+      context.closePath();
+      context.fill();
+      context.restore();
     }
   }
 

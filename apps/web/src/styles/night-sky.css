@@ -23,7 +23,7 @@
 }
 
 /* A phone, and a desk in full screen: the sky is the screen, over the header. */
-@media (--below-md) {
+@media (--handheld) {
   .sky-page {
     position: fixed;
     inset: 0 0 auto;
@@ -291,6 +291,9 @@
   padding: 0;
   border-radius: var(--radius-full);
   cursor: pointer;
+  transition:
+    scale var(--duration-fast) var(--ease-spring),
+    border-color var(--duration-fast) var(--ease-standard);
 }
 
 .sky-round:hover,
@@ -503,10 +506,177 @@
   display: inline;
 }
 
-/* A desk keeps the site's header, so the way back and the phone's compass are a phone's. */
-.sky-back,
-.sky-point {
+/* A desk keeps the site's header, so the way back is a phone's. */
+.sky-back {
   display: none;
+}
+
+/*
+ * The live view: the phone's camera with the sky drawn on it. The one lit control on the
+ * bar, so it is found; shown wherever there is a touch screen to hold up.
+ */
+.sky-point {
+  position: relative;
+  flex: none;
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--sky-dock);
+  padding: 0 var(--space-4) 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--gradient-pill);
+  box-shadow: var(--shadow-pill);
+  color: var(--color-on-action);
+  font: inherit;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    scale var(--duration-fast) var(--ease-spring),
+    background-color var(--duration-state) var(--ease-standard);
+}
+
+/* A slow ring, three times, until it has been used once. */
+.sky-point::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 var(--color-accent-border);
+  animation: sky-call 2.4s var(--ease-sky) 1.2s 3;
+  pointer-events: none;
+}
+
+@keyframes sky-call {
+  0% {
+    box-shadow: 0 0 0 0 var(--color-accent-border);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 0.75rem transparent;
+  }
+}
+
+.sky-point[aria-pressed="true"] {
+  background: var(--color-surface-raised);
+  box-shadow: inset 0 0 0 1px var(--color-glass-border-hover);
+  color: var(--color-text-primary);
+}
+
+.sky-point[aria-pressed="true"]::after {
+  animation: none;
+}
+
+.sky-point:focus-visible {
+  outline: 2px solid var(--color-accent-ink);
+  outline-offset: 2px;
+}
+
+/* A narrow phone keeps the search wide: the button is its icon alone. */
+.sky-top {
+  container: sky-top / inline-size;
+}
+
+@container sky-top (max-width: 20rem) {
+  .sky-point {
+    width: var(--sky-dock);
+    padding: 0;
+    justify-content: center;
+  }
+
+  .sky-point-text {
+    display: none;
+  }
+}
+
+@media (--handheld), (pointer: coarse) {
+  .sky-point {
+    display: inline-flex;
+  }
+}
+
+/* The camera behind the sky; the sky's black screened away over it. */
+.sky-camera {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  filter: brightness(0.72) saturate(0.85);
+  transition: opacity 600ms var(--ease-sky);
+  pointer-events: none;
+}
+
+.sky[data-live="true"] .sky-camera {
+  opacity: 1;
+}
+
+.sky[data-live="true"] .sky-canvas {
+  mix-blend-mode: screen;
+}
+
+/* What the phone is aimed at: a ring at the centre. */
+.sky-reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1.5px solid var(--color-glass-border-hover);
+  border-radius: var(--radius-full);
+  translate: -50% -50%;
+  animation: sky-aim 500ms var(--ease-spring);
+  pointer-events: none;
+}
+
+.sky-reticle::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: var(--radius-full);
+  background: var(--color-text-primary);
+  translate: -50% -50%;
+}
+
+@keyframes sky-aim {
+  from {
+    opacity: 0;
+    scale: 1.6;
+  }
+}
+
+.sky-live-hint {
+  max-width: 22rem;
+  text-align: center;
+  animation: sky-hint 5s var(--ease-sky) both;
+}
+
+@keyframes sky-hint {
+  0% {
+    opacity: 0;
+    translate: 0 -0.5rem;
+  }
+
+  8%,
+  88% {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* A press answers the finger. */
+:is(.sky-round, .sky-pill, .sky-chip, .sky-tool, .sky-point):active {
+  scale: 0.94;
 }
 
 .sky-full {
@@ -615,6 +785,7 @@
   color: var(--color-text-tertiary);
   cursor: pointer;
   transition:
+    scale var(--duration-fast) var(--ease-spring),
     color var(--duration-fast) var(--ease-standard),
     background-color var(--duration-fast) var(--ease-standard);
 }
@@ -665,10 +836,26 @@
   }
 }
 
+/* On a phone a sheet comes up from the dock, with a little give. */
+@keyframes sky-sheet-up {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+    scale: 0.98;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sky-sheet,
-  .sky-panel {
+  .sky-panel,
+  .sky-point::after,
+  .sky-reticle,
+  .sky-live-hint {
     animation: none;
+  }
+
+  :is(.sky-round, .sky-pill, .sky-chip, .sky-tool, .sky-point):active {
+    scale: none;
   }
 }
 
@@ -696,6 +883,9 @@
   font: inherit;
   font-size: var(--font-size-caption);
   cursor: pointer;
+  transition:
+    scale var(--duration-fast) var(--ease-spring),
+    border-color var(--duration-fast) var(--ease-standard);
 }
 
 .sky-chip[aria-pressed="true"],
@@ -947,9 +1137,8 @@
  * A phone: the way back and the compass flank the search, the dock is two round buttons
  * round a row of switches that scrolls, and the panel is a sheet over the dock.
  */
-@media (--below-md) {
-  .sky-back,
-  .sky-point {
+@media (--handheld) {
+  .sky-back {
     display: grid;
   }
 
@@ -995,6 +1184,12 @@
     width: 100%;
   }
 
+  .sky-sheet,
+  .sky-panel {
+    transform-origin: 50% 100%;
+    animation: sky-sheet-up 320ms var(--ease-spring);
+  }
+
   .sky-panel {
     top: auto;
     left: var(--space-2);
@@ -1018,11 +1213,18 @@
   display: none;
 }
 
-@media (--below-md) {
+@media (--handheld) {
   .sky-computed-time {
     display: block;
     color: var(--color-text-primary);
     font-family: var(--font-mono);
     font-size: var(--font-size-caption);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-sheet,
+  .sky-panel {
+    animation: none;
   }
 }

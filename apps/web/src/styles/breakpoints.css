@@ -17,3 +17,9 @@
 @custom-media --below-md (max-width: 47.999rem);
 @custom-media --below-lg (max-width: 63.999rem);
 @custom-media --below-xl (max-width: 79.999rem);
+
+/*
+ * Held in the hand: a phone upright, or one on its side (a big phone's landscape is wider
+ * than --md but under 30rem tall, with a touch screen). Not a sixth width boundary.
+ */
+@custom-media --handheld (max-width: 47.999rem), (pointer: coarse) and (max-height: 29.999rem);
