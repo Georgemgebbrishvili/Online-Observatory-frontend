@@ -104,6 +104,15 @@ export function reduce(room: Room, message: MissionChannelMessage): Room {
       };
     case "MISSION_ERROR":
       return { ...room, channelError: message.code, stream: null, frame: null };
+    case "MISSION_SESSION_ENDED":
+      return {
+        ...room,
+        state: message.state,
+        failureReason: message.failureReason ?? null,
+        stream: null,
+        frame: null,
+        pointing: null,
+      };
   }
 }
 

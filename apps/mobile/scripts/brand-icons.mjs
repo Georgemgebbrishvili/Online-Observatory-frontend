@@ -48,7 +48,7 @@ await writeFile(out("adaptive-monochrome.png"), await png(mark(1024, 0.46, { mon
 await writeFile(out("splash-icon.png"), await png(mark(1024, 0.9)));
 await writeFile(out("favicon.png"), await png(mark(96, 0.8, { background: true })));
 
-// Google Play's listing: a 512 x 512 32-bit PNG icon and a 1024 x 500 feature graphic,
+// Google Play's listing: a 512 x 512 32-bit PNG icon and a 1024 x 500 24-bit feature graphic,
 // the comet mark beside the STELLAR wordmark (the outlines src/ui/icons.tsx draws).
 const store = (name) => fileURLToPath(new URL(`../store/${name}`, import.meta.url));
 await mkdir(fileURLToPath(new URL("../store/", import.meta.url)), { recursive: true });
@@ -76,4 +76,6 @@ const feature = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1024
     <path d="${wordmark}" fill="#F6F1E7"/>
   </svg>
 </svg>`);
-await writeFile(store("feature-graphic-1024x500.png"), await rgba(feature));
+// Play refuses a feature graphic with an alpha channel: JPEG or 24-bit PNG only.
+const rgb = (svg) => sharp(svg).removeAlpha().png({ compressionLevel: 9 }).toBuffer();
+await writeFile(store("feature-graphic-1024x500.png"), await rgb(feature));

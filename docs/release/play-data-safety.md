@@ -40,8 +40,9 @@ under the email and name rows.
 **Loyalty points** (the Club tab) are read from the customer's account and are not a Play
 data type. The app spends and sells nothing (clients ADR-084 §7).
 
-**Payments.** None in the app. Booking and payment happen on the website, outside the app,
-through the payment provider; the app never sees card data.
+**Payments.** None in the app, and no link to them: since 2026-11-15 the app shows tonight's
+slots as open or taken, without prices or a booking button (Google Play's Payments policy). The
+app never sees card data.
 
 ## Form answers
 
@@ -55,7 +56,7 @@ through the payment provider; the app never sees card data.
   database, file storage, email delivery) act on Stellar's behalf, which Play does not
   count as sharing.
 - **Processed ephemerally:** no row is ephemeral; captures and bookings are stored.
-- **Optional vs required:** the app works signed out (Tonight, Book hand-over, the public
+- **Optional vs required:** the app works signed out (Tonight, tonight's slots, the public
   Club scheme). Every row above is only collected once the customer signs in.
 
 ## What deletion removes (platform ADR-044)
@@ -77,6 +78,7 @@ Deleting the account, behind the current password, happens at once and cannot be
 - The retention period for the anonymised payment records is the lawyer's answer (platform
   roadmap F3). Play's form does not ask for it, but the privacy policy should state it.
 - A customer who signed up with Google has no password, and deletion asks for the current
-  password. Confirm on the live site that such a customer can delete their account (set a
-  password first via "Forgot password", or a Google path) before declaring deletion
-  available to everyone.
+  one. Until 2026-11-15 "Forgot password" also failed for them (the reset wrote to an
+  `Account` row they do not have). The platform fix (reset creates the row) must be live
+  before the Data safety form says deletion is available to everyone; such a customer then
+  sets a password through "Forgot password" and deletes with it.

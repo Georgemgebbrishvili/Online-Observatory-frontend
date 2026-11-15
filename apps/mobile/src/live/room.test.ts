@@ -33,6 +33,13 @@ describe("reduce", () => {
     expect(room.channelError).toBe("FORBIDDEN");
     expect(room.stream).toBeNull();
   });
+
+  it("ends the room when the session ends", () => {
+    let room = reduce(initialRoom("OBSERVING"), { ...base, type: "MISSION_STREAM", streamUrl: "/stream/mission/x?t=1", encoding: "JPEG", mode: "SIMULATED", expiresAt: "2026-10-22T14:05:00Z" } as MissionChannelMessage);
+    room = reduce(room, { ...base, type: "MISSION_SESSION_ENDED", state: "COMPLETE", endReason: "SLOT_ENDED", endedAt: "2026-10-22T14:30:00Z", parked: true, captureIds: [], summaryEmailQueued: true } as MissionChannelMessage);
+    expect(room.state).toBe("COMPLETE");
+    expect(room.stream).toBeNull();
+  });
 });
 
 describe("rules", () => {

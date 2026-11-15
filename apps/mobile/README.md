@@ -74,7 +74,8 @@ cd android && ./gradlew bundleRelease --no-daemon --max-workers=3
   screenshots: `sh scripts/play-screenshots.sh <missionId>` against a running emulator (a
   Google APIs image, signed in), into `store/screenshots/{en,ka}/`.
 - **Data safety.** The answers are in `docs/release/play-data-safety.md`.
-- **Nothing is sold in the app** (clients ADR-084 §7). Tonight, Book and a target's page
-  hand over to the website's `/app/book`, where booking and payment happen. A session is a
-  digital service (maintainer, 2026-11-07), so those three hand-overs are removed or replaced
-  by Google Play Billing before the first Play upload.
+- **Nothing is sold in the app, and nothing links to a sale** (clients ADR-084 §7). A session
+  is a digital service (maintainer, 2026-11-07), and Play's Payments policy refuses an app
+  that sends its customers to pay elsewhere. Since 2026-11-15 the Slots tab, Tonight and a
+  target's page show what is open, without prices or a booking button; booking returns to
+  the app only with Google Play Billing.

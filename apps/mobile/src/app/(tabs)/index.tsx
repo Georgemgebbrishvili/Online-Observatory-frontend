@@ -1,13 +1,11 @@
 import type { BookableObservatory, TonightSession } from "@darkview/contracts";
 import { Link, router } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useLocale } from "@/i18n/locale";
 import { useSpectate } from "@/live/use-spectate";
 import { platform } from "@/platform/api";
-import { webAppUrl } from "@/platform/config";
 import { readNight } from "@/platform/night";
 import { useObservatory } from "@/platform/use-observatory";
 import { useResource } from "@/platform/use-resource";
@@ -16,7 +14,6 @@ import {
   cloudSummary,
   nextOpenSlot,
   observatoryName,
-  price,
   sortTonight,
   statusHeadline,
   targetName,
@@ -30,7 +27,6 @@ import {
   Dot,
   Label,
   Loading,
-  PrimaryButton,
   QuietButton,
   SimulatedBadge,
   Screen,
@@ -91,7 +87,6 @@ function Hero({ observatory }: { observatory: BookableObservatory }) {
 function NextSlot({ observatory }: { observatory: BookableObservatory }) {
   const { t, locale } = useLocale();
   const { resource, retry } = useResource(() => readNight(observatory), `night:${observatory.id}`);
-  const book = () => WebBrowser.openBrowserAsync(`${webAppUrl}/${locale}/app/book`);
 
   if (resource.state === "loading") return <Loading />;
   if (resource.state !== "ready") return <Unavailable retry={retry} />;
@@ -108,7 +103,6 @@ function NextSlot({ observatory }: { observatory: BookableObservatory }) {
           <View style={styles.ticketMeta}>
             <Dot tone="live" />
             <Text style={[type.body(locale), { color: palette.ink2, flex: 1 }]}>{t.next.open}</Text>
-            <Text style={[type.reading(locale), { color: palette.ink }]}>{price(slot.priceMinor, locale)}</Text>
           </View>
         </View>
       ) : (
@@ -117,7 +111,6 @@ function NextSlot({ observatory }: { observatory: BookableObservatory }) {
           <Body tone="secondary">{t.next.fullDetail}</Body>
         </View>
       )}
-      <PrimaryButton label={slot ? t.next.cta : t.next.otherNight} onPress={book} />
       {resource.value.items.length > 0 && (
         <QuietButton wide label={t.next.allSlots} onPress={() => router.navigate("/book")} />
       )}

@@ -11,7 +11,6 @@ import {
   nextOpenSlot,
   nightLabel,
   observatoryName,
-  price,
   statusHeadline,
 } from "./present";
 
@@ -71,11 +70,6 @@ describe("formats", () => {
   it("spells a night's date in Georgian without Intl's Georgian data", () => {
     expect(nightLabel("2026-10-22", "ka")).toBe("ხუთშაბათი, 22 ოქტომბერი");
     expect(nightLabel("2026-10-22", "en")).toBe("Thursday 22 October");
-  });
-
-  it("turns tetri into lari without a float sum", () => {
-    expect(price(4500, "en")).toBe("GEL 45.00");
-    expect(price(4505, "ka")).toBe("45,05 ₾");
   });
 });
 

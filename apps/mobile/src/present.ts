@@ -69,13 +69,6 @@ export function nightLabel(date: string, locale: Locale) {
   }).format(at);
 }
 
-/** Minor units (tetri) to lari, by integer arithmetic: "GEL 45.00" or "45,00 ₾" as on the website. */
-export function price(minor: number, locale: Locale) {
-  const lari = `${Math.floor(minor / 100)}`;
-  const tetri = `${minor % 100}`.padStart(2, "0");
-  return locale === "ka" ? `${lari},${tetri} ₾` : `GEL ${lari}.${tetri}`;
-}
-
 export type Tone = "live" | "warn" | "off";
 
 /**
