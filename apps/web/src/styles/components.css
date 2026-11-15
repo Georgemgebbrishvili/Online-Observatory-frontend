@@ -1101,7 +1101,7 @@
 }
 
 /*
- * A finger needs 44 px. The quiet text links (a "→" link, "Return to Stellar", the live
+ * A finger needs 44 px. The quiet text links (a "→" link, the error page's way home, the live
  * room's back link) are set in 13–15 px type; on a touch screen each gets the full height
  * as padding, given back as negative margin so nothing around it moves.
  */

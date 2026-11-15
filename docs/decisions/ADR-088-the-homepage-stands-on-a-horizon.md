@@ -49,3 +49,17 @@ panels glossy and the Moon boxed.
 - `/design-system` shows the horizon beside the story's feed and ticket.
 - The visual baselines of the homepage and `/design-system` change in both languages and widths.
 - Nothing crosses a process boundary; the contract is untouched.
+
+## Amendment — 2026-11-15
+
+Nika: polish the homepage, more adaptable to a phone, and get rid of any extra things.
+
+- **Removed:** the ghost words set large behind the showpieces and behind the sign-off, the
+  "01 / 05" step counter, the Moon photograph beside the telescope's facts, and the four
+  "More to explore" cards. Gift a night, Weekly vote and Weekly cards moved to the footer's
+  Product list (Explorer is already in the header); the copy and types for the cards, the
+  counter's "Scroll" and the ghost words are deleted. A phone page is 7,562 px, down from 8,943.
+- **On a phone:** the session's ticket is hidden (it repeats the price just above it), the
+  session is not held to a screen's height, the night's heading gets a solid shade so no
+  star name runs into it, the showpieces show dots that follow the swipe, and the tab bar
+  sizes each tab to its word in English too (OBSERVATORY was cut short at 320 px).

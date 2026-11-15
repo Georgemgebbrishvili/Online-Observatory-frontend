@@ -72,7 +72,6 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
   const slides: StorySlide[] = (sky?.objects ?? []).map((o) => ({
     id: o.id,
     name: names[o.id],
-    word: copy.showpieces.words[o.id],
     kind: copy.showpieces.kinds[o.kind],
     note: copy.showpieces.notes[o.id],
     image: o.image,
@@ -205,8 +204,6 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
             ]
           : [],
       }}
-      ways={content.more.ways}
-      wayBase={`/${locale}`}
       brandName={locale === "ka" ? brand.ka.nominative : brand.en.name}
     />
   );

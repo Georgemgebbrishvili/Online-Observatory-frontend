@@ -18,7 +18,6 @@ export type StoryTime = { label: string; href: string; price: string };
 export type StorySlide = {
   id: string;
   name: string;
-  word: string;
   kind: string;
   note: string;
   image: string;
@@ -80,8 +79,6 @@ export type HomeStoryProps = {
   };
   faq: HomepageDictionary["more"]["faq"];
   scope: { lede: string; facts: { label: string; value: string }[] };
-  ways: HomepageDictionary["more"]["ways"];
-  wayBase: string;
   brandName: string;
 };
 
@@ -216,7 +213,7 @@ export function StoryFeedSpecimen({
  * the observatory's record.
  */
 export function HomeStory(props: HomeStoryProps) {
-  const { copy, hero, links, target, place, booking, sky, skyLabels, heroMinute, slides, night, session, faq, scope, ways } = props;
+  const { copy, hero, links, target, place, booking, sky, skyLabels, heroMinute, slides, night, session, faq, scope } = props;
   const root = useRef<HTMLElement>(null);
 
   // The showpieces: the one the corners describe, faded out and back in on change.
@@ -234,6 +231,17 @@ export function HomeStory(props: HomeStoryProps) {
       setSlideOut(false);
     }, 220);
   }, []);
+
+  // A phone swipes the showpieces: the dots under them follow the swipe.
+  useEffect(() => {
+    const track = root.current?.querySelector<HTMLElement>(".hs-track");
+    if (!track) return;
+    const swiped = () => {
+      if (track.scrollWidth > track.clientWidth + 1) showSlide(Math.round(track.scrollLeft / track.clientWidth));
+    };
+    track.addEventListener("scroll", swiped, { passive: true });
+    return () => track.removeEventListener("scroll", swiped);
+  }, [showSlide]);
 
   // The night: the step, and the clock written straight to the page.
   const [ns, setNs] = useState(0);
@@ -512,8 +520,6 @@ export function HomeStory(props: HomeStoryProps) {
         const r = within(frame);
         return `${r.x + r.w / 2}px ${r.y + r.h / 2}px`;
       };
-      const step = one(".hs-meta-num");
-      const bar = one(".hs-meta-bar i");
       const tl = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {
@@ -527,9 +533,6 @@ export function HomeStory(props: HomeStoryProps) {
           invalidateOnRefresh: true,
           onUpdate: (s) => {
             const at = s.progress * tl.duration();
-            const i = Math.min(N - 1, Math.round(at));
-            step.textContent = `${String(i + 1).padStart(2, "0")} / ${String(N).padStart(2, "0")}`;
-            bar.style.transform = `scaleX(${0.2 + 0.8 * s.progress})`;
             state.on = at > 1.4 && at < 3.2;
           },
         },
@@ -585,11 +588,6 @@ export function HomeStory(props: HomeStoryProps) {
         ease: "power3.out",
         scrollTrigger: { trigger: one(".hs-scope"), start: "top 75%", refreshPriority: -1 },
       });
-      gsap.fromTo(
-        one(".hs-closer-word"),
-        { xPercent: 6 },
-        { xPercent: -6, ease: "none", scrollTrigger: { trigger: one(".hs-closer"), start: "top bottom", end: "bottom top", scrub: true, refreshPriority: -1 } },
-      );
       gsap.from(q(".hs-closer .hs-rise"), {
         y: 40,
         opacity: 0,
@@ -632,11 +630,8 @@ export function HomeStory(props: HomeStoryProps) {
           },
         });
         for (const s of all) {
-          const word = s.querySelector(".hs-word");
-          gsap.set(word, { x: 0, y: 0, xPercent: -50, yPercent: -50 });
           const along = { trigger: s, containerAnimation: ht, start: "left right", end: "right left", scrub: true };
-          gsap.fromTo(word, { xPercent: -26 }, { xPercent: -74, ease: "none", scrollTrigger: along });
-          gsap.fromTo(s.querySelector(".hs-eye"), { rotate: 8, y: 30 }, { rotate: -8, y: -20, ease: "none", scrollTrigger: { ...along } });
+          gsap.fromTo(s.querySelector(".hs-eye"), { rotate: 8, y: 30 }, { rotate: -8, y: -20, ease: "none", scrollTrigger: along });
         }
         if (n > 1) {
           const sideways = { st: ht.scrollTrigger!, points: all.map((_, i) => i / (n - 1)) };
@@ -804,13 +799,6 @@ export function HomeStory(props: HomeStoryProps) {
             </ButtonLink>
           </div>
         </div>
-        <div className="hs-meta" aria-hidden="true">
-          <span className="hs-meta-num">01 / 05</span>
-          <div className="hs-meta-bar">
-            <i />
-          </div>
-          <span className="hs-label">{copy.scroll}</span>
-        </div>
       </section>
 
       {/* ── Tonight's showpieces ─────────────────────────── */}
@@ -829,9 +817,6 @@ export function HomeStory(props: HomeStoryProps) {
           <div className="hs-track">
             {slides.map((slide) => (
               <article key={slide.id} className="hs-slide" style={{ "--c": slide.glow } as CSSProperties}>
-                <div className="hs-word" aria-hidden="true">
-                  {slide.word}
-                </div>
                 <figure className="hs-eye">
                   {/* eslint-disable-next-line @next/next/no-img-element -- plates on black, sized by the eyepiece */}
                   <img src={slide.image} alt={slide.name} decoding="async" />
@@ -1011,19 +996,11 @@ export function HomeStory(props: HomeStoryProps) {
               </ButtonLink>
             </div>
           </div>
-          <figure className="hs-moon hs-rise">
-            {/* eslint-disable-next-line @next/next/no-img-element -- one fixed size, already webp */}
-            <img src="/sky/moon-lro.webp" alt={copy.scope.moon} width={1000} height={1250} decoding="async" />
-            <figcaption>{copy.scope.photo}</figcaption>
-          </figure>
         </div>
       </section>
 
       {/* ── Sign-off ─────────────────────────────────────── */}
       <section className="hs-closer" aria-labelledby="home-closer-title">
-        <div className="hs-closer-word" aria-hidden="true">
-          {props.brandName}
-        </div>
         <div className="hs-rise">
           <Title id="home-closer-title" title={copy.closer.title} em={copy.closer.em} />
         </div>
@@ -1035,17 +1012,6 @@ export function HomeStory(props: HomeStoryProps) {
             {hero.watch}
           </ButtonLink>
         </div>
-        <ul className="hs-ways" aria-label={ways.title}>
-          {ways.items.map((item) => (
-            <li key={item.href} className="hs-rise">
-              <Link className="hs-way hs-glass" href={`${props.wayBase}/${item.href}`}>
-                <b>{item.title}</b>
-                <span>{item.text}</span>
-                <Arrow />
-              </Link>
-            </li>
-          ))}
-        </ul>
         <p className="hs-credits">{copy.closer.credits}</p>
       </section>
     </main>

@@ -88,7 +88,7 @@ html.lenis body {
 }
 
 /* Mkhedruli has no capitals and runs wide: never uppercased, never tracked. */
-:is(.hs-title, .hs-label, .hs-xl, .hs-word, .hs-closer-word, .hs-seg button, .hs-ticket-head span, .hs-ticket dt):lang(ka) {
+:is(.hs-title, .hs-label, .hs-xl, .hs-seg button, .hs-ticket-head span, .hs-ticket dt):lang(ka) {
   letter-spacing: 0;
   text-transform: none;
 }
@@ -540,43 +540,7 @@ html.lenis body {
   margin-top: var(--space-6);
 }
 
-.hs-meta {
-  position: absolute;
-  z-index: 4;
-  right: var(--space-page);
-  bottom: var(--hs-foot);
-  display: none;
-  text-align: right;
-}
-
-.hs-meta-num {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.hs-meta-bar {
-  position: relative;
-  width: 7.5rem;
-  height: 1px;
-  margin: var(--space-3) 0 var(--space-3) auto;
-  overflow: hidden;
-  background: var(--color-line-strong);
-}
-
-.hs-meta-bar i {
-  position: absolute;
-  background: var(--color-accent);
-  inset: 0;
-  transform: scaleX(0.2);
-  transform-origin: left;
-}
-
 @media (--md) {
-  .hs-meta {
-    display: block;
-  }
-
   /* The longest Georgian line (22 letters) fits 64rem at 4.6vw. */
   .hs-xl:lang(ka) {
     font-size: min(var(--font-size-hero-horizon), 4.6vw);
@@ -586,7 +550,7 @@ html.lenis body {
 
 /*
  * THE SHOWPIECES — tonight's best objects, one to a screen, moving sideways; each in an
- * eyepiece with its name set large behind it.
+ * eyepiece.
  */
 .hs-coll {
   position: relative;
@@ -634,27 +598,6 @@ html.lenis body {
   flex: none;
   overflow: hidden;
   place-items: center;
-}
-
-.hs-word {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-text-primary) 12%, transparent), transparent 92%);
-  background-clip: text;
-  color: transparent;
-  font-family: var(--font-headline);
-  font-size: var(--font-size-story-word);
-  line-height: 0.9;
-  pointer-events: none;
-  text-transform: uppercase;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-  -webkit-text-stroke: 1px var(--color-line-strong);
-}
-
-.hs-word:lang(ka) {
-  font-weight: var(--font-weight-black);
 }
 
 .hs-eye {
@@ -1403,43 +1346,8 @@ html.lenis body {
   margin-top: var(--space-8);
 }
 
-.hs-moon {
-  position: relative;
-  width: min(100%, 60svh);
-  aspect-ratio: 4 / 5;
-  margin: 0 auto;
-}
 
-/* The photograph has no frame: it is cut to the Moon's own disc. */
-.hs-moon img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  mask-image: radial-gradient(43.4% 34.7% at 50% 47.6%, var(--color-mask) 99%, transparent 100%);
-}
-
-.hs-moon figcaption {
-  position: absolute;
-  right: 0;
-  bottom: var(--space-4);
-  left: 0;
-  text-align: center;
-  color: var(--color-text-small);
-  font-size: var(--font-size-caption);
-}
-
-@media (--lg) {
-  .hs-scope-in {
-    gap: clamp(2rem, 6vw, 6.25rem);
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  }
-
-  .hs-moon {
-    margin-right: 0;
-  }
-}
-
-/* THE SIGN-OFF — the name set large, the two buttons, and the other ways in. */
+/* THE SIGN-OFF — the headline, the two buttons, and the picture credits. */
 .hs-closer {
   position: relative;
   display: grid;
@@ -1454,79 +1362,12 @@ html.lenis body {
   text-align: center;
 }
 
-.hs-closer-word {
-  position: absolute;
-  z-index: -1;
-  top: 8%;
-  left: 50%;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-text-primary) 14%, transparent), transparent 90%);
-  background-clip: text;
-  color: transparent;
-  font-family: var(--font-headline);
-  font-size: var(--font-size-story-word);
-  line-height: 0.9;
-  margin-left: -50vw;
-  pointer-events: none;
-  text-align: center;
-  text-transform: uppercase;
-  white-space: nowrap;
-  width: 100vw;
-  -webkit-text-stroke: 1px var(--color-line-strong);
-}
-
-.hs-closer-word:lang(ka) {
-  font-weight: var(--font-weight-black);
-}
-
 .hs-closer .hs-title {
   font-size: var(--font-size-closer);
 }
 
 .hs-closer .hs-acts {
   justify-content: center;
-}
-
-.hs-ways {
-  display: grid;
-  width: 100%;
-  max-width: 72rem;
-  gap: var(--space-3);
-  margin: var(--space-8) 0 0;
-  padding: 0;
-  list-style: none;
-  text-align: left;
-}
-
-.hs-way {
-  position: relative;
-  display: grid;
-  height: 100%;
-  gap: var(--space-1);
-  padding: var(--space-5) var(--space-10) var(--space-5) var(--space-5);
-  transition: border-color var(--duration-state) var(--ease-sky);
-}
-
-.hs-way:hover {
-  border-color: var(--color-glass-border-hover);
-}
-
-.hs-way b {
-  font-size: var(--font-size-tile);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: -0.02em;
-}
-
-.hs-way span {
-  color: var(--color-text-secondary);
-}
-
-.hs-way svg {
-  position: absolute;
-  top: var(--space-5);
-  right: var(--space-5);
-  width: 1rem;
-  height: 1rem;
-  color: var(--color-text-small);
 }
 
 .hs-credits {
@@ -1537,17 +1378,6 @@ html.lenis body {
   line-height: 1.5;
 }
 
-@media (--sm) {
-  .hs-ways {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (--lg) {
-  .hs-ways {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
 
 /* The design system's specimen of the feed. */
 .hs-feed-specimen {
@@ -1751,9 +1581,15 @@ html.lenis body {
     display: none;
   }
 
-  /* The heading sits over the top of the sky on a phone: the sky darkens under it. */
+  /* The heading sits over the top of the sky on a phone: the sky goes dark under it, so
+     no star's name runs into the words. */
   .hs-night-shade {
-    background: linear-gradient(to bottom, color-mix(in srgb, var(--color-night) 82%, transparent) 0%, transparent 32%);
+    background: linear-gradient(
+      to bottom,
+      var(--color-night) 0%,
+      color-mix(in srgb, var(--color-night) 92%, transparent) 26%,
+      transparent 44%
+    );
   }
 
   /* No room above the card: the heading stays for screen readers only. */
@@ -1790,6 +1626,31 @@ html.lenis body {
   .hs-buy {
     max-width: none;
   }
+
+  /* The dots say there is more to swipe, at the foot beside the slide's link. */
+  .hs-bc {
+    right: var(--space-page);
+    bottom: calc(var(--hs-foot) + var(--space-5));
+    left: auto;
+    display: flex;
+    transform: none;
+  }
+
+  /* Not pinned on a phone: the section is as tall as what it holds. */
+  .hs-session {
+    min-height: 0;
+  }
+
+  /* The ticket repeats the price just above it: a phone keeps the price and the questions. */
+  .hs-printer {
+    display: none;
+  }
+
+  .hs-closer {
+    min-height: 0;
+    gap: var(--space-6);
+    padding-top: var(--space-16);
+  }
 }
 
 /* REDUCED MOTION — every scene still: the headline over the sky, the slides swiped. */
@@ -1811,7 +1672,6 @@ html.lenis body {
 }
 
 .hs[data-still] .hs-hero-feed,
-.hs[data-still] .hs-meta,
 .hs[data-still] .hs-slots {
   display: none;
 }

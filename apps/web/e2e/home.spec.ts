@@ -104,16 +104,14 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
     page.locator(".hs-scope").getByRole("link", { name: "See the observatory" }),
   ).toHaveAttribute("href", "/en/observatory");
 
-  // The other ways in.
-  const ways = page.getByRole("list", { name: "More to explore" }).getByRole("link");
-  await expect(ways).toHaveCount(4);
-  for (const [index, href] of [
-    "/en/vote",
-    "/en/gift",
-    "/en/explorer",
-    "/en/app/cards",
-  ].entries()) {
-    await expect(ways.nth(index)).toHaveAttribute("href", href);
+  // The other ways in live in the footer now, not in cards on the page.
+  const footer = page.getByRole("navigation", { name: "Product" });
+  for (const [name, href] of [
+    ["Gift a night", "/en/gift"],
+    ["Weekly vote", "/en/vote"],
+    ["Weekly cards", "/en/app/cards"],
+  ]) {
+    await expect(footer.getByRole("link", { name })).toHaveAttribute("href", href);
   }
 });
 
@@ -123,11 +121,10 @@ test("the hero's story moves with the scroll, and stands still for reduced motio
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
   await expect(page.locator(".pin-spacer > .hs-hero")).toHaveCount(1);
-  await expect(page.locator(".hs-meta-num")).toHaveText("01 / 05");
+  await expect(page.locator(".hs-slots")).toBeHidden();
   await page.mouse.move(700, 500);
   await page.mouse.wheel(0, 300);
   // A short scroll snaps on to the second step: the open times.
-  await expect(page.locator(".hs-meta-num")).toHaveText("02 / 05");
   await expect(page.locator(".hs-slots")).toBeVisible();
   await expect(page.locator(".hs-slots a").first()).toHaveAttribute(
     "href",

@@ -61,7 +61,6 @@ const dictionary = {
     },
     story: {
       simulated: "Simulated",
-      scroll: "Scroll",
       steps: [
         { a: "Pick", b: "your time.", text: "Any open night, from 15 minutes to 4 hours." },
         { a: "It turns", b: "to your target.", text: "A real telescope in Tbilisi turns to what you choose." },
@@ -98,20 +97,6 @@ const dictionary = {
           m27: "Dumbbell Nebula",
           m51: "Whirlpool Galaxy",
           m81: "Bode's Galaxy",
-        },
-        words: {
-          moon: "Moon",
-          saturn: "Saturn",
-          jupiter: "Jupiter",
-          mars: "Mars",
-          venus: "Venus",
-          m42: "Orion",
-          m31: "Andromeda",
-          m13: "Hercules",
-          ngc869: "Perseus",
-          m27: "Dumbbell",
-          m51: "Whirlpool",
-          m81: "Bode",
         },
         kinds: { moon: "Moon", planet: "Planet", galaxy: "Galaxy", nebula: "Nebula", cluster: "Star cluster" },
         notes: {
@@ -172,8 +157,6 @@ const dictionary = {
         mount: "Mount",
         see: "See the observatory",
         sky: "Open Night Sky",
-        moon: "The Moon",
-        photo: "Photograph: NASA/GSFC/Arizona State University — not telescope output",
       },
       closer: {
         title: "The night",
@@ -186,27 +169,6 @@ const dictionary = {
       price: {
         title: "Pay by the minute",
         cloud: "Clouded out? Your next session is free.",
-      },
-      ways: {
-        title: "More to explore",
-        items: [
-          {
-            title: "Weekly vote",
-            text: "Choose what the telescope sees next.",
-            href: "vote",
-          },
-          {
-            title: "Gift a night",
-            text: "A night at the telescope, as a gift.",
-            href: "gift",
-          },
-          {
-            title: brand.en.game,
-            text: "Fly through the solar system.",
-            href: "explorer",
-          },
-          { title: "Weekly cards", text: "A free card every week.", href: "app/cards" },
-        ],
       },
       faq: {
         title: "Questions",
@@ -245,6 +207,9 @@ const dictionary = {
     privacy: "Privacy",
     terms: "Terms",
     refunds: "Refunds",
+    gift: "Gift a night",
+    vote: "Weekly vote",
+    cards: "Weekly cards",
   },
   notFound: {
     title: "Observation not found",

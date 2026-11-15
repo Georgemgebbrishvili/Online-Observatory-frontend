@@ -17,7 +17,6 @@ export type HomepageDictionary = {
   /** ADR-087: the homepage as one scroll story. */
   story: {
     simulated: string;
-    scroll: string;
     /** The hero's steps after the headline: book, aim, watch, keep. */
     steps: readonly { a: string; b: string; text: string }[];
     /** The aim step when tonight has a planet to name: {name} {time} {altitude}. */
@@ -37,7 +36,6 @@ export type HomepageDictionary = {
       bookAny: string;
       names: Record<string, string>;
       /** The name set large behind the picture: one short word. */
-      words: Record<string, string>;
       kinds: Record<"moon" | "planet" | "galaxy" | "nebula" | "cluster", string>;
       notes: Record<string, string>;
     };
@@ -83,17 +81,11 @@ export type HomepageDictionary = {
       mount: string;
       see: string;
       sky: string;
-      moon: string;
-      photo: string;
     };
     closer: { title: string; em: string; credits: string };
   };
   more: {
     price: { title: string; cloud: string };
-    ways: {
-      title: string;
-      items: readonly { title: string; text: string; href: string }[];
-    };
     faq: { title: string; items: readonly { q: string; a: string }[] };
   };
 };
@@ -115,4 +107,7 @@ export type FooterDictionary = {
   privacy: string;
   terms: string;
   refunds: string;
+  gift: string;
+  vote: string;
+  cards: string;
 };
