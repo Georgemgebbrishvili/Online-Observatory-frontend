@@ -62,19 +62,6 @@ const DEFAULT_TOGGLES: Toggles = {
 /** The dock's switches, in order. `ground` is the landscape: lit while the ground is solid. */
 const TOOLS: (keyof Toggles)[] = ["lines", "names", "dso", "atmosphere", "ground", "altaz", "equatorial", "milkyway", "path"];
 const DEG = Math.PI / 180;
-/** A phone's main camera across the long side of its picture, degrees (26 mm equivalent). */
-const CAMERA_LONG_SIDE = 64;
-
-/**
- * The vertical field the screen shows of a camera picture laid over it with
- * `object-fit: cover`, degrees: the sky camera's, so the drawn sky sits on the real one.
- */
-function cameraFov(videoWidth: number, videoHeight: number, width: number, height: number) {
-  const long = Math.max(videoWidth, videoHeight);
-  const scale = Math.max(width / videoWidth, height / videoHeight);
-  const half = (Math.tan((CAMERA_LONG_SIDE / 2) * DEG) * height) / scale / long;
-  return (2 * Math.atan(half)) / DEG;
-}
 /** Half the time slider's reach either side of the present, minutes. */
 const SCRUB = 720;
 
@@ -247,9 +234,6 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
   const lookCloserRef = useRef<(key: string) => void>(() => {});
   const orientation = useRef<import("three").Quaternion | null>(null);
   const pointer = useRef<import("./pointing").Pointing | null>(null);
-  // The phone's camera behind the sky, and the field it shows; null while it is off.
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const live = useRef<{ fov: number } | null>(null);
   const reduceMotion = useRef(false);
 
   const [phase, setPhase] = useState<"loading" | "ready" | "no-webgl">("loading");
@@ -261,9 +245,9 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
   const [site, setSite] = useState<{ site: Site; mine: boolean }>({ site: SITE, mine: false });
   const siteRef = useRef(site.site);
   const [locating, setLocating] = useState<"idle" | "asking" | "refused">("idle");
-  const [pointing, setPointing] = useState<"off" | "on" | "refused">("off");
-  const [camera, setCamera] = useState<"off" | "on" | "refused">("off");
-  // A few seconds of "hold your phone up" when the live view opens.
+  // "absent": the device sent no reading, so it has no motion sensors.
+  const [pointing, setPointing] = useState<"off" | "on" | "refused" | "absent">("off");
+  // A few seconds of "hold your phone up" when pointing starts.
   const [hint, setHint] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const selectedRef = useRef<string | null>(null);
@@ -581,10 +565,6 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
           az: Math.atan2(ahead.x, -ahead.z) / DEG,
         });
       }
-      if (live.current) {
-        zoomGoal.current = null;
-        viewRef.current = { ...viewRef.current, fov: live.current.fov };
-      }
       const date = simDate();
       const following = track.current && !flying;
       const drawn = renderer.render(
@@ -596,7 +576,7 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
           compass: copy.compass,
           selected: selectedRef.current,
           track: following,
-          live: live.current !== null,
+          live: pointer.current !== null,
         },
         orientation.current,
       );
@@ -847,25 +827,16 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     );
   };
 
-  // "Point at the sky": the phone's orientation drives the sky camera, and the phone's own
-  // back camera shows behind it (iOS asks for both, so both are asked within the tap). The
-  // readings go to a filter (pointing.ts) that the frame loop steps; the sky works on
-  // without the camera if it is refused.
+  // "Point at the sky": the phone's orientation drives the sky camera over a dark screen,
+  // every star drawn, the ground see-through. The readings go to a filter (pointing.ts)
+  // that the frame loop steps. A device that sends no reading has no motion sensors.
   const togglePointing = async () => {
     if (pointing === "on") {
       setPointing("off");
       return;
     }
     const request = (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission;
-    const asked = request ? request().catch(() => "denied") : Promise.resolve("granted");
-    const filming: Promise<MediaStream | null> = navigator.mediaDevices?.getUserMedia
-      ? navigator.mediaDevices
-          .getUserMedia({ audio: false, video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } } })
-          .catch(() => null)
-      : Promise.resolve(null);
-    const film = (stream: MediaStream | null) => stream?.getTracks().forEach((track) => track.stop());
-    if ((await asked) !== "granted") {
-      void filming.then(film);
+    if ((await (request ? request().catch(() => "denied") : Promise.resolve("granted"))) !== "granted") {
       return setPointing("refused");
     }
     const { Pointing } = await import("./pointing");
@@ -879,52 +850,18 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
     fly.current = null;
     zoomGoal.current = null;
     velocity.current = { alt: 0, az: 0 };
-    const before = viewRef.current.fov;
     // A window onto the sky, as a phone held up shows it: no wider than 75°.
     if (viewRef.current.fov > 75) zoom(75 / viewRef.current.fov);
     setPointing("on");
     setHint(true);
-    let stopped = false;
-    let stream: MediaStream | null = null;
-    const video = videoRef.current!;
-    const fit = () => {
-      const stage = stageRef.current;
-      if (!stage || !video.videoWidth) return;
-      live.current = { fov: cameraFov(video.videoWidth, video.videoHeight, stage.clientWidth, stage.clientHeight) };
-    };
-    // Back from another app, iOS has paused the picture.
-    const resume = () => {
-      if (!document.hidden) void video.play().catch(() => {});
-    };
-    void filming.then(async (got) => {
-      if (stopped) return film(got);
-      if (!got) return setCamera("refused");
-      stream = got;
-      video.srcObject = got;
-      video.addEventListener("loadedmetadata", fit);
-      window.addEventListener("resize", fit);
-      document.addEventListener("visibilitychange", resume);
-      await video.play().catch(() => {});
-      fit();
-      setCamera("on");
-    });
+    const silent = setTimeout(() => {
+      if (!filter.heard) setPointing("absent");
+    }, 2500);
     stopPointing.current = () => {
-      stopped = true;
+      clearTimeout(silent);
       window.removeEventListener(kind, onOrientation);
       pointer.current = null;
       orientation.current = null;
-      if (stream) {
-        film(stream);
-        video.srcObject = null;
-        video.removeEventListener("loadedmetadata", fit);
-        window.removeEventListener("resize", fit);
-        document.removeEventListener("visibilitychange", resume);
-      }
-      if (live.current) {
-        live.current = null;
-        viewRef.current = clampView({ ...viewRef.current, fov: Math.min(before, 75) });
-      }
-      setCamera("off");
       setHint(false);
     };
   };
@@ -1322,7 +1259,7 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
       data-sky-state={sky}
       data-phase={phase}
       data-full={full}
-      data-live={camera === "on"}
+      data-live={pointing === "on"}
       onKeyDown={(event) => {
         if (event.key !== "Escape") return;
         if (open) setOpen(null);
@@ -1338,11 +1275,10 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
         aria-roledescription="sky"
         onKeyDown={onKey}
       >
-        <video ref={videoRef} className="sky-camera" muted playsInline aria-hidden="true" />
         <canvas ref={canvasRef} className="sky-canvas" aria-hidden="true" />
         <canvas ref={overlayRef} className="sky-overlay" aria-hidden="true" />
         <div ref={labelsRef} className="sky-labels" aria-hidden="true" />
-        {camera === "on" && <span className="sky-reticle" aria-hidden="true" />}
+        {pointing === "on" && <span className="sky-reticle" aria-hidden="true" />}
         {phase === "loading" && (
           <p className="sky-loading" role="status">
             {copy.loading}
@@ -1484,8 +1420,8 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
           <span className="sky-computed-close">{copy.panel.illustration}</span>
         </p>
         {pointing === "refused" && <p className="sky-note sky-head-note">{copy.view.pointRefused}</p>}
-        {camera === "refused" && pointing === "on" && <p className="sky-note sky-head-note">{copy.view.cameraRefused}</p>}
-        {hint && camera !== "refused" && (
+        {pointing === "absent" && <p className="sky-note sky-head-note">{copy.view.noSensors}</p>}
+        {hint && (
           <p className="sky-note sky-head-note sky-live-hint" role="status">
             {copy.view.liveHint}
           </p>

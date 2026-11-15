@@ -106,9 +106,9 @@ export type Frame = {
   /** Keep the selected object at the centre: the view follows it as the sky turns. */
   track?: boolean;
   /**
-   * The phone's camera shows behind the sky: no atmosphere and no drawn ground (the real
-   * ones are in the picture), the background black so the page can screen it over the
-   * video, and an arrow at the edge toward a picked object that is off screen.
+   * The phone points the sky: a dark screen with no atmosphere, the ground see-through so
+   * the stars under it show where the phone aims, and an arrow at the edge toward a picked
+   * object that is off screen.
    */
   live?: boolean;
 };
@@ -156,10 +156,16 @@ const STAR_FRAGMENT = /* glsl */ `
     vec2 p = gl_PointCoord * 2.0 - 1.0;
     float r2 = dot(p, p);
     if (r2 > 1.0) discard;
-    // The core is whiter and tighter the brighter the star; its colour lives in the glow.
-    float core = exp(-r2 * mix(2.4, 9.0, vHalo));
-    float glow = (0.22 + 0.4 * vHalo) * exp(-r2 * 1.8) * (1.0 - r2) * (1.0 - r2);
-    vec3 colour = mix(vTint, vec3(1.0), core * (0.25 + 0.6 * vHalo)) * core + vTint * glow;
+    // The core is whiter and tighter the brighter the star; its colour lives in the glow,
+    // which the eye sees spread round a bright star (its scatter in the eye and the air).
+    float core = exp(-r2 * mix(2.6, 10.0, vHalo));
+    float glow = (0.26 + 0.6 * vHalo) * (0.7 * exp(-r2 * 3.2) + 0.3 * exp(-r2 * 0.9)) * (1.0 - r2) * (1.0 - r2);
+    // Colour as the eye has it: a faint star is seen without colour, a bright one shows
+    // its B-V hue, a little more of it than a white screen point would, so the order and
+    // kind of the colours stay and they are easier to tell apart.
+    float grey = dot(vTint, vec3(0.299, 0.587, 0.114));
+    vec3 hue = clamp(mix(vec3(grey), vTint, 0.45 + 0.85 * smoothstep(0.0, 0.45, vHalo)), 0.0, 1.0);
+    vec3 colour = mix(hue, vec3(1.0), core * (0.25 + 0.6 * vHalo)) * core + hue * glow;
     gl_FragColor = vec4(colour * vAlpha, (core + glow) * vAlpha);
   }
 `;
@@ -205,7 +211,7 @@ function starMaterial() {
         vHalo = clamp((d - 2.0) / 5.0, 0.0, 1.0);
         vTint = mix(tint, tint * vec3(1.0, 0.82, 0.62), uExtinction * clamp((airmass - 2.0) / 10.0, 0.0, 0.8));
         // Wider by the magnitude: each step down the scale is a visibly bigger star.
-        gl_PointSize = vAlpha <= 0.0 ? 0.0 : clamp(2.6 + 1.25 * d + 0.5 * d * d * vHalo, 2.6, 46.0) * uScale;
+        gl_PointSize = vAlpha <= 0.0 ? 0.0 : clamp(2.6 + 1.3 * d + 0.7 * d * d * vHalo, 2.6, 52.0) * uScale;
         gl_Position = projectionMatrix * viewMatrix * vec4(w * ${D.sky.toFixed(3)}, 1.0);
       }
     `,
@@ -293,8 +299,11 @@ function milkyMaterial() {
       void main() {
         vec3 j = normalize(vJ);
         vec2 uv = vec2(atan(j.y, j.x) / 6.2831853 + 0.5, asin(clamp(j.z, -1.0, 1.0)) / 3.1415927 + 0.5);
-        // The photograph's own colours, cooled a little toward the night's blue.
-        vec3 c = texture2D(uMap, uv).rgb * vec3(0.92, 0.96, 1.08);
+        // The photograph's own colours, cooled a little toward the night's blue, with its
+        // contrast raised: the dust lanes darker and the star clouds brighter, as a dark
+        // site shows them, never a light the photograph does not have.
+        vec3 t = texture2D(uMap, uv).rgb;
+        vec3 c = pow(t, vec3(1.35)) * 1.7 * vec3(0.92, 0.96, 1.08);
         // Low down it shines through more air and goes out before the horizon.
         gl_FragColor = vec4(c * uAlpha * mix(1.0, smoothstep(0.0, 0.3, vUp), uHaze), 1.0);
       }
@@ -1304,7 +1313,6 @@ export class SkyRenderer {
     ground.uBase.value.set(base.r, base.g, base.b);
     ground.uHorizon.value.set(hr, hg, hb);
     ground.uOpacity.value = groundOpacity;
-    this.ground.visible = this.hills.visible = this.trees.visible = !frame.live;
     for (const [mesh, colour, opacity] of [
       [this.trees, treeColour, ridgeOpacity],
       [this.hills, hillColour, ridgeOpacity],
@@ -1391,7 +1399,7 @@ export class SkyRenderer {
       glowTint.setXYZ(index, tint.r, tint.g, tint.b);
       // Sized as the star shader sizes a star of the same magnitude.
       const halo = Math.max(0, Math.min(1, (d - 2) / 5));
-      glowSize.setX(index, Math.min(46, Math.max(2.6, 2.6 + 1.25 * d + 0.5 * d * d * halo)) * ratio * Math.min(1.6, 0.85 + 0.25 * zoomGain));
+      glowSize.setX(index, Math.min(52, Math.max(2.6, 2.6 + 1.3 * d + 0.7 * d * d * halo)) * ratio * Math.min(1.6, 0.85 + 0.25 * zoomGain));
       glowAlpha.setX(index, up && !big && d > 0 ? Math.min(1, 0.35 + 0.65 * d) * (1 - resolved) : 0);
       glowHalo.setX(index, halo);
 

@@ -598,27 +598,6 @@
   }
 }
 
-/* The camera behind the sky; the sky's black screened away over it. */
-.sky-camera {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  filter: brightness(0.72) saturate(0.85);
-  transition: opacity 600ms var(--ease-sky);
-  pointer-events: none;
-}
-
-.sky[data-live="true"] .sky-camera {
-  opacity: 1;
-}
-
-.sky[data-live="true"] .sky-canvas {
-  mix-blend-mode: screen;
-}
-
 /* What the phone is aimed at: a ring at the centre. */
 .sky-reticle {
   position: absolute;

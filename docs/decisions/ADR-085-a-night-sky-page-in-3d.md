@@ -371,3 +371,27 @@ planets on it.
 
 The 64° is an assumption: phones differ by a few degrees, so the drawn sky can sit a little
 large or small on the picture toward the edges; the centre is right.
+
+## Amendment — 2026-11-15 (later)
+
+Nika wanted a dark screen when the phone points, not the camera's picture; the motion right on
+every device, tablets included; and the sky a little more beautiful, still accurate.
+
+- **No camera.** Pointing no longer asks for the camera: the sky follows the phone over a
+  dark screen (`live` mode: no atmosphere, so every star to 6.5; the ground stays drawn at the
+  see-through opacity, so the stars under it show where the phone aims). The pill is "Point"
+  ("მიმართე") with a phone-and-star icon; pinch zooms. `Permissions-Policy` is back to
+  `camera=()`. A device that sends no reading in 2.5 s has no motion sensors: pointing turns
+  off and says to drag the sky instead.
+- **North on iOS, any way up.** The top edge's bearing (`webkitCompassHeading`) depends on
+  `alpha` and `beta` only, so the north offset is now learned whenever that edge is at least
+  20° off the vertical, whatever the roll. Before, a phone or iPad held up on its side never
+  taught it, and a first reading taken upright (when the heading means nothing) stayed: the
+  sky could sit turned by any angle until the device was tipped flat. Now that first reading is
+  replaced by the first sound one, then refined.
+- **Stars.** A bright star's glow is fuller (a tight and a wide Gaussian, as the eye's and the
+  air's scatter spread it) and each magnitude step a little larger. Colour follows the eye: a
+  faint star is drawn nearly white, a bright one with its B-V hue somewhat more saturated than
+  a screen point shows, the order and kind of the colours unchanged.
+- **The Milky Way** has the photograph's contrast raised (power 1.35, gain 1.7): darker dust
+  lanes, brighter star clouds, no light the photograph does not have.

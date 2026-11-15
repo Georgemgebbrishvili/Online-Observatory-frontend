@@ -179,8 +179,8 @@ test.describe("a visitor outside Tbilisi", () => {
   });
 });
 
-test.describe("the live view on a phone", () => {
-  // The motion sensors granted (a real phone asks), and a painted canvas for the camera.
+test.describe("pointing a phone at the sky", () => {
+  // The motion sensors granted, as a real phone asks; the readings are sent by the test.
   test.use({
     hasTouch: true,
     isMobile: true,
@@ -188,33 +188,48 @@ test.describe("the live view on a phone", () => {
     permissions: ["accelerometer", "gyroscope", "magnetometer"],
   });
 
-  test("shows the back camera behind the sky, and points the way to what is searched", async ({ page }) => {
-    await page.addInitScript(() => {
-      navigator.mediaDevices.getUserMedia = async () => {
-        const canvas = Object.assign(document.createElement("canvas"), { width: 640, height: 480 });
-        const context = canvas.getContext("2d")!;
-        setInterval(() => context.fillRect(0, 0, 640, 480), 100);
-        return canvas.captureStream(10);
-      };
-    });
+  test("the sky follows the phone over a dark screen, no camera, and points the way to what is searched", async ({ page }) => {
     await page.goto("/en/sky");
     await expect(page.locator('.sky[data-phase="ready"]')).toBeAttached({ timeout: firstCompile });
-    const live = page.getByRole("button", { name: "Live view: the camera, with the sky drawn on it" });
-    await expect(live).toBeVisible();
-    await live.click();
+    // The phone held up 45° to the east, on true north (Android's absolute event).
+    await page.evaluate(() => {
+      setInterval(() => {
+        const event = new DeviceOrientationEvent("deviceorientationabsolute", { alpha: 270 + 7, beta: 135, gamma: 0, absolute: true });
+        window.dispatchEvent(event);
+      }, 16);
+    });
+    const point = page.getByRole("button", { name: "Point your phone at the sky: the map follows it" });
+    await expect(point).toBeVisible();
+    await point.click();
     await expect(page.locator(".sky")).toHaveAttribute("data-live", "true");
-    expect(await page.locator(".sky-camera").evaluate((video: HTMLVideoElement) => video.videoWidth)).toBeGreaterThan(0);
+    await expect(page.locator("video")).toHaveCount(0);
     await expect(page.getByRole("status").filter({ hasText: "Hold your phone up to the sky" })).toBeVisible();
+    const aimed = () =>
+      page.evaluate(() => {
+        const { alt, az } = (window as unknown as { __sky: { view: () => { alt: number; az: number } } }).__sky.view();
+        return Math.abs(alt - 45) < 1 && Math.abs((((az % 360) + 360) % 360) - 90) < 1;
+      });
+    await expect.poll(aimed).toBe(true);
+    // Readings keep coming, so the device is not taken for one without sensors.
+    await page.waitForTimeout(3000);
+    await expect(page.locator(".sky")).toHaveAttribute("data-live", "true");
 
-    // A search while live picks the object and keeps the camera: the phone is the view.
+    // A search while pointing picks the object and keeps the phone as the view.
     const search = page.getByRole("combobox", { name: "Find in the sky" });
     await search.fill("Saturn");
     await search.press("Enter");
     await expect(page.getByRole("complementary", { name: "Saturn" })).toBeVisible();
     await expect(page.locator(".sky")).toHaveAttribute("data-live", "true");
 
-    await page.getByRole("button", { name: "Close the live view" }).click();
+    await page.getByRole("button", { name: "Stop following the phone" }).click();
     await expect(page.locator(".sky")).toHaveAttribute("data-live", "false");
-    expect(await page.locator(".sky-camera").evaluate((video: HTMLVideoElement) => video.srcObject)).toBeNull();
+  });
+
+  test("a device with no motion sensors says so and lets the sky be dragged", async ({ page }) => {
+    await page.goto("/en/sky");
+    await expect(page.locator('.sky[data-phase="ready"]')).toBeAttached({ timeout: firstCompile });
+    await page.getByRole("button", { name: "Point your phone at the sky: the map follows it" }).click();
+    await expect(page.getByText("This device has no motion sensors: drag the sky instead.")).toBeVisible({ timeout: 5000 });
+    await expect(page.locator(".sky")).toHaveAttribute("data-live", "false");
   });
 });

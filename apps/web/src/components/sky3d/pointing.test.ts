@@ -88,6 +88,32 @@ describe("pointing the phone at the sky", () => {
     }
   });
 
+  it("finds north on an iPad held up on its side, after a first reading it could not trust", () => {
+    const original = Object.getOwnPropertyDescriptor(window.screen, "orientation");
+    Object.defineProperty(window.screen, "orientation", { configurable: true, get: () => ({ angle: 90 }) });
+    // iOS: alpha 123° from an arbitrary start; the heading is the top edge's bearing,
+    // half a circle round once the edge leans past upright.
+    const ios = (pose: ReturnType<typeof angles>) => ({
+      ...pose,
+      alpha: (pose.alpha + 123) % 360,
+      webkitCompassHeading: (((360 - pose.alpha + (Math.cos(pose.beta * DEG) < 0 ? 180 : 0)) % 360) + 360) % 360,
+    });
+    try {
+      const pointing = new Pointing(7, false);
+      // Picked up upright: the top edge points at the zenith and the heading means nothing.
+      pointing.take(reading({ ...angles(40, 90, 0), alpha: 163, webkitCompassHeading: 200 }));
+      pointing.step(16);
+      // Then turned on its side and raised 45°: the top edge lies level, a sound bearing.
+      const view = settle(pointing, ios(angles(40, 135, 90)));
+      expect(view.alt).toBeCloseTo(45, 1);
+      expect(view.az).toBeCloseTo(327, 1);
+      expect(view.upright).toBeGreaterThan(0.5);
+    } finally {
+      if (original) Object.defineProperty(window.screen, "orientation", original);
+      else delete (window.screen as unknown as { orientation?: unknown }).orientation;
+    }
+  });
+
   it("holds steady through the hand's tremor, and follows a real move", () => {
     const pointing = new Pointing(0, true);
     settle(pointing, { alpha: 270, beta: 135, gamma: 0 });
