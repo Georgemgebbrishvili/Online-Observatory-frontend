@@ -42,7 +42,7 @@ export default function ExposurePanel(p: ExposurePanelProps) {
     : ae.state.status === 'failed' ? t.hub.ae.failed
     : t.hub.ae.idle;
   return (
-    <section className="oh-card oh-exp" aria-label={t.camera.title} data-tab="camera">
+    <section className="oh-card oh-exp" aria-label={t.camera.title} data-tab="shoot">
       <div className="oh-exp__row">
         <span className="oh-exp__lbl">{t.camera.exposure}</span>
         <Stepper label={t.camera.exposure} value={exposureLabel(p.exposureS)} onDown={() => p.onExposure?.(below[below.length - 1])} onUp={() => p.onExposure?.(above[0])} min={off || below.length === 0} max={off || above.length === 0} />

@@ -522,7 +522,8 @@ html:has(.public-mobile-menu[data-open]) {
   }
 
   body:has(.room.room-console),
-  body:has(.sdo-view.is-full) {
+  body:has(.sdo-view.is-full),
+  body:has(.oh) {
     --tab-bar-space: 0rem;
   }
 
@@ -555,6 +556,8 @@ html:has(.public-mobile-menu[data-open]) {
 
   body:has(.room.room-console) .phone-tab-bar,
   body:has(.sdo-view.is-full) .phone-tab-bar,
+  /* The observatory console has its own tabs at the thumb (ADR-083). */
+  body:has(.oh) .phone-tab-bar,
   body:has(.sky-page) .phone-tab-bar,
   body:has(.public-mobile-menu[data-open]) .phone-tab-bar {
     display: none;

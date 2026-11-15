@@ -12,6 +12,8 @@ export type SlewPadProps = {
   onRelease: (a: Axis) => void;
   onCentre: () => void;
   canCentre: boolean;
+  /** Where the mount points, beside the pad as the hub shows it. */
+  rows?: [string, string][];
 };
 
 type Dir = { key: string; label: string; axes: Array<[Axis, 1 | -1]>; angle: number; big: boolean };
@@ -63,7 +65,38 @@ export default function SlewPad(p: SlewPadProps) {
         })}
         <button type="button" className="oh-slew__c" onClick={p.onCentre} disabled={!p.canCentre} aria-label={t.hand.recentre} title={t.hand.recentre} />
       </div>
-      <RateSlider label={t.hand.slewRate} value={p.rate} text={`${t.hub.rate} ${p.rate}`} title={p.rateLabel} onChange={p.onRate} />
+      <div className="oh-slew__side">
+        {/* The hub's speed strip: 1 the finest, 9 the fastest. */}
+        <div className="oh-speed" role="group" aria-label={t.hub.slewSpeed}>
+          <span className="oh-h3" aria-hidden="true">{t.hub.slewSpeed}</span>
+          <div className="oh-speed__segs">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+              <button
+                key={n}
+                type="button"
+                className={n === p.rate ? 'is-on' : n < p.rate ? 'is-under' : undefined}
+                aria-pressed={n === p.rate}
+                aria-label={`${t.hub.slewSpeed} ${n}`}
+                disabled={!p.onRate}
+                onClick={() => p.onRate?.(n)}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+          <output className="oh-speed__note">{p.rateLabel}</output>
+        </div>
+        {p.rows && (
+          <dl className="oh-kv">
+            {p.rows.map(([k, v]) => (
+              <div key={k}>
+                <dt>{k}</dt>
+                <dd className="sdo-mono">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
     </div>
   );
 }

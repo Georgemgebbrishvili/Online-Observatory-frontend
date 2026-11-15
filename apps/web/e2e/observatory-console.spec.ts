@@ -13,13 +13,16 @@ const evening = new Date("2026-09-25T20:00:00+04:00");
 
 const view = (page: Page) => page.getByRole("region", { name: "Telescope view" });
 const status = (page: Page) => view(page).getByRole("status");
-const altitude = (page: Page) =>
-  page.getByRole("region", { name: "Pointing" }).locator(".sdo-point__vals > div").first().locator(".sdo-v");
+// The slew card reads the altitude beside the pad, on the Point step.
+const altitude = (page: Page) => page.locator(".oh-slewcard .oh-kv dd").first();
+// The hub's steps (ADR-083 amendment 2026-11-15): one task's controls on the screen at a time.
+const step = (page: Page, name: "Point" | "Focus" | "Shoot" | "More") =>
+  page.locator(".oh-stepnav").getByRole("button", { name: new RegExp(name) }).click();
 
 async function onTarget(page: Page) {
   await page.goto("/en/observatory?turbo");
   await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
-  await page.getByRole("button", { name: /FIND & TRACK/ }).click();
+  await page.getByRole("button", { name: /OBSERVE/ }).click();
   await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 60_000 });
   await expect(view(page).getByText(/Centred|Off target/)).toBeVisible();
 }
@@ -39,6 +42,7 @@ test.describe("the sky model's 8SE", () => {
     await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
 
     // The station's details are the maker's numbers, on the Setup tab.
+    await step(page, "More");
     await page.getByRole("tab", { name: "Setup" }).click();
     const setup = page.getByRole("tabpanel");
     await expect(setup.getByText("203 mm Schmidt-Cassegrain")).toBeVisible();
@@ -60,10 +64,11 @@ test.describe("the sky model's 8SE", () => {
 
     // The slew pad's rates are the manual's; the camera's exposures are the sensor's.
     const hand = page.getByRole("region", { name: "Hand control" });
-    await expect(page.locator(".oh-slewcard .oh-rate__pill")).toHaveText("Rate 5");
     await hand.getByRole("button", { name: "Slew rate: more" }).click({ clickCount: 4 });
-    await expect(page.locator(".oh-slewcard .oh-rate__pill")).toHaveText("Rate 9");
     await expect(hand.getByRole("group", { name: "Slew rate" }).locator("output")).toHaveText("9 · 5°/s");
+    await step(page, "Point");
+    await expect(page.getByRole("button", { name: "Slew speed 9" })).toHaveAttribute("aria-pressed", "true");
+    await step(page, "Shoot");
     const camera = page.getByRole("region", { name: "Camera" });
     await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("8 s");
     for (let i = 0; i < 9; i += 1) await camera.getByRole("button", { name: "Exposure: less" }).click();
@@ -79,9 +84,8 @@ test.describe("the sky model's 8SE", () => {
 
     // Rate 7, one degree a second, held for a second and a half: the tube climbs and
     // the target, fixed to the sky, falls that far below the centre of the frame.
-    const hand = page.getByRole("region", { name: "Hand control" });
-    await hand.getByRole("button", { name: "Slew rate: more" }).click({ clickCount: 2 });
-    await expect(page.locator(".oh-slewcard .oh-rate__pill")).toHaveText("Rate 7");
+    await page.getByRole("button", { name: "Slew speed 7" }).click();
+    await expect(page.getByRole("button", { name: "Slew speed 7" })).toHaveAttribute("aria-pressed", "true");
     await page.keyboard.down("ArrowUp");
     await page.waitForTimeout(1500);
     await page.keyboard.up("ArrowUp");
@@ -108,7 +112,8 @@ test.describe("the sky model's 8SE", () => {
     nums(offset).forEach((v, i) => expect(Math.abs(after[i] - v)).toBeLessThan(0.5));
 
     // Centre: a GoTo back, and the target is centred again.
-    await hand.getByRole("button", { name: "Re-centre the target" }).click();
+    await step(page, "More");
+    await page.getByRole("region", { name: "Hand control" }).getByRole("button", { name: "Re-centre the target" }).click();
     await expect(status(page)).toHaveText(/Slewing|Plate-solving|Centring/);
     await expect(view(page).getByText("Centred")).toBeVisible({ timeout: 30_000 });
     // Back on target the live stack runs again before the status settles.
@@ -119,6 +124,7 @@ test.describe("the sky model's 8SE", () => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await onTarget(page);
+    await step(page, "More");
     const hand = page.getByRole("region", { name: "Hand control" });
     const tracking = hand.getByRole("group", { name: "Tracking" });
     await expect(tracking.getByRole("button")).toHaveText(["Off", "Sidereal", "Lunar", "Solar"]);
@@ -137,6 +143,7 @@ test.describe("the sky model's 8SE", () => {
 
     // The camera: Albireo is a showpiece and brings its own recipe; auto exposure reads
     // the picture and settles, and the frames move by hand.
+    await step(page, "Shoot");
     const camera = page.getByRole("region", { name: "Camera" });
     await expect(camera.getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("50 ms");
     await camera.locator(".oh-ae__auto").click();
@@ -145,15 +152,15 @@ test.describe("the sky model's 8SE", () => {
     await expect(camera.getByRole("group", { name: "Frames to stack" }).locator("output")).toHaveText("100");
     await expect(page.getByRole("button", { name: /^Capture 100 × / })).toBeEnabled();
 
-    // Focus: the dial turns by the keyboard, four steps at this speed; the Focus tab reads the motor.
+    // Focus: the dial turns by the keyboard, four steps at this speed; the assistant reads the motor.
+    await step(page, "Focus");
     const dial = page.getByRole("slider", { name: "Focuser" });
     const start = Number(await dial.getAttribute("aria-valuenow"));
     await dial.focus();
     await page.keyboard.press("ArrowRight");
     await expect(dial).toHaveAttribute("aria-valuenow", String(start + 4), { timeout: 5_000 });
-    await page.getByRole("tab", { name: "Focus" }).click();
-    await expect(page.getByRole("tabpanel", { name: "Autofocus curve" }).locator(".oh-metric div").first().locator("b")).toHaveText(String(start + 4));
-    await page.getByRole("tab", { name: "Mount" }).click();
+    await expect(page.getByRole("region", { name: "Autofocus curve" }).locator(".oh-metric div").first().locator("b")).toHaveText(String(start + 4));
+    await step(page, "More");
 
     // Sync improves the pointing model here; the mount settings are the hand control's.
     const hand = page.getByRole("region", { name: "Hand control" });
@@ -178,7 +185,8 @@ test.describe("the sky model's 8SE", () => {
     await form.getByLabel("RA (hh:mm:ss)").fill("19:30:43");
     await form.getByLabel("Dec (±dd:mm:ss)").fill("+27:57:35");
     await form.getByRole("button", { name: "Add target" }).click();
-    await page.getByRole("button", { name: /FIND & TRACK/ }).click();
+    await step(page, "Point");
+    await page.getByRole("button", { name: /OBSERVE/ }).click();
     await expect(status(page)).toHaveText(/Slewing|Plate-solving|Centring/);
     await expect(view(page).getByText(/^19:30:43/)).toBeVisible();
   });
@@ -193,7 +201,9 @@ test.describe("the sky model's 8SE", () => {
     await dome.locator(".sdo-dome__chip", { hasText: "Albireo" }).click();
     await expect(status(page)).toHaveText(/Live stack/, { timeout: 60_000 });
     await expect(view(page).getByRole("group", { name: "Optical train" }).first().getByRole("button", { name: "f/20", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await step(page, "Shoot");
     await expect(page.getByRole("region", { name: "Camera" }).getByRole("group", { name: "Exposure" }).locator("output")).toHaveText("50 ms");
+    await step(page, "Point");
     // The live stack fills, then the Autopilot's pipeline stands done to TRACK.
     await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 30_000 });
     await expect(page.locator(".oh-pipe .is-done")).toHaveCount(5);
@@ -206,6 +216,8 @@ test.describe("the sky model's 8SE", () => {
     // `next dev`'s own badge sits over the phone's corner button; no visitor sees it.
     await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
     await expect(page.getByRole("heading", { level: 1 })).toContainText("ობსერვატორია");
+    // A tab pressed before the console takes its handlers does nothing.
+    await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
     await page.locator(".oh-mtabs").getByRole("button", { name: "მეტი" }).click();
     const hand = page.getByRole("region", { name: "ხელის პულტი" });
     await expect(hand.getByRole("group", { name: "ტრეკინგი" }).getByRole("button")).toHaveText(["გამორთ.", "ვარსკვლავური", "მთვარის", "მზის"]);
@@ -233,14 +245,13 @@ test.describe("the sky model's 8SE", () => {
     });
   }
 
-  test("the slew pad drives the model: the rate slider, a held arrow, a diagonal", async ({ page }) => {
+  test("the slew pad drives the model: the speed strip, a held arrow, a diagonal", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await onTarget(page);
     const pad = page.getByRole("group", { name: "Mount slew" });
-    await page.getByRole("slider", { name: "Slew rate" }).first().fill("8");
-    await expect(page.locator(".oh-slewcard .oh-rate__pill")).toHaveText("Rate 8");
-    await expect(page.getByRole("region", { name: "Hand control" }).getByRole("group", { name: "Slew rate" }).locator("output")).toHaveText("8 · 3°/s");
+    await page.getByRole("button", { name: "Slew speed 8" }).click();
+    await expect(page.locator(".oh-speed__note")).toHaveText("3°/s");
     const before = degrees(await altitude(page).textContent());
     await pad.getByRole("button", { name: "Slew up", exact: true }).dispatchEvent("pointerdown", { pointerId: 1 });
     await page.waitForTimeout(800);
@@ -259,6 +270,7 @@ test.describe("the sky model's 8SE", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await onTarget(page);
     // Knock the focus out by 300 steps, then let autofocus find its way back.
+    await step(page, "Focus");
     const dial = page.getByRole("slider", { name: "Focuser" });
     const start = Number(await dial.getAttribute("aria-valuenow"));
     await dial.focus();
@@ -271,8 +283,9 @@ test.describe("the sky model's 8SE", () => {
     const m = (await page.locator(".oh-af__res").textContent())!.match(/Best (\d+) · (?:HFR|contrast) ([\d.]+) → ([\d.]+)/)!;
     expect(Number(m[3])).toBeLessThan(Number(m[2]));
     expect(Math.abs(Number(m[1]) - (start + 240))).toBeGreaterThan(100);
-    await page.getByRole("tab", { name: "Focus" }).click();
-    expect(await page.getByRole("tabpanel", { name: "Autofocus curve" }).locator(".oh-chart circle").count()).toBeGreaterThanOrEqual(16);
+    // Nine coarse samples and seven fine ones are drawn; a sample far out of focus can lose
+    // its stars on the smaller picture under the two-row head and is left off the chart.
+    expect(await page.getByRole("region", { name: "Autofocus curve" }).locator(".oh-chart circle").count()).toBeGreaterThanOrEqual(14);
   });
 });
 
@@ -297,11 +310,13 @@ test.describe("the real instrument", () => {
     await expect(view(page).getByText("Booked target")).toBeVisible();
     await expect(view(page).getByText("Hercules Cluster", { exact: true })).toBeVisible();
     // Nothing of the model's is offered on the real instrument.
-    await expect(page.getByRole("button", { name: /FIND & TRACK/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /OBSERVE/ })).toHaveCount(0);
+    await expect(page.locator(".oh-apnote")).toHaveText("Your booked target: the platform runs the GoTo.");
+    await step(page, "More");
     const hand = page.getByRole("region", { name: "Hand control" });
     await expect(hand.getByRole("button", { name: "Mount settings" })).toBeDisabled();
     await expect(hand.getByRole("button", { name: "Sync" })).toBeDisabled();
-    await expect(page.locator(".oh-apnote")).toHaveText("Your booked target: the platform runs the GoTo.");
+    await step(page, "Point");
 
     // The booked mission is already observing, so the console reopens its session on
     // arrival, as the live room does; a scheduled one would wait for "Start session".
@@ -313,12 +328,17 @@ test.describe("the real instrument", () => {
     const pad = page.getByRole("group", { name: "Mount slew" });
     await pad.getByRole("button", { name: "Slew up", exact: true }).dispatchEvent("pointerdown", { pointerId: 1 });
     await pad.getByRole("button", { name: "Slew up", exact: true }).dispatchEvent("pointerup", { pointerId: 1 });
+    // The hand control, under More, says what the agent made of it.
+    await step(page, "More");
     await expect(hand.locator("p[role=status]")).toHaveText(/Relayed|Done/);
     await expect(hand.locator("p[role=status]")).toHaveText("Done", { timeout: 10_000 });
 
     // Capture is the platform's CAPTURE; the session's end is a confirmed stop.
+    await step(page, "Shoot");
     await page.getByRole("button", { name: "Capture", exact: true }).click();
+    await step(page, "More");
     await expect(hand.locator("p[role=status]")).toHaveText("Done", { timeout: 10_000 });
+    await step(page, "Point");
     await page.locator(".oh-head").getByRole("button", { name: "STOP" }).click();
     await expect(page.locator(".oh-apnote")).toHaveText("Confirm stop");
   });

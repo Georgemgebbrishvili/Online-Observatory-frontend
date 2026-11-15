@@ -481,13 +481,16 @@ test("the observatory console stands by on the sky model, badged simulated, with
   // ADR-053 §6 as amended: no stations the product has no plan behind.
   await expect(page.getByText("Coming soon")).toHaveCount(0);
   await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
+  // The hub's steps: Setup is under More, the Autopilot under Point.
+  await page.locator(".oh-stepnav").getByRole("button", { name: "More" }).click();
   await page.getByRole("tab", { name: "Setup" }).click();
   await expect(page.getByRole("tabpanel").getByText("12%")).toBeVisible();
+  await page.locator(".oh-stepnav").getByRole("button", { name: /Point/ }).click();
 
   // The Autopilot starts on tonight's highest observable target from the catalogue.
   const autopilot = page.getByRole("region", { name: "Autopilot" });
   await expect(autopilot.locator(".oh-big")).toHaveText("Albireo");
-  await expect(autopilot.getByRole("button", { name: /FIND & TRACK/ })).toBeEnabled();
+  await expect(autopilot.getByRole("button", { name: /OBSERVE/ })).toBeEnabled();
 
   // Nothing is drawn as the telescope's output: standby, captioned, no step under way.
   const view = page.getByRole("region", { name: "Telescope view" });
@@ -514,7 +517,7 @@ test("the console connects, aligns and points at the quick start's target", asyn
   await page.clock.install({ time: new Date("2026-09-25T20:00:00+04:00") });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory?turbo");
-  await page.getByRole("button", { name: /FIND & TRACK/ }).click();
+  await page.getByRole("button", { name: /OBSERVE/ }).click();
 
   // Align and point run as one chain; the feed is the sky model's.
   await expect(page.locator(".oh-pipe [aria-current=step]")).toContainText("Align", {
@@ -531,6 +534,7 @@ test("the console connects, aligns and points at the quick start's target", asyn
     timeout: 60_000,
   });
   await expect(view.getByText(/^Albireo/)).toBeVisible();
+  await page.locator(".oh-stepnav").getByRole("button", { name: /Shoot/ }).click();
   await expect(page.getByRole("button", { name: /^Capture \d+ × \d+ m?s/ })).toBeEnabled();
 
   // Park drives the mount home.

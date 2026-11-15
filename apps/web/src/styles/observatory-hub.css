@@ -72,14 +72,25 @@
 .oh-head {
   flex: none;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   margin: var(--gap) var(--gap) 0;
   padding: 6px 10px;
   border: 1px solid var(--line2);
-  border-radius: 999px;
+  border-radius: 22px;
   background: rgba(var(--bg-rgb), 0.86);
   box-shadow: var(--sh);
+}
+.oh-head-top,
+.oh-head-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.oh-head-top {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
 }
 .oh-brand {
   display: flex;
@@ -133,52 +144,95 @@
   border-color: rgba(46, 204, 113, 0.5);
   background: rgba(46, 204, 113, 0.1);
 }
+.oh-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
 .oh-dev {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 3px 12px 3px 4px;
+  gap: 7px;
+  padding: 5px 12px;
   border-radius: 999px;
   background: var(--card2);
   border: 1px solid var(--line);
   flex: none;
 }
-.oh-di {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: var(--raise);
-}
 .oh-dot {
-  position: absolute;
-  right: -1px;
-  bottom: -1px;
-  width: 10px;
-  height: 10px;
+  flex: none;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: rgba(var(--ink-rgb), 0.25);
-  border: 2px solid rgb(var(--bg-rgb));
 }
 .oh-dot.is-on {
   background: #2ecc71;
+  box-shadow: 0 0 8px rgba(46, 204, 113, 0.7);
 }
 .oh-dev b {
-  display: block;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.15;
 }
 .oh-dev small {
-  display: block;
   font-size: 13px;
   color: var(--mute);
   white-space: nowrap;
   max-width: 96px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.oh-stepnav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card2);
+}
+.oh-stepnav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 16px 0 6px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--mute);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.oh-stepnav button i {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--raise);
+  font-style: normal;
+  font-size: 13px;
+}
+.oh-stepnav button:hover {
+  color: var(--ink);
+}
+.oh-stepnav button.is-on {
+  background: var(--acc);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(var(--acc-rgb), 0.4);
+}
+.oh-stepnav button.is-on i {
+  background: rgba(255, 255, 255, 0.22);
+}
+.oh-stepnav .oh-stepnav__more {
+  width: 36px;
+  padding: 0;
+  justify-content: center;
 }
 .oh-sp {
   flex: 1;
@@ -295,10 +349,15 @@
 .oh-dock {
   grid-column: 2;
   grid-row: 2;
-  display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
+  display: flex;
   gap: var(--gap);
   align-items: stretch;
+  min-width: 0;
+}
+.oh-dock > .oh-card,
+.oh-move > .oh-card {
+  flex: 1 1 0;
+  min-width: 0;
 }
 .oh-move {
   display: contents;
@@ -854,6 +913,73 @@
   align-items: center;
   gap: 8px;
   width: 100%;
+}
+.oh-slew__side {
+  flex: 1;
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+.oh-speed {
+  display: grid;
+  gap: 6px;
+}
+.oh-speed .oh-h3 {
+  margin: 0;
+}
+.oh-speed__segs {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 4px;
+}
+.oh-speed__segs button {
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card2);
+  color: var(--mute);
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+.oh-speed__segs button.is-under {
+  background: rgba(var(--acc-rgb), 0.28);
+  color: var(--ink);
+}
+.oh-speed__segs button.is-on {
+  background: var(--acc);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(var(--acc-rgb), 0.35);
+}
+.oh-speed__segs button:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.oh-speed__note {
+  color: var(--mute);
+  font-size: 13px;
+}
+.oh-kv {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 16px;
+  margin: 0;
+}
+.oh-kv div {
+  display: contents;
+}
+.oh-kv dt {
+  color: var(--mute);
+  font-size: 13px;
+}
+.oh-kv dd {
+  margin: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .oh-slew__plate {
   position: relative;
@@ -1558,7 +1684,7 @@
 }
 .oh-pipe {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 3px;
   margin: 12px 0 8px;
   padding: 0;
@@ -1576,12 +1702,24 @@
 }
 .oh-pipe li {
   position: relative;
+  min-width: 0;
+  overflow-wrap: anywhere;
   text-align: center;
   font-size: 13px;
   font-weight: 600;
   color: var(--mute);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+.oh-pipe li:lang(ka) {
+  letter-spacing: 0;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+/* Georgian's step names run wider than a fifth of the card: every other one sits a line
+   lower, so each word has two columns to itself and none is broken. */
+.oh-pipe li:lang(ka):nth-child(even)::before {
+  margin-bottom: calc(4px + 1.35em);
 }
 .oh-pipe li::before {
   content: "";
@@ -1658,6 +1796,39 @@
   border-radius: 10px;
   padding: 7px 10px;
   margin: 8px 0 0;
+}
+/* the autopilot's settings, folded as the hub folds them */
+.oh-fold {
+  margin-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.oh-fold > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  color: var(--mute);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.oh-fold > summary::-webkit-details-marker {
+  display: none;
+}
+.oh-fold > summary::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
+  transform: rotate(-45deg);
+  transition: transform 160ms ease;
+}
+.oh-fold[open] > summary::before {
+  transform: rotate(45deg);
+}
+.oh-fold > summary:hover {
+  color: var(--ink);
 }
 .oh-linkbtns {
   display: flex;
@@ -1813,10 +1984,6 @@
   .oh-main {
     grid-template-columns: 260px minmax(0, 1fr) 300px;
   }
-  .oh-clock,
-  .oh-dev--focuser {
-    display: none;
-  }
   .oh-hbtn__t {
     display: none;
   }
@@ -1838,9 +2005,6 @@
   .oh-right {
     grid-column: 2;
   }
-  .oh-dev {
-    display: none;
-  }
 }
 @media (max-height: 820px) and (min-width: 48rem) {
   .oh-slew__plate {
@@ -1858,8 +2022,11 @@
   .oh-card {
     padding: 10px 12px;
   }
-  /* nine tools at 36 px stand taller than the picture on a 720 px laptop */
+  /* nine tools at 36 px stand taller than the picture on a 720 px laptop, more so under
+     the two-row head: two columns */
   .oh-vtools {
+    display: grid;
+    grid-template-columns: repeat(2, 30px);
     gap: 1px;
     padding: 3px;
   }
@@ -1868,7 +2035,7 @@
     height: 30px;
   }
   .oh-vtools__sep {
-    margin: 1px 6px;
+    display: none;
   }
   /* and the idle card leaves the readouts and the caption in view */
   .oh .sdo-idle {
@@ -1877,6 +2044,44 @@
   }
   .oh .sdo-idle__icon {
     display: none;
+  }
+}
+
+/* ---------- one step at a time, as the hub does it ---------- */
+@media (--md) {
+  .oh:not([data-step="point"]):not([data-step="targets"]) :is(.oh-dock [data-tab="point"], .oh-right > [data-tab="point"]),
+  .oh:not([data-step="focus"]) :is(.oh-dock [data-tab="focus"], .oh-right > [data-tab="focus"]),
+  .oh:not([data-step="shoot"]) :is(.oh-dock [data-tab="shoot"], .oh-right > [data-tab="shoot"]),
+  .oh:not([data-step="more"]) .oh-right > [data-tab="more"] {
+    display: none;
+  }
+  /* the pad beside its speed strip and readouts; the dial beside its autofocus */
+  .oh-slewcard,
+  .oh-focuscard {
+    width: auto;
+    align-items: stretch;
+  }
+  .oh-slew {
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(16px, 3vw, 36px);
+  }
+  .oh-focuscard {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: clamp(16px, 3vw, 36px);
+    align-items: center;
+  }
+  .oh-focuscard .oh-h3 {
+    grid-column: 1 / -1;
+  }
+  .oh-focuscard .oh-dial {
+    width: auto;
+  }
+  .oh-focuscard .oh-af {
+    margin-top: 0;
+    max-width: 320px;
   }
 }
 
@@ -1889,12 +2094,12 @@
   /* The site header already names the product; here the row belongs to the badge and to
      Day, Night, Park and STOP, which must never leave the screen. A long Georgian row wraps. */
   .oh-head {
-    flex-wrap: wrap;
-    gap: 6px;
     padding: 5px 8px;
     border-radius: 18px;
   }
-  .oh-brand {
+  /* the steps are the tabs at the foot; the strip's lights are in the picture's status */
+  .oh-head-top,
+  .oh-stepnav {
     display: none;
   }
   .oh-bt b {
@@ -1908,31 +2113,38 @@
     font-size: 13px;
     padding: 3px 7px;
   }
-  .oh-dev,
   .oh-clock,
   .oh-hbtn .oh-sw,
   .oh-hbtn__t {
     display: none;
   }
   .oh-hbtn {
-    padding: 7px 9px;
+    padding: 6px 8px;
     min-height: 34px;
   }
   .oh-estop {
-    padding: 9px 12px;
+    padding: 8px 11px;
     min-height: 34px;
     font-size: 13px;
   }
+  /* one row on a 320 px phone: the badge and the four buttons */
+  .oh-head-bar {
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+  /* The picture is the screen: it takes what the controls leave, and all of it when the
+     open step is folded away. */
   .oh-main {
     display: flex;
     flex-direction: column;
     gap: var(--gap);
     padding: var(--gap);
-    padding-bottom: calc(var(--gap) + var(--tab-bar-space, 0px));
+    padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom, 0px));
   }
   .oh-stage {
-    flex: none;
-    height: min(42vh, calc(100vw * 9 / 16 + 24px));
+    flex: 1 1 auto;
+    min-height: 34svh;
+    transition: min-height 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .oh .sdo-view {
     border-radius: 14px;
@@ -1940,22 +2152,20 @@
       0 0 0 2px rgba(var(--bg-rgb), 0.65),
       0 0 0 3px var(--line2);
   }
-  /* nine tools in one column are taller than the phone's picture, and two columns of five
-     run under the optics pills on a 360 px phone: three rows of three, below the pills */
+  /* nine tools in one slim row under the optics pills: the picture keeps its middle */
   .oh-vtools {
     left: 8px;
     top: 50px;
     transform: none;
-    padding: 3px;
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-rows: repeat(3, 32px);
-    gap: 2px;
-    border-radius: 18px;
+    padding: 2px;
+    display: flex;
+    flex-direction: row;
+    gap: 1px;
+    border-radius: 16px;
   }
   .oh-vtools button {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
   .oh-vtools__sep {
     display: none;
@@ -2004,9 +2214,8 @@
     right: 8px;
     bottom: 40px;
   }
-  /* the Autopilot card under the picture says the same thing; here the title is enough */
-  .oh .sdo-idle__text,
-  .oh .sdo-idle__note {
+  /* the Autopilot card under the picture says the same thing: a phone keeps the sky clear */
+  .oh .sdo-idle {
     display: none;
   }
   .oh .sdo-idle__title {
@@ -2045,10 +2254,15 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap);
-    flex: 1;
+    flex: 0 1 auto;
+    max-height: 31svh;
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
+    animation: oh-rise 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .oh[data-folded="true"] .oh-rest {
+    display: none;
   }
   .oh-left,
   .oh-right,
@@ -2059,31 +2273,44 @@
   .oh-rest [data-tab] {
     display: none;
   }
-  .oh[data-tab="track"] .oh-rest [data-tab="track"],
-  .oh[data-tab="camera"] .oh-rest [data-tab="camera"],
-  .oh[data-tab="targets"] .oh-rest [data-tab="targets"],
-  .oh[data-tab="more"] .oh-rest [data-tab="more"] {
+  .oh[data-step="point"] .oh-rest [data-tab="point"],
+  .oh[data-step="focus"] .oh-rest [data-tab="focus"],
+  .oh[data-step="shoot"] .oh-rest [data-tab="shoot"],
+  .oh[data-step="targets"] .oh-rest [data-tab="targets"],
+  .oh[data-step="more"] .oh-rest [data-tab="more"] {
     display: block;
   }
-  .oh[data-tab="camera"] .oh-rest .oh-exp {
+  .oh[data-step="point"] .oh-rest .oh-slewcard,
+  .oh[data-step="focus"] .oh-rest .oh-focuscard,
+  .oh[data-step="shoot"] .oh-rest .oh-exp {
     display: flex;
   }
-  .oh[data-tab="move"] .oh-rest .oh-move {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--gap);
+  /* Point opens on Observe; the pad follows it */
+  .oh-apcard {
+    order: -1;
   }
-  .oh[data-tab="move"] .oh-rest .oh-move > .oh-card {
-    display: flex;
+  .oh-slew {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+  }
+  .oh-speed__segs button {
+    min-height: 32px;
+  }
+  .oh-mtabs {
+    order: 3;
+  }
+  .oh-mtabs button.is-sel {
+    color: var(--ink);
   }
   .oh-slewcard,
   .oh-focuscard {
     width: auto;
   }
   .oh-slew__plate {
-    width: min(100%, 160px);
-    aspect-ratio: 1;
-    height: auto;
+    flex: none;
+    width: 136px;
+    height: 136px;
   }
   .oh-dial__knob {
     width: min(100%, 140px);
@@ -2097,9 +2324,47 @@
     padding: 0;
   }
 }
-@media (--below-md) and (max-width: 400px) {
-  .oh[data-tab="move"] .oh-rest .oh-move {
-    grid-template-columns: 1fr;
+/* A 320 px phone: STOP keeps its word and gives up its square. A longer Georgian row
+   wraps, and STOP then takes the whole second line; on one line it takes the room left. */
+@media (--below-sm) {
+  .oh-head-bar {
+    flex-wrap: wrap;
+  }
+  .oh-head-bar .oh-sp {
+    display: none;
+  }
+  .oh-estop {
+    flex: 1 0 auto;
+    justify-content: center;
+  }
+  /* each tab as wide as its word: Georgian's longer words take the room */
+  .oh-mtabs {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(max-content, 1fr);
+    gap: 0;
+  }
+  .oh-mtabs button {
+    padding-inline: 3px;
+  }
+  .oh-estop i {
+    display: none;
+  }
+  .oh-hbtn {
+    padding: 6px 7px;
+  }
+}
+@keyframes oh-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oh-rest,
+  .oh-stage {
+    animation: none;
+    transition: none;
   }
 }
 

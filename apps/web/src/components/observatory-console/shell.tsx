@@ -32,8 +32,9 @@ export type HubTarget = {
   alias?: string;
 };
 type Filter = 'planet' | 'star' | 'deep' | 'custom' | 'all';
-type MoreTab = 'mount' | 'align' | 'focus' | 'setup' | 'log';
-type PhoneTab = 'track' | 'move' | 'camera' | 'targets' | 'more';
+type MoreTab = 'mount' | 'align' | 'setup' | 'log';
+/** The hub's steps (ADR-083 amendment 2026-11-15); Targets is a phone's own, a desk shows them always. */
+type Step = 'point' | 'focus' | 'shoot' | 'targets' | 'more';
 
 /** Everything the console draws, decided by whichever instrument drives it: the Observatory Hub's cockpit (ADR-083). */
 export type ShellProps = {
@@ -135,7 +136,7 @@ function KindIcon({ kind, id, size = 30 }: { kind: HubKind; id: string; size?: n
   );
 }
 
-function Card({ icon, title, chip, chipOk, className, children, tab, label }: { icon: IconName; title: string; chip?: string | null; chipOk?: boolean; className?: string; children: ReactNode; tab: PhoneTab; label?: string }) {
+function Card({ icon, title, chip, chipOk, className, children, tab, label }: { icon: IconName; title: string; chip?: string | null; chipOk?: boolean; className?: string; children: ReactNode; tab: Step; label?: string }) {
   return (
     <section className={`oh-card${className ? ` ${className}` : ''}`} aria-label={label ?? title} data-tab={tab}>
       <h2 className="oh-h2">
@@ -234,7 +235,17 @@ export function ConsoleShell(p: ShellProps) {
   const { t } = p;
   const root = useRef<HTMLDivElement>(null);
   const [more, setMore] = useState<MoreTab>('mount');
-  const [phone, setPhone] = useState<PhoneTab>('track');
+  const [step, setStep] = useState<Step>('point');
+  // On a phone the open step's controls can be folded away, so the picture has the screen.
+  const [folded, setFolded] = useState(false);
+  const choose = (next: Step) => {
+    if (next === step) setFolded((f) => !f);
+    else {
+      setStep(next);
+      setFolded(false);
+    }
+  };
+  const view = step === 'targets' ? 'point' : step;
   const [look, setLook] = useState<ViewLook>({ grid: false, invert: false, mirror: false, flip: false });
   const ap = p.autopilot;
   const af = p.focuser.af;
@@ -286,33 +297,52 @@ export function ConsoleShell(p: ShellProps) {
 
   return (
     <CopyProvider value={t}>
-    <div ref={root} className={`sdo oh${p.night ? ' is-night' : ''}`} data-tab={phone} aria-busy={p.mounted ? undefined : true}>
+    <div ref={root} className={`sdo oh${p.night ? ' is-night' : ''}`} data-step={step} data-folded={folded} aria-busy={p.mounted ? undefined : true}>
       <div className="oh-head">
-        <div className="oh-brand">
-          <span className="oh-logo" aria-hidden="true">
-            <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="9" fill="url(#oh-lg)" stroke="none" /><ellipse cx="20" cy="20" rx="18" ry="6.5" transform="rotate(-18 20 20)" fill="none" stroke="currentColor" strokeWidth="2" /><defs><radialGradient id="oh-lg" cx="35%" cy="30%" r="80%"><stop offset="0" stopColor="#e8eeff" /><stop offset="1" stopColor="#3b6ef6" /></radialGradient></defs></svg>
-          </span>
-          <span className="oh-bt"><b>{p.observatoryName}</b><small>{t.hub.brand}</small></span>
-        </div>
-        {p.simulated ? <span className="oh-badge" title={t.simulatedLong}>{t.simulated}</span> : <span className="oh-badge is-live">{t.live}</span>}
-        {p.devices.map((d) => (
-          <div key={d.key} className={`oh-dev oh-dev--${d.key}`}>
-            <span className="oh-di"><Icon name={d.key === 'mount' ? 'mount' : d.key === 'camera' ? 'camera' : 'focuser'} size={16} /><span className={`oh-dot${d.on ? ' is-on' : ''}`} /></span>
-            <div><b>{d.label}</b><small>{d.text}</small></div>
+        <div className="oh-head-top">
+          <div className="oh-brand">
+            <span className="oh-logo" aria-hidden="true">
+              <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="9" fill="url(#oh-lg)" stroke="none" /><ellipse cx="20" cy="20" rx="18" ry="6.5" transform="rotate(-18 20 20)" fill="none" stroke="currentColor" strokeWidth="2" /><defs><radialGradient id="oh-lg" cx="35%" cy="30%" r="80%"><stop offset="0" stopColor="#e8eeff" /><stop offset="1" stopColor="#3b6ef6" /></radialGradient></defs></svg>
+            </span>
+            <span className="oh-bt"><b>{p.observatoryName}</b><small>{t.hub.brand}</small></span>
           </div>
-        ))}
-        <div className="oh-sp" />
-        <div className="oh-clock sdo-mono">{p.clock.local}<small>{t.hub.lst} {p.clock.lst}</small></div>
-        {p.daytime && (
-          <button className={`oh-hbtn oh-tog${p.daytime.on ? ' is-on' : ''}`} type="button" onClick={p.daytime.onToggle} aria-pressed={p.daytime.on} aria-label={t.hub.daytime} title={t.hub.daytimeHint}>
-            <Icon name="sun" size={17} /><span className="oh-hbtn__t">{t.hub.daytime}</span><i className="oh-sw" />
+          <div className="oh-sp" />
+          {/* The hub's status strip: one chip a device, lit when it answers. */}
+          <div className="oh-strip">
+            {p.devices.map((d) => (
+              <div key={d.key} className={`oh-dev oh-dev--${d.key}`}>
+                <span className={`oh-dot${d.on ? ' is-on' : ''}`} />
+                <b>{d.label}</b>
+                <small>{d.text}</small>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="oh-head-bar">
+          {p.simulated ? <span className="oh-badge" title={t.simulatedLong}>{t.simulated}</span> : <span className="oh-badge is-live">{t.live}</span>}
+          <nav className="oh-stepnav" aria-label={t.hub.steps.label}>
+            {(['point', 'focus', 'shoot'] as const).map((s, i) => (
+              <button key={s} type="button" className={view === s ? 'is-on' : ''} aria-pressed={view === s} onClick={() => choose(s)}>
+                <i>{i + 1}</i>{t.hub.steps[s]}
+              </button>
+            ))}
+            <button type="button" className={`oh-stepnav__more${view === 'more' ? ' is-on' : ''}`} aria-pressed={view === 'more'} aria-label={t.hub.steps.more} title={t.hub.steps.more} onClick={() => choose('more')}>
+              <Icon name="sliders" size={17} />
+            </button>
+          </nav>
+          <div className="oh-sp" />
+          <div className="oh-clock sdo-mono">{p.clock.local}<small>{t.hub.lst} {p.clock.lst}</small></div>
+          {p.daytime && (
+            <button className={`oh-hbtn oh-tog${p.daytime.on ? ' is-on' : ''}`} type="button" onClick={p.daytime.onToggle} aria-pressed={p.daytime.on} aria-label={t.hub.daytime} title={t.hub.daytimeHint}>
+              <Icon name="sun" size={17} /><span className="oh-hbtn__t">{t.hub.daytime}</span><i className="oh-sw" />
+            </button>
+          )}
+          <button className={`oh-hbtn oh-tog${p.night ? ' is-on' : ''}`} type="button" onClick={p.onNight} aria-pressed={p.night} aria-label={t.nightMode} title={t.nightMode}>
+            <Icon name="moon" size={17} /><span className="oh-hbtn__t">{t.hub.night}</span><i className="oh-sw" />
           </button>
-        )}
-        <button className={`oh-hbtn oh-tog${p.night ? ' is-on' : ''}`} type="button" onClick={p.onNight} aria-pressed={p.night} aria-label={t.nightMode} title={t.nightMode}>
-          <Icon name="moon" size={17} /><span className="oh-hbtn__t">{t.hub.night}</span><i className="oh-sw" />
-        </button>
-        <button className="oh-hbtn" type="button" onClick={() => p.onPark?.()} disabled={!p.onPark} aria-label={t.hub.park}><Icon name="parkP" size={17} /><span className="oh-hbtn__t">{t.hub.park}</span></button>
-        <button className="oh-estop" type="button" onClick={() => p.onStopAll?.()} disabled={!p.onStopAll}><i />{t.hub.stopAll}</button>
+          <button className="oh-hbtn" type="button" onClick={() => p.onPark?.()} disabled={!p.onPark} aria-label={t.hub.park}><Icon name="parkP" size={17} /><span className="oh-hbtn__t">{t.hub.park}</span></button>
+          <button className="oh-estop" type="button" onClick={() => p.onStopAll?.()} disabled={!p.onStopAll}><i />{t.hub.stopAll}</button>
+        </div>
       </div>
 
       <main id="main-content" className="oh-main">
@@ -320,15 +350,6 @@ export function ConsoleShell(p: ShellProps) {
         <section className="oh-stage" aria-label={t.stage.aria}>
           <ViewStage {...p.stage} look={look} overlay={overlay} />
         </section>
-
-        <nav className="oh-mtabs" aria-label={t.hub.controls}>
-          {(['track', 'move', 'camera', 'targets', 'more'] as const).map((v) => (
-            <button key={v} type="button" className={phone === v ? 'is-on' : ''} aria-pressed={phone === v} onClick={() => setPhone(v)}>
-              <Icon name={v === 'track' ? 'bolt' : v === 'move' ? 'mount' : v === 'camera' ? 'camera' : v === 'targets' ? 'rings' : 'sliders'} size={18} />
-              <span>{t.hub.phoneTabs[v]}</span>
-            </button>
-          ))}
-        </nav>
 
         <div className="oh-rest">
           <div className="oh-left">
@@ -349,12 +370,12 @@ export function ConsoleShell(p: ShellProps) {
           </div>
 
           <div className="oh-dock">
-            <div className="oh-move" data-tab="move">
-              <section className="oh-card oh-slewcard" aria-label={t.hub.slew}>
+            <div className="oh-move">
+              <section className="oh-card oh-slewcard" aria-label={t.hub.slew} data-tab="point">
                 <h2 className="oh-h3">{t.hub.slew}</h2>
-                <SlewPad {...p.slew} />
+                <SlewPad {...p.slew} rows={p.pointing.rows.slice(0, 4)} />
               </section>
-              <section className="oh-card oh-focuscard" aria-label={t.hub.focuser.title}>
+              <section className="oh-card oh-focuscard" aria-label={t.hub.focuser.title} data-tab="focus">
                 <h2 className="oh-h3">{t.hub.focuser.title}</h2>
                 <FocusDial {...p.focuser} />
                 {af && (
@@ -371,7 +392,7 @@ export function ConsoleShell(p: ShellProps) {
           </div>
 
           <div className="oh-right">
-            <Card icon="bolt" title={t.hub.autopilot.title} chip={ap.sub} chipOk={ap.pipe.done >= 5} className="oh-apcard" tab="track">
+            <Card icon="bolt" title={t.hub.autopilot.title} chip={ap.sub} chipOk={ap.pipe.done >= 5} className="oh-apcard" tab="point">
               <div className="oh-selrow">
                 {ap.plate && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -390,27 +411,48 @@ export function ConsoleShell(p: ShellProps) {
                   <li key={s} className={i < ap.pipe.done ? 'is-done' : i === ap.pipe.now ? 'is-now' : ''} aria-current={i === ap.pipe.now ? 'step' : undefined}>{s}</li>
                 ))}
               </ol>
-              <div className="oh-readout">
-                {ap.readout.map(([k, v]) => <div key={k}><small>{k}</small><b>{v}</b></div>)}
-              </div>
               {ap.note && <p className="oh-apnote">{ap.note}</p>}
               {ap.links.length > 0 && (
                 <div className="oh-linkbtns">
                   {ap.links.map((l) => <button key={l.label} type="button" className="oh-btn" onClick={l.run} disabled={l.disabled}>{l.label}</button>)}
                 </div>
               )}
-              {ap.after.length > 0 && (
-                <div className="oh-after" role="group" aria-label={t.hub.autopilot.after}>
-                  <span className="oh-h3">{t.hub.autopilot.after}</span>
-                  {ap.after.map((a) => (
-                    <label key={a.label} className="oh-pill"><input type="checkbox" checked={a.on} disabled={!a.onToggle} onChange={() => a.onToggle?.()} />{a.label}</label>
-                  ))}
-                </div>
-              )}
               {ap.log.length > 0 && <div className="oh-aplog sdo-mono" aria-live="polite">{ap.log.slice(-3).map((l, i) => <div key={i}>{l}</div>)}</div>}
+              {/* The rest of the autopilot folds away, as the hub keeps it. */}
+              <details className="oh-fold">
+                <summary>{t.hub.autopilot.settings}</summary>
+                <div className="oh-readout">
+                  {ap.readout.map(([k, v]) => <div key={k}><small>{k}</small><b>{v}</b></div>)}
+                </div>
+                {ap.after.length > 0 && (
+                  <div className="oh-after" role="group" aria-label={t.hub.autopilot.after}>
+                    <span className="oh-h3">{t.hub.autopilot.after}</span>
+                    {ap.after.map((a) => (
+                      <label key={a.label} className="oh-pill"><input type="checkbox" checked={a.on} disabled={!a.onToggle} onChange={() => a.onToggle?.()} />{a.label}</label>
+                    ))}
+                  </div>
+                )}
+              </details>
             </Card>
 
-            <Card icon="camera" title={t.hub.capture} chip={p.capture.total} chipOk={p.capture.progress.frac > 0} className="oh-capcard" tab="camera">
+            <Card icon="focuser" title={t.hub.focuser.assistant} className="oh-assist" tab="focus" label={t.hub.focuser.curve}>
+              <div className="oh-metric">
+                {p.focuser.rows.map(([k, v]) => <div key={k}><small>{k}</small><b>{v}</b></div>)}
+              </div>
+              {af && (
+                <>
+                  <div className="oh-tabs" role="group" aria-label={t.hub.focuser.method}>
+                    {(['auto', 'hfr', 'contrast'] as const).map((m) => (
+                      <button key={m} type="button" className={af.state.method === m ? 'is-on' : ''} aria-pressed={af.state.method === m} onClick={() => af.run(m)} disabled={!p.focuser.enabled || af.state.running}>{t.hub.focuser.methods[m]}</button>
+                    ))}
+                  </div>
+                  <AfChart af={af.state} t={t} />
+                  {afResult && <p className="oh-hint">{afResult}{af.state.fit ? ` · R² ${af.state.fit.r2.toFixed(3)}` : ''}</p>}
+                </>
+              )}
+            </Card>
+
+            <Card icon="camera" title={t.hub.capture} chip={p.capture.total} chipOk={p.capture.progress.frac > 0} className="oh-capcard" tab="shoot">
               <div className="oh-cstats">
                 {p.capture.stats.map(([k, v]) => <div key={k}><small>{k}</small><b>{v}</b></div>)}
               </div>
@@ -430,7 +472,7 @@ export function ConsoleShell(p: ShellProps) {
 
             <section className="oh-card oh-more" aria-label={t.hub.controls} data-tab="more">
               <div className="oh-tabs" role="tablist" aria-label={t.hub.controls}>
-                {(['mount', 'align', 'focus', 'setup', 'log'] as const).map((k) => (
+                {(['mount', 'align', 'setup', 'log'] as const).map((k) => (
                   <button key={k} type="button" role="tab" aria-selected={more === k} className={more === k ? 'is-on' : ''} onClick={() => setMore(k)}>{t.hub.tabs[k]}</button>
                 ))}
               </div>
@@ -451,24 +493,6 @@ export function ConsoleShell(p: ShellProps) {
                   </div>
                 </div>
               )}
-              {more === 'focus' && (
-                <div role="tabpanel" aria-label={t.hub.focuser.curve}>
-                  <div className="oh-metric">
-                    {p.focuser.rows.map(([k, v]) => <div key={k}><small>{k}</small><b>{v}</b></div>)}
-                  </div>
-                  {af && (
-                    <>
-                      <div className="oh-tabs" role="group" aria-label={t.hub.focuser.method}>
-                        {(['auto', 'hfr', 'contrast'] as const).map((m) => (
-                          <button key={m} type="button" className={af.state.method === m ? 'is-on' : ''} aria-pressed={af.state.method === m} onClick={() => af.run(m)} disabled={!p.focuser.enabled || af.state.running}>{t.hub.focuser.methods[m]}</button>
-                        ))}
-                      </div>
-                      <AfChart af={af.state} t={t} />
-                      {afResult && <p className="oh-hint">{afResult}{af.state.fit ? ` · R² ${af.state.fit.r2.toFixed(3)}` : ''}</p>}
-                    </>
-                  )}
-                </div>
-              )}
               {more === 'setup' && <div role="tabpanel">{p.setup}</div>}
               {more === 'log' && (
                 <div role="tabpanel" className="oh-notes sdo-mono">
@@ -480,6 +504,24 @@ export function ConsoleShell(p: ShellProps) {
             <div className="oh-pointing" data-tab="more"><Pointing {...p.pointing} /></div>
           </div>
         </div>
+
+        {/* A phone: the steps as tabs at the thumb; the open one again folds its controls away. */}
+        <nav className="oh-mtabs" aria-label={t.hub.steps.label}>
+          {(['point', 'focus', 'shoot', 'targets', 'more'] as const).map((v) => (
+            <button
+              key={v}
+              type="button"
+              className={step === v && !folded ? 'is-on' : step === v ? 'is-sel' : ''}
+              aria-pressed={step === v}
+              aria-expanded={step === v ? !folded : undefined}
+              title={step === v && !folded ? t.hub.steps.hide : undefined}
+              onClick={() => choose(v)}
+            >
+              <Icon name={v === 'point' ? 'target' : v === 'focus' ? 'focuser' : v === 'shoot' ? 'camera' : v === 'targets' ? 'rings' : 'sliders'} size={18} />
+              <span>{t.hub.steps[v]}</span>
+            </button>
+          ))}
+        </nav>
       </main>
       {p.modals}
     </div>

@@ -135,3 +135,29 @@ Found by running the console end to end, at its own pace and at `?turbo`, on a d
   the field it slews across, not a card still asking for Find & Track.
 - **A capture's times are its exposure's.** A live stack that had stood finished for minutes
   stamped the capture from the stack's start; the span is now the frames it holds.
+
+## Amendment — 2026-11-15
+
+Nika: make the observatory the same as our Observatory Hub (~/telescope, as it stands after
+its 2026-11-13 step layout), and on a phone the observation screen first.
+
+- **Steps.** The hub's Point · Focus · Shoot (and the gear for More) are a step bar in the
+  console's head; a desk shows the open step's tools under the picture and beside it, one
+  task at a time: Point = slew pad + Autopilot, Focus = focuser dial + Focus assistant (the
+  autofocus curve, moved out of More's tabs), Shoot = exposure + capture, More = hand
+  control, alignment, setup, log, pointing. Targets, Tonight and the sky dome stay on the
+  left on every step. The hub's Night step (an unattended plan) has no web counterpart.
+- **Head.** Two rows, as the hub's: name and the status strip (one lit chip a device), then
+  the badge, the steps, the clock, Day, Night, Park and STOP.
+- **Observe.** The Autopilot's button reads OBSERVE (დაკვირვება), the hub's word: it already
+  aligns, finds, centres, tracks and, after the lock, sets the exposure and focuses. Where am
+  I? · GoTo only · Sync stay under it; the readouts and the after-lock switches fold into
+  "Autopilot settings".
+- **Slew speed** is the hub's 1–9 strip with the rate named under it, beside the pad with
+  the altitude, azimuth, RA and Dec. The hand control keeps its own rate buttons.
+- **A phone is the picture.** The console's tabs (the steps plus Targets) sit at the thumb
+  and the site's tab bar is hidden on this page; the picture takes all the height the open
+  step leaves (about a third of the screen for the controls), and tapping the open tab folds
+  the controls away so the picture fills the screen. The idle card is not drawn on a phone;
+  the view tools are one slim row under the optics pills. On a 320 px phone a Georgian head
+  wraps and STOP takes its own line.

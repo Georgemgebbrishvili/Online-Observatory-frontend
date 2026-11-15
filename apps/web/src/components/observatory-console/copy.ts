@@ -279,7 +279,10 @@ export type ConsoleCopy = {
     daytime: string;
     daytimeHint: string;
     daytimeNote: string;
-    tabs: { mount: string; align: string; focus: string; setup: string; log: string };
+    tabs: { mount: string; align: string; setup: string; log: string };
+    /** The hub's steps, in the order the work is done; a phone adds Targets. */
+    steps: { label: string; point: string; focus: string; shoot: string; targets: string; more: string; hide: string };
+    slewSpeed: string;
     autopilot: {
       title: string;
       pick: string;
@@ -295,6 +298,7 @@ export type ConsoleCopy = {
       gotoOnly: string;
       sync: string;
       after: string;
+      settings: string;
       afterExposure: string;
       afterFocus: string;
       keepCentred: string;
@@ -303,6 +307,7 @@ export type ConsoleCopy = {
     align: { steps: [string, string, string, string]; points: string; none: string; clear: string };
     focuser: {
       title: string;
+      assistant: string;
       position: string;
       state: string;
       idle: string;
@@ -336,7 +341,6 @@ export type ConsoleCopy = {
     camera: { size: string; depth: string; rate: string; noFrames: string; idle: string; running: (done: number, goal: number) => string };
     setup: { telescope: string; site: string; mountSettings: string };
     log: { empty: string };
-    phoneTabs: { track: string; move: string; camera: string; targets: string; more: string };
   };
   provenanceSimulated: string;
   close: string;
@@ -485,10 +489,10 @@ const en: ConsoleCopy = {
   idle: {
     text: (quick) =>
       quick
-        ? `Press Find & Track: the telescope aligns itself, finds ${quick} and tracks it.`
-        : "Pick a target, then press Find & Track.",
+        ? `Press Observe: the telescope aligns itself, finds ${quick} and tracks it.`
+        : "Pick a target, then press Observe.",
     ready: "Ready to point",
-    pointTo: (name) => `Press Find & Track to point at ${name}.`,
+    pointTo: (name) => `Press Observe to point at ${name}.`,
     chooseRisen: "Choose a target that has risen.",
     platform: (target) =>
       `Your booked observation: ${target}. Start the session to take control.`,
@@ -628,11 +632,13 @@ const en: ConsoleCopy = {
     daytime: "Day",
     daytimeHint: "Observe the sky as it is now, daylight included: the Moon, Venus, Jupiter and bright stars. The telescope still never points within 30° of the Sun.",
     daytimeNote: "Daytime observing: the telescope keeps 30° away from the Sun.",
-    tabs: { mount: "Mount", align: "Align", focus: "Focus", setup: "Setup", log: "Log" },
+    tabs: { mount: "Mount", align: "Align", setup: "Setup", log: "Log" },
+    steps: { label: "Steps", point: "Point", focus: "Focus", shoot: "Shoot", targets: "Targets", more: "More", hide: "Hide the controls" },
+    slewSpeed: "Slew speed",
     autopilot: {
       title: "Autopilot",
       pick: "Pick a target",
-      go: "FIND & TRACK",
+      go: "OBSERVE",
       cancel: "CANCEL GOTO",
       recentre: "RE-CENTRE",
       busy: "WORKING…",
@@ -644,6 +650,7 @@ const en: ConsoleCopy = {
       gotoOnly: "GoTo only",
       sync: "Sync",
       after: "After it locks on",
+      settings: "Autopilot settings",
       afterExposure: "Auto exposure for the scene",
       afterFocus: "Autofocus",
       keepCentred: "Tracking keeps it centred",
@@ -652,7 +659,7 @@ const en: ConsoleCopy = {
     align: {
       steps: [
         "The mount starts level at home, switched on: no hand-controller alignment needed.",
-        "Easiest: press Where am I? or just Find & Track. The camera recognises the stars and aligns by itself.",
+        "Easiest: press Where am I? or just Observe. The camera recognises the stars and aligns by itself.",
         "Manual way: centre a bright object on the reticle and press Sync.",
         "Every successful plate solve adds a point and improves GoTo accuracy.",
       ],
@@ -662,6 +669,7 @@ const en: ConsoleCopy = {
     },
     focuser: {
       title: "Focuser",
+      assistant: "Focus assistant",
       position: "Position",
       state: "Motor",
       idle: "still",
@@ -702,7 +710,6 @@ const en: ConsoleCopy = {
     },
     setup: { telescope: "Telescope", site: "Observing site", mountSettings: "Mount settings" },
     log: { empty: "Nothing yet. Every step the telescope takes is written here." },
-    phoneTabs: { track: "Track", move: "Move", camera: "Camera", targets: "Targets", more: "More" },
   },
   provenanceSimulated: "Simulated · sky model",
   close: "Close",
@@ -856,10 +863,10 @@ const ka: ConsoleCopy = {
   idle: {
     text: (quick) =>
       quick
-        ? `დააჭირე „პოვნა და მიყოლას“: ტელესკოპი თვითონ სწორდება, პოულობს ობიექტს (${quick}) და მიჰყვება.`
-        : "აირჩიე ობიექტი და დააჭირე „პოვნა და მიყოლას“.",
+        ? `დააჭირე „დაკვირვებას“: ტელესკოპი თვითონ სწორდება, პოულობს ობიექტს (${quick}) და მიჰყვება.`
+        : "აირჩიე ობიექტი და დააჭირე „დაკვირვებას“.",
     ready: "მზადაა მიმართვისთვის",
-    pointTo: (name) => `დააჭირე „პოვნა და მიყოლას“, რომ მიმართო: ${name}.`,
+    pointTo: (name) => `დააჭირე „დაკვირვებას“, რომ მიმართო: ${name}.`,
     chooseRisen: "აირჩიე ამოსული ობიექტი.",
     platform: (target) =>
       `შენი დაჯავშნილი დაკვირვება: ${target}. დაიწყე სეანსი სამართავად.`,
@@ -999,11 +1006,13 @@ const ka: ConsoleCopy = {
     daytime: "დღე",
     daytimeHint: "დააკვირდი ცას ისე, როგორც ახლაა, დღის სინათლის ჩათვლით: მთვარე, ვენერა, იუპიტერი და კაშკაშა ვარსკვლავები. ტელესკოპი მზიდან 30°-ზე ახლოს მაინც არასდროს მიმართება.",
     daytimeNote: "დღის დაკვირვება: ტელესკოპი მზიდან 30°-ით შორს რჩება.",
-    tabs: { mount: "მონტირება", align: "სწორება", focus: "ფოკუსი", setup: "პარამ.", log: "ჟურნალი" },
+    tabs: { mount: "მონტირება", align: "სწორება", setup: "პარამ.", log: "ჟურნალი" },
+    steps: { label: "ნაბიჯები", point: "დამიზნება", focus: "ფოკუსი", shoot: "სურათი", targets: "ობიექტები", more: "მეტი", hide: "მართვის დამალვა" },
+    slewSpeed: "მოძრაობის სიჩქარე",
     autopilot: {
       title: "ავტოპილოტი",
       pick: "აირჩიე ობიექტი",
-      go: "პოვნა და მიყოლა",
+      go: "დაკვირვება",
       cancel: "GOTO-ს გაუქმება",
       recentre: "ხელახლა ცენტრში",
       busy: "მიმდინარეობს…",
@@ -1015,6 +1024,7 @@ const ka: ConsoleCopy = {
       gotoOnly: "მხოლოდ GoTo",
       sync: "სინქრონი",
       after: "დამიზნების შემდეგ",
+      settings: "ავტოპილოტის პარამეტრები",
       afterExposure: "ავტო ექსპოზიცია სცენისთვის",
       afterFocus: "ავტოფოკუსი",
       keepCentred: "მიყოლა ობიექტს ცენტრში ინახავს",
@@ -1023,7 +1033,7 @@ const ka: ConsoleCopy = {
     align: {
       steps: [
         "მონტირება საწყის პოზიციაში ირთვება: პულტით სწორება საჭირო არ არის.",
-        "უმარტივესი: დააჭირე „სად ვარ?“ ან უბრალოდ „პოვნა და მიყოლა“. კამერა ვარსკვლავებს ცნობს და თვითონ სწორდება.",
+        "უმარტივესი: დააჭირე „სად ვარ?“ ან უბრალოდ „დაკვირვება“. კამერა ვარსკვლავებს ცნობს და თვითონ სწორდება.",
         "ხელით: კაშკაშა ობიექტი სამიზნის ცენტრში მოიყვანე და დააჭირე „სინქრონს“.",
         "ყოველი წარმატებული ამოცნობა წერტილს ამატებს და GoTo-ს სიზუსტეს აუმჯობესებს.",
       ],
@@ -1033,6 +1043,7 @@ const ka: ConsoleCopy = {
     },
     focuser: {
       title: "ფოკუსერი",
+      assistant: "ფოკუსის დამხმარე",
       position: "პოზიცია",
       state: "ძრავი",
       idle: "გაჩერებულია",
@@ -1073,7 +1084,6 @@ const ka: ConsoleCopy = {
     },
     setup: { telescope: "ტელესკოპი", site: "დაკვირვების ადგილი", mountSettings: "მონტირების პარამეტრები" },
     log: { empty: "ჯერ ცარიელია. ტელესკოპის ყოველი ნაბიჯი აქ ჩაიწერება." },
-    phoneTabs: { track: "მიყოლა", move: "მოძრაობა", camera: "კამერა", targets: "ობიექტები", more: "მეტი" },
   },
   provenanceSimulated: "სიმულირებული · ცის მოდელი",
   close: "დახურვა",
