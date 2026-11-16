@@ -41,10 +41,12 @@ const contentSecurityPolicy = [
 
 /**
  * ADR-089: the game's Earth globe draws NASA GIBS imagery and Mapzen Terrarium heights
- * through <img>, and its models' textures are read from blob: URLs, so its page alone may
- * load pictures from those two hosts and fetch blob: URLs.
+ * through <img>, its models' textures are read from blob: URLs, and its models are unpacked by
+ * three's meshopt decoder, which is WebAssembly. So its page alone may load pictures from those
+ * two hosts, fetch blob: URLs and compile WebAssembly ('wasm-unsafe-eval' allows no JS eval).
  */
 const explorerGamePolicy = contentSecurityPolicy
+  .replace("script-src 'self' 'unsafe-inline'", "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'")
   .replace(
     "img-src 'self' data: blob:",
     "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov https://s3.amazonaws.com",

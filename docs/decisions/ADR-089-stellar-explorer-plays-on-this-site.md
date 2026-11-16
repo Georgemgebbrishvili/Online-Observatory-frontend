@@ -28,7 +28,8 @@
    Stellar Outpost, "Back to Stellar"), and the game's title is Stellar Explorer.
 5. **English only.** The game's strings exist in English; the Georgian Explorer page says so.
 6. **Policy.** The game's page alone may load images from `gibs.earthdata.nasa.gov` (Earth
-   imagery) and `s3.amazonaws.com` (Terrarium heights); the rest of the site keeps its CSP.
+   imagery) and `s3.amazonaws.com` (Terrarium heights); the rest of the site keeps its CSP. It may also fetch blob: URLs (model textures) and compile
+   WebAssembly (`'wasm-unsafe-eval'`, three's meshopt model decoder).
    `/voyage/*` is excluded from the locale proxy and cached a day.
 7. **Dependencies.** three 0.170 → 0.184 (the version the engine is built on; the site's own
    3D code typechecks unchanged), plus `use-intl` and `lucide-react`, which the engine uses.
