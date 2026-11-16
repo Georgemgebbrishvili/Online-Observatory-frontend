@@ -678,7 +678,8 @@ html.lenis body {
 .hs-bl {
   bottom: var(--hs-foot);
   left: var(--space-page);
-  max-width: 30rem;
+  /* Clear of the dots in the middle: a tablet is too narrow for 30rem of it. */
+  max-width: min(30rem, calc(50% - var(--space-page) - 4rem));
   gap: var(--space-2);
 }
 
@@ -839,9 +840,10 @@ html.lenis body {
 
 .hs-ncard-top {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-2) var(--space-4);
 }
 
 .hs-clock {
@@ -854,7 +856,9 @@ html.lenis body {
 }
 
 .hs-ncard-top .hs-label {
-  max-width: 6rem;
+  max-width: 9rem;
+  margin-left: auto;
+  overflow-wrap: normal;
   text-align: right;
 }
 
@@ -1337,6 +1341,17 @@ html.lenis body {
 .hs-scope dl div {
   padding: var(--space-4) var(--space-4) var(--space-4) 0;
   border-bottom: 1px solid var(--color-line);
+}
+
+/* Three facts: the optics, the longest, takes the row; on a phone each takes its own. */
+.hs-scope dl div:first-child {
+  grid-column: 1 / -1;
+}
+
+@media (--below-sm) {
+  .hs-scope dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .hs-scope dt {

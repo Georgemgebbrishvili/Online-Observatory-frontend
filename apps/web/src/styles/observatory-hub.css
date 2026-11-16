@@ -1050,6 +1050,13 @@
   box-shadow: 0 0 0 6px rgba(var(--ink-rgb), 0.08);
   cursor: pointer;
 }
+/* the dot stays small; the finger gets a 40 px target round it */
+.oh-slew__c::after {
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  content: "";
+}
 .oh-slew__c:hover:not(:disabled) {
   background: var(--acc);
   box-shadow: 0 0 0 8px rgba(var(--acc-rgb), 0.25);
@@ -2299,6 +2306,10 @@
   }
   .oh-speed__segs button {
     min-height: 32px;
+  }
+  /* Beside the pad there is room for three a row, not nine: a finger-wide key each. */
+  .oh-speed__segs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .oh-mtabs {
     order: 3;

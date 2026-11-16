@@ -87,7 +87,9 @@
     padding-block: var(--space-8);
   }
 
+  /* The legal column keeps half the row, or more when its longest word (კონფიდენციალურობა) needs it. */
   .footer-nav {
+    grid-template-columns: minmax(calc(50% - var(--space-2)), max-content) minmax(0, 1fr);
     gap: var(--space-6) var(--space-4);
   }
 

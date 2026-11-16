@@ -127,19 +127,19 @@ function Plan({
   const kind = offering.price.kind;
   const price =
     kind === "FREE"
-      ? { figure: copy.free, note: null }
+      ? { figure: copy.free, note: null, words: false }
       : kind === "PER_SEAT"
-        ? { figure: copy.seatPrice, note: copy.seatNote }
+        ? { figure: copy.seatPrice, note: copy.seatNote, words: true }
         : facts.slot
-          ? { figure: facts.slot.price, note: copy.perSlot(facts.slot.durationMinutes) }
-          : { figure: copy.hero.fallbackPrice, note: null };
+          ? { figure: facts.slot.price, note: copy.perSlot(facts.slot.durationMinutes), words: false }
+          : { figure: copy.hero.fallbackPrice, note: null, words: true };
 
   return (
     <li className={`pricing-plan${kind === "PER_SLOT" ? " is-featured" : ""}`} data-offering={offering.id}>
       <h3>{offering.name[locale]}</h3>
       <p className="pricing-plan-desc">{offering.description[locale]}</p>
       <p className="pricing-plan-price">
-        <strong className={kind === "PER_SEAT" ? "is-words" : undefined}>{price.figure}</strong>
+        <strong className={price.words ? "is-words" : undefined}>{price.figure}</strong>
         {price.note && <small>{price.note}</small>}
       </p>
       <span className="plate-title">{copy.included}</span>
