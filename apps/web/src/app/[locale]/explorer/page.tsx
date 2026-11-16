@@ -28,7 +28,7 @@ export async function generateMetadata({
   });
 }
 
-/** The game in the header (ADR-057): the launch screen for the game, which plays on its own site. */
+/** The game in the header (ADR-057): the launch screen for the game, which plays at ./play (ADR-089). */
 export default async function ExplorerRoute({ params }: ExplorerRouteProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();

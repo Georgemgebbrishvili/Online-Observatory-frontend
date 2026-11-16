@@ -18,6 +18,8 @@ describe("brand", () => {
   it("is spelled out only in brand.ts", () => {
     const offenders = files(src)
       .filter((file) => file !== path.join(src, "brand.ts"))
+      // ADR-089: the Explorer game is Skychaser's Voyage engine, kept as written.
+      .filter((file) => !file.startsWith(path.join(src, "voyage") + path.sep))
       .filter((file) => !/\.test\.[^/]+$/.test(file))
       .flatMap((file) =>
         readFileSync(file, "utf8")

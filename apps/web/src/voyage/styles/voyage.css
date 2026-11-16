@@ -1,0 +1,971 @@
+/* ── Voyage: the game's own screen ──
+   No scroll, no site chrome; every screen sits in the fixed shell. The game
+   marks the body while it is up. Colours are the HUD's own set in
+   solar-system.css, and the few site tokens it reads, set here: this route
+   does not load the legacy Skychaser stylesheet they came from. */
+body[data-solar-immersive] {
+  margin: 0;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #0a0a0a;
+  color: var(--text, #e8ecf4);
+  font-family: var(--font-body, system-ui), sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+/* The Skychaser sky behind the page would only be painted under the game. */
+body[data-solar-immersive] .sd-backdrop { display: none; }
+.game-shell {
+  --canvas: #1d1d1d;
+  --terracotta: #a45528;
+  --seafoam: #f4b113;
+  --text: #F8F4EC;
+  --text-muted: #c8b4a8;
+  --border: rgba(255, 255, 255, 0.08);
+  --bg-panel: #161616;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: #0a0a0a;
+}
+.game-shell .font-display { font-family: var(--font-display); }
+.game-shell__loader { z-index: 180; }
+/* A load that has sat too long: the way out, over the loader (and over a
+   handover's veil, which sits inside the world). */
+.game-shell__rescue {
+  position: absolute;
+  z-index: 200;
+  left: 50%;
+  bottom: max(28px, calc(env(safe-area-inset-bottom) + 20px));
+  transform: translateX(-50%);
+  width: min(420px, calc(100% - 32px));
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(6, 10, 22, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e8ecf6;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+.game-shell__rescue p { margin: 0 0 10px; font-size: 14px; }
+.game-shell__rescue-keys { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.game-shell__rescue-keys .game-menu__item { flex: 1 1 140px; justify-content: center; }
+.game-shell__loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+}
+/* The governor's one line: it has just taken a level off, and the player can
+   put it back in Settings. Seven seconds, top centre, over the glass. */
+.game-shell__notice {
+  position: absolute;
+  z-index: 190;
+  top: max(12px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  max-width: min(420px, calc(100% - 32px));
+  padding: 8px 14px;
+  border: 1px solid rgba(120, 180, 235, 0.3);
+  border-radius: 8px;
+  background: rgba(6, 14, 28, 0.86);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font: 400 12px/1.45 var(--font-mono, ui-monospace), monospace;
+  letter-spacing: 0.04em;
+  text-align: center;
+  animation: game-notice 0.3s ease-out both;
+}
+@keyframes game-notice { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+/* Stars just credited to the account: the same line, in the reward colour. */
+.game-shell__notice--stars {
+  border-color: rgba(255, 179, 71, 0.45);
+  color: var(--terracotta, #ffb347);
+}
+
+/* ── Full-screen menus: title, pause, panels ──
+   The title is a still sky with a world rising out of the bottom of it and
+   the Sun just over the limb; the pause menu is a sheet of glass over the
+   frozen scene. Everything that moves is a transform or an opacity, and
+   all of it stops under reduced motion. */
+.game-menu {
+  --menu-ink: #eef3fc;
+  --menu-dim: rgba(190, 206, 230, 0.82);
+  --menu-line: rgba(132, 170, 222, 0.22);
+  --menu-amber: var(--terracotta, #ffb347);
+  --menu-teal: var(--seafoam, #5eead4);
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 70% 110%, rgba(30, 72, 140, 0.32), rgba(5, 8, 18, 0) 60%),
+    radial-gradient(90% 70% at 15% 0%, rgba(40, 30, 90, 0.28), rgba(5, 8, 18, 0) 70%),
+    #050812;
+  color: var(--menu-ink);
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+/* The pause menu: the frozen scene, dimmed and softened, under one card. */
+.game-pause, .game-panel {
+  background: radial-gradient(120% 100% at 50% 50%, rgba(5, 8, 18, 0.45), rgba(3, 5, 12, 0.86));
+  -webkit-backdrop-filter: blur(8px) saturate(0.9);
+  backdrop-filter: blur(8px) saturate(0.9);
+}
+.game-pause .cosmic-loader__sky { display: none; }
+/* Over the title the sheets keep its sky; over the frozen scene they do not. */
+.game-shell:not([data-state='title']) .game-panel .cosmic-loader__sky { display: none; }
+.game-shell[data-state='title'] .game-panel { background: #050812; }
+
+/* The loader's Earth and Moon, smaller and dimmer, over the menus. Dimmed
+   globe by globe: an opacity on the system would flatten its 3D, and the
+   Moon would stop passing behind the Earth. */
+.game-menu .game-menu__orrery {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  margin-left: -114px;
+  transform: scale(0.72);
+  transform-origin: 50% 0;
+}
+.game-menu__orrery .cosmic-globe { opacity: 0.62; }
+.game-menu__orrery .cosmic-loader__orbit { border-color: rgba(168, 180, 200, 0.14); }
+
+/* ── The title's horizon: a world far larger than the glass, only its cap
+   showing, the Sun rising over its limb on the right and the night side —
+   cities lit — under the menu on the left. The maps stand still; the
+   clouds drift, the air breathes, the Sun pulses. ── */
+.game-menu__horizon {
+  --planet: max(1180px, 170vw);
+  --rise: 24vh;
+  --px: 50%;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: game-rise 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes game-rise { from { transform: translate3d(0, 9vh, 0); opacity: 0; } to { transform: none; opacity: 1; } }
+.game-menu__planet,
+.game-menu__air {
+  position: absolute;
+  left: var(--px);
+  top: calc(100% - var(--rise));
+  width: var(--planet);
+  height: var(--planet);
+  margin-left: calc(var(--planet) / -2);
+  border-radius: 50%;
+}
+.game-menu__planet {
+  overflow: hidden;
+  isolation: isolate;
+  background: #08142a;
+  box-shadow: 0 -4px 60px 8px rgba(70, 140, 255, 0.26);
+}
+.game-menu__planet > i { position: absolute; inset: 0; border-radius: 50%; }
+.game-menu__map {
+  background: url('/voyage/solar-system/planets/earth.jpg') 40% calc(var(--planet) * -0.19) / 125% auto repeat-x;
+  filter: saturate(1.15) contrast(1.06);
+}
+.game-menu__clouds {
+  inset: 0 -4% 0 -4% !important;
+  background: url('/voyage/solar-system/planets/earth-clouds-1k.jpg') 36% calc(var(--planet) * -0.18) / 118% auto repeat-x;
+  mix-blend-mode: screen;
+  opacity: 0.75;
+  animation: game-clouds 120s ease-in-out infinite alternate;
+}
+@keyframes game-clouds { to { transform: translate3d(3%, 0, 0); } }
+/* The cities, only where the Sun is not. */
+.game-menu__lights {
+  background: url('/voyage/solar-system/planets/earth-night.jpg') 40% calc(var(--planet) * -0.19) / 125% auto repeat-x;
+  mix-blend-mode: screen;
+  filter: sepia(0.5) saturate(2.2) brightness(1.5);
+  -webkit-mask-image: linear-gradient(90deg, #000 30%, transparent 48%);
+  mask-image: linear-gradient(90deg, #000 30%, transparent 48%);
+}
+/* The terminator, the limb's thicker air, and the cap's own curve into the dark. */
+.game-menu__shade {
+  background:
+    radial-gradient(42% 7% at 62% 0%, rgba(200, 230, 255, 0.45), rgba(200, 230, 255, 0) 100%),
+    linear-gradient(90deg, rgba(1, 3, 9, 0.93) 26%, rgba(1, 3, 9, 0.72) 38%, rgba(1, 3, 9, 0.2) 50%, rgba(1, 3, 9, 0) 58%),
+    linear-gradient(180deg, rgba(1, 3, 9, 0) 3%, rgba(1, 3, 9, 0.6) 20%);
+  box-shadow: inset 0 16px 34px rgba(120, 190, 255, 0.4), inset 0 3px 6px rgba(200, 230, 255, 0.35);
+}
+/* The air: a thin blue shell just outside the limb, brightest under the Sun. */
+.game-menu__air {
+  background: radial-gradient(circle closest-side, rgba(110, 175, 255, 0) 98.4%, rgba(130, 190, 255, 0.55) 99.2%, rgba(80, 150, 255, 0) 100%);
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.25) 30%, #000 55%);
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.25) 30%, #000 55%);
+  animation: game-air 9s ease-in-out infinite alternate;
+}
+@keyframes game-air { from { opacity: 0.7; } to { opacity: 1; } }
+/* The Sun, rising behind the limb: a hot core over it, a soft corona, a short flare. */
+.game-menu__sunrise {
+  position: absolute;
+  left: calc(var(--px) + var(--planet) * 0.12);
+  top: calc(100% - var(--rise) + var(--planet) * 0.008);
+  width: 0;
+  height: 0;
+}
+.game-menu__sunrise::before,
+.game-menu__sunrise::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.game-menu__sunrise::before {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(closest-side, #fff 0%, rgba(255, 246, 226, 0.95) 7%, rgba(255, 206, 140, 0.45) 20%, rgba(255, 150, 70, 0.12) 50%, rgba(255, 140, 60, 0) 100%);
+  animation: game-sun 7s ease-in-out infinite alternate;
+}
+.game-menu__sunrise::after {
+  width: min(760px, 70vw);
+  height: 4px;
+  background: radial-gradient(closest-side, rgba(255, 240, 215, 0.9), rgba(180, 210, 255, 0.22) 50%, rgba(150, 200, 255, 0) 100%);
+  opacity: 0.75;
+}
+@keyframes game-sun { from { transform: translate(-50%, -50%) scale(0.94); opacity: 0.86; } to { transform: translate(-50%, -50%) scale(1.05); opacity: 1; } }
+/* Now and then, a meteor across the top of the sky. */
+.game-menu__meteor {
+  position: absolute;
+  left: 62%;
+  top: 14%;
+  width: 180px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(220, 236, 255, 0.95));
+  transform-origin: 100% 50%;
+  opacity: 0;
+  animation: game-meteor 13s ease-in 3s infinite;
+}
+@keyframes game-meteor {
+  0% { transform: translate3d(0, 0, 0) rotate(-24deg) scaleX(0.2); opacity: 0; }
+  2% { opacity: 1; }
+  7% { transform: translate3d(-34vw, 15vw, 0) rotate(-24deg) scaleX(1); opacity: 0; }
+  100% { transform: translate3d(-34vw, 15vw, 0) rotate(-24deg) scaleX(1); opacity: 0; }
+}
+
+/* ── The column: the wordmark, then the menu. ── */
+.game-menu__panel {
+  position: relative;
+  width: min(100%, 380px);
+  display: grid;
+  gap: 26px;
+  justify-items: center;
+}
+.game-title__mark { text-align: center; }
+.game-title__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font: 500 12px/1 var(--font-mono, ui-monospace), monospace;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--menu-teal);
+  animation: game-in 0.9s ease both 0.15s;
+}
+.game-title__brand::before,
+.game-title__brand::after { content: ''; width: 28px; height: 1px; background: linear-gradient(90deg, rgba(94, 234, 212, 0), rgba(94, 234, 212, 0.8)); }
+.game-title__brand::after { transform: scaleX(-1); margin-left: -0.5em; }
+.game-title__name {
+  margin: 12px 0 0;
+  font-size: clamp(32px, 6.2vw, 64px);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f4f8ff;
+  background: linear-gradient(100deg, #ffffff 0%, #dbe9ff 38%, #ffffff 46%, #a9c6ee 62%, #e6efff 100%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 6px 26px rgba(70, 140, 255, 0.38));
+  animation: game-in 1s ease both 0.25s, game-shine 9s ease-in-out 1.6s infinite;
+}
+@keyframes game-shine { 0%, 62% { background-position: 100% 0; } 86%, 100% { background-position: 0% 0; } }
+.game-title__tagline {
+  margin: 12px 0 0;
+  font: 500 14px/1.5 var(--font-body, system-ui), sans-serif;
+  letter-spacing: 0.02em;
+  color: var(--menu-dim);
+  animation: game-in 1s ease both 0.4s;
+}
+@keyframes game-in { from { opacity: 0; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: none; } }
+.game-pause__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f4f8ff;
+}
+.game-pause__hint { margin: -14px 0 0; font: 500 11px/1.3 var(--font-mono, ui-monospace), monospace; letter-spacing: 0.08em; color: var(--menu-dim); }
+@media (pointer: coarse) { .game-pause__hint { display: none; } }
+.game-pause .game-menu__panel {
+  width: min(100%, 380px);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 24px 20px 20px;
+  border: 1px solid var(--menu-line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(16, 26, 48, 0.86), rgba(6, 11, 22, 0.92));
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: game-card 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes game-card { from { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.98); } to { opacity: 1; transform: none; } }
+.game-menu__list {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+}
+.game-menu__list > * { animation: game-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.game-menu__list > :nth-child(1) { animation-delay: 0.45s; }
+.game-menu__list > :nth-child(2) { animation-delay: 0.52s; }
+.game-menu__list > :nth-child(3) { animation-delay: 0.59s; }
+.game-menu__list > :nth-child(4) { animation-delay: 0.66s; }
+.game-menu__list > :nth-child(5) { animation-delay: 0.73s; }
+.game-menu__list > :nth-child(6) { animation-delay: 0.8s; }
+.game-pause .game-menu__list > * { animation-duration: 0.35s; animation-delay: calc(var(--n, 0) * 0.04s); }
+.game-menu__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 16px;
+  border: 1px solid var(--menu-line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(14, 24, 44, 0.8), rgba(6, 12, 24, 0.86));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--menu-ink);
+  font: 500 15px/1.2 var(--font-body, system-ui), sans-serif;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+.game-menu__item::before { content: none; }
+.game-menu__item > svg { flex: none; color: rgba(160, 196, 240, 0.85); transition: color 0.18s ease; }
+/* The accent edge that comes in on hover and focus. */
+.game-menu__item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22%;
+  bottom: 22%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #4db2ff;
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+.game-menu__item:hover, .game-menu__item:focus-visible {
+  border-color: rgba(110, 180, 255, 0.6);
+  background: linear-gradient(180deg, rgba(20, 36, 64, 0.9), rgba(10, 20, 38, 0.92));
+  transform: translate3d(3px, 0, 0);
+  outline: none;
+}
+.game-menu__item:hover::after, .game-menu__item:focus-visible::after { transform: scaleY(1); }
+.game-menu__item:hover > svg, .game-menu__item:focus-visible > svg { color: #fff; }
+.game-menu__item:active { transform: translate3d(3px, 1px, 0) scale(0.995); }
+.game-menu__item--primary {
+  min-height: 60px;
+  border-color: rgba(255, 179, 71, 0.7);
+  background: linear-gradient(180deg, rgba(64, 40, 12, 0.82), rgba(26, 16, 6, 0.88));
+  box-shadow: 0 12px 40px -16px rgba(255, 150, 40, 0.55), inset 0 1px 0 rgba(255, 220, 170, 0.12);
+}
+.game-menu__item--primary > svg { color: var(--menu-amber); }
+.game-menu__item--primary::after { background: var(--menu-amber); }
+.game-menu__item--primary:hover, .game-menu__item--primary:focus-visible {
+  border-color: var(--menu-amber);
+  background: linear-gradient(180deg, rgba(84, 52, 14, 0.9), rgba(36, 22, 8, 0.92));
+  box-shadow: 0 16px 50px -14px rgba(255, 150, 40, 0.7), inset 0 1px 0 rgba(255, 220, 170, 0.18);
+}
+.game-menu__item--continue {
+  min-height: 60px;
+  border-color: rgba(94, 234, 212, 0.6);
+  background: linear-gradient(180deg, rgba(10, 52, 56, 0.82), rgba(4, 22, 26, 0.88));
+  box-shadow: 0 12px 40px -16px rgba(94, 234, 212, 0.45);
+}
+.game-menu__item--continue > svg, .game-menu__item--continue .game-menu__go { color: var(--menu-teal); }
+.game-menu__item--continue::after { background: var(--menu-teal); }
+.game-menu__item--continue:hover, .game-menu__item--continue:focus-visible { border-color: var(--menu-teal); background: linear-gradient(180deg, rgba(14, 66, 70, 0.9), rgba(6, 28, 32, 0.92)); }
+.game-menu__item--exit { color: rgba(196, 216, 240, 0.8); background: rgba(6, 12, 24, 0.55); }
+.game-menu__go { margin-left: auto; flex: none; color: rgba(255, 196, 120, 0.85); transition: transform 0.18s ease; }
+.game-menu__item:hover .game-menu__go, .game-menu__item:focus-visible .game-menu__go { transform: translate3d(3px, 0, 0); }
+.game-menu__text { display: grid; gap: 3px; min-width: 0; }
+.game-menu__text small { font: 500 12px/1.3 var(--font-mono, ui-monospace), monospace; color: var(--menu-dim); }
+
+/* A wide screen: the wordmark and the menu stand at the left, the world rises on the right. */
+@media (min-width: 900px) and (min-height: 600px) {
+  .game-title { place-items: center start; padding-left: max(9vw, 56px, env(safe-area-inset-left)); }
+  .game-title .game-menu__panel { width: min(420px, 42vw); justify-items: start; gap: 34px; }
+  .game-title .game-title__mark { text-align: left; }
+  .game-title .game-menu__horizon { --rise: 30vh; --px: 60%; }
+}
+/* A phone on its side: the wordmark on the left, the menu on the right, the world low. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .game-title .game-menu__panel { width: min(100%, 760px); grid-template-columns: 1fr minmax(240px, 320px); align-items: center; gap: 28px; }
+  .game-title .game-title__mark { text-align: left; }
+  .game-title .game-title__name { font-size: clamp(26px, 5vw, 40px); }
+  .game-title .game-menu__horizon { --rise: 16vh; }
+  .game-menu__item { min-height: 44px; padding-block: 4px; }
+  .game-menu__item--primary, .game-menu__item--continue { min-height: 48px; }
+  .game-menu__list { gap: 6px; }
+  .game-pause .game-menu__panel { padding: 16px; gap: 18px; }
+  .game-pause .game-menu__list { grid-template-columns: 1fr 1fr; }
+  .game-pause .game-menu__item--primary { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-menu__horizon, .game-menu__air, .game-menu__clouds, .game-menu__sunrise::before, .game-menu__meteor,
+  .game-title__brand, .game-title__name, .game-title__tagline, .game-menu__list > *, .game-pause .game-menu__panel { animation: none; }
+  .game-menu__item, .game-menu__item::after, .game-menu__go { transition: none; }
+}
+
+/* ── Sheets: settings, controls, missions ── */
+.game-panel__sheet {
+  width: min(100%, 460px);
+  max-height: 100%;
+  display: grid;
+  /* minmax(0, …): a plain 1fr row grows with its content, so the body
+     never scrolled and the last setting fell off the bottom of a phone. */
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
+  justify-items: stretch;
+  border: 1px solid var(--menu-line);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(14, 24, 44, 0.94), rgba(5, 10, 20, 0.96));
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  animation: game-card 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.game-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px 12px 18px;
+  border-bottom: 1px solid var(--menu-line);
+}
+.game-panel__close:hover, .game-panel__close:focus-visible { border-color: rgba(110, 180, 255, 0.6); background: rgba(77, 163, 255, 0.12); outline: none; }
+.game-panel__title { margin: 0; font: 600 15px/1.2 var(--font-display, system-ui), sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: #eef2fb; }
+.game-panel__close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  min-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(122, 162, 216, 0.22);
+  border-radius: 50%;
+  background: transparent;
+  color: #eaf2fd;
+  cursor: pointer;
+}
+.game-panel__close::before { content: none; }
+.game-panel__body {
+  padding: 16px;
+  /* The last row scrolls clear of the iPhone's home indicator. */
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  display: grid;
+  gap: 16px;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.game-setting { display: grid; gap: 8px; }
+.game-setting--row { grid-template-columns: 1fr auto; align-items: center; min-height: 44px; }
+.game-setting--row label { min-height: 44px; align-items: center; cursor: pointer; }
+.game-setting input[type='range'] { min-height: 28px; }
+.game-setting label, .game-setting__label { font: 500 13px/1.3 var(--font-body, system-ui), sans-serif; color: rgba(186, 214, 240, 0.9); display: flex; justify-content: space-between; }
+.game-setting label b { font: 500 12px/1.3 var(--font-mono, ui-monospace), monospace; color: var(--terracotta, #ffb347); }
+.game-setting input[type='range'] { width: 100%; accent-color: var(--terracotta, #ffb347); }
+.game-setting input[type='checkbox'] { width: 20px; height: 20px; accent-color: var(--terracotta, #ffb347); }
+.game-setting select {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid rgba(122, 162, 216, 0.22);
+  border-radius: 8px;
+  background: rgba(6, 12, 24, 0.82);
+  color: #eaf2fd;
+  font: inherit;
+}
+.game-setting__note { margin: 0; font: 500 12px/1.4 var(--font-body, system-ui), sans-serif; color: rgba(166, 190, 220, 0.74); }
+.game-setting__choices { display: flex; gap: 8px; }
+.game-setting__choice {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid rgba(122, 162, 216, 0.22);
+  border-radius: 8px;
+  background: rgba(6, 12, 24, 0.82);
+  color: #eaf2fd;
+  font: 500 13px/1 var(--font-body, system-ui), sans-serif;
+  cursor: pointer;
+}
+.game-setting__choice::before { content: none; }
+.game-setting__choice[aria-pressed='true'] { border-color: var(--terracotta, #ffb347); color: var(--terracotta, #ffb347); }
+.game-setting__reset {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(166, 190, 220, 0.74);
+  font: 500 13px/1 var(--font-body, system-ui), sans-serif;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.game-setting__reset::before { content: none; }
+.game-controls__shell { margin: 0; font: 500 12px/1.4 var(--font-mono, ui-monospace), monospace; color: var(--seafoam, #5eead4); }
+.game-controls__head { margin: 8px 0 0; font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(166, 190, 220, 0.74); }
+.game-controls__row { margin: 0; font: 500 13px/1.45 var(--font-body, system-ui), sans-serif; color: rgba(186, 214, 240, 0.9); }
+.game-missions { margin: 0; display: grid; gap: 6px; }
+.game-missions dt { font: 500 13px/1.3 var(--font-body, system-ui), sans-serif; color: rgba(186, 214, 240, 0.9); }
+.game-missions dd { margin: 0 0 10px; font: 500 12px/1.3 var(--font-mono, ui-monospace), monospace; color: var(--terracotta, #ffb347); }
+.game-missions dd[data-done='true'] { color: var(--seafoam, #5eead4); }
+.game-missions__track { display: block; height: 4px; border-radius: 2px; background: rgba(168, 180, 200, 0.18); overflow: hidden; }
+.game-missions__track i { display: block; height: 100%; background: var(--terracotta, #ffb347); }
+.game-missions__empty { margin: 0; font: 500 13px/1.5 var(--font-body, system-ui), sans-serif; color: rgba(186, 214, 240, 0.9); }
+.game-missions__signin { margin: 12px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font: 500 13px/1.5 var(--font-body, system-ui), sans-serif; color: rgba(186, 214, 240, 0.9); }
+.game-missions__signin-btn { min-height: 44px; padding: 6px 14px; border: 1px solid rgba(255, 179, 71, 0.45); border-radius: 6px; background: rgba(255, 179, 71, 0.1); color: var(--terracotta, #ffb347); font: 600 12px/1 var(--font-mono, ui-monospace), monospace; letter-spacing: 0.04em; cursor: pointer; }
+.game-missions__signin-btn:hover { background: rgba(255, 179, 71, 0.2); }
+
+/* The five missions, as the store has them. */
+.game-missions__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font: 500 13px/1.3 var(--font-body, system-ui), sans-serif; color: rgba(214, 228, 246, 0.95); }
+.game-missions__head b { font: 500 12px/1.3 var(--font-mono, ui-monospace), monospace; color: var(--terracotta, #ffb347); white-space: nowrap; }
+.game-missions__list { margin: -4px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.game-missions__item {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 12px 6px 8px;
+  border: 1px solid rgba(132, 170, 222, 0.16);
+  border-radius: 12px;
+  background: rgba(8, 14, 28, 0.6);
+}
+.game-missions__mark { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(132, 170, 222, 0.3); color: rgba(176, 196, 222, 0.8); }
+.game-missions__name { font: 500 14px/1.3 var(--font-body, system-ui), sans-serif; color: #eef3fc; min-width: 0; }
+.game-missions__state { font: 500 11px/1.2 var(--font-mono, ui-monospace), monospace; letter-spacing: 0.04em; color: rgba(176, 196, 222, 0.8); white-space: nowrap; }
+.game-missions__item[data-state='done'] .game-missions__mark { border-color: transparent; background: var(--seafoam, #5eead4); color: #04201c; }
+.game-missions__item[data-state='done'] .game-missions__state { color: var(--seafoam, #5eead4); }
+.game-missions__item[data-state='next'] { border-color: rgba(255, 179, 71, 0.5); background: rgba(48, 30, 10, 0.45); }
+.game-missions__item[data-state='next'] .game-missions__mark { border-color: var(--terracotta, #ffb347); color: var(--terracotta, #ffb347); }
+.game-missions__item[data-state='next'] .game-missions__state { color: var(--terracotta, #ffb347); }
+.game-missions__item[data-state='locked'] .game-missions__name { color: rgba(196, 210, 232, 0.72); }
+.game-missions__item[data-state='lesson'] .game-missions__name { color: rgba(196, 210, 232, 0.72); }
+.game-missions__item[data-state='lesson'] .game-missions__state { color: #9fd1ff; }
+/* The on-foot rows come from the surfaces' own help (moon-hud__bind): give
+   them the sheet's type and spacing rather than the HUD's. */
+.game-controls__binds { display: grid; gap: 6px; }
+.game-controls__binds .moon-hud__bind { font: 500 13px/1.45 var(--font-body, system-ui), sans-serif; color: rgba(186, 214, 240, 0.9); margin: 0; }
+.game-controls__binds .moon-hud__bind kbd { font: 600 12px/1 var(--font-mono, ui-monospace), monospace; padding: 4px 7px; border-radius: 5px; border: 1px solid rgba(140, 180, 220, 0.3); background: rgba(6, 10, 20, 0.6); color: #f4f8ff; }
+.game-controls__binds .moon-hud__bind .moon-hud__pad { color: rgba(186, 206, 232, 0.62); }
+
+/* A phone on its side: the title and the menus fit the short screen, and
+   scroll if a language runs long, instead of losing their last key. */
+@media (max-height: 520px) {
+  .game-menu { overflow-y: auto; place-items: safe center; touch-action: pan-y; }
+  .game-menu .game-menu__orrery { display: none; }
+  .game-title__mark { margin-top: 0; }
+  .game-menu__panel { gap: 14px; }
+  .game-menu__item { min-height: 44px; padding-block: 6px; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .game-title .game-menu__panel { width: min(100%, 720px); grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 28px; }
+  .game-title__mark { text-align: left; justify-self: start; }
+  .game-title__name { font-size: clamp(24px, 4.2vw, 34px); }
+  .game-menu__list { gap: 6px; }
+}
+@media (pointer: coarse) {
+  .game-pause { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(5, 8, 18, 0.82); }
+}
+
+/* ══ Game modes: the title's three choices, the pause menu's mode, the
+   multiplayer lobby, and Story mode's comms, objective chip and chapter
+   card (TitleScreen, PauseMenu, ExploreRoomPanel, StoryHud). Phone first:
+   every key is at least 48 px tall and the cards read in portrait and on
+   the side. ══ */
+.game-title__list { gap: 10px; }
+.game-modes { display: grid; gap: 10px; width: 100%; }
+.game-mode {
+  --mode: #5eead4;
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 78px;
+  padding: 12px 14px 12px 12px;
+  border: 1px solid color-mix(in srgb, var(--mode) 45%, transparent);
+  border-radius: 18px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--mode) 16%, rgba(10, 18, 34, 0.9)), rgba(6, 11, 22, 0.92));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 40px -22px color-mix(in srgb, var(--mode) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: var(--menu-ink, #eef3fc);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  animation: game-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.game-mode::before { content: none; }
+.game-mode[data-mode='story'] { --mode: #ffb347; }
+.game-mode[data-mode='multi'] { --mode: #7cb8ff; }
+.game-mode:nth-child(1) { animation-delay: 0.5s; }
+.game-mode:nth-child(2) { animation-delay: 0.58s; }
+.game-mode:nth-child(3) { animation-delay: 0.66s; }
+.game-mode:hover, .game-mode:focus-visible { border-color: var(--mode); transform: translate3d(3px, 0, 0); outline: none; box-shadow: 0 18px 50px -20px var(--mode), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+.game-mode:active { transform: translate3d(2px, 1px, 0) scale(0.99); }
+.game-mode__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--mode) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mode) 40%, transparent);
+  color: var(--mode);
+}
+.game-mode__text { display: grid; gap: 4px; min-width: 0; }
+.game-mode__name { font: 600 18px/1.15 var(--font-display, system-ui), sans-serif; letter-spacing: 0.02em; color: #f4f8ff; }
+.game-mode__sub { font: 500 13px/1.35 var(--font-body, system-ui), sans-serif; color: var(--menu-dim, rgba(190, 206, 230, 0.82)); }
+.game-mode__go { color: var(--mode); transition: transform 0.18s ease; }
+.game-mode:hover .game-mode__go, .game-mode:focus-visible .game-mode__go { transform: translate3d(3px, 0, 0); }
+.game-title__row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.game-title__row .game-menu__item { min-height: 48px; justify-content: center; }
+@media (max-width: 380px) {
+  .game-mode { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; min-height: 70px; padding: 10px 12px 10px 10px; }
+  .game-mode__icon { width: 40px; height: 40px; border-radius: 12px; }
+  .game-mode__name { font-size: 16px; }
+  .game-title .game-title__mark { margin-bottom: -6px; }
+}
+/* A phone on its side: the three modes side by side under the wordmark's column. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .game-title__list { gap: 6px; }
+  .game-modes { gap: 6px; }
+  .game-mode { min-height: 56px; padding: 6px 12px 6px 8px; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 10px; border-radius: 14px; }
+  .game-mode__icon { width: 38px; height: 38px; border-radius: 11px; }
+  .game-mode__name { font-size: 15px; }
+  .game-mode__sub { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .game-title__row .game-menu__item { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-mode { animation: none; transition: none; }
+}
+
+/* The pause menu says how the game is being played. */
+.game-pause__mode {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 8px;
+  margin: -14px 0 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  background: rgba(94, 234, 212, 0.08);
+  color: #5eead4;
+  font: 600 12px/1.2 var(--font-mono, ui-monospace), monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.game-pause__mode[data-mode='story'] { border-color: rgba(255, 179, 71, 0.4); background: rgba(255, 179, 71, 0.08); color: #ffb347; }
+.game-pause__mode[data-mode='multi'] { border-color: rgba(124, 184, 255, 0.4); background: rgba(124, 184, 255, 0.08); color: #9ccaff; }
+.game-pause__mode small { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; text-transform: none; letter-spacing: 0.04em; color: rgba(220, 232, 248, 0.86); }
+.game-menu__item--leave { color: #ffb4a8; }
+.game-menu__item--leave > svg { color: #ff9a8a; }
+
+/* A room over the game: the world is a fixed layer at z-index 100, so the
+   room's badge and toasts, the pilots overlay and the in-game room panel sit
+   above it — and under the loader and the menus. */
+.game-shell > .room-radar { z-index: 110; }
+.game-shell > .room-nearby { z-index: 111; }
+.game-shell > .room-badge { z-index: 120; }
+.game-shell > .room-panel { z-index: 150; }
+
+/* The multiplayer lobby: the room panel's own parts, set into the title's sheet. */
+.room-panel.room-panel--lobby {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  gap: 14px;
+  font-size: 15px;
+}
+.room-panel__lead { margin: 0; font: 500 14px/1.5 var(--font-body, system-ui), sans-serif; color: rgba(214, 228, 246, 0.92); }
+.room-panel--lobby .room-panel__primary, .room-panel--lobby .room-panel__secondary, .room-panel--lobby .room-panel__leave { min-height: 52px; border-radius: 14px; font-size: 15px; }
+.room-panel--lobby .room-panel__input { min-height: 52px; font-size: 18px; }
+.room-panel--lobby .room-panel__item { min-height: 52px; }
+.room-panel__launch { min-height: 60px !important; font-size: 17px !important; box-shadow: 0 14px 40px -16px rgba(255, 150, 40, 0.7); }
+.room-panel__keys { grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; gap: 6px; }
+.room-panel--lobby .room-panel__bigcode { font-size: 34px; }
+@media (max-width: 380px) {
+  .room-panel__invite { grid-template-columns: 1fr; }
+  .room-panel__keys { grid-column: 1; grid-row: auto; flex-direction: row; flex-wrap: wrap; }
+}
+
+/* ── Story mode in flight: the briefing on the comms, then one line of
+   what to do. Top centre on a desk; under the deck's head on a phone. ── */
+.story-comms, .story-chip {
+  position: absolute;
+  z-index: 41;
+  left: 50%;
+  top: calc(max(10px, env(safe-area-inset-top)) + 6px);
+  transform: translateX(-50%);
+  width: min(460px, 46vw);
+  border: 1px solid rgba(255, 179, 71, 0.38);
+  background: rgba(8, 12, 22, 0.84);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: #eef3fc;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  animation: story-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.story-comms::before, .story-chip::before { content: none; }
+.story-comms { display: grid; gap: 6px; padding: 12px 16px; border-radius: 14px; }
+.story-comms__from { display: inline-flex; align-items: center; gap: 6px; font: 600 11px/1 var(--font-mono, ui-monospace), monospace; letter-spacing: 0.14em; text-transform: uppercase; color: #ffb347; }
+.story-comms__text { font: 500 14px/1.5 var(--font-body, system-ui), sans-serif; }
+.story-comms__dots { display: flex; gap: 4px; justify-content: flex-end; }
+.story-comms__dots i { width: 14px; height: 3px; border-radius: 2px; background: rgba(255, 179, 71, 0.25); }
+.story-comms__dots i[data-on='true'] { background: #ffb347; }
+.story-chip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 12px;
+  min-height: 48px;
+  width: auto;
+  max-width: min(440px, 46vw);
+  padding: 7px 14px;
+  border-radius: 14px;
+}
+.story-chip__tag { grid-column: 1; display: inline-flex; align-items: center; gap: 5px; font: 600 10px/1.2 var(--font-mono, ui-monospace), monospace; letter-spacing: 0.12em; text-transform: uppercase; color: #ffb347; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.story-chip__text { grid-column: 1; font: 500 13px/1.35 var(--font-body, system-ui), sans-serif; }
+.story-chip__count { grid-column: 2; grid-row: 1 / span 2; font: 600 13px/1 var(--font-mono, ui-monospace), monospace; color: #ffb347; }
+@keyframes story-in { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+/* On a phone the deck's right edge is a column of round keys (menu, then the
+   jump key at about +106..150): the chip keeps to their left, never over them. */
+@keyframes story-in-edge { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 599px) {
+  .story-comms, .story-chip {
+    top: calc(max(10px, env(safe-area-inset-top)) + 112px);
+    left: max(12px, env(safe-area-inset-left));
+    right: calc(max(10px, env(safe-area-inset-right)) + 54px);
+    width: auto;
+    max-width: none;
+    transform: none;
+    animation-name: story-in-edge;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .story-comms, .story-chip { top: calc(max(8px, env(safe-area-inset-top)) + 4px); width: min(420px, 44vw); }
+  .story-comms { padding: 8px 12px; gap: 4px; }
+  .story-comms__text { font-size: 13px; line-height: 1.4; }
+}
+/* Turned landscape (the shell drawn a quarter turn round): the screen's own
+   media queries still say portrait, so the landscape layout is named here. */
+.game-shell[data-rotate='cw'] :is(.story-comms, .story-chip) {
+  top: 12px;
+  left: 50%;
+  right: auto;
+  width: min(420px, 44vh);
+  max-width: none;
+  transform: translateX(-50%);
+  animation-name: story-in;
+}
+.game-shell[data-rotate='cw'] .story-comms { padding: 8px 12px; gap: 4px; }
+/* No blur on a phone: it resamples the live canvas every frame (see the HUD's own list). */
+@media (pointer: coarse) {
+  .story-comms, .story-chip { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(8, 12, 22, 0.9); }
+}
+
+/* A chapter done: one card in the middle of the glass, a fact, the next world, one key. */
+.story-card {
+  position: absolute;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: radial-gradient(80% 60% at 50% 50%, rgba(5, 8, 18, 0.35), rgba(5, 8, 18, 0.7));
+  pointer-events: auto;
+}
+.story-card__panel {
+  width: min(100%, 400px);
+  max-height: 100%;
+  overflow-y: auto;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 24px 22px 20px;
+  border: 1px solid rgba(255, 179, 71, 0.5);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(40, 26, 10, 0.92), rgba(8, 10, 18, 0.95));
+  box-shadow: 0 30px 80px -24px rgba(255, 150, 40, 0.45), inset 0 1px 0 rgba(255, 230, 190, 0.12);
+  text-align: center;
+  color: #f4f8ff;
+  animation: game-card 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.story-card__icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: rgba(255, 179, 71, 0.16); color: #ffb347; }
+.story-card__kicker { margin: 0; font: 600 11px/1.2 var(--font-mono, ui-monospace), monospace; letter-spacing: 0.16em; text-transform: uppercase; color: #ffb347; }
+.story-card__title { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: 0.04em; }
+.story-card__fact { margin: 0; font: 500 15px/1.55 var(--font-body, system-ui), sans-serif; color: rgba(232, 238, 248, 0.94); }
+.story-card__next { margin: 0; font: 500 13px/1.45 var(--font-body, system-ui), sans-serif; color: rgba(196, 212, 236, 0.86); }
+.story-card__go {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 180px;
+  min-height: 52px;
+  margin-top: 6px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 14px;
+  background: #ffb347;
+  color: #1a1206;
+  font: 600 16px/1 var(--font-body, system-ui), sans-serif;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.story-card__go::before { content: none; }
+@media (max-height: 500px) and (orientation: landscape) {
+  .story-card__panel { padding: 14px 18px; gap: 6px; }
+  .story-card__icon { display: none; }
+  .story-card__title { font-size: 22px; }
+  .story-card__go { min-height: 46px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-comms, .story-chip, .story-card__panel { animation: none; }
+}
+
+/* On a world's surface the chapter's objective has the surface's own card;
+   a phone on its side keeps it (the HUD hides the other objectives there). */
+@media (max-height: 460px) {
+  .moon-hud__objective[data-story='true']:not([hidden]) { display: grid; padding: 5px 10px; max-width: min(260px, 44vw); }
+  .moon-hud__objective[data-story='true'] .moon-hud__objective-text { font-size: 12px; }
+}
+
+/* The campaign in the Missions sheet: the steps of the chapter in hand. */
+.story-steps { display: grid; gap: 3px; margin-top: 4px; }
+.story-steps__item { font: 500 12px/1.4 var(--font-body, system-ui), sans-serif; color: rgba(196, 210, 232, 0.72); }
+.story-steps__item[data-now='true'] { color: #ffb347; }
+.story-steps__item[data-done='true'] { color: #5eead4; }
+
+/* ── Gems: the leaderboard sheet, and the tally and pickup line on the surfaces' glass. ── */
+.game-board { display: grid; gap: 10px; }
+.game-board__mine {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(94, 234, 212, 0.32);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(14, 52, 60, 0.72), rgba(8, 16, 32, 0.72));
+}
+.game-board__mine-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: rgba(94, 234, 212, 0.14); color: var(--seafoam, #5eead4); }
+.game-board__mine-text { display: grid; gap: 2px; min-width: 0; }
+.game-board__mine-text small { font: 500 11px/1.2 var(--font-mono, ui-monospace), monospace; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(176, 196, 222, 0.8); }
+.game-board__mine-text b { font: 600 22px/1.1 var(--font-display, system-ui), sans-serif; color: #eef3fc; font-variant-numeric: tabular-nums; }
+.game-board__mine-text span { font: 500 12px/1.3 var(--font-body, system-ui), sans-serif; color: rgba(186, 214, 240, 0.9); }
+.game-board__rank { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 999px; background: rgba(255, 179, 71, 0.14); color: var(--terracotta, #ffb347); font: 600 14px/1 var(--font-mono, ui-monospace), monospace; white-space: nowrap; }
+.game-board__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.game-board__row {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 4px 12px 4px 6px;
+  border: 1px solid rgba(132, 170, 222, 0.14);
+  border-radius: 10px;
+  background: rgba(8, 14, 28, 0.6);
+}
+.game-board__pos { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font: 600 12px/1 var(--font-mono, ui-monospace), monospace; color: rgba(196, 212, 236, 0.9); background: rgba(132, 170, 222, 0.12); }
+.game-board__row[data-top='1'] .game-board__pos { background: #ffd36b; color: #2a1a00; }
+.game-board__row[data-top='2'] .game-board__pos { background: #d7e1ee; color: #18202c; }
+.game-board__row[data-top='3'] .game-board__pos { background: #e0a26a; color: #2a1404; }
+.game-board__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 14px/1.3 var(--font-body, system-ui), sans-serif; color: #eef3fc; }
+.game-board__gems { font: 500 11px/1.2 var(--font-mono, ui-monospace), monospace; color: rgba(176, 196, 222, 0.8); white-space: nowrap; }
+.game-board__pts { font: 600 13px/1 var(--font-mono, ui-monospace), monospace; color: var(--terracotta, #ffb347); font-variant-numeric: tabular-nums; min-width: 3ch; text-align: right; }
+.game-board__row[data-me] { border-color: rgba(94, 234, 212, 0.6); background: rgba(10, 50, 52, 0.6); }
+.game-board__row[data-me] .game-board__name { color: var(--seafoam, #5eead4); font-weight: 600; }
+.game-board__row--me { margin-top: 6px; border-style: dashed; }
+.game-board__worlds { gap: 8px; }
+.game-board__world { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: center; gap: 12px; }
+.game-board__world dt { min-width: 0; }
+.game-board__world dd { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px; }
+.game-board__world dd > span:first-child { white-space: nowrap; }
+.game-board__world[data-done] dd { color: var(--seafoam, #5eead4); }
+.game-board__world[data-done] .game-missions__track i { background: var(--seafoam, #5eead4); }
+.game-board__kinds { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px 14px; }
+.game-board__kinds li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 8px; font: 500 13px/1.3 var(--font-body, system-ui), sans-serif; color: rgba(214, 228, 246, 0.95); }
+.game-board__kinds i { width: 10px; height: 10px; transform: rotate(45deg); border-radius: 2px; box-shadow: 0 0 8px currentColor; }
+.game-board__kinds b { font: 600 12px/1 var(--font-mono, ui-monospace), monospace; color: var(--terracotta, #ffb347); }
+.game-board__hint { margin-top: 10px; font-size: 12px; color: rgba(166, 190, 220, 0.8); }
+
+.moon-hud__gems span { margin-left: 4px; color: var(--hud-accent, #5eead4); font-variant-numeric: tabular-nums; }
+.moon-hud__gems-points { font: 600 11px/1 var(--font-mono, ui-monospace), monospace; color: var(--terracotta, #ffb347); font-variant-numeric: tabular-nums; }
+.moon-hud__gems[data-tick] { animation: gem-tick 0.45s ease-out; }
+.moon-hud__gems[data-tick='2'] { animation-name: gem-tick-b; }
+@keyframes gem-tick { 0% { transform: scale(1.18); box-shadow: 0 0 18px rgba(94, 234, 212, 0.65); } 100% { transform: none; box-shadow: none; } }
+@keyframes gem-tick-b { 0% { transform: scale(1.18); box-shadow: 0 0 18px rgba(94, 234, 212, 0.65); } 100% { transform: none; box-shadow: none; } }
+.moon-hud__gem-toast {
+  position: fixed;
+  left: 50%;
+  top: 26%;
+  z-index: 5;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(6, 12, 24, 0.62);
+  border: 1px solid rgba(94, 234, 212, 0.45);
+  color: #f2fbff;
+  font: 600 15px/1.2 var(--font-display, system-ui), sans-serif;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 0 12px rgba(160, 240, 255, 0.8);
+  animation: gem-toast 2.6s ease-out both;
+}
+.moon-hud__gem-toast[hidden] { display: none; }
+.moon-hud__gem-toast[data-kind='diamond'] { border-color: rgba(220, 240, 255, 0.85); }
+.moon-hud__gem-toast[data-kind='ruby'] { border-color: rgba(255, 70, 90, 0.7); }
+.moon-hud__gem-toast[data-kind='emerald'] { border-color: rgba(60, 255, 130, 0.7); }
+.moon-hud__gem-toast[data-kind='sapphire'] { border-color: rgba(80, 130, 255, 0.75); }
+.moon-hud__gem-toast[data-kind='gold'], .moon-hud__gem-toast[data-kind='meteorite'] { border-color: rgba(255, 179, 71, 0.75); }
+@keyframes gem-toast { 0% { opacity: 0; transform: translate(-50%, 10px) scale(0.9); } 12% { opacity: 1; transform: translate(-50%, 0) scale(1.04); } 20% { transform: translate(-50%, 0) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -14px); } }
+@media (prefers-reduced-motion: reduce) {
+  .moon-hud__gems[data-tick], .moon-hud__gem-toast { animation: none; }
+}

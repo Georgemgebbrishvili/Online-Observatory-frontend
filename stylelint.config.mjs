@@ -24,6 +24,8 @@ const awaitingV3Migration = [
 
 /** @type {import("stylelint").Config} */
 const config = {
+  // ADR-089: the Explorer game's stylesheets are Skychaser's Voyage, kept as written.
+  ignoreFiles: ["apps/web/src/voyage/**"],
   rules: {
     // DV-070 AC1: no colour literal outside styles/tokens.css.
     "color-no-hex": true,

@@ -22,3 +22,5 @@ docs/evidence
 # Build output.
 apps/mobile/dist
 apps/mobile/.expo
+# ADR-089: the Explorer game is Skychaser's Voyage engine, kept as written.
+apps/web/src/voyage

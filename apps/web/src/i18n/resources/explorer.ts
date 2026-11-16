@@ -1,7 +1,8 @@
 import { brand } from "@/brand";
+import type { Locale } from "@/i18n/config";
 
-/** Where the game lives: Skychaser's Voyage, played on its own site (ADR-057). */
-export const explorerGameUrl = "https://skychaser.io/voyage";
+/** Where the game lives: on this site, full screen (ADR-089). */
+export const explorerGamePath = (locale: Locale) => `/${locale}/explorer/play`;
 
 const [enFirst, enSecond] = brand.en.game.split(" ");
 const [kaFirst, kaSecond] = brand.ka.game.split(" ");
@@ -17,7 +18,7 @@ export const explorerCopy = {
     lede: "Fly the solar system. Orbit the planets, visit their moons, land on the surface.",
     launch: "Launch the game",
     launching: "Launching",
-    note: "Plays at skychaser.io. No install.",
+    note: "Plays right here in your browser. No install.",
     features: [
       { title: "Fly", text: "Fly between the planets at your own pace." },
       { title: "Land", text: "Land on the Moon and walk the surface." },
@@ -35,7 +36,7 @@ export const explorerCopy = {
     lede: "იმოგზაურე მზის სისტემაში. შემოუარე პლანეტებს, ეწვიე მათ თანამგზავრებს და დაეშვი ზედაპირზე.",
     launch: "თამაშის დაწყება",
     launching: "იწყება",
-    note: "იხსნება skychaser.io-ზე. დაყენება არ სჭირდება.",
+    note: "იხსნება აქვე, ბრაუზერში. დაყენება არ სჭირდება. თამაში ინგლისურ ენაზეა.",
     features: [
       { title: "იფრინე", text: "იფრინე პლანეტებს შორის შენი ტემპით." },
       { title: "დაეშვი", text: "დაეშვი მთვარეზე და გაისეირნე." },

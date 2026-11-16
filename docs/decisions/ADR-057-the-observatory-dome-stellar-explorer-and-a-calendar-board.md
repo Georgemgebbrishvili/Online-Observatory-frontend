@@ -1,7 +1,7 @@
 # ADR-057 — The observatory dome, Stellar Explorer in the header, and a calendar board
 
 - **Date:** 2026-10-21
-- **Status:** APPROVED
+- **Status:** APPROVED; §3 superseded by ADR-089 (2026-11-16)
 - **Decided by:** project maintainer (Nika), in session, with reference screenshots (a
   domed observatory on a hill; a dark planet-selector game interface): "build this dome
   telescope in the below middle area of my home landing page, when I point mouse on any

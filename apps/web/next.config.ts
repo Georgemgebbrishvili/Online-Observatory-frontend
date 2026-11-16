@@ -39,6 +39,18 @@ const contentSecurityPolicy = [
   ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
+/**
+ * ADR-089: the game's Earth globe draws NASA GIBS imagery and Mapzen Terrarium heights
+ * through <img>, and its models' textures are read from blob: URLs, so its page alone may
+ * load pictures from those two hosts and fetch blob: URLs.
+ */
+const explorerGamePolicy = contentSecurityPolicy
+  .replace(
+    "img-src 'self' data: blob:",
+    "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov https://s3.amazonaws.com",
+  )
+  .replace("connect-src 'self'", "connect-src 'self' blob:");
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   // The dev badge sits in the bottom-left corner, over the live room's phone dock.
@@ -62,6 +74,16 @@ const nextConfig: NextConfig = {
           },
           { key: "Content-Security-Policy", value: contentSecurityPolicy },
         ],
+      },
+      {
+        // Listed after the site-wide entry, so this policy replaces it on the game's page.
+        source: "/:locale(en|ka)/explorer/play",
+        headers: [{ key: "Content-Security-Policy", value: explorerGamePolicy }],
+      },
+      {
+        // The game's planets, models and Tbilisi terrain change only with a new release.
+        source: "/voyage/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       },
       {
         // The Night Sky's data and pictures change only with a rebuilt file, which takes a

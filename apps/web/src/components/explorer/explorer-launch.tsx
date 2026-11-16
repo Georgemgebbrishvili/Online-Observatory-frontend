@@ -3,11 +3,11 @@
 import { useState } from "react";
 
 import type { Locale } from "@/i18n/config";
-import { explorerCopy, explorerGameUrl } from "@/i18n/resources/explorer";
+import { explorerCopy, explorerGamePath } from "@/i18n/resources/explorer";
 
 /**
  * The game's launch screen: a still from the game behind, the name, one button. A press
- * plays a short warp over the page and then leaves for the game; a modified click or a
+ * plays a short warp over the page and then opens the game; a modified click or a
  * reduced-motion visitor goes at once.
  */
 export function ExplorerLaunch({ locale }: { locale: Locale }) {
@@ -19,7 +19,7 @@ export function ExplorerLaunch({ locale }: { locale: Locale }) {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     event.preventDefault();
     setLaunching(true);
-    window.setTimeout(() => window.location.assign(explorerGameUrl), 900);
+    window.setTimeout(() => window.location.assign(explorerGamePath(locale)), 900);
   }
 
   return (
@@ -38,7 +38,7 @@ export function ExplorerLaunch({ locale }: { locale: Locale }) {
         <p className="explorer-lede">{copy.lede}</p>
         <a
           className="button button-primary button-large explorer-launch"
-          href={explorerGameUrl}
+          href={explorerGamePath(locale)}
           onClick={launch}
           aria-busy={launching || undefined}
         >
