@@ -105,11 +105,6 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
           name,
           description: copy.metadataDescription,
           url: new URL(`/${locale}/observatory`, siteUrl).toString(),
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: locale === "ka" ? "თბილისი" : "Tbilisi",
-            addressCountry: "GE",
-          },
         }}
       />
       <SiteHeader locale={locale} navigation={dictionary.navigation} />

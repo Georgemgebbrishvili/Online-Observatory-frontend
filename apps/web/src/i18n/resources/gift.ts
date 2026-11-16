@@ -5,7 +5,7 @@ export const giftCopy = {
   en: {
     metadataTitle: `Gift a night · ${brand.en.name}`,
     metadataDescription:
-      "Gift a live session at a real telescope in Georgia. They pick the night and the target.",
+      "Gift a live session at a real telescope. They pick the night and the target.",
     title: "Gift a night",
     lede: "A live telescope session, as a gift. They pick the night and the target.",
     facts: {
@@ -65,7 +65,7 @@ export const giftCopy = {
       heading: "A night at the telescope",
       for: (name: string) => `For ${name}`,
       length: (minutes: number) =>
-        `${minutes}-minute live session at ${brand.en.name}, Tbilisi`,
+        `${minutes}-minute live session at ${brand.en.name}`,
       code: "Gift code",
       until: (date: string) => `Use it by ${date}`,
       redeem: "Book at stellar.astroman.ge and enter the code under “Have a gift code?”.",
@@ -82,7 +82,7 @@ export const giftCopy = {
   ka: {
     metadataTitle: `აჩუქე ღამე · ${brand.ka.nominative}`,
     metadataDescription:
-      "აჩუქე პირდაპირი სეანსი ნამდვილ ტელესკოპთან საქართველოში. ღამესა და ობიექტს თვითონ აირჩევს.",
+      "აჩუქე პირდაპირი სეანსი ნამდვილ ტელესკოპთან. ღამესა და ობიექტს თვითონ აირჩევს.",
     title: "აჩუქე ღამე",
     lede: "პირდაპირი სეანსი ტელესკოპთან, საჩუქრად. ღამესა და ობიექტს თვითონ აირჩევს.",
     facts: {
@@ -141,7 +141,7 @@ export const giftCopy = {
       heading: "ღამე ტელესკოპთან",
       for: (name: string) => `ვისთვის: ${name}`,
       length: (minutes: number) =>
-        `${minutes}-წუთიანი პირდაპირი სეანსი, ${brand.ka.nominative}, თბილისი`,
+        `${minutes}-წუთიანი პირდაპირი სეანსი, ${brand.ka.nominative}`,
       code: "სასაჩუქრე კოდი",
       until: (date: string) => `გამოიყენე ${date}-მდე`,
       redeem:

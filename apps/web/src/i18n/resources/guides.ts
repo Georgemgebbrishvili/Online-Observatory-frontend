@@ -52,7 +52,7 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
       faq: [
         {
           question: "Is this a real telescope?",
-          answer: `Yes. One telescope with a colour camera, in Georgia.`,
+          answer: `Yes. One telescope with a colour camera.`,
           link: { label: "See the observatory", path: "observatory" },
         },
         {
@@ -61,7 +61,7 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
         },
         {
           question: "When can I observe?",
-          answer: "Through the dark hours, Georgia time (GMT+4). Booking shows the next seven nights.",
+          answer: "Through the dark hours, observatory time (GMT+4). Booking shows the next seven nights.",
           link: { label: "Open the booking page", path: "app/book" },
         },
         {
@@ -136,7 +136,7 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
     },
     observatory: {
       eyebrow: "About the observatory",
-      title: "One telescope in Georgia, run for you remotely.",
+      title: "One telescope, run for you remotely.",
       lede: "The console works like a real session: connect, point, capture.",
       stepsTitle: "What happens in a real session",
       steps: [
@@ -205,7 +205,7 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
       faq: [
         {
           question: "ეს ნამდვილი ტელესკოპია?",
-          answer: `დიახ. ერთი ტელესკოპი ფერადი კამერით, საქართველოში.`,
+          answer: `დიახ. ერთი ტელესკოპი ფერადი კამერით.`,
           link: { label: "ობსერვატორიის ნახვა", path: "observatory" },
         },
         {
@@ -214,7 +214,7 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
         },
         {
           question: "როდის შემიძლია დაკვირვება?",
-          answer: "ღამის ბნელ საათებში, საქართველოს დროით (GMT+4). დაჯავშნისას ჩანს მომდევნო შვიდი ღამე.",
+          answer: "ღამის ბნელ საათებში, ობსერვატორიის დროით (GMT+4). დაჯავშნისას ჩანს მომდევნო შვიდი ღამე.",
           link: { label: "დაჯავშნა", path: "app/book" },
         },
         {
@@ -289,7 +289,7 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
     },
     observatory: {
       eyebrow: "ობსერვატორიის შესახებ",
-      title: "ერთი ტელესკოპი საქართველოში, დისტანციურად.",
+      title: "ერთი ტელესკოპი, შენთვის დისტანციურად მართული.",
       lede: "პულტი ნამდვილი სეანსივით მუშაობს: დაუკავშირდი, მიმართე, გადაიღე.",
       stepsTitle: "რა ხდება ნამდვილ სეანსში",
       steps: [

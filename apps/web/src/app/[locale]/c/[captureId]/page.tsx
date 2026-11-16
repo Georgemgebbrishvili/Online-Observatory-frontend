@@ -93,7 +93,6 @@ function GalleryCaptureView({
   const target = locale === "ka" ? capture.target.nameKa : capture.target.nameEn;
   const facts: [string, string][] = [
     [copy.taken, formatCapturedAt(capture.capturedAt, capture.place.timezone, locale)],
-    [copy.place, copy.placeValue],
     [
       copy.instrument,
       fill(copy.instrumentValue, {

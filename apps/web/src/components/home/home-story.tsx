@@ -51,8 +51,6 @@ export type HomeStoryProps = {
     /** The aim step's line when tonight names it: its best time and height. Null for the stand-in. */
     line: string | null;
   };
-  /** Where the observatory stands, over the hero's headline. */
-  place: string;
   /** The open times on the hero's booking step. */
   booking: { night: string; times: StoryTime[] } | null;
   sky: StorySky | null;
@@ -213,7 +211,7 @@ export function StoryFeedSpecimen({
  * the observatory's record.
  */
 export function HomeStory(props: HomeStoryProps) {
-  const { copy, hero, links, target, place, booking, sky, skyLabels, heroMinute, slides, night, session, faq, scope } = props;
+  const { copy, hero, links, target, booking, sky, skyLabels, heroMinute, slides, night, session, faq, scope } = props;
   const root = useRef<HTMLElement>(null);
 
   // The showpieces: the one the corners describe, faded out and back in on change.
@@ -783,7 +781,6 @@ export function HomeStory(props: HomeStoryProps) {
               const Heading = i === 0 ? "h1" : "h2";
               return (
                 <div key={step.a} className="hs-ln">
-                  {i === 0 && place && <p className="hs-label hs-eyebrow">{place}</p>}
                   <Heading id={i === 0 ? "home-title" : undefined} className="home-hero-title hs-xl">
                     <Mask>{step.a}</Mask> <Mask accent>{step.b}</Mask>
                   </Heading>

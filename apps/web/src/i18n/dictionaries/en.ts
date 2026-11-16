@@ -4,7 +4,7 @@ import { brand } from "@/brand";
 const dictionary = {
   metadata: {
     title: brand.en.siteName,
-    description: "Book a real telescope in Georgia and watch the sky live.",
+    description: "Book a real telescope and watch the sky live.",
   },
   navigation: {
     ariaLabel: "Primary navigation",
@@ -49,7 +49,7 @@ const dictionary = {
     hero: {
       headline: "The real sky,",
       sunset: "live.",
-      lede: "Book a real telescope in Georgia and watch the night sky live.",
+      lede: "Book a real telescope and watch the night sky live.",
       cta: "Book a session",
       watch: "Watch live",
       illustration: "Illustration — not telescope output",
@@ -63,7 +63,7 @@ const dictionary = {
       simulated: "Simulated",
       steps: [
         { a: "Pick", b: "your time.", text: "Any open night, from 15 minutes to 4 hours." },
-        { a: "It turns", b: "to your target.", text: "A real telescope in Tbilisi turns to what you choose." },
+        { a: "It turns", b: "to your target.", text: "A real telescope turns to what you choose." },
         {
           a: "Watch it",
           b: "settle.",
@@ -115,11 +115,11 @@ const dictionary = {
         },
       },
       night: {
-        label: "Tonight over Tbilisi",
+        label: "Tonight",
         title: "One night",
         em: "at the telescope.",
         lede: "Tonight's real sky, from dark to dawn. Scroll through the hours.",
-        zone: "Tbilisi time",
+        zone: "Observatory time",
         on: "Telescope on",
         slewing: "Turning to {name}…",
         pointing: "{name} · {altitude}° up, {direction}",
@@ -150,8 +150,7 @@ const dictionary = {
         label: "The instrument",
         title: "One real",
         em: "telescope.",
-        lede: "A {aperture} {type} in Tbilisi. For your session, you are its only observer.",
-        site: "Site",
+        lede: "A {aperture} {type}. For your session, you are its only observer.",
         optics: "Optics",
         focal: "Focal length",
         mount: "Mount",
@@ -195,7 +194,7 @@ const dictionary = {
     brandEndorsement: brand.en.endorsement,
     georgianLanguage: "ქართული",
     englishLanguage: "English",
-    statement: "One real telescope in Georgia.",
+    statement: "One real telescope, live.",
     product: "Product",
     legal: "Legal",
     language: "Language",

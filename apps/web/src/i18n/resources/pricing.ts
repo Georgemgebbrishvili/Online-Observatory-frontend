@@ -6,7 +6,7 @@ export const pricingPageCopy = {
     metadataDescription: `Browsing is free. You pay per session, and see the price first.`,
     title: "Pricing",
     hero: {
-      eyebrow: "A real telescope in Georgia",
+      eyebrow: "A real telescope, live",
       per: (minutes: number) => `for ${minutes} minutes`,
       member: (price: string, percent: number) =>
         `Members pay ${price} (${percent}% less). Every account is a member.`,
@@ -53,7 +53,7 @@ export const pricingPageCopy = {
     metadataDescription: `დათვალიერება უფასოა. სეანსის ფასს გადახდამდე ხედავ.`,
     title: "ფასები",
     hero: {
-      eyebrow: "ნამდვილი ტელესკოპი საქართველოში",
+      eyebrow: "ნამდვილი ტელესკოპი, პირდაპირ ეთერში",
       per: (minutes: number) => `${minutes} წუთი`,
       member: (price: string, percent: number) =>
         `წევრისთვის ${price} (${percent}%-ით იაფი). ყველა ანგარიში წევრია.`,

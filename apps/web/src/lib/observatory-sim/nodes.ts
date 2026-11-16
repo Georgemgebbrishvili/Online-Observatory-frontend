@@ -10,7 +10,7 @@ export const NODES: ObservatoryNode[] = [
   {
     id: "tbilisi-01",
     name: "Tbilisi Observatory",
-    site: "Tbilisi, Georgia",
+    site: "the observatory",
     countryCode: "GE",
     lat: 41.7151,
     lon: 44.8271,

@@ -14,7 +14,7 @@ export const targetGuideCopy: Record<
     classes: {
       MOON: "A sharp, bright surface: craters and mountains are clearest along the line between day and night.",
       PLANET:
-        "A small, bright disc that steadies as frames stack: rings, belts, moons or a phase. Detail depends on the air over Tbilisi.",
+        "A small, bright disc that steadies as frames stack: rings, belts, moons or a phase. Detail depends on the night's air.",
       DOUBLE_STAR:
         "Two or more stars side by side, often in different colours.",
       GLOBULAR_CLUSTER:
@@ -31,7 +31,7 @@ export const targetGuideCopy: Record<
     classes: {
       MOON: "მკვეთრი, კაშკაშა ზედაპირი: კრატერები და მთები ყველაზე კარგად დღისა და ღამის საზღვარზე ჩანს.",
       PLANET:
-        "პატარა, კაშკაშა დისკო, რომელიც კადრების დაგროვებით მკვეთრდება: რგოლები, სარტყლები, თანამგზავრები ან ფაზა. დეტალი თბილისის ჰაერზეა დამოკიდებული.",
+        "პატარა, კაშკაშა დისკო, რომელიც კადრების დაგროვებით მკვეთრდება: რგოლები, სარტყლები, თანამგზავრები ან ფაზა. დეტალი იმ ღამის ჰაერზეა დამოკიდებული.",
       DOUBLE_STAR:
         "ორი ან მეტი ვარსკვლავი გვერდიგვერდ, ხშირად სხვადასხვა ფერის.",
       GLOBULAR_CLUSTER:

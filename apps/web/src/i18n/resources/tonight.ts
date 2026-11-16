@@ -5,10 +5,10 @@ export const tonightCopy = {
   en: {
     metadataTitle: `Tonight, live · ${brand.en.name}`,
     metadataDescription:
-      "Watch a real telescope in Georgia, live.",
+      "Watch a real telescope, live.",
     title: "Tonight, live",
     liveNow: "Live now",
-    watching: "{target}, live from Georgia",
+    watching: "{target}, live from the observatory",
     endsAt: "Until {time}",
     states: {
       PREPARING: "The telescope is getting ready.",
@@ -59,10 +59,10 @@ export const tonightCopy = {
   ka: {
     metadataTitle: `ამაღამ, პირდაპირ · ${brand.ka.nominative}`,
     metadataDescription:
-      "უყურე ნამდვილ ტელესკოპს საქართველოში, პირდაპირ.",
+      "უყურე ნამდვილ ტელესკოპს პირდაპირ ეთერში.",
     title: "ამაღამ, პირდაპირ",
     liveNow: "ახლა პირდაპირ",
-    watching: "{target}, პირდაპირ საქართველოდან",
+    watching: "{target}, პირდაპირ ობსერვატორიიდან",
     endsAt: "{time}-მდე",
     states: {
       PREPARING: "ტელესკოპი ემზადება.",

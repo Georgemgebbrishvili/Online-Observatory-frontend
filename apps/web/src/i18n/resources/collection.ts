@@ -274,11 +274,9 @@ export const captureSharingCopy = {
 export const galleryPageCopy = {
   en: {
     metadataTitle: "{target}, through the telescope",
-    metadataDescription: "{target} on {date}, live from the observatory in Georgia.",
+    metadataDescription: "{target} on {date}, live from the observatory.",
     kicker: "Seen through a real telescope",
     taken: "Taken",
-    place: "Where",
-    placeValue: "Georgia",
     instrument: "Telescope",
     instrumentValue: "{aperture} mm aperture · {focal} mm focal length",
     exposure: "Exposure",
@@ -293,11 +291,9 @@ export const galleryPageCopy = {
   },
   ka: {
     metadataTitle: "{target} — ტელესკოპით",
-    metadataDescription: "{target}, {date}, პირდაპირ ობსერვატორიიდან, საქართველო.",
+    metadataDescription: "{target}, {date}, პირდაპირ ობსერვატორიიდან.",
     kicker: "გადაღებულია ნამდვილი ტელესკოპით",
     taken: "გადაღებულია",
-    place: "სად",
-    placeValue: "საქართველო",
     instrument: "ტელესკოპი",
     instrumentValue: "აპერტურა {aperture} მმ · ფოკუსური მანძილი {focal} მმ",
     exposure: "ექსპოზიცია",

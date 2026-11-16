@@ -132,7 +132,6 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
     new Date(`${pricing.tonight?.date ?? sky?.date ?? new Date().toISOString().slice(0, 10)}T12:00:00Z`),
   );
   const telescope = observatories[0]?.telescope;
-  const site = observatories[0]?.location[locale];
 
   return (
     <HomeStory
@@ -160,7 +159,6 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
             })
           : null,
       }}
-      place={site ?? ""}
       booking={
         pricing.reachable
           ? {
@@ -197,7 +195,6 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
         lede: telescope ? fill(copy.scope.lede, { aperture: telescope.aperture, type: telescope.type[locale] }) : "",
         facts: telescope
           ? [
-              { label: copy.scope.site, value: site ?? "" },
               { label: copy.scope.optics, value: `${telescope.type[locale]} · ${telescope.aperture}` },
               { label: copy.scope.focal, value: telescope.focalLength },
               { label: copy.scope.mount, value: telescope.mount[locale] },

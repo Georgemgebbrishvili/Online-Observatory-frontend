@@ -42,7 +42,7 @@ const NIGHT_KEY = 'stellar.observatory.night';
  */
 export function PlatformConsole({ locale, observatoryName, simulated, mission, caption }: Props) {
   const t = consoleCopy[locale];
-  const station = useMemo<Station>(() => ({ ...SIM_STATIONS.find((s) => s.id === NODE_ID)!, name: observatoryName, site: 'Tbilisi' }), [observatoryName]);
+  const station = useMemo<Station>(() => ({ ...SIM_STATIONS.find((s) => s.id === NODE_ID)!, name: observatoryName, site: observatoryName }), [observatoryName]);
   const [clockMs, setClockMs] = useState<number | null>(null);
   const now = clockMs ?? 0;
   const [night, setNight] = useState(false);

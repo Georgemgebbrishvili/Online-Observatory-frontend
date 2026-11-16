@@ -48,6 +48,13 @@ html.lenis body {
   text-transform: none;
 }
 
+/* The same for a section title in Georgian: its gradient reaches the descenders of its last line. */
+.hs-title:lang(ka) {
+  margin-bottom: -0.26em;
+  padding-bottom: 0.26em;
+  line-height: 1.15;
+}
+
 .hs-title em {
   display: block;
   color: var(--color-text-tertiary);
@@ -65,8 +72,7 @@ html.lenis body {
 }
 
 /* A scene's first label opens with a short red rule. */
-:is(.hs-eyebrow, .hs-coll-head > .hs-label, .hs-night-head > .hs-label, .hs-session-text > .hs-label, .hs-scope .hs-label)::before,
-.hs-eyebrow::after {
+:is(.hs-coll-head > .hs-label, .hs-night-head > .hs-label, .hs-session-text > .hs-label, .hs-scope .hs-label)::before {
   display: inline-block;
   width: var(--space-6);
   height: 1px;
@@ -74,10 +80,6 @@ html.lenis body {
   background: var(--color-accent);
   content: "";
   vertical-align: middle;
-}
-
-.hs-eyebrow::after {
-  margin: 0 0 0 var(--space-3);
 }
 
 .hs-data {
@@ -484,20 +486,25 @@ html.lenis body {
   background-clip: text;
 }
 
+/* Mkhedruli reaches much further below the baseline than Latin (ღ, ლ, ც, ყ, ფ).
+   A gradient fill stops at its box and the mask clips at its own, so in Georgian
+   both reach down to the descenders; the negative margins keep the layout as it was. */
+.hs-m:lang(ka) {
+  margin-bottom: -0.32em;
+  padding-bottom: 0.32em;
+}
+
+.hs-m:lang(ka) > span {
+  margin-bottom: -0.26em;
+  padding-bottom: 0.26em;
+}
+
 .hs-ln p {
   max-width: 34rem;
   margin: var(--space-4) auto 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-body-lg);
   line-height: 1.5;
-}
-
-.hs-ln .hs-eyebrow {
-  max-width: none;
-  margin: 0 0 var(--space-4);
-  color: var(--color-text-small);
-  font-size: var(--font-size-label);
-  line-height: 1.3;
 }
 
 .hs-ln:not(:first-child) .hs-m > span {

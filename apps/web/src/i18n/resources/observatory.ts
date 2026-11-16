@@ -71,8 +71,6 @@ type ObservatoryPageCopy = {
     kicker: string;
     title: string;
     lede: string;
-    city: string;
-    cityValue: string;
     placement: string;
     placementValue: string;
     precision: string;
@@ -94,9 +92,9 @@ type ObservatoryPageCopy = {
 export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
   en: {
     metadataTitle: `Observatory · ${brand.en.name}`,
-    metadataDescription: `${brand.en.name}'s remote telescope in Georgia: live status, tonight's targets, the instrument and its safety rules.`,
+    metadataDescription: `${brand.en.name}'s remote telescope: live status, tonight's targets, the instrument and its safety rules.`,
     eyebrow: "Remote observatory · Georgia",
-    statement: `One real telescope on a rooftop in Georgia. You book the time; it does the moving.`,
+    statement: `One real telescope on a rooftop. You book the time; it does the moving.`,
     liveStatus: "Status",
     fullStatus: "Full status",
     observingNow: (target) => `Observing now: ${target}`,
@@ -231,10 +229,8 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     },
     siteSection: {
       kicker: "03 · The site",
-      title: "A rooftop in Georgia.",
-      lede: "Installed on a rooftop in Georgia, on mains power.",
-      city: "Country",
-      cityValue: "Georgia",
+      title: "A rooftop observatory.",
+      lede: "Installed on a rooftop, on mains power.",
       placement: "Placement",
       placementValue: "Rooftop, mains power",
       precision: "Exact location",
@@ -246,7 +242,7 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       title: "One site today.",
       lede: `Built so more observatories can join later. Today there is one.`,
       today: "Today",
-      todayValue: `One observatory, in Georgia, operated by ${brand.en.name}.`,
+      todayValue: `One observatory, operated by ${brand.en.name}.`,
       later: "Later",
       laterValue:
         "Other sites may join after review and safety checks. None is connected yet.",
@@ -256,10 +252,10 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
   },
   ka: {
     metadataTitle: `ობსერვატორია · ${brand.ka.nominative}`,
-    metadataDescription: `${brand.ka.genitive} დისტანციური ტელესკოპი საქართველოში: სტატუსი, ამაღამის ობიექტები, ინსტრუმენტი და უსაფრთხოების წესები.`,
+    metadataDescription: `${brand.ka.genitive} დისტანციური ტელესკოპი: სტატუსი, ამაღამის ობიექტები, ინსტრუმენტი და უსაფრთხოების წესები.`,
     eyebrow: "დისტანციური ობსერვატორია · საქართველო",
     statement:
-      "ერთი ნამდვილი ტელესკოპი სახურავზე, საქართველოში. შენ ჯავშნი დროს, ტელესკოპი თავად მოძრაობს.",
+      "ერთი ნამდვილი ტელესკოპი სახურავზე. შენ ჯავშნი დროს, ტელესკოპი თავად მოძრაობს.",
     liveStatus: "სტატუსი",
     fullStatus: "სრული სტატუსი",
     observingNow: (target) => `ახლა ვაკვირდებით: ${target}`,
@@ -394,10 +390,8 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     },
     siteSection: {
       kicker: "03 · ადგილი",
-      title: "სახურავი საქართველოში.",
-      lede: "ტელესკოპი სახურავზეა, საქართველოში, ქსელის კვებით.",
-      city: "ქვეყანა",
-      cityValue: "საქართველო",
+      title: "ობსერვატორია სახურავზე.",
+      lede: "ტელესკოპი სახურავზეა, ქსელის კვებით.",
       placement: "განთავსება",
       placementValue: "სახურავი, ქსელის კვება",
       precision: "ზუსტი მდებარეობა",
@@ -409,7 +403,7 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       title: "დღეს — ერთი ობსერვატორია.",
       lede: `მომავალში სხვა ობსერვატორიებიც შეიძლება დაემატოს. დღეს მხოლოდ ერთია.`,
       today: "დღეს",
-      todayValue: `ერთი ობსერვატორია საქართველოში, რომელსაც ${brand.ka.nominative} მართავს.`,
+      todayValue: `ერთი ობსერვატორია, რომელსაც ${brand.ka.nominative} მართავს.`,
       later: "მოგვიანებით",
       laterValue:
         "სხვა ობსერვატორიები შემოწმების შემდეგ შეიძლება დაემატოს. ჯერ არცერთი არ არის დაკავშირებული.",

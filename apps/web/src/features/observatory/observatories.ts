@@ -16,7 +16,6 @@ export type TelescopeConfiguration = {
 export type ObservatorySite = {
   id: string;
   name: LocalizedText;
-  location: LocalizedText;
   telescope: TelescopeConfiguration;
   capabilities: string[];
 };
@@ -25,10 +24,9 @@ export const observatories: ObservatorySite[] = [
   {
     id: "tbilisi-01",
     name: {
-      en: `${brand.en.name} Tbilisi Observatory`,
-      ka: `${brand.ka.genitive} ობსერვატორია, თბილისი`,
+      en: `${brand.en.name} Observatory`,
+      ka: `${brand.ka.genitive} ობსერვატორია`,
     },
-    location: { en: "Tbilisi, Georgia", ka: "თბილისი, საქართველო" },
     telescope: {
       type: { en: "Schmidt-Cassegrain", ka: "შმიდტ-კასეგრენი" },
       aperture: "203 mm",

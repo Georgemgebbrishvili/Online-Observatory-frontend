@@ -7,7 +7,7 @@ import { brand } from "@/brand";
 import { cometMarkPath } from "@/components/brand/brand-mark";
 import { palette } from "@/styles/tokens";
 
-export const alt = `${brand.en.siteName} — Remote Observatory · Georgia`;
+export const alt = `${brand.en.siteName} — Remote Observatory`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -108,7 +108,7 @@ export default async function OpenGraphImage() {
             color: `${palette.blush}b3`,
           }}
         >
-          LIVE REMOTE OBSERVATORY · TBILISI
+          LIVE REMOTE OBSERVATORY
         </div>
       </div>
     </div>,

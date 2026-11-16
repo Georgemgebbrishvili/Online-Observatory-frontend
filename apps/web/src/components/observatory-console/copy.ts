@@ -150,7 +150,6 @@ export type ConsoleCopy = {
     platform: (target: string) => string;
   };
   details: {
-    site: string;
     elevation: string;
     sky: string;
     bortle: (n: number) => string;
@@ -498,7 +497,6 @@ const en: ConsoleCopy = {
       `Your booked observation: ${target}. Start the session to take control.`,
   },
   details: {
-    site: "Site",
     elevation: "Elevation",
     sky: "Sky",
     bortle: (n) => `Bortle ${n}`,
@@ -872,7 +870,6 @@ const ka: ConsoleCopy = {
       `შენი დაჯავშნილი დაკვირვება: ${target}. დაიწყე სეანსი სამართავად.`,
   },
   details: {
-    site: "ადგილი",
     elevation: "სიმაღლე ზღვის დონიდან",
     sky: "ცა",
     bortle: (n) => `ბორტლი ${n}`,

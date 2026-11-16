@@ -75,7 +75,6 @@ export type HomepageDictionary = {
       em: string;
       /** {aperture} {type} */
       lede: string;
-      site: string;
       optics: string;
       focal: string;
       mount: string;

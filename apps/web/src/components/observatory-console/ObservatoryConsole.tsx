@@ -76,7 +76,7 @@ const FOCUS_SHIFT: Record<OpticalTrainId, number> = { F6_3_REDUCER: -260, F10_NA
  * source listed four stations still to come, which this product has no plan behind.
  */
 function stationsFor(observatoryName: string): Station[] {
-  return SIM_STATIONS.filter((s) => s.id === NODE_ID).map((s) => ({ ...s, name: observatoryName, site: 'Tbilisi' }));
+  return SIM_STATIONS.filter((s) => s.id === NODE_ID).map((s) => ({ ...s, name: observatoryName, site: observatoryName }));
 }
 
 const ARROWS: Record<string, { axis: Axis; dir: 1 | -1 }> = {
@@ -1014,7 +1014,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         <h3 className="oh-h3" style={{ marginTop: 0 }}>{t.hub.setup.site}</h3>
         <dl className="oh-kv">
           {([
-            [t.details.site, selected.site],
             [t.details.elevation, `${selected.elevationM} m`],
             [t.details.sky, t.details.bortle(selected.bortle)],
             [t.cloud, nodeCloud !== null ? `${nodeCloud}%` : '—'],

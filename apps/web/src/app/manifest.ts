@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: brand.en.name,
     short_name: brand.en.name,
-    description: "One real telescope in Georgia, live.",
+    description: "One real telescope, live.",
     start_url: "/",
     display: "standalone",
     background_color: palette.canvas,
