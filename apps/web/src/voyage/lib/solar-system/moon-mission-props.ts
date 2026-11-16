@@ -28,7 +28,8 @@ export interface MissionPropsWorld {
   heightAt: (x: number, z: number) => number;
   anchors: Record<AnchorId, Anchor>;
   /** Where the lander came down. */
-  lander: () => { x: number; z: number };
+  /** Where the vehicle stands, and the radius of the walk collider round its hull. */
+  lander: () => { x: number; z: number; hull: number };
   /** The scene direction to Earth, for the framing check. */
   earthDir: THREE.Vector3;
   state: Readonly<BaseState>;
@@ -177,7 +178,8 @@ export function makeMissionProps(world: MissionPropsWorld): MissionPropsHandle {
     {
       id: 'suitCheck',
       priority: 5,
-      where: () => (suitChecked ? null : { ...world.lander(), r: 5.4 }),
+      // Reached from anywhere the crew can stand beside the hull, whichever hull it is.
+      where: () => { if (suitChecked) return null; const l = world.lander(); return { x: l.x, z: l.z, r: l.hull + 2.6 }; },
       kind: () => 'tap',
       label: () => 'suitCheck',
       use: () => { suitChecked = true; },

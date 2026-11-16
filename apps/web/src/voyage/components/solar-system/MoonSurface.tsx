@@ -143,6 +143,8 @@ export function MoonSurface({ onReturn, room, sink, paused, standby, startAt, on
   const objRef = useRef<HTMLButtonElement>(null);
   const objTextRef = useRef<HTMLSpanElement>(null);
   const objRangeRef = useRef<HTMLSpanElement>(null);
+  const markRef = useRef<HTMLDivElement>(null);
+  const markDistRef = useRef<HTMLSpanElement>(null);
   const jobRef = useRef<HTMLSpanElement>(null);
   const jobTextRef = useRef<HTMLSpanElement>(null);
   const motionRef = useRef<HTMLDivElement>(null);
@@ -399,6 +401,27 @@ export function MoonSurface({ onReturn, room, sink, paused, standby, startAt, on
           : m.task === 'drill' && m.atSite ? `${m.drill.depth.toFixed(1)} / ${5.2} m`
           : m.task === 'clear' && m.atSite ? tt('mission.patches', { n: m.cleared, total: m.patches })
           : m.distance >= 0 ? (m.approx ? fmtApprox(m.distance) : fmtRange(m.distance)) : '');
+        // ── The tag over the objective: its distance, pinned to the edge with an arrow when it is off the glass. ──
+        const mk = tel.marker;
+        const mark = markRef.current;
+        const markOn = !free && onMission && mk.on && mk.distance > 2.5 && !ms.banner;
+        show(mark, markOn);
+        if (mark && markOn) {
+          const PAD = 0.06;
+          let x = mk.x; let y = mk.y;
+          if (!mk.inFrame) {
+            // Out to the edge along the line from the centre, so the arrow points the way to turn.
+            const dx = x - 0.5; const dy = y - 0.5;
+            const s = 0.5 - PAD;
+            const k = s / Math.max(Math.abs(dx), Math.abs(dy), 1e-4);
+            x = 0.5 + dx * k; y = 0.5 + dy * k;
+            mark.style.setProperty('--turn', `${Math.atan2(dy, dx)}rad`);
+          }
+          mark.dataset.edge = String(!mk.inFrame);
+          mark.style.left = `${(Math.min(1 - PAD, Math.max(PAD, x)) * 100).toFixed(2)}%`;
+          mark.style.top = `${(Math.min(1 - PAD, Math.max(PAD, y)) * 100).toFixed(2)}%`;
+          text(markDistRef.current, fmtRange(mk.distance));
+        }
         show(jobRef.current, j.active !== '');
         if (j.active && j.objective) text(jobTextRef.current, `${tt(`jobs.steps.${j.objective}`)}${j.distance >= 0 && j.distance > 4 ? ` · ${fmtRange(j.distance)}` : ''}`);
 
@@ -812,6 +835,11 @@ export function MoonSurface({ onReturn, room, sink, paused, standby, startAt, on
           <span ref={meterLabelRef} />
         </div>
         <div ref={radioRef} className="moon-hud__radio" role="status" hidden />
+
+        <div ref={markRef} className="moon-hud__mark" aria-hidden hidden>
+          <span className="moon-hud__mark-pin" />
+          <span ref={markDistRef} className="moon-hud__mark-dist" />
+        </div>
 
         {/* ── Top left: the place, the mission, and one line of what to do. ── */}
         <div className="moon-hud__topleft">

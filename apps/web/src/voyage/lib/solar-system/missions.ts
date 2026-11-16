@@ -57,6 +57,10 @@ export interface ObjectiveState {
   bearing: number;
 }
 
+/** Objective types whose target is a thing in the world with a place:
+ *  without an `at` of their own, they are found where that thing is. */
+const LOCATED: ReadonlySet<ObjectiveType> = new Set(['INTERACT', 'COLLECT', 'INSTALL', 'REPAIR', 'ACTIVATE']);
+
 export interface MissionsTelemetry {
   /** The mission being worked, or ''. */
   active: string;
@@ -65,6 +69,10 @@ export interface MissionsTelemetry {
   objectives: ObjectiveState[];
   distance: number;
   bearing: number;
+  /** Where the objective in hand is, or null when it sends the crew nowhere. */
+  at: { x: number; z: number } | null;
+  /** What the objective in hand names (an interactable, an item, a signal), or ''. */
+  target: string;
   done: string[];
   rewards: string[];
   /** Thrown up big for a few seconds: a key under `…moon.missions`. */
@@ -163,9 +171,12 @@ export interface MissionsSetup {
    *  time, so a lesson finished in another tab opens the mission. Left out,
    *  nothing outside the game holds a mission back. */
   gate?: (id: string) => boolean;
+  /** Where a thing an objective names is right now, or null. Lets an
+   *  objective with no `at` (use the panel, take the part) be marked too. */
+  locate?: (target: string) => { x: number; z: number } | null;
 }
 
-export function makeMissions({ missions, bus, store, onComplete, onStart, gate = () => true }: MissionsSetup): MissionsHandle {
+export function makeMissions({ missions, bus, store, onComplete, onStart, gate = () => true, locate }: MissionsSetup): MissionsHandle {
   const byId = new Map(missions.map((m) => [m.id, m]));
   const saved = store.load();
   const done = new Set(saved.done.filter((id) => byId.has(id)));
@@ -189,7 +200,7 @@ export function makeMissions({ missions, bus, store, onComplete, onStart, gate =
   }
 
   const telemetry: MissionsTelemetry = {
-    active: '', objective: '', objectives: [], distance: -1, bearing: 0,
+    active: '', objective: '', objectives: [], distance: -1, bearing: 0, at: null, target: '',
     done: [...done], rewards, banner: '', bannerHold: 0, complete: false,
   };
 
@@ -289,11 +300,15 @@ export function makeMissions({ missions, bus, store, onComplete, onStart, gate =
       telemetry.objective = '';
       telemetry.objectives = [];
       telemetry.distance = -1;
+      telemetry.at = null;
+      telemetry.target = '';
       return;
     }
     const open = firstOpen(m);
+    let openAt: { x: number; z: number } | null = null;
     telemetry.objectives = m.objectives.map((o, i) => {
-      const at = o.at;
+      const at = o.at ?? (i === open && locate && LOCATED.has(o.type) ? locate(o.target) : undefined) ?? undefined;
+      if (i === open) openAt = at ? { x: at.x, z: at.z } : null;
       const d = at && ctx ? Math.hypot(at.x - ctx.x, at.z - ctx.z) : -1;
       return {
         id: o.id, type: o.type, progress: counts[i], required: required(o),
@@ -305,6 +320,8 @@ export function makeMissions({ missions, bus, store, onComplete, onStart, gate =
     telemetry.objective = open >= 0 ? m.objectives[open].id : '';
     telemetry.distance = cur?.distance ?? -1;
     telemetry.bearing = cur?.bearing ?? 0;
+    telemetry.at = openAt;
+    telemetry.target = open >= 0 ? m.objectives[open].target : '';
   }
 
   if (!active) handle.start();

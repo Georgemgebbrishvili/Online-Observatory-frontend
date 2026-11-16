@@ -80,6 +80,10 @@ export interface InteractionContext {
   press: boolean;
   /** The key is down. */
   held: boolean;
+  /** What the objective in hand asks to be used: in reach, it wins over
+   *  anything else there, so the mission's step is never lost to a neighbour
+   *  (the lander's hatch next to the suit check). */
+  focus?: string;
 }
 
 export interface Interactions {
@@ -138,7 +142,7 @@ export function makeInteractions(): Interactions {
     const d = Math.hypot(dx, dz);
     if (d > w.r) return -Infinity;
     const facing = d > 0.3 ? (dx * Math.sin(ctx.yaw) + dz * Math.cos(ctx.yaw)) / d : 1;
-    return (i.priority ?? 0) * 10 + facing * 1.5 - d * 0.6;
+    return (i.priority ?? 0) * 10 + facing * 1.5 - d * 0.6 + (ctx.focus && i.id === ctx.focus ? 1000 : 0);
   };
 
   return {

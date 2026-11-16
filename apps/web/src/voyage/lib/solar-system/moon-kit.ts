@@ -187,8 +187,14 @@ export function makeKit(lite: boolean): Kit {
       ctx.fillStyle = opts.bg ?? '#ecebe6'; ctx.fillRect(0, 0, w, h);
       ctx.fillStyle = opts.fg ?? '#15181d';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.font = `600 ${px}px "JetBrains Mono", ui-monospace, monospace`;
-      lines.forEach((l, i) => ctx.fillText(l, w / 2, h / 2 + (i - (lines.length - 1) / 2) * px * 1.3));
+      const font = (n: number) => `600 ${n}px "JetBrains Mono", ui-monospace, monospace`;
+      lines.forEach((l, i) => {
+        // A line too long for the plate is set smaller rather than cut off at its edges.
+        ctx.font = font(px);
+        const fit = Math.min(px, Math.floor(px * (w * 0.92) / Math.max(1, ctx.measureText(l).width)));
+        ctx.font = font(fit);
+        ctx.fillText(l, w / 2, h / 2 + (i - (lines.length - 1) / 2) * px * 1.3);
+      });
     }, true));
     const m = std({ map: tex, roughness: 0.65, metalness: 0, ...(opts.emissive ? { emissiveMap: tex, emissive: new THREE.Color(0xffffff), emissiveIntensity: opts.emissive } : {}) });
     labels.set(key, m);

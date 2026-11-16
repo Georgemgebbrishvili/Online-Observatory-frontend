@@ -100,6 +100,8 @@ export interface MoonMissionsOptions {
   free?: boolean;
   /** Tests: where progress lives. Left out, this device. */
   store?: MissionStore;
+  /** Where an interactable is right now, for the objective marker. */
+  locate?: (id: string) => { x: number; z: number } | null;
 }
 
 /** The props, the engine and the world changes, wired to each other. */
@@ -114,6 +116,7 @@ export function makeMoonMissions(world: MissionPropsWorld, opts: MoonMissionsOpt
     // that teaches it; everywhere else the gate is always open. In Free Fly
     // there are no missions to take on, so nothing waits for anything.
     gate: opts.free ? () => false : academyMissionGate(),
+    locate: opts.locate,
     onStart: (id) => {
       // The premise of a mission is set when it is taken on, not written into
       // the base: the power mission starts with the base dim, the comms one

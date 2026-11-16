@@ -41,6 +41,7 @@ import type { ShipKind } from '@/voyage/lib/solar-system/ship-mesh';
 import { makeMission, missionComplete, type MissionContext, type MissionTelemetry } from '@/voyage/lib/solar-system/moon-mission';
 import { makeJobs, type JobId, type JobsTelemetry } from '@/voyage/lib/solar-system/moon-jobs';
 import { makeMoonMissions } from '@/voyage/lib/solar-system/moon-missions';
+import { makeObjectiveMarker, type MarkerScreen } from '@/voyage/lib/solar-system/objective-marker';
 import { localRewardSink, MISSION_ACHIEVEMENTS, OBJECTIVE_ACHIEVEMENTS, type Achievement, type RewardSink } from '@/voyage/lib/solar-system/achievements';
 import type { MissionsTelemetry } from '@/voyage/lib/solar-system/missions';
 import type { MissionPropsTelemetry } from '@/voyage/lib/solar-system/moon-mission-props';
@@ -204,6 +205,8 @@ export interface SurfaceTelemetry {
   mission: MissionTelemetry;
   /** The five Moon missions: what is in hand and what has been done. */
   missions: MissionsTelemetry;
+  /** The objective in hand on the screen, for the HUD's tag over it. */
+  marker: MarkerScreen;
   /** What the mission props have to say: the scanner, the scope, the hands. */
   props: MissionPropsTelemetry;
   jobs: JobsTelemetry;
@@ -587,7 +590,7 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
   const moonMissions = makeMoonMissions({
     heightAt: terrain.heightAt,
     anchors: base.zones.anchors,
-    lander: () => ({ x: lander.position.x, z: lander.position.z }),
+    lander: () => ({ x: lander.position.x, z: lander.position.z, hull: lander.hull }),
     earthDir: sky.earthDir,
     state: base.state,
     setState: base.setState,
@@ -597,7 +600,13 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
     carry: interactions.carry,
     bus: interactions.bus,
   // Free Fly and multiplayer: the missions are not run (game/mode.ts).
-  }, { free: !hasObjectives(game.get().mode) });
+  }, {
+    free: !hasObjectives(game.get().mode),
+    locate: (id) => {
+      const w = interactions.find(id)?.where();
+      return w ? { x: w.x, z: w.z } : null;
+    },
+  });
   scene.add(moonMissions.props.group);
   // ── The Moon under the patch, from the ground to orbit (surface-orbit):
   // the sky on its own layer, the ground and the base under the ceiling. ──
@@ -609,6 +618,9 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
     tiers: patchTiers('moon', [terrain.mesh, terrain.rocks, horizon, sinkhole.group, dust.points, prints.mesh, history.mesh, base.group,
       mission.group, meteors.group, jobs.group, moonMissions.props.group, gems.group]),
   });
+  // Where the questline sends the crew: a column of light over the place.
+  const objMarker = makeObjectiveMarker();
+  scene.add(objMarker.group);
   const telemetry: SurfaceTelemetry = {
     ready: false, phase: 'orbit', orbital: flight.telemetry, ascended: false, exitReady: false, touchdownIn: 0, landing: lander.telemetry, grade: '',
     view: 'chase', driving: false, headlamp: false, poiId: '', poiDist: 0, impactDist: 0, impactHold: 0,
@@ -617,7 +629,7 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
     roverSpeed: 0, gear: rover.gear, gears: rover.gears, roverTop: rover.top, battery: 1, charging: false, roverFault: false,
     crouched: false, stumbling: false, sliding: false, anim: 'idle', gait: 'stand', mode: 'idle', sprinting: false, stamina: 1, gravity: cosmonaut.state.gravity, stride: 0, cadence: 0,
     grounded: true, fallen: false, heading: 0, crewX: 0, crewZ: 0,
-    mission: mission.telemetry, missions: moonMissions.missions.telemetry, props: moonMissions.props.telemetry,
+    mission: mission.telemetry, missions: moonMissions.missions.telemetry, marker: objMarker.screen, props: moonMissions.props.telemetry,
     jobs: jobs.telemetry, prompt: interactions.prompt, achievements: sink.list(),
     airlock: { near: false, state: 'closed', cycle: 0 }, readout: '', readoutHold: 0, inside: '',
     gems: gems.count, gemsTotal: gems.total, gemPoints: gems.points, gemLast: '', gemPicks: 0, autoland: false, baseDistance: 0,
@@ -1273,6 +1285,7 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
       // Up in the air, nothing on the ground is in reach.
       const aloft = cosmonaut.state.flying && cosmonaut.state.altitude > 2.5;
       ictx.x = aloft ? 1e6 : crew.x; ictx.z = aloft ? 1e6 : crew.z; ictx.yaw = driving() ? rover.yaw : cosmonaut.yaw; ictx.driving = driving(); ictx.press = press; ictx.held = !building && (input.use || press);
+      ictx.focus = moonMissions.missions.telemetry.target;
       interactions.update(dt, ictx);
       if (!interactions.prompt.holding) bailHold = 0;
       mctx.crewX = crew.x; mctx.crewZ = crew.z; mctx.driving = driving();
@@ -1456,6 +1469,7 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
     // (the climb ends on black, and nothing underground sets that layer any more).
     if (surfacing > 0) { surfacing = Math.max(0, surfacing - dt * 0.7); post.setBlack(surfacing); bt.black = surfacing; }
     if (telemetry.phase === 'surface') build.update(crew.x, crew.z, camera);
+    objMarker.update(dt, telemetry.phase === 'surface' && !br ? moonMissions.missions.telemetry.at : null, crew, terrain.heightAt, camera);
     orbit.update(dt);
     host.render(dt);
   };
@@ -1468,6 +1482,7 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
     flight.dispose();
     lander.dispose();
     mission.dispose();
+    objMarker.dispose();
     jobs.dispose();
     moonMissions.dispose();
     meteors.dispose();
