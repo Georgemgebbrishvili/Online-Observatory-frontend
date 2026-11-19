@@ -8,6 +8,7 @@
 import * as THREE from 'three';
 import type { BodyKind } from '@/voyage/lib/solar-system/npc-cast';
 import type { Mode } from '@/voyage/lib/solar-system/npc-brain';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export interface PoseInput {
   t: number;
@@ -139,7 +140,6 @@ function limbs(b: {
     }
     // Down: a knee, then flat on the back; up again as it fades.
     b.root.rotation.x = -Math.min(1, p.downness * 1.5) * 1.45;
-    b.root.position.y = 0;
   };
 }
 
@@ -288,10 +288,11 @@ function ballDroid(color: number): Rig {
       ball.rotation.x = roll;
       // A happy spin and a hop.
       cheer = easeTo(cheer, p.gesture === 'celebrate' ? 1 : 0, p.dt, 6);
-      root.position.y = Math.abs(Math.sin(p.t * 11)) * 0.18 * cheer;
+      const hop = Math.abs(Math.sin(p.t * 11)) * 0.18 * cheer;
+      ball.position.y = R + hop;
       dome.rotation.x = Math.sin(p.t * 2) * 0.05 - (p.mode === 'down' ? 0.5 : 0);
       dome.rotation.y = p.aiming ? 0 : Math.sin(p.t * 0.7) * 0.6 + cheer * p.t * 9;
-      dome.position.y = R * 2 + 0.02 + (p.mode === 'talk' ? Math.abs(Math.sin(p.t * 6)) * 0.03 : 0);
+      dome.position.y = R * 2 + 0.02 + hop + (p.mode === 'talk' ? Math.abs(Math.sin(p.t * 6)) * 0.03 : 0);
       root.rotation.z = p.downness * 0.6;
       eye.color.set(p.mode === 'attack' ? 0xff6a3a : 0x6cf0ff).lerp(WHITE, p.hurt);
     },
@@ -377,6 +378,7 @@ function scav(color: number): Rig {
   B.mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.32, 5), rust, body, -0.1, 0.32, -0.05);
   const beacon = glow(0xff3020);
   const tip = B.mesh(new THREE.SphereGeometry(0.03, 8, 6), beacon, body, -0.1, 0.49, -0.05);
+  tip.userData.dynamic = true;
   let bob = Math.random() * 10;
   let dig = 0;
   return {
@@ -463,7 +465,105 @@ function alien(color: number): Rig {
   };
 }
 
+function skinRig(root: THREE.Object3D): void {
+  root.updateMatrixWorld(true);
+  const bones: THREE.Object3D[] = [];
+  root.traverse((o) => { if (!(o as THREE.Mesh).isMesh) bones.push(o); });
+  const boneOf = new Map(bones.map((b, i) => [b, i]));
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const buckets = new Map<string, { material: THREE.Material; parts: THREE.BufferGeometry[]; meshes: THREE.Mesh[] }>();
+  root.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh || mesh.userData.dynamic || Array.isArray(mesh.material) || !mesh.parent) return;
+    const bone = boneOf.get(mesh.parent);
+    if (bone === undefined) return;
+    const g = (mesh.geometry.index ? mesh.geometry.toNonIndexed() : mesh.geometry.clone());
+    for (const name of Object.keys(g.attributes)) if (!['position', 'normal', 'uv', 'color'].includes(name)) g.deleteAttribute(name);
+    if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+    g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, mesh.matrixWorld));
+    g.clearGroups();
+    const n = g.attributes.position.count;
+    const idx = new Uint16Array(n * 4); const wt = new Float32Array(n * 4);
+    for (let i = 0; i < n; i++) { idx[i * 4] = bone; wt[i * 4] = 1; }
+    g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(idx, 4));
+    g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(wt, 4));
+    const key = mesh.material.uuid;
+    let b = buckets.get(key);
+    if (!b) buckets.set(key, (b = { material: mesh.material, parts: [], meshes: [] }));
+    b.parts.push(g);
+    b.meshes.push(mesh);
+  });
+  // Bones are the pivots themselves: the skeleton reads their world matrices, so the animation
+  // that turns them keeps working unchanged.
+  const skeleton = new THREE.Skeleton(bones as THREE.Bone[]);
+  for (const b of buckets.values()) {
+    // A material whose parts carry colours: every part needs them, or the merge cannot line up.
+    const withColor = b.parts.some((g) => g.attributes.color);
+    if (withColor) for (const g of b.parts) if (!g.attributes.color) g.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 3).fill(1), 3));
+    const merged = mergeGeometries(b.parts, false);
+    for (const g of b.parts) g.dispose();
+    if (!merged) continue;
+    for (const m of b.meshes) m.removeFromParent();
+    const sm = new THREE.SkinnedMesh(merged, b.material);
+    sm.name = 'baked';
+    sm.castShadow = true;
+    sm.receiveShadow = true;
+    sm.frustumCulled = false;
+    root.add(sm);
+    sm.bind(skeleton, new THREE.Matrix4());
+  }
+}
+
+/** Each joint's pieces merged by material: a figure of forty parts draws in a dozen calls. The
+ *  joints themselves stay separate (they are what the animation turns). */
+function bakeRig(rig: Rig): Rig {
+  // Parts whose surfaces differ only in colour share one material, the colour carried in the
+  // vertices; then each joint is one opaque draw (plus anything that glows or is see-through).
+  const shared = new Map<string, THREE.MeshPhysicalMaterial>();
+  rig.root.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh || mesh.userData.dynamic || Array.isArray(mesh.material)) return;
+    const m = mesh.material as THREE.MeshPhysicalMaterial;
+    if (!(m as THREE.MeshStandardMaterial).isMeshStandardMaterial || m.transparent) return;
+    const phys = !!m.isMeshPhysicalMaterial;
+    // Three finishes are enough at this size: matte cloth and suit, satin metal, and lacquer or
+    // glass; colour rides in the vertices.
+    const glossy = phys && (m.clearcoat > 0.3 || m.metalness > 0.85);
+    const finish = glossy ? 'gloss' : m.metalness > 0.35 ? 'metal' : 'matte';
+    const key = `${finish}|${m.side}|${m.emissive.getHex() ? m.emissive.getHexString() : ''}|${phys && m.sheen > 0 ? 'sheen' : ''}`;
+    let s = shared.get(key);
+    if (!s) {
+      s = new THREE.MeshPhysicalMaterial({
+        vertexColors: true, side: m.side,
+        roughness: finish === 'gloss' ? 0.18 : finish === 'metal' ? 0.4 : 0.75,
+        metalness: finish === 'gloss' ? 0.6 : finish === 'metal' ? 0.65 : 0.1,
+        clearcoat: finish === 'gloss' ? 1 : 0, clearcoatRoughness: 0.1,
+        sheen: phys ? m.sheen : 0, sheenColor: phys ? m.sheenColor : undefined,
+        emissive: m.emissive, emissiveIntensity: m.emissiveIntensity, envMapIntensity: finish === 'gloss' ? 1.4 : 1,
+      });
+      shared.set(key, s);
+    }
+    const g = mesh.geometry;
+    const n = g.attributes.position.count;
+    const col = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { col[i * 3] = m.color.r; col[i * 3 + 1] = m.color.g; col[i * 3 + 2] = m.color.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    mesh.material = s;
+  });
+  // Then the whole figure becomes one skinned mesh per material: every joint a bone (the pivots
+  // the animation already turns), every part weighted fully to the joint it hangs from. The
+  // figure draws in two or three calls, not one per part.
+  skinRig(rig.root);
+  const dispose = rig.dispose;
+  rig.dispose = () => { rig.root.traverse((o) => { if (o.name === 'baked') (o as THREE.Mesh).geometry.dispose(); }); for (const s of shared.values()) s.dispose(); dispose(); };
+  return rig;
+}
+
 export function buildRig(kind: BodyKind, color: number): Rig {
+  return bakeRig(rawRig(kind, color));
+}
+
+function rawRig(kind: BodyKind, color: number): Rig {
   if (kind === 'alien') return alien(color);
   if (kind === 'ballDroid') return ballDroid(color);
   if (kind === 'tallDroid') return tallDroid(color);

@@ -212,6 +212,8 @@ export interface WorldSurfaceHandle {
   npcClose: () => void;
   /** Development: what each of the colony is doing. */
   npcProbe: () => Record<string, string>;
+  /** Development: the GPU programs built so far. */
+  programs: () => string[];
   /** Show or hide a named part of the scene (profiling). */
   layer: (name: string, on: boolean) => void;
   /** Earth: the sky's working numbers, for checking the light. */
@@ -1108,6 +1110,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     npcChoose: (i) => npcs?.choose(i),
     npcClose: () => npcs?.closeDialog(),
     npcProbe: () => npcs?.probe() ?? {},
+    programs: () => (renderer.info.programs ?? []).map((p) => `${p.name}|${String((p as unknown as { cacheKey: string }).cacheKey).slice(0, 160)}`),
     advance: () => earth?.advance(),
     layer(name, on) {
       const o = scene.getObjectByName(name);
@@ -1147,6 +1150,6 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   };
   // A station is boarded from the dock: the ship is already on its pad.
   if (opts.startOnSurface || world === 'station') handle.skipDescent();
-  if (QA_HOOKS) window.__stellarWorld = handle;
+  if (QA_HOOKS) { window.__stellarWorld = handle; (handle as unknown as { scene: THREE.Scene }).scene = scene; }
   return handle;
 }

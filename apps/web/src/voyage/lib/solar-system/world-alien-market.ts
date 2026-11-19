@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import type { Collider } from '@/voyage/lib/solar-system/moon-cosmonaut';
 import type { PointOfInterest } from '@/voyage/lib/solar-system/moon-base';
 import type { LightPool } from '@/voyage/lib/solar-system/moon-lights';
+import { bakeStatic } from '@/voyage/lib/solar-system/static-bake';
 
 export const MARKET = { x: -40, z: 40, r: 14 };
 
@@ -108,6 +109,8 @@ export function makeAlienMarket(heightAt: (x: number, z: number) => number, lite
     colliders.push({ x: MARKET.x, z: MARKET.z, r: 1.2 });
   }
 
+  // Lanterns breathe through their materials' colours, so they can be baked with the rest.
+  bakeStatic(group);
   return {
     group, colliders, pois, spots,
     update(dt, t, lights) {
@@ -124,6 +127,7 @@ export function makeAlienMarket(heightAt: (x: number, z: number) => number, lite
     },
     dispose() {
       for (const g of geoms) g.dispose();
+      group.traverse((o) => { if (o.name === 'baked') (o as THREE.Mesh).geometry.dispose(); });
       for (const m of mats) m.dispose();
     },
   };

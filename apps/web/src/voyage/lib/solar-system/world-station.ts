@@ -13,6 +13,7 @@ import type { Collider } from '@/voyage/lib/solar-system/moon-cosmonaut';
 import type { PointOfInterest } from '@/voyage/lib/solar-system/moon-base';
 import type { LightPool } from '@/voyage/lib/solar-system/moon-lights';
 import { signTexture } from '@/voyage/lib/solar-system/world-mars-town';
+import { bakeStatic } from '@/voyage/lib/solar-system/static-bake';
 
 export interface Station {
   group: THREE.Group;
@@ -184,6 +185,9 @@ export function makeStation(kit: Kit, radius: number, lite: boolean): Station {
   spots.walkA = { x: -14, z: 8 };
   spots.walkB = { x: 14, z: -8 };
 
+  // The deck and its buildings stand still; the wheel turns as one piece.
+  bakeStatic(group, [wheel]);
+  bakeStatic(wheel);
   let blink = 0;
   return {
     group, colliders, pois, spots,
@@ -198,6 +202,7 @@ export function makeStation(kit: Kit, radius: number, lite: boolean): Station {
       }
     },
     dispose() {
+      group.traverse((o) => { if (o.name === 'baked') (o as THREE.Mesh).geometry.dispose(); });
       for (const m of owned) m.dispose();
       for (const x of texs) x.dispose();
       win.dispose();

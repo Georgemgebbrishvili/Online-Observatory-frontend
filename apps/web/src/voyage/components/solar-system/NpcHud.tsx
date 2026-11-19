@@ -26,15 +26,19 @@ export function NpcHud({ get, choose, close, touch, onFire }: NpcHudProps) {
   const [flash, setFlash] = useState(0);
   const [tick, setTick] = useState(0);
   const hits = useRef(0);
+  const sigRef = useRef('');
   const landed = useRef(0);
 
   useEffect(() => {
     const id = window.setInterval(() => {
       const n = get();
-      if (!n) { setTel(null); return; }
+      if (!n) { if (sigRef.current) { sigRef.current = ''; setTel(null); } return; }
       if (n.hits !== hits.current) { hits.current = n.hits; setFlash((f) => f + 1); }
       if (n.landed !== landed.current) { landed.current = n.landed; setTick((k) => k + 1); }
-      // A copy, so React sees the change; the fields are few.
+      // Only a real change re-renders: what the glass shows, rounded as it shows it.
+      const sig = `${Math.round(n.integrity)}|${Math.round(n.shield)}|${n.credits}|${n.wanted}|${n.engaged}|${n.companion}|${n.job ? `${n.job.done}/${n.job.need}` : ''}|${n.bark?.serial ?? ''}|${n.dialog?.serial ?? ''}`;
+      if (sig === sigRef.current) return;
+      sigRef.current = sig;
       setTel({ ...n, bark: n.bark ? { ...n.bark } : null, dialog: n.dialog });
     }, POLL_MS);
     return () => window.clearInterval(id);

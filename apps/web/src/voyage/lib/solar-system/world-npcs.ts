@@ -122,6 +122,8 @@ interface Npc {
   waveCool: number;
   /** Something worth watching (the pilot's ship coming down or going up): look at it while it lasts. */
   watch: { x: number; z: number; t: number } | null;
+  /** Casting shadows now (only near the crew). */
+  shadowOn: boolean;
 }
 
 export type Gesture = 'work' | 'chat' | 'scan' | 'wave' | 'celebrate' | 'salvage' | null;
@@ -138,6 +140,9 @@ const REGEN_DELAY = 5;
 const REGEN_RATE = 7;
 const WANTED_DECAY = 40;
 const LABEL_RANGE = 26;
+/** Beyond this the figure is not drawn at all (it still thinks and moves). */
+const DRAW_RANGE = 75;
+const SHADOW_RANGE = 22;
 const COMPASS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 
 const wrap = (a: number) => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
@@ -193,6 +198,9 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
   let talkingTo: Npc | null = null;
   let node = '';
   let breachTimer = 0;
+  let farTick = 0;
+  // Phones draw the colony out to a shorter range.
+  const drawRange = opts.lite ? DRAW_RANGE * 0.66 : DRAW_RANGE;
   const crewPos = new THREE.Vector3();
 
   const npcs: Npc[] = (opts.cast ?? MARS_CAST).map((spec) => {
@@ -205,11 +213,13 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       health: spec.maxHealth, mind: newMind(), decision: { mode: 'idle', target: null }, think: Math.random() * 0.3,
       waypoint: null, route: 0, cooldown: 1, hitBy: null, hitHold: 0, hurt: 0, downTimer: 0, downness: 0, alarm: 0,
       strafe: 1, strafeTimer: 0, threat: null, barked: 0, charged: 0, coverSpot: null, detour: null, detourT: 0, stuck: 0,
-      gesture: null, gestureT: 0, chatWith: null, chatCool: 10 + Math.random() * 20, waveCool: 0, watch: null,
+      gesture: null, gestureT: 0, chatWith: null, chatCool: 10 + Math.random() * 20, waveCool: 0, watch: null, shadowOn: true,
     };
     return n;
   });
   const colliders: Collider[] = npcs.filter((n) => n.spec.body !== 'scav').map((n) => ({ x: n.x, z: n.z, r: 0.5 }));
+  const scavs = npcs.filter((n) => n.spec.persona.faction === 'scav');
+  const colonyBodies = npcs.filter((n) => n.spec.persona.faction !== 'scav' && n.spec.persona.role !== 'vendor');
   const standing = () => save;
   const hostileToPlayer = (n: Npc) => attitude(n.spec.persona, save, n.mind) <= -0.3;
 
@@ -534,16 +544,17 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       }
     } else n.downness = Math.max(0, n.downness - dt * 0.8);
 
-    // Threats: the nearest scav that is up (for everyone else), or the nearest colony body (for a scav).
+    // Threats: the nearest scav that is up (for everyone else), or the nearest colony body (for a
+    // scav) — nearest first, and only that one is checked for a clear line.
     let threat: Npc | null = null;
     let threatDist = Infinity;
-    for (const o of npcs) {
+    const pool = p.faction === 'scav' ? colonyBodies : scavs;
+    for (const o of pool) {
       if (o === n || o.health <= 0) continue;
-      const enemy = p.faction === 'scav' ? o.spec.persona.faction !== 'scav' && o.spec.persona.role !== 'vendor' : o.spec.persona.faction === 'scav';
-      if (!enemy) continue;
       const d = Math.hypot(o.x - n.x, o.z - n.z);
-      if (d < threatDist && lineClear(n.x, n.z, o.x, o.z)) { threatDist = d; threat = o; }
+      if (d < threatDist) { threatDist = d; threat = o; }
     }
+    if (threat && (threatDist > 60 || !lineClear(n.x, n.z, threat.x, threat.z))) { threat = null; threatDist = Infinity; }
     n.threat = threat;
     // Sight: in range, nothing in the way, and roughly in front (or close, or already fighting).
     const ahead = Math.abs(wrap(Math.atan2(crew.x - n.x, crew.z - n.z) - n.yaw)) < 1.4;
@@ -724,7 +735,15 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       }
     }
 
-    // ── Draw. ──
+    // ── Draw: only what is near enough to see, and shadows only close by. ──
+    const seen = dPlayer < drawRange;
+    n.rig.root.visible = seen;
+    if (!seen) { n.label.sprite.visible = false; return; }
+    const wantShadow = dPlayer < SHADOW_RANGE;
+    if (wantShadow !== n.shadowOn) {
+      n.shadowOn = wantShadow;
+      n.rig.root.traverse((o) => { if ((o as THREE.Mesh).isMesh) o.castShadow = wantShadow; });
+    }
     const ground = opts.heightAt(n.x, n.z);
     n.rig.root.position.set(n.x, ground + n.rig.hover, n.z);
     n.rig.root.rotation.y = n.yaw;
@@ -798,10 +817,16 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       playerCooldown -= dt;
       if (fire && playerCooldown <= 0 && !talkingTo && breachTimer <= 0) { playerCooldown = PLAYER_COOLDOWN; playerShoot(crew, camera); }
       let engaged = 0;
+      farTick += dt;
+      const farStep = farTick >= 0.2;
       for (const n of npcs) {
-        run(n, dt, t, crew);
+        // Out of sight and out of the fight, a figure is stepped five times a second, not every frame.
+        const far = Math.hypot(n.x - crew.x, n.z - crew.z) > drawRange + 10 && n.decision.mode !== 'attack';
+        if (far) { if (farStep) run(n, farTick, t, crew); }
+        else run(n, dt, t, crew);
         if (n.health > 0 && n.decision.mode === 'attack' && n.decision.target === 'player' && n.mind.lastSeenAgo < 1) engaged++;
       }
+      if (farStep) farTick = 0;
       for (let i = 0, k = 0; i < npcs.length; i++) {
         if (npcs[i].spec.body === 'scav') continue;
         colliders[k].x = npcs[i].x; colliders[k].z = npcs[i].z;

@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import type { Collider } from '@/voyage/lib/solar-system/moon-cosmonaut';
 import type { PointOfInterest } from '@/voyage/lib/solar-system/moon-base';
 import type { LightPool } from '@/voyage/lib/solar-system/moon-lights';
+import { bakeStatic } from '@/voyage/lib/solar-system/static-bake';
 
 /** The street's line: from the south end to the north, at this x. */
 export const TOWN = { x: -92, z0: -2, z1: 74, pad: { x: -92, z: 96 } };
@@ -300,6 +301,9 @@ export function makeMarsTown(heightAt: (x: number, z: number) => number, lite: b
   const total = CYCLE.reduce((a, [, s]) => a + s, 0);
   let clock = Math.random() * total;
   const state = { x: pad.x, y: padY, z: pad.z, burning: false };
+  // Everything but the shuttle stands still: one mesh per material.
+  bakeStatic(group, [shuttle]);
+  bakeStatic(shuttle, flames);
 
   return {
     group, colliders, pois, spots,
@@ -333,6 +337,7 @@ export function makeMarsTown(heightAt: (x: number, z: number) => number, lite: b
     shuttle: () => state,
     dispose() {
       for (const g of geoms) g.dispose();
+      group.traverse((o) => { if (o.name === 'baked') (o as THREE.Mesh).geometry.dispose(); });
       for (const m of mats) m.dispose();
       for (const t of texs) t.dispose();
     },
