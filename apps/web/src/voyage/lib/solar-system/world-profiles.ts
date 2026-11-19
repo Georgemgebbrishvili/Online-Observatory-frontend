@@ -783,7 +783,7 @@ export const STATION: WorldProfile = {
   sky: {
     zenith: c(0, 0, 0), horizon: c(0.015, 0.03, 0.07),
     glow: c(1, 0.97, 0.92), glowPower: 40,
-    fillSky: 0x1a2236, fillGround: 0x2a5a8a, fill: 0.55,
+    fillSky: 0x34405e, fillGround: 0x2f6aa0, fill: 0.85,
     fog: 0x000000, fogNear: 4000, fogFar: 40000,
     stars: 1,
     aurora: false,

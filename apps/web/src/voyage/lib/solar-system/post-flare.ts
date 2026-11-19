@@ -325,8 +325,10 @@ function flareFragment(ghosts: number): string {
   vec3 ghost(vec2 p, vec2 at, float r) {
     float d = length(p - at);
     vec3 e = d / (r * vec3(0.965, 1.0, 1.035));
-    vec3 body = (1.0 - smoothstep(vec3(0.55), vec3(1.0), e)) * 0.4;
-    vec3 rim = smoothstep(vec3(0.72), vec3(0.94), e) * (1.0 - smoothstep(vec3(0.94), vec3(1.06), e)) * 0.7;
+    // A real coated lens leaves faint ghosts: a whisper of body, a thin rim. Over a bright
+    // sky they must not read as solid discs.
+    vec3 body = (1.0 - smoothstep(vec3(0.35), vec3(1.0), e)) * 0.12;
+    vec3 rim = smoothstep(vec3(0.78), vec3(0.95), e) * (1.0 - smoothstep(vec3(0.95), vec3(1.04), e)) * 0.22;
     return body + rim;
   }
   vec3 ring(vec2 p, vec2 at, float r, float w) {
@@ -345,6 +347,9 @@ function flareFragment(ghosts: number): string {
               + luma(texture2D(tDiffuse, uSun + vec2(0.0,  k.y)).rgb)
               + luma(texture2D(tDiffuse, uSun - vec2(0.0,  k.y)).rgb);
     float show = smoothstep(0.7, 2.0, occ * 0.2) * uStrength;
+    // Ghosts show against the dark; on a bright frame (a day sky, a lit deck) they wash out, as they do through a real lens.
+    float frame = luma(scene);
+    show *= 1.0 - smoothstep(0.35, 0.9, frame) * 0.85;
     if (show < 0.001) { gl_FragColor = vec4(scene, 1.0); return; }
     vec2 asp = vec2(uAspect, 1.0);
     vec2 p = (vUv - 0.5) * asp;
@@ -361,7 +366,7 @@ function flareFragment(ghosts: number): string {
     float dx = abs(p.x - s.x);
     float streak = exp(-dy * dy * 1400.0) * exp(-dx * 2.6) * 0.5
                  + exp(-dy * dy * 9000.0) * exp(-dx * 4.5) * 0.9;
-    flare += vec3(0.5, 0.72, 1.0) * streak * 0.55;
+    flare += vec3(0.5, 0.72, 1.0) * streak * 0.35;
     // No dirt on the glass, but the corners stay clean: the whole flare
     // fades toward the edge of the frame.
     float vig = 1.0 - smoothstep(0.55, 1.0, length(p) / (0.5 * max(uAspect, 1.0)) * 0.78);

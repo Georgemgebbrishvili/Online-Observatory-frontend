@@ -260,8 +260,12 @@ export function makeWorldTerrain(profile: WorldProfile, lite: boolean, density =
     }
     h += fbm(x / 24, z / 24, 3, seed + 9) * 1.1;
     // Dunes: long ripples across the plain, bent by the wind's own noise.
+    // Real dune fields come and go: a broad mask decides where the sand has piled, and the
+    // crest is sharp on its lee side, not a sine.
     const bend = fbm(x / 60, z / 60, 2, seed + 41) * 6;
-    h += (0.5 + 0.5 * Math.sin((x * 0.45 + z * 0.9) / 3.4 + bend)) * 0.55 * G.dunes;
+    const field = smooth(clamp01((fbm(x / 150 + 7, z / 150, 2, seed + 71) + 0.15) / 0.5));
+    const wave = 0.5 + 0.5 * Math.sin((x * 0.45 + z * 0.9) / (3.4 + fbm(x / 90, z / 90, 1, seed + 5) * 0.8) + bend);
+    h += Math.pow(wave, 1.8) * (0.25 + 0.75 * field) * 0.6 * G.dunes;
     h += fbm(x / 2.4, z / 2.4, 2, seed + 13) * 0.1;
     for (const c of craters) {
       const d = Math.hypot(x - c.x, z - c.z);
@@ -425,10 +429,12 @@ export function makeWorldTerrain(profile: WorldProfile, lite: boolean, density =
         vec2 ripple = vec2( 0.0 );
         if ( uDunes > 0.0 ) {
           float rDist = length( vEarthPos - cameraPosition );
-          float rMask = uDunes * ( 1.0 - steep ) * ( 1.0 - smoothstep( 45.0, 120.0, rDist ) );
+          // Wind ripples lie in patches, not in one sheet across the whole plain.
+          float patchy = smoothstep( -0.2, 0.45, gNoise( vEarthPos.xz / 38.0 + 3.1 ) );
+          float rMask = uDunes * ( 1.0 - steep ) * ( 1.0 - smoothstep( 45.0, 120.0, rDist ) ) * patchy;
           if ( rMask > 0.001 ) {
             vec2 k = normalize( vec2( 0.45, 0.9 ) ) * 6.98;
-            float bend = gNoise( vEarthPos.xz / 25.0 ) * 4.0;
+            float bend = gNoise( vEarthPos.xz / 25.0 ) * 4.0 + gNoise( vEarthPos.xz / 9.0 ) * 1.2;
             float ph = dot( k, vEarthPos.xz ) + bend;
             float dh = cos( ph ) + 0.5 * cos( 2.0 * ph );
             ripple = -k * dh * 0.022 * rMask;

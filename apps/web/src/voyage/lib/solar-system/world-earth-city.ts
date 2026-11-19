@@ -163,8 +163,10 @@ function facadeMaterial(): { material: THREE.MeshStandardMaterial; night: { valu
           float r = fh(id);
           eLit = eWin * step(r, 0.38 * uNight) ;
           eLitCol = mix(vec3(1.0, 0.66, 0.36), vec3(0.8, 0.88, 1.0), step(0.7, fh(id + 3.1)));
-          // Glass: dark, smooth, and it reflects the sky; the frame is the wall.
-          diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 0.12 + vec3(0.012, 0.016, 0.02), eWin);
+          // Glass: smooth, and by day it gives back the sky — a grey-blue, a little different
+          // pane to pane (curtains, angle) — never a black hole; at night it goes dark.
+          vec3 pane = mix(vec3(0.16, 0.2, 0.25), vec3(0.3, 0.33, 0.36), fh(vec3(floor(vFacade / vec2(1.6, 3.0)), 11.0))) * (1.0 - 0.8 * uNight);
+          diffuseColor.rgb = mix(diffuseColor.rgb, pane + diffuseColor.rgb * 0.05, eWin);
           roughnessFactor = mix(roughnessFactor, 0.06, eWin);
           metalnessFactor = mix(metalnessFactor, 0.35, eWin);
           float upper = step(1.0, cell.y);
