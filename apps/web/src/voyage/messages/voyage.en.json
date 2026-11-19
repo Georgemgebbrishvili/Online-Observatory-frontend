@@ -1534,9 +1534,6 @@
       "join": "Join",
       "badCode": "A room code is {n} letters and digits.",
       "full": "That room is full — {max} explorers at most.",
-      "openRooms": "Open rooms",
-      "noRooms": "No open rooms right now. Create one and send the code to a friend.",
-      "hostedBy": "{name}'s room",
       "joining": "Joining room {code}…",
       "roomCode": "Room code",
       "copyInvite": "Copy invite link",
@@ -1569,9 +1566,7 @@
         "landed": "{name}: {place}",
         "launched": "{name} lifted off"
       },
-      "quickPlay": "Join open space",
-      "quickPlayHint": "Fly with whoever is online: you land in the busiest public room with a free seat, or open a new one.",
-      "seeking": "Finding pilots…",
+      "seeking": "Finding your place in open space…",
       "cancel": "Cancel",
       "createPrivate": "Create private room",
       "flyingAs": "Flying as {name}",
@@ -1583,10 +1578,19 @@
       "unreachable": "Can't reach the multiplayer server. Check your connection.",
       "reconnecting": "Connection lost — reconnecting…",
       "retry": "Try again",
-      "fullHint": "Join open space finds a room with a free seat.",
       "nearby": "Nearby pilots",
       "nearbyNone": "Nobody else is flying right now.",
-      "memberAt": "{name} · {place}"
+      "enterWorld": "Enter open space",
+      "worldOnline": "{n, plural, one {# explorer} other {# explorers}} online now.",
+      "worldHint": "Everyone online flies in one shared solar system. When {max} are in it, a second copy opens.",
+      "privateTitle": "Private room",
+      "joiningWorld": "Entering open space…",
+      "worldLabel": "You are in",
+      "worldName": "Open space",
+      "worldNumbered": "Open space {n}",
+      "worldHowItWorks": "Everyone here sees your ship in flight and your suit on the same world. Want only your friends? Leave and create a private room.",
+      "leaveWorld": "Leave open space",
+      "badgeWorldAria": "{name}, {n} explorers — open the list"
     },
     "launch": "Launch Explorer",
     "launchSub": "Land at Stellar Base on the Moon",
@@ -1813,7 +1817,7 @@
       },
       "multi": {
         "name": "Multiplayer",
-        "sub": "Play online with friends"
+        "sub": "Open world — fly with everyone online"
       }
     },
     "continueMode": "{mode} · {place}",
@@ -1822,14 +1826,14 @@
     "exitShort": "Exit",
     "lobby": {
       "title": "Multiplayer",
-      "lead": "Fly the solar system with other pilots — no sign-in needed. Jump into open space, or make a private room for friends.",
+      "lead": "Fly the solar system with everyone online — no sign-in needed. Enter open space, or make a private room for friends.",
       "launch": "Launch",
       "share": "Share",
       "shareTitle": "Stellar Explorer",
       "shareText": "Fly with me in Stellar Explorer — room {code}",
       "checking": "Checking your account…",
-      "inRoom": "Room {code} · {n} aboard",
-      "leaveToTitle": "Leave room"
+      "inRoom": "{place} · {n} aboard",
+      "leaveToTitle": "Leave multiplayer"
     },
     "story": {
       "panelTitle": "The Grand Tour",

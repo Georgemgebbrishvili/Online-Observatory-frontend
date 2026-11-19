@@ -14,7 +14,7 @@ interface PauseMenuProps {
   /** Back to the title, to pick another mode (a room is left on the way). */
   onTitle: () => void;
   /** The room this game is played in, if any. */
-  room?: { code: string; count: number } | null;
+  room?: { label: string; count: number } | null;
 }
 
 const n = (i: number) => ({ '--n': i }) as CSSProperties;
@@ -30,7 +30,7 @@ export function PauseMenu({ onResume, mode, onTitle, room }: PauseMenuProps) {
         <p className="game-pause__mode" data-mode={mode}>
           <ModeIcon mode={mode} size={15} />
           <span>{t(`modes.${mode}.name`)}</span>
-          {room && <small><Users size={13} aria-hidden /> {t('lobby.inRoom', { code: room.code, n: room.count })}</small>}
+          {room && <small><Users size={13} aria-hidden /> {t('lobby.inRoom', { place: room.label, n: room.count })}</small>}
         </p>
         <p className="game-pause__hint">{t('pauseHint')}</p>
         <div className="game-menu__list">

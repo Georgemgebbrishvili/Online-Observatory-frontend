@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'use-intl';
 import { fmtRange, type RoomLink } from '@/voyage/lib/multiplayer/room-link';
-import { ROOM_MAX } from '@/voyage/lib/multiplayer/useExploreRoom';
 
 /** The flight scene's view is this old: the ship is not flying, nothing to
  *  show. Long enough for a slow device's frames to come round. */
 const STALE_VIEW_MS = 2000;
 const LIST_EVERY_MS = 500;
 const LIST_MAX = 5;
+/** Arrows at the edge: the nearest this many off-screen pilots; the open world can hold dozens. */
+const ARROWS = 12;
 /** How far in from the screen's edge an arrow sits, px. */
 const INSET = 34;
 
@@ -84,7 +85,7 @@ export function RoomRadar({ link }: { link: RoomLink }) {
   return (
     <>
       <div ref={boxRef} className="room-radar" aria-hidden>
-        {Array.from({ length: ROOM_MAX - 1 }, (_, i) => (
+        {Array.from({ length: ARROWS }, (_, i) => (
           <div key={i} className="room-radar__arrow" style={{ display: 'none' }} ref={(el) => { arrowsRef.current[i] = el; }}>
             <span className="room-radar__tip" />
             <span className="room-radar__name" />

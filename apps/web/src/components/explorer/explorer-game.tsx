@@ -21,7 +21,7 @@ const GameShell = dynamic(() => import("@/voyage/components/play/GameShell"), {
 /** The game's clocks read in the player's own zone; it only ever renders in the browser. */
 const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-/** The game plays alone here: no accounts, so no rooms, no leaderboard, progress on the device. */
+/** No accounts here: guests fly in the open world or private rooms (ADR-090), no leaderboard, progress on the device. */
 export function ExplorerGame() {
   return (
     <IntlProvider locale="en" messages={messages} timeZone={timeZone}>

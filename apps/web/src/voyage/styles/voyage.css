@@ -709,6 +709,7 @@ body[data-solar-immersive] .sd-backdrop { display: none; }
 /* The multiplayer lobby: the room panel's own parts, set into the title's sheet. */
 .room-panel.room-panel--lobby {
   position: static;
+  width: auto;
   max-height: none;
   overflow: visible;
   padding: 0;

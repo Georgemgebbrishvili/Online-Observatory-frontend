@@ -39,19 +39,35 @@ const contentSecurityPolicy = [
   ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
+/** ADR-090: the game's multiplayer socket, to the Supabase project's Realtime. */
+const gameRealtimeOrigin = (() => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!url) return "";
+  try {
+    const u = new URL(url);
+    return ` ${u.protocol === "http:" ? "ws" : "wss"}://${u.host}`;
+  } catch {
+    return "";
+  }
+})();
+
 /**
  * ADR-089: the game's Earth globe draws NASA GIBS imagery and Mapzen Terrarium heights
  * through <img>, its models' textures are read from blob: URLs, and its models are unpacked by
  * three's meshopt decoder, which is WebAssembly. So its page alone may load pictures from those
  * two hosts, fetch blob: URLs and compile WebAssembly ('wasm-unsafe-eval' allows no JS eval).
+ * ADR-090: it may also open its multiplayer socket.
  */
 const explorerGamePolicy = contentSecurityPolicy
-  .replace("script-src 'self' 'unsafe-inline'", "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'")
+  .replace(
+    "script-src 'self' 'unsafe-inline'",
+    "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",
+  )
   .replace(
     "img-src 'self' data: blob:",
     "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov https://s3.amazonaws.com",
   )
-  .replace("connect-src 'self'", "connect-src 'self' blob:");
+  .replace("connect-src 'self'", `connect-src 'self' blob:${gameRealtimeOrigin}`);
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -85,13 +101,23 @@ const nextConfig: NextConfig = {
       {
         // The game's planets, models and Tbilisi terrain change only with a new release.
         source: "/voyage/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
       },
       {
         // The Night Sky's data and pictures change only with a rebuilt file, which takes a
         // new name when its layout changes: a day fresh, then a week served while checked.
         source: "/sky/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
       },
     ];
   },

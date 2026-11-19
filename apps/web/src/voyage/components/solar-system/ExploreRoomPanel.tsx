@@ -5,7 +5,7 @@ import { Check, Copy, Globe, Lock, LogIn, LogOut, Pencil, RotateCw, Rocket, Shar
 import { useTranslations } from 'use-intl';
 import { CODE_LENGTH } from '@/voyage/lib/multiplayer/room-link';
 import { NAME_MAX } from '@/voyage/lib/multiplayer/guest';
-import { ROOM_MAX, type useExploreRoom } from '@/voyage/lib/multiplayer/useExploreRoom';
+import { ROOM_MAX, WORLD_MAX, type useExploreRoom } from '@/voyage/lib/multiplayer/useExploreRoom';
 import { GamePanel } from '@/voyage/components/play/GamePanel';
 
 type Room = ReturnType<typeof useExploreRoom>;
@@ -47,6 +47,9 @@ export function inviteUrl(code: string, loc: { origin: string; pathname: string 
   return `${loc.origin}${loc.pathname}?room=${encodeURIComponent(code)}`;
 }
 
+/** "Open space", or "Open space 2" for a later copy of it. */
+export const worldName = (t: (key: string, values?: Record<string, number>) => string, n: number) => (n > 1 ? t('worldNumbered', { n }) : t('worldName'));
+
 /** The callsign line: the name, and for a guest a way to change it. */
 function PilotLine({ pilot }: { pilot: Pilot }) {
   const t = useTranslations('solarSystem.room');
@@ -82,8 +85,8 @@ function PilotLine({ pilot }: { pilot: Pilot }) {
   );
 }
 
-/** What a room shows, wherever it is shown: the quick way in, a private
- *  room or a code, the open rooms, then the code to share and who is in it.
+/** What multiplayer shows, wherever it is shown: the open world everyone
+ *  shares, a private room or a code, then where you are and who is there.
  *  Nobody has to sign in. */
 export function RoomBody({ room, pilot, onLaunch }: RoomBodyProps) {
   const t = useTranslations('solarSystem.room');
@@ -126,12 +129,15 @@ export function RoomBody({ room, pilot, onLaunch }: RoomBodyProps) {
       {room.status === 'idle' && (
         <>
           <PilotLine pilot={pilot} />
-          {room.error === 'full' && <p className="room-panel__error" role="alert">{t('full', { max: ROOM_MAX })} {t('fullHint')}</p>}
+          {room.error === 'full' && <p className="room-panel__error" role="alert">{t('full', { max: ROOM_MAX })}</p>}
           {unreachable}
-          <button type="button" className="room-panel__primary room-panel__quick" onClick={room.quickPlay} autoFocus={!!onLaunch}>
-            <Globe size={18} aria-hidden /> {t('quickPlay')}
+          <button type="button" className="room-panel__primary room-panel__quick" onClick={room.enterWorld} autoFocus={!!onLaunch}>
+            <Globe size={18} aria-hidden /> {t('enterWorld')}
           </button>
-          <p className="room-panel__note">{t('quickPlayHint')}</p>
+          <p className="room-panel__note">
+            {room.online ? t('worldOnline', { n: room.online }) + ' ' : ''}{t('worldHint', { max: WORLD_MAX })}
+          </p>
+          <h3 className="room-panel__sub">{t('privateTitle')}</h3>
           <button type="button" className="room-panel__secondary room-panel__wide" onClick={room.create}><Lock size={16} aria-hidden /> {t('createPrivate')}</button>
           <form className="room-panel__join" onSubmit={submit}>
             <label htmlFor="room-code" className="room-panel__label">{t('joinLabel')}</label>
@@ -142,23 +148,6 @@ export function RoomBody({ room, pilot, onLaunch }: RoomBodyProps) {
             </div>
             {bad && <p className="room-panel__error" role="alert">{t('badCode', { n: CODE_LENGTH })}</p>}
           </form>
-          <h3 className="room-panel__sub">{t('openRooms')}</h3>
-          {room.rooms.length === 0 ? <p className="room-panel__note">{t('noRooms')}</p> : (
-            <ul className="room-panel__list">
-              {room.rooms.map((r) => (
-                <li key={r.code} className="room-panel__item room-panel__item--room">
-                  <span className="room-panel__roomhead">
-                    <span className="room-panel__who">{t('hostedBy', { name: r.host })}</span>
-                    <span className="room-panel__count">{r.count}/{ROOM_MAX}</span>
-                  </span>
-                  <span className="room-panel__members">
-                    {r.members.map((m) => t('memberAt', { name: m.name, place: place(m.scene, m.world) })).join(' · ')}
-                  </span>
-                  <button type="button" className="room-panel__secondary" disabled={r.count >= ROOM_MAX} onClick={() => room.join(r.code, true)}>{t('join')}</button>
-                </li>
-              ))}
-            </ul>
-          )}
         </>
       )}
 
@@ -171,13 +160,13 @@ export function RoomBody({ room, pilot, onLaunch }: RoomBodyProps) {
 
       {room.status === 'connecting' && (
         <>
-          <p className="room-panel__note room-panel__wait" aria-live="polite">{t('joining', { code: room.code ?? '' })}</p>
+          <p className="room-panel__note room-panel__wait" aria-live="polite">{room.world !== null ? t('joiningWorld') : t('joining', { code: room.code ?? '' })}</p>
           {unreachable}
           <button type="button" className="room-panel__secondary room-panel__wide" onClick={room.leave}>{t('cancel')}</button>
         </>
       )}
 
-      {(room.status === 'joined' || room.status === 'reconnecting') && room.code && (
+      {(room.status === 'joined' || room.status === 'reconnecting') && (room.code || room.world !== null) && (
         <>
           {room.status === 'reconnecting' && (
             <div className="room-panel__problem" role="status">
@@ -185,19 +174,26 @@ export function RoomBody({ room, pilot, onLaunch }: RoomBodyProps) {
               <button type="button" className="room-panel__secondary" onClick={room.retry}><RotateCw size={16} aria-hidden /> {t('retry')}</button>
             </div>
           )}
-          <div className="room-panel__invite">
-            <span className="room-panel__label">{t('roomCode')}</span>
-            <span className="room-panel__bigcode">{room.code}</span>
-            <span className="room-panel__keys">
-              {canShare && <button type="button" className="room-panel__secondary" onClick={share}><Share2 size={16} aria-hidden /> {tp('share')}</button>}
-              <button type="button" className="room-panel__secondary" onClick={copyInvite}>
-                {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />} {t(copied ? 'copied' : 'copyInvite')}
-              </button>
-            </span>
-          </div>
+          {room.code ? (
+            <div className="room-panel__invite">
+              <span className="room-panel__label">{t('roomCode')}</span>
+              <span className="room-panel__bigcode">{room.code}</span>
+              <span className="room-panel__keys">
+                {canShare && <button type="button" className="room-panel__secondary" onClick={share}><Share2 size={16} aria-hidden /> {tp('share')}</button>}
+                <button type="button" className="room-panel__secondary" onClick={copyInvite}>
+                  {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />} {t(copied ? 'copied' : 'copyInvite')}
+                </button>
+              </span>
+            </div>
+          ) : (
+            <div className="room-panel__invite">
+              <span className="room-panel__label">{t('worldLabel')}</span>
+              <span className="room-panel__bigcode">{worldName(t, room.world ?? 1)}</span>
+            </div>
+          )}
           {onLaunch && <button type="button" className="room-panel__primary room-panel__launch" onClick={onLaunch} autoFocus><Rocket size={18} aria-hidden /> {tp('launch')}</button>}
-          <p className="room-panel__note">{t('howItWorks')}</p>
-          <h3 className="room-panel__sub">{t('explorers', { n: room.roster.length, max: ROOM_MAX })}</h3>
+          <p className="room-panel__note">{t(room.code ? 'howItWorks' : 'worldHowItWorks')}</p>
+          <h3 className="room-panel__sub">{t('explorers', { n: room.roster.length, max: room.code ? ROOM_MAX : WORLD_MAX })}</h3>
           <ul className="room-panel__list">
             {room.roster.map((m) => (
               <li key={m.id} className="room-panel__item">
@@ -206,7 +202,7 @@ export function RoomBody({ room, pilot, onLaunch }: RoomBodyProps) {
               </li>
             ))}
           </ul>
-          <button type="button" className="room-panel__leave" onClick={room.leave}><LogOut size={16} aria-hidden /> {t('leave')}</button>
+          <button type="button" className="room-panel__leave" onClick={room.leave}><LogOut size={16} aria-hidden /> {t(room.code ? 'leave' : 'leaveWorld')}</button>
         </>
       )}
     </>
@@ -230,8 +226,8 @@ export function ExploreRoomPanel({ room, pilot, onClose }: ExploreRoomPanelProps
   );
 }
 
-/** On the title: Multiplayer's lobby. Into open space in one tap, a private
- *  room (a short code and a link to send), or a code or a listed room; then launch. */
+/** On the title: Multiplayer's lobby. Into the open world in one tap, or a
+ *  private room (a short code and a link to send), or a code; then launch. */
 export function MultiplayerLobby({ room, pilot, onClose, onLaunch }: ExploreRoomPanelProps & { onLaunch: () => void }) {
   const tp = useTranslations('play.lobby');
   return (

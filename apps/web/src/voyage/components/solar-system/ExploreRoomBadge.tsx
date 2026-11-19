@@ -4,10 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { RotateCw, Users } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 import type { RosterEntry } from '@/voyage/lib/multiplayer/useExploreRoom';
-import { placeKey } from './ExploreRoomPanel';
+import { placeKey, worldName } from './ExploreRoomPanel';
 
 interface ExploreRoomBadgeProps {
-  code: string;
+  /** A private room's code, or null in the open world. */
+  code: string | null;
+  /** Which copy of the open world, when in it. */
+  world: number | null;
   roster: RosterEntry[];
   /** The connection dropped and is being made again. */
   reconnecting?: boolean;
@@ -16,8 +19,8 @@ interface ExploreRoomBadgeProps {
 
 const TOAST_MS = 4200;
 
-/** The room, wherever the explorer is — and a line when someone arrives, leaves or lands. */
-export function ExploreRoomBadge({ code, roster, reconnecting, onOpen }: ExploreRoomBadgeProps) {
+/** The room or the open world, wherever the explorer is — and a line when someone arrives, leaves or lands. */
+export function ExploreRoomBadge({ code, world, roster, reconnecting, onOpen }: ExploreRoomBadgeProps) {
   const t = useTranslations('solarSystem.room');
   const [toasts, setToasts] = useState<{ id: number; text: string }[]>([]);
   const prevRef = useRef<Map<string, RosterEntry> | null>(null);
@@ -48,12 +51,14 @@ export function ExploreRoomBadge({ code, roster, reconnecting, onOpen }: Explore
     timers.current.push(window.setTimeout(() => setToasts((cur) => cur.filter((x) => !added.includes(x))), TOAST_MS));
   }, [roster, t]);
 
+  const label = code ?? worldName(t, world ?? 1);
+  const aria = code ? t('badgeAria', { code, n: roster.length }) : t('badgeWorldAria', { name: label, n: roster.length });
   return (
     <div className="room-badge">
       <button type="button" className={reconnecting ? 'room-badge__chip is-reconnecting' : 'room-badge__chip'} onClick={onOpen}
-        aria-label={reconnecting ? t('reconnecting') : t('badgeAria', { code, n: roster.length })} title={reconnecting ? t('reconnecting') : undefined}>
+        aria-label={reconnecting ? t('reconnecting') : aria} title={reconnecting ? t('reconnecting') : undefined}>
         {reconnecting ? <RotateCw size={14} className="room-badge__spin" aria-hidden /> : <Users size={14} aria-hidden />}
-        <span className="room-badge__code">{code}</span>
+        <span className="room-badge__code">{label}</span>
         <span className="room-badge__count">{roster.length}</span>
       </button>
       <ul className="room-badge__toasts" aria-live="polite">

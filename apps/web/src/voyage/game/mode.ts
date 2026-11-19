@@ -6,9 +6,9 @@
 // - `story` The Grand Tour (story-chapters.ts): a short guided campaign
 //           from the Moon to the planets and home to Tbilisi, with the
 //           Moon missions as its opening.
-// - `multi` Multiplayer: Free Fly in a shared room, the other explorers'
-//           ships and suits drawn where they are. Needs a signed-in account,
-//           so it only exists on a host that has accounts.
+// - `multi` Multiplayer: Free Fly in the open world everyone online shares,
+//           or in a private room, the other explorers' ships and suits drawn
+//           where they are. Guests play it; it needs a realtime service.
 //
 // Pure and dependency-free: the state machine, the surfaces and the menus
 // all ask it the same questions.

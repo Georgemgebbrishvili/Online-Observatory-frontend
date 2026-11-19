@@ -10,7 +10,7 @@ import { createRoomLink, normalizeRoomCode, type RoomLink } from '@/voyage/lib/m
 import { useExploreRoom } from '@/voyage/lib/multiplayer/useExploreRoom';
 import { realtimeConfig } from '@/voyage/lib/multiplayer/realtime';
 import type { EpochRef } from '@/voyage/components/solar-system/SolarSystemCanvas';
-import { ExploreRoomPanel, MultiplayerLobby, type Pilot } from '@/voyage/components/solar-system/ExploreRoomPanel';
+import { ExploreRoomPanel, MultiplayerLobby, worldName, type Pilot } from '@/voyage/components/solar-system/ExploreRoomPanel';
 import { ExploreRoomBadge } from '@/voyage/components/solar-system/ExploreRoomBadge';
 import { RoomRadar } from '@/voyage/components/solar-system/RoomRadar';
 import { guestIdentity, setGuestName } from '@/voyage/lib/multiplayer/guest';
@@ -79,6 +79,7 @@ export default function GameShell() {
   const snap = useSyncExternalStore(game.subscribe, game.get, game.get);
   const t = useTranslations('play');
   const ts = useTranslations('solarSystem');
+  const tr = useTranslations('solarSystem.room');
   const tl = useTranslations('solarSystem.loading');
   const tips = useLoadingTips();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -100,7 +101,7 @@ export default function GameShell() {
   /** Multiplayer is offered wherever there is a realtime service to meet in.
    *  Nobody has to sign in: a guest flies under a callsign kept on the device,
    *  a signed-in player under their account's name. */
-  const online = account.available && realtimeConfig() !== null;
+  const online = realtimeConfig() !== null;
   const [guest, setGuest] = useState(guestIdentity);
   const signedIn = account.authenticated;
   const pilotName = signedIn
@@ -143,6 +144,13 @@ export default function GameShell() {
     if (!invite || !online) return;
     if (room.status === 'idle') { room.join(invite); setInvite(null); }
   }, [invite, online, room]);
+  // Into the open world from the lobby: straight into the game once there (a private room waits on Launch, to share its code first).
+  const launchLobby = () => { void enterFullscreen(); game.start(lobbyScene, 'multi'); };
+  useEffect(() => {
+    if (overlay === 'lobby' && room.world !== null && room.status === 'joined') launchLobby();
+  }, [overlay, room.world, room.status]); // eslint-disable-line react-hooks/exhaustive-deps
+  const inMulti = room.code !== null || room.world !== null;
+  const placeLabel = room.code ?? worldName(tr, room.world ?? 1);
   // A room's game without a room (left from the panel, or the room was full): the panel, to find one.
   useEffect(() => {
     if (multiPlaying && state === 'playing' && room.status === 'idle') setRoomPanel(true);
@@ -248,7 +256,7 @@ export default function GameShell() {
 
   const start = (to: GameScene, as: GameMode) => {
     // Free Fly and the story are played alone.
-    if (as !== 'multi' && room.code) room.leave();
+    if (as !== 'multi' && inMulti) room.leave();
     void enterFullscreen();
     game.start(to, as);
   };
@@ -258,11 +266,11 @@ export default function GameShell() {
     game.openOverlay('lobby');
   };
   const closeLobby = () => {
-    if (room.code) room.leave();
+    if (inMulti) room.leave();
     game.closeOverlay();
   };
   const toTitle = () => {
-    if (room.code) room.leave();
+    if (inMulti) room.leave();
     game.toTitle();
   };
   const resume = () => {
@@ -305,21 +313,21 @@ export default function GameShell() {
       )}
       {dropped && state === 'playing' && <p className="game-shell__notice" role="status">{t('qualityDrop')}</p>}
       {/* In a room: the roster badge over the scene, and the panel it opens. */}
-      {multiPlaying && (state !== 'loading' || seamless) && room.code && !roomPanel && (
-        <ExploreRoomBadge code={room.code} roster={room.roster} reconnecting={room.status === 'reconnecting'} onOpen={() => setRoomPanel(true)} />
+      {multiPlaying && (state !== 'loading' || seamless) && inMulti && !roomPanel && (
+        <ExploreRoomBadge code={room.code} world={room.world} roster={room.roster} reconnecting={room.status === 'reconnecting'} onOpen={() => setRoomPanel(true)} />
       )}
       {/* The others in flight: arrows to the ones off the screen, and the nearest few. */}
-      {multiPlaying && state === 'playing' && room.code && <RoomRadar link={roomLinkRef.current} />}
+      {multiPlaying && state === 'playing' && inMulti && <RoomRadar link={roomLinkRef.current} />}
       {multiPlaying && state === 'playing' && roomPanel && (
         <ExploreRoomPanel room={room} pilot={pilot} onClose={() => setRoomPanel(false)} />
       )}
       {state === 'title' && overlay === 'none' && <TitleScreen onStart={start} onMultiplayer={online ? openLobby : undefined} />}
       {state === 'paused' && overlay === 'none' && (
-        <PauseMenu onResume={resume} mode={mode} onTitle={toTitle} room={mode === 'multi' && room.code ? { code: room.code, count: room.roster.length } : null} />
+        <PauseMenu onResume={resume} mode={mode} onTitle={toTitle} room={mode === 'multi' && inMulti ? { label: placeLabel, count: room.roster.length } : null} />
       )}
       {overlay === 'lobby' && (
         <MultiplayerLobby room={room} pilot={pilot} onClose={closeLobby}
-          onLaunch={() => { void enterFullscreen(); game.start(lobbyScene, 'multi'); }} />
+          onLaunch={launchLobby} />
       )}
       {overlay === 'settings' && <SettingsPanel onClose={game.closeOverlay} />}
       {overlay === 'controls' && <ControlsPanel onClose={game.closeOverlay} />}

@@ -4,13 +4,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connectRealtime, realtimeConfig, type Channel, type PresenceState, type RealtimeClient } from '@/voyage/lib/multiplayer/realtime';
 import { makeRoomCode, normalizeRoomCode, pushSample, pushShot, readPose, readShot, type RoomLink, type Scene } from '@/voyage/lib/multiplayer/room-link';
 
+/** A private room: friends by code or link. */
 export const ROOM_MAX = 8;
+/** One copy of the open world. Past this, newcomers open the next copy. */
+export const WORLD_MAX = 40;
 const SEND_EVERY_MS = 200;
 const KEEPALIVE_MS = 2000;
 /** At most this often a bolt goes out; more than a few waiting and the oldest are dropped. */
 const SHOT_GAP_MS = 100;
 const SHOTS_WAITING = 3;
-/** Quick play waits this long for the lobby to say which rooms are open, then opens one. */
+/** Entering the open world waits this long for the lobby's head count, then goes to copy 1. */
 const SEEK_WAIT_MS = 4000;
 /** A join not through by now says so (it keeps trying underneath). */
 const UNREACHABLE_MS = 12_000;
@@ -24,18 +27,11 @@ export interface RosterEntry {
   self: boolean;
 }
 
-export interface OpenRoom {
-  code: string;
-  host: string;
-  count: number;
-  /** Who is in it and where, the earliest first (a few at most). */
-  members: { name: string; scene: Scene; world: string }[];
-}
-
 export type RoomStatus = 'unconfigured' | 'idle' | 'seeking' | 'connecting' | 'joined' | 'reconnecting';
 export type RoomError = 'full' | 'unreachable' | null;
-/** How a room was come to: it decides whether the room is listed for others. */
-type Intent = 'quick' | 'list' | 'private' | 'code';
+
+/** Where this explorer plays: a copy of the open world, or a private room. */
+type Target = { kind: 'world'; n: number } | { kind: 'room'; code: string };
 
 interface RoomMeta {
   name: string;
@@ -43,8 +39,6 @@ interface RoomMeta {
   world: string;
   joinedAt: number;
   epoch: number;
-  /** Listed in the lobby and open to quick play. */
-  pub: boolean;
 }
 
 const str = (v: unknown, fallback = '') => (typeof v === 'string' ? v.slice(0, 40) : fallback);
@@ -56,34 +50,32 @@ function firstMetas(state: PresenceState) {
   return Object.entries(state).flatMap(([key, metas]) => (metas[0] ? [{ key, meta: metas[0] }] : []));
 }
 
-/** The public rooms a lobby's presence advertises, busiest first. A room
- *  whose explorers all marked it private is left out. */
-export function roomsFromLobby(state: PresenceState): OpenRoom[] {
-  const byCode = new Map<string, { pub: boolean; list: { name: string; scene: Scene; world: string; at: number }[] }>();
+/** How many explorers each copy of the open world holds, from the lobby's presence. */
+export function worldCounts(state: PresenceState): Map<number, number> {
+  const counts = new Map<number, number>();
   for (const { meta } of firstMetas(state)) {
-    const c = normalizeRoomCode(str(meta.room));
-    if (!c) continue;
-    let r = byCode.get(c);
-    if (!r) byCode.set(c, (r = { pub: false, list: [] }));
-    // An older client says nothing: its rooms were all listed.
-    if (meta.pub !== false) r.pub = true;
-    r.list.push({ name: str(meta.name, '?'), scene: scene(meta.s), world: str(meta.w), at: num(meta.joinedAt) });
+    const n = num(meta.world);
+    if (Number.isInteger(n) && n >= 1 && n <= 999) counts.set(n, (counts.get(n) ?? 0) + 1);
   }
-  return [...byCode]
-    .filter(([, r]) => r.pub)
-    .map(([code, r]) => {
-      const list = r.list.sort((a, b) => a.at - b.at);
-      return { code, host: list[0].name, count: list.length, members: list.slice(0, 4).map(({ name, scene: s, world }) => ({ name, scene: s, world })) };
-    })
-    .sort((a, b) => b.count - a.count || a.code.localeCompare(b.code))
-    .slice(0, 20);
+  return counts;
 }
 
-/** Where quick play goes: the busiest public room with a seat, or null to open one. */
-export function pickQuickRoom(rooms: OpenRoom[], exclude: ReadonlySet<string> = new Set()): string | null {
-  const open = rooms.filter((r) => r.count < ROOM_MAX && !exclude.has(r.code));
-  return open.length ? open[0].code : null;
+/** The copy a newcomer goes to: the first with a free place, so the copies fill
+ *  in order and the later ones empty out as the first ones free up. */
+export function pickWorld(counts: ReadonlyMap<number, number>, exclude: ReadonlySet<number> = new Set()): number {
+  for (let n = 1; ; n++) if (!exclude.has(n) && (counts.get(n) ?? 0) < WORLD_MAX) return n;
 }
+
+/** Whether anyone else is where this explorer is, so a pose is worth sending:
+ *  in flight anyone else in flight, on a surface anyone on the same world. */
+export function anyoneHere(roster: readonly RosterEntry[], s: Scene, world: string): boolean {
+  if (s === 'orbit') return false;
+  return roster.some((m) => !m.self && m.scene === s && (s === 'flight' || m.world === world));
+}
+
+/** The key the engine knows the room by (the Backrooms' maze is seeded from it). */
+const linkKey = (t: Target) => (t.kind === 'world' ? `W${t.n}` : t.code);
+const channelName = (t: Target) => (t.kind === 'world' ? `explore-world-${t.n}` : `explore-room-${t.code}`);
 
 /** A state setter that keeps the old value (and skips the render) when the new one reads the same. */
 function setIfChanged<T>(set: (fn: (prev: T) => T) => void, next: T) {
@@ -92,21 +84,22 @@ function setIfChanged<T>(set: (fn: (prev: T) => T) => void, next: T) {
 }
 
 /**
- * The room this explorer flies in. Nobody has to sign in: `name` is the
- * account's name or the guest's callsign. `create` opens a private room
- * (shared by code or link), `quickPlay` joins the busiest public one with a
- * seat or opens a public one, `join` takes a code or a listed room.
+ * Where this explorer flies with others. Nobody has to sign in: `name` is the
+ * account's name or the guest's callsign. `enterWorld` joins the open world
+ * everyone shares (the first copy of it with a free place), `create` opens a
+ * private room shared by code or link, `join` takes a code.
  */
 export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: number; watchLobby: boolean; onEpoch: (ms: number) => void }) {
   const config = realtimeConfig();
-  const [code, setCode] = useState<string | null>(null);
+  const [target, setTarget] = useState<Target | null>(null);
   const [joined, setJoined] = useState(false);
-  /** This room was joined once: a drop now reads as reconnecting, not joining. */
+  /** This place was joined once: a drop now reads as reconnecting, not joining. */
   const [wasJoined, setWasJoined] = useState(false);
   const [seeking, setSeeking] = useState(false);
   const [lobbyReady, setLobbyReady] = useState(false);
   const [roster, setRoster] = useState<RosterEntry[]>([]);
-  const [rooms, setRooms] = useState<OpenRoom[]>([]);
+  /** Everyone in the open world right now, all copies together (while the lobby is watched). */
+  const [online, setOnline] = useState<number | null>(null);
   const [error, setError] = useState<RoomError>(null);
   /** Bumped by Retry: a fresh socket. */
   const [attempt, setAttempt] = useState(0);
@@ -116,15 +109,16 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
   const optsRef = useRef(opts);
   optsRef.current = opts;
   const metaRef = useRef<RoomMeta | null>(null);
-  const intentRef = useRef<Intent>('code');
-  /** Rooms quick play found full this time round. */
-  const excludeRef = useRef(new Set<string>());
-  /** What this explorer advertises in the lobby while in a room (re-sent if the lobby channel is made again). */
+  const rosterRef = useRef<RosterEntry[]>([]);
+  /** Copies found full this time round. */
+  const excludeRef = useRef(new Set<number>());
+  /** The copy this explorer is counted in, in the lobby (re-sent if the lobby channel is made again). */
   const advertRef = useRef<Record<string, unknown> | null>(null);
-  /** The lobby's last presence, kept while nobody is looking at the list. */
   const lobbyStateRef = useRef<PresenceState | null>(null);
 
-  const wantSocket = !!config && (code !== null || opts.watchLobby || seeking);
+  const inWorld = target?.kind === 'world';
+  const wantSocket = !!config && (target !== null || opts.watchLobby || seeking);
+  const wantLobby = wantSocket && (inWorld || opts.watchLobby || seeking);
   useEffect(() => {
     if (!wantSocket || !config) return;
     const client = connectRealtime(config.url, config.key);
@@ -137,32 +131,26 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
     };
   }, [wantSocket, config?.url, config?.key, attempt]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const advertise = useCallback((meta: RoomMeta, room: string) => {
-    advertRef.current = { room, name: meta.name, joinedAt: meta.joinedAt, pub: meta.pub, s: meta.scene, w: meta.world };
-    lobbyRef.current?.track({ ...advertRef.current });
-  }, []);
-
-  // The lobby lists the rooms that are open: every member advertises its
-  // room code there, and the list is those codes counted. The channel is
-  // joined while in a room too (that is how the room is advertised, and
-  // presence cannot be tracked without joining), but the list only turns
-  // into state while the lobby is on screen: a change in some other room
-  // must not re-render a game in progress.
+  // The lobby counts the open world: each explorer in it is counted under
+  // the copy they are in. It is joined while in the open world (presence
+  // cannot be tracked without joining), but the count only turns into state
+  // while the lobby is on screen.
   useEffect(() => {
     const client = clientRef.current;
-    if (!wantSocket || !client) return;
+    if (!wantLobby || !client) return;
     const lobby = client.channel('explore-lobby', link.self.id);
     lobbyRef.current = lobby;
     let grace = 0;
+    const total = (state: PresenceState) => [...worldCounts(state).values()].reduce((a, b) => a + b, 0);
     lobby.onPresence((state) => {
       lobbyStateRef.current = state;
       setLobbyReady(true);
-      if (optsRef.current.watchLobby) setIfChanged(setRooms, roomsFromLobby(state));
+      if (optsRef.current.watchLobby) setOnline(total(state));
     });
     // A server that sends no presence for an empty lobby: joined is enough to go on.
     lobby.onStatus((s) => {
       window.clearTimeout(grace);
-      if (s === 'joined') grace = window.setTimeout(() => setLobbyReady(true), 700);
+      if (s === 'joined') grace = window.setTimeout(() => { setLobbyReady(true); setOnline((n) => n ?? 0); }, 700);
     });
     if (advertRef.current) lobby.track({ ...advertRef.current });
     return () => {
@@ -172,23 +160,20 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
       lobbyStateRef.current = null;
       setLobbyReady(false);
     };
-  }, [wantSocket, link, attempt]);
-  // The list opened again: from what the lobby last said, not from a fresh diff.
+  }, [wantLobby, wantSocket, link, attempt]);
   useEffect(() => {
     const state = lobbyStateRef.current;
-    if (opts.watchLobby && state) setIfChanged(setRooms, roomsFromLobby(state));
+    if (opts.watchLobby && state) setOnline([...worldCounts(state).values()].reduce((a, b) => a + b, 0));
   }, [opts.watchLobby]);
 
-  // Quick play: once the lobby has spoken (or has not, in time), the busiest
-  // public room with a seat, or a new public one.
+  // Into the open world: once the lobby has counted (or has not, in time),
+  // the first copy with a free place.
   useEffect(() => {
     if (!seeking) return;
     const decide = () => {
       const state = lobbyStateRef.current;
-      const pick = state ? pickQuickRoom(roomsFromLobby(state), excludeRef.current) : null;
-      intentRef.current = 'quick';
       setSeeking(false);
-      setCode(pick ?? makeRoomCode());
+      setTarget({ kind: 'world', n: pickWorld(state ? worldCounts(state) : new Map(), excludeRef.current) });
     };
     if (lobbyReady) { decide(); return; }
     const id = window.setTimeout(decide, SEEK_WAIT_MS);
@@ -197,21 +182,17 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
 
   useEffect(() => {
     const client = clientRef.current;
-    if (!code || !client) return;
+    if (!target || !client) return;
     setJoined(false);
     setWasJoined(false);
     link.peers.clear();
     link.shotsIn.length = 0;
     link.shotsOut.length = 0;
-    link.code = code;
-    const intent = intentRef.current;
-    const joinedAt = Date.now();
-    const meta: RoomMeta = {
-      name: optsRef.current.name, scene: link.self.s, world: link.self.w ?? '', joinedAt, epoch: optsRef.current.epochMs,
-      pub: intent === 'quick' || intent === 'list',
-    };
+    link.code = linkKey(target);
+    const max = target.kind === 'world' ? WORLD_MAX : ROOM_MAX;
+    const meta: RoomMeta = { name: optsRef.current.name, scene: link.self.s, world: link.self.w ?? '', joinedAt: Date.now(), epoch: optsRef.current.epochMs };
     metaRef.current = meta;
-    const room = client.channel(`explore-room-${code}`, link.self.id);
+    const room = client.channel(channelName(target), link.self.id);
     roomRef.current = room;
     let firstSync = true;
     let alive = true;
@@ -231,33 +212,27 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
     room.onPresence((state) => {
       if (!alive) return;
       const members = firstMetas(state).map(({ key, meta: m }) => ({
-        id: key, name: str(m.name, '?'), scene: scene(m.scene), world: str(m.world), joinedAt: num(m.joinedAt), epoch: num(m.epoch), pub: m.pub === true, self: key === link.self.id,
+        id: key, name: str(m.name, '?'), scene: scene(m.scene), world: str(m.world), joinedAt: num(m.joinedAt), epoch: num(m.epoch), self: key === link.self.id,
       })).sort((a, b) => a.joinedAt - b.joinedAt || a.id.localeCompare(b.id));
       const mine = members.findIndex((m) => m.self);
-      if (mine >= ROOM_MAX) {
+      if (mine >= max) {
         alive = false;
-        if (intent === 'quick') {
-          // Someone took the last seat first: on to the next room.
-          excludeRef.current.add(code);
-          setCode(null);
+        if (target.kind === 'world') {
+          // Someone took the last place first: on to the next copy.
+          excludeRef.current.add(target.n);
+          setTarget(null);
           setSeeking(true);
         } else {
           setError('full');
-          setCode(null);
+          setTarget(null);
         }
         return;
       }
       if (firstSync && mine >= 0) {
         firstSync = false;
         const first = members[0];
-        // Everyone in a room sees the planets where the room's first explorer had them.
+        // Everyone in a room sees the planets where its first explorer had them.
         if (!first.self && first.epoch) optsRef.current.onEpoch(first.epoch);
-        // Come in by code: the room is listed if the one who opened it listed it.
-        if (intent === 'code' && !first.self && first.pub !== meta.pub) {
-          meta.pub = first.pub;
-          room.track({ ...meta });
-          advertise(meta, code);
-        }
       }
       names.clear();
       for (const m of members) names.set(m.id, m.name);
@@ -266,7 +241,8 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
         const p = link.peers.get(m.id);
         if (p) p.name = m.name;
       }
-      setIfChanged(setRoster, members.map(({ epoch: _epoch, pub: _pub, ...m }) => m));
+      rosterRef.current = members.map(({ epoch: _epoch, ...m }) => m);
+      setIfChanged(setRoster, rosterRef.current);
     });
     room.onBroadcast('pose', (payload) => {
       const msg = readPose(payload);
@@ -283,30 +259,41 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
       if (!alive || !msg || msg.id === link.self.id) return;
       pushShot(link, link.peers.get(msg.id), msg, performance.now());
     });
-    advertise(meta, code);
+    if (target.kind === 'world') {
+      advertRef.current = { world: target.n };
+      lobbyRef.current?.track({ ...advertRef.current });
+    }
 
     let lastSent = 0;
     let lastShot = 0;
     let lastJson = '';
+    let wasHere = false;
     const timer = window.setInterval(() => {
       const now = performance.now();
       const self = link.self;
-      // Where this explorer is goes into presence too, for the room list.
+      // Where this explorer is goes into presence: the roster shows it, and the others decide from it whether to send.
       if (self.s !== meta.scene || (self.w ?? '') !== meta.world) {
         meta.scene = self.s;
         meta.world = self.w ?? '';
         room.track({ ...meta });
-        advertise(meta, code);
+      }
+      // Nobody else in the same place: nothing to send, and nobody to draw it.
+      const here = anyoneHere(rosterRef.current, self.s, self.w ?? '');
+      if (!here) {
+        link.shotsOut.length = 0;
+        wasHere = false;
+        return;
       }
       const { n: _n, t: _t, ...pose } = self;
       const json = JSON.stringify(pose);
-      if ((json !== lastJson && now - lastSent >= SEND_EVERY_MS) || now - lastSent >= KEEPALIVE_MS) {
+      if (!wasHere || (json !== lastJson && now - lastSent >= SEND_EVERY_MS) || now - lastSent >= KEEPALIVE_MS) {
         self.n += 1;
         self.t = Math.round(now);
         room.send('pose', { ...self });
         lastSent = now;
         lastJson = json;
       }
+      wasHere = true;
       const out = link.shotsOut;
       if (out.length > SHOTS_WAITING) out.splice(0, out.length - SHOTS_WAITING);
       if (out.length && now - lastShot >= SHOT_GAP_MS) {
@@ -322,28 +309,31 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
       window.clearInterval(timer);
       room.leave();
       roomRef.current = null;
+      if (advertRef.current) lobbyRef.current?.track({ world: 0 });
       advertRef.current = null;
-      lobbyRef.current?.track({ room: '', name: meta.name, joinedAt: 0 });
       link.peers.clear();
       link.shotsIn.length = 0;
       link.shotsOut.length = 0;
       link.view.pilots = [];
       link.code = null;
+      rosterRef.current = [];
       setRoster([]);
       setJoined(false);
     };
-  }, [code, link, wantSocket, attempt, advertise]);
+  }, [target, link, wantSocket, attempt]);
 
   // The name can arrive after the room was joined (the profile loads late), or be changed.
   useEffect(() => {
     const meta = metaRef.current;
-    if (!meta || !code || meta.name === opts.name) return;
+    if (!meta || !target || meta.name === opts.name) return;
     meta.name = opts.name;
     roomRef.current?.track({ ...meta });
-    advertise(meta, code);
-  }, [opts.name, code, advertise]);
+  }, [opts.name, target]);
 
-  // The room goes in the address bar, so the page can be shared as the invite.
+  const code = target?.kind === 'room' ? target.code : null;
+  const world = target?.kind === 'world' ? target.n : null;
+
+  // A private room goes in the address bar, so the page can be shared as the invite.
   useEffect(() => {
     const url = new URL(window.location.href);
     if (code) url.searchParams.set('room', code);
@@ -351,27 +341,24 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
     window.history.replaceState(window.history.state, '', url);
   }, [code]);
 
-  const enter = useCallback((c: string, intent: Intent) => {
-    intentRef.current = intent;
+  const enterWorld = useCallback(() => {
     excludeRef.current.clear();
     setError(null);
-    setSeeking(false);
-    setCode(c);
-  }, []);
-  const create = useCallback(() => enter(makeRoomCode(), 'private'), [enter]);
-  const quickPlay = useCallback(() => {
-    excludeRef.current.clear();
-    setError(null);
-    setCode(null);
+    setTarget(null);
     setSeeking(true);
   }, []);
-  /** `listed`: picked from the open rooms (it stays listed), rather than typed or linked. */
-  const join = useCallback((raw: string, listed = false) => {
+  const enterRoom = useCallback((c: string) => {
+    setError(null);
+    setSeeking(false);
+    setTarget({ kind: 'room', code: c });
+  }, []);
+  const create = useCallback(() => enterRoom(makeRoomCode()), [enterRoom]);
+  const join = useCallback((raw: string) => {
     const c = normalizeRoomCode(raw);
-    if (c) enter(c, listed ? 'list' : 'code');
+    if (c) enterRoom(c);
     return !!c;
-  }, [enter]);
-  const leave = useCallback(() => { setSeeking(false); setCode(null); }, []);
+  }, [enterRoom]);
+  const leave = useCallback(() => { setSeeking(false); setTarget(null); }, []);
   const clearError = useCallback(() => setError(null), []);
   /** A fresh socket, now, rather than waiting out the backoff. */
   const retry = useCallback(() => { setError(null); setAttempt((n) => n + 1); }, []);
@@ -379,13 +366,13 @@ export function useExploreRoom(link: RoomLink, opts: { name: string; epochMs: nu
   let status: RoomStatus;
   if (!config) status = 'unconfigured';
   else if (seeking) status = 'seeking';
-  else if (!code) status = 'idle';
+  else if (!target) status = 'idle';
   else if (joined) status = 'joined';
   else status = wasJoined ? 'reconnecting' : 'connecting';
 
   // One object while nothing in it changed: it is handed down to the game's panels.
   return useMemo(
-    () => ({ status, code, roster, rooms, error, create, quickPlay, join, leave, clearError, retry }),
-    [status, code, roster, rooms, error, create, quickPlay, join, leave, clearError, retry],
+    () => ({ status, code, world, roster, online, error, enterWorld, create, join, leave, clearError, retry }),
+    [status, code, world, roster, online, error, enterWorld, create, join, leave, clearError, retry],
   );
 }
