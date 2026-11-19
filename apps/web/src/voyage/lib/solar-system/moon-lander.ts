@@ -202,6 +202,56 @@ export interface LanderOptions {
   kind?: DescentKind;
 }
 
+/** An exhaust cone that reads as flame rather than a solid: white-hot at the
+ *  throat and cooling to the drive's colour down its length, soft at the
+ *  silhouette (bright where you look into it, faint where you look across
+ *  it), fading out at the tip; the core carries a run of shock diamonds near
+ *  the throat and a flicker that travels down it. `uv.y` is 0 at the throat
+ *  and 1 at the tip (the cones are hung apex-down from the bell). */
+function plumeShader(color: THREE.Color, core: boolean): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: { value: color.clone() },
+      uHot: { value: new THREE.Color(1.0, 0.97, 0.92).multiplyScalar(core ? 3.2 : 1.9) },
+      uOpacity: { value: 0 },
+      uTime: { value: 0 },
+      uCore: { value: core ? 1 : 0 },
+    },
+    vertexShader: `
+      varying float vT;
+      varying vec3 vN;
+      varying vec3 vV;
+      void main() {
+        vT = uv.y;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vN = normalize(normalMatrix * normal);
+        vV = normalize(-mv.xyz);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: `
+      uniform vec3 uColor; uniform vec3 uHot; uniform float uOpacity; uniform float uTime; uniform float uCore;
+      varying float vT; varying vec3 vN; varying vec3 vV;
+      void main() {
+        float t = clamp(vT, 0.0, 1.0);
+        // Looking into the column it is thick; across its edge it is thin.
+        float facing = abs(dot(normalize(vN), normalize(vV)));
+        float body = pow(facing, mix(1.6, 0.9, uCore));
+        float along = pow(1.0 - t, mix(1.5, 0.85, uCore)) * smoothstep(0.0, 0.04, t + 0.02);
+        // Shock diamonds in the core near the throat, and a flicker running down.
+        float diamonds = uCore * 0.45 * exp(-t * 4.0) * max(0.0, sin(t * 46.0 - uTime * 9.0));
+        float flick = 1.0 + 0.12 * sin(t * 13.0 - uTime * 55.0) + 0.08 * sin(t * 31.0 + uTime * 37.0);
+        vec3 col = mix(uHot, uColor, smoothstep(0.0, mix(0.55, 0.8, uCore), t));
+        float a = uOpacity * body * along * flick;
+        gl_FragColor = vec4(col * (a + diamonds * uOpacity), 1.0);
+      }`,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide,
+    toneMapped: true,
+  });
+}
+
 export function makeLander(
   padX: number,
   padZ: number,
@@ -237,8 +287,8 @@ export function makeLander(
   // the blue-white streak a ship hovers on — and a glow at each nozzle.
   // The haze is the drive's hue pulled toward the blue-white the reference
   // ships hover on, and over 1 so the bloom takes it.
-  const plumeMat = new THREE.MeshBasicMaterial({ color: drive.clone().lerp(new THREE.Color(0.75, 0.88, 1.0), 0.45).multiplyScalar(1.6), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
-  const coreMat = new THREE.MeshBasicMaterial({ color: plumeCoreColor(drive), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
+  const plumeMat = plumeShader(drive.clone().lerp(new THREE.Color(0.75, 0.88, 1.0), 0.45).multiplyScalar(1.6), false);
+  const coreMat = plumeShader(plumeCoreColor(drive), true);
   const glowMat = new THREE.SpriteMaterial({ map: softSpriteTexture(), color: plumeCoreColor(drive).multiplyScalar(0.5), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
   const strutMat = new THREE.MeshStandardMaterial({ color: 0x4a5058, roughness: 0.55, metalness: 0.7 });
   const padMat = new THREE.MeshStandardMaterial({ color: 0x2a2d33, roughness: 0.8, metalness: 0.4 });
@@ -294,8 +344,8 @@ export function makeLander(
     for (const c of cores) c.scale.set(x * 0.9, y * 1.25, z * 0.9);
   };
   const plumeOpacity = (k: number) => {
-    plumeMat.opacity = Math.min(1, k * 0.9);
-    coreMat.opacity = Math.min(1, k * 0.95);
+    plumeMat.uniforms.uOpacity.value = Math.min(1, k * 0.9);
+    coreMat.uniforms.uOpacity.value = Math.min(1, k * 0.95);
     glowMat.opacity = Math.min(1, k * 1.1);
     const show = k > 0.01;
     for (const p of plumes) p.visible = show;
@@ -465,6 +515,7 @@ export function makeLander(
    *  sheet of it going sideways faster than the vehicle is coming down. */
   const exhaust = (dt: number, t: number, alt: number, g2: number, rate: number) => {
     flicker += dt * 30;
+    plumeMat.uniforms.uTime.value = coreMat.uniforms.uTime.value = flicker / 30;
     // Airborne, the engines are never dark: an idle tongue at the throat
     // that the throttle stretches into the full plume. The dust answers
     // the real throttle only.

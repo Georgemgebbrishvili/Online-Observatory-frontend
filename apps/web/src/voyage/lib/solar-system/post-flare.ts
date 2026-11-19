@@ -455,7 +455,8 @@ export const GradeShader = {
       float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
       // Shadows take the cool tint, the mids the warm one; the top stop is
       // left alone so a white stays white.
-      float sw = 1.0 - smoothstep(0.0, 0.45, l);
+      // ...but true black stays black: empty space and the deepest shadows take no tint.
+      float sw = (1.0 - smoothstep(0.0, 0.45, l)) * smoothstep(0.0, 0.07, l);
       float hw = smoothstep(0.35, 0.8, l) * (1.0 - smoothstep(0.85, 1.0, l));
       c += (uShadowTint * sw + uHighlightTint * hw) * uSplit;
       l = dot(c, vec3(0.2126, 0.7152, 0.0722));

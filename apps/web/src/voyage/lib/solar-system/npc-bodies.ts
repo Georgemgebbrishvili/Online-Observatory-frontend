@@ -42,6 +42,10 @@ export interface Rig {
 const std = (color: number, rough = 0.6, metal = 0.2, extra: THREE.MeshStandardMaterialParameters = {}) =>
   new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal, ...extra });
 const glow = (color: number) => new THREE.MeshBasicMaterial({ color, toneMapped: false });
+/** Polished: lacquer over metal or paint, so the world's sky shows in it. */
+const lacquer = (color: number, metal = 0.6, rough = 0.28) => new THREE.MeshPhysicalMaterial({ color, metalness: metal, roughness: rough, clearcoat: 1, clearcoatRoughness: 0.12 });
+/** A visor: dark, mirror-smooth, faintly gold, as real ones are. */
+const visorGlass = () => new THREE.MeshPhysicalMaterial({ color: 0x2a2416, metalness: 0.95, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.6 });
 
 class Builder {
   geoms: THREE.BufferGeometry[] = [];
@@ -52,6 +56,7 @@ class Builder {
     const m = new THREE.Mesh(geom, mat);
     m.position.set(x, y, z);
     m.castShadow = true;
+    m.receiveShadow = true;
     parent.add(m);
     return m;
   }
@@ -154,10 +159,21 @@ function humanoid(kind: 'smuggler' | 'hunter' | 'colonist', color: number): Rig 
   B.mesh(new THREE.CapsuleGeometry(0.2, 0.34, 4, 10), kind === 'colonist' ? suit : cloth, torso, 0, 0.32, 0).scale.set(1.15, 1, 0.8);
   // Kit on the back: an air pack, or the hunter's power cell.
   B.mesh(new THREE.BoxGeometry(0.34, 0.42, 0.16), kind === 'colonist' ? std(0xd8d4c8, 0.6, 0.2) : dark, torso, 0, 0.36, -0.2);
+  // A belt with a buckle, and for the colonist a chest control box with lit keys.
+  B.mesh(new THREE.TorusGeometry(0.2, 0.03, 6, 20), dark, hips, 0, 0.06, 0).rotation.x = Math.PI / 2;
+  B.mesh(new THREE.BoxGeometry(0.08, 0.06, 0.03), lacquer(0x9a8f7a, 0.9, 0.3), hips, 0, 0.06, 0.2);
+  if (kind === 'colonist') {
+    B.mesh(new THREE.BoxGeometry(0.2, 0.12, 0.06), std(0x5a5f66, 0.5, 0.5), torso, 0, 0.3, 0.19);
+    const keys = [glow(0x3ee6a0), glow(0xffb340), glow(0x5ac8ff)];
+    keys.forEach((k, i) => B.mesh(new THREE.BoxGeometry(0.03, 0.025, 0.01), k, torso, -0.05 + i * 0.05, 0.31, 0.225));
+  }
   if (kind === 'hunter') {
     // Plates: chest, one heavy shoulder.
-    B.mesh(new THREE.BoxGeometry(0.42, 0.26, 0.1), std(color, 0.35, 0.7), torso, 0, 0.42, 0.15);
-    B.mesh(new THREE.SphereGeometry(0.15, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(color, 0.35, 0.7), torso, -0.27, 0.58, 0).scale.set(1.2, 0.8, 1.1);
+    const plate = lacquer(color, 0.75, 0.25);
+    B.mesh(new THREE.BoxGeometry(0.42, 0.26, 0.1), plate, torso, 0, 0.42, 0.15);
+    B.mesh(new THREE.SphereGeometry(0.15, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2), plate, torso, -0.27, 0.58, 0).scale.set(1.2, 0.8, 1.1);
+    // Ammunition cells across the chest, lit.
+    for (let i = 0; i < 3; i++) B.mesh(new THREE.BoxGeometry(0.06, 0.08, 0.03), i === 1 ? eye : dark, torso, -0.1 + i * 0.1, 0.33, 0.205);
   }
   if (kind === 'smuggler') {
     // The long coat, open at the front, hanging from the waist.
@@ -177,12 +193,16 @@ function humanoid(kind: 'smuggler' | 'hunter' | 'colonist', color: number): Rig 
     B.mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.12, 14), cloth, head, 0, 0.27, 0);
   } else if (kind === 'hunter') {
     // A round sealed helmet with a single slit of light.
-    B.mesh(new THREE.SphereGeometry(0.17, 16, 12), std(color, 0.3, 0.75), head, 0, 0.12, 0);
+    B.mesh(new THREE.SphereGeometry(0.17, 20, 16), lacquer(color, 0.75, 0.22), head, 0, 0.12, 0);
+    B.mesh(new THREE.BoxGeometry(0.3, 0.07, 0.07), lacquer(0x1a1c20, 0.8, 0.3), head, 0, 0.13, 0.13);
     B.mesh(new THREE.BoxGeometry(0.24, 0.035, 0.05), eye, head, 0, 0.13, 0.15);
     B.mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.18, 6), dark, head, 0.12, 0.25, -0.02);
   } else {
     // A colonist's bubble helmet: the face a dark glass, a lamp on the brow.
-    B.mesh(new THREE.SphereGeometry(0.18, 18, 14), std(0x0d1218, 0.08, 0.6, { transparent: true, opacity: 0.85 }), head, 0, 0.12, 0.01);
+    B.mesh(new THREE.SphereGeometry(0.18, 20, 16), visorGlass(), head, 0, 0.12, 0.01);
+    // The shell behind the visor, and a lamp on each side.
+    B.mesh(new THREE.SphereGeometry(0.185, 20, 16, Math.PI * 0.6, Math.PI * 0.8), suit, head, 0, 0.12, 0).rotation.y = Math.PI;
+    B.mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.05, 10), eye, head, 0.17, 0.16, 0.04).rotation.z = Math.PI / 2;
     B.mesh(new THREE.TorusGeometry(0.16, 0.025, 6, 18), suit, head, 0, 0.0, 0).rotation.x = Math.PI / 2;
     B.mesh(new THREE.BoxGeometry(0.05, 0.03, 0.02), eye, head, 0, 0.27, 0.12);
     B.mesh(new THREE.BoxGeometry(0.24, 0.05, 0.02), std(color, 0.7, 0.1), torso, 0, 0.5, 0.17);
@@ -198,13 +218,16 @@ function humanoid(kind: 'smuggler' | 'hunter' | 'colonist', color: number): Rig 
     B.mesh(new THREE.CapsuleGeometry(0.065, 0.24, 3, 8), kind === 'colonist' ? suit : cloth, arm, 0, -0.16, 0);
     const fore = B.pivot(arm, 0, -0.32, 0);
     B.mesh(new THREE.CapsuleGeometry(0.058, 0.22, 3, 8), suit, fore, 0, -0.15, 0);
-    B.mesh(new THREE.SphereGeometry(0.06, 8, 6), dark, fore, 0, -0.32, 0);
+    B.mesh(new THREE.SphereGeometry(0.06, 10, 8), dark, fore, 0, -0.32, 0);
+    B.mesh(new THREE.TorusGeometry(0.062, 0.018, 6, 14), kind === 'hunter' ? lacquer(color, 0.75, 0.25) : dark, fore, 0, -0.25, 0).rotation.x = Math.PI / 2;
     arms.push(arm); fores.push(fore);
     const leg = B.pivot(hips, sign * 0.11, -0.06, 0);
     B.mesh(new THREE.CapsuleGeometry(0.085, 0.3, 3, 8), suit, leg, 0, -0.22, 0);
     const shin = B.pivot(leg, 0, -0.44, 0);
     B.mesh(new THREE.CapsuleGeometry(0.075, 0.3, 3, 8), suit, shin, 0, -0.2, 0);
     B.mesh(new THREE.BoxGeometry(0.13, 0.08, 0.26), dark, shin, 0, -0.42, 0.04);
+    B.mesh(new THREE.BoxGeometry(0.14, 0.03, 0.28), std(0x15171a, 0.9, 0.1), shin, 0, -0.465, 0.04);
+    B.mesh(new THREE.SphereGeometry(0.075, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2), kind === 'hunter' ? lacquer(color, 0.75, 0.25) : dark, shin, 0, 0.0, 0.05).rotation.x = Math.PI / 2;
     legs.push(leg); shins.push(shin);
   }
   // Weapons: the hunter's rifle along the right forearm, the smuggler's sidearm in the right hand.
@@ -228,8 +251,8 @@ function humanoid(kind: 'smuggler' | 'hunter' | 'colonist', color: number): Rig 
 function ballDroid(color: number): Rig {
   const B = new Builder();
   const root = new THREE.Group();
-  const shell = std(color, 0.35, 0.3);
-  const trim = std(0xe07a22, 0.5, 0.3);
+  const shell = lacquer(color, 0.15, 0.35);
+  const trim = lacquer(0xe07a22, 0.2, 0.4);
   const grey = std(0x8a9099, 0.4, 0.6);
   const eye = glow(0x6cf0ff);
   const R = 0.38;
@@ -279,7 +302,7 @@ function ballDroid(color: number): Rig {
 function tallDroid(color: number): Rig {
   const B = new Builder();
   const root = new THREE.Group();
-  const gold = std(color, 0.3, 0.85);
+  const gold = lacquer(color, 0.9, 0.22);
   const joint = std(0x2a2d33, 0.5, 0.6);
   const eye = glow(0xffd36a);
   const hipY = 1.18;
@@ -289,6 +312,10 @@ function tallDroid(color: number): Rig {
   const torso = B.pivot(hips, 0, 0.08, 0);
   B.mesh(new THREE.CylinderGeometry(0.24, 0.16, 0.55, 8), gold, torso, 0, 0.3, 0);
   B.mesh(new THREE.BoxGeometry(0.2, 0.14, 0.04), glow(0x3fd0a0), torso, 0, 0.35, 0.21);
+  // Ribbed waist, a collar and a chest plate.
+  for (let i = 0; i < 3; i++) B.mesh(new THREE.TorusGeometry(0.13 - i * 0.005, 0.02, 6, 18), joint, torso, 0, 0.02 + i * 0.045, 0).rotation.x = Math.PI / 2;
+  B.mesh(new THREE.CylinderGeometry(0.1, 0.16, 0.06, 12), joint, torso, 0, 0.6, 0);
+  B.mesh(new THREE.BoxGeometry(0.3, 0.2, 0.03), gold, torso, 0, 0.47, 0.19);
   const head = B.pivot(torso, 0, 0.66, 0);
   B.mesh(new THREE.BoxGeometry(0.22, 0.26, 0.24), gold, head, 0, 0.12, 0);
   B.mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.02, 10), eye, head, -0.055, 0.15, 0.125).rotation.x = Math.PI / 2;
@@ -347,6 +374,9 @@ function scav(color: number): Rig {
     rotors.push(claw);
   }
   const muzzle = B.pivot(body, 0, -0.05, 0.42);
+  B.mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.32, 5), rust, body, -0.1, 0.32, -0.05);
+  const beacon = glow(0xff3020);
+  const tip = B.mesh(new THREE.SphereGeometry(0.03, 8, 6), beacon, body, -0.1, 0.49, -0.05);
   let bob = Math.random() * 10;
   let dig = 0;
   return {
@@ -362,6 +392,7 @@ function scav(color: number): Rig {
         else r.rotation.y += p.dt * (p.mode === 'down' ? 0 : 40);
       }
       eye.color.set(p.mode === 'attack' ? 0xff2010 : 0xff8a30).lerp(WHITE, p.hurt);
+      tip.visible = p.mode !== 'down' && (bob % 1.2) < 0.15;
     },
     dispose: () => B.dispose(),
   };

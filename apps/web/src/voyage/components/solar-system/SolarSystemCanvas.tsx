@@ -99,7 +99,7 @@ import { QA_HOOKS } from '@/voyage/game/qa';
 declare global {
   interface Window {
     /** Development only: lets a headless capture teleport the ship and read the session. */
-    __stellarFlight?: { session: FlightSession; ship: PlayerShipHandle; world: FlightWorld; aliens: AlienHandle; skyEvents?: { trigger: () => void }; rocks?: { near: number } | null };
+    __stellarFlight?: { session: FlightSession; ship: PlayerShipHandle; world: FlightWorld; aliens: AlienHandle; skyEvents?: { trigger: () => void }; rocks?: { near: number } | null; scene?: THREE.Scene };
     __stellarOrrery?: {
       probe: (within?: string) => Record<string, number>;
       /** Frame the system (theta, phi, radius) or select and orbit a body: for captures. */
@@ -297,7 +297,7 @@ export function SolarSystemCanvas({
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.18;
-    renderer.setClearColor(0x01030a, 1);
+    renderer.setClearColor(0x000000, 1);
     mount.appendChild(renderer.domElement);
     // A GPU under memory pressure (integrated graphics, two scenes, a sleep)
     // can take the context away. Without this the page just goes black; with
@@ -1602,7 +1602,7 @@ export function SolarSystemCanvas({
             if (hit) aliens.spawnSparks(hit.at, 0.02);
             return !!hit;
           };
-          if (QA_HOOKS) window.__stellarFlight = { session, ship: live, world, aliens, skyEvents, rocks: flightRocks };
+          if (QA_HOOKS) window.__stellarFlight = { session, ship: live, world, aliens, skyEvents, rocks: flightRocks, scene };
         }
       } else if (ship) {
         teardownShip();
