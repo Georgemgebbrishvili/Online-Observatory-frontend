@@ -16,7 +16,7 @@
 import * as THREE from 'three';
 import { attitude, decide, newMind, remember, wantedFor, type Decision, type Mind, type Senses } from '@/voyage/lib/solar-system/npc-brain';
 import { buildRig, type Rig } from '@/voyage/lib/solar-system/npc-bodies';
-import { JOB_PAY, MARS_CAST, REPAIR_COST, SHIELD_COST, TIP_COST, WANTED_FEE, optionsFor, type CastMember, type DialogCtx } from '@/voyage/lib/solar-system/npc-cast';
+import { ASSAY_PER_GEM, BLASTER_COST, DRINK_COST, FOOD_COST, JOB_PAY, MARS_CAST, PLATING_COST, REPAIR_COST, SHIELD_COST, TIP_COST, WANTED_FEE, optionsFor, type CastMember, type DialogCtx } from '@/voyage/lib/solar-system/npc-cast';
 import { loadNpcSave, storeNpcSave, type NpcSave } from '@/voyage/lib/solar-system/npc-memory';
 import { makeNameLabel, type NameLabel } from '@/voyage/lib/multiplayer/name-label';
 import type { Collider } from '@/voyage/lib/solar-system/moon-cosmonaut';
@@ -328,6 +328,8 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
   // ── Damage, both ways. ──
   const hurtPlayer = (dmg: number) => {
     if (breachTimer > 0) return;
+    // GRIT-4's plating takes a third of every hit.
+    if (save.flags.includes('plating')) dmg *= 0.7;
     const onShield = Math.min(telemetry.shield, dmg);
     telemetry.shield -= onShield;
     telemetry.integrity = Math.max(0, telemetry.integrity - (dmg - onShield));
@@ -396,17 +398,22 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
   };
 
   // ── Talking. ──
-  const ctx = (): DialogCtx => ({ save, integrity: telemetry.integrity, hostiles: npcs.filter((n) => n.health > 0 && n.spec.persona.faction === 'scav').length });
+  const assayed = () => { const f = save.flags.find((x) => x.startsWith('assayed:')); return f ? Number(f.slice(8)) || 0 : 0; };
+  const collected = () => opts.gems().filter((g) => g.collected).length;
+  const ctx = (): DialogCtx => ({ save, integrity: telemetry.integrity, hostiles: npcs.filter((n) => n.health > 0 && n.spec.persona.faction === 'scav').length, unassayed: Math.max(0, collected() - assayed()) });
   const lineVars = () => ({
     credits: save.credits, integrity: Math.round(telemetry.integrity), fee: WANTED_FEE * Math.ceil(save.wanted), stars: Math.ceil(save.wanted),
     need: save.job?.need ?? 3, done: save.job?.done ?? 0, pay: JOB_PAY, repair: REPAIR_COST, tip: TIP_COST, shield: SHIELD_COST,
     hostiles: ctx().hostiles,
+    gems: ctx().unassayed ?? 0, gemPay: (ctx().unassayed ?? 0) * ASSAY_PER_GEM, blaster: BLASTER_COST, plating: PLATING_COST, drink: DRINK_COST, food: FOOD_COST,
   });
   const showNode = (n: Npc, id: string) => {
     const nd = n.spec.nodes?.[id];
     if (!nd) { closeDialog(); return; }
     node = id;
-    const line = nd.line === 'vex.rumorLine' ? `vex.rumor${(save.rumors - 1 + 4) % 4}` : nd.line;
+    // Rotating lines (Vex's rumours, Shee's songs): a new one each time.
+    const rot = /^(.*\.)(rumor|song)Line$/.exec(nd.line);
+    const line = rot ? `${rot[1]}${rot[2]}${(save.rumors - 1 + 4) % 4}` : nd.line;
     telemetry.dialog = { npc: n.spec.id, name: n.spec.name, line, vars: lineVars(), options: optionsFor(nd, ctx()), serial: ++dialogSerial };
   };
   function closeDialog() {
@@ -422,6 +429,8 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
   };
   const apply = (n: Npc, effect: string) => {
     const pay = (c: number) => { if (save.credits < c) return false; save.credits -= c; return true; };
+    // The Lantern Market's traders say their own thanks.
+    const done = (k: string) => (n.spec.body === 'alien' ? `market.${n.spec.id}.done` : k);
     switch (effect) {
       case 'recruit': save.recruited = true; bark(n, 'pip.joined'); break;
       case 'dismiss': save.recruited = false; bark(n, 'pip.dismissed'); break;
@@ -433,13 +442,13 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       case 'tip': {
         if (!pay(TIP_COST)) break;
         const g = nearestGem(crewPos.x, crewPos.z);
-        bark(n, g ? 'vex.tipLine' : 'vex.noTip', g ?? {}, 6);
+        bark(n, g ? done('vex.tipLine') : 'vex.noTip', g ?? {}, 6);
         if (!g) save.credits += TIP_COST;
         save.rep.trader = Math.min(1, save.rep.trader + 0.05);
         break;
       }
-      case 'repair': if (pay(REPAIR_COST)) { telemetry.integrity = 100; bark(n, 'kern.repaired'); } break;
-      case 'shield': if (pay(SHIELD_COST)) { telemetry.shield = 50; bark(n, 'vex.shielded'); save.rep.trader = Math.min(1, save.rep.trader + 0.05); } break;
+      case 'repair': if (pay(REPAIR_COST)) { telemetry.integrity = 100; bark(n, done('kern.repaired')); } break;
+      case 'shield': if (pay(SHIELD_COST)) { telemetry.shield = 50; bark(n, done('vex.shielded')); save.rep.trader = Math.min(1, save.rep.trader + 0.05); } break;
       case 'startJob': save.job = { need: 3, done: 0 }; bark(n, 'kern.jobStarted', { need: 3 }); break;
       case 'turnIn':
         save.credits += JOB_PAY; save.jobsDone += 1; save.job = null;
@@ -459,6 +468,20 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       case 'provoke': save.rep.hunter = Math.max(-1, save.rep.hunter - 0.3); n.mind.grudge = 1; bark(n, 'bark.provoked'); break;
       case 'work': if (!save.flags.includes(`work-${n.spec.id}`)) { save.flags.push(`work-${n.spec.id}`); save.rep.hunter = Math.min(1, save.rep.hunter + 0.05); } break;
       case 'rumor': save.rumors += 1; break;
+      case 'buyBlaster': if (pay(BLASTER_COST)) { save.flags.push('blaster2'); bark(n, 'town.grit.sold'); } break;
+      case 'buyPlating': if (pay(PLATING_COST)) { save.flags.push('plating'); bark(n, 'town.grit.sold'); } break;
+      case 'drink': if (pay(DRINK_COST)) { telemetry.integrity = Math.min(100, telemetry.integrity + 30); bark(n, done('town.nadia.served')); } break;
+      case 'food': if (pay(FOOD_COST)) { telemetry.integrity = Math.min(100, telemetry.integrity + 15); bark(n, done('town.pell.served')); } break;
+      case 'assay': {
+        const k = Math.max(0, collected() - assayed());
+        if (k > 0) {
+          save.credits += k * ASSAY_PER_GEM;
+          save.flags = save.flags.filter((x) => !x.startsWith('assayed:'));
+          save.flags.push(`assayed:${collected()}`);
+          bark(n, 'town.okonkwo.paid', { pay: k * ASSAY_PER_GEM });
+        }
+        break;
+      }
     }
     persist();
   };
@@ -737,7 +760,7 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
     else tmpB.copy(camera.position).addScaledVector(tmpDir, 60);
     const dir = tmpB.sub(tmpA).normalize();
     tmpA.addScaledVector(dir, 0.6);
-    fireBolt('player', tmpA, dir, PLAYER_DMG);
+    fireBolt('player', tmpA, dir, save.flags.includes('blaster2') ? PLAYER_DMG * 1.5 : PLAYER_DMG);
     opts.onEvent('shot');
   };
 

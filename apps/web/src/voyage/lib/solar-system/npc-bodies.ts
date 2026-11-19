@@ -398,7 +398,73 @@ function scav(color: number): Rig {
   };
 }
 
+/** A trader of the Lantern Market: tall and light-boned, a long neck and a crest, legs that bend
+ *  back at the ankle, and bands of light down the body that pulse as they talk. */
+function alien(color: number): Rig {
+  const B = new Builder();
+  const root = new THREE.Group();
+  const skin = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(color).lerp(new THREE.Color(0x2a2236), 0.6), roughness: 0.45, clearcoat: 0.6, clearcoatRoughness: 0.3, sheen: 1, sheenColor: new THREE.Color(color) });
+  const bands = new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(1.6), toneMapped: false });
+  const robe = std(0x2d2238, 0.85, 0.05);
+  const eye = glow(0xffffff);
+  const hipY = 1.25;
+  const hips = B.pivot(root, 0, hipY, 0);
+  hips.userData.y = hipY;
+  B.mesh(new THREE.SphereGeometry(0.16, 12, 10), skin, hips).scale.set(1.2, 0.8, 0.9);
+  // A wrap round the waist, hanging in strips.
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2;
+    B.mesh(new THREE.BoxGeometry(0.1, 0.5, 0.02), robe, hips, Math.cos(a) * 0.17, -0.25, Math.sin(a) * 0.15).rotation.y = -a;
+  }
+  const torso = B.pivot(hips, 0, 0.1, 0);
+  B.mesh(new THREE.CapsuleGeometry(0.13, 0.5, 4, 12), skin, torso, 0, 0.36, 0).scale.set(1.1, 1, 0.75);
+  for (let i = 0; i < 4; i++) B.mesh(new THREE.TorusGeometry(0.13, 0.012, 4, 18), bands, torso, 0, 0.18 + i * 0.12, 0).rotation.x = Math.PI / 2;
+  const neck = B.pivot(torso, 0, 0.72, 0.02);
+  B.mesh(new THREE.CylinderGeometry(0.04, 0.06, 0.32, 8), skin, neck, 0, 0.16, 0);
+  const head = B.pivot(neck, 0, 0.34, 0.02);
+  B.mesh(new THREE.SphereGeometry(0.12, 14, 12), skin, head, 0, 0.04, 0.05).scale.set(0.85, 1.05, 1.35);
+  // The crest, lit along its edge.
+  B.mesh(new THREE.ConeGeometry(0.05, 0.36, 6), skin, head, 0, 0.18, -0.08).rotation.x = -0.9;
+  B.mesh(new THREE.BoxGeometry(0.012, 0.3, 0.012), bands, head, 0, 0.2, -0.1).rotation.x = -0.9;
+  for (const x of [-0.05, 0.05]) B.mesh(new THREE.SphereGeometry(0.022, 8, 6), eye, head, x, 0.06, 0.19);
+  const arms: THREE.Object3D[] = []; const fores: THREE.Object3D[] = []; const legs: THREE.Object3D[] = []; const shins: THREE.Object3D[] = [];
+  for (let s = 0; s < 2; s++) {
+    const sign = s === 0 ? 1 : -1;
+    const arm = B.pivot(torso, sign * 0.17, 0.62, 0);
+    B.mesh(new THREE.CapsuleGeometry(0.035, 0.36, 3, 8), skin, arm, 0, -0.21, 0);
+    const fore = B.pivot(arm, 0, -0.44, 0);
+    B.mesh(new THREE.CapsuleGeometry(0.03, 0.34, 3, 8), skin, fore, 0, -0.2, 0);
+    for (let f = 0; f < 3; f++) B.mesh(new THREE.CylinderGeometry(0.008, 0.005, 0.12, 4), skin, fore, (f - 1) * 0.02, -0.43, 0.01);
+    arms.push(arm); fores.push(fore);
+    const leg = B.pivot(hips, sign * 0.1, -0.05, 0);
+    // Thigh angled forward, the long "shin" (the foot bones) back, then a toe on the ground: digitigrade.
+    const thigh = B.mesh(new THREE.CapsuleGeometry(0.06, 0.38, 3, 8), skin, leg, 0, -0.2, 0.06);
+    thigh.rotation.x = -0.35;
+    const shin = B.pivot(leg, 0, -0.44, 0.13);
+    const sh = B.mesh(new THREE.CapsuleGeometry(0.045, 0.4, 3, 8), skin, shin, 0, -0.22, -0.1);
+    sh.rotation.x = 0.5;
+    B.mesh(new THREE.ConeGeometry(0.05, 0.22, 6), skin, shin, 0, -0.45, -0.1).rotation.x = Math.PI / 2;
+    legs.push(leg); shins.push(shin);
+  }
+  const animate = limbs({ hips, torso, head, arms, fores, legs, shins, root, stride: 2.4 });
+  let pulse = Math.random() * 10;
+  const bandBase = bands.color.clone();
+  return {
+    root, height: 1.6, radius: 0.5, muzzle: head, eye, hover: 0,
+    animate(p) {
+      animate(p);
+      neck.rotation.x = Math.sin(p.t * 0.7 + pulse) * 0.08 + (p.mode === 'talk' ? 0.15 : 0);
+      // Bands roll with light faster when they talk, as the villagers' do.
+      pulse += p.dt * (p.mode === 'talk' || p.gesture === 'chat' ? 4 : 1.2);
+      bands.color.copy(bandBase).multiplyScalar(0.7 + 0.5 * Math.max(0, Math.sin(pulse * 2)));
+      eye.color.setScalar(1).lerp(new THREE.Color(1, 0.4, 0.3), p.hurt);
+    },
+    dispose: () => { B.dispose(); skin.dispose(); bands.dispose(); },
+  };
+}
+
 export function buildRig(kind: BodyKind, color: number): Rig {
+  if (kind === 'alien') return alien(color);
   if (kind === 'ballDroid') return ballDroid(color);
   if (kind === 'tallDroid') return tallDroid(color);
   if (kind === 'scav') return scav(color);

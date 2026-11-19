@@ -47,7 +47,9 @@ import { hasOutpost, holdOverDeck, landingPad, makeOutpost } from '@/voyage/lib/
 import { makeFlora } from '@/voyage/lib/solar-system/world-flora';
 import { makeAliens, type AlienTelemetry } from '@/voyage/lib/solar-system/world-aliens';
 import { makeNpcs, type NpcTelemetry } from '@/voyage/lib/solar-system/world-npcs';
-import { outpostCast } from '@/voyage/lib/solar-system/npc-cast';
+import { MARS_CAST, alienMarketCast, marsTownCast, outpostCast } from '@/voyage/lib/solar-system/npc-cast';
+import { makeAlienMarket } from '@/voyage/lib/solar-system/world-alien-market';
+import { TOWN, makeMarsTown } from '@/voyage/lib/solar-system/world-mars-town';
 import { makePadLights, type PadMode } from '@/voyage/lib/solar-system/pad-lights';
 import { makeLightning } from '@/voyage/lib/solar-system/world-lightning';
 import { WORLDS, type WorldId, type WorldProfile } from '@/voyage/lib/solar-system/world-profiles';
@@ -343,6 +345,16 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     pois.push(...base.pois);
     for (const i of base.interactables) interactions.add(i);
   }
+  // Dusthaven, the town west of the base (Mars only).
+  const town = world === 'mars' ? makeMarsTown(heightAt, lite) : null;
+  if (town) {
+    scene.add(town.group);
+    colliders.push(...town.colliders);
+    pois.push(...town.pois);
+    // The street itself stays clear of rocks.
+    pois.push({ id: 'town-street', x: TOWN.x, z: (TOWN.z0 + TOWN.z1) / 2, r: 30 });
+  }
+  await step();
   // Player-built pieces round Mars Base, and the shared colony east of the pad (Mars only).
   const build = world === 'mars' && base ? makeBuildMode({ world: 'mars', kit, scene, heightAt, blockers: [...colliders], colliderSets: [colliders] }) : null;
   if (build) pois.push({ id: 'colonySite', ...BUILD_SITES.mars.colony });
@@ -365,6 +377,13 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     colliders.push(...flora.colliders);
     pois.push(...flora.pois);
     for (const i of aliens.interactables) interactions.add(i);
+  }
+  // Proxima b: the Lantern Market west of the village.
+  const market = world === 'proximaB' && flora ? makeAlienMarket(heightAt, lite) : null;
+  if (market) {
+    scene.add(market.group);
+    colliders.push(...market.colliders);
+    pois.push(...market.pois);
   }
 
   // ── The big rock and the crystals, placed clear of everything above. ──
@@ -404,8 +423,10 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
 
   // ── Mars: the colony's people and machines; an outpost: its caretaker and technician (world-npcs). ──
   const npcSpots = base ? base.pois.filter((p) => !['landingZone', 'railing', 'envelope', 'sign', 'colonySite'].includes(p.id)).map((p) => ({ x: p.x, z: p.z })) : [];
-  const npcCast = world === 'mars' ? undefined : hasOutpost(world) ? outpostCast(world, npcSpots) : [];
-  const npcs = base && (world === 'mars' || (npcCast && npcCast.length)) ? makeNpcs({
+  const npcCast = world === 'mars' ? [...MARS_CAST, ...(town ? marsTownCast(town.spots, TOWN) : [])]
+    : hasOutpost(world) ? outpostCast(world, npcSpots)
+    : market ? alienMarketCast(market.spots) : [];
+  const npcs = (world === 'mars' ? !!base : npcCast.length > 0) ? makeNpcs({
     heightAt: floorAt, colliders, gems: () => gems.gems, lite, cast: npcCast,
     tag: opts.npcTag ?? ((k) => k),
     onBreach: () => handle.teleport(profile.pad.x + 5, profile.pad.z + 8),
@@ -984,6 +1005,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
       if (earth.state.outsideC !== null) telemetry.outsideC = earth.state.outsideC;
     }
     base?.update(dt, t, crew.x, crew.z, lightPool);
+    town?.update(dt, t, lightPool);
+    market?.update(dt, t, lightPool);
     const padMode: PadMode = telemetry.phase === 'orbit' || telemetry.phase === 'descent' ? 'approach' : telemetry.phase === 'ascent' ? 'launch' : 'idle';
     padLights?.update(dt, t, padMode, lightPool);
     lightning?.update(dt, crew, hemi, (k) => audio.thump(3 + k * 10));
@@ -1017,6 +1040,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     flightAudio?.dispose();
     earth?.dispose();
     npcs?.dispose();
+    town?.dispose();
+    market?.dispose();
     padLights?.dispose();
     lightning?.dispose();
     crowd?.dispose();

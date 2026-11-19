@@ -281,8 +281,22 @@ export function makeWorldTerrain(profile: WorldProfile, lite: boolean, density =
     return h;
   };
   const padHeight = rawHeight(pad.x, pad.z) * 0.3;
+  // Settlements' levelled ground: how far outside each rectangle a point is (≤ 0 inside), and the rectangle's datum.
+  const flats = (G.flats ?? []).map((f) => ({ ...f, h: rawHeight(f.x, f.z) * 0.4 }));
+  const flatOut = (f: (typeof flats)[number], x: number, z: number) => {
+    const dx = Math.max(0, Math.abs(x - f.x) - f.hw); const dz = Math.max(0, Math.abs(z - f.z) - f.hd);
+    return Math.hypot(dx, dz);
+  };
   const heightFn = (x: number, z: number): number => {
-    const h = rawHeight(x, z);
+    let h = rawHeight(x, z);
+    for (const f of flats) {
+      const d = flatOut(f, x, z);
+      if (d < 20) {
+        const t = smooth(d / 20);
+        const level = f.h + fbm(x / 2.2, z / 2.2, 2, seed + 13) * 0.05;
+        h = level + (h - level) * t;
+      }
+    }
     const d = Math.hypot(x - pad.x, z - pad.z);
     if (d >= PAD_RADIUS + 22) return h;
     const t = d <= PAD_RADIUS ? 0 : smooth((d - PAD_RADIUS) / 22);
@@ -505,6 +519,7 @@ export function makeWorldTerrain(profile: WorldProfile, lite: boolean, density =
       const scale = 0.18 + Math.pow(hash(k, 53, seed), 3) * 2.4;
       if ((d < PAD_RADIUS && scale > 0.5) || d < 12) continue;
       if (water && Math.hypot(x - water.x, z - water.z) < water.r * 0.9) continue;
+      if (flats.some((f) => flatOut(f, x, z) < 4)) continue;
       p.set(x, heightAt(x, z) - scale * 0.22, z);
       normalAt(x, z, nrm);
       q.setFromUnitVectors(up, nrm);

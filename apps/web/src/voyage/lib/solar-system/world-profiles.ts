@@ -224,6 +224,8 @@ export interface WorldProfile {
     sand: [number, number, number];
     /** A basin that holds water: its centre, radius and surface height (Proxima only). */
     water: { x: number; z: number; r: number; level: number } | null;
+    /** Levelled ground for a settlement: rectangles (centre, half-width in x, half-depth in z), blended into the relief over 20 m. */
+    flats?: { x: number; z: number; hw: number; hd: number }[];
     seed: number;
   };
   /** The suit's outside reading, °C, and how far the crew may walk, m. */
@@ -288,6 +290,8 @@ export const MARS: WorldProfile = {
     warp: 28, mesas: 6.5, terraces: 3,
     slopeRock: [0.46, 0.26, 0.17], sand: [0.86, 0.62, 0.40],
     water: null, seed: 4311,
+    // Dusthaven, west of the base (world-mars-town).
+    flats: [{ x: -92, z: 46, hw: 24, hd: 60 }],
   },
   // Dust, not air: the sky is butterscotch away from the sun because the
   // dust absorbs blue and scatters red, and blue right round the sun because
@@ -343,6 +347,8 @@ export const PROXIMA_B: WorldProfile = {
     warp: 40, mesas: 0, terraces: 0,
     slopeRock: [0.26, 0.18, 0.28], sand: [0.48, 0.36, 0.42],
     water: { x: 62, z: 48, r: 44, level: -2.6 }, seed: 7727,
+    // The Lantern Market, west of the village (world-alien-market).
+    flats: [{ x: -40, z: 40, hw: 17, hd: 17 }],
   },
   // A thick air under a red star: violet overhead where what little blue
   // there is scatters, salmon along the horizon and a wide orange wash

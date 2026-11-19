@@ -1020,7 +1020,16 @@
           "rover": "Pressurised rover — 200 km on a charge",
           "landingZone": "Landing zone — keep clear",
           "ourLander": "Your descent vehicle",
-          "colonySite": "Stellar Colony — the shared build site"
+          "colonySite": "Stellar Colony — the shared build site",
+          "town-street": "Dusthaven — the main street",
+          "town-parts": "Parts & Repair — GRIT-4 fixes anything with a bolt in it",
+          "town-hydro": "Hydro Market — greens grown under lamps",
+          "town-o2bar": "Oxygen Bar — scented air by the lungful",
+          "town-clinic": "Clinic — patched suits and patched people",
+          "town-bunks": "Bunks — forty beds, one shower",
+          "town-assay": "Assay Office — gems weighed, logged and paid for",
+          "town-cantina": "The Red Dune — the only bar on Mars",
+          "town-shuttlePad": "Shuttle pad — the short hop to Phobos"
         },
         "act": {
           "read": {
@@ -1071,12 +1080,14 @@
           "lake": "The lake — still, and lit from below",
           "village": "The settlement — seven grown pods",
           "stone": "The council stone — their script, lit into it",
-          "ourLander": "Your descent vehicle"
+          "ourLander": "Your descent vehicle",
+          "market": "The Lantern Market — the villagers trade under the caps"
         },
         "act": {
           "greet": "Greet",
           "collectCrystal": "Collect the crystals",
-          "boardLander": "Board ship — Take off"
+          "boardLander": "Board ship — Take off",
+          "talk": "Talk"
         },
         "readout": {
           "none": ""
@@ -1728,7 +1739,12 @@
           "colonist": "Colonist",
           "raider": "Scav drone",
           "caretaker": "Caretaker droid",
-          "tech": "Technician"
+          "tech": "Technician",
+          "grit": "Mechanic",
+          "nadia": "Bartender",
+          "pell": "Grocer",
+          "okonkwo": "Assayer",
+          "vendor": "Trader"
         }
       },
       "bark": {
@@ -1857,6 +1873,68 @@
           "lore": "Neptune was found with mathematics before anyone saw it. Its moon Triton orbits backwards and is slowly falling in.",
           "tech": "Lior, survey. The Sun's just a bright star from here. We keep the lamps on all day.",
           "life": "Lonely and beautiful. Every message home takes four hours to arrive."
+        }
+      },
+      "town": {
+        "grit": {
+          "hello": "GRIT-4. Parts, repairs, upgrades. If it fires, flies or leaks, I can make it do it better. You have {credits} credits.",
+          "blaster": "Upgrade my blaster: half again the punch.",
+          "plating": "Fit suit plating: a third off every hit.",
+          "sold": "Installed. Try not to bring it back in pieces."
+        },
+        "nadia": {
+          "hello": "Welcome to The Red Dune. Best drinks on the planet. Only drinks on the planet. What'll it be?",
+          "drink": "A Rust Sunrise, please.",
+          "served": "There you go. Warms the suit from the inside, somehow.",
+          "news": "Heard any news?"
+        },
+        "pell": {
+          "hello": "Pell's hydro stall. Everything here grew under a lamp a hundred metres from where you're standing.",
+          "food": "A bag of greenhouse tomatoes.",
+          "served": "Fresh this sol. Eat them before they freeze."
+        },
+        "okonkwo": {
+          "hello": "Assay office. Bring me gems from out in the dunes and I'll pay for every one I can log.",
+          "buy": "I see {gems} unlogged gems on your scanner. That's {gemPay} credits to you.",
+          "sell": "Log them and pay me.",
+          "paid": "Logged. {pay} credits transferred. Good hunting."
+        },
+        "townie0": "Sol. I came for the mining boom. Stayed for the sunsets. They're blue here, did you know?",
+        "townie1": "Mira. The shuttle to Phobos runs every few minutes. I've never once caught it on time.",
+        "townie2": "Dez. Don't drink the oxygen bar's cinnamon blend. Trust me."
+      },
+      "market": {
+        "ilu": {
+          "hello": "*The bands on Ilu-Ren's neck roll teal.* Your suit tastes of iron. Moss would mend it. Glow-moss, from the cold side.",
+          "moss": "Some glow-moss, please.",
+          "done": "*Ilu-Ren presses the moss to your suit. It glows, and the seams warm.*"
+        },
+        "tavo": {
+          "hello": "*Tavo flashes pink and taps a stone scratched with lines.* Every bright stone on this world is on my charts. Every one.",
+          "chart": "Show me where the nearest one is.",
+          "done": "*Tavo traces a line on the stone:* {dist} of your metres, toward the {dir}. Go."
+        },
+        "shee": {
+          "hello": "*Shee hums. Gold light ripples down her arms.* I keep the songs. You may have one. Songs are free.",
+          "song": "Sing me something.",
+          "song0": "*She sings of the red sun that never moves, and of the night side, where the stones grow in the dark.*",
+          "song1": "*She sings of the first ones who climbed to the line between day and night, and stayed because it was warm.*",
+          "song2": "*She sings of a shell that fell from the sky, long ago, and of the strange ones inside it. You.*",
+          "song3": "*She sings of the wind off the frozen side, and how it carries seeds for a thousand days.*"
+        },
+        "orrun": {
+          "hello": "*Orrun's bands go green and slow.* Fruit from the long trees. Sweet. Good for small creatures in shells.",
+          "fruit": "I'll take some fruit.",
+          "done": "*Orrun's bands brighten.* Eat. Grow strong, shell-creature."
+        },
+        "kesh": {
+          "hello": "*Kesh turns your helmet over in long fingers, curious.* I mend things. Shells, nets, and now, perhaps, you.",
+          "done": "*Kesh hums as it works.* Whole again. Mostly."
+        },
+        "vahn": {
+          "hello": "*Vahn's bands flicker blue, wary.* I sell skin-light. It turns away what is thrown at you. For a while.",
+          "shield": "I'll buy some skin-light.",
+          "done": "*Vahn brushes light across your shoulders. It clings, shimmering.*"
         }
       }
     }
