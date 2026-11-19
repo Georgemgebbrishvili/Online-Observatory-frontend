@@ -29,7 +29,7 @@ export interface Binding<A extends string> {
 
 export type FootAction =
   | 'move' | 'look' | 'zoom' | 'jump' | 'jet' | 'sprint' | 'walk' | 'crouch' | 'interact'
-  | 'headlamp' | 'view' | 'shoulder' | 'map' | 'gears' | 'sound';
+  | 'headlamp' | 'view' | 'shoulder' | 'map' | 'gears' | 'sound' | 'fire';
 
 export const FOOT_BINDINGS: readonly Binding<FootAction>[] = [
   { action: 'move', keys: ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'], keyLabel: 'W A S D', pad: ['leftStick'], padLabel: 'LS', touch: true },
@@ -42,6 +42,7 @@ export const FOOT_BINDINGS: readonly Binding<FootAction>[] = [
   { action: 'walk', keys: ['AltLeft', 'AltRight'], keyLabel: 'Alt', pad: [PAD.LT], padLabel: 'LT' },
   { action: 'crouch', keys: ['KeyC'], keyLabel: 'C', pad: [PAD.B], padLabel: 'B', touch: true },
   { action: 'interact', keys: ['KeyE'], keyLabel: 'E', pad: [PAD.X], padLabel: 'X', touch: true },
+  { action: 'fire', keys: ['KeyR'], keyLabel: 'R / click', pad: [PAD.LEFT], padLabel: '←', touch: true },
   { action: 'headlamp', keys: ['KeyF'], keyLabel: 'F', pad: [PAD.LB], padLabel: 'LB' },
   { action: 'view', keys: ['KeyV'], keyLabel: 'V', pad: [PAD.Y], padLabel: 'Y', touch: true },
   { action: 'shoulder', keys: ['KeyQ'], keyLabel: 'Q', pad: [PAD.RB], padLabel: 'RB' },

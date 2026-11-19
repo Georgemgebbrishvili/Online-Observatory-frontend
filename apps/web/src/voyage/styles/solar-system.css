@@ -3391,3 +3391,69 @@
 }
 .moon-surface[data-phase='surface'][data-far='true'] .moon-hud__gobase { display: inline-flex; }
 .moon-surface[data-immersive='true'] .moon-hud__basekey { display: none !important; }
+
+/* ── Mars colony (NpcHud): suit and standing, what people say, the talk panel, crosshair, hit flash. ── */
+.npc-hud { position: absolute; inset: 0; pointer-events: none; z-index: 30; font-family: var(--font-body, "Geist"), system-ui, sans-serif; color: rgba(240, 244, 252, 0.95); }
+.npc-hud__status {
+  position: absolute; right: max(16px, env(safe-area-inset-right)); top: max(76px, calc(env(safe-area-inset-top) + 64px));
+  width: 210px; padding: 10px 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px;
+  background: rgba(6, 9, 14, 0.62); border: 0.5px solid rgba(248, 244, 236, 0.14);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 13px;
+}
+.npc-hud__bar { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; }
+.npc-hud__bar-label { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(220, 228, 240, 0.75); }
+.npc-hud__bar-track { position: relative; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.npc-hud__bar-track i { position: absolute; inset: 0 auto 0 0; background: #5eead4; border-radius: 4px; transition: width 160ms linear; }
+.npc-hud__bar-track b { position: absolute; inset: 0 auto 0 0; background: rgba(124, 184, 255, 0.85); border-radius: 4px; }
+.npc-hud__bar[data-low] .npc-hud__bar-track i { background: #ff5b45; animation: npc-pulse 0.8s ease-in-out infinite alternate; }
+.npc-hud__bar-num { display: inline-flex; align-items: center; gap: 3px; font-family: var(--font-mono, 'JetBrains Mono'), monospace; font-size: 13px; }
+.npc-hud__row { display: flex; justify-content: space-between; align-items: center; }
+.npc-hud__credits { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono, 'JetBrains Mono'), monospace; color: #ffd36a; }
+.npc-hud__wanted { display: inline-flex; gap: 2px; color: rgba(255, 255, 255, 0.28); }
+.npc-hud__wanted[data-on] { color: #ffcf3f; filter: drop-shadow(0 0 6px rgba(255, 190, 40, 0.7)); }
+.npc-hud__job { margin: 0; font-size: 13px; color: rgba(220, 228, 240, 0.85); }
+.npc-hud__bark {
+  position: absolute; left: 50%; bottom: calc(196px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  max-width: min(640px, calc(100vw - 32px)); margin: 0; padding: 8px 14px; border-radius: 10px;
+  background: rgba(6, 9, 14, 0.72); font-size: 15px; line-height: 1.4; text-align: center;
+  animation: npc-in 220ms ease-out;
+}
+.npc-hud__bark b { margin-right: 8px; color: #ffb347; font-weight: 600; }
+.npc-hud__talk {
+  pointer-events: auto; position: absolute; left: 50%; bottom: calc(110px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  width: min(560px, calc(100vw - 32px)); padding: 14px 16px; border-radius: 16px;
+  background: rgba(6, 9, 14, 0.9); border: 0.5px solid rgba(255, 179, 71, 0.35);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); animation: npc-in 200ms ease-out;
+}
+.npc-hud__talk-who { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #ffb347; font-weight: 600; }
+.npc-hud__talk-line { margin: 0 0 12px; font-size: 16px; line-height: 1.45; }
+.npc-hud__talk-opts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.npc-hud__talk-opts button {
+  width: 100%; min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-radius: 10px; cursor: pointer;
+  border: 0.5px solid rgba(248, 244, 236, 0.16); background: rgba(255, 255, 255, 0.05); color: inherit; font: inherit; font-size: 15px; text-align: left;
+}
+.npc-hud__talk-opts button:hover:not(:disabled), .npc-hud__talk-opts button:focus-visible { background: rgba(255, 179, 71, 0.16); border-color: rgba(255, 179, 71, 0.5); outline: none; }
+.npc-hud__talk-opts button:disabled { opacity: 0.45; cursor: default; }
+.npc-hud__talk-opts kbd { min-width: 22px; height: 22px; display: inline-grid; place-items: center; border-radius: 6px; background: rgba(255, 255, 255, 0.12); font-family: var(--font-mono, 'JetBrains Mono'), monospace; font-size: 13px; }
+.npc-hud__talk-opts span { flex: 1; }
+.npc-hud__talk-opts small { display: inline-flex; align-items: center; gap: 3px; color: #ffd36a; font-family: var(--font-mono, 'JetBrains Mono'), monospace; font-size: 13px; }
+.npc-hud__talk-hint { margin: 10px 0 0; font-size: 13px; color: rgba(220, 228, 240, 0.6); }
+.npc-hud__cross { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); color: rgba(255, 255, 255, 0.7); filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.9)); }
+.npc-hud__cross[data-hit] { animation: npc-hit 180ms ease-out; }
+.npc-hud__flash { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(255, 40, 20, 0.45) 100%); animation: npc-flash 450ms ease-out forwards; }
+.npc-hud__engaged {
+  position: absolute; left: 50%; top: max(70px, calc(env(safe-area-inset-top) + 58px)); transform: translateX(-50%); margin: 0;
+  padding: 4px 12px; border-radius: 999px; background: rgba(120, 16, 8, 0.75); color: #ffd0c8; font-size: 13px; letter-spacing: 0.04em;
+}
+.npc-hud__fire {
+  pointer-events: auto; position: absolute; right: max(24px, env(safe-area-inset-right)); bottom: calc(196px + env(safe-area-inset-bottom));
+  width: 62px; height: 62px; border-radius: 50%; border: 0.5px solid rgba(255, 120, 90, 0.6); background: rgba(120, 20, 10, 0.55); color: #ffd0c8;
+  display: grid; place-items: center; touch-action: none;
+}
+.npc-hud__fire:active { background: rgba(200, 40, 20, 0.75); }
+@keyframes npc-in { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes npc-flash { from { opacity: 1; } to { opacity: 0; } }
+@keyframes npc-hit { from { color: #ff6a4a; transform: translate(-50%, -50%) scale(1.35); } to { color: rgba(255, 255, 255, 0.7); transform: translate(-50%, -50%) scale(1); } }
+@keyframes npc-pulse { from { opacity: 1; } to { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) { .npc-hud__bark, .npc-hud__talk, .npc-hud__cross[data-hit], .npc-hud__bar[data-low] .npc-hud__bar-track i { animation: none; } }
+@media (max-width: 600px) { .npc-hud__status { width: 170px; top: max(64px, calc(env(safe-area-inset-top) + 56px)); } }

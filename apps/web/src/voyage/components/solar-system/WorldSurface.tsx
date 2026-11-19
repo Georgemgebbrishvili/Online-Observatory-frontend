@@ -1,7 +1,7 @@
 'use client';
 
 import { BuildAborted, makeSlicer } from '@/voyage/game/slice';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Camera, ChevronsDown, ChevronsUp, Flame, Flashlight, Hand, HelpCircle, Menu, Rocket, RotateCcw, Trophy, Volume2, VolumeX, Wind, X } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 import { makeWorldSurface, type WorldSurfaceHandle } from '@/voyage/lib/solar-system/world-surface';
@@ -29,6 +29,7 @@ import { game } from '@/voyage/game/state';
 import { noteContextLoss, rebuildWhenVisible } from '@/voyage/game/gpu-recovery';
 import { hasObjectives } from '@/voyage/game/mode';
 import { story, storyLine } from '@/voyage/game/story';
+import { NpcHud } from './NpcHud';
 
 interface WorldSurfaceProps {
   world: WorldId;
@@ -179,8 +180,25 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
   tRef.current = t;
   const twRef = useRef(tw);
   twRef.current = tw;
+  const tnTag = useTranslations('solarSystem.npc.tag');
+  const tnTagRef = useRef(tnTag);
+  tnTagRef.current = tnTag;
   const controlsRef = useRef<SurfaceControls | null>(null);
   const touchRef = useRef(false);
+
+  // Mars: the colony's layer reads the scene's telemetry on its own clock.
+  const npcTel = useCallback(() => {
+    const h = handleRef.current;
+    return h && h.telemetry.phase === 'surface' ? h.telemetry.npcs : null;
+  }, []);
+  const npcChoose = useCallback((i: number) => handleRef.current?.npcChoose(i), []);
+  const npcClose = useCallback(() => handleRef.current?.npcClose(), []);
+  const npcFire = useCallback((down: boolean) => {
+    const c = controlsRef.current;
+    if (!c) return;
+    c.touchDeck.fire = down;
+    c.sync();
+  }, []);
 
   useEffect(() => {
     const coarse = window.matchMedia('(pointer: coarse)').matches;
@@ -502,6 +520,7 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
     // Built in steps that hand the frame back (game/slice), so the scene
     // being left keeps drawing; unmounted mid-build, the build stops.
     makeWorldSurface(mount, world, {
+      npcTag: (k) => (tnTagRef.current.has(k) ? tnTagRef.current(k) : ''),
       slice: makeSlicer(BUILD_SLICE_MS, ac.signal),
       room,
       earth: earthData ?? undefined,
@@ -807,6 +826,7 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
           </div>
         )}
 
+        {world === 'mars' && <NpcHud get={npcTel} choose={npcChoose} close={npcClose} touch={touch} onFire={npcFire} />}
         <div ref={bannerRef} className="moon-hud__banner" role="status" hidden><span /></div>
         <div ref={readoutRef} className="moon-hud__readout" role="status" hidden />
         <div ref={dialogRef} className="moon-hud__dialog" role="status" hidden>

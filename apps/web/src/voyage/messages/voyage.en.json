@@ -1030,7 +1030,8 @@
             "power": "Reactor status"
           },
           "collectCrystal": "Collect the crystals",
-          "boardLander": "Board ship — Take off"
+          "boardLander": "Board ship — Take off",
+          "talk": "Talk"
         },
         "readout": {
           "habitat": "HAB-1 · 101 kPa · 21 °C · CO₂ 0.4 % · shielding 2.1 m regolith · 4 crew asleep",
@@ -1624,9 +1625,11 @@
         "interact": "The amber key — tap to use, hold to work",
         "view": "Camera — top right: shoulder, helmet, wide",
         "map": "The objective card — tap it for the expedition log",
-        "gears": "The gear key — the rover's speed"
+        "gears": "The gear key — the rover's speed",
+        "fire": "Crosshair key — right side, above jump: hold to fire the blaster (Mars)"
       },
-      "lampOn": "Headlamp on"
+      "lampOn": "Headlamp on",
+      "fire": "fire the blaster (Mars): R, or click while the mouse is captured; it locks onto whoever is near the crosshair"
     },
     "build": {
       "title": "Build",
@@ -1695,6 +1698,116 @@
         "gold": "Gold nugget",
         "meteorite": "Meteorite",
         "ice": "Ice crystal"
+      }
+    },
+    "npc": {
+      "statusLabel": "Suit and standing",
+      "suit": "Suit",
+      "wantedLabel": "Wanted: {n} of 5 stars",
+      "jobTracker": "Kern's contract: scav drones {done}/{need}",
+      "companionOn": "PIP-7 is with you",
+      "engaged": "{n, plural, one {# hostile on you} other {# hostiles on you}}",
+      "fire": "Fire",
+      "talkHint": "Number keys answer · Esc walks away",
+      "bye": "Never mind.",
+      "breach": "Suit breach. The colony medics dragged you back to the pad and took half your credits for the trouble.",
+      "lostThem": "The hunters lost your trail. Warrant cleared.",
+      "tag": {
+        "hostile": "Hostile",
+        "role": {
+          "companion": "Utility droid",
+          "kern": "Quartermaster",
+          "vex": "Smuggler · trader",
+          "patrol": "Guild hunter",
+          "colonist": "Colonist",
+          "raider": "Scav drone"
+        }
+      },
+      "bark": {
+        "spot": "There you are. Hands where I can see them.",
+        "wanted": "{stars}-star warrant on you, pilot. Nothing personal.",
+        "scav": "*shrieking static*",
+        "hit": "Hey! Watch it!",
+        "flee": "I'm out of here!",
+        "cover": "Getting to cover!",
+        "search": "Spread out. They can't have gone far.",
+        "down": "Ugh... systems... offline...",
+        "provoked": "Wrong hunter to mouth off to."
+      },
+      "pip": {
+        "hello": "Bweep! PIP-7, colony utility droid. My scanner is bored and so am I. Want company out there?",
+        "what": "What can you do?",
+        "about": "I find shiny rocks, I zap scav drones, and I complain only a little. My last pilot said I was 'mostly helpful'. I took it as a compliment.",
+        "join": "Roll with me, PIP.",
+        "joined": "Bwee-oo! Following. Try not to walk into anything I can't roll over.",
+        "status": "Systems green. {hostiles} scav drones still out in the dunes. Orders?",
+        "scan": "Scan for gems.",
+        "stay": "Wait at the base.",
+        "dismissed": "Fine. I'll be by the habitats, alphabetising bolts.",
+        "gem": "Gem signal: {dist} metres {dir}. Shiny!",
+        "noGem": "Scanner says you've picked this world clean. Show-off.",
+        "threat": "Scav drone {dir}! Engaging!"
+      },
+      "kern": {
+        "hello": "Quartermaster KERN. Suit integrity {integrity} percent. Credits on file: {credits}. State your requirement.",
+        "repair": "Patch my suit.",
+        "repaired": "Seals renewed. Please stop letting things shoot you.",
+        "job": "Got any work?",
+        "offer": "Scav drones are stripping the solar farm for parts. Disable {need} of them. The colony pays {pay} credits.",
+        "accept": "Consider it done.",
+        "decline": "Not today.",
+        "jobStarted": "Contract logged: {need} scav drones. They patrol the dunes past the outer ring.",
+        "progress": "How's the contract?",
+        "progressLine": "Scav drones disabled: {done} of {need}. Scrap they drop is yours to keep.",
+        "jobDone": "Contract complete. Come and collect your {pay} credits.",
+        "payday": "Contract verified. The solar farm thanks you, in its silent way. {pay} credits transferred.",
+        "collect": "Collect payment.",
+        "wanted": "Records show a {stars}-star warrant on you. The guild hunters will not discuss it. I could. Clearance fee: {fee} credits.",
+        "clear": "Pay the fee.",
+        "cleared": "Warrant expunged. The hunters have been notified. Try to stay boring."
+      },
+      "vex": {
+        "hello": "Vex Marrow. I move things nobody asks about. You buying, or just breathing my air?",
+        "tip": "Where are the gems?",
+        "tipLine": "There's a stone {dist} metres {dir} of you. Don't tell anyone where you heard it.",
+        "noTip": "Nothing left out there worth a tip. Keep your money. This once.",
+        "shield": "Sell me an overshield.",
+        "shielded": "Military surplus. It fell off a cargo hauler. Several times.",
+        "rumor": "Heard anything interesting?",
+        "rumor0": "Kern's been here longer than the habitats. Nobody remembers who brought him. He says it was 'a clerical matter'.",
+        "rumor1": "The scavs aren't wild. Somebody out past the dunes is collecting what they strip. I'd love to know who.",
+        "rumor2": "Rook and Sable used to hunt as a pair. Then one of them took a contract on the other. Ask them which.",
+        "rumor3": "PIP-7 has rebooted forty-one times. It counts each one as a birthday.",
+        "more": "Tell me more.",
+        "threat": "Hand over the goods, Marrow.",
+        "insulted": "Big mistake, pilot. You'll be paying double for air from now on.",
+        "cold": "We're done talking. Walk."
+      },
+      "hunter": {
+        "work": "Who's on the guild's list?",
+        "insult": "You don't scare me."
+      },
+      "rook": {
+        "hello": "Rook. Guild contract hunter. You're not on my list. Yet.",
+        "work": "Scav drones mostly, and anyone who shoots at colonists. Do Kern's contract and the guild hears about it. Reputation is currency out here."
+      },
+      "sable": {
+        "hello": "Sable. Don't stand so close, pilot. I get twitchy.",
+        "work": "Anyone with a warrant. Keep yours clean and we'll get on fine."
+      },
+      "oda": {
+        "hello": "Oda, greenhouse shift. If PIP asks you to race it, don't. It cheats."
+      },
+      "tamsin": {
+        "hello": "Tamsin, power crew. The scavs took two panels last night. If you're handy with that blaster, Kern's paying."
+      },
+      "chat": {
+        "oda0": "Morning, pilot.",
+        "oda1": "Mind the tomatoes.",
+        "oda2": "The dust gets in everything.",
+        "tamsin0": "Panels won't fix themselves.",
+        "tamsin1": "Seen any scavs out east?",
+        "tamsin2": "Don't let Vex sell you anything."
       }
     }
   },

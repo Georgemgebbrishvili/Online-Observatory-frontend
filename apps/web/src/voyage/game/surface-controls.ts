@@ -34,6 +34,8 @@ export interface FootInputs {
   headlamp: boolean;
   shoulderSwap: boolean;
   gearRequest?: number | null;
+  /** Held: the blaster (Mars). */
+  fire?: boolean;
 }
 
 /** One source's held controls. */
@@ -47,9 +49,10 @@ export interface FootIntent {
   sprint: boolean;
   walk: boolean;
   use: boolean;
+  fire: boolean;
 }
 
-const idle = (): FootIntent => ({ x: 0, y: 0, jump: false, jet: false, descend: false, sprint: false, walk: false, use: false });
+const idle = (): FootIntent => ({ x: 0, y: 0, jump: false, jet: false, descend: false, sprint: false, walk: false, use: false, fire: false });
 const held = (a: FootAction, down: (code: string) => boolean) => footBinding(a).keys.some(down);
 
 /** The keyboard's held controls. */
@@ -59,7 +62,7 @@ export function intentFromKeys(pressed: ReadonlySet<string>, out: FootIntent = i
   const y = (has('KeyW') || has('ArrowUp') ? 1 : 0) - (has('KeyS') || has('ArrowDown') ? 1 : 0);
   const len = Math.hypot(x, y) || 1;
   out.x = x / len; out.y = y / len;
-  out.jump = held('jump', has); out.jet = held('jet', has); out.descend = held('crouch', has); out.sprint = held('sprint', has); out.walk = held('walk', has); out.use = held('interact', has);
+  out.jump = held('jump', has); out.jet = held('jet', has); out.descend = held('crouch', has); out.sprint = held('sprint', has); out.walk = held('walk', has); out.use = held('interact', has); out.fire = held('fire', has);
   return out;
 }
 
@@ -67,7 +70,7 @@ export function intentFromKeys(pressed: ReadonlySet<string>, out: FootIntent = i
 export function intentFromPad(axes: readonly number[], down: (i: number) => boolean, out: FootIntent = idle()): FootIntent {
   const any = (a: FootAction) => padButtons(footBinding(a)).some(down);
   out.x = deadZone(axes[0] ?? 0); out.y = -deadZone(axes[1] ?? 0);
-  out.jump = any('jump'); out.jet = any('jet'); out.descend = any('crouch'); out.sprint = any('sprint'); out.walk = any('walk'); out.use = any('interact');
+  out.jump = any('jump'); out.jet = any('jet'); out.descend = any('crouch'); out.sprint = any('sprint'); out.walk = any('walk'); out.use = any('interact'); out.fire = any('fire');
   return out;
 }
 
@@ -84,6 +87,8 @@ export interface TouchDeck {
   throttle: boolean;
   /** The lope key. */
   run: boolean;
+  /** The blaster key, held. */
+  fire: boolean;
 }
 
 export interface SurfaceControlsOptions {
@@ -133,8 +138,10 @@ export function attachSurfaceControls(o: SurfaceControlsOptions): SurfaceControl
   const keys = idle();
   const pad = idle();
   const padWas: boolean[] = [];
-  const deck: TouchDeck = { x: 0, y: 0, jump: false, jet: false, descend: false, use: false, throttle: false, run: false };
+  const deck: TouchDeck = { x: 0, y: 0, jump: false, jet: false, descend: false, use: false, throttle: false, run: false, fire: false };
   let crouch = false;
+  /** The left button held while the mouse is captured: the blaster. */
+  let mouseFire = false;
 
   const sync = () => {
     intentFromKeys(pressed, keys);
@@ -152,6 +159,7 @@ export function attachSurfaceControls(o: SurfaceControlsOptions): SurfaceControl
     input.walk = keys.walk || pad.walk;
     input.run = deck.run || (o.touch && Math.hypot(deck.x, deck.y) > TOUCH_RIM);
     input.use = keys.use || pad.use || deck.use;
+    input.fire = keys.fire || pad.fire || deck.fire || mouseFire;
     input.crouch = crouch;
   };
   const toggleCrouch = () => { crouch = !crouch; o.onCrouch(crouch); sync(); };
@@ -198,7 +206,8 @@ export function attachSurfaceControls(o: SurfaceControlsOptions): SurfaceControl
     pressed.clear();
     Object.assign(pad, idle());
     // The lope key is a toggle on the deck, not a held key: it stays as it is.
-    deck.x = deck.y = 0; deck.jump = deck.jet = deck.descend = deck.use = deck.throttle = false;
+    deck.x = deck.y = 0; deck.jump = deck.jet = deck.descend = deck.use = deck.throttle = deck.fire = false;
+    mouseFire = false;
     input.orbitDX = input.orbitDY = 0;
     orbitId = -1;
     sync();
@@ -216,6 +225,7 @@ export function attachSurfaceControls(o: SurfaceControlsOptions): SurfaceControl
   let lastX = 0; let lastY = 0;
   const onDown = (e: PointerEvent) => {
     o.wake();
+    if (document.pointerLockElement === mount && e.button === 0 && !o.paused()) { mouseFire = true; sync(); }
     if (e.button !== 0 || orbitId >= 0 || o.paused()) return;
     // Touch: the left of the glass belongs to the movement thumb, and a
     // finger that slides off the stick must not also swing the view. Only a
@@ -244,7 +254,10 @@ export function attachSurfaceControls(o: SurfaceControlsOptions): SurfaceControl
       lastX = e.clientX; lastY = e.clientY;
     }
   };
-  const onUp = (e: PointerEvent) => { if (e.pointerId === orbitId) orbitId = -1; };
+  const onUp = (e: PointerEvent) => {
+    if (e.pointerId === orbitId) orbitId = -1;
+    if (mouseFire) { mouseFire = false; sync(); }
+  };
   const onWheel = (e: WheelEvent) => { input.zoom += Math.sign(e.deltaY); e.preventDefault(); };
   // The lock is held from the first click; losing it (Esc) is a pause.
   let lockHeld = false;
@@ -266,7 +279,7 @@ export function attachSurfaceControls(o: SurfaceControlsOptions): SurfaceControl
     }
     const down = (i: number) => !!p.buttons[i]?.pressed;
     const wasMoving = pad.x !== 0 || pad.y !== 0;
-    const j = pad.jump; const jt = pad.jet; const dn = pad.descend; const s = pad.sprint; const w = pad.walk; const u = pad.use;
+    const j = pad.jump; const jt = pad.jet; const dn = pad.descend; const s = pad.sprint; const w = pad.walk; const u = pad.use; const f = pad.fire;
     intentFromPad(p.axes, down, pad);
     const moving = pad.x !== 0 || pad.y !== 0;
     if (moving) o.wake();
@@ -282,7 +295,7 @@ export function attachSurfaceControls(o: SurfaceControlsOptions): SurfaceControl
         padWas[i] = on;
       }
     }
-    if (moving || wasMoving || pad.jump !== j || pad.jet !== jt || pad.descend !== dn || pad.sprint !== s || pad.walk !== w || pad.use !== u) sync();
+    if (moving || wasMoving || pad.jump !== j || pad.jet !== jt || pad.descend !== dn || pad.sprint !== s || pad.walk !== w || pad.use !== u || pad.fire !== f) sync();
   };
 
   window.addEventListener('keydown', onKeyDown);

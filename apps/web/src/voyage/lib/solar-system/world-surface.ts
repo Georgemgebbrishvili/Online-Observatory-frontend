@@ -46,6 +46,7 @@ import { makeMarsBase } from '@/voyage/lib/solar-system/world-mars-base';
 import { hasOutpost, holdOverDeck, landingPad, makeOutpost } from '@/voyage/lib/solar-system/world-outpost';
 import { makeFlora } from '@/voyage/lib/solar-system/world-flora';
 import { makeAliens, type AlienTelemetry } from '@/voyage/lib/solar-system/world-aliens';
+import { makeNpcs, type NpcTelemetry } from '@/voyage/lib/solar-system/world-npcs';
 import { WORLDS, type WorldId, type WorldProfile } from '@/voyage/lib/solar-system/world-profiles';
 import type { EarthData } from '@/voyage/lib/solar-system/world-earth-data';
 import { EARTH_DESCENT, EARTH_WALK_RADIUS, makeEarthWorld, type EarthState } from '@/voyage/lib/solar-system/world-earth';
@@ -95,6 +96,8 @@ export interface WorldInput {
   autoland?: boolean;
   /** Edge-triggered: back to the base (the ship on its pad), from wherever the crew have gone. Consumed. */
   goBase?: boolean;
+  /** Held: the blaster (Mars). */
+  fire?: boolean;
 }
 
 export interface WorldOptions {
@@ -108,6 +111,8 @@ export interface WorldOptions {
   room?: RoomLink;
   /** The hull the crew flew here in: it is what comes down. Left out, the lander does. */
   shipKind?: ShipKind;
+  /** Mars: the second line of the colony's name tags, translated. */
+  npcTag?: (key: string) => string;
 }
 
 export interface WorldTelemetry {
@@ -154,6 +159,8 @@ export interface WorldTelemetry {
   bannerHold: number;
   /** Proxima b only. */
   aliens: AlienTelemetry | null;
+  /** Mars only: the colony's people, the suit's integrity, credits and the warrant. */
+  npcs: NpcTelemetry | null;
   /** Earth only. */
   earth: EarthState | null;
   /** Coming in hot: the entry leg of the flight down from orbit. */
@@ -194,6 +201,11 @@ export interface WorldSurfaceHandle {
   setTime: (iso: string) => void;
   advance: () => void;
   look: (heading: number, pitch?: number) => void;
+  /** Mars: pick an answer in the talk panel, or walk away from it. */
+  npcChoose: (index: number) => void;
+  npcClose: () => void;
+  /** Development: what each of the colony is doing. */
+  npcProbe: () => Record<string, string>;
   /** Show or hide a named part of the scene (profiling). */
   layer: (name: string, on: boolean) => void;
   /** Earth: the sky's working numbers, for checking the light. */
@@ -387,6 +399,22 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   scene.add(gems.group);
   await step();
 
+  // ── Mars: the colony's people and machines (world-npcs). ──
+  const npcs = world === 'mars' && base ? makeNpcs({
+    heightAt, colliders, gems: () => gems.gems, lite,
+    tag: opts.npcTag ?? ((k) => k),
+    onBreach: () => handle.teleport(profile.pad.x + 5, profile.pad.z + 8),
+    onEvent: (kind) => {
+      if (kind === 'hit') cam.shake(0.18);
+      else if (kind === 'talk' || kind === 'clear') audio.bleep();
+    },
+  }) : null;
+  if (npcs) {
+    scene.add(npcs.group);
+    colliders.push(...npcs.colliders);
+    for (const i of npcs.interactables) interactions.add(i);
+  }
+
   if (earth) {
     colliders.push(...earth.colliders);
     pois.push(...earth.pois);
@@ -475,6 +503,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     evaSeconds: 0, distanceM: 0, crouched: false, stumbling: false, sliding: false, heading: 0,
     prompt: interactions.prompt, readout: '', readoutHold: 0, banner: '', bannerHold: 0,
     aliens: aliens ? aliens.telemetry : null,
+    npcs: npcs ? npcs.telemetry : null,
     earth: earth ? earth.state : null,
     entry: false,
     gems: gems.count, gemsTotal: gems.total, gemPoints: gems.points, gemLast: '', gemPicks: 0, autoland: false, baseDistance: 0,
@@ -595,11 +624,15 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
       cosmonaut.position.copy(earth.car.position);
       return;
     }
-    const moving = Math.hypot(input.moveX, input.moveY) > 0.2;
+    // In a conversation the crew stand still.
+    const still = !!npcs?.telemetry.dialog;
+    const moveX = still ? 0 : input.moveX;
+    const moveY = still ? 0 : input.moveY;
+    const moving = Math.hypot(moveX, moveY) > 0.2;
     const sprint = sprintFrom(sprintLatch, input.sprint, moving, h);
-    stick.moveX = input.moveX; stick.moveY = input.moveY; stick.jet = input.jet; stick.descend = !!input.descend;
+    stick.moveX = moveX; stick.moveY = moveY; stick.jet = input.jet; stick.descend = !!input.descend;
     stick.run = input.run; stick.sprint = sprint; stick.walk = input.walk; stick.crouch = input.crouch;
-    walkFromStick(walk, stick, cam.yaw, jump, interactions.prompt.holding);
+    walkFromStick(walk, stick, cam.yaw, jump && !still, interactions.prompt.holding);
     stepFrom.copy(cosmonaut.position);
     cosmonaut.update(h, walk, floorAt, walkColliders(), walkRadius);
     earth?.confine(cosmonaut.position, stepFrom);
@@ -907,6 +940,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     flora?.update(dt, t);
     gems.update(dt, crew.x, crew.y, crew.z, lightPool, telemetry.phase === 'surface');
     if (aliens && telemetry.phase === 'surface') aliens.update(dt, t, crew.x, crew.z, lightPool);
+    if (npcs && telemetry.phase === 'surface') npcs.update(dt, t, crew, camera, lightPool, !!input.fire && !cosmonaut.state.flying);
     // High in flight, the shadows stay on the ground below rather than round the crew in mid-air.
     shadowFocus.copy(crew);
     if (cosmonaut.state.flying && cosmonaut.state.altitude > 6) shadowFocus.y -= cosmonaut.state.altitude - 6;
@@ -931,6 +965,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     lander.dispose();
     flightAudio?.dispose();
     earth?.dispose();
+    npcs?.dispose();
     crowd?.dispose();
     cosmonaut.dispose();
     base?.dispose();
@@ -981,6 +1016,9 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     probe: host.probe,
     setPaused: host.setPaused,
     setTime: (iso) => earth?.setTime(iso),
+    npcChoose: (i) => npcs?.choose(i),
+    npcClose: () => npcs?.closeDialog(),
+    npcProbe: () => npcs?.probe() ?? {},
     advance: () => earth?.advance(),
     layer(name, on) {
       const o = scene.getObjectByName(name);
