@@ -13,7 +13,9 @@ test("communicates real telescope access in the English hero", async ({ page }) 
   ).toBeVisible();
   // ADR-052 §7: the last words in red, as the Skychaser headline sets its own.
   await expect(hero.locator("h1 .hs-accent")).toHaveText("live.");
-  await expect(hero.getByText(/Book a real telescope in Georgia/)).toBeVisible();
+  await expect(
+    hero.getByText("Book a real telescope and watch the night sky live."),
+  ).toBeVisible();
   await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
   const actions = hero.locator(".home-hero-actions");
   await expect(actions.getByRole("link", { name: "Book a session" })).toHaveAttribute(
@@ -24,22 +26,18 @@ test("communicates real telescope access in the English hero", async ({ page }) 
     "href",
     "/en/tonight",
   );
-  // ADR-076/077: no telescope model and no status chips in the hero.
+  // ADR-076/077: no telescope model and no status chips in the hero; ADR-093: no canvas.
   await expect(hero.locator(".observatory-dome")).toHaveCount(0);
   await expect(hero.getByText("Online", { exact: true })).toHaveCount(0);
-
-  // ADR-087: the sky is a drawing and says so; the feed behind it is badged Simulated.
-  await expect(hero.getByText("Illustration — not telescope output")).toBeVisible();
-  await expect(hero.locator(".hs-hud-badge dd")).toHaveText("Simulated");
-  await expect(hero.locator(".hs-hero-feed")).toBeHidden();
-  // The four steps after the headline are headings a reader can reach.
+  await expect(page.locator("main canvas")).toHaveCount(0);
+  // The four steps are headings a reader can reach, right under the hero.
   for (const name of [
     "Pick your time.",
     "It turns to your target.",
     "Watch it settle.",
     "Keep the picture.",
   ]) {
-    await expect(hero.getByRole("heading", { level: 2, name })).toBeAttached();
+    await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
   }
 });
 
@@ -53,58 +51,52 @@ test("renders the Georgian hero and switches locale", async ({ page }) => {
   await expect(
     page.locator(".home-hero-actions").getByRole("link", { name: "დაჯავშნე სეანსი" }),
   ).toHaveAttribute("href", "/ka/app/book");
-  await expect(
-    page.locator(".home-hero").getByText("ილუსტრაცია — არა ტელესკოპის გამოსახულება"),
-  ).toBeVisible();
   // Mkhedruli has no capitals: the headline and the labels are never uppercased.
   await expect(page.locator("h1.home-hero-title")).toHaveCSS("text-transform", "none");
-  await expect(page.locator(".hs-label").first()).toHaveCSS("text-transform", "none");
+  await expect(page.locator(".hm-label").first()).toHaveCSS("text-transform", "none");
   await page.getByRole("link", { name: "ენა: English" }).click();
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("the public homepage: the story's scenes, with the platform's prices", async ({
+test("the public homepage: five plain sections, with the platform's prices", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
 
-  // ADR-087: the hero, tonight's showpieces, the night, the session, the telescope, the sign-off.
+  // ADR-093: the hero, how it works, tonight, the session, the telescope, the sign-off.
   await expect(page.locator("main section")).toHaveCount(6);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
-  // Tonight's showpieces: each with its best time and a way to book.
-  const slides = page.locator(".hs-slide");
-  expect(await slides.count()).toBeGreaterThan(0);
-  await expect(slides.first().getByRole("link")).toHaveAttribute("href", /^\/en\/app\/book/);
+  // Tonight's objects: each with its best time and a way to book, and a drawing says so.
+  const objects = page.locator(".hm-object");
+  expect(await objects.count()).toBeGreaterThan(0);
+  await expect(objects.first().getByRole("link")).toHaveAttribute(
+    "href",
+    /^\/en\/app\/book/,
+  );
+  await expect(objects.first().locator(".hm-data").first()).toHaveText(/^\d\d:\d\d$/);
   await expect(
-    page.locator(".hs-coll").getByText("Illustration — not telescope output"),
-  ).toBeAttached();
+    page.locator(".hm-tonight").getByText("Illustration — not telescope output").last(),
+  ).toBeVisible();
 
-  // The night: a clock on the observatory's time and the drawn sky it turns.
-  await expect(page.locator(".hs-clock")).toHaveText(/^\d\d:\d0$/);
-  await expect(page.getByRole("img", { name: "Tonight over Tbilisi" })).toBeAttached();
-
-  // The session: the fake platform's price by the minute, on the panel and the ticket.
-  const session = page.locator(".hs-session");
-  await expect(session.locator(".hs-price b")).toHaveText("GEL 45.00");
-  await expect(session.getByText("GEL 1.50 a minute")).toBeAttached();
-  await session.getByRole("button", { name: "60 min" }).dispatchEvent("click");
-  await expect(session.locator(".hs-price b")).toHaveText("GEL 90.00");
-  await expect(session.locator(".hs-ticket-foot b")).toHaveText("GEL 90.00");
-  const questions = session.locator(".hs-ask button");
+  // The session: the fake platform's price by the minute and each length's price.
+  const session = page.locator(".hm-session");
+  await expect(session.getByText("GEL 1.50 a minute")).toBeVisible();
+  await expect(session.locator(".hm-lengths")).toContainText("GEL 45.00");
+  await expect(session.locator(".hm-lengths")).toContainText("GEL 90.00");
+  const questions = session.locator("details");
   await expect(questions).toHaveCount(4);
-  await questions.nth(2).dispatchEvent("click");
-  await expect(questions.nth(2)).toHaveAttribute("aria-expanded", "true");
-  await expect(questions.nth(0)).toHaveAttribute("aria-expanded", "false");
+  await questions.nth(2).locator("summary").click();
+  await expect(questions.nth(2)).toHaveAttribute("open", "");
 
   // The telescope: the observatory record's aperture, never the maker's name.
-  await expect(page.locator(".hs-scope")).toContainText("203 mm");
+  await expect(page.locator(".hm-scope")).toContainText("203 mm");
   await expect(
-    page.locator(".hs-scope").getByRole("link", { name: "See the observatory" }),
+    page.locator(".hm-scope").getByRole("link", { name: "See the observatory" }),
   ).toHaveAttribute("href", "/en/observatory");
 
-  // The other ways in live in the footer now, not in cards on the page.
+  // The other ways in live in the footer, not in cards on the page.
   const footer = page.getByRole("navigation", { name: "Product" });
   for (const [name, href] of [
     ["Gift a night", "/en/gift"],
@@ -115,29 +107,18 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
   }
 });
 
-test("the hero's story moves with the scroll, and stands still for reduced motion", async ({
-  page,
-}) => {
+test("the homepage is short and loads no animation library", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
+  const scripts: string[] = [];
+  page.on("request", (request) => {
+    if (request.resourceType() === "script") scripts.push(request.url());
+  });
   await page.goto("/en");
-  await expect(page.locator(".pin-spacer > .hs-hero")).toHaveCount(1);
-  await expect(page.locator(".hs-slots")).toBeHidden();
-  await page.mouse.move(700, 500);
-  await page.mouse.wheel(0, 300);
-  // A short scroll snaps on to the second step: the open times.
-  await expect(page.locator(".hs-slots")).toBeVisible();
-  await expect(page.locator(".hs-slots a").first()).toHaveAttribute(
-    "href",
-    /^\/en\/app\/book/,
-  );
-
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.reload();
-  await expect(page.locator(".hs[data-still]")).toHaveCount(1);
+  // ADR-093: a page a reader scrolls in a few flicks, not a pinned story.
+  const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  expect(height).toBeLessThan(6000);
   await expect(page.locator(".pin-spacer")).toHaveCount(0);
-  await expect(
-    page.getByRole("heading", { level: 2, name: "Watch it settle." }),
-  ).toBeVisible();
+  expect(scripts.filter((url) => /gsap|lenis/i.test(url))).toEqual([]);
 });
 
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {
@@ -151,10 +132,9 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
         scrollWidth: document.documentElement.scrollWidth,
       }));
       expect(viewport.scrollWidth, `${locale} at ${width}px`).toBe(viewport.clientWidth);
-      await expect(page.locator(".home-hero .button-primary")).toBeVisible();
-      // A phone swipes the showpieces; the corners wait for a wide screen.
-      await expect(page.locator(".hs-corner").first()).toBeHidden();
-      await expect(page.locator(".hs-slide-info").first()).toBeAttached();
+      await expect(page.locator(".home-hero .button-primary").first()).toBeVisible();
+      // A phone swipes tonight's objects sideways.
+      await expect(page.locator(".hm-objects")).toHaveCSS("overflow-x", "auto");
     }
   }
 });
@@ -280,7 +260,9 @@ test("shows and operates the internal visual system", async ({ page }) => {
   await expect(dialog).not.toBeVisible();
 
   await page.getByRole("tab", { name: "Visibility" }).click();
-  await expect(page.getByRole("tabpanel", { name: "Visibility" })).toContainText("Altitude");
+  await expect(page.getByRole("tabpanel", { name: "Visibility" })).toContainText(
+    "Altitude",
+  );
 });
 
 test("keeps the visual system within a mobile viewport", async ({ page }) => {
@@ -358,9 +340,7 @@ test("keeps missions usable inside a mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ka/app/missions");
 
-  await expect(
-    page.getByRole("heading", { name: "ამაღამის ობიექტები" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "ამაღამის ობიექტები" })).toBeVisible();
   await page.getByRole("link", { name: "ობიექტის ნახვა" }).first().click();
   await expect(page.getByRole("link", { name: "დაჯავშნე დაკვირვება" })).toBeVisible();
 
@@ -535,7 +515,9 @@ test("the console connects, aligns and points at the quick start's target", asyn
   });
   await expect(view.getByText(/^Albireo/)).toBeVisible();
   await page.locator(".oh-stepnav").getByRole("button", { name: /Shoot/ }).click();
-  await expect(page.getByRole("button", { name: /^Capture \d+ × \d+ m?s/ })).toBeEnabled();
+  await expect(
+    page.getByRole("button", { name: /^Capture \d+ × \d+ m?s/ }),
+  ).toBeEnabled();
 
   // Park drives the mount home.
   await page.locator(".oh-head").getByRole("button", { name: "Park" }).click();

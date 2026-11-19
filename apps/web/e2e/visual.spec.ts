@@ -80,13 +80,8 @@ function masks(page: Page) {
     page.locator(".cal-month"),
     page.locator(".cal-note"),
     page.locator(".cal-list"),
-    // ADR-087: the homepage's story reads the server's tonight: which planet the hero
-    // names, which showpieces are up, the night's clock and card, the ticket's night and
-    // target. Its drawn skies are hidden in visual.css, so the words over them still count.
-    page.locator(".hs-ln:nth-child(3) p"),
-    page.locator(".hs-track"),
-    page.locator(".hs-ncard"),
-    page.locator(".hs-ticket dd"),
+    // ADR-093: which of tonight's objects are up, and when, follows the server's tonight.
+    page.locator(".hm-objects"),
   ];
 }
 

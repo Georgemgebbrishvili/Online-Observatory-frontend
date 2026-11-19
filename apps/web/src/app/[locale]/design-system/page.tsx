@@ -68,8 +68,7 @@ import { roomControlsCopy } from "@/i18n/resources/room-controls";
 import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { TargetPreview } from "@/components/room/target-preview";
 import { PageGuide } from "@/components/guide/page-guide";
-import { brand } from "@/brand";
-import { StoryFeedSpecimen, StoryHorizon, StoryTicket } from "@/components/home/home-story";
+import { HomeHorizon, HomeObjectCard } from "@/components/home/home-page";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -1517,28 +1516,24 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
           <div className="ds-home-specimen ds-story-specimens">
-            {/* The story's camera feed, a raw sub and the settled stack, always badged. */}
-            {[0, 1].map((depth) => (
-              <StoryFeedSpecimen
-                key={depth}
-                depth={depth}
-                image="/sky/targets/saturn.jpg"
-                name={dictionary.home.story.showpieces.names.saturn}
-                simulated={dictionary.home.story.simulated}
-                illustration={dictionary.home.hero.illustration}
-              />
-            ))}
-            <StoryTicket
-              brandName={locale === "ka" ? brand.ka.nominative : brand.en.name}
-              copy={dictionary.home.story.session.ticket}
-              night="28.10.2026"
-              target={dictionary.home.story.showpieces.names.saturn}
-              length={`30 ${dictionary.home.common.minutes}`}
-              price="GEL 45.00"
+            {/* One of tonight's objects, as the homepage lists them. */}
+            <HomeObjectCard
+              illustration={dictionary.home.hero.illustration}
+              object={{
+                id: "saturn",
+                name: dictionary.home.story.showpieces.names.saturn,
+                kind: dictionary.home.story.showpieces.kinds.planet,
+                note: dictionary.home.story.showpieces.notes.saturn,
+                image: "/sky/targets/saturn.jpg",
+                time: "21:44",
+                high: "49° · S",
+                glow: palette.targetSaturn,
+                book: { href: `/${locale}/app/book`, label: dictionary.home.story.showpieces.bookAny },
+              }}
             />
             {/* The hero's horizon, as it sits at the foot of the screen. */}
-            <div className="hs-horizon-specimen">
-              <StoryHorizon />
+            <div className="hm-horizon-specimen">
+              <HomeHorizon />
             </div>
           </div>
         </section>
