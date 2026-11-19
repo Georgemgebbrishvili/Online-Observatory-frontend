@@ -16,6 +16,16 @@ export interface CityAmbience {
   engine: (speed: number) => void;
   /** A crowd clapping and cheering, 0 none … 1 all of them. */
   cheer: (k: number) => void;
+  /** The pilot's horn, held. */
+  horn: (on: boolean) => void;
+  /** Patrol sirens, 0 none … 1 right behind. */
+  siren: (level: number) => void;
+  /** Somebody else's horn, so many metres off. */
+  honk: (distance: number) => void;
+  /** A crash, 0 a knock … 1 a smash. */
+  crash: (k: number) => void;
+  /** The context and the bus for the car radio, once sound has started. */
+  out: () => { ctx: AudioContext; bus: AudioNode } | null;
   dispose: () => void;
 }
 
@@ -33,6 +43,9 @@ export function makeCityAmbience(): CityAmbience {
   let motor: { osc: OscillatorNode; sub: OscillatorNode; filter: BiquadFilterNode; gain: GainNode } | null = null;
   let clapK = 0;
   let clapT = 0;
+  let hornV: { a: OscillatorNode; b: OscillatorNode; gain: GainNode } | null = null;
+  let sirenV: { osc: OscillatorNode; lfo: OscillatorNode; gain: GainNode } | null = null;
+  let lastCrash = -1;
   // Suspended, not just silent, while the page is hidden or the game paused.
   const hold = holdAudio(() => ctx);
   const unsubscribe = onSoundChange((_on, level) => {
@@ -174,6 +187,88 @@ export function makeCityAmbience(): CityAmbience {
         src.start(at, Math.random() * 2); src.stop(at + 0.07);
       }
     },
+    horn(on) {
+      if (!ctx || !master) return;
+      if (!hornV && on) {
+        try {
+          const a = ctx.createOscillator(); a.type = 'square'; a.frequency.value = 415;
+          const b = ctx.createOscillator(); b.type = 'square'; b.frequency.value = 523;
+          const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1800;
+          const gain = ctx.createGain(); gain.gain.value = 0;
+          a.connect(lp); b.connect(lp); lp.connect(gain).connect(master);
+          a.start(); b.start();
+          hornV = { a, b, gain };
+        } catch { hornV = null; }
+      }
+      hornV?.gain.gain.setTargetAtTime(on ? 0.22 : 0, ctx.currentTime, on ? 0.01 : 0.03);
+    },
+    siren(level) {
+      if (!ctx || !master) return;
+      if (!sirenV && level > 0) {
+        try {
+          const osc = ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = 950;
+          // The wail: the pitch swept up and down by a slow oscillator.
+          const lfo = ctx.createOscillator(); lfo.type = 'triangle'; lfo.frequency.value = 0.45;
+          const depth = ctx.createGain(); depth.gain.value = 330;
+          lfo.connect(depth).connect(osc.frequency);
+          const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400;
+          const gain = ctx.createGain(); gain.gain.value = 0;
+          osc.connect(lp).connect(gain).connect(master);
+          osc.start(); lfo.start();
+          sirenV = { osc, lfo, gain };
+        } catch { sirenV = null; }
+      }
+      sirenV?.gain.gain.setTargetAtTime(Math.max(0, Math.min(1, level)) * 0.12, ctx.currentTime, 0.25);
+    },
+    honk(distance) {
+      if (!ctx || !master) return;
+      const k = Math.max(0, 1 - distance / 160);
+      if (k <= 0.02) return;
+      const at = ctx.currentTime + 0.01;
+      const len = 0.25 + Math.random() * 0.35;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, at);
+      g.gain.exponentialRampToValueAtTime(0.13 * k * k, at + 0.02);
+      g.gain.setValueAtTime(0.13 * k * k, at + len);
+      g.gain.exponentialRampToValueAtTime(0.0001, at + len + 0.06);
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900 + k * 1400;
+      lp.connect(g).connect(master);
+      const f = 340 + Math.random() * 160;
+      for (const m of [1, 1.26]) {
+        const o = ctx.createOscillator(); o.type = 'square'; o.frequency.value = f * m;
+        o.connect(lp);
+        o.onended = () => { o.disconnect(); };
+        o.start(at); o.stop(at + len + 0.1);
+      }
+      setTimeout(() => { lp.disconnect(); g.disconnect(); }, (len + 0.4) * 1000);
+    },
+    crash(k) {
+      if (!ctx || !master || !noise) return;
+      // One crash at a time: a run of contacts in a single knock is one sound.
+      if (ctx.currentTime - lastCrash < 0.25) return;
+      lastCrash = ctx.currentTime;
+      const at = ctx.currentTime + 0.005;
+      const v = Math.max(0.05, Math.min(1, k));
+      const src = ctx.createBufferSource(); src.buffer = noise; src.playbackRate.value = 3;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1200 + v * 3000;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, at);
+      g.gain.exponentialRampToValueAtTime(0.5 * v, at + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, at + 0.25 + v * 0.35);
+      src.connect(lp).connect(g).connect(master);
+      src.onended = () => { src.disconnect(); lp.disconnect(); g.disconnect(); };
+      src.start(at, Math.random() * 2); src.stop(at + 0.7);
+      const thump = ctx.createOscillator(); thump.type = 'sine';
+      thump.frequency.setValueAtTime(110, at); thump.frequency.exponentialRampToValueAtTime(40, at + 0.2);
+      const tg = ctx.createGain();
+      tg.gain.setValueAtTime(0.0001, at);
+      tg.gain.exponentialRampToValueAtTime(0.6 * v, at + 0.01);
+      tg.gain.exponentialRampToValueAtTime(0.0001, at + 0.25);
+      thump.connect(tg).connect(master);
+      thump.onended = () => { thump.disconnect(); tg.disconnect(); };
+      thump.start(at); thump.stop(at + 0.3);
+    },
+    out: () => (ctx && master ? { ctx, bus: master } : null),
     dispose() {
       unsubscribe();
       hold.dispose();

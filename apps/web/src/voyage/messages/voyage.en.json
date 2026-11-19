@@ -1134,15 +1134,18 @@
           "jump": "Space — jump. The red car by the pad is yours: E to get in.",
           "walkTouch": "Left stick — jog; push it to the rim to sprint. Drag the right half of the screen to look around.",
           "jumpTouch": "Jump is bottom right. The red car by the pad: the amber key gets you in.",
-          "drive": "W / S — drive and brake (reverse when stopped) · A / D — steer · Space — handbrake · E — get out",
-          "driveTouch": "Stick up and down — drive and brake · left and right — steer · Jump key — handbrake"
+          "drive": "W / S — drive and brake (reverse when stopped) · A / D — steer · Space — handbrake · R — horn · Q — radio · Tab — map · E — get out",
+          "driveTouch": "Stick up and down — drive and brake · left and right — steer · Jump key — handbrake · the horn and radio keys are over the thumb"
         },
         "keys": {
           "r5": "E — the thing in front of you: the car, the lander, the cable car, the roof, the telescope",
           "r6": "The Bridge of Peace is west of the pad; the cable car starts beside it",
           "r7": "Hold E in the cable car to ride six times as fast",
           "t5": "The amber key does the thing in front of you",
-          "t6": "The Bridge of Peace is west of the pad; the cable car starts beside it"
+          "t6": "The Bridge of Peace is west of the pad; the cable car starts beside it",
+          "r8": "Any car on the street can be taken (E beside it). If somebody sees, the police come: get out of their sight to lose them",
+          "r9": "Tab — the city map: click anywhere for a GPS route there. Driving with a clean record, people wave for a ride: stop beside them",
+          "t7": "Any car on the street can be taken. The map key opens the city map: tap anywhere for a GPS route there"
         },
         "pois": {
           "narikala": "Narikala — the fortress on the Sololaki ridge, from the 4th century",
@@ -1170,7 +1173,9 @@
           "boardLander": "Board ship — Take off",
           "drive": "Get in the car",
           "getOut": "Get out",
-          "stopToExit": "Stop to get out"
+          "stopToExit": "Stop to get out",
+          "jack": "Take the car",
+          "jackPolice": "Take the patrol car"
         },
         "readout": {
           "none": ""
@@ -1234,7 +1239,77 @@
           }
         },
         "entry": "Entry interface",
-        "crystals": "Crystals"
+        "crystals": "Crystals",
+        "city": {
+          "cash": "{n} ₾",
+          "stars": "Wanted: {n} of 5 stars",
+          "bust": "Police — stop the car",
+          "bustFoot": "Police — stay where you are",
+          "busted": "Busted",
+          "bustedLine": "Fined {n} ₾ and let go by the pad",
+          "bustedFree": "Let go by the pad with a warning",
+          "map": "City map",
+          "openMap": "Map",
+          "closeMap": "Close the map",
+          "mapHint": "Click or tap the map to set a waypoint",
+          "clearWaypoint": "Clear the waypoint",
+          "zoomIn": "Zoom in",
+          "zoomOut": "Zoom out",
+          "places": {
+            "pad": "The landing pad",
+            "sameba": "Sameba Cathedral",
+            "bridgeOfPeace": "Bridge of Peace",
+            "rikeTubes": "Rike Park",
+            "tvTower": "Mtatsminda TV tower",
+            "ferrisWheel": "Mtatsminda Park",
+            "kartlisDeda": "Kartlis Deda",
+            "narikala": "Narikala",
+            "abanotubani": "Abanotubani baths",
+            "cableCar": "Cable car, Rike Park",
+            "rooftop": "The Avlabari rooftop"
+          },
+          "horn": "Horn",
+          "radio": "Radio",
+          "radioOff": "Radio off",
+          "nextStation": "Q — next station",
+          "stations": {
+            "lofi": {
+              "name": "Mtatsminda Lo-Fi",
+              "line": "Slow chords for a slow climb up the hill."
+            },
+            "voices": {
+              "name": "Kartuli Voices",
+              "line": "Three voices and a drone, in the old way."
+            },
+            "orbit": {
+              "name": "Orbit 101.3",
+              "line": "Night-drive synths. Lights on, windows down."
+            }
+          },
+          "fare": {
+            "pickup": "Fare waiting — pick them up",
+            "ride": "To {place}",
+            "meter": "{n} ₾ on the meter",
+            "timeLeft": "{t} left",
+            "late": "Running late"
+          },
+          "notes": {
+            "wanted": "Wanted — {n} star",
+            "wantedMany": "Wanted — {n} stars",
+            "lost": "You lost the police",
+            "busted": "Busted",
+            "jacked": "Nobody saw a thing",
+            "hail": "Someone is waving for a ride — stop beside them",
+            "pickedUp": "Passenger in — follow the GPS",
+            "fareDone": "Fare paid: {n} ₾ and a {m} ₾ tip",
+            "fareLate": "Late — they paid {n} ₾ and no tip",
+            "fareLeft": "You got out — the passenger walked off",
+            "fareScared": "Your passenger bailed at the sight of the police",
+            "arrived": "You have arrived",
+            "wrecked": "The engine is dead — find another car"
+          },
+          "carHealth": "Car"
+        }
       },
       "mercury": {
         "place": "Mercury Outpost · Rachmaninoff",

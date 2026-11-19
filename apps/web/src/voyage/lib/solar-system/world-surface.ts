@@ -56,6 +56,7 @@ import { makeLightning } from '@/voyage/lib/solar-system/world-lightning';
 import { WORLDS, type WorldId, type WorldProfile } from '@/voyage/lib/solar-system/world-profiles';
 import type { EarthData } from '@/voyage/lib/solar-system/world-earth-data';
 import { EARTH_DESCENT, EARTH_WALK_RADIUS, makeEarthWorld, type EarthState } from '@/voyage/lib/solar-system/world-earth';
+import type { Street } from '@/voyage/lib/solar-system/world-earth-street';
 import { makeSurfaceFlight } from '@/voyage/lib/solar-system/surface-flight';
 import type { OrbitalTelemetry } from '@/voyage/lib/solar-system/orbital-descent';
 import { haze } from '@/voyage/lib/solar-system/world-earth-haze';
@@ -220,6 +221,8 @@ export interface WorldSurfaceHandle {
   sky: () => Record<string, number | number[]> | null;
   /** Player base building (Mars only). */
   build: BuildHandle | null;
+  /** Earth: street life — the map, the waypoint, the radio. */
+  city: Street | null;
   /** Development: use the thing with this id wherever the crew is (a hold runs to the end). */
   forceInteract: (id: string, seconds?: number) => boolean;
   /** Development: where the ship stands. */
@@ -660,6 +663,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   const wrap = (a: number) => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
   const walkColliders = () => (earth ? gather(walkList, earth.walkers(cosmonaut.position.x, cosmonaut.position.z)) : cameraColliders());
   const carVel = new THREE.Vector3();
+  let hornOn = false;
   let welcomed = false;
   if (earth) {
     earth.onEvent = (kind) => {
@@ -697,12 +701,13 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     const jump = jumpPress.take();
     if (earth?.carried()) return;
     if (earth?.driving()) {
-      earth.drive(h, { throttle: input.moveY, steer: input.moveX, handbrake: input.jump }, colliders);
+      const held = earth.frozen();
+      earth.drive(h, { throttle: held ? 0 : input.moveY, steer: held ? 0 : input.moveX, handbrake: held || input.jump }, colliders);
       cosmonaut.position.copy(earth.car.position);
       return;
     }
-    // In a conversation the crew stand still.
-    const still = !!npcs?.telemetry.dialog;
+    // In a conversation the crew stand still; under arrest too.
+    const still = !!npcs?.telemetry.dialog || !!earth?.frozen();
     const moveX = still ? 0 : input.moveX;
     const moveY = still ? 0 : input.moveY;
     const moving = Math.hypot(moveX, moveY) > 0.2;
@@ -913,8 +918,13 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
       }
       if (input.shoulderSwap) {
         input.shoulderSwap = false;
-        cam.swapShoulder();
+        // At the wheel the shoulder key is the radio's.
+        if (earth?.driving()) earth.street.radioNext();
+        else cam.swapShoulder();
       }
+      // The fire key at the wheel is the horn.
+      const horn = !!earth?.driving() && !!input.fire;
+      if (earth && horn !== hornOn) { hornOn = horn; earth.street.horn(horn); }
       const alpha = clock.advance(dt, simStep);
       const atWheel = !!earth?.driving();
       if (atWheel && earth) earth.car.present(alpha);
@@ -929,7 +939,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
         carVel.set(Math.sin(car.yaw) * car.speed, 0, Math.cos(car.yaw) * car.speed);
         cam.chase(dt, {
           position: car.group.position, velocity: carVel, yaw: car.speed < -0.5 ? car.yaw + Math.PI : car.yaw,
-          height: 1.9, distance: Math.max(7, cam.distance * 1.7), speedFrac: Math.min(1, Math.abs(car.speed) / 30),
+          // A taller, longer vehicle (the marshrutka) is followed from higher and further back.
+          height: 1.9 + (car.spec.length - 3.9) * 0.45, distance: Math.max(7, cam.distance * 1.7) + (car.spec.length - 3.9) * 1.1, speedFrac: Math.min(1, Math.abs(car.speed) / 30),
         }, { follow: 5, lead: 0.22, leadMax: 4, fovKick: 14, horizontal: 12, vertical: 6 });
         cam.shake(car.bump * 0.7);
       } else if (view === 'helmet') {
@@ -1074,6 +1085,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
 
   const handle: WorldSurfaceHandle = {
     input, telemetry, profile, build,
+    city: earth?.street ?? null,
     startAudio: () => { audio.start(); earth?.startAudio(); },
     teleport(x, z) {
       cosmonaut.position.set(x, floorAt(x, z), z);

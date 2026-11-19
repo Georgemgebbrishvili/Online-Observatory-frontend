@@ -2897,7 +2897,7 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: min(560px, calc(100% - 320px));
+  width: min(560px, calc(100% - 470px));
   bottom: calc(var(--edge-bottom) + 58px);
   margin: 0;
   font: 400 12px/1.35 var(--font-body), system-ui, sans-serif;
@@ -3457,3 +3457,138 @@
 @keyframes npc-pulse { from { opacity: 1; } to { opacity: 0.45; } }
 @media (prefers-reduced-motion: reduce) { .npc-hud__bark, .npc-hud__talk, .npc-hud__cross[data-hit], .npc-hud__bar[data-low] .npc-hud__bar-track i { animation: none; } }
 @media (max-width: 600px) { .npc-hud__status { width: 170px; top: max(64px, calc(env(safe-area-inset-top) + 56px)); } }
+
+/* ── Tbilisi street life (CityHud): the minimap and GPS, the stars and the
+   cash, the fare, the radio, the arrest, and the city map. ── */
+.city-hud { position: absolute; inset: 0; pointer-events: none; z-index: 28; font-family: var(--font-body, 'Geist'), system-ui, sans-serif; color: #f4f4f2; }
+.moon-surface:not([data-phase='surface']) .city-hud,
+.moon-surface[data-immersive='true'] .city-hud { display: none; }
+.city-hud button { pointer-events: auto; }
+/* Out of sight of the ship, the way-back key takes the top right: the stars and cash go under it. */
+.moon-surface[data-far='true'] .city-hud__status { top: calc(var(--edge-top) + 120px); }
+.moon-surface[data-far='true'] .city-hud[data-touch='true'] .city-hud__fare { top: calc(var(--edge-top) + 176px); }
+.city-hud__status {
+  position: absolute; right: var(--edge-right); top: calc(var(--edge-top) + 54px);
+  display: grid; justify-items: end; gap: 4px;
+}
+.city-hud__stars { display: flex; gap: 2px; color: rgba(244, 244, 242, 0.22); filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)); }
+.city-hud__stars[data-on='false'] { display: none; }
+.city-hud__stars svg[data-lit='true'] { color: #e2b85a; fill: #e2b85a; filter: drop-shadow(0 0 6px rgba(226, 184, 90, 0.7)); }
+.city-hud__stars[data-evading='true'] svg[data-lit='true'] { animation: city-blink 0.6s steps(2, jump-none) infinite; }
+.city-hud__cash {
+  font-family: var(--font-mono, 'JetBrains Mono'), monospace; font-size: 15px; font-weight: 600; color: #8ee6a8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.city-hud__bust {
+  position: absolute; left: 50%; top: 22%; transform: translateX(-50%);
+  display: grid; gap: 6px; justify-items: center; padding: 9px 16px; border-radius: 10px;
+  background: rgba(13, 13, 13, 0.78); border: 1px solid rgba(227, 72, 44, 0.6);
+  font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: #fff1d6;
+}
+.city-hud__bust i { display: block; width: 180px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.12); overflow: hidden; position: relative; }
+.city-hud__bust i::after { content: ''; position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--v, 0)); background: #e3482c; }
+
+.city-hud__mapwrap { position: absolute; left: var(--edge-left); bottom: var(--edge-bottom); width: 196px; height: 196px; }
+.city-hud__mini {
+  width: 100%; height: 100%; border-radius: 50%; display: block;
+  box-shadow: 0 0 0 2px rgba(244, 244, 242, 0.18), 0 6px 22px rgba(0, 0, 0, 0.55);
+}
+.city-hud button.city-hud__mapkey {
+  position: absolute; right: -6px; top: -6px; display: inline-flex; align-items: center; gap: 4px;
+  height: 30px; padding: 0 8px; border-radius: 10px; border: 1px solid rgba(244, 244, 242, 0.2);
+  background: rgba(13, 13, 13, 0.82); color: #f4f4f2; cursor: pointer;
+}
+.city-hud__mapkey kbd { font-family: var(--font-mono, 'JetBrains Mono'), monospace; font-size: 13px; color: #b8b8b4; }
+.city-hud__mapkey:focus-visible { outline: 2px solid #f0785a; outline-offset: 2px; }
+.city-hud__health { position: absolute; left: 22px; right: 22px; bottom: -12px; height: 6px; border-radius: 3px; background: rgba(13, 13, 13, 0.8); overflow: hidden; box-shadow: 0 0 0 1px rgba(244, 244, 242, 0.18); }
+.city-hud__health i { position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--v, 1)); background: #8ee6a8; transition: transform 200ms linear; }
+.city-hud__health[data-low='true'] i { background: #e3482c; animation: city-blink 0.8s ease-in-out infinite alternate; }
+
+.city-hud__fare {
+  position: absolute; left: var(--edge-left); bottom: calc(var(--edge-bottom) + 216px);
+  display: grid; gap: 3px; max-width: 280px; padding: 9px 12px; border-radius: 10px;
+  background: rgba(13, 13, 13, 0.8); border-left: 3px solid #e2b85a;
+}
+.city-hud__fare-where { font-size: 14px; font-weight: 600; color: #fff1d6; }
+.city-hud__fare-meta { font-family: var(--font-mono, 'JetBrains Mono'), monospace; font-size: 13px; color: #b8b8b4; }
+.city-hud__fare[data-late='true'] { border-left-color: #e3482c; }
+
+.city-hud__note {
+  position: absolute; left: 50%; top: 30%; transform: translateX(-50%); max-width: min(520px, calc(100% - 32px));
+  padding: 9px 18px; border-radius: 10px; background: rgba(13, 13, 13, 0.8); font-size: 16px; text-align: center;
+  color: #fff1d6; animation: city-in 260ms ease-out both;
+}
+.city-hud__note[data-kind='wanted'], .city-hud__note[data-kind='wrecked'] { border: 1px solid rgba(227, 72, 44, 0.7); color: #ffd2c4; }
+.city-hud__note[data-kind='lost'], .city-hud__note[data-kind='fareDone'] { border: 1px solid rgba(142, 230, 168, 0.55); }
+
+.city-hud__radio {
+  position: absolute; left: 50%; top: calc(var(--edge-top) + 56px); transform: translateX(-50%);
+  display: grid; grid-template-columns: auto auto; column-gap: 8px; row-gap: 1px; align-items: center; justify-items: start;
+  padding: 8px 14px; border-radius: 10px; background: rgba(13, 13, 13, 0.78); animation: city-in 220ms ease-out both;
+}
+.city-hud__radio svg { grid-row: span 2; color: #e3482c; }
+.city-hud__radio-name { font-family: var(--font-display, 'Anton'), sans-serif; font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase; color: #fff1d6; }
+.city-hud__radio-line { font-size: 13px; color: #b8b8b4; }
+.city-hud__radio small { grid-column: 2; font-family: var(--font-mono, 'JetBrains Mono'), monospace; font-size: 13px; color: #969692; }
+
+.city-hud__busted {
+  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 10px;
+  background: radial-gradient(ellipse at center, rgba(13, 13, 13, 0.35), rgba(13, 13, 13, 0.82));
+  animation: city-fade 600ms ease-out both;
+}
+.city-hud__busted b {
+  font-family: var(--font-display, 'Anton'), sans-serif; font-size: clamp(56px, 11vw, 120px); line-height: 1; letter-spacing: 0.04em;
+  text-transform: uppercase; color: #e3482c; text-shadow: 0 0 30px rgba(227, 72, 44, 0.45), 4px 4px 0 #050507;
+}
+.city-hud__busted span { font-size: 16px; color: #fff1d6; }
+
+.city-hud__drivekeys { position: absolute; right: var(--edge-right); bottom: calc(var(--edge-bottom) + 176px); display: flex; gap: 8px; }
+.city-hud__drivekeys .moon-hud__key { pointer-events: auto; }
+
+.city-map {
+  position: absolute; inset: 0; z-index: 40; pointer-events: auto; display: grid;
+  grid-template-columns: 1fr 240px; grid-template-rows: auto 1fr; background: rgba(5, 5, 7, 0.94);
+}
+.city-map__head { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid rgba(244, 244, 242, 0.1); }
+.city-map__head span { font-family: var(--font-display, 'Anton'), sans-serif; font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase; }
+.city-map__head small { flex: 1; font-size: 13px; color: #969692; }
+.city-map__head button, .city-map__zoom button {
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; cursor: pointer;
+  border: 1px solid rgba(244, 244, 242, 0.2); background: rgba(244, 244, 242, 0.06); color: #f4f4f2;
+}
+.city-map__canvas { width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
+.city-map__side { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 14px; border-left: 1px solid rgba(244, 244, 242, 0.1); min-height: 0; }
+.city-map__zoom { display: flex; gap: 8px; }
+.city-map__places { list-style: none; margin: 0; padding: 0; overflow-y: auto; display: grid; align-content: start; gap: 4px; }
+.city-map__places button {
+  width: 100%; text-align: left; padding: 8px 10px; border-radius: 8px; border: 0; cursor: pointer;
+  background: rgba(244, 244, 242, 0.05); color: #f4f4f2; font: inherit; font-size: 14px;
+}
+.city-map__places button:hover, .city-map__places button:focus-visible { background: rgba(227, 72, 44, 0.18); outline: none; }
+.city-map button.city-map__clear {
+  padding: 10px 12px; border-radius: 10px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 600;
+  border: 0; color: #fff1d6; background: linear-gradient(#d9442a, #b8321f); box-shadow: 3px 3px 0 #050507;
+}
+.city-map button:focus-visible { outline: 2px solid #f0785a; outline-offset: 2px; }
+/* The HUD's keys take every touch for the game; on the map a finger must still scroll the list. */
+.city-map button { touch-action: manipulation; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* A touch screen: the minimap small, beside the stick (above it on a narrow upright phone). */
+.city-hud[data-touch='true'] .city-hud__mapwrap { width: 104px; height: 104px; left: calc(var(--edge-left) + 132px); bottom: calc(var(--edge-bottom) + 6px); }
+@media (max-width: 599px) {
+  .city-hud[data-touch='true'] .city-hud__mapwrap { left: var(--edge-left); bottom: calc(var(--edge-bottom) + 132px); }
+}
+.city-hud[data-touch='true'] .city-hud__fare { left: auto; right: var(--edge-right); bottom: auto; top: calc(var(--edge-top) + 112px); max-width: 220px; }
+@media (max-width: 700px) {
+  .city-map { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+  .city-map__side { border-left: 0; border-top: 1px solid rgba(244, 244, 242, 0.1); grid-template-rows: auto auto auto; max-height: 34vh; }
+  .city-map__places { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; overflow-y: hidden; }
+  .city-map__head small { display: none; }
+}
+@keyframes city-blink { from { opacity: 1; } to { opacity: 0.25; } }
+@keyframes city-in { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes city-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .city-hud__stars[data-evading='true'] svg[data-lit='true'], .city-hud__health[data-low='true'] i { animation: none; }
+  .city-hud__note, .city-hud__radio, .city-hud__busted { animation: none; }
+}

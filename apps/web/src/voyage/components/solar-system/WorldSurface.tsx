@@ -30,6 +30,7 @@ import { noteContextLoss, rebuildWhenVisible } from '@/voyage/game/gpu-recovery'
 import { hasObjectives } from '@/voyage/game/mode';
 import { story, storyLine } from '@/voyage/game/story';
 import { NpcHud } from './NpcHud';
+import { CityHud, type CityHudHandle } from './CityHud';
 
 interface WorldSurfaceProps {
   world: WorldId;
@@ -54,6 +55,9 @@ interface WorldSurfaceProps {
 /** Each world's own notes under the controls: the place, not the keys. */
 const KEY_TIPS = ['r5', 'r6', 'r7'] as const;
 const TOUCH_TIPS = ['t5', 't6'] as const;
+/** Tbilisi's streets have more to them: the cars, the police, the map. */
+const EARTH_KEY_TIPS = [...KEY_TIPS, 'r8', 'r9'] as const;
+const EARTH_TOUCH_TIPS = [...TOUCH_TIPS, 't7'] as const;
 const fmtTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const fmtRange = (m: number) => (m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${Math.round(m)} m`);
 const PPD = 3.1;
@@ -174,6 +178,12 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
   onPauseRequestRef.current = onPauseRequest;
   const pausedRef = useRef(false);
   pausedRef.current = !!paused || !!standby;
+  // Tbilisi's city map: the world holds still while it is open.
+  const [cityMap, setCityMap] = useState(false);
+  const cityMapRef = useRef(false);
+  cityMapRef.current = cityMap;
+  const cityHudRef = useRef<CityHudHandle>(null);
+  const cityStreet = useCallback(() => handleRef.current?.city ?? null, []);
   // The translator is read through a ref: a new identity (a locale switch)
   // must not tear the scene down and rebuild it.
   const tRef = useRef(t);
@@ -255,14 +265,15 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
     let cancelFailed: (() => void) | null = null;
     const run = (handle: WorldSurfaceHandle): (() => void) => {
       handleRef.current = handle;
-      handle.setPaused(pausedRef.current);
+      handle.setPaused(pausedRef.current || cityMapRef.current);
       beginEntry();
       onProgressRef.current?.('compile');
       let readyReported = false;
       const controls = attachSurfaceControls({
         mount, input: handle.input, touch: touchRef.current,
-        paused: () => pausedRef.current,
+        paused: () => pausedRef.current || cityMapRef.current,
         wake: handle.startAudio,
+        onMap: isEarth ? () => setCityMap((o) => !o) : undefined,
         onCrouch: setCrouch,
         flying: () => !!handleRef.current?.telemetry.flying,
         onPauseRequest: () => onPauseRequestRef.current?.(),
@@ -440,6 +451,7 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
         }
         const ea = tel.earth;
         if (ea) {
+          cityHudRef.current?.paint(ea.city, tel.heading, now);
           const ex = ea.expedition;
           text(clockRef.current, ea.clock);
           const obj = objRef.current;
@@ -573,9 +585,11 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
   // drawing it unseen would halve the flight's frame rate on the approach,
   // and its descent clock would run on without the player.
   useEffect(() => {
-    handleRef.current?.setPaused(!!paused || !!standby);
-    if (paused) unlockPointer();
-  }, [paused, standby, glGeneration]);
+    handleRef.current?.setPaused(!!paused || !!standby || cityMap);
+    if (paused || cityMap) unlockPointer();
+  }, [paused, standby, glGeneration, cityMap]);
+  // Out of the city and back, the map is closed.
+  useEffect(() => { if (!isEarth) setCityMap(false); }, [isEarth]);
 
   const capture = (e: React.PointerEvent<HTMLElement>) => {
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* no live pointer: the key still works */ }
@@ -805,7 +819,7 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
               <span>{t('help')}</span>
               <button type="button" onClick={() => setHelp(false)} aria-label={t('close')}><X size={14} aria-hidden /></button>
             </div>
-            <ControlsHelp touch={touch} moon={false} tips={(touch ? TOUCH_TIPS : KEY_TIPS).map((k) => tw(`keys.${k}`))} />
+            <ControlsHelp touch={touch} moon={false} tips={(isEarth ? (touch ? EARTH_TOUCH_TIPS : EARTH_KEY_TIPS) : (touch ? TOUCH_TIPS : KEY_TIPS)).map((k) => tw(`keys.${k}`))} />
           </div>
         )}
 
@@ -827,6 +841,7 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
         )}
 
         {!isEarth && <NpcHud get={npcTel} choose={npcChoose} close={npcClose} touch={touch} onFire={npcFire} />}
+        {isEarth && <CityHud ref={cityHudRef} street={cityStreet} touch={touch} open={cityMap} onOpen={setCityMap} />}
         <div ref={bannerRef} className="moon-hud__banner" role="status" hidden><span /></div>
         <div ref={readoutRef} className="moon-hud__readout" role="status" hidden />
         <div ref={dialogRef} className="moon-hud__dialog" role="status" hidden>

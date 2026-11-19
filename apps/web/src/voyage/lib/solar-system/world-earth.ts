@@ -26,6 +26,9 @@ import { makeTbilisiExpedition, type ExpeditionEvent, type ExpeditionTelemetry }
 import { makeCar, type CarHandle, type CarInput, type CarWorld } from '@/voyage/lib/solar-system/world-earth-car';
 import { makePeople, type Mover } from '@/voyage/lib/solar-system/world-earth-people';
 import { makeTraffic } from '@/voyage/lib/solar-system/world-earth-traffic';
+import { makeRoadGraph } from '@/voyage/lib/solar-system/world-earth-roads';
+import { makePolice } from '@/voyage/lib/solar-system/world-earth-police';
+import { makeStreet, type CityState, type Place, type Street } from '@/voyage/lib/solar-system/world-earth-street';
 
 /** From 600 m over the city, sinking at 38 m/s, coming in from the north-west over the river. The
  *  guidance only closes about a tenth of the gap a second, so the entry leaves it nearly overhead. */
@@ -47,6 +50,8 @@ export interface EarthState {
   /** The rooftop's street door and the telescope on the roof, where the bake found a roof. */
   door: { x: number; z: number } | null;
   telescope: { x: number; z: number; y: number };
+  /** Street life: cash, the stars, the fare, the GPS, the radio. */
+  city: CityState;
 }
 
 export interface EarthWorld {
@@ -69,8 +74,11 @@ export interface EarthWorld {
   confine: (pos: THREE.Vector3, prev: THREE.Vector3) => void;
   update: (dt: number, crew: THREE.Vector3, heading: number, use: boolean, cameraPos: THREE.Vector3, place: (x: number, y: number, z: number) => void) => void;
   onEvent: ((kind: ExpeditionEvent | 'arrived' | 'enterCar' | 'exitCar') => void) | null;
-  /** The pilot's car, parked by the pad. */
+  /** The pilot's car: parked by the pad at first, then whatever the pilot last drove. */
   car: CarHandle;
+  street: Street;
+  /** Held still (an arrest): no walking, no driving. */
+  frozen: () => boolean;
   driving: () => boolean;
   /** One simulation step at the wheel. `colliders` are the scene's own (the lander, the landmarks). */
   drive: (dt: number, input: CarInput, colliders: Collider[]) => void;
@@ -131,7 +139,9 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
   const ambience = makeCityAmbience();
   // The pilot's car, parked on the lawn east of the pad, nose to the north.
   const car = makeCar(9, -3, Math.PI, heightAt, lite);
-  const traffic = makeTraffic(data, lite);
+  car.group.name = 'player-car';
+  const graph = makeRoadGraph(data.roads);
+  const traffic = makeTraffic(graph, lite);
   const blockedMemo = new Map<number, boolean>();
   const people = makePeople(data, {
     floorAt: (x, z) => { const d = streets.deckAt(x, z); return Number.isNaN(d) ? heightAt(x, z) : Math.max(heightAt(x, z) - 0.5, d); },
@@ -147,15 +157,17 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
       return hit;
     },
   }, lite);
-  group.add(car.group, traffic.group, people.group);
+  group.add(car.group, car.fx, traffic.group, people.group);
   let driving = false;
   const movers: Mover[] = [];
   const carMovers: Mover[] = [];
   const nearPeople: Mover[] = [];
   const walkerList: Collider[] = [];
+  const streetObstacles: Collider[] = [];
   const doorAt = new THREE.Vector3();
   const crewMover: Mover = { x: 0, z: 0, vx: 0, vz: 0, r: 0.5 };
   const parkedCar: Mover = { x: 0, z: 0, vx: 0, vz: 0, r: 1.9 };
+  const policeMovers: Mover[] = [];
   // What the car runs into this step: the scene's colliders plus the traffic, in one reused list.
   const hits: Collider[] = [];
   const carWorld: CarWorld = {
@@ -164,6 +176,18 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
     isWater: streets.isWater,
     colliders: () => hits,
   };
+  // No building on the line between two points: sampled every few metres.
+  const lineClear = (ax: number, az: number, bx: number, bz: number) => {
+    const L = Math.hypot(bx - ax, bz - az);
+    const n = Math.ceil(L / 6);
+    for (let k = 1; k < n; k++) {
+      const t = k / n;
+      if (!Number.isNaN(city.roofAt(ax + (bx - ax) * t, az + (bz - az) * t))) return false;
+    }
+    return true;
+  };
+  const police = makePolice({ graph, car: { floorAt: carWorld.floorAt, pushOut: carWorld.pushOut, isWater: carWorld.isWater }, lineClear }, lite);
+  group.add(police.group);
 
   const roof = city.rooftop;
   const site = (id: string) => landmarks.sites[id] ?? { x: 0, z: 0 };
@@ -181,10 +205,31 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
   });
   group.add(expedition.group);
 
+  // Where a fare may ask to go, and what the map names.
+  const places: Place[] = [{ id: 'pad', x: data.manifest.pad.x, z: data.manifest.pad.z }];
+  for (const id of ['sameba', 'bridgeOfPeace', 'rikeTubes', 'tvTower', 'ferrisWheel', 'kartlisDeda', 'narikala']) {
+    const s = landmarks.sites[id];
+    if (s) places.push({ id, x: s.x, z: s.z });
+  }
+  const baths = landmarks.pois.find((p) => p.id === 'abanotubani');
+  if (baths) places.push({ id: 'abanotubani', x: baths.x, z: baths.z });
+  if (cable) places.push({ id: 'cableCar', x: cable.bottom.x, z: cable.bottom.z });
+  if (roof) places.push({ id: 'rooftop', x: roof.door[0], z: roof.door[1] });
+  const street = makeStreet({
+    data, graph, traffic, people, police, car, ambience, places,
+    release: { x: data.manifest.pad.x + 6, z: data.manifest.pad.z + 8 },
+    blocked: (x, z) => streets.isWater(x, z) || !Number.isNaN(city.roofAt(x, z)),
+    floorAt: (x, z) => floorAt(x, z),
+    driving: () => driving,
+    enter: () => { driving = true; handle.onEvent?.('enterCar'); },
+    exit: () => { driving = false; handle.onEvent?.('exitCar'); },
+  });
+  traffic.onHonk = (x, z) => ambience.honk(Math.hypot(x - crewMover.x, z - crewMover.z));
+
   const state: EarthState = {
     expedition: expedition.telemetry, clock: tbilisiClock(now), riding: false, onRoof: false, target: null,
     outsideC: null, date: sky.state.date, sunAlt: sky.state.sunAlt, night: sky.state.night,
-    door: roof ? { x: roof.door[0], z: roof.door[1] } : null, telescope,
+    door: roof ? { x: roof.door[0], z: roof.door[1] } : null, telescope, city: street.state,
   };
   let rideS = -1;
   let clockMinute = Math.floor(sky.state.dateMs / 60_000);
@@ -237,6 +282,7 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
     pois: [...landmarks.pois],
     interactables: [
       ...expedition.interactables,
+      ...street.interactables,
       {
         id: 'enterCar', priority: 3, mode: 'foot',
         where: () => { car.door(doorAt); return { x: doorAt.x, z: doorAt.z, r: 2.8 }; },
@@ -259,13 +305,17 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
     cameraColliders: (x, z) => city.cameraColliders(x, z),
     carried: () => rideS >= 0,
     car,
+    street,
+    frozen: street.frozen,
     driving: () => driving,
     drive(dt, input, colliders) {
       traffic.movers(car.position.x, car.position.z, 30, carMovers);
       hits.length = 0;
       for (const c of colliders) hits.push(c);
       for (const m of carMovers) hits.push(m);
+      for (const m of street.policeMovers(policeMovers)) hits.push(m);
       car.update(dt, input, carWorld, sky.state.night);
+      street.afterDrive();
     },
     welcome: (x, z, faceX, faceZ) => people.welcome(x, z, faceX, faceZ),
     cheering: () => people.cheering(),
@@ -273,6 +323,7 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
       traffic.movers(x, z, 20, carMovers);
       walkerList.length = 0;
       for (const m of carMovers) walkerList.push(m);
+      for (const m of street.policeMovers(policeMovers)) walkerList.push(m);
       return walkerList;
     },
     confine(pos, prev) {
@@ -325,15 +376,23 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
 
       // ── The street: people make way for the pilot and the cars; the cars stop for both. ──
       movers.length = 0;
-      if (driving) { crewMover.x = car.position.x; crewMover.z = car.position.z; crewMover.vx = Math.sin(car.yaw) * car.speed; crewMover.vz = Math.cos(car.yaw) * car.speed; crewMover.r = 1.9; }
+      if (driving) { crewMover.x = car.position.x; crewMover.z = car.position.z; crewMover.vx = Math.sin(car.yaw) * car.speed; crewMover.vz = Math.cos(car.yaw) * car.speed; crewMover.r = car.spec.hull; }
       else { crewMover.x = crew.x; crewMover.z = crew.z; crewMover.vx = 0; crewMover.vz = 0; crewMover.r = 0.5; }
       movers.push(crewMover);
       traffic.movers(crew.x, crew.z, 60, carMovers);
       for (const m of carMovers) movers.push(m);
+      for (const m of street.policeMovers(policeMovers)) movers.push(m);
       people.update(dt, crew.x, crew.z, movers);
       people.colliders(crew.x, crew.z, 120, nearPeople);
       nearPeople.push(crewMover);
-      if (!driving) { parkedCar.x = car.position.x; parkedCar.z = car.position.z; nearPeople.push(parkedCar); }
+      if (!driving) { parkedCar.x = car.position.x; parkedCar.z = car.position.z; parkedCar.r = car.spec.hull; nearPeople.push(parkedCar); }
+      // The patrols drive round people, the pilot and the traffic; the traffic stops for the patrols.
+      const obstacles = streetObstacles;
+      obstacles.length = 0;
+      for (const m of nearPeople) obstacles.push(m);
+      for (const m of carMovers) obstacles.push(m);
+      street.update(dt, crew, sky.state.night, obstacles, place);
+      for (const m of street.policeMovers(policeMovers)) nearPeople.push(m);
       traffic.update(dt, crew.x, crew.z, nearPeople, sky.state.night, floorAt);
       ambience.engine(driving ? Math.abs(car.speed) : -1);
       ambience.cheer(people.cheering());
@@ -349,8 +408,10 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
     advance: () => expedition.advance(),
     startAudio: () => ambience.start(),
     dispose() {
+      street.dispose();
       ambience.dispose();
       car.dispose();
+      police.dispose();
       traffic.dispose();
       people.dispose();
       expedition.dispose();
