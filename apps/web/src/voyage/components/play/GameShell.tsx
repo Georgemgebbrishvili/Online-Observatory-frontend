@@ -285,7 +285,9 @@ export default function GameShell() {
   // to come. Proxima b keeps the plasma of the entry here.
   const insertion = scene !== 'orbit' && isGlobeWorld(scene);
   const loaderVariant: LoaderVariant = scene === 'orbit' ? (fromSurface ? 'ascent' : 'orrery') : insertion ? 'insertion' : 'entry';
-  const loaderBody: LoaderBody = scene === 'orbit' ? (fromSurface ? from : 'earth') : scene;
+  // The station is in orbit round Earth: its loader shows Earth (and a climb from it, the Earth too).
+  const asBody = (x: GameScene): LoaderBody => (x === 'station' || x === 'orbit' ? 'earth' : x);
+  const loaderBody: LoaderBody = scene === 'orbit' ? (fromSurface ? asBody(from) : 'earth') : asBody(scene);
 
   return (
     <div ref={rootRef} className="game-shell" data-state={state} data-rotate={turned && inWorld ? 'cw' : undefined}>

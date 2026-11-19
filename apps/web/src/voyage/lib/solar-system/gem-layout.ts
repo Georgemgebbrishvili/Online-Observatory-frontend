@@ -40,9 +40,9 @@ export const GEM_INFO: Record<GemKind, GemKindInfo> = {
   gold: { points: 10, rarity: 'common', color: [1.0, 0.72, 0.18], rough: 1 },
 };
 
-export type GemWorld = 'moon' | 'mercury' | 'venus' | 'earth' | 'mars' | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'proximaB';
+export type GemWorld = 'moon' | 'mercury' | 'venus' | 'earth' | 'mars' | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'proximaB' | 'station';
 /** Every world with gems, in the order the menus list them (out from the Sun, the Moon after Earth, Proxima b last). */
-export const GEM_WORLDS: readonly GemWorld[] = ['mercury', 'venus', 'earth', 'moon', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'proximaB'];
+export const GEM_WORLDS: readonly GemWorld[] = ['mercury', 'venus', 'earth', 'moon', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'proximaB', 'station'];
 export const isGemWorld = (v: unknown): v is GemWorld => typeof v === 'string' && (GEM_WORLDS as readonly string[]).includes(v);
 
 export type GemTier = 'near' | 'far' | 'high';
@@ -72,14 +72,14 @@ export const GEM_FLY_ONLY_ALT = 6;
 /** The fence round each scene, m from the origin. */
 export const GEM_WALK_RADIUS: Record<GemWorld, number> = {
   moon: 165, mercury: 165, venus: 150, earth: 1950, mars: 165, proximaB: 165,
-  jupiter: 42 - 2.6, saturn: 42 - 2.6, uranus: 42 - 2.6, neptune: 42 - 2.6,
+  jupiter: 42 - 2.6, saturn: 42 - 2.6, uranus: 42 - 2.6, neptune: 42 - 2.6, station: 40 - 3.5,
 };
 const DECK_WORLDS: readonly GemWorld[] = ['jupiter', 'saturn', 'uranus', 'neptune'];
 export const isDeckGemWorld = (w: GemWorld) => DECK_WORLDS.includes(w);
 /** Where the ship sets down. */
 export const GEM_LANDING: Record<GemWorld, { x: number; z: number }> = {
   moon: { x: 0, z: 20 }, mercury: { x: 0, z: 20 }, venus: { x: 0, z: 20 }, earth: { x: 0, z: 0 }, mars: { x: 0, z: 20 }, proximaB: { x: 0, z: 20 },
-  jupiter: { x: 0, z: 0 }, saturn: { x: 0, z: 0 }, uranus: { x: 0, z: 0 }, neptune: { x: 0, z: 0 },
+  jupiter: { x: 0, z: 0 }, saturn: { x: 0, z: 0 }, uranus: { x: 0, z: 0 }, neptune: { x: 0, z: 0 }, station: { x: 0, z: 0 },
 };
 /** The roofs: where a gem sits on top of a building, and how high its centre is over the floor. */
 const ROOFS: Partial<Record<GemWorld, { x: number; z: number; alt: number }[]>> = {
@@ -119,7 +119,7 @@ const KEEP_OUT: Partial<Record<GemWorld, KeepOut[]>> = {
 
 const SEED: Record<GemWorld, number> = {
   moon: 9011, mercury: 1601, venus: 2251, earth: 4144, mars: 4311, proximaB: 7727,
-  jupiter: 5201, saturn: 5691, uranus: 1921, neptune: 3071,
+  jupiter: 5201, saturn: 5691, uranus: 1921, neptune: 3071, station: 6271,
 };
 
 /** Which kinds each world grows, and how likely each is (higher is commoner). */
@@ -135,6 +135,8 @@ const POOLS: Record<GemWorld, Partial<Record<GemKind, number>>> = {
   saturn: { diamond: 0.5, sapphire: 2, ice: 6 },
   uranus: { diamond: 0.7, sapphire: 2, ice: 6 },
   neptune: { diamond: 0.7, sapphire: 2, ice: 6 },
+  // Lost overboard: a station trades in everything.
+  station: { diamond: 1, meteorite: 2, gold: 4, sapphire: 2 },
 };
 
 function hash(ix: number, iy: number, seed: number): number {

@@ -30,10 +30,10 @@
 
 import * as THREE from 'three';
 
-export type WorldId = 'mars' | 'proximaB' | 'earth' | 'mercury' | 'venus' | 'jupiter' | 'saturn' | 'uranus' | 'neptune';
+export type WorldId = 'mars' | 'proximaB' | 'earth' | 'mercury' | 'venus' | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'station';
 
 /** Every world the surface scene can be built for, in order out from the Sun (then Proxima b). */
-export const WORLD_IDS: readonly WorldId[] = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'proximaB'];
+export const WORLD_IDS: readonly WorldId[] = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'proximaB', 'station'];
 
 export interface SkyMoon {
   id: string;
@@ -529,6 +529,8 @@ export const VENUS: WorldProfile = {
 // their sky: their moons along the plane of the equator, and on Saturn
 // the rings, a bright arch from horizon to horizon. ──
 const DECK_R = 42;
+/** Stellar Station's concourse deck, m. */
+const STATION_R = 40;
 
 /** Jupiter: 14° S, in the South Equatorial Belt just north of the Great Red
  *  Spot (planet-frame's site). The cloud tops are ammonia ice, cream and
@@ -752,9 +754,61 @@ export const NEPTUNE: WorldProfile = {
   },
 };
 
+// ── Stellar Station: the hub in low Earth orbit, boarded from the dock
+// alongside it. Its concourse is an open deck under the stars (spin gravity,
+// suits on), the station's ring arching overhead, and four hundred
+// kilometres below, Earth: the deck's "sea" is the ocean and the cloud. ──
+export const STATION: WorldProfile = {
+  id: 'station',
+  gravity: 9.81,
+  sunDir: v(0.7, 0.32, -0.45),
+  sun: {
+    color: 0xfffaf2, intensity: 4.2,
+    disc: c(9.0, 8.8, 8.4), discScale: 60,
+    halo: 0xfff6ea, haloOpacity: 0.14, haloScale: 400,
+  },
+  sky: {
+    zenith: c(0, 0, 0), horizon: c(0.015, 0.03, 0.07),
+    glow: c(1, 0.97, 0.92), glowPower: 40,
+    fillSky: 0x1a2236, fillGround: 0x2a5a8a, fill: 0.55,
+    fog: 0x000000, fogNear: 4000, fogFar: 40000,
+    stars: 1,
+    aurora: false,
+    moons: [{ id: 'moon', size: 6, color: 0xd8d4cc, dir: v(-0.5, 0.42, -0.75).normalize(), axis: v(0, 1, 0), rate: -0.0004, lumpy: true }],
+    stars2: [],
+  },
+  ground: {
+    plain: [0.4, 0.42, 0.45], dark: [0.2, 0.22, 0.26], pale: [0.7, 0.72, 0.75],
+    rockA: 0x505860, rockB: 0x8a929a,
+    dust: [0.5, 0.5, 0.52], dunes: 0, craters: 0, relief: 0,
+    warp: 0, mesas: 0, terraces: 0,
+    slopeRock: [0.4, 0.42, 0.45], sand: [0.5, 0.5, 0.52],
+    water: null, seed: 6271,
+  },
+  atmosphere: {
+    rayleigh: [1e-5, 1e-5, 1e-5], absorb: [0, 0, 0], mie: 1e-5, mieTint: [1, 1, 1], mieG: 0.8, turbidity: 1,
+    sunIntensity: 30, sunTint: [1, 0.98, 0.95], ambient: [0, 0, 0],
+    hazeBeta: 2e-5, hazeColor: [0.01, 0.01, 0.02], hazeSun: [0.62, 0.6, 0.56],
+  },
+  clouds: null,
+  giant: null,
+  formations: null,
+  crystals: null,
+  ambientC: -150,
+  walkRadius: STATION_R - 2.6,
+  pad: { x: 0, z: -26 },
+  deck: {
+    radius: STATION_R, seaDepth: 320,
+    // Earth from orbit: deep ocean in the gaps, two blues, cloud tops white.
+    sea: [[0.01, 0.04, 0.12], [0.04, 0.16, 0.38], [0.5, 0.62, 0.78], [1.0, 1.0, 1.0]],
+    towers: 10, wind: [7, 1.5],
+  },
+};
+
 export const WORLDS: Record<WorldId, WorldProfile> = {
   mars: MARS, proximaB: PROXIMA_B, earth: EARTH,
   mercury: MERCURY, venus: VENUS, jupiter: JUPITER, saturn: SATURN, uranus: URANUS, neptune: NEPTUNE,
+  station: STATION,
 };
 
 /** The bodies a ship can go down to, and how low it must be, km: about one

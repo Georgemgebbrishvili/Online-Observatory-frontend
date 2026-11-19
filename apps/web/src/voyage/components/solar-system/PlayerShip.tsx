@@ -574,10 +574,12 @@ export function PlayerShip({ session, onActiveChange, onLand, onStandby, onWarm,
       // (L, or the card by the stick) and the computer flies the way down,
       // in the surface's own scene, from the top of the entry. Flying into
       // the ground instead is a wreck.
-      const ceiling = LANDING_SITES[tel.nearId];
-      const flyable = tel.pilot === 'ship' && !tel.crashed && tel.jumpPhase === 'none' && !tel.docked && !session.paused;
-      const site = ceiling !== undefined ? (tel.nearId as LandingSite) : null;
-      const ready = !!site && tel.nearAltKm < ceiling;
+      // Docked at the station round Earth: the card is the way aboard, and it is always ready.
+      const atStation = tel.docked && tel.dockedTo === 'iss' && tel.pilot === 'ship' && !tel.crashed && !session.paused;
+      const ceiling = atStation ? 1 : LANDING_SITES[tel.nearId];
+      const flyable = atStation || (tel.pilot === 'ship' && !tel.crashed && tel.jumpPhase === 'none' && !tel.docked && !session.paused);
+      const site = atStation ? 'station' : ceiling !== undefined ? (tel.nearId as LandingSite) : null;
+      const ready = atStation || (!!site && tel.nearAltKm < ceiling);
       const canLand = ready && flyable;
       // A radius or so out: the world's files and data start down.
       const radiusKm = site ? siteRadiusKm(site) : 0;
@@ -610,11 +612,11 @@ export function PlayerShip({ session, onActiveChange, onLand, onStandby, onWarm,
         landKey.hidden = !site || !flyable;
         landKey.dataset.ready = String(ready);
         const label = `${tel.nearId}:${ready}:${touch}`;
-        if (!landKey.hidden) landSiteRef.current = tel.nearId as LandingSite;
-        if (!landKey.hidden && landLabelRef.current !== label && site) {
-          landLabelRef.current = label;
-          text(landTextRef.current, t(`landOn.${tel.nearId}`));
-          text(landStateRef.current, ready ? t(touch ? 'landTap' : 'landPress') : t('landDescend', { n: fmt(ceiling) }));
+        if (!landKey.hidden) landSiteRef.current = site ?? (tel.nearId as LandingSite);
+        if (!landKey.hidden && landLabelRef.current !== `${label}:${atStation}` && site) {
+          landLabelRef.current = `${label}:${atStation}`;
+          text(landTextRef.current, t(`landOn.${site}`));
+          text(landStateRef.current, ready ? t(atStation ? (touch ? 'boardTap' : 'boardPress') : touch ? 'landTap' : 'landPress') : t('landDescend', { n: fmt(ceiling) }));
         }
         // How far down to landing range, on a log scale: full in range.
         if (!landKey.hidden && ceiling) {

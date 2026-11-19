@@ -47,7 +47,8 @@ import { hasOutpost, holdOverDeck, landingPad, makeOutpost } from '@/voyage/lib/
 import { makeFlora } from '@/voyage/lib/solar-system/world-flora';
 import { makeAliens, type AlienTelemetry } from '@/voyage/lib/solar-system/world-aliens';
 import { makeNpcs, type NpcTelemetry } from '@/voyage/lib/solar-system/world-npcs';
-import { MARS_CAST, alienMarketCast, marsTownCast, outpostCast } from '@/voyage/lib/solar-system/npc-cast';
+import { MARS_CAST, alienMarketCast, marsTownCast, outpostCast, stationCast } from '@/voyage/lib/solar-system/npc-cast';
+import { makeStation } from '@/voyage/lib/solar-system/world-station';
 import { makeAlienMarket } from '@/voyage/lib/solar-system/world-alien-market';
 import { TOWN, makeMarsTown } from '@/voyage/lib/solar-system/world-mars-town';
 import { makePadLights, type PadMode } from '@/voyage/lib/solar-system/pad-lights';
@@ -345,6 +346,13 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     pois.push(...base.pois);
     for (const i of base.interactables) interactions.add(i);
   }
+  // Stellar Station's concourse (the station only).
+  const station = world === 'station' && profile.deck ? makeStation(kit, profile.deck.radius, lite) : null;
+  if (station) {
+    scene.add(station.group);
+    colliders.push(...station.colliders);
+    pois.push(...station.pois);
+  }
   // Dusthaven, the town west of the base (Mars only).
   const town = world === 'mars' ? makeMarsTown(heightAt, lite) : null;
   if (town) {
@@ -425,7 +433,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   const npcSpots = base ? base.pois.filter((p) => !['landingZone', 'railing', 'envelope', 'sign', 'colonySite'].includes(p.id)).map((p) => ({ x: p.x, z: p.z })) : [];
   const npcCast = world === 'mars' ? [...MARS_CAST, ...(town ? marsTownCast(town.spots, TOWN) : [])]
     : hasOutpost(world) ? outpostCast(world, npcSpots)
-    : market ? alienMarketCast(market.spots) : [];
+    : market ? alienMarketCast(market.spots)
+    : station ? stationCast(station.spots) : [];
   const npcs = (world === 'mars' ? !!base : npcCast.length > 0) ? makeNpcs({
     heightAt: floorAt, colliders, gems: () => gems.gems, lite, cast: npcCast,
     tag: opts.npcTag ?? ((k) => k),
@@ -474,7 +483,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   await step();
   const lander = makeLander(padX, padZ, heightAt, dust, lite, lightPool, profile.gravity, earth ? EARTH_DESCENT : undefined, { kind: opts.shipKind });
   // The pad's lamps and strobes (Mars and the outposts), and lightning in the clouds (Venus overhead, the giants below the deck).
-  const padLights = base ? makePadLights(padX, padZ, hasOutpost(world) ? 13 : 12, floorAt, lite) : null;
+  const padLights = base || station ? makePadLights(padX, padZ, hasOutpost(world) ? 13 : 12, floorAt, lite) : null;
   if (padLights) scene.add(padLights.group);
   const lightning = world === 'venus' ? makeLightning({ below: false, tint: 0xffe2b0 }) : deck ? makeLightning({ below: true }) : null;
   if (lightning) scene.add(lightning.group);
@@ -1006,6 +1015,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     }
     base?.update(dt, t, crew.x, crew.z, lightPool);
     town?.update(dt, t, lightPool);
+    station?.update(dt, t, lightPool);
     market?.update(dt, t, lightPool);
     const padMode: PadMode = telemetry.phase === 'orbit' || telemetry.phase === 'descent' ? 'approach' : telemetry.phase === 'ascent' ? 'launch' : 'idle';
     padLights?.update(dt, t, padMode, lightPool);
@@ -1041,6 +1051,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     earth?.dispose();
     npcs?.dispose();
     town?.dispose();
+    station?.dispose();
     market?.dispose();
     padLights?.dispose();
     lightning?.dispose();
@@ -1134,7 +1145,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
       host.dispose(release);
     },
   };
-  if (opts.startOnSurface) handle.skipDescent();
+  // A station is boarded from the dock: the ship is already on its pad.
+  if (opts.startOnSurface || world === 'station') handle.skipDescent();
   if (QA_HOOKS) window.__stellarWorld = handle;
   return handle;
 }

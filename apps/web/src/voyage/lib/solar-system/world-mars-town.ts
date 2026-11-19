@@ -26,7 +26,7 @@ export interface MarsTown {
 }
 
 /** A sign's face: the name in a neon tube colour on a dark plate, with a glow round the letters. */
-function signTexture(text: string, color: string, w = 512, h = 128): THREE.CanvasTexture {
+export function signTexture(text: string, color: string, w = 512, h = 128): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = w; c.height = h;
   const g = c.getContext('2d')!;

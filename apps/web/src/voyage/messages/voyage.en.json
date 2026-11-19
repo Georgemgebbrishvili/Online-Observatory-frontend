@@ -396,7 +396,8 @@
         "jupiter": "Land at Jupiter Outpost",
         "saturn": "Land at Saturn Outpost",
         "uranus": "Land at Uranus Outpost",
-        "neptune": "Land at Neptune Outpost"
+        "neptune": "Land at Neptune Outpost",
+        "station": "Board Stellar Station"
       },
       "jumpLabel": "Light-year jump",
       "jumpShort": "Jump",
@@ -499,6 +500,11 @@
           "name": "Neptune",
           "descriptors": "Ice giant · Fastest winds · Floating station",
           "temp": "−201 °C"
+        },
+        "station": {
+          "name": "Stellar Station",
+          "descriptors": "Orbital hub · Spin gravity · Earth below",
+          "temp": "21 °C inside"
         }
       },
       "noReturn": "Past the point of no return",
@@ -522,7 +528,9 @@
         "clear": "Area clear — grab the salvage to repair",
         "breakoff": "They are pulling back — repair while you can",
         "spooked": "You scared the visitor off"
-      }
+      },
+      "boardPress": "Press L to go aboard",
+      "boardTap": "Tap to go aboard"
     },
     "moon": {
       "place": "Stellar Base · Moon",
@@ -1537,6 +1545,45 @@
           "arrived": "Neptune Outpost — the windiest planet · welcome aboard",
           "backAtBase": "Back at the base"
         }
+      },
+      "station": {
+        "place": "Stellar Station · low Earth orbit",
+        "loading": "Boarding Stellar Station",
+        "loadingDetail": "Docking clamps on — spin gravity 1 g, Earth 400 km below",
+        "outside": "Outside",
+        "crystals": "Crystals",
+        "run": "Run",
+        "hints": {
+          "walk": "W A S D — walk. Hold Shift to run. The spin of the station holds you down at one g.",
+          "jump": "Space — jump. Mind the railing: past it is four hundred kilometres of nothing.",
+          "walkTouch": "Left stick — walk. Drag the right half of the screen to look around.",
+          "jumpTouch": "Jump is bottom right. Mind the railing."
+        },
+        "keys": {
+          "r5": "E — talk to the people at their posts",
+          "r6": "Look down past the railing: that is Earth, turning under you once every ninety minutes",
+          "r7": "Look up: the station's ring turns once a minute — that spin is where the gravity comes from",
+          "t5": "The amber key talks to the people at their posts",
+          "t6": "Look down past the railing: that is Earth, turning under you once every ninety minutes"
+        },
+        "pois": {
+          "dock": "Dock Control — DOCK-7 keeps the traffic moving",
+          "exchange": "The Exchange — gems bought, shields sold",
+          "lounge": "Observation Lounge — drinks, and the best view in the system",
+          "bunks": "Crew bunks — pilots between runs",
+          "railing": "Railing — Earth is 400 km below, and nothing in between",
+          "landingZone": "Docking pad — keep clear",
+          "ourLander": "Your ship"
+        },
+        "act": {
+          "boardLander": "Board ship — Undock",
+          "talk": "Talk"
+        },
+        "readout": {},
+        "banner": {
+          "arrived": "Stellar Station — welcome aboard",
+          "backAtBase": "Back at the station"
+        }
       }
     },
     "room": {
@@ -1576,7 +1623,8 @@
         "jupiter": "Over Jupiter",
         "saturn": "Over Saturn",
         "uranus": "Over Uranus",
-        "neptune": "Over Neptune"
+        "neptune": "Over Neptune",
+        "station": "On Stellar Station"
       },
       "toast": {
         "joined": "{name} joined the room",
@@ -1744,7 +1792,11 @@
           "nadia": "Bartender",
           "pell": "Grocer",
           "okonkwo": "Assayer",
-          "vendor": "Trader"
+          "vendor": "Trader",
+          "dock7": "Dock master",
+          "voss": "Broker",
+          "imani": "Bartender",
+          "reyes": "Pilot"
         }
       },
       "bark": {
@@ -1936,6 +1988,28 @@
           "shield": "I'll buy some skin-light.",
           "done": "*Vahn brushes light across your shoulders. It clings, shimmering.*"
         }
+      },
+      "station": {
+        "dock7": {
+          "hello": "DOCK-7, traffic control. Your berth is logged. Suit integrity {integrity} percent. How can the station help?",
+          "where": "Any gems lost on the deck?",
+          "lore": "Stellar Station: forty crew, a ring that turns once a minute for gravity, and a view of every sunrise on Earth. Sixteen of them a day."
+        },
+        "voss": {
+          "hello": "Halden Voss, Exchange. I buy what pilots find and sell what pilots need. Mostly shields.",
+          "buy": "Your scanner shows {gems} unlogged gems. I'll give you {gemPay} credits for the lot."
+        },
+        "imani": {
+          "hello": "Welcome to the lounge. Pull up a window. What can I get you?",
+          "drink": "Something warm."
+        },
+        "reyes": {
+          "hello": "Captain Reyes. Between runs. If you're heading out, ask me anything.",
+          "ask": "Where's worth flying?",
+          "routes": "The asteroid belt's thick with rock past Mars — great salvage if you can shoot straight. Watch the sky out there, too: I saw a supernova go off last month. Brightest thing I ever saw."
+        },
+        "traveller0": "Arlo. First time off Earth. I keep looking down. I can't stop looking down.",
+        "traveller1": "Wen. Waiting on the Mars shuttle. Dusthaven, then the long way home."
       }
     }
   },
@@ -1972,7 +2046,8 @@
         "jupiter": "Descending to Jupiter Outpost",
         "saturn": "Descending to Saturn Outpost",
         "uranus": "Descending to Uranus Outpost",
-        "neptune": "Descending to Neptune Outpost"
+        "neptune": "Descending to Neptune Outpost",
+        "station": "Docking at Stellar Station"
       },
       "insertion": {
         "moon": "Orbit insertion — the Moon",

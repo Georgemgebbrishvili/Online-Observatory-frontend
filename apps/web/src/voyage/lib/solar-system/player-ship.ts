@@ -1588,7 +1588,9 @@ export function createPlayerShip(session: FlightSession): PlayerShipHandle {
         // The world the crew went down to is still the nearest one on the
         // telemetry — the deck was paused the whole time they were away —
         // unless they never flew down at all, and the deck names it instead.
-        const came = input.relaunchAt || tel.nearId;
+        // Off the station, the ship comes away from the dock it was berthed at.
+        const named = input.relaunchAt || tel.nearId;
+        const came = named === 'station' ? 'iss' : named;
         const from = world.bodies.find((b) => b.id === came && !b.destroyed)
           ?? world.bodies.find((b) => b.id === 'moon' && !b.destroyed);
         // A canvas that has only just been built has the planets, but its

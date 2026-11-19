@@ -311,3 +311,55 @@ export function alienMarketCast(spots: { x: number; z: number }[]): CastMember[]
     };
   });
 }
+
+/** Stellar Station's people: the dock master, a broker, the lounge's bartender, a pilot between runs, and travellers. */
+export function stationCast(spots: Record<string, { x: number; z: number }>): CastMember[] {
+  const at = (k: string) => spots[k] ?? { x: 0, z: 0 };
+  const vendor = { faction: 'crew' as const, role: 'vendor' as const, nerve: 0.6, temper: 0, sight: 30 };
+  return [
+    {
+      id: 'dock7', name: 'DOCK-7', body: 'tallDroid', color: 0x8fb8d8, maxHealth: 160, persona: vendor, home: at('dock'),
+      start: () => 'hello',
+      nodes: {
+        hello: { line: 'station.dock7.hello', options: [
+          { key: 'kern.repair', effect: 'repair', cost: REPAIR_COST, when: (c) => c.integrity < 100 },
+          { key: 'station.dock7.where', effect: 'scan' },
+          { key: 'outpost.ask', to: 'lore' }, bye,
+        ] },
+        lore: { line: 'station.dock7.lore', options: [bye] },
+      },
+    },
+    {
+      id: 'voss', name: 'Halden Voss', body: 'smuggler', color: 0x2a4a6a, maxHealth: 70, persona: { ...vendor, faction: 'trader' }, home: at('exchange'),
+      start: (c) => ((c.unassayed ?? 0) > 0 ? 'buy' : 'hello'),
+      nodes: {
+        hello: { line: 'station.voss.hello', options: [{ key: 'vex.shield', effect: 'shield', cost: SHIELD_COST }, bye] },
+        buy: { line: 'station.voss.buy', options: [{ key: 'town.okonkwo.sell', effect: 'assay' }, { key: 'vex.shield', effect: 'shield', cost: SHIELD_COST }, bye] },
+      },
+    },
+    {
+      id: 'imani', name: 'Imani', body: 'colonist', color: 0x6a3ab0, maxHealth: 60, persona: vendor, home: at('lounge'),
+      start: () => 'hello',
+      nodes: {
+        hello: { line: 'station.imani.hello', options: [{ key: 'station.imani.drink', effect: 'drink', cost: DRINK_COST }, { key: 'town.nadia.news', effect: 'rumor', to: 'news' }, bye] },
+        news: { line: 'vex.rumorLine', options: [bye] },
+      },
+    },
+    {
+      id: 'reyes', name: 'Captain Reyes', body: 'hunter', color: 0x3a6a4a, maxHealth: 120, persona: { faction: 'crew', role: 'vendor', nerve: 0.9, temper: 0.2, sight: 40 }, home: at('bunks'),
+      start: () => 'hello',
+      nodes: {
+        hello: { line: 'station.reyes.hello', options: [{ key: 'station.reyes.ask', to: 'routes' }, bye] },
+        routes: { line: 'station.reyes.routes', options: [bye] },
+      },
+    },
+    ...[0x2a8fd0, 0xd06a2a].map((color, i): CastMember => ({
+      id: `traveller${i}`, name: ['Arlo', 'Wen'][i], body: 'colonist', color, maxHealth: 60,
+      persona: { faction: 'crew', role: 'colonist', nerve: 0.35, temper: 0, sight: 30 },
+      home: at(i ? 'walkB' : 'walkA'),
+      route: [at('walkA'), at('dock'), at('lounge'), at('walkB'), at('exchange'), at('bunks')].map((s, k) => ({ x: s.x + (i ? 1.5 : -1.5) + (k % 2), z: s.z + (i ? -1 : 1) })),
+      start: () => 'hello',
+      nodes: { hello: { line: `station.traveller${i}`, options: [bye] } },
+    })),
+  ];
+}
