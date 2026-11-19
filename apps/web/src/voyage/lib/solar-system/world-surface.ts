@@ -51,6 +51,7 @@ import { MARS_CAST, alienMarketCast, marsTownCast, outpostCast, stationCast } fr
 import { makeStation } from '@/voyage/lib/solar-system/world-station';
 import { makeAlienMarket } from '@/voyage/lib/solar-system/world-alien-market';
 import { TOWN, makeMarsTown } from '@/voyage/lib/solar-system/world-mars-town';
+import { makeSecretBase } from '@/voyage/lib/solar-system/world-secret-base';
 import { makePadLights, type PadMode } from '@/voyage/lib/solar-system/pad-lights';
 import { makeLightning } from '@/voyage/lib/solar-system/world-lightning';
 import { WORLDS, type WorldId, type WorldProfile } from '@/voyage/lib/solar-system/world-profiles';
@@ -391,6 +392,19 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     pois.push(...flora.pois);
     for (const i of aliens.interactables) interactions.add(i);
   }
+  // A secret base dug into a hill (Mars, Mercury, Venus), found by its signal.
+  const secret = profile.secretBase && terrain && !deck ? makeSecretBase(world, profile.secretBase, profile.pad, heightAt, lite) : null;
+  if (secret) {
+    scene.add(secret.group);
+    colliders.push(...secret.colliders);
+    pois.push(...secret.pois);
+    for (const i of secret.interactables) interactions.add(i);
+    secret.onEvent = (kind) => {
+      if (kind === 'signal') telemetryReadout('secretSignal');
+      else if (kind === 'opened') { banner('secretOpen'); audio.thump(20); }
+      else { banner('secretFound'); telemetryReadout('secretLog'); }
+    };
+  }
   // Proxima b: the Lantern Market west of the village.
   const market = world === 'proximaB' && flora ? makeAlienMarket(heightAt, lite) : null;
   if (market) {
@@ -477,7 +491,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
 
   await step();
   // Earth's air: no pressure suit, so an ordinary gait, and no helmet.
-  const cosmonaut = makeCosmonaut(dust, lite, profile.gravity, !profile.breathable, !!profile.breathable);
+  // Tbilisi has air, but the pilot keeps the jetpack on: the city is for flying over too.
+  const cosmonaut = makeCosmonaut(dust, lite, profile.gravity, !profile.breathable, !!profile.breathable, !profile.breathable || isEarth);
   cosmonaut.onStep = (e) => { if (!deck) prints.stamp(e.x, e.y, e.z, e.yaw, e.side); audio.step(e.hard); cam.footfall(e.hard, cosmonaut.state.gait === 'run' || cosmonaut.state.gait === 'sprint' ? 1 : 0.25); };
   // On Earth, a game character's run: jog on the stick, sprint on Shift.
   if (earth) cosmonaut.setProfile(earthGait());
@@ -508,6 +523,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   // Where the jetpack may take the crew: past the fence, up to this world's
   // ceiling, and over a giant out across the clouds but never into them.
   const envelope = flightEnvelope(walkRadius, cosmonaut.profile.g, deck);
+  // Tbilisi's ground is hundreds of metres above the datum: its ceiling is over the city, not over the sea.
+  if (earth) envelope.ceiling = heightAt(padX, padZ) + 320;
   cosmonaut.setFlight(envelope);
   // Out past the fence only a flyer meets the formations there: their footprints, for the flight alone.
   const flightRocks: Collider[] = formations
@@ -716,6 +733,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     stick.run = input.run; stick.sprint = sprint; stick.walk = input.walk; stick.crouch = input.crouch;
     walkFromStick(walk, stick, cam.yaw, jump && !still, interactions.prompt.holding);
     stepFrom.copy(cosmonaut.position);
+    // Tbilisi's roofs are floors to someone coming down on them from above.
+    earth?.setCrewY(cosmonaut.position.y);
     cosmonaut.update(h, walk, floorAt, walkColliders(), walkRadius);
     earth?.confine(cosmonaut.position, stepFrom);
     // Over water the boots and the exhaust raise no dust.
@@ -967,7 +986,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
       if (!jumped && cosmonaut.state.airborne && cosmonaut.state.altitude > 0.3) jumped = true;
       if (!flown && cosmonaut.state.flying && cosmonaut.state.altitude > 4) flown = true;
       // Where there is a pack, the last lesson is that it flies.
-      const flyNext = !profile.breathable && !flown;
+      const flyNext = (!profile.breathable || !!earth) && !flown;
       telemetry.hint = atWheel ? 'drive' : !walked ? 'walk' : !jumped ? 'jump' : flyNext ? 'fly' : '';
       if (earth && !welcomed && earth.cheering() > 0.5) { welcomed = true; banner('welcome'); }
     }
@@ -1030,6 +1049,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     town?.update(dt, t, lightPool);
     station?.update(dt, t, lightPool);
     market?.update(dt, t, lightPool);
+    secret?.update(dt, t, crew, lightPool);
     const padMode: PadMode = telemetry.phase === 'orbit' || telemetry.phase === 'descent' ? 'approach' : telemetry.phase === 'ascent' ? 'launch' : 'idle';
     padLights?.update(dt, t, padMode, lightPool);
     lightning?.update(dt, crew, hemi, (k) => audio.thump(3 + k * 10));
@@ -1066,6 +1086,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     town?.dispose();
     station?.dispose();
     market?.dispose();
+    secret?.dispose();
     padLights?.dispose();
     lightning?.dispose();
     crowd?.dispose();

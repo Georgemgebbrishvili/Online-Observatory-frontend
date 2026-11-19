@@ -60,7 +60,7 @@ import {
 import { makeSunSurface } from '@/voyage/lib/solar-system/sun-surface';
 import { makePostFx } from '@/voyage/lib/solar-system/post-processing';
 import { projectSunPoint, type SunScreen } from '@/voyage/lib/solar-system/post-flare';
-import { currentQuality, onQualityChange, pixelRatioFor, stepQualityDown } from '@/voyage/game/quality';
+import { currentQuality, onQualityChange, pixelRatioFor, ratioFloor, stepQualityDown } from '@/voyage/game/quality';
 import { compileFor, releaseCompilePolls, settleWithin, skipShaderChecks, uploadSceneTexturesSliced } from '@/voyage/lib/solar-system/gpu-warm';
 import { makeSlicer } from '@/voyage/game/slice';
 import { makeLoopGuard, noteContextLoss, rebuildWhenVisible } from '@/voyage/game/gpu-recovery';
@@ -554,14 +554,8 @@ export function SolarSystemCanvas({
 
     const comet: CometHandle = makeComet(scaleRef.current, lite);
     scene.add(comet.group);
-    // Two more on their own orbits, timed to be in the inner system: a long
-    // steep one and a short low one, so there is usually a tail in the sky.
-    const comets: CometHandle[] = [
-      comet,
-      makeComet(scaleRef.current, lite, { aAu: 3.1, e: 0.82, inc: 1.1, node: 2.6, phase: 0.97 }),
-      makeComet(scaleRef.current, lite, { aAu: 1.9, e: 0.66, inc: 0.25, node: 4.4, phase: 0.04 }),
-    ];
-    for (const c of comets.slice(1)) scene.add(c.group);
+    // One comet: a tail in the sky now and then is an event; three were clutter.
+    const comets: CometHandle[] = [comet];
     // Far beyond the system, now and then, a star dies (flight only).
     const skyEvents = makeSkyEvents(lite);
     skyEvents.group.visible = false;
@@ -1206,7 +1200,7 @@ export function SolarSystemCanvas({
       const h = mount.clientHeight;
       const r = ratioFor();
       if (!force && w === sizedW && h === sizedH && r === sizedRatio) return;
-      if (r !== sizedRatio) flightPerf.setRatioBounds(Math.min(1, r), r);
+      if (r !== sizedRatio) flightPerf.setRatioBounds(ratioFloor(currentQuality().level, r), r);
       sizedW = w; sizedH = h; sizedRatio = r;
       camera.aspect = Math.max(1, mount.clientWidth) / Math.max(1, mount.clientHeight);
       camera.updateProjectionMatrix();
@@ -1227,7 +1221,7 @@ export function SolarSystemCanvas({
     // pixel ratio comes down in quarter steps to 1 when the frame is over
     // budget, and once it has nothing left the preset steps down a level.
     const flightPerf = makeMoonPerf(renderer, mount, {
-      minRatio: Math.min(1, ratioFor()),
+      minRatio: ratioFloor(currentQuality().level, ratioFor()),
       maxRatio: ratioFor(),
       onPixelRatio: (r) => { renderer.setPixelRatio(r); postFx.setSize(mount.clientWidth, mount.clientHeight); },
       onOverBudget: () => { stepQualityDown(); },

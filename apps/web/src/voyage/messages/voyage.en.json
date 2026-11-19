@@ -1037,7 +1037,8 @@
           "town-bunks": "Bunks — forty beds, one shower",
           "town-assay": "Assay Office — gems weighed, logged and paid for",
           "town-cantina": "The Red Dune — the only bar on Mars",
-          "town-shuttlePad": "Shuttle pad — the short hop to Phobos"
+          "town-shuttlePad": "Shuttle pad — the short hop to Phobos",
+          "secretBase": "A concrete portal dug into the hill"
         },
         "act": {
           "read": {
@@ -1048,17 +1049,23 @@
           },
           "collectCrystal": "Collect the crystals",
           "boardLander": "Board ship — Take off",
-          "talk": "Talk"
+          "talk": "Talk",
+          "secretDoor": "Open the blast door",
+          "secretLogs": "Download the logs"
         },
         "readout": {
           "habitat": "HAB-1 · 101 kPa · 21 °C · CO₂ 0.4 % · shielding 2.1 m regolith · 4 crew asleep",
           "greenhouse": "GH-1 · 6 beds · wheat day 58, potatoes day 41, tomatoes flowering · 320 g O₂ a day",
           "isru": "SABATIER-1 · CO₂ in 2.6 kg/h · CH₄ 0.9 kg/h · O₂ 1.8 kg/h · tanks 74 % · return fuel by sol 410",
-          "power": "KRUSTY-1 and 2 · 20 kWe · core 800 °C · radiators nominal · 11 years of fuel"
+          "power": "KRUSTY-1 and 2 · 20 kWe · core 800 °C · radiators nominal · 11 years of fuel",
+          "secretSignal": "Faint signal on an old military band — somewhere north-west, under the rock.",
+          "secretLog": "ARES BLACK SITE — last entry, year unknown: \"Rover stays. Core goes home. Tell no one we found water this deep.\""
         },
         "banner": {
           "arrived": "Mars Base — sol 1,214 · welcome down",
-          "backAtBase": "Back at the base"
+          "backAtBase": "Back at the base",
+          "secretOpen": "The door slides open — Ares Black Site",
+          "secretFound": "Secret base found — Ares Black Site"
         },
         "dialog": {
           "who": ""
@@ -1131,7 +1138,7 @@
         "credits": "Map data © OpenStreetMap contributors (ODbL) · Terrain: SRTM and GMTED2010 (USGS), ETOPO1 (NOAA), via AWS Terrain Tiles · Weather: Open-Meteo.com (CC BY 4.0)",
         "hints": {
           "walk": "W A S D — jog. Shift — sprint. The red car by the pad is yours: E to get in.",
-          "jump": "Space — jump. The red car by the pad is yours: E to get in.",
+          "jump": "Space — jump; hold it to fly on the jetpack (C drops you). The red car by the pad is yours: E to get in.",
           "walkTouch": "Left stick — jog; push it to the rim to sprint. Drag the right half of the screen to look around.",
           "jumpTouch": "Jump is bottom right. The red car by the pad: the amber key gets you in.",
           "drive": "W / S — drive and brake (reverse when stopped) · A / D — steer · Space — handbrake · R — horn · Q — radio · Tab — map · E — get out",
@@ -1140,7 +1147,7 @@
         "keys": {
           "r5": "E — the thing in front of you: the car, the lander, the cable car, the roof, the telescope",
           "r6": "The Bridge of Peace is west of the pad; the cable car starts beside it",
-          "r7": "Hold E in the cable car to ride six times as fast",
+          "r7": "Hold Space (or J) to fly on the jetpack over the city; land on any roof. Hold E in the cable car to ride six times as fast",
           "t5": "The amber key does the thing in front of you",
           "t6": "The Bridge of Peace is west of the pad; the cable car starts beside it",
           "r8": "Any car on the street can be taken (E beside it). If somebody sees, the police come: get out of their sight to lose them",
@@ -1308,7 +1315,15 @@
             "arrived": "You have arrived",
             "wrecked": "The engine is dead — find another car"
           },
-          "carHealth": "Car"
+          "carHealth": "Car",
+          "greetings": {
+            "0": "Passer-by: „გამარჯობა!“ — Hello!",
+            "1": "Passer-by: „როგორ ხარ?“ — How are you?",
+            "2": "Passer-by: „კეთილი იყოს თქვენი მობრძანება!“ — Welcome!",
+            "3": "Passer-by: „ვაიმე, კოსმონავტი!“ — Wow, a cosmonaut!",
+            "4": "Passer-by: „ძმაო, საიდან ჩამოხვედი?“ — Brother, where did you come from?",
+            "5": "Passer-by: „გაუმარჯოს!“ — Cheers!"
+          }
         }
       },
       "mercury": {
@@ -1339,7 +1354,8 @@
           "sunshade": "Sun wall — keeps the habitats in shade",
           "sign": "Stellar Outpost — Mercury",
           "landingZone": "Landing pad — keep clear",
-          "ourLander": "Your ship"
+          "ourLander": "Your ship",
+          "secretBase": "A concrete portal dug into the hill"
         },
         "act": {
           "read": {
@@ -1349,17 +1365,23 @@
             "sunshade": "Sun wall status"
           },
           "boardLander": "Board ship — Take off",
-          "talk": "Talk"
+          "talk": "Talk",
+          "secretDoor": "Open the blast door",
+          "secretLogs": "Download the logs"
         },
         "readout": {
           "habitat": "HAB-1 · 101 kPa · 22 °C · CO₂ 0.4 % · in the sun wall's shadow · 2 crew asleep",
           "power": "ARRAY-1 · 8 panels facing a Sun 6° up · 9 kW of sunlight per m², 6.7 × Earth's · 38 kWe · panels at 120 °C",
           "comms": "COMMS · dish on Earth · 0.9 au away · signal 7.5 minutes each way",
-          "sunshade": "SUN WALL · sunlit face 120 °C · back face −60 °C · keeps the habitats in shade all morning, and a morning here lasts six Earth weeks"
+          "sunshade": "SUN WALL · sunlit face 120 °C · back face −60 °C · keeps the habitats in shade all morning, and a morning here lasts six Earth weeks",
+          "secretSignal": "A carrier tone on the relay band, repeating — south-east, toward the hills.",
+          "secretLog": "HERMES RELAY — mothballed. \"Listening post sealed. The lander is fuelled for one more hop if anyone needs it.\""
         },
         "banner": {
           "arrived": "Mercury Outpost — Rachmaninoff basin · welcome down",
-          "backAtBase": "Back at the base"
+          "backAtBase": "Back at the base",
+          "secretOpen": "The door slides open — Hermes Relay",
+          "secretFound": "Secret base found — Hermes Relay"
         }
       },
       "venus": {
@@ -1390,7 +1412,8 @@
           "dish": "Comms — radio goes straight through the clouds",
           "sign": "Stellar Outpost — Venus",
           "landingZone": "Landing pad — keep clear",
-          "ourLander": "Your ship"
+          "ourLander": "Your ship",
+          "secretBase": "A concrete portal dug into the hill"
         },
         "act": {
           "read": {
@@ -1400,17 +1423,23 @@
             "cooler": "Cooler status"
           },
           "boardLander": "Board ship — Take off",
-          "talk": "Talk"
+          "talk": "Talk",
+          "secretDoor": "Open the blast door",
+          "secretLogs": "Download the logs"
         },
         "readout": {
           "habitat": "HAB-1 · inside 101 kPa, 24 °C · outside 9,200 kPa, 464 °C · hull 18 cm of steel · 2 crew",
           "power": "STIRLING 1–4 · plutonium-238 heat · 12 kWe · nearly all of it runs the cooler",
           "comms": "COMMS · dish on Earth · 0.7 au away · signal 6 minutes each way",
-          "cooler": "COOLER-1 · pulling 6 kW of heat out of the habitats · radiators at 540 °C — hotter than the air, or the heat could not leave"
+          "cooler": "COOLER-1 · pulling 6 kW of heat out of the habitats · radiators at 540 °C — hotter than the air, or the heat could not leave",
+          "secretSignal": "Something is pinging through the static — south-west, low and steady.",
+          "secretLog": "CYTHEREAN VAULT — \"Samples sealed at 464 °C. The probe survived. We did not stay to see if we would.\""
         },
         "banner": {
           "arrived": "Venus Outpost — Venera 13 plain · welcome down",
-          "backAtBase": "Back at the base"
+          "backAtBase": "Back at the base",
+          "secretOpen": "The door slides open — Cytherean Vault",
+          "secretFound": "Secret base found — Cytherean Vault"
         }
       },
       "jupiter": {
@@ -1885,7 +1914,14 @@
         "down": "Ugh... systems... offline...",
         "provoked": "Wrong hunter to mouth off to.",
         "landed": "Nice landing, pilot! Welcome to the base.",
-        "launch": "Clear skies! Come back soon!"
+        "launch": "Clear skies! Come back soon!",
+        "space0": "Little room here, pilot?",
+        "space1": "You're standing on my boots.",
+        "space2": "Personal space. It's a whole planet.",
+        "tail": "Are you following me?",
+        "jet0": "Look at that — flying on a pack!",
+        "jet1": "Show-off. Mind the antennas up there!",
+        "again": "Back again, pilot? Good to see you."
       },
       "pip": {
         "hello": "Bweep! PIP-7, colony utility droid. My scanner is bored and so am I. Want company out there?",
@@ -2085,6 +2121,16 @@
         },
         "traveller0": "Arlo. First time off Earth. I keep looking down. I can't stop looking down.",
         "traveller1": "Wen. Waiting on the Mars shuttle. Dusthaven, then the long way home."
+      },
+      "overheard": {
+        "0": "{other}, did you feel the ground shake last night?",
+        "1": "Shipment's late again, {other}. Third time this month.",
+        "2": "{other}, you still owe me for those filters.",
+        "3": "They say there's something out past the ridge, {other}. Lights at night.",
+        "4": "{other}, the pilot who just landed — friend of yours?",
+        "5": "Air recycler's making that noise again, {other}.",
+        "6": "Heard the hunters are hiring, {other}. Good money, bad hours.",
+        "7": "{other}, save me a seat at the cantina tonight."
       }
     }
   },

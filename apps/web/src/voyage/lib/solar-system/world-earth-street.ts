@@ -61,6 +61,8 @@ export interface CityState {
   carHealth: number;
   /** Where the pilot is, and the car's heading while at the wheel (NaN on foot). */
   px: number; pz: number; yaw: number;
+  /** A passer-by's greeting: which line, and a count that changes with each. */
+  say: { line: number; serial: number };
 }
 
 export interface CityMap {
@@ -137,8 +139,9 @@ export function makeStreet(d: StreetDeps): Street {
   const state: CityState = {
     cash: saved.cash, fares: saved.fares, stars: 0, evade: 0, bust: 0, busted: 0, radio: -1, radioSerial: 0, fare: null,
     note: { key: 'wanted', n: 0, m: 0, serial: 0 }, route: null, routeSerial: 0, target: null, waypoint: null, police: [], parked: null, carHealth: -1,
-    px: 0, pz: 0, yaw: NaN,
+    px: 0, pz: 0, yaw: NaN, say: { line: 0, serial: 0 },
   };
+  people.onGreet = (line) => { state.say = { line, serial: state.say.serial + 1 }; };
   const persist = () => save({ cash: state.cash, fares: state.fares });
   const note = (key: CityNote, n = 0, m = 0) => { state.note = { key, n, m, serial: state.note.serial + 1 }; };
   const radio = makeCarRadio(ambience.out);

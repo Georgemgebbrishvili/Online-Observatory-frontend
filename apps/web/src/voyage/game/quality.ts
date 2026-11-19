@@ -164,6 +164,12 @@ export function pixelRatioFor(q: QualityProfile, cssWidth: number, cssHeight: nu
   return budgetedPixelRatio(window.devicePixelRatio || 1, q.maxPixelRatio, gpuString(), cssWidth, cssHeight);
 }
 
+/** How low the governor may take the pixel ratio. On the lowest preset it may go under one
+ *  pixel a screen pixel: a soft picture at full speed beats a sharp one at a few frames a second. */
+export function ratioFloor(level: QualityLevel, maxRatio: number): number {
+  return Math.min(level === 'performance' ? 0.6 : 1, maxRatio);
+}
+
 /** The arithmetic behind `pixelRatioFor`. Pure, so it is tested. */
 export function budgetedPixelRatio(dpr: number, maxRatio: number, gpu: string, cssWidth: number, cssHeight: number): number {
   const ratio = Math.min(dpr, maxRatio);

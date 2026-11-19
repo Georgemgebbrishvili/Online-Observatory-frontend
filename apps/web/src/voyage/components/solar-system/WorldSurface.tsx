@@ -884,8 +884,8 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
             <Wind className="moon-hud__ico-jump" size={18} aria-hidden /><ChevronsDown className="moon-hud__ico-down" size={18} aria-hidden />
             <span className="moon-hud__word-jump">{t('jump')}</span><span className="moon-hud__word-down">{t('descend')}</span>
           </button>
-          {/* No pack where there is air to breathe: the pilot came out without it. */}
-          {!breathable && (
+          {/* No pack where there is air to breathe, except in Tbilisi, where the pilot flies over the city. */}
+          {(!breathable || isEarth) && (
             <button type="button" className="moon-hud__jet" {...jetKey} aria-label={t('jet')}>
               <Rocket size={18} aria-hidden /><span>{t('jet')}</span>
             </button>

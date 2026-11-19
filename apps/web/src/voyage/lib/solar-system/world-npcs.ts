@@ -124,6 +124,17 @@ interface Npc {
   watch: { x: number; z: number; t: number } | null;
   /** Casting shadows now (only near the crew). */
   shadowOn: boolean;
+  /** On an errand to someone else's stall or door: face them and talk when there. */
+  visit: Npc | null;
+  /** Has talked with the pilot this visit: greets them as someone known. */
+  met: boolean;
+  /** Seconds before the next remark about personal space, the jetpack, or a greeting. */
+  remarkCool: number;
+  /** Seconds the pilot has stood on top of them, or tailed them close. */
+  crowded: number;
+  tailed: number;
+  /** Which side of a target this one closes from, rad. */
+  flank: number;
 }
 
 export type Gesture = 'work' | 'chat' | 'scan' | 'wave' | 'celebrate' | 'salvage' | null;
@@ -202,6 +213,8 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
   // Phones draw the colony out to a shorter range.
   const drawRange = opts.lite ? DRAW_RANGE * 0.66 : DRAW_RANGE;
   const crewPos = new THREE.Vector3();
+  let pilotSpeed = 0;
+  let pilotAlt = 0;
 
   const npcs: Npc[] = (opts.cast ?? MARS_CAST).map((spec) => {
     const rig = buildRig(spec.body, spec.color);
@@ -214,6 +227,7 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       waypoint: null, route: 0, cooldown: 1, hitBy: null, hitHold: 0, hurt: 0, downTimer: 0, downness: 0, alarm: 0,
       strafe: 1, strafeTimer: 0, threat: null, barked: 0, charged: 0, coverSpot: null, detour: null, detourT: 0, stuck: 0,
       gesture: null, gestureT: 0, chatWith: null, chatCool: 10 + Math.random() * 20, waveCool: 0, watch: null, shadowOn: true,
+      visit: null, met: false, remarkCool: 4 + Math.random() * 6, crowded: 0, tailed: 0, flank: (Math.random() - 0.5) * 1.4,
     };
     return n;
   });
@@ -434,6 +448,7 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
   const openDialog = (n: Npc) => {
     if (!n.spec.start || n.health <= 0 || hostileToPlayer(n)) return;
     talkingTo = n;
+    n.met = true;
     opts.onEvent('talk');
     showNode(n, n.spec.start(ctx()));
   };
@@ -528,6 +543,7 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
     n.cooldown -= dt;
     n.chatCool -= dt;
     n.waveCool -= dt;
+    n.remarkCool -= dt;
 
     if (n.health <= 0) {
       n.downTimer -= dt;
@@ -581,6 +597,31 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       }
     }
 
+    // ── The pilot, as people notice them: too close, tailing, flying overhead, someone they know. ──
+    const calmNow = n.health > 0 && !hostileToPlayer(n) && p.faction !== 'scav'
+      && (n.decision.mode === 'wander' || n.decision.mode === 'patrol' || n.decision.mode === 'post' || n.decision.mode === 'idle');
+    if (calmNow && !talkingTo) {
+      const remark = (key: string) => { if (n.remarkCool <= 0 && n.barked <= 0 && telemetry.bark === null) { bark(n, key); n.remarkCool = 25 + Math.random() * 20; } };
+      n.crowded = dPlayer < 1.5 && pilotSpeed < 1.2 ? n.crowded + dt : Math.max(0, n.crowded - dt);
+      if (n.crowded > 1.1) {
+        remark(`bark.space${Math.floor(Math.random() * 3)}`);
+        // Wanderers step round the pilot; someone at their post stays and says so.
+        if (n.decision.mode === 'wander' || n.decision.mode === 'patrol') {
+          const ax = n.x - crew.x; const az = n.z - crew.z; const al = Math.hypot(ax, az) || 1;
+          n.waypoint = { x: n.x + (ax / al) * 2.6 - (az / al) * 1.2, z: n.z + (az / al) * 2.6 + (ax / al) * 1.2 };
+          n.visit = null;
+        }
+        n.crowded = 0;
+      }
+      n.tailed = n.speed > 0.6 && dPlayer < 3.2 && pilotSpeed > 0.6 ? n.tailed + dt : Math.max(0, n.tailed - dt * 2);
+      if (n.tailed > 7) { remark('bark.tail'); n.tailed = 0; }
+      if (pilotAlt > 3 && dPlayer < 35 && visible) {
+        remark(`bark.jet${Math.floor(Math.random() * 2)}`);
+        if (p.role === 'colonist' && n.waveCool <= 0) { n.gesture = 'wave'; n.gestureT = 2.4; n.waveCool = 40; n.chatWith = null; }
+      }
+      if (n.met && dPlayer < 6 && visible) remark('bark.again');
+    }
+
     // ── Carry it out. ──
     const d = n.decision;
     const targetPos = d.target === 'threat' && threat ? { x: threat.x, z: threat.z } : { x: crew.x, z: crew.z };
@@ -604,7 +645,17 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
         const route = n.spec.route;
         if (!n.waypoint) {
           if (route && route.length) { n.route = (n.route + 1) % route.length; n.waypoint = route[n.route]; }
-          else {
+          else if (p.role === 'colonist' && Math.random() < 0.45) {
+            // An errand: over to someone's stall or door — a trader, a friend — to talk a while.
+            const near = npcs.filter((o) => o !== n && o.health > 0 && o.spec.persona.faction !== 'scav' && o.spec.persona.role !== 'raider'
+              && Math.hypot(o.spec.home.x - n.spec.home.x, o.spec.home.z - n.spec.home.z) < 70);
+            const o = near.length ? near[Math.floor(Math.random() * near.length)] : null;
+            if (o) {
+              n.visit = o;
+              const a = Math.atan2(n.x - o.x, n.z - o.z);
+              n.waypoint = { x: o.x + Math.sin(a) * 1.7, z: o.z + Math.cos(a) * 1.7 };
+            } else n.waypoint = { x: n.spec.home.x, z: n.spec.home.z };
+          } else {
             const a = Math.random() * Math.PI * 2; const r = 4 + Math.random() * (p.faction === 'scav' ? 26 : 10);
             n.waypoint = { x: n.spec.home.x + Math.cos(a) * r, z: n.spec.home.z + Math.sin(a) * r };
           }
@@ -620,6 +671,16 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
         }
         if (steer(n, dt, n.waypoint.x, n.waypoint.z, 1.2, p.faction === 'scav' ? 2.4 : WALK)) {
           n.waypoint = null;
+          const v = n.visit;
+          n.visit = null;
+          if (v && v.health > 0 && Math.hypot(v.x - n.x, v.z - n.z) < 4) {
+            // Arrived on the errand: the two of them talk, the one who was visited turning to see who it is.
+            const len = 5 + Math.random() * 4;
+            n.gesture = 'chat'; n.gestureT = len; n.chatWith = v;
+            if (v.gestureT <= 0 && (v.decision.mode === 'post' || v.decision.mode === 'idle' || v.decision.mode === 'wander')) { v.gesture = 'chat'; v.gestureT = len; v.chatWith = n; }
+            if (dPlayer < 9 && n.barked <= 0) bark(n, `overheard.${Math.floor(Math.random() * 8)}`, { other: v.spec.name });
+            break;
+          }
           const g: Gesture = p.role === 'colonist' ? (Math.random() < 0.7 ? 'work' : null) : p.role === 'patrol' ? 'scan' : p.faction === 'scav' ? (Math.random() < 0.6 ? 'salvage' : null) : null;
           if (g) { n.gesture = g; n.gestureT = g === 'work' ? 5 + Math.random() * 5 : g === 'salvage' ? 4 + Math.random() * 4 : 3 + Math.random() * 2; }
         }
@@ -630,6 +691,7 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
             if (Math.hypot(o.x - n.x, o.z - n.z) < 3) {
               const len = 4 + Math.random() * 3;
               for (const [a, b] of [[n, o], [o, n]] as const) { a.gesture = 'chat'; a.gestureT = len; a.chatWith = b; a.chatCool = 40 + Math.random() * 30; }
+              if (dPlayer < 9 && n.barked <= 0) bark(n, `overheard.${Math.floor(Math.random() * 8)}`, { other: o.spec.name });
               break;
             }
           }
@@ -684,7 +746,13 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
       case 'attack': {
         // Hold a range that suits the weapon, side-step to spoil the aim, face the target and shoot.
         const [lo, hi] = p.faction === 'hunter' ? [13, 24] : p.faction === 'scav' ? [5, 11] : [6, 11];
-        if (targetDist > hi) steer(n, dt, targetPos.x, targetPos.z, hi - 1, RUN);
+        if (targetDist > hi) {
+          // Closing in from their own side of the target, so a squad fans out instead of queueing.
+          const ux = (n.x - targetPos.x) / (targetDist || 1); const uz = (n.z - targetPos.z) / (targetDist || 1);
+          const c = Math.cos(n.flank); const sn = Math.sin(n.flank);
+          const gx = targetPos.x + (ux * c - uz * sn) * (hi - 2); const gz = targetPos.z + (ux * sn + uz * c) * (hi - 2);
+          steer(n, dt, gx, gz, 1.5, RUN);
+        }
         else if (targetDist < lo) {
           const ax = n.x - targetPos.x; const az = n.z - targetPos.z; const al = Math.hypot(ax, az) || 1;
           steer(n, dt, n.x + (ax / al) * 3, n.z + (az / al) * 3, 0.2, WALK * 1.4);
@@ -809,6 +877,10 @@ export function makeNpcs(opts: NpcOptions): NpcsHandle {
   return {
     group, telemetry, interactables, colliders,
     update(dt, t, crew, camera, lights, fire) {
+      // How fast the pilot is going, and how high off the ground (the jetpack).
+      if (dt > 0) pilotSpeed += (Math.hypot(crew.x - crewPos.x, crew.z - crewPos.z) / dt - pilotSpeed) * Math.min(1, dt * 6);
+      if (pilotSpeed > 40) pilotSpeed = 0;
+      pilotAlt = crew.y - opts.heightAt(crew.x, crew.z);
       crewPos.copy(crew);
       if (breachTimer > 0) {
         breachTimer -= dt;

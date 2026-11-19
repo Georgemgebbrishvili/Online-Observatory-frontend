@@ -17,7 +17,7 @@ import { serviceStill } from '@/voyage/game/frame-tap';
 import { projectSunDirection, type SunScreen } from '@/voyage/lib/solar-system/post-flare';
 import { getSettings } from '@/voyage/game/settings';
 import { softSpriteTexture } from '@/voyage/lib/solar-system/soft-sprite';
-import { currentQuality, onQualityChange, pixelRatioFor, stepQualityDown, type QualityProfile } from '@/voyage/game/quality';
+import { currentQuality, onQualityChange, pixelRatioFor, ratioFloor, stepQualityDown, type QualityProfile } from '@/voyage/game/quality';
 
 /** Seconds since the last frame, at most a tenth. 0 when no time has passed:
  *  a coarse clock (a privacy-hardened browser rounds performance.now to a
@@ -161,7 +161,7 @@ export function makeSurfaceHost(mount: HTMLElement, opts: SurfaceHostOptions): S
   };
   const pinned = process.env.NODE_ENV !== 'production' && new URLSearchParams(window.location.search).has('fixedpx');
   const perf = makeMoonPerf(renderer, mount, {
-    minRatio: pinned ? maxRatio : Math.min(1, maxRatio),
+    minRatio: pinned ? maxRatio : ratioFloor(profile.level, maxRatio),
     maxRatio,
     onPixelRatio: (r) => { renderer.setPixelRatio(r); post.setSize(mount.clientWidth, mount.clientHeight); },
     // A pinned bench must be reproducible, so it keeps the preset it was given.
@@ -175,7 +175,7 @@ export function makeSurfaceHost(mount: HTMLElement, opts: SurfaceHostOptions): S
   const unsubQuality = onQualityChange((q) => {
     profile = q;
     maxRatio = ratioFor(q);
-    perf.setRatioBounds(pinned ? maxRatio : Math.min(1, maxRatio), maxRatio);
+    perf.setRatioBounds(pinned ? maxRatio : ratioFloor(profile.level, maxRatio), maxRatio);
     renderer.setPixelRatio(maxRatio);
     fitShadow(q);
     // The old map is the old size: drop it and three allocates the new one.
@@ -258,7 +258,7 @@ export function makeSurfaceHost(mount: HTMLElement, opts: SurfaceHostOptions): S
     const cap = ratioFor(profile);
     if (Math.abs(cap - maxRatio) > 0.01) {
       maxRatio = cap;
-      perf.setRatioBounds(pinned ? maxRatio : Math.min(1, maxRatio), maxRatio);
+      perf.setRatioBounds(pinned ? maxRatio : ratioFloor(profile.level, maxRatio), maxRatio);
       renderer.setPixelRatio(maxRatio);
     }
     renderer.setSize(w, h);

@@ -29,6 +29,7 @@ import { makeTraffic } from '@/voyage/lib/solar-system/world-earth-traffic';
 import { makeRoadGraph } from '@/voyage/lib/solar-system/world-earth-roads';
 import { makePolice } from '@/voyage/lib/solar-system/world-earth-police';
 import { makeStreet, type CityState, type Place, type Street } from '@/voyage/lib/solar-system/world-earth-street';
+import { makeOldTown } from '@/voyage/lib/solar-system/world-earth-oldtown';
 
 /** From 600 m over the city, sinking at 38 m/s, coming in from the north-west over the river. The
  *  guidance only closes about a tenth of the gap a second, so the entry leaves it nearly overhead. */
@@ -79,6 +80,8 @@ export interface EarthWorld {
   street: Street;
   /** Held still (an arrest): no walking, no driving. */
   frozen: () => boolean;
+  /** How high the crew's feet are before a step: a roof under them is a floor only from above. */
+  setCrewY: (y: number) => void;
   driving: () => boolean;
   /** One simulation step at the wheel. `colliders` are the scene's own (the lander, the landmarks). */
   drive: (dt: number, input: CarInput, colliders: Collider[]) => void;
@@ -134,7 +137,8 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
   const city = makeCity(buildings, heightAt, lite, oldTown, [0, 0], data.prepared?.city);
   const landmarks = makeLandmarks(data, heightAt, lite);
   const cable = L.cableCar.line ? makeCableCar(L.cableCar.line, heightAt, lite) : null;
-  group.add(terrain.group, streets.group, city.group, landmarks.group);
+  const oldStreets = makeOldTown(city.oldTownWalls(), heightAt, lite);
+  group.add(terrain.group, streets.group, city.group, landmarks.group, oldStreets.group);
   if (cable) group.add(cable.group);
   const ambience = makeCityAmbience();
   // The pilot's car, parked on the lawn east of the pad, nose to the north.
@@ -253,11 +257,18 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
   const rideFloor = new THREE.Vector3();
   let pending: 'roofUp' | 'roofDown' | 'board' | null = null;
 
+  let crewY = -Infinity;
   const floorAt = (x: number, z: number) => {
     const ground = heightAt(x, z);
     if (state.onRoof && roof && insideRing(x, z, roof.ring)) return roof.roofY;
     const deck = streets.deckAt(x, z);
-    return Number.isNaN(deck) ? ground : Math.max(ground - 0.5, deck);
+    const street = Number.isNaN(deck) ? ground : Math.max(ground - 0.5, deck);
+    // Come down on a roof from above (the jetpack) and it holds: anywhere on it is floor.
+    if (crewY > street + 2) {
+      const top = city.roofAt(x, z);
+      if (!Number.isNaN(top) && crewY >= top - 0.6) return top;
+    }
+    return street;
   };
 
   /** The skyline from the rooftop at an azimuth: ground and roofs out to three kilometres, degrees. */
@@ -307,6 +318,7 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
     car,
     street,
     frozen: street.frozen,
+    setCrewY: (y) => { crewY = y; },
     driving: () => driving,
     drive(dt, input, colliders) {
       traffic.movers(car.position.x, car.position.z, 30, carMovers);
@@ -332,7 +344,8 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
         return;
       }
       city.pushOut(pos, 0.45, false);
-      if (streets.isWater(pos.x, pos.z)) { pos.x = prev.x; pos.z = prev.z; }
+      // The river cannot be walked on; it can be flown over.
+      if (streets.isWater(pos.x, pos.z) && pos.y - streets.riverLevel(pos.x, pos.z) < 1.5) { pos.x = prev.x; pos.z = prev.z; }
     },
     update(dt, crew, heading, use, cameraPos, place) {
       sky.update(dt, cameraPos);
@@ -345,6 +358,7 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
       state.night = sky.state.night;
       terrain.update(cameraPos);
       city.update(cameraPos, sky.state.night);
+      oldStreets.update(cameraPos, sky.state.night);
       streets.update(dt, cameraPos, sky.state.night);
       landmarks.update(dt, sky.state.night);
       cable?.update(dt, cameraPos);
@@ -382,6 +396,7 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
       traffic.movers(crew.x, crew.z, 60, carMovers);
       for (const m of carMovers) movers.push(m);
       for (const m of street.policeMovers(policeMovers)) movers.push(m);
+      people.setPilot(crew.y - carWorld.floorAt(crew.x, crew.z), !driving);
       people.update(dt, crew.x, crew.z, movers);
       people.colliders(crew.x, crew.z, 120, nearPeople);
       nearPeople.push(crewMover);
@@ -393,7 +408,7 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
       for (const m of carMovers) obstacles.push(m);
       street.update(dt, crew, sky.state.night, obstacles, place);
       for (const m of street.policeMovers(policeMovers)) nearPeople.push(m);
-      traffic.update(dt, crew.x, crew.z, nearPeople, sky.state.night, floorAt);
+      traffic.update(dt, crew.x, crew.z, nearPeople, sky.state.night, carWorld.floorAt);
       ambience.engine(driving ? Math.abs(car.speed) : -1);
       ambience.cheer(people.cheering());
       let river = Infinity;
@@ -417,6 +432,7 @@ export function makeEarthWorld(renderer: THREE.WebGLRenderer, data: EarthData, l
       expedition.dispose();
       cable?.dispose();
       landmarks.dispose();
+      oldStreets.dispose();
       city.dispose();
       streets.dispose();
       terrain.dispose();

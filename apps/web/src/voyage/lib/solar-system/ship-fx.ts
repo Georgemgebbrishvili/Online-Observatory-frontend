@@ -19,7 +19,7 @@ import { softSpriteTexture } from '@/voyage/lib/solar-system/soft-sprite';
 const TRAIL_POINTS = 48;
 /** Trails drawn at most: the outer engines of a bigger cluster carry it. */
 const MAX_TRAILS = 4;
-const TRAIL_LIFE = 0.7;
+const TRAIL_LIFE = 0.35;
 const TRAIL_STEP = 1 / 60;
 const SMOKE_N = 72;
 const SMOKE_LIFE = 1.6;
@@ -298,8 +298,9 @@ export function makeShipFx(H: number, length: number): ShipFx {
       // A model hull arrives after the ship is built: fit to it when it does.
       if (f.hull.children.length !== fittedTo) fx.fit(f.hull);
       f.camera.getWorldPosition(camPos);
-      const gain = f.visible ? Math.min(1.4, 0.15 + f.throttle * 0.75 + (f.boost ? 0.5 : 0)) : 0;
-      const cap = (f.boost ? 70 : 42) * H;
+      // A short hot streak: the ship, not its exhaust, is what the eye should follow.
+      const gain = f.visible ? Math.min(0.9, 0.08 + f.throttle * 0.5 + (f.boost ? 0.3 : 0)) : 0;
+      const cap = (f.boost ? 24 : 14) * H;
       trailMat.uniforms.uColor.value.copy(f.color);
       trailMat.uniforms.uGain.value += (gain - trailMat.uniforms.uGain.value) * (1 - Math.exp(-dt * 8));
 

@@ -27,8 +27,13 @@ export interface CityHandle {
   update: (cameraPos: THREE.Vector3, night: number) => void;
   /** Roof height if (x, z) is on a building's footprint, else NaN. */
   roofAt: (x: number, z: number) => number;
+  /** The old town's outside walls, long enough to carry a balcony or a shop sign. */
+  oldTownWalls: () => OldWall[];
   dispose: () => void;
 }
+
+/** A wall of an old-town house: its ends, the way it faces (out), its foot and top, and a number of its own. */
+export interface OldWall { ax: number; az: number; bx: number; bz: number; nx: number; nz: number; base: number; top: number; seed: number }
 
 const CELL = 800;
 const NEAR = 900;
@@ -54,6 +59,8 @@ const GLASSY = srgb(0.5, 0.56, 0.6);
 const INDUSTRIAL = srgb(0.55, 0.54, 0.52);
 const ROOF_FLAT = [srgb(0.36, 0.35, 0.34), srgb(0.44, 0.43, 0.41), srgb(0.3, 0.3, 0.31)];
 const ROOF_PITCH = [srgb(0.5, 0.3, 0.24), srgb(0.36, 0.44, 0.38), srgb(0.6, 0.61, 0.62), srgb(0.45, 0.27, 0.22)];
+/** Old Tbilisi's roofs are tin: painted rust red, oxidised green, faded red, or left grey. */
+const ROOF_TIN = [srgb(0.58, 0.2, 0.15), srgb(0.3, 0.46, 0.38), srgb(0.66, 0.32, 0.26), srgb(0.55, 0.56, 0.57), srgb(0.48, 0.16, 0.13)];
 
 /** Facade styles the shader knows: 0 blank, 1 flats, 2 old town, 3 glass, 4 stone church. */
 function styleOf(b: Building, oldTown: boolean): number {
@@ -195,7 +202,7 @@ function facadeMaterial(): { material: THREE.MeshStandardMaterial; night: { valu
 }
 
 /** A footprint made ready for building: its rings, the ground under it, its colours. */
-interface Rec { b: Building; outer: Pt[]; holes: Pt[][]; base: number; top: number; area: number; c: Pt; seed: number; style: number; wall: THREE.Color; roof: THREE.Color }
+interface Rec { b: Building; outer: Pt[]; holes: Pt[][]; base: number; top: number; area: number; c: Pt; seed: number; style: number; wall: THREE.Color; roof: THREE.Color; /** A hipped roof goes on (OSM says pitched, or an old-town house). */ hip: boolean }
 
 const tmp = new THREE.Color();
 const addWalls = (batch: Batch, p: Rec, ring: Pt[], inner: boolean) => {
@@ -329,10 +336,13 @@ function* recordsOf(buildings: Building[], heightAt: (x: number, z: number) => n
       ?? (b.kind === KIND.church ? STONE : b.kind === KIND.industrial || b.kind === KIND.shed ? INDUSTRIAL : style === 3 ? GLASSY
         : style === 2 ? (seed < 0.12 ? BRICK : PLASTER[Math.floor(seed * 97) % PLASTER.length]) : PANEL[Math.floor(seed * 89) % PANEL.length]);
     const pitched = b.roof === ROOF.gabled || b.roof === ROOF.hipped || b.roof === ROOF.pyramidal;
-    const roof = fromRgb565(b.roofColour) ?? (pitched ? ROOF_PITCH[Math.floor(seed * 53) % ROOF_PITCH.length] : ROOF_FLAT[Math.floor(seed * 41) % ROOF_FLAT.length]);
+    // Most of the old town's houses wear a pitched tin roof whatever the map says.
+    const tin = !pitched && style === 2 && b.height < 16 && hash1(k * 31 + 7) < 0.85;
+    const roof = fromRgb565(b.roofColour) ?? (tin ? ROOF_TIN[Math.floor(seed * 61) % ROOF_TIN.length]
+      : pitched ? ROOF_PITCH[Math.floor(seed * 53) % ROOF_PITCH.length] : ROOF_FLAT[Math.floor(seed * 41) % ROOF_FLAT.length]);
     // Heights are from the ground at the building's foot; on a slope that is the low side.
     const top = base + Math.max(2.6, b.height);
-    out.push({ b, outer, holes, base: base + b.minHeight, top, area, c, seed, style, wall, roof });
+    out.push({ b, outer, holes, base: base + b.minHeight, top, area, c, seed, style, wall, roof, hip: pitched || tin });
   }
   return out;
 }
@@ -348,9 +358,15 @@ function* buildSteps(list: Rec[], coarse: boolean, far: boolean, lite: boolean):
     const outer = coarse ? simplify(p.outer, far ? 5 : 2.5) : p.outer;
     addWalls(batch, p, outer, false);
     if (!coarse) for (const h of p.holes) addWalls(batch, p, h, true);
-    const pitched = p.b.roof === ROOF.gabled || p.b.roof === ROOF.hipped || p.b.roof === ROOF.pyramidal;
-    if (!coarse && pitched && outer.length <= 8 && !p.holes.length && convex(outer) && p.area < 900) addHipRoof(batch, p, outer);
-    else {
+    // A hip needs a simple convex outline: an irregular one is tried again simplified.
+    const hipOn = !coarse && p.hip && !p.holes.length && p.area < 900
+      ? (outer.length <= 8 && convex(outer) ? outer : ((s) => (s.length <= 8 && convex(s) ? s : null))(simplify(outer, 1.2)))
+      : null;
+    if (hipOn) {
+      addHipRoof(batch, p, hipOn);
+      // A roof on a simplified outline: the flat top under it closes what it does not cover.
+      if (hipOn !== outer) addFlatRoof(batch, p, outer, []);
+    } else {
       addFlatRoof(batch, p, outer, coarse ? [] : p.holes);
       // Parapets are a third of a full cell's walls: phones go without.
       if (!coarse && !lite && p.top - p.base > 5) addCornice(batch, p, outer);
@@ -406,13 +422,13 @@ export async function runChunked<T>(steps: Steps<T>, { signal, sliceMs = 10, onS
   }
 }
 
-interface Seg { ax: number; az: number; bx: number; bz: number; rooftop: boolean; /** Last camera query that took it: a Set-free "seen". */ stamp: number }
+interface Seg { ax: number; az: number; bx: number; bz: number; rooftop: boolean; /** The wall's top, m: anything above it passes over. */ top: number; /** Last camera query that took it: a Set-free "seen". */ stamp: number }
 
 /** The walls near the pad as segments on a 24 m grid, the footprints on a 60 m one. */
 function* walkHashSteps(records: Rec[]): Steps<{ segs: Map<number, Seg[]>; footprints: Map<number, Rec[]> }> {
   const segs = new Map<number, Seg[]>();
-  const addSeg = (ax: number, az: number, bx: number, bz: number, rooftop: boolean) => {
-    const s: Seg = { ax, az, bx, bz, rooftop, stamp: 0 };
+  const addSeg = (ax: number, az: number, bx: number, bz: number, rooftop: boolean, top: number) => {
+    const s: Seg = { ax, az, bx, bz, rooftop, top, stamp: 0 };
     const i0 = Math.floor(Math.min(ax, bx) / SEG_CELL); const i1 = Math.floor(Math.max(ax, bx) / SEG_CELL);
     const j0 = Math.floor(Math.min(az, bz) / SEG_CELL); const j1 = Math.floor(Math.max(az, bz) / SEG_CELL);
     for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
@@ -429,7 +445,7 @@ function* walkHashSteps(records: Rec[]): Steps<{ segs: Map<number, Seg[]>; footp
     if ((++n & 255) === 0) yield;
     for (const ring of [p.outer, ...p.holes]) for (let k = 0; k < ring.length; k++) {
       const [ax, az] = ring[k]; const [bx, bz] = ring[(k + 1) % ring.length];
-      addSeg(ax, az, bx, bz, p.b.rooftop);
+      addSeg(ax, az, bx, bz, p.b.rooftop, p.top);
     }
     const key = cellKey(Math.floor(p.c[0] / 60), Math.floor(p.c[1] / 60));
     let list = footprints.get(key);
@@ -563,6 +579,7 @@ export function makeCity(
     return out;
   };
   const found: Prepared[] = [];
+  let oldWalls: OldWall[] | null = null;
 
   const top = prepared.find((p) => p.b.rooftop) ?? null;
   let rooftop: CityHandle['rooftop'] = null;
@@ -601,6 +618,8 @@ export function makeCity(
         if (!list) continue;
         for (const s of list) {
           if (onRoof && s.rooftop) continue;
+          // Flying over it (the jetpack): the wall is below.
+          if (pos.y > s.top - 0.2) continue;
           const dx = s.bx - s.ax; const dz = s.bz - s.az;
           const l2 = dx * dx + dz * dz || 1;
           const tt = Math.max(0, Math.min(1, ((pos.x - s.ax) * dx + (pos.z - s.az) * dz) / l2));
@@ -613,7 +632,7 @@ export function makeCity(
       if (!onRoof) {
         // Inside a footprint (a teleport, a wall passed at speed): out the nearest side.
         for (const p of nearFootprints(pos.x, pos.z, found)) {
-          if (!insideRing(pos.x, pos.z, p.outer) || p.holes.some((h) => insideRing(pos.x, pos.z, h))) continue;
+          if (pos.y > p.top - 0.2 || !insideRing(pos.x, pos.z, p.outer) || p.holes.some((h) => insideRing(pos.x, pos.z, h))) continue;
           let bd = Infinity; let bx = pos.x; let bz = pos.z;
           for (let k = 0; k < p.outer.length; k++) {
             const [ax, az] = p.outer[k]; const [cx, cz] = p.outer[(k + 1) % p.outer.length];
@@ -657,6 +676,24 @@ export function makeCity(
       camOut.length = 0;
       for (let k = 0; k < n; k++) camOut.push(camPool[k]);
       return camOut;
+    },
+    oldTownWalls() {
+      if (oldWalls) return oldWalls;
+      oldWalls = [];
+      for (const p of prepared) {
+        if (p.style !== 2 || p.top - p.base < 6) continue;
+        const ring = p.outer;
+        for (let k = 0; k < ring.length; k++) {
+          const [ax, az] = ring[k]; const [bx, bz] = ring[(k + 1) % ring.length];
+          const len = Math.hypot(bx - ax, bz - az);
+          if (len < 4) continue;
+          let nx = (bz - az) / len; let nz = -(bx - ax) / len;
+          // Out is the side the footprint is not on.
+          if (insideRing((ax + bx) / 2 + nx * 0.4, (az + bz) / 2 + nz * 0.4, ring)) { nx = -nx; nz = -nz; }
+          oldWalls.push({ ax, az, bx, bz, nx, nz, base: p.base, top: p.top, seed: hash1(Math.round(ax * 13) ^ Math.round(az * 7)) });
+        }
+      }
+      return oldWalls;
     },
     roofAt(x, z) {
       for (const p of nearFootprints(x, z, found)) if (insideRing(x, z, p.outer)) return p.top;

@@ -76,8 +76,8 @@ function coated(m: THREE.MeshStandardMaterial): THREE.MeshPhysicalMaterial {
   });
 }
 
-/** `bareHead`: on a world with air — no pack, no helmet, the pilot's own head. */
-export function buildSuit(lite: boolean, bareHead = false): SuitRig {
+/** `bareHead`: on a world with air — no helmet, the pilot's own head; `withPack`: the jetpack on the back (off bare-headed unless asked for). */
+export function buildSuit(lite: boolean, bareHead = false, withPack = !bareHead): SuitRig {
   const group = new THREE.Group();
   group.name = 'cosmonaut';
   // Every joint's rest position in the rig's frame: rest rotations are all
@@ -113,13 +113,13 @@ export function buildSuit(lite: boolean, bareHead = false): SuitRig {
     ankles.push(joint(kn, `ankle${i}`, 0, -SHIN, 0));
     hips.push(hip); knees.push(kn);
   });
-  // No pack where there is air: its vertices fold into the pivot.
-  if (bareHead) pack.scale.setScalar(1e-4);
+  // No pack: its vertices fold into the pivot.
+  if (!withPack) pack.scale.setScalar(1e-4);
   const joints = new Map<string, THREE.Bone>();
   group.traverse((o) => { if ((o as THREE.Bone).isBone) joints.set(o.name, o as THREE.Bone); });
   // The hardware goes on before the model: it needs only the joints, and a
   // remote crew merges the rig as soon as it is built.
-  const gear = buildSuitGear({ pack, chest, helmet }, bareHead);
+  const gear = buildSuitGear({ pack, chest, helmet }, bareHead, withPack);
 
   const owned: { dispose: () => void }[] = [];
   let suitMat: THREE.MeshStandardMaterial | null = null;

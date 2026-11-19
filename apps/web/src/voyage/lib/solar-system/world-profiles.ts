@@ -160,6 +160,12 @@ export interface WorldCrystals {
   glow: number;
 }
 
+/** The hidden bases, each south of nothing in particular and out of sight of the pad. */
+const MARS_SECRET = { x: -72, z: -108 };
+const MERCURY_SECRET = { x: 108, z: 84 };
+const VENUS_SECRET = { x: -96, z: 92 };
+const secretFlat = (b: { x: number; z: number }) => ({ x: b.x, z: b.z, hw: 14, hd: 16 });
+
 export interface WorldProfile {
   id: WorldId;
   gravity: number;
@@ -233,6 +239,8 @@ export interface WorldProfile {
   walkRadius: number;
   /** Where the descent aims. */
   pad: { x: number; z: number };
+  /** A hidden base dug into a hill (world-secret-base), on levelled ground (the same spot is in `ground.flats`). */
+  secretBase?: { x: number; z: number };
   /** Air to breathe: no helmet, no oxygen reading. */
   breathable?: boolean;
   /** The giants: a floating deck over a sea of cloud instead of ground. */
@@ -291,7 +299,7 @@ export const MARS: WorldProfile = {
     slopeRock: [0.46, 0.26, 0.17], sand: [0.86, 0.62, 0.40],
     water: null, seed: 4311,
     // Dusthaven, west of the base (world-mars-town).
-    flats: [{ x: -92, z: 46, hw: 24, hd: 60 }],
+    flats: [{ x: -92, z: 46, hw: 24, hd: 60 }, secretFlat(MARS_SECRET)],
   },
   // Dust, not air: the sky is butterscotch away from the sun because the
   // dust absorbs blue and scatters red, and blue right round the sun because
@@ -313,6 +321,7 @@ export const MARS: WorldProfile = {
   ambientC: -61,
   walkRadius: 165,
   pad: { x: 0, z: -6 },
+  secretBase: MARS_SECRET,
 };
 
 export const PROXIMA_B: WorldProfile = {
@@ -450,6 +459,7 @@ export const MERCURY: WorldProfile = {
     warp: 14, mesas: 0, terraces: 0,
     slopeRock: [0.24, 0.22, 0.20], sand: [0.36, 0.33, 0.29],
     water: null, seed: 1601,
+    flats: [secretFlat(MERCURY_SECRET)],
   },
   // No air: a trace of scattering so the shader has numbers to divide by, a black sky.
   atmosphere: {
@@ -468,6 +478,7 @@ export const MERCURY: WorldProfile = {
   ambientC: 80,
   walkRadius: 165,
   pad: { x: 0, z: -6 },
+  secretBase: MERCURY_SECRET,
 };
 
 // ── Venus: the floor of a 92-bar carbon-dioxide sea, 464 °C day and night.
@@ -502,6 +513,7 @@ export const VENUS: WorldProfile = {
     warp: 24, mesas: 1.6, terraces: 5,
     slopeRock: [0.16, 0.14, 0.12], sand: [0.30, 0.24, 0.19],
     water: null, seed: 2251,
+    flats: [secretFlat(VENUS_SECRET)],
   },
   // A thick, even overcast: strong scattering with a weak forward lobe, so
   // the sky is one colour, and absorption in the blue, so it is orange.
@@ -521,6 +533,7 @@ export const VENUS: WorldProfile = {
   ambientC: 464,
   walkRadius: 150,
   pad: { x: 0, z: -6 },
+  secretBase: VENUS_SECRET,
 };
 
 // ── The giants. The site is the outpost's deck, the site datum; the cloud

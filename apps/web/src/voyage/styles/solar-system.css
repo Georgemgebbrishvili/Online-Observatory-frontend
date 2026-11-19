@@ -3521,6 +3521,12 @@
 .city-hud__note[data-kind='wanted'], .city-hud__note[data-kind='wrecked'] { border: 1px solid rgba(227, 72, 44, 0.7); color: #ffd2c4; }
 .city-hud__note[data-kind='lost'], .city-hud__note[data-kind='fareDone'] { border: 1px solid rgba(142, 230, 168, 0.55); }
 
+.city-hud__say {
+  position: absolute; left: 50%; bottom: calc(var(--edge-bottom) + 120px); transform: translateX(-50%); margin: 0;
+  max-width: min(560px, calc(100% - 32px)); padding: 7px 14px; border-radius: 10px; background: rgba(13, 13, 13, 0.72);
+  font-family: 'Noto Sans Georgian', 'FiraGO', var(--font-body, 'Geist'), system-ui, sans-serif; font-size: 15px; color: #fff1d6; text-align: center;
+  animation: city-in 220ms ease-out both;
+}
 .city-hud__radio {
   position: absolute; left: 50%; top: calc(var(--edge-top) + 56px); transform: translateX(-50%);
   display: grid; grid-template-columns: auto auto; column-gap: 8px; row-gap: 1px; align-items: center; justify-items: start;

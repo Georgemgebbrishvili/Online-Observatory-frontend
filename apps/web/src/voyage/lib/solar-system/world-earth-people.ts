@@ -48,12 +48,18 @@ export interface PeopleHandle {
   release: (slot: number) => void;
   /** A hailer who gives up waiting walks off. */
   dismiss: (slot: number) => void;
+  /** How high the pilot is off the ground, and whether on foot: people look up at a jetpack, and greet a passer-by. */
+  setPilot: (alt: number, onFoot: boolean) => void;
+  /** Someone said hello to the pilot: which line. */
+  onGreet: ((line: number) => void) | null;
   /** Someone getting out here and walking off, away from (fromX, fromZ). */
   alight: (x: number, z: number, fromX: number, fromZ: number) => void;
   dispose: () => void;
 }
 
-type Mode = 'walk' | 'gather' | 'cheer' | 'disperse' | 'idle' | 'down' | 'flee' | 'hail';
+type Mode = 'walk' | 'gather' | 'cheer' | 'disperse' | 'idle' | 'down' | 'flee' | 'hail' | 'chat' | 'gawk';
+/** Lines a passer-by may say to the pilot (world-earth-street shows them). */
+export const GREETINGS = 6;
 interface Person {
   x: number; z: number; y: number; yaw: number; speed: number; want: number;
   phase: number; mode: Mode;
@@ -63,6 +69,9 @@ interface Person {
   scale: number; seed: number; timer: number; wave: number; active: boolean;
   /** Knocked down: thrown at (vx, vy, vz), `lift` off the ground, `tilt` 0 standing … −π/2 flat on the back. */
   vx: number; vy: number; vz: number; lift: number; tilt: number;
+  /** Stopped to talk: with whom (a slot), and until when they walk on. */
+  partner: number;
+  chatCool: number;
 }
 
 const PEDESTRIANS = 60;
@@ -134,7 +143,7 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
   const fresh = (i: number): Person => ({
     x: 0, z: 0, y: 0, yaw: 0, speed: 0, want: 1.2 + hash(i) * 0.4, phase: hash(i + 3) * 6, mode: 'idle',
     path: -1, at: 0, dir: 1, tx: 0, tz: 0, scale: 0.92 + hash(i + 7) * 0.16, seed: i, timer: 0, wave: 0, active: false,
-    vx: 0, vy: 0, vz: 0, lift: 0, tilt: 0,
+    vx: 0, vy: 0, vz: 0, lift: 0, tilt: 0, partner: -1, chatCool: 5 + hash(i + 51) * 20,
   });
   for (let i = 0; i < total; i++) people.push(fresh(i));
   /** Each person's clothes, skin and hair; written into whichever instance slot they occupy this frame. */
@@ -171,6 +180,9 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
   };
 
   let crowd = { x: 0, z: 0, faceX: 0, faceZ: 0, t: -1 };
+  let pilotAlt = 0;
+  let pilotOnFoot = true;
+  let greetCool = 6;
   /** A pedestrian slot for someone the story needs here: one not in use, or the furthest walker. */
   const enlist = (x: number, z: number): Person | null => {
     let slot = -1; let far = -1;
@@ -194,7 +206,7 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
     m.setMatrixAt(n, tmpM);
   };
 
-  return {
+  const handle: PeopleHandle = {
     group,
     welcome(x, z, faceX, faceZ) {
       crowd = { x, z, faceX, faceZ, t: 0 };
@@ -232,6 +244,7 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
     },
     update(dt, cx, cz, movers) {
       if (crowd.t >= 0) crowd.t += dt;
+      greetCool -= dt;
       let n = 0;
       const poseRange = lite ? 180 : 280;
       for (let i = 0; i < total; i++) {
@@ -293,6 +306,31 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
             }
             // Some stop a moment to look.
             if (dCrew < 14 && hash(p.seed + 31) < 0.4) { speedWant = 0; gx = cx - p.x; gz = cz - p.z; }
+            // A pilot flying over the street on a jetpack: people stop and point.
+            if (pilotAlt > 4 && dCrew < 45 + pilotAlt * 0.5 && hash(p.seed + 77) < 0.7) { p.mode = 'gawk'; p.timer = 0; }
+            // Two who meet on the pavement sometimes stop for a word.
+            p.chatCool -= dt;
+            if (p.chatCool <= 0 && p.mode === 'walk') {
+              p.chatCool = 3;
+              for (let j = 0; j < PEDESTRIANS; j++) {
+                const o = people[j];
+                if (o === p || !o.active || o.mode !== 'walk' || o.chatCool > 0) continue;
+                if (Math.abs(o.x - p.x) > 2.4 || Math.abs(o.z - p.z) > 2.4) continue;
+                if (hash(p.seed * 3.7 + j + crowd.t) < 0.35) {
+                  const len = 6 + hash(p.seed + j) * 6;
+                  p.mode = 'chat'; p.partner = j; p.timer = len;
+                  o.mode = 'chat'; o.partner = i; o.timer = len;
+                }
+                p.chatCool = 25 + hash(p.seed + 9) * 25; o.chatCool = 25 + hash(o.seed + 9) * 25;
+                break;
+              }
+            }
+            // A passer-by greets a pilot on foot.
+            if (pilotOnFoot && dCrew < 3.5 && greetCool <= 0 && hash(p.seed + 13) < 0.5) {
+              greetCool = 14 + hash(p.seed + crowd.t) * 12;
+              gx = cx - p.x; gz = cz - p.z;
+              handle.onGreet?.(Math.floor(hash(p.seed * 1.7 + greetCool) * GREETINGS));
+            }
           }
         } else if (p.mode === 'flee') {
             // Running from what frightened them, then off out of the scene.
@@ -300,6 +338,19 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
             speedWant = 4.3 + hash(p.seed + 41) * 0.8;
             p.timer += dt;
             if (p.timer > 9) { p.mode = 'disperse'; p.timer = 0; }
+          } else if (p.mode === 'chat') {
+            // Facing each other, talking with their hands, until one of them walks on.
+            speedWant = 0;
+            const o = people[p.partner];
+            if (o && o.active && o.mode === 'chat') { gx = o.x - p.x; gz = o.z - p.z; }
+            p.timer -= dt;
+            if (p.timer <= 0 || !o || !o.active || o.mode !== 'chat') { p.mode = 'walk'; p.partner = -1; }
+          } else if (p.mode === 'gawk') {
+            // Looking up at the pilot overhead, one arm pointing.
+            speedWant = 0;
+            gx = cx - p.x; gz = cz - p.z;
+            p.timer += dt;
+            if (p.timer > 6 || pilotAlt < 2 || dCrew > 70) { p.mode = 'walk'; p.timer = 0; }
           } else if (p.mode === 'hail') {
             // At the kerb, facing the road, arm up.
             speedWant = 0;
@@ -374,8 +425,9 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
         const down = p.mode === 'down';
         set(mesh.hips, n, 0, hipY, 0, 0, 0, 0);
         set(mesh.torso, n, 0, hipY + 0.06, 0, 0.05 * moving + running * 0.22, Math.sin(p.phase) * 0.08 * moving, 0);
-        set(mesh.head, n, 0, hipY + 0.66, 0, running * 0.1, 0, 0);
-        set(mesh.hair, n, 0, hipY + 0.66, 0, running * 0.1, 0, 0);
+        const lookUp = p.mode === 'gawk' ? -0.5 : running * 0.1;
+        set(mesh.head, n, 0, hipY + 0.66, 0, lookUp, 0, 0);
+        set(mesh.hair, n, 0, hipY + 0.66, 0, lookUp, 0, 0);
         if (down) {
           // Sprawled: legs apart, arms flung out.
           set(mesh.legL, n, -0.085, hipY, 0, 0.15, 0, -0.25);
@@ -385,7 +437,16 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
         } else {
           set(mesh.legL, n, -0.085, hipY, 0, stride, 0, 0);
           set(mesh.legR, n, 0.085, hipY, 0, -stride, 0, 0);
-          if (cheer && (p.wave === 1 || hailing)) {
+          if (p.mode === 'gawk') {
+            // Pointing up at the sky, head back.
+            set(mesh.armR, n, 0.22, hipY + 0.58, 0, -2.5, 0, 0.1);
+            set(mesh.armL, n, -0.22, hipY + 0.58, 0, 0.05, 0, -0.08);
+          } else if (p.mode === 'chat') {
+            // Talking with the hands: one forearm's worth of gesture, now and then.
+            const g = Math.max(0, Math.sin(t * 2.3 + p.seed * 5)) * 0.7;
+            set(mesh.armR, n, 0.22, hipY + 0.58, 0, -0.4 - g, 0, 0.12);
+            set(mesh.armL, n, -0.22, hipY + 0.58, 0, -0.15 * g, 0, -0.1);
+          } else if (cheer && (p.wave === 1 || hailing)) {
             // Waving: the right arm up and swinging from the elbow's worth of shoulder.
             set(mesh.armR, n, 0.22, hipY + 0.58, 0, 0, 0, 2.6 + Math.sin(t * 7 + p.seed) * 0.35);
             set(mesh.armL, n, -0.22, hipY + 0.58, 0, 0.05, 0, -0.08);
@@ -463,6 +524,8 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
       const p = people[slot];
       return p && p.active ? { x: p.x, z: p.z, mode: p.mode } : null;
     },
+    setPilot(alt, onFoot) { pilotAlt = alt; pilotOnFoot = onFoot; },
+    onGreet: null,
     dismiss(slot) {
       const p = people[slot];
       if (p && p.active && p.mode === 'hail') { p.mode = 'disperse'; p.timer = 0; p.wave = 0; }
@@ -488,4 +551,5 @@ export function makePeople(data: EarthData, world: PeopleWorld, lite: boolean): 
       material.dispose();
     },
   };
+  return handle;
 }

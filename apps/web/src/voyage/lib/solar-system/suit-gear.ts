@@ -94,7 +94,7 @@ const FLAME_FRAG = /* glsl */ `
     gl_FragColor = vec4(col * (2.0 + 2.0 * v) * shape * uK, 1.0);
   }`;
 
-export function buildSuitGear(joints: GearJoints, bareHead = false): SuitGear {
+export function buildSuitGear(joints: GearJoints, bareHead = false, withPack = !bareHead): SuitGear {
   const owned: { dispose: () => void }[] = [];
   const own = <T extends { dispose: () => void }>(o: T): T => { owned.push(o); return o; };
   const std = (o: THREE.MeshStandardMaterialParameters) => own(new THREE.MeshStandardMaterial(o));
@@ -159,7 +159,7 @@ export function buildSuitGear(joints: GearJoints, bareHead = false): SuitGear {
   const glows: THREE.Sprite[] = [];
 
   // ── The jet module: under the pack, between the hips, with a tank each side. ──
-  if (!bareHead) {
+  if (withPack) {
     const { g, small } = assembly(joints.pack, 'jet-module');
     part(g, rbox(0.44, 0.24, 0.26, 0.03), shell, PACK, 0, 1.06, -0.39);
     // A dark vent inset on the module's back face, and a lit status strip up the pack.

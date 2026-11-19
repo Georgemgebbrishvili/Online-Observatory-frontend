@@ -108,9 +108,9 @@ export interface CosmonautHandle {
 const wrap = (a: number) => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
 const ease = (rate: number, dt: number) => 1 - Math.exp(-dt * rate);
 
-/** `bareHead`: on a world with air the pilot comes out without the helmet and pack. */
-export function makeCosmonaut(dust: DustHandle, lite = false, g = MOON_G, suited = true, bareHead = false): CosmonautHandle {
-  const rig = buildSuit(lite, bareHead);
+/** `bareHead`: on a world with air the pilot comes out without the helmet — and without the pack, unless `withPack`. */
+export function makeCosmonaut(dust: DustHandle, lite = false, g = MOON_G, suited = true, bareHead = false, withPack = !bareHead): CosmonautHandle {
+  const rig = buildSuit(lite, bareHead, withPack);
   const { group, helmet } = rig;
   // The exhaust's sparks fly free of the body: their points ride under the
   // suit's group so they are in the scene with it, but stay in world space.
@@ -122,8 +122,8 @@ export function makeCosmonaut(dust: DustHandle, lite = false, g = MOON_G, suited
   const prev = new THREE.Vector3();
   let prevYaw = 0;
   const loco = makeLocomotion(position, vel, gaitProfile(g, suited));
-  // No pack where there is air to breathe: the pilot came out without it.
-  loco.jet.enabled = !bareHead;
+  // No pack, no flying.
+  loco.jet.enabled = withPack;
   const ls = loco.state;
   const poser = makeSuitPoser(rig, loco, bareHead);
   const state: CosmonautState = {

@@ -2284,7 +2284,7 @@ export function createPlayerShip(session: FlightSession): PlayerShipHandle {
       PLUME_TIME.value = timeSec;
       if (live.plumeMat) {
         live.plumeMat.opacity = Math.min(0.85, 0.14 + 0.34 * (pulse - 0.8));
-        const stretch = 0.35 + 0.85 * Math.min(1.6, pulse - 0.75);
+        const stretch = 0.3 + 0.6 * Math.min(1.2, pulse - 0.75);
         const flicker = 1 + 0.06 * Math.sin(timeSec * 43) * (thrusting ? 1 : 0.3);
         for (const pl of live.plumes) pl.scale.set(1, Math.max(0.12, stretch * flicker), 1);
         // The core runs longer than the haze and only really shows under
@@ -2292,7 +2292,7 @@ export function createPlayerShip(session: FlightSession): PlayerShipHandle {
         if (live.plumeCoreMat) {
           live.plumeCoreMat.opacity = Math.min(1, 0.22 + 0.5 * (pulse - 0.8));
           const coreFlicker = 1 + 0.09 * Math.sin(timeSec * 61 + 1) * (thrusting ? 1 : 0.3);
-          const coreStretch = 0.22 + 0.95 * Math.min(1.6, pulse - 0.75);
+          const coreStretch = 0.2 + 0.65 * Math.min(1.2, pulse - 0.75);
           for (const pc of live.plumeCores) pc.scale.set(0.85 + 0.3 * Math.min(1, pulse - 0.8), Math.max(0.1, coreStretch * coreFlicker), 0.85 + 0.3 * Math.min(1, pulse - 0.8));
         }
       }

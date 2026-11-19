@@ -173,10 +173,11 @@ export const CityHud = forwardRef<CityHudHandle, Props>(function CityHud({ stree
   const bustedRef = useRef<HTMLDivElement>(null);
   const bustedLineRef = useRef<HTMLSpanElement>(null);
   const healthRef = useRef<HTMLDivElement>(null);
+  const sayRef = useRef<HTMLParagraphElement>(null);
   const driveKeysRef = useRef<HTMLDivElement>(null);
   const atlasRef = useRef<Atlas | null>(null);
-  const seen = useRef({ note: -1, radio: -1, stars: -1, cash: -1, fare: '', busted: false, health: -2, driving: false });
-  const until = useRef({ note: 0, radio: 0 });
+  const seen = useRef({ note: -1, radio: -1, stars: -1, cash: -1, fare: '', busted: false, health: -2, driving: false, say: -1 });
+  const until = useRef({ note: 0, radio: 0, say: 0 });
   const lastMini = useRef(0);
   const zoom = useRef(1);
   const atlas = useCallback(() => {
@@ -264,6 +265,18 @@ export const CityHud = forwardRef<CityHudHandle, Props>(function CityHud({ stree
         const on = city.busted > 0;
         if (busted.hidden === on) busted.hidden = !on;
       }
+      // ── A passer-by's hello, in Georgian with the English under it. ──
+      const say = sayRef.current;
+      if (say) {
+        if (was.say < 0) was.say = city.say.serial;
+        if (city.say.serial !== was.say) {
+          was.say = city.say.serial;
+          say.textContent = tt(`greetings.${city.say.line}`);
+          until.current.say = now + 3200;
+        }
+        const on = now < until.current.say;
+        if (say.hidden === on) say.hidden = !on;
+      }
       // ── The station, when it changes. ──
       const radio = radioRef.current;
       if (radio) {
@@ -344,6 +357,7 @@ export const CityHud = forwardRef<CityHudHandle, Props>(function CityHud({ stree
         <span ref={fareMetaRef} className="city-hud__fare-meta" />
       </div>
       <div ref={noteRef} className="city-hud__note" role="status" hidden />
+      <p ref={sayRef} className="city-hud__say" role="status" hidden />
       <div ref={radioRef} className="city-hud__radio" role="status" hidden>
         <Radio size={15} aria-hidden />
         <span ref={radioNameRef} className="city-hud__radio-name" />
