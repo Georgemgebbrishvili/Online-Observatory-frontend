@@ -46,7 +46,7 @@ test("the same capture in Georgian", async ({ browser }) => {
   const { context, page } = await stranger(browser);
   await page.goto(`/ka/c/${shared}`, { timeout: firstCompile });
   await expect(page.getByRole("heading", { level: 1, name: "სატურნი" })).toBeVisible();
-  await expect(page.getByText("საქართველო", { exact: true })).toBeVisible();
+  await expect(page.getByText("საქართველო")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "დაჯავშნე სეანსი" })).toBeVisible();
   await context.close();
 });

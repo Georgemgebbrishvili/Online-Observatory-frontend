@@ -44,7 +44,7 @@ test("is in the profile menu, and in Georgian", async ({ page }) => {
   await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
 
   await page.getByRole("button", { name: "Account" }).click();
-  await page.getByRole("link", { name: "Weekly cards" }).click();
+  await page.locator("#account-menu-list").getByRole("link", { name: "Weekly cards" }).click();
   await expect(page).toHaveURL(/\/en\/app\/cards$/, { timeout: firstCompile });
 
   await page.goto("/ka/app/cards");

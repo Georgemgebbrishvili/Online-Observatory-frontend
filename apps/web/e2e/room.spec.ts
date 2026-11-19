@@ -133,7 +133,7 @@ test("the room and the target page say what the live view can show (ADR-069)", a
   await expect(guide).toContainText("resolves into points as frames stack");
 
   await page.goto("/ka/app/missions/m13-hercules-cluster");
-  await expect(page.getByText("რას აჩვენებს პირდაპირი გამოსახულება")).toBeVisible();
+  await expect(page.getByText("რას დაინახავ")).toBeVisible();
 });
 
 test("the presenter view shows the state and the feed alone, and goes back (ADR-070)", async ({

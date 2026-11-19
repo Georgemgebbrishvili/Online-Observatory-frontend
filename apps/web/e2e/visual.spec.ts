@@ -113,6 +113,15 @@ async function capture(
     () =>
       !document.querySelector(':is(.operator-list, .operator-manual)[aria-busy="true"]'),
   );
+  // A full-page capture shows what is below the fold, which a lazy image never loads
+  // unless scrolled to: the completed room's capture tiles sit there at 390.
+  await page.evaluate(() => {
+    for (const image of document.querySelectorAll<HTMLImageElement>(
+      'img[loading="lazy"]',
+    )) {
+      image.loading = "eager";
+    }
+  });
   await page.waitForFunction(() =>
     [...document.images].every(
       (image) => image.complete || "liveStream" in image.dataset,
