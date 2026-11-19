@@ -80,7 +80,7 @@ function masks(page: Page) {
     page.locator(".cal-month"),
     page.locator(".cal-note"),
     page.locator(".cal-list"),
-    // ADR-093: which of tonight's objects are up, and when, follows the server's tonight.
+    // ADR-094: which of tonight's objects are up, and when, follows the server's tonight.
     page.locator(".hm-objects"),
   ];
 }

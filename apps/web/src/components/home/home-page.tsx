@@ -126,7 +126,7 @@ export function HomeObjectCard({
 }
 
 /**
- * The public homepage (ADR-093): five plain sections, rendered on the server. No pinned
+ * The public homepage (ADR-094): five plain sections, rendered on the server. No pinned
  * scroll, no canvas and no animation library: what it says is worked out by the shell
  * from tonight's almanac and the platform's prices, and the page only lays it out.
  */

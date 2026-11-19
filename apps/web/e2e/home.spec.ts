@@ -26,7 +26,7 @@ test("communicates real telescope access in the English hero", async ({ page }) 
     "href",
     "/en/tonight",
   );
-  // ADR-076/077: no telescope model and no status chips in the hero; ADR-093: no canvas.
+  // ADR-076/077: no telescope model and no status chips in the hero; ADR-094: no canvas.
   await expect(hero.locator(".observatory-dome")).toHaveCount(0);
   await expect(hero.getByText("Online", { exact: true })).toHaveCount(0);
   await expect(page.locator("main canvas")).toHaveCount(0);
@@ -64,7 +64,7 @@ test("the public homepage: five plain sections, with the platform's prices", asy
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
 
-  // ADR-093: the hero, how it works, tonight, the session, the telescope, the sign-off.
+  // ADR-094: the hero, how it works, tonight, the session, the telescope, the sign-off.
   await expect(page.locator("main section")).toHaveCount(6);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
@@ -114,7 +114,7 @@ test("the homepage is short and loads no animation library", async ({ page }) =>
     if (request.resourceType() === "script") scripts.push(request.url());
   });
   await page.goto("/en");
-  // ADR-093: a page a reader scrolls in a few flicks, not a pinned story.
+  // ADR-094: a page a reader scrolls in a few flicks, not a pinned story.
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
   expect(height).toBeLessThan(6000);
   await expect(page.locator(".pin-spacer")).toHaveCount(0);

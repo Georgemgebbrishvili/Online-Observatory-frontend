@@ -1,4 +1,4 @@
-# ADR-093 — The homepage is plain and short
+# ADR-094 — The homepage is plain and short
 
 - **Date:** 2026-11-19
 - **Status:** APPROVED (2026-11-19)

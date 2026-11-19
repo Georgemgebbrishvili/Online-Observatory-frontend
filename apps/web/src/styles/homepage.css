@@ -1,5 +1,5 @@
 /*
- * The public homepage (ADR-093): five plain sections, rendered on the server, in normal
+ * The public homepage (ADR-094): five plain sections, rendered on the server, in normal
  * page flow. No pinned scroll, no canvas, no animation library. The hero keeps ADR-088's
  * look: centred over a lit horizon, medium-weight headline on the title gradient. Tokens only.
  */

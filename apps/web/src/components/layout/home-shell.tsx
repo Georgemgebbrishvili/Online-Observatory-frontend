@@ -34,7 +34,7 @@ const glow: Record<string, string> = {
 };
 
 /**
- * The public homepage (ADR-093). Everything it says is worked out here, on the server,
+ * The public homepage (ADR-094). Everything it says is worked out here, on the server,
  * from tonight's almanac, the platform's open times and prices, and the observatory's
  * record.
  */
