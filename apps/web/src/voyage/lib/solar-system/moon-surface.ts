@@ -320,7 +320,7 @@ const EXIT_AFTER = 0.8;
  *  short enough that nobody leaves without hearing it. */
 const HOLE_CALL_AFTER = 75;
 /** Seconds of the lander's own climb before the flight back to orbit takes it. */
-const ASCENT_HANDOFF = 6;
+const ASCENT_HANDOFF = 4.2;
 const STEP = 1 / 120;
 const MAX_STEPS = 12;
 // Near the south pole the Sun never climbs far: a low sun out of the south-west,
@@ -807,11 +807,37 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
         lander.launch();
         audio.thump(12);
         cam.shake(0.5);
-        ascentFrom.copy(camera.position);
+        // Cut to the launch, watched from off the pad on the side the camera was on.
+        launchDir.set(camera.position.x - lander.position.x, 0, camera.position.z - lander.position.z);
+        if (launchDir.lengthSq() < 1e-4) launchDir.set(1, 0, 0);
+        launchDir.normalize().applyAxisAngle(UP_AXIS, 0.6);
+        const back = lander.hull * 5 + 18;
+        ascentFrom.set(lander.position.x + launchDir.x * back, 0, lander.position.z + launchDir.z * back);
+        ascentFrom.y = terrain.heightAt(ascentFrom.x, ascentFrom.z) + 2.5 + lander.hull * 0.4;
+        camera.position.copy(ascentFrom);
+        camera.lookAt(lander.position.x, lander.position.y + lander.hull * 0.6, lander.position.z);
       },
     });
   };
   const ascentFrom = new THREE.Vector3();
+  const launchDir = new THREE.Vector3();
+  const UP_AXIS = new THREE.Vector3(0, 1, 0);
+  // Hand-offs between cameras are eased, never cut (see world-surface).
+  const camBlend = { t: 1, dur: 1, arc: 0, pos: new THREE.Vector3(), quat: new THREE.Quaternion(), fov: 60 };
+  const blendFrom = (dur: number, arc = 0) => {
+    camBlend.t = 0; camBlend.dur = dur; camBlend.arc = arc;
+    camBlend.pos.copy(camera.position); camBlend.quat.copy(camera.quaternion); camBlend.fov = camera.fov;
+  };
+  const applyBlend = (dt: number) => {
+    if (camBlend.t >= 1) return;
+    camBlend.t = Math.min(1, camBlend.t + dt / camBlend.dur);
+    const k = THREE.MathUtils.smootherstep(camBlend.t, 0, 1);
+    camera.position.lerpVectors(camBlend.pos, camera.position, k);
+    camera.position.y += Math.sin(Math.PI * k) * camBlend.arc;
+    camera.quaternion.slerpQuaternions(camBlend.quat, camera.quaternion, k);
+    const fov = THREE.MathUtils.lerp(camBlend.fov, camera.fov, k);
+    if (Math.abs(fov - camera.fov) > 0.01) { camera.fov = fov; camera.updateProjectionMatrix(); }
+  };
 
   // ── The sinkhole, the fall, and the Backrooms under it. ──
   const fall = makeFall({ cosmonaut, camera, cam, dust, thump: (d) => audio.thump(d), g: MOON_G });
@@ -1075,6 +1101,7 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
         // After a dive the computer flies the last of it down onto the base's
         // pad; the stick (or the engine key) takes it back.
         if (dived) lander.telemetry.assist = true;
+        blendFrom(1.6);
         telemetry.phase = 'descent';
         telemetry.orbital = null;
         cam.yaw = flight.cameraYaw();
@@ -1173,6 +1200,7 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
         telemetry.exitReady = egressHold < EGRESS_HOLD - EXIT_AFTER;
         if (egressHold <= 0 || (pressed && telemetry.exitReady)) {
           telemetry.exitReady = false;
+          blendFrom(2.2, lander.hull * 3 + 7);
           telemetry.phase = 'surface';
           cosmonaut.position.set(lt.egressX, terrain.heightAt(lt.egressX, lt.egressZ), lt.egressZ);
           cosmonaut.yaw = Math.PI;
@@ -1471,6 +1499,7 @@ export async function makeMoonSurface(mount: HTMLElement, opts: SurfaceOptions =
     if (telemetry.phase === 'surface') build.update(crew.x, crew.z, camera);
     objMarker.update(dt, telemetry.phase === 'surface' && !br ? moonMissions.missions.telemetry.at : null, crew, terrain.heightAt, camera);
     orbit.update(dt);
+    applyBlend(dt);
     host.render(dt);
   };
   host.start(frame, () => { telemetry.ready = true; }, cosmonaut.ready);

@@ -826,7 +826,7 @@ export function WorldSurface({ world, onReturn, room, paused, standby, startAt, 
           </div>
         )}
 
-        {world === 'mars' && <NpcHud get={npcTel} choose={npcChoose} close={npcClose} touch={touch} onFire={npcFire} />}
+        {!isEarth && <NpcHud get={npcTel} choose={npcChoose} close={npcClose} touch={touch} onFire={npcFire} />}
         <div ref={bannerRef} className="moon-hud__banner" role="status" hidden><span /></div>
         <div ref={readoutRef} className="moon-hud__readout" role="status" hidden />
         <div ref={dialogRef} className="moon-hud__dialog" role="status" hidden>

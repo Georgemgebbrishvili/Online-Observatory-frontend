@@ -173,3 +173,50 @@ export function optionsFor(node: DialogNode, ctx: DialogCtx): { key: string; cos
       return { key: o.key, cost, enabled: ctx.save.credits >= cost, index };
     });
 }
+
+/** The two who keep each outpost: a caretaker droid at its post, who patches suits and knows the place,
+ *  and a technician on their rounds. `spots` are the outpost's own points of interest. */
+const OUTPOST_PEOPLE: Record<string, { droid: string; body: BodyKind; tech: string; color: number }> = {
+  mercury: { droid: 'HELIO-3', body: 'tallDroid', tech: 'Ines', color: 0xb9c2cc },
+  venus: { droid: 'SULFA', body: 'ballDroid', tech: 'Marek', color: 0xd9a441 },
+  jupiter: { droid: 'BAND-9', body: 'tallDroid', tech: 'Yuki', color: 0xc77b4a },
+  saturn: { droid: 'RINGO', body: 'ballDroid', tech: 'Anan', color: 0xe3d3a3 },
+  uranus: { droid: 'TILT', body: 'tallDroid', tech: 'Bo', color: 0x7fd6d0 },
+  neptune: { droid: 'DEEP-1', body: 'ballDroid', tech: 'Lior', color: 0x4a6fd8 },
+};
+
+export function outpostCast(world: string, spots: { x: number; z: number }[]): CastMember[] {
+  const who = OUTPOST_PEOPLE[world];
+  if (!who || spots.length === 0) return [];
+  const at = (i: number) => spots[i % spots.length];
+  const home = at(0);
+  return [
+    {
+      id: 'caretaker', name: who.droid, body: who.body, color: who.color, maxHealth: 140,
+      persona: { faction: 'crew', role: 'vendor', nerve: 0.9, temper: 0, sight: 30 },
+      home: { x: home.x + 3, z: home.z + 3 },
+      start: () => 'hello',
+      nodes: {
+        hello: {
+          line: `outpost.${world}.droid`,
+          options: [
+            { key: 'kern.repair', effect: 'repair', cost: REPAIR_COST, when: (c) => c.integrity < 100 },
+            { key: 'outpost.ask', to: 'lore' },
+            bye,
+          ],
+        },
+        lore: { line: `outpost.${world}.lore`, options: [bye] },
+      },
+    },
+    {
+      id: 'tech', name: who.tech, body: 'colonist', color: 0xe07a2e, maxHealth: 60,
+      persona: { faction: 'crew', role: 'colonist', nerve: 0.4, temper: 0, sight: 30 },
+      home: { x: at(1).x, z: at(1).z }, route: spots.slice(0, 4).map((s) => ({ x: s.x + 2, z: s.z + 2 })),
+      start: () => 'hello',
+      nodes: {
+        hello: { line: `outpost.${world}.tech`, options: [{ key: 'outpost.life', to: 'life' }, bye] },
+        life: { line: `outpost.${world}.life`, options: [bye] },
+      },
+    },
+  ];
+}

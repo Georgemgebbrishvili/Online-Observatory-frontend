@@ -1254,7 +1254,8 @@
             "comms": "Comms status",
             "sunshade": "Sun wall status"
           },
-          "boardLander": "Board ship — Take off"
+          "boardLander": "Board ship — Take off",
+          "talk": "Talk"
         },
         "readout": {
           "habitat": "HAB-1 · 101 kPa · 22 °C · CO₂ 0.4 % · in the sun wall's shadow · 2 crew asleep",
@@ -1304,7 +1305,8 @@
             "comms": "Comms status",
             "cooler": "Cooler status"
           },
-          "boardLander": "Board ship — Take off"
+          "boardLander": "Board ship — Take off",
+          "talk": "Talk"
         },
         "readout": {
           "habitat": "HAB-1 · inside 101 kPa, 24 °C · outside 9,200 kPa, 464 °C · hull 18 cm of steel · 2 crew",
@@ -1355,7 +1357,8 @@
             "comms": "Comms status",
             "envelope": "Balloon status"
           },
-          "boardLander": "Board ship — Take off"
+          "boardLander": "Board ship — Take off",
+          "talk": "Talk"
         },
         "readout": {
           "habitat": "HAB-1 · 101 kPa · 21 °C · outside −108 °C, 1 bar of hydrogen and helium · 2 crew",
@@ -1406,7 +1409,8 @@
             "comms": "Comms status",
             "envelope": "Balloon status"
           },
-          "boardLander": "Board ship — Take off"
+          "boardLander": "Board ship — Take off",
+          "talk": "Talk"
         },
         "readout": {
           "habitat": "HAB-1 · 101 kPa · 21 °C · outside −139 °C, 1 bar of hydrogen and helium · 2 crew",
@@ -1457,7 +1461,8 @@
             "comms": "Comms status",
             "envelope": "Balloon status"
           },
-          "boardLander": "Board ship — Take off"
+          "boardLander": "Board ship — Take off",
+          "talk": "Talk"
         },
         "readout": {
           "habitat": "HAB-1 · 101 kPa · 21 °C · outside −197 °C, 1 bar of hydrogen and helium · 2 crew",
@@ -1508,7 +1513,8 @@
             "comms": "Comms status",
             "envelope": "Balloon status"
           },
-          "boardLander": "Board ship — Take off"
+          "boardLander": "Board ship — Take off",
+          "talk": "Talk"
         },
         "readout": {
           "habitat": "HAB-1 · 101 kPa · 21 °C · outside −201 °C, 1 bar of hydrogen and helium · 2 crew",
@@ -1720,7 +1726,9 @@
           "vex": "Smuggler · trader",
           "patrol": "Guild hunter",
           "colonist": "Colonist",
-          "raider": "Scav drone"
+          "raider": "Scav drone",
+          "caretaker": "Caretaker droid",
+          "tech": "Technician"
         }
       },
       "bark": {
@@ -1732,7 +1740,9 @@
         "cover": "Getting to cover!",
         "search": "Spread out. They can't have gone far.",
         "down": "Ugh... systems... offline...",
-        "provoked": "Wrong hunter to mouth off to."
+        "provoked": "Wrong hunter to mouth off to.",
+        "landed": "Nice landing, pilot! Welcome to the base.",
+        "launch": "Clear skies! Come back soon!"
       },
       "pip": {
         "hello": "Bweep! PIP-7, colony utility droid. My scanner is bored and so am I. Want company out there?",
@@ -1808,6 +1818,46 @@
         "tamsin0": "Panels won't fix themselves.",
         "tamsin1": "Seen any scavs out east?",
         "tamsin2": "Don't let Vex sell you anything."
+      },
+      "outpost": {
+        "ask": "What should I know about this place?",
+        "life": "What's it like, living out here?",
+        "mercury": {
+          "droid": "HELIO-3, outpost caretaker. Surface temperature on the day side: four hundred and thirty degrees. Please stay on the shadowed walkways.",
+          "lore": "A Mercury day lasts longer than its year. From here the Sun rises, stops, goes backwards a little, and carries on. The first time it happened I filed a fault report.",
+          "tech": "Ines, thermal crew. If your boots start to smell like toast, come inside.",
+          "life": "We follow the terminator, the line between day and night, as slowly as we can. Everything up here is about shade."
+        },
+        "venus": {
+          "droid": "SULFA, caretaker unit. Outside pressure: ninety-two Earth atmospheres. Your suit is rated for it. Probably.",
+          "lore": "The clouds above us are sulphuric acid. The lightning you see is real, and nobody is quite sure what drives it. I like to count the flashes.",
+          "tech": "Marek, structural. Venus spins backwards, so the Sun rises in the west here. You get used to it. Eventually.",
+          "life": "The air is so thick it flows like the sea. Walking out there is more like wading. We call the night shift the long dark: it lasts two Earth months."
+        },
+        "jupiter": {
+          "droid": "BAND-9, platform caretaker. We float at the one-bar level. Do not lean on the railing. Below it is a very long way to anything solid.",
+          "lore": "The storms down there are bigger than Earth, and the Great Red Spot has been turning for centuries. The flashes under the deck are lightning a thousand kilometres wide.",
+          "tech": "Yuki, flight systems. Two and a half g on this deck. Sit down when you can.",
+          "life": "Ten-hour days, the radiation alarms, and the most beautiful sky in the system. I wouldn't trade it."
+        },
+        "saturn": {
+          "droid": "RINGO, caretaker. Welcome under the rings. They are mostly water ice, and they are thinner than this platform is long.",
+          "lore": "Saturn would float in a bath big enough to hold it. Its winds run at eighteen hundred kilometres an hour at the equator. Hold on to something.",
+          "tech": "Anan, comms. On a clear evening the rings throw a shadow right across the clouds. Stay for one.",
+          "life": "Quiet, mostly. Gravity's almost like home. The hexagon storm at the north pole is the strangest thing I've ever seen."
+        },
+        "uranus": {
+          "droid": "TILT, caretaker. This planet rolls round the Sun on its side. Our seasons last twenty-one years each.",
+          "lore": "Something enormous knocked Uranus over long ago. The air smells of methane, which is why everything looks blue-green from here.",
+          "tech": "Bo, life support. It's minus two hundred out there. The coffee is the only warm thing for a billion kilometres.",
+          "life": "Long, long seasons. I arrived in spring. I'll leave in spring, if I'm lucky."
+        },
+        "neptune": {
+          "droid": "DEEP-1, caretaker. Fastest winds in the system: two thousand kilometres an hour. The platform is anchored. You are not. Please clip in.",
+          "lore": "Neptune was found with mathematics before anyone saw it. Its moon Triton orbits backwards and is slowly falling in.",
+          "tech": "Lior, survey. The Sun's just a bright star from here. We keep the lamps on all day.",
+          "life": "Lonely and beautiful. Every message home takes four hours to arrive."
+        }
       }
     }
   },

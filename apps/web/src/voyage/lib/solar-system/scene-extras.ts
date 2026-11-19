@@ -2634,8 +2634,13 @@ export function makePlanetMoons(lite: boolean): PlanetMoonsHandle {
 export interface CometHandle {
   group: THREE.Group;
   update: (epochMs: number, sunPos: THREE.Vector3) => void;
+  /** Every frame: the tails stream outward from the head. */
+  animate: (dt: number) => void;
   dispose: () => void;
 }
+
+/** A comet's orbit: semi-major axis (AU), eccentricity, inclination and node (rad), and where on it (0…1 of a period) it is at epoch 0. */
+export interface CometElements { aAu: number; e: number; inc: number; node: number; phase: number }
 
 function cometGlowSprite(): THREE.CanvasTexture {
   const s = 128;
@@ -2653,15 +2658,12 @@ function cometGlowSprite(): THREE.CanvasTexture {
   return t;
 }
 
-export function makeComet(mode: ScaleMode, lite: boolean): CometHandle {
+export function makeComet(mode: ScaleMode, lite: boolean, el: CometElements = { aAu: 2.4, e: 0.74, inc: 0.5, node: 0.9, phase: 0 }): CometHandle {
   const group = new THREE.Group();
   group.name = 'comet';
 
-  // Keplerian elements (AU) — a bright short-period comet on a steep orbit.
-  const aAu = 2.4;
-  const e = 0.74;
-  const inc = 0.5;
-  const node = 0.9;
+  // Keplerian elements (AU) — a bright short-period comet on a steep orbit by default.
+  const { aAu, e, inc, node } = el;
   const cosN = Math.cos(node);
   const sinN = Math.sin(node);
   const sinI = Math.sin(inc);
@@ -2672,7 +2674,7 @@ export function makeComet(mode: ScaleMode, lite: boolean): CometHandle {
 
   /** True anomaly at `epochMs` — mean anomaly → Newton-solved eccentric anomaly. */
   const trueAnomalyAt = (epochMs: number): number => {
-    const M = ((epochMs % periodMs) / periodMs) * Math.PI * 2;
+    const M = ((((epochMs + el.phase * periodMs) % periodMs) + periodMs) % periodMs / periodMs) * Math.PI * 2;
     let E = M;
     for (let i = 0; i < 6; i++) {
       E -= (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
@@ -2764,7 +2766,35 @@ export function makeComet(mode: ScaleMode, lite: boolean): CometHandle {
     const grp = new THREE.Group();
     grp.add(new THREE.Points(geo, mat));
     group.add(grp);
-    return { grp, geo, mat };
+    // Each grain's speed outward, and its spread, so the tail can stream.
+    const speed = new Float32Array(n);
+    const lateral = new Float32Array(n * 2);
+    for (let i = 0; i < n; i++) {
+      speed[i] = len * (0.035 + Math.random() * 0.05);
+      const t = p[i * 3] / len;
+      lateral[i * 2] = p[i * 3 + 1] / (0.2 + t);
+      lateral[i * 2 + 1] = p[i * 3 + 2] / (0.2 + t);
+    }
+    return { grp, geo, mat, len, speed, lateral, rgb, n };
+  };
+  /** The grains drift outward along the tail and widen as they go; past the end they start again at the head. */
+  const stream = (tail: ReturnType<typeof makeTail>, dt: number) => {
+    const pos = tail.geo.attributes.position as THREE.BufferAttribute;
+    const col = tail.geo.attributes.color as THREE.BufferAttribute;
+    const p = pos.array as Float32Array;
+    const c = col.array as Float32Array;
+    for (let i = 0; i < tail.n; i++) {
+      let x = p[i * 3] + tail.speed[i] * dt;
+      if (x > tail.len) x -= tail.len;
+      const t = x / tail.len;
+      p[i * 3] = x;
+      p[i * 3 + 1] = tail.lateral[i * 2] * (0.2 + t);
+      p[i * 3 + 2] = tail.lateral[i * 2 + 1] * (0.2 + t);
+      const fade = (1 - t) * 0.9 + 0.1;
+      c[i * 3] = tail.rgb[0] * fade; c[i * 3 + 1] = tail.rgb[1] * fade; c[i * 3 + 2] = tail.rgb[2] * fade;
+    }
+    pos.needsUpdate = true;
+    col.needsUpdate = true;
   };
   const ionTail = makeTail(lite ? 160 : 340, baseLen * 1.15, baseLen * 0.035, [0.5, 0.7, 1.0]);
   const dustTail = makeTail(lite ? 220 : 480, baseLen * 0.85, baseLen * 0.09, [0.95, 0.9, 0.7]);
@@ -2779,6 +2809,11 @@ export function makeComet(mode: ScaleMode, lite: boolean): CometHandle {
 
   return {
     group,
+    animate(dt) {
+      if (!group.visible) return;
+      stream(ionTail, dt);
+      stream(dustTail, dt);
+    },
     update(epochMs, sunPos) {
       const theta = trueAnomalyAt(epochMs);
       const { rAu } = orbitPos(theta, tmp);

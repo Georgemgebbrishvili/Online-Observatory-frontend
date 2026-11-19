@@ -616,6 +616,10 @@ export interface PlayerShipHandle {
   repair: (hull: number, shield: number) => void;
   /** Told of each bolt as it leaves (where from, its velocity): a room sends it on. */
   onFire?: (from: THREE.Vector3, velocity: THREE.Vector3) => void;
+  /** Anything else a bolt can hit on its way (the asteroids): true when it was hit and the bolt is spent. */
+  boltHook?: (from: THREE.Vector3, to: THREE.Vector3) => boolean;
+  /** The hull's velocity, scene units a second. */
+  velocity: THREE.Vector3;
   update: (
     dtSec: number,
     timeSec: number,
@@ -1537,6 +1541,7 @@ export function createPlayerShip(session: FlightSession): PlayerShipHandle {
 
   const handle: PlayerShipHandle = {
     group,
+    velocity: vel,
     fillAnchor,
     fillDistance: 80 * H,
     boltGroup,
@@ -2401,6 +2406,7 @@ export function createPlayerShip(session: FlightSession): PlayerShipHandle {
             break;
           }
         }
+        if (!spent && handle.boltHook?.(prevPos, b.mesh.position)) spent = true;
         if (!spent) {
           seg.copy(b.mesh.position).sub(prevPos);
           const segLen2 = seg.lengthSq();

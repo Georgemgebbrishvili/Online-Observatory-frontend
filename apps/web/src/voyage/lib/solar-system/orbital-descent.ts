@@ -47,6 +47,11 @@ import {
  *  about ten seconds, not half a minute and more. */
 export const DIVE_PACE = 22;
 export const DIVE_TAIL_S = 1.6;
+/** The way back up runs this much faster than its own clock, eased in over
+ *  ASCENT_RAMP_S so the climb off the pad does not jump, and held to the end:
+ *  the climb to orbit is a launch to watch, not a wait. */
+export const ASCENT_PACE = 3.4;
+export const ASCENT_RAMP_S = 2.5;
 
 export type OrbitalPhase = 'orbit' | 'deorbit' | 'entry' | 'braking' | 'glide' | 'approach' | 'done';
 /** The legs of the way back up. */
@@ -641,7 +646,7 @@ function frameAt(world: GlobeWorld, x: number, z: number, axisHint: THREE.Vector
 function makeFlight(
   world: GlobeWorld, frame: Frame, corridor: Corridor, finalYaw: number, opts: OrbitalOptions,
   cfg: { heatScale: number; heatRef: number; qRef: number; levelFrom: number; ascent: boolean },
-): OrbitalFlight & { goTo: (s: number) => void; setPace: (p: number) => void } {
+): OrbitalFlight & { goTo: (s: number) => void; setPace: (p: number, opts?: { ramp?: number; tail?: boolean }) => void } {
   const f = FLIGHTS[world];
   const endH = corridor.h[corridor.h.length - 1];
   const position = new THREE.Vector3();
@@ -654,6 +659,9 @@ function makeFlight(
   // the whole flight down from orbit, more for the dive (see DIVE_PACE). The
   // real-time end of the corridor (warp 1) stays real time either way.
   let pace = 1;
+  /** Seconds over which the pace comes in (0: at once), and whether it eases back to the corridor's clock at the end. */
+  let paceRamp = 0;
+  let paceTail = true;
   // Seconds of play left to the end of the corridor at its own clock, per sample.
   const timeLeft = new Float64Array(corridor.s.length);
   for (let i = corridor.s.length - 2; i >= 0; i--) {
@@ -665,8 +673,9 @@ function makeFlight(
     const w = corridor.read(corridor.warp, at);
     if (pace <= 1) return w;
     // Through the plasma at a third of the pace: the entry is the show.
-    const k = (pace - 1) * (1 - 0.66 * Math.min(1, telemetry.heat * 2));
-    return w * (1 + k * THREE.MathUtils.smoothstep(corridor.read(timeLeft, at), 0, DIVE_TAIL_S));
+    const ramp = paceRamp > 0 ? THREE.MathUtils.smootherstep(telemetry.wallSeconds, 0, paceRamp) : 1;
+    const k = (pace - 1) * ramp * (1 - 0.66 * Math.min(1, telemetry.heat * 2));
+    return w * (1 + k * (paceTail ? THREE.MathUtils.smoothstep(corridor.read(timeLeft, at), 0, DIVE_TAIL_S) : 1));
   };
   const telemetry: OrbitalTelemetry = {
     phase: corridor.phases[0], phaseT: 0, progress: 0, wallSeconds: 0, simSeconds: 0,
@@ -827,7 +836,7 @@ function makeFlight(
       telemetry.done = true;
       telemetry.phase = 'done';
     },
-    setPace(p: number) { pace = Math.max(1, p); },
+    setPace(p: number, o: { ramp?: number; tail?: boolean } = {}) { pace = Math.max(1, p); paceRamp = o.ramp ?? 0; paceTail = o.tail ?? true; },
     goTo(to: number) {
       s = THREE.MathUtils.clamp(to, 0, corridor.length);
       dh = dhRate = cr = crRate = brake = bank = pitchTrim = 0;
@@ -968,9 +977,11 @@ export function makeOrbitalAscent(world: GlobeWorld, from: { position: THREE.Vec
   const corridor = new Corridor(knots, R);
   const pk = nominalPeaks(world);
   const yaw = Math.atan2(frame.axis.x, frame.axis.z);
-  return makeFlight(world, frame, corridor, yaw, opts, {
+  const flight = makeFlight(world, frame, corridor, yaw, opts, {
     heatScale: 0.35, heatRef: pk.heat, qRef: pk.q, levelFrom: Infinity, ascent: true,
   });
+  flight.setPace(ASCENT_PACE, { ramp: ASCENT_RAMP_S, tail: false });
+  return flight;
 }
 
 // ── The numbers as the glass reads them. ──

@@ -600,7 +600,7 @@ export function makeLander(
         // Going home: the engines come up to full over a second, the vehicle
         // hangs a moment while it overcomes its own weight, then climbs.
         telemetry.climb += dt;
-        telemetry.throttle += (1 - telemetry.throttle) * (1 - Math.exp(-dt * 2.5));
+        telemetry.throttle += (1 - telemetry.throttle) * (1 - Math.exp(-dt * 3.6));
         vel.y += (telemetry.throttle * MAX_THRUST - g) * dt;
         if (vel.y < 0 && position.y - height(position.x, position.z) <= REST + 1e-3) vel.y = 0;
         position.y += vel.y * dt;

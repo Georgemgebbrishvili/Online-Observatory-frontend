@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { makeSkyEvents } from '@/voyage/lib/solar-system/sky-events';
+import { makeFlightAsteroids } from '@/voyage/lib/solar-system/flight-asteroids';
 import {
   MEAN_RADIUS_KM,
   sampleSolarSystem,
@@ -97,7 +99,7 @@ import { QA_HOOKS } from '@/voyage/game/qa';
 declare global {
   interface Window {
     /** Development only: lets a headless capture teleport the ship and read the session. */
-    __stellarFlight?: { session: FlightSession; ship: PlayerShipHandle; world: FlightWorld; aliens: AlienHandle };
+    __stellarFlight?: { session: FlightSession; ship: PlayerShipHandle; world: FlightWorld; aliens: AlienHandle; skyEvents?: { trigger: () => void }; rocks?: { near: number } | null };
     __stellarOrrery?: {
       probe: (within?: string) => Record<string, number>;
       /** Frame the system (theta, phi, radius) or select and orbit a body: for captures. */
@@ -552,6 +554,20 @@ export function SolarSystemCanvas({
 
     const comet: CometHandle = makeComet(scaleRef.current, lite);
     scene.add(comet.group);
+    // Two more on their own orbits, timed to be in the inner system: a long
+    // steep one and a short low one, so there is usually a tail in the sky.
+    const comets: CometHandle[] = [
+      comet,
+      makeComet(scaleRef.current, lite, { aAu: 3.1, e: 0.82, inc: 1.1, node: 2.6, phase: 0.97 }),
+      makeComet(scaleRef.current, lite, { aAu: 1.9, e: 0.66, inc: 0.25, node: 4.4, phase: 0.04 }),
+    ];
+    for (const c of comets.slice(1)) scene.add(c.group);
+    // Far beyond the system, now and then, a star dies (flight only).
+    const skyEvents = makeSkyEvents(lite);
+    skyEvents.group.visible = false;
+    scene.add(skyEvents.group);
+    // Rocks round the ship: thick in the main belt, a scatter elsewhere.
+    let flightRocks: ReturnType<typeof makeFlightAsteroids> | null = null;
 
     const sunExtras: SunExtrasHandle = makeSunExtras(worldRadiusForBody('sun'));
     scene.add(sunExtras.group);
@@ -1281,6 +1297,8 @@ export function SolarSystemCanvas({
         yaw: 0,
       };
       aliens.setHostile(null);
+      if (flightRocks) { scene.remove(flightRocks.group); flightRocks.dispose(); flightRocks = null; }
+      skyEvents.group.visible = false;
       shipFill.intensity = 0;
       scene.add(shipFill);
       scene.remove(ship.group);
@@ -1568,7 +1586,23 @@ export function SolarSystemCanvas({
           });
           // In a room, every bolt fired goes to the others too.
           live.onFire = (from, velocity) => { if (roomRef.current) queueShot(roomRef.current, from, velocity, world.bodies); };
-          if (QA_HOOKS) window.__stellarFlight = { session, ship: live, world, aliens };
+          flightRocks = makeFlightAsteroids({
+            lite,
+            onImpact: (dmg, at) => { live.takeDamage(dmg, at); aliens.spawnSparks(at, 0.03); },
+            onBreak: (at, size) => {
+              aliens.spawnSparks(at, Math.min(0.06, 0.02 + size * 6));
+              // Some rocks carry ice and metal worth having: a little hull and shield back.
+              if (Math.random() < 0.18) live.repair(6, 12);
+            },
+          });
+          scene.add(flightRocks.group);
+          const rocks = flightRocks;
+          live.boltHook = (from, to) => {
+            const hit = rocks.bolt(from, to);
+            if (hit) aliens.spawnSparks(hit.at, 0.02);
+            return !!hit;
+          };
+          if (QA_HOOKS) window.__stellarFlight = { session, ship: live, world, aliens, skyEvents, rocks: flightRocks };
         }
       } else if (ship) {
         teardownShip();
@@ -1582,6 +1616,10 @@ export function SolarSystemCanvas({
       if (ship) {
         syncWorld(ship.group.position, earthPos, now);
         ship.update(dtSec, (now - t0) / 1000, camera, aliens, world);
+        const flying = !session?.paused;
+        flightRocks?.update(flying ? dtSec : 0, { position: ship.group.position, velocity: ship.velocity }, sunMesh?.position ?? vZero, world.bodies);
+        skyEvents.group.visible = true;
+        skyEvents.update(flying ? dtSec : 0, camera);
         // Only the system the ship is in — or is jumping to — is drawn: the
         // other stars are light-years away, and their lights would cost every
         // lit fragment here. During a jump both ends are up so arrival is seamless.
@@ -1623,6 +1661,7 @@ export function SolarSystemCanvas({
         earthRocket?.update(dtSec);
         earthMeteors?.update(dtSec);
         for (const a of auroraHandles) a.update(dtSec);
+        for (const c of comets) c.animate(dtSec);
       }
       // Alien sightings are decorative (reduce-motion pauses them) — but in
       // Explore Mode they are the opposition, so they always run.
@@ -1661,7 +1700,7 @@ export function SolarSystemCanvas({
       // Moons + comet at their epoch-accurate orbital phases (real periods).
       if (epochMoved) {
         planetMoons.update(epochNow, planetPosOf);
-        comet.update(epochNow, sunMesh?.position ?? vZero);
+        for (const c of comets) c.update(epochNow, sunMesh?.position ?? vZero);
       }
 
       // Imperative zoom (e.g. "zoom into Sun" from the galactic tier) —
@@ -1836,7 +1875,9 @@ export function SolarSystemCanvas({
       bodies.remove(planetMoons.group);
       planetMoons.dispose();
       scene.remove(comet.group);
-      comet.dispose();
+      for (const c of comets) c.dispose();
+      skyEvents.dispose();
+      flightRocks?.dispose();
       sunExtras.dispose();
       scene.remove(alphaCen.group);
       alphaCen.dispose();

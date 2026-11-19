@@ -20,6 +20,8 @@ export interface PoseInput {
   hurt: number;
   /** 0…1 after going down: lies down, then fades back as it gets up. */
   downness: number;
+  /** A job or a greeting being done with the hands. */
+  gesture?: 'work' | 'chat' | 'scan' | 'wave' | 'celebrate' | 'salvage' | null;
 }
 
 export interface Rig {
@@ -76,7 +78,10 @@ function limbs(b: {
 }) {
   let phase = Math.random() * 10;
   let aim = 0;
+  let work = 0; let wave = 0; let chat = 0;
   return (p: PoseInput) => {
+    b.hips.rotation.z = 0;
+    b.head.rotation.x = 0;
     const moving = p.speed > 0.2;
     phase += p.dt * (1.6 + p.speed * b.stride);
     const amp = moving ? Math.min(1, p.speed / 2.2) * 0.6 : 0;
@@ -95,6 +100,38 @@ function limbs(b: {
     b.torso.rotation.x = (moving ? 0.08 + p.speed * 0.02 : breathe) + (p.mode === 'flee' ? 0.25 : 0) - (p.mode === 'cover' ? -0.35 : 0);
     b.hips.position.y = b.hips.userData.y + (moving ? Math.abs(Math.cos(phase)) * 0.04 : 0) - (p.mode === 'cover' ? 0.35 : 0);
     b.head.rotation.y = Math.sin(p.t * 0.5 + phase) * (p.mode === 'idle' || p.mode === 'post' ? 0.35 : 0.1);
+    // Gestures, eased in and out so nothing snaps.
+    const gw = (want: boolean) => (want ? 1 : 0);
+    work = easeTo(work, gw(p.gesture === 'work'), p.dt, 4);
+    wave = easeTo(wave, gw(p.gesture === 'wave'), p.dt, 6);
+    chat = easeTo(chat, gw(p.gesture === 'chat'), p.dt, 4);
+    if (work > 0.01) {
+      // Down on one knee at the job: reaching in, a tool going up and down.
+      // Front thigh level and its shin straight down to the boot; the back knee
+      // on the ground, its shin flat behind; the hips down to suit.
+      const L = THREE.MathUtils.lerp;
+      b.hips.position.y -= 0.47 * work;
+      b.torso.rotation.x = L(b.torso.rotation.x, 0.32, work);
+      b.legs[0].rotation.x = L(b.legs[0].rotation.x, -1.45, work); b.shins[0].rotation.x = L(b.shins[0].rotation.x, 1.45, work);
+      b.legs[1].rotation.x = L(b.legs[1].rotation.x, 0.12, work); b.shins[1].rotation.x = L(b.shins[1].rotation.x, 1.5, work);
+      b.arms[0].rotation.x = THREE.MathUtils.lerp(b.arms[0].rotation.x, -0.9 + Math.sin(p.t * 7) * 0.35, work);
+      b.arms[1].rotation.x = THREE.MathUtils.lerp(b.arms[1].rotation.x, -0.7, work);
+      b.fores[0].rotation.x = THREE.MathUtils.lerp(b.fores[0].rotation.x, -0.6 - Math.max(0, Math.sin(p.t * 7)) * 0.5, work);
+      b.head.rotation.x = 0.35 * work;
+    }
+    if (wave > 0.01) {
+      // The right arm up and swinging over the head.
+      b.arms[0].rotation.x = THREE.MathUtils.lerp(b.arms[0].rotation.x, -2.75, wave);
+      b.arms[0].rotation.z = THREE.MathUtils.lerp(b.arms[0].rotation.z, -0.25 + Math.sin(p.t * 9) * 0.38, wave);
+      b.fores[0].rotation.x = THREE.MathUtils.lerp(b.fores[0].rotation.x, -0.35, wave);
+    }
+    if (chat > 0.01) {
+      // Weight on one leg, hands going as they talk, a nod now and then.
+      b.hips.rotation.z = Math.sin(p.t * 0.6) * 0.05 * chat;
+      b.fores[0].rotation.x -= Math.max(0, Math.sin(p.t * 2.6)) * 0.6 * chat;
+      b.fores[1].rotation.x -= Math.max(0, Math.sin(p.t * 2.1 + 1.5)) * 0.4 * chat;
+      b.head.rotation.x = Math.sin(p.t * 1.7) * 0.12 * chat;
+    }
     // Down: a knee, then flat on the back; up again as it fades.
     b.root.rotation.x = -Math.min(1, p.downness * 1.5) * 1.45;
     b.root.position.y = 0;
@@ -220,13 +257,17 @@ function ballDroid(color: number): Rig {
   const muzzle = B.pivot(dome, 0.12, 0.08, 0.16);
   B.mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.12, 8), grey, muzzle, 0, 0, -0.04).rotation.x = Math.PI / 2;
   let roll = 0;
+  let cheer = 0;
   return {
     root, height: 0.55, radius: 0.5, muzzle, eye, hover: 0,
     animate(p) {
       roll += (p.speed * p.dt) / R;
       ball.rotation.x = roll;
+      // A happy spin and a hop.
+      cheer = easeTo(cheer, p.gesture === 'celebrate' ? 1 : 0, p.dt, 6);
+      root.position.y = Math.abs(Math.sin(p.t * 11)) * 0.18 * cheer;
       dome.rotation.x = Math.sin(p.t * 2) * 0.05 - (p.mode === 'down' ? 0.5 : 0);
-      dome.rotation.y = p.aiming ? 0 : Math.sin(p.t * 0.7) * 0.6;
+      dome.rotation.y = p.aiming ? 0 : Math.sin(p.t * 0.7) * 0.6 + cheer * p.t * 9;
       dome.position.y = R * 2 + 0.02 + (p.mode === 'talk' ? Math.abs(Math.sin(p.t * 6)) * 0.03 : 0);
       root.rotation.z = p.downness * 0.6;
       eye.color.set(p.mode === 'attack' ? 0xff6a3a : 0x6cf0ff).lerp(WHITE, p.hurt);
@@ -307,15 +348,17 @@ function scav(color: number): Rig {
   }
   const muzzle = B.pivot(body, 0, -0.05, 0.42);
   let bob = Math.random() * 10;
+  let dig = 0;
   return {
     root, height: 0, radius: 0.6, muzzle, eye, hover: 1.7,
     animate(p) {
       bob += p.dt;
-      body.position.y = Math.sin(bob * 2.1) * 0.12 - p.downness * 1.6;
+      dig = easeTo(dig, p.gesture === 'salvage' ? 1 : 0, p.dt, 2);
+      body.position.y = Math.sin(bob * 2.1) * 0.12 * (1 - dig * 0.7) - p.downness * 1.6 - dig * 1.05;
       body.rotation.z = Math.sin(bob * 1.3) * 0.08 + p.downness * 0.9;
       body.rotation.x = Math.min(0.3, p.speed * 0.05) + (p.aiming ? 0.15 : 0);
       for (const r of rotors) {
-        if (r.userData.claw) r.rotation.x = Math.sin(bob * 3 + r.position.x * 9) * 0.3;
+        if (r.userData.claw) r.rotation.x = Math.sin(bob * (3 + dig * 9) + r.position.x * 9) * (0.3 + dig * 0.35);
         else r.rotation.y += p.dt * (p.mode === 'down' ? 0 : 40);
       }
       eye.color.set(p.mode === 'attack' ? 0xff2010 : 0xff8a30).lerp(WHITE, p.hurt);

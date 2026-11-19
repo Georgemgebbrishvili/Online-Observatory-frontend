@@ -47,6 +47,9 @@ import { hasOutpost, holdOverDeck, landingPad, makeOutpost } from '@/voyage/lib/
 import { makeFlora } from '@/voyage/lib/solar-system/world-flora';
 import { makeAliens, type AlienTelemetry } from '@/voyage/lib/solar-system/world-aliens';
 import { makeNpcs, type NpcTelemetry } from '@/voyage/lib/solar-system/world-npcs';
+import { outpostCast } from '@/voyage/lib/solar-system/npc-cast';
+import { makePadLights, type PadMode } from '@/voyage/lib/solar-system/pad-lights';
+import { makeLightning } from '@/voyage/lib/solar-system/world-lightning';
 import { WORLDS, type WorldId, type WorldProfile } from '@/voyage/lib/solar-system/world-profiles';
 import type { EarthData } from '@/voyage/lib/solar-system/world-earth-data';
 import { EARTH_DESCENT, EARTH_WALK_RADIUS, makeEarthWorld, type EarthState } from '@/voyage/lib/solar-system/world-earth';
@@ -231,7 +234,7 @@ const EGRESS_HOLD = 2.2;
 /** How much of that before the exit key is offered. */
 const EXIT_AFTER = 0.8;
 /** Seconds of the lander's own climb before the flight back to orbit takes it. */
-const ASCENT_HANDOFF = 6;
+const ASCENT_HANDOFF = 4.2;
 const STEP = 1 / 120;
 const MAX_STEPS = 12;
 /** The first-contact record, kept on the device. */
@@ -399,9 +402,11 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   scene.add(gems.group);
   await step();
 
-  // ── Mars: the colony's people and machines (world-npcs). ──
-  const npcs = world === 'mars' && base ? makeNpcs({
-    heightAt, colliders, gems: () => gems.gems, lite,
+  // ── Mars: the colony's people and machines; an outpost: its caretaker and technician (world-npcs). ──
+  const npcSpots = base ? base.pois.filter((p) => !['landingZone', 'railing', 'envelope', 'sign', 'colonySite'].includes(p.id)).map((p) => ({ x: p.x, z: p.z })) : [];
+  const npcCast = world === 'mars' ? undefined : hasOutpost(world) ? outpostCast(world, npcSpots) : [];
+  const npcs = base && (world === 'mars' || (npcCast && npcCast.length)) ? makeNpcs({
+    heightAt: floorAt, colliders, gems: () => gems.gems, lite, cast: npcCast,
     tag: opts.npcTag ?? ((k) => k),
     onBreach: () => handle.teleport(profile.pad.x + 5, profile.pad.z + 8),
     onEvent: (kind) => {
@@ -447,6 +452,11 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   // The crew's own ship comes down; the lander only when no hull is named.
   await step();
   const lander = makeLander(padX, padZ, heightAt, dust, lite, lightPool, profile.gravity, earth ? EARTH_DESCENT : undefined, { kind: opts.shipKind });
+  // The pad's lamps and strobes (Mars and the outposts), and lightning in the clouds (Venus overhead, the giants below the deck).
+  const padLights = base ? makePadLights(padX, padZ, hasOutpost(world) ? 13 : 12, floorAt, lite) : null;
+  if (padLights) scene.add(padLights.group);
+  const lightning = world === 'venus' ? makeLightning({ below: false, tint: 0xffe2b0 }) : deck ? makeLightning({ below: true }) : null;
+  if (lightning) scene.add(lightning.group);
   await step();
   scene.add(lander.group);
   // The globe worlds: the ship comes down from orbit in this scene — the
@@ -534,6 +544,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     landerSettled = true;
     pois.push({ id: 'ourLander', x: lander.position.x, z: lander.position.z, r: lander.hull + 4.5 });
     colliders.push({ x: lander.position.x, z: lander.position.z, r: lander.hull });
+    // The colony on Mars stops to watch who has come down.
+    npcs?.notice(lander.position.x, lander.position.z, 'land');
     // The people in the park come over to see who has landed.
     earth?.welcome(lander.position.x, lander.position.z, lander.telemetry.egressX, lander.telemetry.egressZ);
     interactions.add({
@@ -545,13 +557,26 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
         telemetry.banner = ''; telemetry.bannerHold = 0;
         cosmonaut.group.visible = false;
         lander.launch();
+        npcs?.notice(lander.position.x, lander.position.z, 'launch');
         audio.thump(12);
         cam.shake(0.5);
-        ascentFrom.copy(camera.position);
+        // The launch is watched from off the pad: out on the side the camera
+        // was on, far enough back to see the whole ship and the ground under
+        // it, a little above head height: a cut, as a film would, rather than a slide past the hull.
+        launchDir.set(camera.position.x - lander.position.x, 0, camera.position.z - lander.position.z);
+        if (launchDir.lengthSq() < 1e-4) launchDir.set(1, 0, 0);
+        launchDir.normalize().applyAxisAngle(UP_AXIS, 0.6);
+        const back = lander.hull * 5 + 18;
+        ascentFrom.set(lander.position.x + launchDir.x * back, 0, lander.position.z + launchDir.z * back);
+        ascentFrom.y = floorAt(ascentFrom.x, ascentFrom.z) + 2.5 + lander.hull * 0.4;
+        camera.position.copy(ascentFrom);
+        camera.lookAt(lander.position.x, lander.position.y + lander.hull * 0.6, lander.position.z);
       },
     });
   }
   const ascentFrom = new THREE.Vector3();
+  const launchDir = new THREE.Vector3();
+  const UP_AXIS = new THREE.Vector3(0, 1, 0);
   /** Where the crew step off: the ship's own egress, pulled inside the walk
    *  fence (on a deck, a ship parked near the rail must not step them off it). */
   const egressAt = { x: 0, z: 0 };
@@ -578,6 +603,26 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
   const walk: WalkInput = { moveX: 0, moveZ: 0, jump: false, run: false, crouch: false, work: false };
   const tmp = new THREE.Vector3();
   const shadowFocus = new THREE.Vector3();
+  // ── Hand-offs between cameras (the flight's chase to the descent's, the
+  // descent's to the crew's) are eased, never cut: the frame's pose at the
+  // moment of the switch is held and blended into whatever the new camera
+  // wants, over a second or two. ──
+  const camBlend = { t: 1, dur: 1, arc: 0, pos: new THREE.Vector3(), quat: new THREE.Quaternion(), fov: 60 };
+  /** `arc`: metres the path rises in the middle, so a move round the ship goes over it, not through it. */
+  const blendFrom = (dur: number, arc = 0) => {
+    camBlend.t = 0; camBlend.dur = dur; camBlend.arc = arc;
+    camBlend.pos.copy(camera.position); camBlend.quat.copy(camera.quaternion); camBlend.fov = camera.fov;
+  };
+  const applyBlend = (dt: number) => {
+    if (camBlend.t >= 1) return;
+    camBlend.t = Math.min(1, camBlend.t + dt / camBlend.dur);
+    const k = THREE.MathUtils.smootherstep(camBlend.t, 0, 1);
+    camera.position.lerpVectors(camBlend.pos, camera.position, k);
+    camera.position.y += Math.sin(Math.PI * k) * camBlend.arc;
+    camera.quaternion.slerpQuaternions(camBlend.quat, camera.quaternion, k);
+    const fov = THREE.MathUtils.lerp(camBlend.fov, camera.fov, k);
+    if (Math.abs(fov - camera.fov) > 0.01) { camera.fov = fov; camera.updateProjectionMatrix(); }
+  };
   const descentFocus = new THREE.Vector3();
   const descentPos = new THREE.Vector3();
   const wrap = (a: number) => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
@@ -669,6 +714,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
         // After a dive the computer flies the last of it down onto the base's
         // pad; the stick (or the engine key) takes it back.
         if (dived) lander.telemetry.assist = true;
+        blendFrom(1.6);
         telemetry.phase = 'descent';
         telemetry.orbital = null;
         telemetry.entry = false;
@@ -768,6 +814,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
         telemetry.exitReady = egressHold < EGRESS_HOLD - EXIT_AFTER;
         if (egressHold <= 0 || (pressed && telemetry.exitReady)) {
           telemetry.exitReady = false;
+          blendFrom(2.2, lander.hull * 3 + 7);
           telemetry.phase = 'surface';
           cosmonaut.position.set(out.x, heightAt(out.x, out.z), out.z);
           // The crew face the way the world wants them to look first (the outpost, unless it says otherwise).
@@ -937,6 +984,9 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
       if (earth.state.outsideC !== null) telemetry.outsideC = earth.state.outsideC;
     }
     base?.update(dt, t, crew.x, crew.z, lightPool);
+    const padMode: PadMode = telemetry.phase === 'orbit' || telemetry.phase === 'descent' ? 'approach' : telemetry.phase === 'ascent' ? 'launch' : 'idle';
+    padLights?.update(dt, t, padMode, lightPool);
+    lightning?.update(dt, crew, hemi, (k) => audio.thump(3 + k * 10));
     flora?.update(dt, t);
     gems.update(dt, crew.x, crew.y, crew.z, lightPool, telemetry.phase === 'surface');
     if (aliens && telemetry.phase === 'surface') aliens.update(dt, t, crew.x, crew.z, lightPool);
@@ -954,6 +1004,7 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     }
     if (telemetry.phase === 'surface') build?.update(crew.x, crew.z, camera);
     orbit?.update(dt);
+    applyBlend(dt);
     host.render(dt);
   };
   host.start(frame, () => { telemetry.ready = true; }, cosmonaut.ready);
@@ -966,6 +1017,8 @@ export async function makeWorldSurface(mount: HTMLElement, world: WorldId, opts:
     flightAudio?.dispose();
     earth?.dispose();
     npcs?.dispose();
+    padLights?.dispose();
+    lightning?.dispose();
     crowd?.dispose();
     cosmonaut.dispose();
     base?.dispose();
