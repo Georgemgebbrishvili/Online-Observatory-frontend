@@ -791,7 +791,7 @@ export const zBookableTelescope = z.strictObject({
 });
 
 export const zScheduleTestMissionRequest = z.strictObject({
-    targetId: z.uuid(),
+    targetId: z.uuid().optional(),
     durationMinutes: z.int().gte(15).lte(240)
 });
 
@@ -1024,6 +1024,12 @@ export const zLoyaltyTier = z.strictObject({
     nameKa: z.string(),
     thresholdPoints: z.int().gte(0),
     discountPercent: z.int().gte(0).lte(100)
+});
+
+export const zServiceHealth = z.strictObject({
+    service: z.enum(['darkview-api']),
+    status: z.enum(['up']),
+    checkedAt: z.iso.datetime()
 });
 
 export const zLoyaltyScheme = z.strictObject({
@@ -2785,6 +2791,11 @@ export const zTargetSlug = z.string().regex(/^[a-z0-9-]+$/);
  *
  */
 export const zIdempotencyKey = z.string().min(8).max(128).regex(/^[A-Za-z0-9_.:-]+$/);
+
+/**
+ * The process is up.
+ */
+export const zGetServiceHealthResponse = zServiceHealth;
 
 export const zRegisterBody = zRegisterRequest;
 

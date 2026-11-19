@@ -1272,7 +1272,10 @@ export type AdminObservatory = {
 };
 
 export type ScheduleTestMissionRequest = {
-    targetId: string;
+    /**
+     * Left out, the brightest target the observatory may point at now (ADR-082).
+     */
+    targetId?: string;
     /**
      * Quarter hours, as a customer's session (clients ADR-072).
      */
@@ -1643,6 +1646,12 @@ export type LoyaltyTier = {
      */
     thresholdPoints: number;
     discountPercent: number;
+};
+
+export type ServiceHealth = {
+    service: 'darkview-api';
+    status: 'up';
+    checkedAt: string;
 };
 
 export type LoyaltyScheme = {
@@ -4147,6 +4156,22 @@ export type TargetSlug = string;
  *
  */
 export type IdempotencyKey = string;
+
+export type GetServiceHealthData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/health';
+};
+
+export type GetServiceHealthResponses = {
+    /**
+     * The process is up.
+     */
+    200: ServiceHealth;
+};
+
+export type GetServiceHealthResponse = GetServiceHealthResponses[keyof GetServiceHealthResponses];
 
 export type RegisterData = {
     body: RegisterRequest;
