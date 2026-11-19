@@ -1,4 +1,4 @@
-# ADR-094 — Stellar Explorer: three new places
+# ADR-095 — Stellar Explorer: three new places
 
 - **Date:** 2026-11-19
 - **Status:** APPROVED (2026-11-19)
