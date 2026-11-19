@@ -9,6 +9,7 @@ const en = {
   hardwareTest: "hardware test",
   navigation: {
     label: "Operator console",
+    telescope: "Telescope",
     overview: "Overview",
     control: "Control",
     missions: "Missions",
@@ -118,17 +119,26 @@ const en = {
     changed: "Mode changed to {mode}.",
     close: "Close",
   },
-  testMission: {
-    title: "Test mission",
+  openTelescope: {
+    title: "Your telescope",
     detail:
-      "No customer can book this observatory. Schedule your own mission here, starting now, then start it in its room. Every safety check still applies; scheduling again replaces one you have not started.",
+      "Free for you: an hour from now on the brightest object that is up, straight into the room. A customer's booking always comes first.",
+    enter: "Enter the observatory",
+    opening: "Opening your telescope…",
+    failed: "The telescope did not open: {message}",
+    retry: "Try again",
+  },
+  testMission: {
+    title: "Your own session",
+    detail:
+      "Free for you, starting now, then start it in its room. A customer's booking always comes first and every safety check still applies; scheduling again replaces one you have not started.",
     target: "Target",
     length: "Length",
     minutes: "{minutes} min",
-    submit: "Schedule test mission",
+    submit: "Schedule my session",
     scheduled: "Scheduled from {time} for {minutes} min.",
     open: "Open the mission room",
-    failed: "The test mission was not scheduled: {message}",
+    failed: "Your session was not scheduled: {message}",
   },
   manual: {
     title: "Manual control",
@@ -305,6 +315,7 @@ export const operatorCopy = {
     hardwareTest: "აპარატურის ტესტი",
     navigation: {
       label: "ოპერატორის პანელი",
+      telescope: "ტელესკოპი",
       overview: "მიმოხილვა",
       control: "მართვა",
       missions: "მისიები",
@@ -418,17 +429,26 @@ export const operatorCopy = {
       changed: "რეჟიმი შეიცვალა: {mode}.",
       close: "დახურვა",
     },
-    testMission: {
-      title: "სატესტო მისია",
+    openTelescope: {
+      title: "შენი ტელესკოპი",
       detail:
-        "ამ ობსერვატორიას მომხმარებელი ვერ დაჯავშნის. აქ დაგეგმე შენი მისია ახლავე, შემდეგ კი გაუშვი მის ოთახში. უსაფრთხოების ყველა შემოწმება მოქმედებს; ხელახლა დაგეგმვა ჩაანაცვლებს გაუშვებელ მისიას.",
+        "შენთვის უფასოა: ერთი საათი ახლავე, ყველაზე კაშკაშა ხილულ ობიექტზე, პირდაპირ ოთახში. მომხმარებლის ჯავშანს ყოველთვის უპირატესობა აქვს.",
+      enter: "ობსერვატორიაში შესვლა",
+      opening: "ტელესკოპი იხსნება…",
+      failed: "ტელესკოპი ვერ გაიხსნა: {message}",
+      retry: "თავიდან ცდა",
+    },
+    testMission: {
+      title: "შენი სეანსი",
+      detail:
+        "შენთვის უფასოა, იწყება ახლავე; შემდეგ გაუშვი მის ოთახში. მომხმარებლის ჯავშანს ყოველთვის უპირატესობა აქვს და უსაფრთხოების ყველა შემოწმება მოქმედებს; ხელახლა დაგეგმვა ჩაანაცვლებს გაუშვებელ სეანსს.",
       target: "ობიექტი",
       length: "ხანგრძლივობა",
       minutes: "{minutes} წთ",
-      submit: "სატესტო მისიის დაგეგმვა",
+      submit: "სეანსის დაგეგმვა",
       scheduled: "დაიგეგმა {time}-დან, {minutes} წთ.",
       open: "მისიის ოთახის გახსნა",
-      failed: "სატესტო მისია არ დაიგეგმა: {message}",
+      failed: "სეანსი არ დაიგეგმა: {message}",
     },
     manual: {
       title: "ხელით მართვა",

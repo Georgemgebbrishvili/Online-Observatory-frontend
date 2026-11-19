@@ -15,6 +15,7 @@ export function OperatorNavigation({
 }) {
   const pathname = usePathname();
   const links = [
+    { href: `/${locale}/admin/telescope`, label: copy.telescope },
     { href: `/${locale}/admin`, label: copy.overview },
     { href: `/${locale}/admin/control`, label: copy.control },
     { href: `/${locale}/admin/missions`, label: copy.missions },

@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { ManualControl } from "@/components/operator/manual-control";
 import { ModeSwitch } from "@/components/operator/mode-switch";
 import { TestMissionPanel } from "@/components/operator/test-mission";
-import { readOperatedObservatories } from "@/features/operator/observatories";
 import { isLocale } from "@/i18n/config";
 import { operatorCopy } from "@/i18n/resources/operator";
 import { platformRequest } from "@/lib/platform/client";
@@ -32,14 +31,11 @@ export default async function OperatorControlPage({ params }: OperatorControlPag
   const { items } = zListTargetsResponse.parse(
     await platformRequest<unknown>("/targets?limit=100"),
   );
-  const { observatory } = await readOperatedObservatories();
 
   return (
     <div className="operator-control">
       <ModeSwitch copy={copy.switcher} />
-      {observatory?.hardwareTest && (
-        <TestMissionPanel copy={copy.testMission} locale={locale} targets={items} />
-      )}
+      <TestMissionPanel copy={copy.testMission} locale={locale} targets={items} />
       <ManualControl copy={copy.manual} locale={locale} targets={items} />
     </div>
   );

@@ -445,3 +445,15 @@
   color: var(--color-text-primary);
   font: inherit;
 }
+
+.operator-open-telescope {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  margin-block-end: var(--space-4);
+}
+
+.operator-open-telescope h2,
+.operator-open-telescope p {
+  margin: 0;
+}

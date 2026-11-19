@@ -45,7 +45,10 @@ test.describe("operator", () => {
 
   test("offers GoTo only for targets with fixed coordinates", async ({ page }) => {
     await page.goto("/en/admin/control");
-    const options = page.getByLabel("Target").locator("option");
+    const options = page
+      .getByRole("region", { name: "Manual control" })
+      .getByLabel("Target")
+      .locator("option");
     // Saturn, Venus and the Moon are ephemeris targets and are left out.
     await expect(options).toHaveText(["M13 · Hercules Cluster", "Beta Cygni · Albireo"]);
   });
@@ -106,6 +109,21 @@ test.describe("operator", () => {
   });
 });
 
+test.describe("opening the telescope (platform ADR-082)", () => {
+  test.use({ storageState: "e2e/.auth/operator.json" });
+
+  test("goes from the overview straight into the room of a free session", async ({
+    page,
+  }) => {
+    await page.goto("/en/admin");
+    await page.getByRole("link", { name: "Enter the observatory" }).click();
+    await expect(page).toHaveURL(
+      /\/en\/app\/missions\/20000000-0000-4000-8000-000000000001\/session$/,
+      { timeout: firstCompile },
+    );
+  });
+});
+
 test.describe("non-operator", () => {
   test.use({ storageState: "e2e/.auth/observer.json" });
 
@@ -146,16 +164,16 @@ test.describe("the hardware test observatory (platform ADR-075)", () => {
     await expect(page.getByRole("heading", { name: "Hardware mode" })).toBeVisible({
       timeout: firstCompile,
     });
-    // The demo first: no test mission there.
-    await expect(page.getByRole("heading", { name: "Test mission" })).toHaveCount(0);
+    // The demo first: the operator's own session is offered there too (ADR-082).
+    await expect(page.getByRole("region", { name: "Your own session" })).toBeVisible();
 
     await page
       .locator(".operator-picker select")
       .selectOption({ label: "Stellar Tbilisi — hardware test · hardware test" });
-    const panel = page.getByRole("region", { name: "Test mission" });
+    const panel = page.getByRole("region", { name: "Your own session" });
     await expect(panel).toBeVisible({ timeout: firstCompile });
     await panel.getByLabel("Length").selectOption("60");
-    await panel.getByRole("button", { name: "Schedule test mission" }).click();
+    await panel.getByRole("button", { name: "Schedule my session" }).click();
 
     await expect(panel.getByRole("status")).toContainText("for 60 min");
     await expect(

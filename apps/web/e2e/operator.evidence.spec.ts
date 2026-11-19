@@ -24,7 +24,9 @@ test("overview and control, simulated", async ({ page }) => {
   });
 
   await page.goto("/en/admin/control");
-  await expect(page.getByLabel("Target")).toBeVisible({ timeout: firstCompile });
+  await expect(
+    page.getByRole("region", { name: "Manual control" }).getByLabel("Target"),
+  ).toBeVisible({ timeout: firstCompile });
   await page.screenshot({ path: `${evidence}/02-control-simulated.png`, fullPage: true });
 });
 

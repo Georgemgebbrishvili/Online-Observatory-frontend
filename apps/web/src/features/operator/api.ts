@@ -55,7 +55,7 @@ export function setObservatoryMode(
   });
 }
 
-/** Platform ADR-075: the operator's own mission on the hardware test observatory. */
+/** Platform ADR-075/ADR-082: the operator's own free session, starting now. */
 export function scheduleTestMission(
   observatoryId: string,
   body: ScheduleTestMissionRequest,

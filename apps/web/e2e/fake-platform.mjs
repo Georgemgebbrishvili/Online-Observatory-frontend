@@ -1571,6 +1571,26 @@ function seesHardwareTest(request) {
   return cookies.fake_hardware_test === "1" || session?.hardwareTest === true;
 }
 
+async function scheduleOwnSession(request, response, where, mission) {
+  if (!operator(request, response)) return;
+  const body = zScheduleTestMissionRequest.safeParse(await json(request));
+  if (!body.success)
+    return error(response, 422, "VALIDATION_FAILED", "A length in quarter hours.");
+  send(
+    response,
+    201,
+    zAdminScheduleTestMissionResponse.parse({
+      bookingId: randomUUID(),
+      missionId: mission,
+      observatoryId: where,
+      targetId: body.data.targetId ?? targets.items[0].id,
+      slotStartAt: new Date(Math.floor(Date.now() / 60_000) * 60_000).toISOString(),
+      durationMinutes: body.data.durationMinutes,
+      mode: "SIMULATED",
+    }),
+  );
+}
+
 function cookiesOf(request) {
   return Object.fromEntries(
     (request.headers.cookie ?? "")
@@ -2047,28 +2067,14 @@ const routes = {
   ) => {
     if (operator(request, response)) send(response, 200, observatoryState());
   },
-  [`POST /admin/observatories/${hardwareTestObservatoryId}/test-mission`]: async (
+  [`POST /admin/observatories/${hardwareTestObservatoryId}/test-mission`]: (
     request,
     response,
-  ) => {
-    if (!operator(request, response)) return;
-    const body = zScheduleTestMissionRequest.safeParse(await json(request));
-    if (!body.success)
-      return error(response, 422, "VALIDATION_FAILED", "A target and a length.");
-    send(
-      response,
-      201,
-      zAdminScheduleTestMissionResponse.parse({
-        bookingId: randomUUID(),
-        missionId: randomUUID(),
-        observatoryId: hardwareTestObservatoryId,
-        targetId: body.data.targetId,
-        slotStartAt: new Date(Math.floor(Date.now() / 60_000) * 60_000).toISOString(),
-        durationMinutes: body.data.durationMinutes,
-        mode: "SIMULATED",
-      }),
-    );
-  },
+  ) => scheduleOwnSession(request, response, hardwareTestObservatoryId, randomUUID()),
+  // Platform ADR-082: on a first-party observatory too, the target optional. It answers
+  // the fake's live mission, so the room it leads to is one the fake knows.
+  [`POST /admin/observatories/${observatoryId}/test-mission`]: (request, response) =>
+    scheduleOwnSession(request, response, observatoryId, missionId),
   [`GET /admin/observatories/${observatoryId}/state`]: (request, response) => {
     if (operator(request, response)) send(response, 200, observatoryState());
   },
