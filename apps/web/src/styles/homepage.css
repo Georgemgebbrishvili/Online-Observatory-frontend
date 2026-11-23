@@ -157,8 +157,10 @@
   stroke: none;
 }
 
+/* Above the field, so the orbiting moon passes behind it, never across its words. */
 .home-hero-tag {
   position: absolute;
+  z-index: 1;
   top: 6%;
   right: 0;
   display: grid;
