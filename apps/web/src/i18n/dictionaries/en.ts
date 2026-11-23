@@ -53,8 +53,13 @@ const dictionary = {
       cta: "Book a session",
       watch: "Watch live",
       illustration: "Illustration — not telescope output",
-      panels: { tonight: "Tonight", noTimes: "No open times tonight", upTonight: "{count} up tonight" },
-      rail: { aperture: "Aperture", perMinute: "A minute", openWeek: "Open this week" },
+      moonCredit: "The Moon: NASA/GSFC/Arizona State University",
+      panels: {
+        tonight: "Tonight",
+        noTimes: "No open times tonight",
+        upTonight: "{count} up tonight",
+        perMinute: "A minute",
+      },
     },
     common: {
       minutes: "min",
@@ -75,27 +80,6 @@ const dictionary = {
       price: {
         title: "Pay by the minute",
         cloud: "Clouded out? Your next session is free.",
-      },
-      ways: {
-        title: "More to explore",
-        items: [
-          {
-            title: "Weekly vote",
-            text: "Choose what the telescope sees next.",
-            href: "vote",
-          },
-          {
-            title: "Gift a night",
-            text: "A night at the telescope, as a gift.",
-            href: "gift",
-          },
-          {
-            title: brand.en.game,
-            text: "Fly through the solar system.",
-            href: "explorer",
-          },
-          { title: "Weekly cards", text: "A free card every week.", href: "app/cards" },
-        ],
       },
       faq: {
         title: "Questions",

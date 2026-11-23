@@ -30,3 +30,25 @@ used them, and neither did the horizon and hero-size tokens ADR-087 and ADR-088 
   as ADR-086 had them; reduced motion stills both.
 - Visual baselines for `/` and `/design-system` are regenerated; the design system shows
   `HomeHero`, `HomeQuick` and `HomeSteps` again.
+
+## Amendment — polish (2026-11-23)
+
+The maintainer, the same day: "now polish it, get rid of additional things, make little
+smooth animations, and fix the mistakes".
+
+- **Fewer things.** The three facts down the side leave (each repeated a panel or said
+  little); the Live panel leaves (the hero's *Watch live* button is the same door); More to
+  explore leaves (vote, gift and cards are in the footer, Stellar Explorer in the header).
+  The hero keeps three panels: the next open time, the price a minute, Night Sky.
+- **Mistakes fixed.** The Moon was always drawn half lit, whatever tonight's phase. It is
+  now NASA's photograph (`public/sky/moon-full.webp`, cropped from the LRO mosaic ADR-087
+  used) with tonight's night side laid over it from the almanac's lit fraction, credited
+  under the caption. The panels' figures were set in the mono face and the rest of the
+  page in Geist: they take Geist with tabular figures. With the platform unreadable the
+  first panel no longer claims "no open times tonight", and the price panel no longer
+  repeats its own heading. The hero's headline and line are balanced, so no word hangs
+  alone, and tonight's readout no longer stretches to the chart's height.
+- **Motion.** The planet and the panels rise in after the words, one after another; the
+  little moon goes round its orbit once a minute; tonight's bars draw in from dusk when the
+  chart scrolls into view, and the Now tag glows softly. Reduced motion stills all of it.
+  The visual gate freezes each one.

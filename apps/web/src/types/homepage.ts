@@ -8,9 +8,10 @@ export type HomepageDictionary = {
     watch: string;
     /** Under the drawn planet: it is a drawing, not the telescope's picture. */
     illustration: string;
-    /** ADR-086: the hero's panels and the facts down its side. */
-    panels: { tonight: string; noTimes: string; upTonight: string };
-    rail: { aperture: string; perMinute: string; openWeek: string };
+    /** Under the Moon, which is NASA's photograph darkened to tonight's phase. */
+    moonCredit: string;
+    /** ADR-086, ADR-099: the hero's three panels. */
+    panels: { tonight: string; noTimes: string; upTonight: string; perMinute: string };
   };
   common: {
     minutes: string;
@@ -25,10 +26,6 @@ export type HomepageDictionary = {
   /** ADR-076: the sections under "how it works". */
   more: {
     price: { title: string; cloud: string };
-    ways: {
-      title: string;
-      items: readonly { title: string; text: string; href: string }[];
-    };
     faq: { title: string; items: readonly { q: string; a: string }[] };
   };
 };

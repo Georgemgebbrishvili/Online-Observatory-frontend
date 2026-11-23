@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { ButtonLink } from "@/components/ui/button";
-import { observatories } from "@/features/observatory/observatories";
 import { fill } from "@/features/operator/format";
 import type { PricingFacts } from "@/features/pricing/read";
 import type { SkyBody, SkyObject, TonightSky } from "@/features/sky/tonight-sky";
@@ -17,15 +16,23 @@ const plates: Partial<Record<SkyBody, string>> = {
   Jupiter: "/sky/jupiter.webp",
   Mars: "/sky/mars.webp",
   Venus: "/sky/venus.webp",
-  Moon: "/sky/moon-terminator.webp",
+  Moon: "/sky/moon-full.webp",
 };
+
+/**
+ * The night side of the Moon's disc, in a viewBox of -1 -1 2 2: the dark half, closed by
+ * the terminator, an ellipse as wide as |1 - 2 × lit|. Waxing, the light is on the right.
+ */
+function moonShadow(lit: number) {
+  const f = lit / 100;
+  const rx = Math.abs(1 - 2 * f).toFixed(3);
+  return `M0,-1 A1,1 0 0 0 0,1 A${rx},1 0 0 ${f > 0.5 ? 1 : 0} 0,-1 Z`;
+}
 
 type HomeHeroProps = {
   content: HomepageDictionary["hero"];
-  /** The step texts, reused on the panels. */
-  steps: HomepageDictionary["howItWorks"]["steps"];
   price: HomepageDictionary["more"]["price"];
-  navigation: { live: string; sky: string };
+  navigation: { sky: string };
   locale: Locale;
   pricing: PricingFacts;
   sky: TonightSky | null;
@@ -55,12 +62,12 @@ function Panel({ href, head, children }: { href: string; head: ReactNode; childr
 }
 
 /**
- * The homepage hero (ADR-086): the headline and the two buttons, tonight's best placed
- * planet drawn large with its almanac beside it, three facts down the side, and four
- * panels that open the booking board, the live view, the prices and the night sky.
- * Every number is the almanac's, the platform's or the observatory record's.
+ * The homepage hero (ADR-086, ADR-099): the headline and the two buttons, tonight's best
+ * placed planet drawn large with its almanac beside it, and three panels that open the
+ * booking board, the prices and the night sky. Every number is the almanac's or the
+ * platform's. The Moon is NASA's photograph, darkened to tonight's phase.
  */
-export function HomeHero({ content, steps, price, navigation, locale, pricing, sky, timezone, headingLevel = 1 }: HomeHeroProps) {
+export function HomeHero({ content, price, navigation, locale, pricing, sky, timezone, headingLevel = 1 }: HomeHeroProps) {
   const Heading = headingLevel === 1 ? "h1" : "h2";
   const titleId = headingLevel === 1 ? "home-title" : "ds-home-title";
   const copy = skyTonightCopy[locale];
@@ -76,7 +83,6 @@ export function HomeHero({ content, steps, price, navigation, locale, pricing, s
     sky?.objects.find((o) => plates[o.body] && o.altitude >= 20) ?? sky?.objects.find((o) => plates[o.body]);
   const body: SkyBody = drawn?.body ?? "Saturn";
 
-  const telescope = observatories[0]?.telescope;
   const firstSlot = pricing.tonight?.slots[0];
   const up = sky?.objects ?? [];
 
@@ -100,9 +106,16 @@ export function HomeHero({ content, steps, price, navigation, locale, pricing, s
           <div className="home-hero-field" aria-hidden="true">
             <svg className="home-hero-orbit" viewBox="0 0 400 400">
               <ellipse cx="200" cy="200" rx="196" ry="70" transform="rotate(-18 200 200)" />
-              <circle className="home-hero-moon" cx="384" cy="148" r="3.5" />
+              <circle className="home-hero-moon" r="3.5" />
             </svg>
-            <Image src={plates[body] ?? "/sky/saturn.webp"} alt="" width={414} height={414} loading="eager" fetchPriority="high" sizes="(min-width: 64rem) 20rem, 70vw" />
+            <span className="home-hero-body" data-body={body}>
+              <Image src={plates[body] ?? "/sky/saturn.webp"} alt="" width={414} height={414} loading="eager" fetchPriority="high" sizes="(min-width: 64rem) 20rem, 70vw" />
+              {body === "Moon" && drawn?.lit !== undefined && drawn.lit < 99 && (
+                <svg className="home-hero-phase" viewBox="-1 -1 2 2">
+                  <path d={moonShadow(drawn.lit)} transform={drawn.waxing ? undefined : "scale(-1 1)"} />
+                </svg>
+              )}
+            </span>
           </div>
           <Link className="home-hero-tag" href={`/${locale}/sky`}>
             <span className="home-hero-tag-kicker">{content.panels.tonight}</span>
@@ -124,29 +137,11 @@ export function HomeHero({ content, steps, price, navigation, locale, pricing, s
               </dl>
             )}
           </Link>
-          <figcaption className="home-hero-caption">{content.illustration}</figcaption>
+          <figcaption className="home-hero-caption">
+            {content.illustration}
+            {body === "Moon" && <span>{content.moonCredit}</span>}
+          </figcaption>
         </figure>
-
-        <dl className="home-hero-rail">
-          {telescope && (
-            <div>
-              <dt>{content.rail.aperture}</dt>
-              <dd>{telescope.aperture}</dd>
-            </div>
-          )}
-          {pricing.slot && (
-            <div>
-              <dt>{content.rail.perMinute}</dt>
-              <dd>{pricing.slot.perMinute}</dd>
-            </div>
-          )}
-          {pricing.reachable && (
-            <div>
-              <dt>{content.rail.openWeek}</dt>
-              <dd>{pricing.openThisWeek}</dd>
-            </div>
-          )}
-        </dl>
       </div>
 
       <div className="home-hero-panels">
@@ -155,19 +150,18 @@ export function HomeHero({ content, steps, price, navigation, locale, pricing, s
           head={<span>{content.panels.tonight}</span>}
         >
           <span className="hero-panel-foot">
-            <b className="hero-panel-big">{firstSlot ? clock.format(Date.parse(firstSlot.startAt)) : content.cta}</b>
-            <span>{firstSlot ? firstSlot.price : content.panels.noTimes}</span>
-          </span>
-        </Panel>
-
-        <Panel
-          href={`/${locale}/tonight`}
-          head={<span>{navigation.live}</span>}
-        >
-          <span className="hero-panel-eyepiece" aria-hidden="true" />
-          <span className="hero-panel-foot">
-            <b>{content.watch}</b>
-            <span>{steps[2]?.description}</span>
+            {firstSlot ? (
+              <>
+                <b className="hero-panel-big">{clock.format(Date.parse(firstSlot.startAt))}</b>
+                <span>{firstSlot.price}</span>
+              </>
+            ) : (
+              <>
+                <b>{content.cta}</b>
+                {/* Only the platform can say tonight is full; unread, nothing is claimed. */}
+                {pricing.tonight && <span>{content.panels.noTimes}</span>}
+              </>
+            )}
           </span>
         </Panel>
 
@@ -179,11 +173,9 @@ export function HomeHero({ content, steps, price, navigation, locale, pricing, s
             {pricing.slot ? (
               <>
                 <b className="hero-panel-big">{pricing.slot.perMinute}</b>
-                <span>{content.rail.perMinute}</span>
+                <span>{content.panels.perMinute}</span>
               </>
-            ) : (
-              <b>{price.title}</b>
-            )}
+            ) : null}
             <span className="hero-panel-note">{price.cloud}</span>
           </span>
         </Panel>

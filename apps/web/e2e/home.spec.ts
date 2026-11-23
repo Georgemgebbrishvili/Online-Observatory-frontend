@@ -32,17 +32,16 @@ test("communicates real telescope access in the English hero", async ({ page }) 
   await expect(hero.locator(".home-hero-field img")).toBeVisible();
   await expect(hero.getByText("Illustration — not telescope output")).toBeVisible();
   await expect(hero.locator(".home-hero-tag")).toHaveAttribute("href", "/en/sky");
-  // The observatory record's aperture down the side, never the maker's name.
-  await expect(hero.locator(".home-hero-rail")).toContainText("203 mm");
+  // ADR-099: no facts down the side; what they said is on the panels.
+  await expect(hero.locator(".home-hero-rail")).toHaveCount(0);
 
-  // Four panels: the booking board, the live view, the prices and the night sky.
+  // Three panels: the booking board, the prices and the night sky.
   const panels = hero.locator(".hero-panel");
-  await expect(panels).toHaveCount(4);
+  await expect(panels).toHaveCount(3);
   await expect(panels.nth(0)).toHaveAttribute("href", /^\/en\/app\/book/);
-  await expect(panels.nth(1)).toHaveAttribute("href", "/en/tonight");
-  await expect(panels.nth(2)).toHaveAttribute("href", "/en/pricing");
-  await expect(panels.nth(3)).toHaveAttribute("href", "/en/sky");
-  await expect(panels.nth(2)).toContainText("GEL 1.50");
+  await expect(panels.nth(1)).toHaveAttribute("href", "/en/pricing");
+  await expect(panels.nth(2)).toHaveAttribute("href", "/en/sky");
+  await expect(panels.nth(1)).toContainText("GEL 1.50");
 });
 
 test("renders the Georgian hero and switches locale", async ({ page }) => {
@@ -73,8 +72,10 @@ test("the public homepage: the hero, tonight, the steps, and the rest", async ({
   await expect(
     page.getByRole("heading", { level: 2, name: "How it works" }),
   ).toBeVisible();
-  // ADR-086: the hero, tonight, the steps, more, and questions. Prices sit on the hero.
-  await expect(page.locator("main section")).toHaveCount(5);
+  // ADR-099: the hero, tonight, the steps and questions. Prices sit on the hero; the
+  // other ways in (vote, gift, cards) are in the footer.
+  await expect(page.locator("main section")).toHaveCount(4);
+  await expect(page.locator(".home-ways")).toHaveCount(0);
   await expect(page.locator(".home-picker")).toHaveCount(0);
   await expect(page.locator(".home-faq details")).toHaveCount(4);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
@@ -121,9 +122,9 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
       }));
       expect(viewport.scrollWidth, `${locale} at ${width}px`).toBe(viewport.clientWidth);
       await expect(page.locator(".home-hero .button-primary")).toBeVisible();
-      // A phone keeps the planet and the panels; the side facts wait for a wide screen.
+      // A phone keeps the planet and the panels.
       await expect(page.locator(".home-hero-field")).toBeVisible();
-      await expect(page.locator(".home-hero-rail")).toBeHidden();
+      await expect(page.locator(".hero-panel")).toHaveCount(3);
     }
   }
 });

@@ -12,15 +12,15 @@ import type { Dictionary } from "@/i18n/types";
 
 type HomeShellProps = {
   content: Dictionary["home"];
-  navigation: { live: string; sky: string };
+  navigation: { sky: string };
   locale: Locale;
   pricing: PricingFacts;
   sky: TonightSky | null;
 };
 
 /**
- * The public homepage (ADR-086): the hero with its panels, tonight (the planets and the
- * open times on one night chart), how a session works, other ways in, and questions.
+ * The public homepage (ADR-086, ADR-099): the hero with its panels, tonight (the planets
+ * and the open times on one night chart), how a session works, and questions.
  */
 export function HomeShell({ content, navigation, locale, pricing, sky }: HomeShellProps) {
   // Each step opens the page where it happens.
@@ -34,7 +34,6 @@ export function HomeShell({ content, navigation, locale, pricing, sky }: HomeShe
     <main id="main-content" className="public-home">
       <HomeHero
         content={content.hero}
-        steps={content.howItWorks.steps}
         price={content.more.price}
         navigation={navigation}
         locale={locale}
@@ -75,7 +74,7 @@ export function HomeShell({ content, navigation, locale, pricing, sky }: HomeShe
         </Container>
       </section>
 
-      <HomeMore content={content.more} locale={locale} />
+      <HomeMore content={content.more} />
       <ScrollReveal />
     </main>
   );

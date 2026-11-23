@@ -52,8 +52,13 @@ const dictionary = {
       cta: "დაჯავშნე სეანსი",
       watch: "უყურე პირდაპირ",
       illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
-      panels: { tonight: "ამაღამ", noTimes: "ამაღამ თავისუფალი დრო არ არის", upTonight: "ამაღამ ცაზე: {count}" },
-      rail: { aperture: "აპერტურა", perMinute: "წუთში", openWeek: "თავისუფალი ამ კვირას" },
+      moonCredit: "მთვარე: NASA/GSFC/Arizona State University",
+      panels: {
+        tonight: "ამაღამ",
+        noTimes: "ამაღამ თავისუფალი დრო არ არის",
+        upTonight: "ამაღამ ცაზე: {count}",
+        perMinute: "წუთში",
+      },
     },
     common: {
       minutes: "წთ",
@@ -74,23 +79,6 @@ const dictionary = {
       price: {
         title: "გადაიხადე წუთობრივად",
         cloud: "ღრუბლებმა ხელი შეგიშალა? შემდეგი სეანსი უფასოა.",
-      },
-      ways: {
-        title: "კიდევ აღმოაჩინე",
-        items: [
-          {
-            title: "კვირის კენჭისყრა",
-            text: "აირჩიე, რას დააკვირდება ტელესკოპი.",
-            href: "vote",
-          },
-          { title: "აჩუქე ღამე", text: "ღამე ტელესკოპთან, საჩუქრად.", href: "gift" },
-          { title: brand.ka.game, text: "იმოგზაურე მზის სისტემაში.", href: "explorer" },
-          {
-            title: "კვირის ბარათები",
-            text: "ყოველ კვირა — უფასო ბარათი.",
-            href: "app/cards",
-          },
-        ],
       },
       faq: {
         title: "ხშირი კითხვები",

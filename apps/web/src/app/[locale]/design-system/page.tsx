@@ -1542,9 +1542,8 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             {/* No sky: the specimen draws Saturn with no almanac, so it never changes. */}
             <HomeHero
               content={dictionary.home.hero}
-              steps={dictionary.home.howItWorks.steps}
               price={dictionary.home.more.price}
-              navigation={{ live: dictionary.navigation.app.live, sky: dictionary.navigation.public.sky }}
+              navigation={{ sky: dictionary.navigation.public.sky }}
               locale={locale}
               pricing={quickPricingSpecimen(false)}
               sky={null}
