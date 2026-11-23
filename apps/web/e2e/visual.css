@@ -57,9 +57,11 @@ nextjs-portal {
 }
 
 /*
- * What moves on its own: the LIVE LED blinks, a loading button's sheen loops. Captured at
- * rest.
+ * What moves on its own: the homepage hero's words rise and its planet floats (ADR-086),
+ * the LIVE LED blinks, a loading button's sheen loops. Captured at rest.
  */
+.home-hero-lead > *,
+.home-hero-field img,
 .status-dot,
 .button-primary::after {
   animation: none !important;

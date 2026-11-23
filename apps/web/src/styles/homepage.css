@@ -1,604 +1,1471 @@
 /*
- * The public homepage (ADR-094): five plain sections, rendered on the server, in normal
- * page flow. No pinned scroll, no canvas, no animation library. The hero keeps ADR-088's
- * look: centred over a lit horizon, medium-weight headline on the title gradient. Tokens only.
+ * The public homepage (ADR-086): a hero with its planet, its facts and four panels, then
+ * the sections under it, hairlines between rows. Tokens only.
  */
 
-.hm {
-  --hm-max: 72rem;
-
-  position: relative;
-  display: block;
-  overflow-x: clip;
-  background: var(--color-night);
+.public-home {
+  display: grid;
 }
 
-/* TYPE — Geist medium, set tight, on the title gradient; labels in Oswald. */
-.hm-title {
+/*
+ * THE HERO (ADR-086) — the headline and its two buttons; tonight's best placed planet
+ * drawn large in an eyepiece field, its almanac in a glass tag beside it and the
+ * illustration caption under it; three facts down the side; four glass panels below.
+ */
+.home-hero {
+  position: relative;
+  display: grid;
+  min-height: calc(100svh - var(--size-bar));
+  align-content: center;
+  gap: var(--space-8);
+  padding: var(--space-10) var(--space-page) var(--space-8);
+  overflow: clip;
+}
+
+/* A warm glow behind the planet, the sunset's red kept low. */
+.home-hero::before {
+  position: absolute;
+  z-index: -1;
+  background: radial-gradient(42% 46% at 64% 40%, var(--color-accent-muted), transparent 70%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+}
+
+.home-hero-stage {
+  display: grid;
+  width: 100%;
+  max-width: 90rem;
+  align-items: center;
+  gap: var(--space-8);
+  margin-inline: auto;
+}
+
+.home-hero-title {
   margin: 0;
+  padding-bottom: 0.08em;
   background: var(--gradient-title);
   background-clip: text;
   color: transparent;
   font-family: var(--font-body);
-  font-size: var(--font-size-section);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-hero-glass);
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.045em;
-  line-height: 1.05;
+  line-height: 1.02;
   text-transform: none;
 }
 
-/* Mkhedruli reaches far below the baseline: the gradient's box reaches its descenders. */
-.hm-title:lang(ka) {
-  margin-bottom: -0.26em;
-  padding-bottom: 0.26em;
-  letter-spacing: 0;
-  line-height: 1.15;
-}
-
-.hm-title em {
-  display: block;
-  color: var(--color-text-tertiary);
+.home-hero-title em {
+  background: var(--gradient-title-accent);
+  background-clip: text;
+  color: transparent;
   font-style: normal;
 }
 
-.hm-label {
-  margin: 0;
-  color: var(--color-text-small);
-  font-family: var(--font-label);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-label);
-  line-height: 1.3;
-  text-transform: uppercase;
-}
-
-.hm-data {
-  color: var(--color-text-secondary);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-mono);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Mkhedruli has no capitals and runs wide: never uppercased, never tracked. */
-:is(.hm-label, .hm-more, .hm-xl):lang(ka) {
+/* Mkhedruli has no capitals and runs wide: never tracked tight. */
+.home-hero-title:lang(ka) {
   letter-spacing: 0;
-  text-transform: none;
 }
 
-.hm-lede {
-  max-width: 38rem;
-  margin: var(--space-4) 0 0;
-  color: var(--color-text-secondary);
+.home-hero-lede {
+  max-width: 34ch;
+  margin: var(--space-5) 0 0;
+  color: var(--color-text-cream);
   font-size: var(--font-size-body-lg);
   line-height: 1.5;
 }
 
-.hm-more {
-  display: inline-flex;
-  min-height: var(--size-touch);
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--color-text-secondary);
-  font-family: var(--font-label);
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  transition: color var(--duration-state) var(--ease-sky);
+.home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
 }
 
-.hm-more:hover {
+.home-hero-planet {
+  position: relative;
+  display: grid;
+  margin: 0;
+  justify-items: center;
+}
+
+/* The eyepiece: a dark round field with a hairline rim and an orbit crossing it. */
+.home-hero-field {
+  position: relative;
+  display: grid;
+  width: min(100%, 26rem);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, var(--color-scene-inner), var(--color-night-dark) 72%);
+  box-shadow: var(--shadow-glass);
+}
+
+.home-hero-field img {
+  width: 74%;
+  height: auto;
+  /* The plates sit on a dark square: only the round middle shows in the eyepiece. */
+  mask-image: radial-gradient(circle closest-side, var(--color-mask) 82%, transparent);
+  filter: drop-shadow(0 1.5rem 2.5rem var(--color-shadow));
+}
+
+.home-hero-orbit {
+  position: absolute;
+  width: 118%;
+  height: 118%;
+  fill: none;
+  inset: -9%;
+  pointer-events: none;
+  stroke: var(--color-line-strong);
+  stroke-width: 0.8;
+}
+
+.home-hero-moon {
+  fill: var(--color-accent);
+  stroke: none;
+}
+
+.home-hero-tag {
+  position: absolute;
+  top: 6%;
+  right: 0;
+  display: grid;
+  min-width: 11rem;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-panel);
+  background: var(--gradient-tile);
+  box-shadow: var(--shadow-glass);
   color: var(--color-text-primary);
+  backdrop-filter: var(--blur-glass);
+  text-decoration: none;
+  transition: border-color var(--duration-state) var(--ease-sky);
 }
 
-.hm-more svg {
+.home-hero-tag:hover {
+  border-color: var(--color-glass-border-hover);
+}
+
+.home-hero-tag-kicker {
+  color: var(--color-accent-ink);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+}
+
+.home-hero-tag b {
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+.home-hero-tag dl {
+  display: grid;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-line);
+}
+
+.home-hero-tag dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-size: var(--font-size-label);
+}
+
+.home-hero-tag dt {
+  color: var(--color-text-secondary);
+}
+
+.home-hero-tag dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-hero-caption {
+  margin-top: var(--space-4);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.home-hero-rail {
+  display: none;
+  margin: 0;
+}
+
+.home-hero-rail div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-1);
+}
+
+.home-hero-rail dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.home-hero-rail dd {
+  margin: 0;
+  font-size: var(--font-size-price);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Four glass doors along the hero's foot. */
+.home-hero-panels {
+  display: grid;
+  width: 100%;
+  max-width: 90rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-inline: auto;
+}
+
+.hero-panel {
+  position: relative;
+  display: flex;
+  min-height: 10rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  overflow: hidden;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.hero-panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+}
+
+.hero-panel-head span + span {
+  color: var(--color-text-tertiary);
+}
+
+.hero-panel-foot {
+  display: grid;
+  max-width: 85%;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.hero-panel-foot b {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.hero-panel-foot b.hero-panel-big {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-price);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+}
+
+.hero-panel-note {
+  color: var(--color-text-tertiary);
+}
+
+.hero-panel-go {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-full);
+  background: var(--color-glass);
+  transition:
+    rotate var(--duration-state) var(--ease-sky),
+    background-color var(--duration-state) var(--ease-sky);
+}
+
+.hero-panel-go svg {
   width: 0.875rem;
   height: 0.875rem;
 }
 
-.hm-acts {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
+.hero-panel:hover .hero-panel-go {
+  background: var(--color-surface-hover);
+  rotate: 45deg;
 }
 
-.hm-panel {
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-panel-quiet);
-}
-
-/* A section: one column of content at the page's width, with room above and below. */
-.hm-section {
-  position: relative;
-  width: min(var(--hm-max), calc(100% - 2 * var(--space-page)));
-  margin-inline: auto;
-  padding-block: var(--space-16);
-}
-
-.hm-head {
-  display: grid;
-  gap: var(--space-3);
-  margin-bottom: var(--space-8);
-}
-
-/* A section's label opens with a short red rule. */
-.hm-head > .hm-label::before {
-  display: inline-block;
-  width: var(--space-6);
-  height: 1px;
-  margin-right: var(--space-3);
-  background: var(--color-accent);
-  content: "";
-  vertical-align: middle;
-}
-
-@media (--md) {
-  .hm-section {
-    padding-block: var(--space-20);
-  }
-
-  .hm-head {
-    grid-template-columns: 1fr auto;
-    align-items: end;
-  }
-
-  .hm-head > .hm-label {
-    grid-column: 1 / -1;
-  }
-}
-
-/* THE HERO — centred over the lit curve of a planet's limb. */
-.hm-horizon {
+/* The live panel's eyepiece: two rings and a red point of light. */
+.hero-panel-eyepiece {
   position: absolute;
-  overflow: hidden;
-  inset: 0;
-  mask-image: var(--mask-horizon);
-  pointer-events: none;
-}
-
-.hm-horizon i {
-  --d: max(220vw, 80rem);
-
-  position: absolute;
-  top: calc(100% - clamp(3.25rem, 9svh, 5.25rem));
-  left: calc(50% - var(--d) / 2);
-  width: var(--d);
-  height: var(--d);
+  top: 50%;
+  right: var(--space-5);
+  width: 4.5rem;
+  height: 4.5rem;
+  border: 1px solid var(--color-line-strong);
   border-radius: 50%;
-  background: var(--color-mask);
-  box-shadow: var(--shadow-horizon);
+  box-shadow: inset 0 0 0 0.75rem var(--color-night-dark), inset 0 0 0 calc(0.75rem + 1px) var(--color-line);
+  translate: 0 -60%;
 }
 
-.hm-hero {
-  position: relative;
+.hero-panel-eyepiece::after {
+  position: absolute;
+  top: 46%;
+  left: 54%;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0.75rem var(--color-accent);
+  content: "";
+}
+
+.hero-panel-orbs {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* HOW IT WORKS — four numbered tiles, each opening its page. */
+.home-steps {
   display: grid;
-  min-height: min(44rem, calc(100svh - var(--size-app-header)));
-  place-items: center;
-  padding: var(--space-16) var(--space-page) calc(var(--space-20) + var(--space-8));
-  overflow: hidden;
-  text-align: center;
-}
-
-.hm-hero-in {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  justify-items: center;
-}
-
-.hm-hero .hm-lede {
-  margin-inline: auto;
-}
-
-.hm-hero .hm-acts {
-  justify-content: center;
-  margin-top: var(--space-8);
-}
-
-.hm-xl {
-  margin: 0;
-  background: var(--gradient-title);
-  background-clip: text;
-  color: transparent;
-  font-family: var(--font-body);
-  font-size: var(--font-size-hero-horizon);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: -0.05em;
-  line-height: 1.04;
-  text-transform: none;
-}
-
-.hm-xl .hs-accent {
-  background: var(--gradient-title-accent);
-  background-clip: text;
-  color: transparent;
-}
-
-.hm-xl:lang(ka) {
-  margin-bottom: -0.3em;
-  padding-bottom: 0.3em;
-  line-height: 1.15;
-}
-
-@media (--md) {
-  /* The longest Georgian line (22 letters) fits 64rem at 4.6vw. */
-  .hm-xl:lang(ka) {
-    font-size: min(var(--font-size-hero-horizon), 4.6vw);
-  }
-}
-
-@media (--lg) {
-  .hm-hero {
-    min-height: min(46rem, calc(100svh - var(--size-bar)));
-  }
-}
-
-/* HOW IT WORKS — four numbered steps, a row on wide screens. */
-.hm-steps {
-  display: grid;
-  gap: var(--space-8) var(--space-6);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.hm-steps li {
+.home-step {
+  position: relative;
   display: grid;
+  height: 100%;
   align-content: start;
   gap: var(--space-2);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-line);
-}
-
-.hm-step-n {
-  color: var(--color-accent);
-}
-
-.hm-steps h2 {
-  margin: 0;
+  padding: var(--space-5);
   color: var(--color-text-primary);
-  font-family: var(--font-body);
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.home-step-no {
+  color: var(--color-accent-ink);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-label);
+}
+
+.home-step b {
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
-  line-height: 1.2;
-  text-transform: none;
 }
 
-.hm-steps h2:lang(ka) {
-  letter-spacing: 0;
-}
-
-.hm-steps em {
-  color: var(--color-text-tertiary);
-  font-style: normal;
-}
-
-.hm-steps p {
-  margin: 0;
+.home-step > span:not(.home-step-no, .home-step-go) {
+  max-width: 28ch;
   color: var(--color-text-secondary);
-  line-height: 1.5;
+  font-size: var(--font-size-label);
 }
 
-@media (--sm) {
-  .hm-steps {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.home-step-go {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  color: var(--color-text-tertiary);
+  transition: translate var(--duration-state) var(--ease-sky);
+}
+
+.home-step:hover .home-step-go {
+  color: var(--color-text-primary);
+  translate: 0.25rem 0;
 }
 
 @media (--lg) {
-  .hm-steps {
+  .home-hero-stage {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  }
+
+  .home-hero-panels,
+  .home-steps {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-/* TONIGHT — tonight's best objects: a swipe row on phones, a grid on wide screens. */
-.hm-objects {
+@media (--xl) {
+  .home-hero-stage {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) auto;
+  }
+
+  .home-hero-rail {
+    display: grid;
+    gap: var(--space-8);
+    padding-left: var(--space-6);
+    border-left: 1px solid var(--color-line);
+  }
+}
+
+@media (--below-md) {
+  .home-hero {
+    min-height: 0;
+    padding-top: var(--space-8);
+  }
+
+  .home-hero-field {
+    width: min(100%, 17rem);
+  }
+
+  .home-hero-tag {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: min(100%, 17rem);
+    margin-top: calc(-1 * var(--space-6));
+  }
+
+  .hero-panel-note {
+    display: none;
+  }
+
+  .hero-panel {
+    min-height: 9rem;
+    padding: var(--space-4);
+  }
+
+  .hero-panel-eyepiece {
+    display: none;
+  }
+
+  .hero-panel-foot {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero-lead > * {
+    animation: hero-rise 900ms var(--ease-sky) both;
+  }
+
+  .home-hero-lead > :nth-child(2) {
+    animation-delay: 80ms;
+  }
+
+  .home-hero-lead > :nth-child(3) {
+    animation-delay: 160ms;
+  }
+
+  .home-hero-field img {
+    animation: hero-float 7s ease-in-out infinite;
+  }
+}
+
+/* From 0.01, not 0: an element first painted at opacity 0 never counts as the LCP. */
+@keyframes hero-rise {
+  from {
+    opacity: 0.01;
+    translate: 0 1.25rem;
+  }
+}
+
+@keyframes hero-float {
+  50% {
+    translate: 0 -0.625rem;
+  }
+}
+
+/*
+ * BELOW THE HERO (ADR-077, ADR-078) — glass panels on a dot grid over soft ambient light,
+ * numbered sections split by fading hairlines, small pill buttons, and each piece rising
+ * into place as it scrolls in.
+ */
+.public-home {
+  background: var(--gradient-ambient), var(--color-night);
+  background-attachment: fixed;
+}
+
+.public-home .button {
+  min-height: 2.5rem;
+  padding-inline: var(--space-5);
+  font-size: var(--font-size-label);
+}
+
+.home-band {
+  position: relative;
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.home-band + .home-band::before {
+  position: absolute;
+  top: 0;
+  right: var(--space-page);
+  left: var(--space-page);
+  height: 1px;
+  background: var(--gradient-hairline);
+  content: "";
+}
+
+.home-head {
   display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.home-head-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.home-head-row time {
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-label);
+}
+
+.home-head h2 {
+  margin: 0;
+  padding-bottom: 0.06em;
+  background: var(--gradient-title);
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-body);
+  font-size: var(--font-size-section);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  text-transform: none;
+}
+
+.home-head p {
+  max-width: 36ch;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+}
+
+/* One panel look: glass on a faint dot grid, a bright top edge. */
+.home-tile,
+.night-panel,
+.night-readout {
+  border: 1px solid var(--color-glass-border);
+  border-radius: 1.25rem;
+  background: var(--gradient-tile);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: var(--blur-glass);
+}
+
+/* A rim that catches the light at the top-left and fades round the sides. */
+.home-tile,
+.night-panel,
+.night-readout {
+  position: relative;
+  border-color: transparent;
+}
+
+.home-tile::after,
+.night-panel::after,
+.night-readout::after {
+  position: absolute;
+  padding: 1px;
+  border-radius: inherit;
+  background: var(--gradient-edge);
+  content: "";
+  inset: -1px;
+  mask: var(--mask-edge);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.night-panel {
+  background:
+    var(--texture-dots) 0 0 / 1.375rem 1.375rem,
+    var(--gradient-panel);
+}
+
+.home-tile {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+a.home-tile {
+  transition:
+    border-color var(--duration-state) var(--ease-sky),
+    translate var(--duration-state) var(--ease-sky);
+}
+
+a.home-tile:hover {
+  border-color: var(--color-glass-border-hover);
+  translate: 0 -3px;
+}
+
+a.home-tile:focus-visible,
+.home-quick-times a:focus-visible,
+.home-tile-link:focus-visible,
+.night-row:focus-visible,
+.night-chips a:focus-visible,
+.home-hero-tag:focus-visible,
+.home-faq summary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* The open-times card: shown alone when there is no sky to chart, and on /design-system. */
+.home-tile-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.home-tile-head h3 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.home-tile-head time {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-tile-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.home-tile-link {
+  justify-self: start;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  background: var(--color-chip);
+  box-shadow: var(--shadow-pill-glass);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.home-tile-link:hover {
+  background: var(--color-chip-strong);
+}
+
+.home-quick-times {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-quick-times a {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 1rem;
+  background: var(--color-well);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  text-decoration: none;
+}
+
+.home-quick-times a:hover {
+  border-color: var(--color-accent);
+}
+
+.home-quick-times time {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-time);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Each body's colour, for its orb, its bar and the readout's glow. */
+[data-body="Moon"] {
+  --orb-hi: var(--color-moon-lit);
+  --orb-lo: var(--color-moon-dark);
+}
+
+[data-body="Mercury"] {
+  --orb-hi: var(--planet-mercury-hi);
+  --orb-lo: var(--planet-mercury-lo);
+}
+
+[data-body="Venus"] {
+  --orb-hi: var(--planet-venus-hi);
+  --orb-lo: var(--planet-venus-lo);
+}
+
+[data-body="Mars"] {
+  --orb-hi: var(--planet-mars-hi);
+  --orb-lo: var(--planet-mars-lo);
+}
+
+[data-body="Jupiter"] {
+  --orb-hi: var(--planet-jupiter-hi);
+  --orb-lo: var(--planet-jupiter-lo);
+}
+
+[data-body="Saturn"] {
+  --orb-hi: var(--planet-saturn-hi);
+  --orb-lo: var(--planet-saturn-lo);
+}
+
+[data-body="Uranus"] {
+  --orb-hi: var(--planet-uranus-hi);
+  --orb-lo: var(--planet-uranus-lo);
+}
+
+[data-body="Neptune"] {
+  --orb-hi: var(--planet-neptune-hi);
+  --orb-lo: var(--planet-neptune-lo);
+}
+
+/* TONIGHT — the night chart and its readout. */
+.night {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
-  grid-auto-columns: minmax(16rem, 78%);
-  grid-auto-flow: column;
-  margin-inline: calc(-1 * var(--space-page));
-  padding-inline: var(--space-page);
-  padding-bottom: var(--space-2);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-padding-inline: var(--space-page);
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
 }
 
-.hm-objects::-webkit-scrollbar {
-  display: none;
+.night-panel {
+  min-width: 0;
+  padding: var(--space-4) var(--space-5);
 }
 
-@media (--md) {
-  .hm-objects {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-inline: 0;
-    padding-inline: 0;
-    overflow: visible;
-  }
+.night-plot {
+  --night-name: 7.5rem;
+  --night-axis: 1.75rem;
+
+  position: relative;
+  display: grid;
 }
 
-@media (--lg) {
-  .hm-objects {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+.night-axis,
+.night-row,
+.night-lane {
+  display: grid;
+  grid-template-columns: var(--night-name) minmax(0, 1fr);
+  align-items: center;
 }
 
-.hm-object {
+.night-axis {
+  height: var(--night-axis);
+}
+
+.night-axis-track {
+  position: relative;
+  height: 100%;
+  grid-column: 2;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-label);
+  line-height: var(--night-axis);
+}
+
+.night-tick {
+  position: absolute;
+  left: calc(var(--at) * 1%);
+  translate: -50% 0;
+}
+
+.night-end {
+  position: absolute;
+  color: var(--color-text-secondary);
+}
+
+.night-end[data-end="start"] {
+  left: 0;
+}
+
+.night-end[data-end="end"] {
+  right: 0;
+}
+
+.night-grid {
+  position: absolute;
+  top: var(--night-axis);
+  right: 0;
+  bottom: 0;
+  left: var(--night-name);
+  pointer-events: none;
+}
+
+.night-grid span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--at) * 1%);
+  width: 1px;
+  background: var(--color-line);
+}
+
+.night-rows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.night-row {
+  width: 100%;
+  min-height: 2.125rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.625rem;
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition:
+    background-color var(--duration-state) var(--ease-sky),
+    color var(--duration-state) var(--ease-sky);
+}
+
+.night-row:hover,
+.night-row[aria-pressed="true"] {
+  background: var(--color-well);
+  color: var(--color-text-primary);
+}
+
+.night-name {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
+  padding-left: var(--space-3);
+  overflow: hidden;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.night-track {
+  position: relative;
+  height: 100%;
+  min-height: inherit;
+  transition: opacity var(--duration-state) var(--ease-sky);
+}
+
+.night-rows:has([aria-pressed="true"]) .night-row:not([aria-pressed="true"]) .night-track {
+  opacity: 0.45;
+}
+
+.night-bar {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--from) * 1%);
+  width: calc((var(--to) - var(--from)) * 1%);
+  height: 0.375rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--orb-hi) 14%, transparent),
+    var(--orb-hi) calc(var(--peak) * 1%),
+    color-mix(in srgb, var(--orb-hi) 14%, transparent)
+  );
+  translate: 0 -50%;
+  transition: height var(--duration-state) var(--ease-sky);
+}
+
+.night-row[aria-pressed="true"] .night-bar {
+  height: 0.5rem;
+}
+
+.night-peak {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--best) * 1%);
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--orb-hi);
+  box-shadow:
+    0 0 0 0.25rem color-mix(in srgb, var(--orb-hi) 22%, transparent),
+    0 0 1rem var(--orb-hi);
+  translate: -50% -50%;
+}
+
+.night-orb {
+  position: relative;
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--orb-hi), var(--orb-lo) 72%);
+}
+
+.night-orb svg {
+  width: 100%;
+  height: 100%;
+}
+
+[data-body="Moon"] .night-orb {
+  background: none;
+}
+
+.night-orb .board-moon-dark {
+  fill: var(--color-moon-dark);
+  stroke: var(--color-line-strong);
+  stroke-width: 0.6;
+}
+
+.night-orb .board-moon-lit {
+  fill: var(--color-moon-lit);
+}
+
+.night-lane {
+  min-height: 2.125rem;
+  margin-top: var(--space-1);
+  border-top: 1px dashed var(--color-line-strong);
+}
+
+.night-lane-label {
+  padding-left: var(--space-3);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.night-open {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--from) * 1%);
+  width: calc((var(--to) - var(--from)) * 1%);
+  height: 0.875rem;
+  border: 1px solid var(--color-open-edge);
+  border-radius: 999px;
+  background: var(--gradient-open);
+  translate: 0 -50%;
+}
+
+/* The open time a chip points at, marked on its stretch. */
+.night-pin {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--at) * 1%);
+  width: 0.25rem;
+  height: 1.375rem;
+  border-radius: 999px;
+  background: var(--color-now);
+  box-shadow: 0 0 0.75rem var(--color-now);
+  translate: -50% -50%;
+}
+
+.night-now {
+  position: absolute;
+  top: var(--night-axis);
+  bottom: 0;
+  left: calc(var(--night-name) + (100% - var(--night-name)) * var(--now) / 100);
+  width: 1px;
+  background: var(--color-now);
+  box-shadow: 0 0 0.5rem var(--color-now);
+  pointer-events: none;
+}
+
+.night-now span {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  padding: 0.125rem var(--space-2);
+  border-radius: 999px;
+  background: var(--color-now);
+  color: var(--color-night);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.3;
+  translate: -50% -0.125rem;
+}
+
+.night-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) 0 0;
+  border-top: 1px solid var(--color-line);
+  list-style: none;
+}
+
+.night-chips a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 999px;
+  background: var(--color-well);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-label);
+  text-decoration: none;
+  transition:
+    border-color var(--duration-state) var(--ease-sky),
+    background-color var(--duration-state) var(--ease-sky);
+}
+
+.night-chips a:hover {
+  border-color: var(--color-accent);
+  background: var(--color-chip);
+}
+
+.night-chips time {
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.night-chips span {
+  color: var(--color-text-secondary);
+}
+
+.night-readout {
+  position: relative;
   display: grid;
   align-content: start;
   gap: var(--space-4);
   padding: var(--space-5);
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-panel);
-  background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--c) 16%, transparent), transparent 70%), var(--color-panel-quiet);
-  scroll-snap-align: start;
-}
-
-.hm-eye {
-  width: min(9.5rem, 60%);
-  margin: var(--space-2) auto 0;
-  aspect-ratio: 1;
   overflow: hidden;
+}
+
+/* The chosen body's own light, rising behind the readout. */
+.night-readout::before {
+  position: absolute;
+  z-index: -1;
+  top: -40%;
+  right: -35%;
+  width: 90%;
+  aspect-ratio: 1;
   border-radius: 50%;
-  background: var(--color-night-dark);
-  box-shadow: 0 0 2.5rem color-mix(in srgb, var(--c) 30%, transparent);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--orb-hi) 26%, transparent),
+    transparent 68%
+  );
+  content: "";
 }
 
-.hm-eye img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.night-readout-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
 }
 
-.hm-object-text {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.hm-object h3 {
+.night-readout h3 {
   margin: 0;
-  color: var(--color-text-primary);
   font-family: var(--font-body);
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  font-size: var(--font-size-readout);
+  overflow-wrap: anywhere;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.035em;
+  line-height: 1.05;
   text-transform: none;
 }
 
-.hm-object h3:lang(ka) {
-  letter-spacing: 0;
-}
-
-.hm-object p {
-  margin: 0;
+.night-tag {
+  display: inline-block;
+  margin-top: var(--space-1);
+  padding: 0.125rem var(--space-3);
+  border-radius: 999px;
+  background: var(--color-chip);
   color: var(--color-text-secondary);
-  line-height: 1.5;
+  font-size: var(--font-size-label);
 }
 
-.hm-object-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  margin-top: auto;
-  padding-top: var(--space-3);
+.night-orb-big {
+  width: 3rem;
+  height: 3rem;
+  box-shadow:
+    inset -0.5rem -0.625rem 1rem color-mix(in srgb, var(--color-night) 55%, transparent),
+    0 0 2.5rem color-mix(in srgb, var(--orb-hi) 45%, transparent);
+}
+
+[data-body="Moon"] .night-orb-big {
+  box-shadow: 0 0 2.5rem color-mix(in srgb, var(--orb-hi) 30%, transparent);
+}
+
+[data-body="Saturn"] .night-orb-big::after {
+  position: absolute;
+  inset: 36% -24%;
+  border: 2px solid color-mix(in srgb, var(--orb-hi) 75%, transparent);
+  border-radius: 50%;
+  content: "";
+  rotate: -16deg;
+}
+
+.night-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
   border-top: 1px solid var(--color-line);
 }
 
-.hm-object-foot > div {
+.night-stats div {
   display: grid;
+  /* A label that wraps (Georgian) keeps its value level with the one beside it. */
+  align-content: space-between;
+  gap: 0.125rem;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
 }
 
-.hm-object-foot b {
+.night-stats div:nth-child(odd) {
+  padding-right: var(--space-4);
+  border-right: 1px solid var(--color-line);
+}
+
+.night-stats div:nth-child(even) {
+  padding-left: var(--space-4);
+}
+
+.night-stats dt {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.night-stats dd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--font-size-stat);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.night-book {
+  justify-self: start;
+}
+
+/* SPLIT — a heading beside its content (Questions). */
+.home-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.home-split .home-head {
+  margin-bottom: 0;
+}
+
+/* MORE — a bento of four doors. */
+.home-ways {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-way {
+  position: relative;
+  height: 100%;
+  min-height: 8rem;
+  align-content: end;
+  gap: var(--space-1);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.home-way::before {
+  position: absolute;
+  z-index: -1;
+  top: -50%;
+  right: -30%;
+  width: 80%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-accent) 22%, transparent),
+    transparent 68%
+  );
+  content: "";
+  opacity: 0;
+  transition: opacity 400ms var(--ease-sky);
+}
+
+.home-way:hover::before {
+  opacity: 1;
+}
+
+/* The door's drawing, large and faint, cropped by the tile's corner. */
+.home-way-glyph {
+  position: absolute;
+  z-index: -1;
+  right: -0.75rem;
+  bottom: -1.25rem;
+  width: 7.5rem;
+  height: 7.5rem;
+  color: var(--color-accent);
+  opacity: 0.32;
+  rotate: -8deg;
+  transition:
+    opacity 400ms var(--ease-sky),
+    rotate 400ms var(--ease-sky),
+    scale 400ms var(--ease-sky);
+}
+
+.home-way:hover .home-way-glyph {
+  opacity: 0.55;
+  rotate: 0deg;
+  scale: 1.06;
+}
+
+.home-way b {
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+.home-way span {
+  max-width: 32ch;
+  text-wrap: pretty;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.home-way .home-ways-go {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-chip);
+  box-shadow: var(--shadow-pill-glass);
   color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
+  rotate: -45deg;
+  transition:
+    rotate var(--duration-state) var(--ease-sky),
+    background-color var(--duration-state) var(--ease-sky);
 }
 
-/* Every drawn picture says what it is (CLAUDE.md, ADR-052 §7). */
-.hm-illustration {
-  margin: var(--space-4) 0 0;
-  color: var(--color-text-quiet);
-  font-size: var(--font-size-caption);
+.home-way:hover .home-ways-go {
+  background: var(--color-chip-strong);
+  rotate: 0deg;
 }
 
-/* YOUR SESSION — the price, plainly, and the questions beside it. */
-.hm-session {
+/* QUESTIONS — hairline rows that open smoothly. */
+.home-faq {
   display: grid;
-  gap: var(--space-10);
+  border-top: 1px solid var(--color-line);
+  interpolate-size: allow-keywords;
 }
 
-@media (--lg) {
-  .hm-session {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: start;
+.home-faq details {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.home-faq details::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 320ms var(--ease-sky),
+    content-visibility 320ms allow-discrete;
+}
+
+.home-faq details[open]::details-content {
+  block-size: auto;
+}
+
+.home-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  list-style: none;
+}
+
+.home-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.home-faq summary::after {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-chip);
+  box-shadow: var(--shadow-pill-glass);
+  color: var(--color-text-primary);
+  content: "+";
+  font-size: var(--font-size-body-lg);
+  transition:
+    rotate var(--duration-state) var(--ease-sky),
+    background-color var(--duration-state) var(--ease-sky);
+}
+
+.home-faq summary:hover::after {
+  background: var(--color-chip-strong);
+}
+
+.home-faq details[open] summary::after {
+  rotate: 45deg;
+}
+
+.home-faq p {
+  max-width: 56ch;
+  margin: 0;
+  padding: 0 0 var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+/* SCROLL REVEAL — only once the script is running, so nothing hides without it. */
+.public-home[data-reveal]
+  .home-band
+  :is(
+    .home-head,
+    .home-tile,
+    .night-panel,
+    .night-readout,
+    .home-faq details
+  ):not([data-in]) {
+  opacity: 0;
+  filter: blur(6px);
+  translate: 0 1.5rem;
+}
+
+.public-home[data-reveal] [data-in] {
+  transition:
+    opacity 800ms var(--ease-sky) var(--reveal-delay, 0ms),
+    filter 800ms var(--ease-sky) var(--reveal-delay, 0ms),
+    translate 800ms var(--ease-sky) var(--reveal-delay, 0ms),
+    border-color var(--duration-state) var(--ease-sky);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .night-readout-head,
+  .night-stats dd {
+    animation: piece-in 520ms var(--ease-sky) both;
   }
 }
 
-.hm-price {
-  padding: var(--space-6);
+@keyframes piece-in {
+  from {
+    filter: blur(4px);
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
 }
 
-.hm-price .hm-head {
-  grid-template-columns: 1fr;
-  margin-bottom: var(--space-6);
-}
-
-.hm-rate {
-  margin: 0;
-  color: var(--color-text-primary);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-price);
-  font-variant-numeric: tabular-nums;
-}
-
-.hm-lengths {
-  display: grid;
-  gap: var(--space-2);
-  margin: var(--space-5) 0 0;
-}
-
-@media (--sm) {
-  .hm-lengths {
+@media (--md) {
+  .home-ways {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.hm-lengths dt,
-.hm-lengths dd {
-  white-space: nowrap;
-}
+@media (--lg) {
+  .night {
+    grid-template-columns: minmax(0, 1fr) 18.5rem;
+  }
 
-.hm-lengths > div {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-control);
-}
+  .home-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-10);
+  }
 
-.hm-lengths dt {
-  color: var(--color-text-secondary);
-}
+  .home-split-faq {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+    align-items: start;
+  }
 
-.hm-lengths dd {
-  margin: 0;
-  color: var(--color-text-primary);
-}
+  .home-split-faq .home-head {
+    position: sticky;
+    top: calc(var(--size-bar) + var(--space-8));
+  }
 
-.hm-note {
-  margin: var(--space-5) 0;
-  color: var(--color-text-secondary);
-}
-
-.hm-faq {
-  display: grid;
-}
-
-.hm-faq > .hm-label {
-  margin-bottom: var(--space-4);
-}
-
-.hm-faq details {
-  border-top: 1px solid var(--color-line);
-}
-
-.hm-faq details:last-child {
-  border-bottom: 1px solid var(--color-line);
-}
-
-.hm-faq summary {
-  display: flex;
-  min-height: var(--size-touch);
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding-block: var(--space-4);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-size: var(--font-size-body-lg);
-  list-style: none;
-}
-
-.hm-faq summary::-webkit-details-marker {
-  display: none;
-}
-
-.hm-faq summary::after {
-  color: var(--color-accent);
-  content: "+";
-  font-family: var(--font-mono);
-  transition: transform var(--duration-state) var(--ease-sky);
-}
-
-.hm-faq details[open] summary::after {
-  transform: rotate(45deg);
-}
-
-.hm-faq details p {
-  margin: 0 0 var(--space-4);
-  color: var(--color-text-secondary);
-  line-height: 1.5;
-}
-
-/* THE INSTRUMENT — one short paragraph and three facts. */
-.hm-scope .hm-head {
-  grid-template-columns: 1fr;
-  margin-bottom: 0;
-}
-
-.hm-facts {
-  display: grid;
-  gap: var(--space-4);
-  margin: var(--space-8) 0 var(--space-4);
-}
-
-.hm-facts > div {
-  display: grid;
-  gap: var(--space-1);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-line);
-}
-
-.hm-facts dd {
-  margin: 0;
-  color: var(--color-text-primary);
-}
-
-@media (--md) {
-  .hm-facts {
+  .home-ways {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 8.5rem;
+  }
+
+  .home-ways li:first-child {
+    grid-column: span 2;
+  }
+
+  .home-ways li:nth-child(2) {
+    grid-row: span 2;
+  }
+
+  .home-ways li:nth-child(2) .home-way-glyph {
+    right: -1.5rem;
+    bottom: 3rem;
+    width: 13rem;
+    height: 13rem;
   }
 }
 
-/* THE CLOSER — the call again, over the horizon. */
-.hm-closer {
-  display: grid;
-  width: 100%;
-  min-height: 28rem;
-  place-items: center;
-  padding-inline: var(--space-page);
-  overflow: hidden;
-  text-align: center;
+@media (--below-md) {
+  .home-tile,
+  .night-panel,
+  .night-readout {
+    padding: var(--space-4);
+  }
+
+  .night-plot {
+    --night-name: 7.5rem;
+  }
+
+  .night-name {
+    gap: var(--space-2);
+    padding-left: var(--space-2);
+  }
+
+  .night-lane-label {
+    visibility: hidden;
+  }
+
+  /* Every other hour on a phone, so the numbers do not touch. */
+  .night-tick[data-minor],
+  .night-grid [data-minor] {
+    display: none;
+  }
+
+  .night-end {
+    display: none;
+  }
+
+  .public-home {
+    background-attachment: scroll;
+  }
 }
 
-.hm-closer-in {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  justify-items: center;
-  gap: var(--space-8);
-}
-
-.hm-closer .hm-acts {
-  justify-content: center;
-}
-
-.hm-credits {
-  max-width: 44rem;
-  margin: 0;
-  color: var(--color-text-quiet);
-  font-size: var(--font-size-caption);
-  line-height: 1.5;
-}
-
-/* The design system's specimen of the horizon. */
-.hm-horizon-specimen {
-  position: relative;
-  height: 12rem;
-  overflow: hidden;
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-night);
-  grid-column: 1 / -1;
+@media (prefers-reduced-motion: reduce) {
+  a.home-tile,
+  .night-row {
+    transition: none;
+  }
 }
