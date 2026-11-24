@@ -130,22 +130,6 @@
   color: var(--mute);
   white-space: nowrap;
 }
-.oh-badge {
-  flex: none;
-  background: rgba(226, 184, 90, 0.12);
-  color: #e2b85a;
-  border: 1px solid rgba(226, 184, 90, 0.45);
-  border-radius: 999px;
-  padding: 4px 10px;
-  font: 600 13px var(--o-mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-.oh-badge.is-live {
-  color: #2ecc71;
-  border-color: rgba(46, 204, 113, 0.5);
-  background: rgba(46, 204, 113, 0.1);
-}
 .oh-strip {
   display: flex;
   flex-wrap: wrap;
@@ -769,18 +753,9 @@
   padding: 7px 16px;
   height: auto;
 }
-/* The caption sat top-centre, under the optics pills, which cut it at "not telescope".
-   It stands bottom-left now, clear of every control, and wraps before it is covered. */
-.oh .sdo-hud--bc {
-  top: auto;
-  bottom: 14px;
-  left: 64px;
-  transform: none;
-  max-width: calc(100% - 64px - 200px);
-  white-space: normal;
-  z-index: 3;
+.oh .sdo-hud--bl {
+  bottom: 16px;
 }
-.oh .sdo-hud--bl,
 .oh .sdo-hud--br {
   bottom: 60px;
 }
@@ -796,6 +771,87 @@
 }
 .oh .sdo-idle {
   border-radius: 18px;
+}
+.sdo-idle__go {
+  margin-top: 4px;
+  min-height: 46px;
+  padding: 11px 26px;
+  border-radius: 13px;
+  border: 1px solid var(--acc);
+  background: var(--grad);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 8px 26px -8px rgba(var(--acc-rgb), 0.85);
+  transition: filter 0.15s, transform 0.15s;
+}
+.sdo-idle__go:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+.sdo-idle__go:active:not(:disabled) {
+  transform: translateY(0);
+}
+.sdo-idle__go:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* The picture's one mark of where it comes from (ADR-101): SIM in the simulated gold, LIVE
+   in the live green with the live glow. It sits in the frame's top-right corner, and the
+   optics pills step aside for it. */
+.oh-mode {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font: 700 14px/1 var(--o-mono);
+  letter-spacing: 0.16em;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+}
+.oh-mode.is-sim {
+  color: #e2b85a;
+  background: rgba(20, 15, 4, 0.72);
+  border: 1px solid rgba(226, 184, 90, 0.6);
+}
+.oh-mode.is-live {
+  color: #2ecc71;
+  background: rgba(3, 20, 10, 0.72);
+  border: 1px solid rgba(46, 204, 113, 0.65);
+  box-shadow: 0 0 18px -2px rgba(46, 204, 113, 0.55);
+}
+.sdo-view.has-mode .oh-otools {
+  right: 84px;
+}
+.oh.is-night .oh-mode {
+  color: var(--ink);
+  border-color: var(--line2);
+  box-shadow: none;
+}
+.oh-end {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line2);
+  background: none;
+  color: var(--mute);
+  font-size: 13px;
+  cursor: pointer;
+}
+.oh-end:hover {
+  color: var(--ink);
+  border-color: var(--ink);
 }
 .oh .sdo-idle__icon {
   background: var(--grad);
@@ -2047,7 +2103,7 @@
   .oh-vtools__sep {
     display: none;
   }
-  /* and the idle card leaves the readouts and the caption in view */
+  /* and the idle card leaves the readouts in view */
   .oh .sdo-idle {
     padding: 16px 22px;
     gap: 8px;
@@ -2055,10 +2111,71 @@
   .oh .sdo-idle__icon {
     display: none;
   }
+  /* The start card on a short picture: compact, below the optics pills, and the field
+     readout steps out for it until the simulation starts. */
+  .oh .sdo-view .sdo-idle:has(.sdo-idle__go) {
+    top: 56%;
+    width: min(400px, calc(100% - 140px));
+    padding: 12px 18px;
+    gap: 6px;
+  }
+  .oh .sdo-idle:has(.sdo-idle__go) .sdo-idle__title {
+    font-size: 18px;
+  }
+  .oh .sdo-idle:has(.sdo-idle__go) .sdo-idle__text {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .oh .sdo-idle__go {
+    min-height: 40px;
+    padding: 8px 20px;
+    font-size: 15px;
+  }
+  .oh .sdo-view:has(.sdo-idle__go) .sdo-hud--br {
+    display: none;
+  }
+}
+
+/* A tablet's picture is too narrow for every readout and its head too narrow for the clock:
+   STOP stays on the screen, the target's readout stands above the status pill, and the start
+   card clears the tool rail. */
+@media (--md) and (--below-lg) {
+  .oh-clock {
+    display: none;
+  }
+  .oh .sdo-hud--br {
+    display: none;
+  }
+  .oh .sdo-hud--bl {
+    bottom: 60px;
+  }
+  .oh .sdo-idle {
+    left: calc(50% + 28px);
+    width: calc(100% - 120px);
+  }
+}
+
+/* The start card is the picture's one call to action: no icon over it, and it sits a little
+   high so the readouts at the foot stay clear. */
+.oh .sdo-idle:has(.sdo-idle__go) {
+  top: 46%;
+}
+.oh .sdo-idle:has(.sdo-idle__go) .sdo-idle__icon {
+  display: none;
+}
+/* On standby the bar above names the station and the pills show the optics: the top-left
+   readout gives the card its room. */
+.oh .sdo-view:has(.sdo-idle__go) .sdo-hud--tl {
+  display: none;
 }
 
 /* ---------- one step at a time, as the hub does it ---------- */
 @media (--md) {
+  /* The picture fits its grid row: observatory-console.css's 420 px floor below 1280 px
+     ran it under the slew card on a short laptop (1024 x 700). */
+  .oh .sdo-view {
+    min-height: 0;
+  }
   .oh:not([data-step="point"]):not([data-step="targets"]) :is(.oh-dock [data-tab="point"], .oh-right > [data-tab="point"]),
   .oh:not([data-step="focus"]) :is(.oh-dock [data-tab="focus"], .oh-right > [data-tab="focus"]),
   .oh:not([data-step="shoot"]) :is(.oh-dock [data-tab="shoot"], .oh-right > [data-tab="shoot"]),
@@ -2119,10 +2236,6 @@
   .oh-bt small {
     display: none;
   }
-  .oh-badge {
-    font-size: 13px;
-    padding: 3px 7px;
-  }
   .oh-clock,
   .oh-hbtn .oh-sw,
   .oh-hbtn__t {
@@ -2137,7 +2250,7 @@
     min-height: 34px;
     font-size: 13px;
   }
-  /* one row on a 320 px phone: the badge and the four buttons */
+  /* one row on a 320 px phone: the four buttons */
   .oh-head-bar {
     flex-wrap: nowrap;
     gap: 4px;
@@ -2194,6 +2307,16 @@
     right: 8px;
     top: 8px;
   }
+  .oh-mode {
+    right: 8px;
+    top: 8px;
+    height: 32px;
+    padding: 0 9px;
+    font-size: 13px;
+  }
+  .sdo-view.has-mode .oh-otools {
+    right: 72px;
+  }
   .oh-seg button {
     padding: 4px 7px;
     font-size: 13px;
@@ -2210,19 +2333,9 @@
   .oh .sdo-hud--br {
     display: none;
   }
-  /* the picture keeps its caption on a phone too: one line along the foot */
-  .oh .sdo-hud--bc {
-    left: 8px;
-    bottom: 6px;
-    max-width: calc(100% - 16px);
-    padding: 3px 8px;
-    font-family: inherit;
-    line-height: 1.35;
-    letter-spacing: 0;
-  }
   .oh .sdo-status {
     right: 8px;
-    bottom: 40px;
+    bottom: 8px;
   }
   /* the Autopilot card under the picture says the same thing: a phone keeps the sky clear */
   .oh .sdo-idle {

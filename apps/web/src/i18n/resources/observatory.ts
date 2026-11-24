@@ -42,7 +42,6 @@ type ObservatoryPageCopy = {
   camera: string;
   cameraModel: string;
   cameraType: string;
-  illustration: string;
   instrumentSection: {
     kicker: string;
     title: string;
@@ -164,7 +163,6 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     camera: "Camera",
     cameraModel: "ZWO ASI585MC",
     cameraType: "Uncooled, one-shot colour",
-    illustration: "Illustration — not telescope output",
     instrumentSection: {
       kicker: "01 · The instrument",
       title: "An 8-inch telescope and a colour camera.",
@@ -325,7 +323,6 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     camera: "კამერა",
     cameraModel: "ZWO ASI585MC",
     cameraType: "ფერადი, გაგრილების გარეშე",
-    illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
     instrumentSection: {
       kicker: "01 · ინსტრუმენტი",
       title: "203 მმ ტელესკოპი და ფერადი კამერა.",

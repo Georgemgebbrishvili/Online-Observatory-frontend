@@ -26,9 +26,7 @@ type Props = {
   locale: Locale;
   observatoryName: string;
   nodeCloud: number | null;
-  simulated: boolean;
   mission: PlatformMission;
-  caption: string;
 };
 
 const NODE_ID = 'tbilisi-01';
@@ -40,7 +38,7 @@ const NIGHT_KEY = 'stellar.observatory.night';
  * RECENTER; Capture is CAPTURE; the session's end is ABORT. The target is the booked
  * one, the train the mission's, and the mount's own settings are the operator's.
  */
-export function PlatformConsole({ locale, observatoryName, simulated, mission, caption }: Props) {
+export function PlatformConsole({ locale, observatoryName, mission }: Props) {
   const t = consoleCopy[locale];
   const station = useMemo<Station>(() => ({ ...SIM_STATIONS.find((s) => s.id === NODE_ID)!, name: observatoryName, site: observatoryName }), [observatoryName]);
   const [clockMs, setClockMs] = useState<number | null>(null);
@@ -147,7 +145,8 @@ export function PlatformConsole({ locale, observatoryName, simulated, mission, c
     // eslint-disable-next-line @next/next/no-img-element
     <img src={d.feed.url} alt={d.feed.simulated ? t.stage.simulatedFeed : t.stage.liveFeed} onError={driver.onStreamError} />
   ) : null;
-  const streamSimulated = d.feed?.simulated ?? simulated;
+  // The corner says LIVE only while the real instrument's picture is on the screen (ADR-101).
+  const mode = d.feed ? (d.feed.simulated ? 'sim' : live ? 'live' : null) : null;
   const sessionLeft = d.timeLeftMs !== null ? hms(d.timeLeftMs) : null;
   const ms = d.missionState;
   const pipeNow = ms === 'PREPARING' ? 0 : ms === 'SLEWING' ? 1 : ms === 'VERIFYING' ? 2 : ms === 'CENTERING' ? 3 : -1;
@@ -160,7 +159,6 @@ export function PlatformConsole({ locale, observatoryName, simulated, mission, c
       mounted={mounted}
       night={night}
       onNight={toggleNight}
-      simulated={simulated}
       observatoryName={observatoryName}
       clock={{ local: mounted ? clock(now, station.timezone, true) : '--:--:--', lst: mounted ? lstText(localSiderealHours(station.lon, date)) : '--' }}
       devices={[
@@ -199,11 +197,11 @@ export function PlatformConsole({ locale, observatoryName, simulated, mission, c
         status: { text: statusText, go: live && observing, blink: d.status === 'starting' || d.status === 'connecting' || d.status === 'reconnecting' || (live && !observing && !ended) },
         exposing: null,
         alerts: [],
-        hudLive: [d.feed ? (streamSimulated ? t.stage.simulatedFeed : t.stage.liveFeed) : d.session ? t.stage.noFeed : t.stage.standby, observatoryName, `${Math.round(focal)} MM · F/${fRatio.toFixed(1).replace(/\.0$/, '')}`],
+        hudLive: [observatoryName, `${Math.round(focal)} MM · F/${fRatio.toFixed(1).replace(/\.0$/, '')}`],
         hudTarget: [mission.targetName, t.session.booked, null],
         hudField: [`${t.stage.fov} ${fov.widthArcmin.toFixed(1)}′ × ${fov.heightArcmin.toFixed(1)}′`, `${fov.plateScaleArcsecPx.toFixed(2)}″ / PX`],
-        caption,
-        idle: d.feed ? null : { title: t.observatory, text: t.idle.platform(mission.targetName), note: simulated ? t.simulated : observatoryName },
+        mode,
+        idle: d.feed ? null : { title: t.observatory, text: t.idle.platform(mission.targetName) },
       }}
       autopilot={{
         name: mission.targetName,
@@ -218,6 +216,7 @@ export function PlatformConsole({ locale, observatoryName, simulated, mission, c
         links: [],
         after: [],
         note: confirmStop ? t.session.confirmStop : t.hub.autopilot.booked,
+        end: null,
       }}
       pointing={{
         path: null,

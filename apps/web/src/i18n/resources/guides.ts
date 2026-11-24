@@ -1,4 +1,3 @@
-import { brand } from "@/brand";
 import type { Locale } from "@/i18n/config";
 
 type GuideLink = { label: string; path: string };
@@ -16,7 +15,7 @@ export type GuideCopy = {
   cta?: { title: string; body: string; action: GuideLink; secondary?: GuideLink };
 };
 
-export type GuideId = "home" | "pricing" | "observatory";
+export type GuideId = "home" | "pricing";
 
 /**
  * The explaining each landing page carries under its working part. Nothing here
@@ -134,48 +133,6 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
         secondary: { label: "Try the observatory", path: "observatory" },
       },
     },
-    observatory: {
-      eyebrow: "About the observatory",
-      title: "One telescope, run for you remotely.",
-      lede: "The console works like a real session: connect, point, capture.",
-      stepsTitle: "What happens in a real session",
-      steps: [
-        {
-          title: "Slew",
-          body: "The mount turns to your target. Too low, near the Sun or behind the horizon mask is refused.",
-        },
-        {
-          title: "Verify and centre",
-          body: "The camera takes a frame, finds where it points, and the mount centres the target.",
-        },
-        {
-          title: "Observe",
-          body: "Short exposures stack live on your screen.",
-        },
-        {
-          title: "Capture",
-          body: "Save the frame you like to your Collection, with time and target.",
-        },
-      ],
-      faqTitle: "About the instrument",
-      faq: [
-        {
-          question: "Can my browser move the telescope directly?",
-          answer: `No. The observatory dials out to the ${brand.en.name} cloud and rechecks every command before it moves.`,
-        },
-        {
-          question: "What is the instrument?",
-          answer: "A telescope with a ZWO ASI585MC colour camera on a computerised mount. Its live state is on the status page.",
-          link: { label: "Status", path: "status" },
-        },
-      ],
-      cta: {
-        title: "Book the real one.",
-        body: "Time on the telescope, live.",
-        action: { label: "Reserve a slot", path: "app/book" },
-        secondary: { label: "See prices", path: "pricing" },
-      },
-    },
   },
   ka: {
     home: {
@@ -285,48 +242,6 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
         body: "აირჩიე ღამე და ობიექტი.",
         action: { label: "დაჯავშნე სეანსი", path: "app/book" },
         secondary: { label: "სცადე ობსერვატორია", path: "observatory" },
-      },
-    },
-    observatory: {
-      eyebrow: "ობსერვატორიის შესახებ",
-      title: "ერთი ტელესკოპი, შენთვის დისტანციურად მართული.",
-      lede: "პულტი ნამდვილი სეანსივით მუშაობს: დაუკავშირდი, მიმართე, გადაიღე.",
-      stepsTitle: "რა ხდება ნამდვილ სეანსში",
-      steps: [
-        {
-          title: "მობრუნება",
-          body: "მონტირება ობიექტისკენ ბრუნდება. ძალიან დაბალი ან მზესთან ახლო მიმართულება იბლოკება.",
-        },
-        {
-          title: "შემოწმება და დაცენტრება",
-          body: "კადრით დგინდება მიმართულება და ობიექტი ცენტრდება.",
-        },
-        {
-          title: "დაკვირვება",
-          body: "მოკლე კადრები პირდაპირ შენს ეკრანზე გროვდება.",
-        },
-        {
-          title: "გადაღება",
-          body: "მოწონებული კადრი კოლექციაში ინახება.",
-        },
-      ],
-      faqTitle: "ინსტრუმენტის შესახებ",
-      faq: [
-        {
-          question: "ჩემს ბრაუზერს შეუძლია ტელესკოპის ამოძრავება?",
-          answer: `არა. ობსერვატორია თავად უკავშირდება ${brand.ka.genitive} სერვერს და ყოველ ბრძანებას ამოწმებს.`,
-        },
-        {
-          question: "რა ინსტრუმენტია?",
-          answer: "ტელესკოპი ZWO ASI585MC ფერადი კამერით, კომპიუტერიზებულ მონტირებაზე.",
-          link: { label: "სტატუსი", path: "status" },
-        },
-      ],
-      cta: {
-        title: "დაჯავშნე ნამდვილი.",
-        body: "დრო ტელესკოპთან, პირდაპირ.",
-        action: { label: "დაჯავშნე სეანსი", path: "app/book" },
-        secondary: { label: "ფასების ნახვა", path: "pricing" },
       },
     },
   },

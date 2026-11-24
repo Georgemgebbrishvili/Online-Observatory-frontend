@@ -4,9 +4,8 @@ import type { TargetKind } from "@/lib/observatory-sim/telescope-targets";
 /** Every word the console says, in both languages. Numbers and units stay as the model writes them. */
 export type ConsoleCopy = {
   observatory: string;
-  simulated: string;
-  simulatedLong: string;
-  live: string;
+  /** The picture's corner mark, spoken: it reads SIM or LIVE (ADR-101). */
+  mode: { simLabel: string; liveLabel: string };
   nightMode: string;
   cloud: string;
   seeing: string;
@@ -92,13 +91,11 @@ export type ConsoleCopy = {
     roi: string;
     liveFeed: string;
     simulatedFeed: string;
-    standby: string;
     fov: string;
     framesHud: string;
     near: string;
     offset: string;
     centred: string;
-    noFeed: string;
     conditions: string;
   };
   steps: {
@@ -117,6 +114,8 @@ export type ConsoleCopy = {
     connecting: string;
     stacking: (done: number, goal: number) => string;
     liveStack: (done: number, goal: number) => string;
+    exposing: (pass: number) => string;
+    focusing: (pass: number, samples: number) => string;
     slewing: string;
     slewingLong: string;
     solving: string;
@@ -143,6 +142,8 @@ export type ConsoleCopy = {
     >;
   };
   idle: {
+    start: string;
+    startText: (quick: string | null) => string;
     text: (quick: string | null) => string;
     ready: string;
     pointTo: (name: string) => string;
@@ -302,6 +303,8 @@ export type ConsoleCopy = {
       afterFocus: string;
       keepCentred: string;
       booked: string;
+      start: string;
+      end: string;
     };
     align: { steps: [string, string, string, string]; points: string; none: string; clear: string };
     focuser: {
@@ -347,9 +350,7 @@ export type ConsoleCopy = {
 
 const en: ConsoleCopy = {
   observatory: "Observatory",
-  simulated: "Simulated",
-  simulatedLong: "sky model",
-  live: "Live",
+  mode: { simLabel: "Simulation", liveLabel: "Live observation" },
   nightMode: "Night mode",
   cloud: "Cloud",
   seeing: "Seeing",
@@ -436,13 +437,11 @@ const en: ConsoleCopy = {
     roi: "Read-out region",
     liveFeed: "Live feed",
     simulatedFeed: "Simulated feed",
-    standby: "Standby",
     fov: "Field",
     framesHud: "FRAMES",
     near: "Near",
     offset: "Off target",
     centred: "Centred",
-    noFeed: "No stream yet",
     conditions: "Conditions",
   },
   steps: {
@@ -461,6 +460,8 @@ const en: ConsoleCopy = {
     connecting: "Connecting",
     stacking: (done, goal) => `Stacking · ${done} / ${goal}`,
     liveStack: (done, goal) => `Live stack · ${done} / ${goal}`,
+    exposing: (pass) => `Auto exposure · pass ${pass}`,
+    focusing: (pass, n) => `Autofocus · pass ${pass} · ${n} samples`,
     slewing: "Slewing",
     slewingLong: "Slewing · long way round",
     solving: "Plate-solving",
@@ -486,6 +487,11 @@ const en: ConsoleCopy = {
     },
   },
   idle: {
+    start: "Start simulation",
+    startText: (quick) =>
+      quick
+        ? `The telescope connects, aligns itself, finds ${quick} and tonight's best sights, and captures each one.`
+        : "The telescope connects, aligns itself, finds tonight's best sights and captures each one.",
     text: (quick) =>
       quick
         ? `Press Observe: the telescope aligns itself, finds ${quick} and tracks it.`
@@ -653,6 +659,8 @@ const en: ConsoleCopy = {
       afterFocus: "Autofocus",
       keepCentred: "Tracking keeps it centred",
       booked: "Your booked target: the platform runs the GoTo.",
+      start: "START SIMULATION",
+      end: "End simulation",
     },
     align: {
       steps: [
@@ -715,9 +723,7 @@ const en: ConsoleCopy = {
 
 const ka: ConsoleCopy = {
   observatory: "ობსერვატორია",
-  simulated: "სიმულირებული",
-  simulatedLong: "ცის მოდელი",
-  live: "პირდაპირი",
+  mode: { simLabel: "სიმულაცია", liveLabel: "პირდაპირი დაკვირვება" },
   nightMode: "ღამის რეჟიმი",
   cloud: "ღრუბლიანობა",
   seeing: "სიინგი",
@@ -809,13 +815,11 @@ const ka: ConsoleCopy = {
     roi: "წაკითხვის არე",
     liveFeed: "პირდაპირი გამოსახულება",
     simulatedFeed: "სიმულირებული გამოსახულება",
-    standby: "მოლოდინი",
     fov: "ხედვის ველი",
     framesHud: "კადრები",
     near: "ახლოს",
     offset: "აცდენილია",
     centred: "დაცენტრებულია",
-    noFeed: "გამოსახულება ჯერ არ არის",
     conditions: "პირობები",
   },
   steps: {
@@ -834,6 +838,8 @@ const ka: ConsoleCopy = {
     connecting: "უკავშირდება",
     stacking: (done, goal) => `გროვდება · ${done} / ${goal}`,
     liveStack: (done, goal) => `პირდაპირი დაგროვება · ${done} / ${goal}`,
+    exposing: (pass) => `ავტოექსპოზიცია · ცდა ${pass}`,
+    focusing: (pass, n) => `ავტოფოკუსი · ცდა ${pass} · ${n} გაზომვა`,
     slewing: "მოძრაობს",
     slewingLong: "მოძრაობს · გრძელი გზით",
     solving: "კადრის ამოცნობა",
@@ -859,6 +865,11 @@ const ka: ConsoleCopy = {
     },
   },
   idle: {
+    start: "სიმულაციის დაწყება",
+    startText: (quick) =>
+      quick
+        ? `ტელესკოპი უკავშირდება, თვითონ სწორდება, პოულობს ობიექტს (${quick}) და ამაღამის საუკეთესო ობიექტებს და თითოეულს იღებს.`
+        : "ტელესკოპი უკავშირდება, თვითონ სწორდება, პოულობს ამაღამის საუკეთესო ობიექტებს და თითოეულს იღებს.",
     text: (quick) =>
       quick
         ? `დააჭირე „დაკვირვებას“: ტელესკოპი თვითონ სწორდება, პოულობს ობიექტს (${quick}) და მიჰყვება.`
@@ -1026,6 +1037,8 @@ const ka: ConsoleCopy = {
       afterFocus: "ავტოფოკუსი",
       keepCentred: "მიყოლა ობიექტს ცენტრში ინახავს",
       booked: "შენი დაჯავშნილი ობიექტი: GoTo-ს პლატფორმა ასრულებს.",
+      start: "სიმულაციის დაწყება",
+      end: "სიმულაციის დასრულება",
     },
     align: {
       steps: [

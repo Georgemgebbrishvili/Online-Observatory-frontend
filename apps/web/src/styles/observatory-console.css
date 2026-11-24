@@ -750,18 +750,6 @@
   bottom: 16px;
   text-align: right;
 }
-.sdo-hud--bc {
-  left: 50%;
-  bottom: 16px;
-  transform: translateX(-50%);
-  margin: 0;
-  white-space: nowrap;
-}
-.sdo-caption {
-  text-transform: none;
-  letter-spacing: 0.04em;
-  color: rgba(230, 237, 255, 0.72);
-}
 .sdo-idle {
   position: absolute;
   left: 50%;
@@ -1174,25 +1162,6 @@
 }
 
 /* ── Film: the console as it will be once the telescope is live ── */
-/* The sky model's feed is never the instrument's: gold, as every simulated thing is (ADR-052). */
-.sdo-idle__note {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  margin-top: 4px;
-  padding: 7px 13px;
-  border-radius: 30px;
-  border: 1px solid rgba(226, 184, 90, 0.4);
-  background: rgba(226, 184, 90, 0.07);
-  font: 600 13px/1 var(--o-cond);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--o-teal);
-}
-.sdo-idle__note .sdo-led {
-  width: 6px;
-  height: 6px;
-}
 /* In the strip only the step in hand keeps its name; where the strip is narrowest, only that step shows. */
 @media (--xl) {
   /* The step in hand takes what is left and clips, so a long Georgian name never reaches the buttons. */
@@ -1375,13 +1344,6 @@
   /* The phone's box is far from 16:9: the frame fills it, cropped evenly about the optical centre. */
   .sdo-view__feed canvas {
     object-fit: cover;
-  }
-  .sdo-hud--bc {
-    bottom: 62px;
-    width: max-content;
-    max-width: min(300px, calc(100% - 20px));
-    white-space: normal;
-    text-align: center;
   }
   /* The field the crop leaves, above the caption; the scale and frame count stay on the desk. */
   .sdo-view .sdo-hud--br {

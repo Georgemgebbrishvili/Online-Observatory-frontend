@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 
 import ObservatoryConsole from "@/components/observatory-console/ObservatoryConsole";
 import type { PlatformMission } from "@/components/observatory-console/platform-console";
-import { PageGuide } from "@/components/guide/page-guide";
-import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { readConditions, readMyMissions, readObservatoryPanel } from "@/features/home/read";
@@ -62,8 +60,9 @@ async function readCallersMission(locale: "en" | "ka"): Promise<PlatformMission 
 /**
  * /observatory is the observatory console (ADR-053): connect, calibrate, point and
  * capture on the sky model, in the Skychaser site's console. The real instrument's name,
- * mode and forecast come from the platform; everything the console draws is the model's,
- * badged Simulated unless the instrument is REAL.
+ * mode and forecast come from the platform. The page is the console and nothing else: no
+ * guide, no footer (ADR-101). The picture's corner says SIM while the sky model runs and
+ * LIVE while the real instrument is observing.
  */
 export default async function ObservatoryRoute({ params }: ObservatoryRouteProps) {
   const { locale } = await params;
@@ -115,10 +114,7 @@ export default async function ObservatoryRoute({ params }: ObservatoryRouteProps
         observatoryName={name}
         simulated={!real}
         mission={mission}
-        caption={copy.illustration}
       />
-      <PageGuide id="observatory" locale={locale} />
-      <SiteFooter footer={dictionary.footer} locale={locale} path="observatory" />
     </>
   );
 }

@@ -42,7 +42,6 @@ export type ShellProps = {
   mounted: boolean;
   night: boolean;
   onNight: () => void;
-  simulated: boolean;
   observatoryName: string;
   clock: { local: string; lst: string };
   devices: DeviceRow[];
@@ -79,6 +78,8 @@ export type ShellProps = {
     links: Action[];
     after: Array<{ label: string; on: boolean; onToggle: (() => void) | null }>;
     note: string | null;
+    /** Ends the sky model's session and puts the console back on standby; null where there is none to end. */
+    end: Action | null;
   };
   slew: SlewPadProps;
   focuser: FocusDialProps & {
@@ -319,7 +320,6 @@ export function ConsoleShell(p: ShellProps) {
           </div>
         </div>
         <div className="oh-head-bar">
-          {p.simulated ? <span className="oh-badge" title={t.simulatedLong}>{t.simulated}</span> : <span className="oh-badge is-live">{t.live}</span>}
           <nav className="oh-stepnav" aria-label={t.hub.steps.label}>
             {(['point', 'focus', 'shoot'] as const).map((s, i) => (
               <button key={s} type="button" className={view === s ? 'is-on' : ''} aria-pressed={view === s} onClick={() => choose(s)}>
@@ -417,6 +417,7 @@ export function ConsoleShell(p: ShellProps) {
                   {ap.links.map((l) => <button key={l.label} type="button" className="oh-btn" onClick={l.run} disabled={l.disabled}>{l.label}</button>)}
                 </div>
               )}
+              {ap.end && <button type="button" className="oh-end" onClick={ap.end.run} disabled={ap.end.disabled}>{ap.end.label}</button>}
               {ap.log.length > 0 && <div className="oh-aplog sdo-mono" aria-live="polite">{ap.log.slice(-3).map((l, i) => <div key={i}>{l}</div>)}</div>}
               {/* The rest of the autopilot folds away, as the hub keeps it. */}
               <details className="oh-fold">

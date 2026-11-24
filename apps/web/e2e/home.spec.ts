@@ -432,19 +432,19 @@ test("keeps the Georgian authenticated home within a mobile viewport", async ({
   expect(viewport.scrollWidth).toBe(viewport.clientWidth);
 });
 
-test("the observatory console stands by on the sky model, badged simulated, with the platform's name and forecast", async ({
+test("the observatory console stands by, unmarked, with the platform's name and forecast and a Start simulation button", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory");
 
-  // The site header, as on every page (ADR-057); the console's own bar holds the clocks
-  // and the badge.
+  // The site header, as on every page (ADR-057); the console's own bar holds the clocks.
   await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(
     page.getByRole("banner").getByRole("link", { name: "Observatory", exact: true }),
   ).toHaveAttribute("aria-current", "page");
-  await expect(page.locator(".oh-head .oh-badge")).toHaveText(/Simulated/);
+  // ADR-101: nothing runs and nothing is marked until the simulation starts.
+  await expect(page.locator(".oh-head").getByText(/Simulated|Live/)).toHaveCount(0);
 
   // The one station is the platform's observatory; its forecast is the platform's.
   await expect(page.locator(".oh-head .oh-bt b")).toHaveText("Stellar Tbilisi");
@@ -460,11 +460,12 @@ test("the observatory console stands by on the sky model, badged simulated, with
   // The Autopilot starts on tonight's highest observable target from the catalogue.
   const autopilot = page.getByRole("region", { name: "Autopilot" });
   await expect(autopilot.locator(".oh-big")).toHaveText("Albireo");
-  await expect(autopilot.getByRole("button", { name: /OBSERVE/ })).toBeEnabled();
+  await expect(autopilot.getByRole("button", { name: /START SIMULATION/ })).toBeEnabled();
 
-  // Nothing is drawn as the telescope's output: standby, captioned, no step under way.
+  // Nothing is drawn as the telescope's output: standby, no mark, no step under way.
   const view = page.getByRole("region", { name: "Telescope view" });
-  await expect(view.getByText("Illustration — not telescope output")).toBeVisible();
+  await expect(view.getByRole("button", { name: "Start simulation" })).toBeVisible();
+  await expect(view.locator(".oh-mode")).toHaveCount(0);
   await expect(view.getByRole("status")).toHaveText("Standby");
   await expect(autopilot.locator(".oh-pipe [aria-current=step]")).toHaveCount(0);
 
@@ -487,9 +488,14 @@ test("the console connects, aligns and points at the quick start's target", asyn
   await page.clock.install({ time: new Date("2026-09-25T20:00:00+04:00") });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/observatory?turbo");
-  await page.getByRole("button", { name: /OBSERVE/ }).click();
+  await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
+  await page.getByRole("button", { name: /START SIMULATION/ }).click();
+  // Picking the target by hand takes the controls: the simulation stays on Albireo
+  // instead of keeping a frame and moving on (ADR-101).
+  await page.getByRole("searchbox", { name: /^Search/ }).fill("Albireo");
+  await page.locator(".oh-list .oh-row", { hasText: "Albireo" }).first().click();
 
-  // Align and point run as one chain; the feed is the sky model's.
+  // Align and point run as one chain; the feed is the sky model's, and the corner says so.
   await expect(page.locator(".oh-pipe [aria-current=step]")).toContainText("Align", {
     timeout: 15_000,
   });
@@ -499,7 +505,7 @@ test("the console connects, aligns and points at the quick start's target", asyn
   ).toBeVisible({
     timeout: 20_000,
   });
-  await expect(view.getByText(/Simulated feed/)).toBeVisible();
+  await expect(view.getByRole("img", { name: "Simulation" })).toHaveText("SIM");
   await expect(view.getByRole("status")).toHaveText(/On target · tracking/, {
     timeout: 60_000,
   });
@@ -531,10 +537,14 @@ test("preserves observatory locale and mobile width", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     /ობსერვატორია — სტელარი თბილისი/,
   );
-  // The site header on the phone too; the console's bar keeps the station and the badge.
+  // The site header on the phone too; the console's bar keeps the station, and the
+  // Autopilot offers the simulation (ADR-101).
   await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(page.locator(".oh-head .oh-bt b")).toHaveText("სტელარი თბილისი");
-  await expect(page.locator(".oh-head .oh-badge")).toHaveText("სიმულირებული");
+  await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
+  await expect(
+    page.getByRole("button", { name: /სიმულაციის დაწყება/ }).first(),
+  ).toBeVisible();
 
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,

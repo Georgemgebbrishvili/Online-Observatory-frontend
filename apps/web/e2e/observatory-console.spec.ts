@@ -19,10 +19,15 @@ const altitude = (page: Page) => page.locator(".oh-slewcard .oh-kv dd").first();
 const step = (page: Page, name: "Point" | "Focus" | "Shoot" | "More") =>
   page.locator(".oh-stepnav").getByRole("button", { name: new RegExp(name) }).click();
 
+// ADR-101: the sky model runs once Start simulation is pressed; the corner says SIM.
 async function onTarget(page: Page) {
   await page.goto("/en/observatory?turbo");
   await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
-  await page.getByRole("button", { name: /OBSERVE/ }).click();
+  await page.getByRole("button", { name: /START SIMULATION/ }).click();
+  // Take the controls at once: a target picked by hand ends the simulation's own plan, so
+  // the telescope stays on Albireo for the test rather than moving on after a capture.
+  await page.getByRole("searchbox", { name: /^Search/ }).fill("Albireo");
+  await page.locator(".oh-list .oh-row", { hasText: "Albireo" }).first().click();
   await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 60_000 });
   await expect(view(page).getByText(/Centred|Off target/)).toBeVisible();
 }
@@ -191,14 +196,20 @@ test.describe("the sky model's 8SE", () => {
     await expect(view(page).getByText(/^19:30:43/)).toBeVisible();
   });
 
-  test("pressing a showpiece on the sky dome runs the whole acquisition and the stack settles", async ({ page }) => {
+  test("pressing a showpiece on the sky dome picks it on standby, and the simulation starts there", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/en/observatory?turbo");
+    await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
     const dome = page.getByRole("region", { name: "Sky tonight" });
     await expect(dome.getByRole("button", { name: /^Albireo · \d+°$/ })).toHaveCount(2);
-    // From standby: one press connects, aligns, slews, solves and centres.
+    // On standby a press only picks the target: nothing moves until the simulation starts.
     await dome.locator(".sdo-dome__chip", { hasText: "Albireo" }).click();
+    await expect(page.getByRole("region", { name: "Autopilot" }).locator(".oh-big")).toHaveText("Albireo");
+    await expect(status(page)).toHaveText("Standby");
+    await expect(view(page).locator(".oh-mode")).toHaveCount(0);
+    // Start simulation from the picture: it connects, aligns, slews, solves and centres.
+    await view(page).getByRole("button", { name: "Start simulation" }).click();
     await expect(status(page)).toHaveText(/Live stack/, { timeout: 60_000 });
     await expect(view(page).getByRole("group", { name: "Optical train" }).first().getByRole("button", { name: "f/20", exact: true })).toHaveAttribute("aria-pressed", "true");
     await step(page, "Shoot");
@@ -208,6 +219,53 @@ test.describe("the sky model's 8SE", () => {
     await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 30_000 });
     await expect(page.locator(".oh-pipe .is-done")).toHaveCount(5);
     await expect(dome.locator(".sdo-dome__chip", { hasText: "Albireo" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("Start simulation runs a night on its own: each sight found, stacked and kept, then the next", async ({ page }) => {
+    test.setTimeout(180_000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/en/observatory?turbo");
+    await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
+    // Standby: the button, and no mark in the corner.
+    const mark = view(page).locator(".oh-mode");
+    await expect(mark).toHaveCount(0);
+    await expect(view(page).locator(".oh-tr")).toHaveCount(1);
+    const autopilot = page.getByRole("region", { name: "Autopilot" });
+    await expect(autopilot.getByRole("button", { name: /START SIMULATION/ })).toBeEnabled();
+    await view(page).getByRole("button", { name: "Start simulation" }).click();
+
+    // From the first instant the corner says SIM, and only the corner: no chip, no caption.
+    await expect(view(page).getByRole("img", { name: "Simulation" })).toHaveText("SIM");
+    await expect(page.locator(".oh-head").getByText(/Simulated|Live/)).toHaveCount(0);
+    await expect(page.getByText("Illustration — not telescope output")).toHaveCount(0);
+    await expect(view(page).getByText(/Simulated feed|Live feed/)).toHaveCount(0);
+    await expect(autopilot.getByRole("button", { name: "End simulation" })).toBeVisible();
+
+    // The first sight: tonight's pick, aligned on, found and stacked, then kept without a dialog.
+    await expect(autopilot.locator(".oh-big")).toHaveText("Albireo");
+    await expect(view(page).getByText(/FRAMES 1$/)).toBeVisible({ timeout: 90_000 });
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    // Then on to the next sight on its own.
+    await expect(autopilot.locator(".oh-big")).not.toHaveText("Albireo", { timeout: 30_000 });
+    await expect(status(page)).toHaveText(/Slewing|Plate-solving|Centring|Live stack|On target/);
+
+    // End simulation: standby again, the button back, the corner bare.
+    await autopilot.getByRole("button", { name: "End simulation" }).click();
+    await expect(status(page)).toHaveText("Standby");
+    await expect(mark).toHaveCount(0);
+    await expect(view(page).getByRole("button", { name: "Start simulation" })).toBeVisible();
+  });
+
+  test("the observatory page is the console alone: no guide, no footer, no scroll", async ({ page }) => {
+    for (const [width, height] of [[1440, 900], [390, 844]] as const) {
+      await page.setViewportSize({ width, height });
+      await page.goto("/en/observatory");
+      await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
+      await expect(page.locator(".page-guide")).toHaveCount(0);
+      await expect(page.locator("footer")).toHaveCount(0);
+      const sizes = await page.evaluate(() => ({ scroll: document.documentElement.scrollHeight, inner: window.innerHeight }));
+      expect(sizes.scroll).toBeLessThanOrEqual(sizes.inner);
+    }
   });
 
   test("the Georgian console names the same controls", async ({ page }) => {
@@ -226,7 +284,7 @@ test.describe("the sky model's 8SE", () => {
 
   // Park and STOP once sat past the right edge of a phone, and the view tools stood taller
   // than the picture: a control nobody can reach is not a control.
-  for (const [locale, width, height] of [["en", 390, 844], ["ka", 360, 740], ["en", 1280, 720]] as const) {
+  for (const [locale, width, height] of [["en", 390, 844], ["ka", 360, 740], ["en", 768, 1024], ["en", 1280, 720]] as const) {
     test(`every header and picture control is on the screen (${locale}, ${width} px)`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.goto(`/${locale}/observatory`);
@@ -305,12 +363,12 @@ test.describe("the real instrument", () => {
 
   test("takes the same console: the session reopens, the stream shows, a nudge is relayed and answered", async ({ page }) => {
     await page.goto("/en/observatory");
-    // The platform reports REAL: the pill is Live, the booked target is the mission's.
-    await expect(page.locator(".oh-head .oh-badge")).toHaveText(/Live/);
+    // The platform reports REAL: the booked target is the mission's, and nothing is offered
+    // of the model's, the simulation least of all.
     await expect(view(page).getByText("Booked target")).toBeVisible();
     await expect(view(page).getByText("Hercules Cluster", { exact: true })).toBeVisible();
     // Nothing of the model's is offered on the real instrument.
-    await expect(page.getByRole("button", { name: /OBSERVE/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /OBSERVE|START SIMULATION/i })).toHaveCount(0);
     await expect(page.locator(".oh-apnote")).toHaveText("Your booked target: the platform runs the GoTo.");
     await step(page, "More");
     const hand = page.getByRole("region", { name: "Hand control" });
@@ -322,7 +380,9 @@ test.describe("the real instrument", () => {
     // arrival, as the live room does; a scheduled one would wait for "Start session".
     await expect(status(page)).toHaveText(/On target · tracking/, { timeout: 15_000 });
     await expect(view(page).getByRole("img", { name: "Live feed" })).toBeVisible();
-    await expect(view(page).getByText("Live feed")).toBeVisible();
+    // ADR-101: the picture's top-right corner says LIVE, and nothing else says it.
+    await expect(view(page).getByRole("img", { name: "Live observation" })).toHaveText("LIVE");
+    await expect(page.getByText(/^(Live feed|Simulated|Simulated feed)$/)).toHaveCount(0);
 
     // A nudge is one bounded step: relayed, then the agent's verdict.
     const pad = page.getByRole("group", { name: "Mount slew" });

@@ -8,7 +8,7 @@ import ExposurePanel from "@/components/observatory-console/exposure-panel";
 import FocusDial from "@/components/observatory-console/focus-dial";
 import SlewPad from "@/components/observatory-console/slew-pad";
 import SkyDome from "@/components/observatory-console/sky-dome";
-import { ConditionAlerts } from "@/components/observatory-console/ViewStage";
+import { ConditionAlerts, ModeMark } from "@/components/observatory-console/ViewStage";
 import type { Locale } from "@/i18n/config";
 import { GAIN, STACK_SIZES } from "@/lib/observatory-sim/camera";
 import { STATION_BY_ID } from "@/lib/observatory-sim/sim-stations";
@@ -32,8 +32,8 @@ const domePointing = targetPosition(domeTarget, domeStation, new Date(DOME_NIGHT
 const noop = () => {};
 
 /**
- * The observatory console's exposure panel, slew pad and focuser dial (ADR-083) and its
- * condition notices (ADR-056), on the console's own ground. The live specimen's controls work, so hover and focus can be
+ * The observatory console's exposure panel, slew pad and focuser dial (ADR-083), its
+ * condition notices (ADR-056) and its SIM and LIVE mark (ADR-101), on the console's own ground. The live specimen's controls work, so hover and focus can be
  * tried; the others hold their state.
  */
 export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: Labels }) {
@@ -116,6 +116,19 @@ export function ConsoleSpecimens({ locale, labels }: { locale: Locale; labels: L
               <ConditionAlerts alerts={alerts} />
             </div>
             <figcaption>{labels.conditions}</figcaption>
+          </figure>
+          {/* The picture's corner mark (ADR-101): SIM while the sky model draws, LIVE on the real instrument. */}
+          <figure>
+            <div className="ds-console-stage">
+              <ModeMark mode="sim" />
+            </div>
+            <figcaption>{t.mode.simLabel}</figcaption>
+          </figure>
+          <figure>
+            <div className="ds-console-stage">
+              <ModeMark mode="live" />
+            </div>
+            <figcaption>{t.mode.liveLabel}</figcaption>
           </figure>
         </div>
       </div>

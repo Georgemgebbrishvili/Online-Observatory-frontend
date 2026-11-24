@@ -40,12 +40,10 @@ export type ObservatoryConsoleProps = {
   nodeCloud: number | null;
   /** The platform's name for the instrument: the open station carries it. */
   observatoryName: string;
-  /** The platform's mode. Everything the console draws is the sky model's; the badge says so unless the instrument is REAL. */
+  /** The platform's mode: the real instrument is the caller's only in REAL mode with a mission of theirs. */
   simulated: boolean;
   /** The caller's active mission, when the real instrument is theirs to drive (ADR-054 §6). */
   mission: PlatformMission | null;
-  /** The caption every drawn frame carries (ADR-052). */
-  caption: string;
 };
 
 type RunState = 'todo' | 'running' | 'done';
@@ -70,6 +68,10 @@ const STEPS_PER_DEFOCUS = 60;
 const FOCUS_GOTO_S = 370;
 /** A Barlow pushes focus outward, a reducer pulls it in: where best focus lies for each train, from the native one. */
 const FOCUS_SHIFT: Record<OpticalTrainId, number> = { F6_3_REDUCER: -260, F10_NATIVE: 0, F20_BARLOW: 420 };
+/** How many sights a simulated night visits: tonight's pick, then the best of the rest. */
+const SIM_TARGETS = 3;
+/** How long a capture stands in the strip before the simulation moves on to the next sight. */
+const SIM_DWELL_MS = 3_000;
 
 /**
  * The one station is the platform's observatory (ADR-053 §6, amended 2026-10-17): the
@@ -99,14 +101,14 @@ function resolveTarget(id: string) {
 /**
  * The observatory console. With the platform in REAL mode and a mission of the
  * caller's, it drives the real instrument through the platform; otherwise it drives
- * the sky model's NexStar 8SE (ADR-054).
+ * the sky model's NexStar 8SE (ADR-054), once Start simulation is pressed (ADR-101).
  */
 export default function ObservatoryConsole(props: ObservatoryConsoleProps) {
   if (!props.simulated && props.mission) return <PlatformConsole {...props} mission={props.mission} />;
   return <SimConsole {...props} />;
 }
 
-function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, caption }: ObservatoryConsoleProps) {
+function SimConsole({ locale, tonight, nodeCloud, observatoryName }: ObservatoryConsoleProps) {
   const t = consoleCopy[locale];
   // The name the console says: Georgian for the planets, the named stars and the showpieces.
   const shortName = useCallback((tg: TelescopeTarget) => targetName(tg, locale), [locale]);
@@ -151,8 +153,33 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const [daytime, setDaytime] = useState(false);
   const [afterAe, setAfterAe] = useState(true);
   const [afterAf, setAfterAf] = useState(true);
+  /** `?turbo`, read once on the client: the after-lock exposure and focus never run under it. */
+  const turboRef = useRef<boolean | null>(null);
+  const turbo = () => {
+    if (turboRef.current === null) turboRef.current = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('turbo');
+    return turboRef.current;
+  };
   /** The acquisition that has just locked on, for the after-lock exposure and focus. */
   const [lockedAt, setLockedAt] = useState<Acquisition | null>(null);
+  /** The acquisition whose after-lock exposure and focus have run: the picture is ready to keep. */
+  const [autoDone, setAutoDone] = useState<Acquisition | null>(null);
+  /**
+   * The simulated night (ADR-101): the sights still to visit after the one under way, each
+   * found, exposed, focused, stacked and captured in turn. Null once the user drives.
+   */
+  const [tour, setTour] = useState<TelescopeTarget[] | null>(null);
+  const tourRef = useRef(tour);
+  tourRef.current = tour;
+  /** The acquisition the simulation has captured, so each sight is kept once. */
+  const tourShotRef = useRef<Acquisition | null>(null);
+  /** The next capture is the simulation's own: it goes to the strip, not into a dialog. */
+  const quietRef = useRef(false);
+  const advanceRef = useRef<() => void>(() => undefined);
+  /** The user drives from here: the simulated night's plan, and a capture it had under way, are let go. */
+  const endTour = useCallback(() => {
+    setTour(null);
+    quietRef.current = false;
+  }, []);
   const [settings, setSettings] = useState<MountSettings | null>(null);
   const [synced, setSynced] = useState(false);
   const [reticle, setReticle] = useState(true);
@@ -251,7 +278,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     focusOffsetRef.current = Math.round((Math.random() - 0.5) * 260);
     // `?turbo`: the same model, its GoTo and solves eight times faster. For the test suite;
     // the camera and focus stay where the recipe puts them.
-    if (new URLSearchParams(window.location.search).has('turbo')) {
+    if (turbo()) {
       mountRef.current!.pace = 8;
       focusOffsetRef.current = 0;
       setAfterAe(false);
@@ -405,6 +432,12 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     setPark('todo');
     setCal('todo');
     setAuto(null);
+    setAlignNext(false);
+    setTour(null);
+    setLockedAt(null);
+    setAutoDone(null);
+    tourShotRef.current = null;
+    quietRef.current = false;
     setTarget(null);
     setAcquisition(null);
     setStack(null);
@@ -428,13 +461,14 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   }, [disconnect, mount, tracking]);
 
   const parkHome = useCallback(() => {
+    endTour();
     setAcquisition(null);
     setStack(null);
     const startedAtMs = Date.now();
     const plan = mount.park(startedAtMs);
     setParkEndsAtMs(startedAtMs + plan.totalS * 1000);
     setPark('running');
-  }, [mount]);
+  }, [mount, endTour]);
 
   /** Align: leave home, slew to a field, solve it, sync. The alignment's residual error is the session's. */
   const align = useCallback(() => {
@@ -476,14 +510,21 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   }, [station, mount, targetFn, daytime, shortName]);
 
   const cancelGoto = useCallback(() => {
+    endTour();
     mount.abortSlew();
     setAcquisition(null);
-  }, [mount]);
+  }, [mount, endTour]);
 
-  /** One press from anywhere: connect and align first when the session has not, then the GoTo. */
+  /**
+   * One press: the GoTo, aligning first when the session has not. On standby it only picks
+   * the target: the simulation starts from its own button (ADR-101).
+   */
   const observe = useCallback((tg: TelescopeTarget) => {
     setModal(null);
     setPicked(tg.id);
+    if (!station) return;
+    // The user drives from here: the simulated night's plan is let go.
+    endTour();
     const at = new Date(skyNow());
     const verdict = evaluateSafety(node, targetPosition(tg, node, at), at, { daytime });
     if (!verdict.ok) {
@@ -491,17 +532,12 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       setModal('refused');
       return;
     }
-    if (station?.id === NODE_ID && cal === 'done') {
+    if (cal === 'done') {
       pointAt(tg);
       return;
     }
-    if (station?.id === NODE_ID) {
-      setAuto(tg);
-      return;
-    }
-    connect(STATIONS[0]);
     setAuto(tg);
-  }, [node, station, cal, connect, pointAt, STATIONS, daytime]);
+  }, [node, station, cal, pointAt, daytime, endTour]);
 
   // A new exposure, gain, train or crop starts the live stack again, as capture software does;
   // a focus change does not, the frames just sharpen or soften.
@@ -510,13 +546,14 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   }, [exp, gain, train, roiId, subsIx]);
 
   const press = useCallback((axis: Axis, dir: 1 | -1) => {
+    endTour();
     if (acquisitionRef.current && acquisitionStateAt(acquisitionRef.current, Date.now()).state !== 'OBSERVING') {
       acquisitionRef.current = null;
       setAcquisition(null);
     }
     setLive(null);
     mount.press(axis, dir, rate);
-  }, [mount, rate]);
+  }, [mount, rate, endTour]);
   const release = useCallback((axis: Axis) => mount.release(axis), [mount]);
 
 
@@ -539,7 +576,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       // The frames in the picture are the last `subs` the camera took: a live stack that
       // stood finished for minutes did not spend those minutes exposing.
       startedAtMs = Math.max(startedAtMs, capturedAt - subs * Math.max(exp, 1 / 30) * 1000);
-      const provenance = simulated ? t.provenanceSimulated : station.name;
+      // Everything this console draws is the sky model's, whatever mode the platform is in.
+      const provenance = t.provenanceSimulated;
       const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'));
       if (!blob) return;
       // The file carries its own record: exposure, gain, frames and time ride in the PNG.
@@ -564,12 +602,18 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         provenance,
       };
       setFrames((prev) => [frame, ...prev]);
-      setViewing(frame);
-      setModal('capture');
+      if (quietRef.current) {
+        // The simulation's own capture: kept in the strip, then on to the next sight.
+        quietRef.current = false;
+        setTimeout(() => advanceRef.current(), SIM_DWELL_MS);
+      } else {
+        setViewing(frame);
+        setModal('capture');
+      }
     } finally {
       capturingRef.current = false;
     }
-  }, [target, station, frames.length, exp, gain, focal, fRatio, fov.plateScaleArcsecPx, seeing, simulated, t, shortName]);
+  }, [target, station, frames.length, exp, gain, focal, fRatio, fov.plateScaleArcsecPx, seeing, t, shortName]);
 
   // Tracking follows the selector; the Moon takes the lunar rate when it is pointed at.
   useEffect(() => {
@@ -616,6 +660,12 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       setStack(null);
       void capture(subsGoal, stack.startsAtMs);
     }
+    // The simulated night keeps each sight once its picture is exposed, focused and stacked.
+    if (tour !== null && acquisition && live && onTarget && settled && !stack && autoDone === acquisition && tourShotRef.current !== acquisition && !capturingRef.current) {
+      tourShotRef.current = acquisition;
+      quietRef.current = true;
+      setStack({ startsAtMs: live.startsAtMs });
+    }
     if (timeLeftMs !== null && timeLeftMs <= 0) disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [now]);
@@ -655,6 +705,53 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
 
   const pickedTarget = picked ? resolveTarget(picked) ?? custom.find((c) => c.id === picked) ?? null : null;
 
+  /* --- the simulated night (ADR-101) ------------------------------------- */
+
+  /** Tonight's pick when it is up, then the highest showpieces: the sights the simulation visits. */
+  const planNight = useCallback((): TelescopeTarget[] => {
+    const at = new Date(skyNow());
+    const safe = (tg: TelescopeTarget) => evaluateSafety(node, targetPosition(tg, node, at), at, { daytime }).ok;
+    const sights = gradeTargets(node, at, { daytime })
+      .filter((g) => g.visible && SHOWPIECE_BY_ID.has(g.target.id))
+      .sort((a, b) => b.position.altitude - a.position.altitude)
+      .map((g) => g.target);
+    const first = pickedTarget && safe(pickedTarget) ? [pickedTarget] : [];
+    return [...first, ...sights.filter((tg) => tg.id !== pickedTarget?.id)].slice(0, SIM_TARGETS);
+  }, [node, daytime, pickedTarget]);
+
+  /** Start simulation: connect, align, then each sight in turn, found, exposed, focused, stacked and captured. */
+  const startSimulation = useCallback(() => {
+    const plan = planNight();
+    connect(STATIONS[0]);
+    if (plan.length === 0) {
+      // Nothing worth a visit is up: the telescope still connects and aligns, ready for a target.
+      setAlignNext(true);
+      return;
+    }
+    setPicked(plan[0].id);
+    setAuto(plan[0]);
+    setTour(plan.slice(1));
+  }, [planNight, connect, STATIONS]);
+
+  // After a capture's dwell: the next sight that is still safe, or the night is done and the
+  // telescope stays on the last one, tracking.
+  advanceRef.current = () => {
+    const queue = tourRef.current;
+    if (queue === null || !station) return;
+    const at = new Date(skyNow());
+    const rest = [...queue];
+    while (rest.length > 0) {
+      const next = rest.shift()!;
+      if (evaluateSafety(node, targetPosition(next, node, at), at, { daytime }).ok) {
+        setTour(rest);
+        setPicked(next.id);
+        pointAt(next);
+        return;
+      }
+    }
+    setTour(null);
+  };
+
   /* --- auto exposure and autofocus, read off the picture ------------------ */
 
   const camRef = useRef({ exposureS: exp, gain });
@@ -684,6 +781,10 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     step: () => (trainRef.current === 'F20_BARLOW' ? 110 : trainRef.current === 'F6_3_REDUCER' ? 50 : 75),
   });
   afRunningRef.current = af.state.running;
+  const afterAeRef = useRef(afterAe);
+  afterAeRef.current = afterAe;
+  const afterAfRef = useRef(afterAf);
+  afterAfRef.current = afterAf;
   const aeRun = ae.run;
   const afRun = af.run;
   const aeStop = ae.stop;
@@ -703,8 +804,10 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     let live = true;
     void (async () => {
       await new Promise((r) => setTimeout(r, 600));
-      if (live && afterAe) await aeRun('auto');
-      if (live && afterAf) await afRun('auto');
+      // The flags are read now, not from the render that locked on; `?turbo` skips both.
+      if (live && afterAeRef.current && !turbo()) await aeRun('auto');
+      if (live && afterAfRef.current && !turbo()) await afRun('auto');
+      if (live) setAutoDone(lockedAt);
     })();
     return () => {
       live = false;
@@ -714,6 +817,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
 
   const toggleDaytime = useCallback(() => {
     // The sky jumps between now and tonight: any GoTo, stack or metering is let go.
+    endTour();
     mount.halt();
     setAcquisition(null);
     setAuto(null);
@@ -730,31 +834,30 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       }
       return !on;
     });
-  }, [node, mount, aeStop, afStop]);
+  }, [node, mount, aeStop, afStop, endTour]);
   const addCustom = useCallback((raText: string, decText: string) => {
     const ra = parseRa(raText);
     const dec = parseDec(decText);
     if (ra === null || dec === null) return false;
     const tg = manualTarget(ra, dec);
     setCustom((c) => [...c.filter((x) => x.id !== tg.id), tg]);
+    endTour();
     setPicked(tg.id);
     return true;
-  }, []);
+  }, [endTour]);
   const expLabel = exposureLabel(exp);
   const expTotal = `${subsGoal} × ${expLabel} · ${duration(subsGoal * exp)}`;
 
-  /** Where am I?: connect if need be, then the solve-and-sync on a field. */
+  /** Where am I?: the solve-and-sync on a field, once the simulation is running. */
   const whereAmI = useCallback(() => {
-    if (!station) {
-      connect(STATIONS[0]);
-      setAlignNext(true);
-      return;
-    }
+    if (!station) return;
+    endTour();
     setAcquisition(null);
     align();
-  }, [station, connect, STATIONS, align]);
+  }, [station, align, endTour]);
 
   const stopAll = useCallback(() => {
+    endTour();
     mount.halt();
     focuserRef.current.target = null;
     focuserRef.current.vel = 0;
@@ -764,26 +867,27 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     setAuto(null);
     setStack(null);
     setLive(null);
-  }, [mount, aeStop, afStop]);
+  }, [mount, aeStop, afStop, endTour]);
 
   const busy = connecting || cal === 'running' || park === 'running';
   // The mount is moving on its own: no metering, no focusing, no dial until it has stopped.
   const mountBusy = busy || inGoto;
   let primary: Action;
   // Until the console has hydrated a press would be lost: the button waits for it.
-  if (clockMs === null) primary = { label: t.hub.autopilot.go, run: () => undefined, disabled: true };
+  if (clockMs === null) primary = { label: t.hub.autopilot.start, run: () => undefined, disabled: true };
+  else if (!station) primary = { label: t.hub.autopilot.start, run: startSimulation };
   else if (busy) primary = { label: t.hub.autopilot.busy, run: () => undefined, disabled: true };
   else if (inGoto) primary = { label: t.hub.autopilot.cancel, run: cancelGoto };
-  else if (onTarget && target && pickedTarget?.id === target.id) primary = { label: t.hub.autopilot.recentre, run: () => pointAt(target) };
+  else if (onTarget && target && pickedTarget?.id === target.id) primary = { label: t.hub.autopilot.recentre, run: () => { endTour(); pointAt(target); } };
   else primary = pickedTarget ? { label: t.hub.autopilot.go, run: () => observe(pickedTarget) } : { label: t.hub.autopilot.pick, run: () => undefined, disabled: true };
 
   const pipeNow = connecting || cal === 'running' ? 0 : gotoState === 'slewing' ? 1 : gotoState === 'solving' ? 2 : gotoState === 'centring' ? 3 : -1;
   const pipeDone = onTarget ? 5 : gotoState === 'centring' ? 3 : gotoState === 'solving' ? 2 : gotoState === 'slewing' ? 1 : cal === 'done' ? 1 : 0;
 
   const captureAction: Action = stacking
-    ? { label: t.steps.stopStack, run: () => setStack(null) }
+    ? { label: t.steps.stopStack, run: () => { endTour(); setStack(null); } }
     // The capture takes the live stack over where it stands: a settled stack is kept at once.
-    : { label: t.steps.capture(subsGoal, expLabel), run: () => setStack({ startsAtMs: live?.startsAtMs ?? Date.now() }), disabled: step !== 4, icon: 'camera' };
+    : { label: t.steps.capture(subsGoal, expLabel), run: () => { endTour(); setStack({ startsAtMs: live?.startsAtMs ?? Date.now() }); }, disabled: step !== 4, icon: 'camera' };
 
   /* --- the keyboard ---------------------------------------------------- */
 
@@ -858,6 +962,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
   const statusText = !station ? t.status.standby
     : connecting ? t.status.connecting
     : stacking ? t.status.stacking(subsDone, subsGoal)
+    // The after-lock exposure and focus read the picture: the pill says so rather than idling.
+    : onTarget && af.state.running ? t.status.focusing(af.state.status === 'fine' ? 2 : 1, af.state.points.length)
+    : onTarget && ae.state.running ? t.status.exposing(Math.max(1, ae.state.pass))
     : live && !settled && onTarget ? t.status.liveStack(liveDone, subsGoal)
     : gotoState === 'slewing' ? (longWay ? t.status.slewingLong : t.status.slewing)
     : gotoState === 'solving' ? t.status.solving
@@ -868,10 +975,16 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     : cal === 'done' ? t.status.ready
     : park === 'done' ? t.status.parked
     : t.status.connected;
-  // While it aligns the camera is already on: the field it slews across is the picture.
-  const idle = step >= 3 || (cal === 'running' && cameraOn) ? null
+  // On standby the picture offers the simulation; while it aligns the camera is already on,
+  // and the field it slews across is the picture.
+  // Graded once a minute, not on every tick.
+  const firstSight = useMemo(() => (!station && mounted ? planNight()[0] ?? null : null), [station, mounted, planNight, minute]); // eslint-disable-line react-hooks/exhaustive-deps
+  const idle = !station
+    ? { title: t.observatory, text: t.idle.startText(firstSight ? shortName(firstSight) : null), action: { label: t.idle.start, run: startSimulation, disabled: !mounted } }
+    : step >= 3 || (cal === 'running' && cameraOn) ? null
+    : connecting ? { title: t.observatory, text: t.status.connecting }
     : step < 2 || !cameraOn
-      ? { title: t.observatory, text: t.idle.text(pickedTarget ? shortName(pickedTarget) : null), note: simulated ? t.simulated : observatoryName }
+      ? { title: t.observatory, text: t.idle.text(pickedTarget ? shortName(pickedTarget) : null) }
       : { title: t.idle.ready, text: pickedTarget ? t.idle.pointTo(shortName(pickedTarget)) : t.idle.chooseRisen };
   const battery = station ? Math.max(5, 100 - Math.floor(((now - connectedAtMs) / 60_000) * 0.3)) : null;
   const stationName = (station ?? selected).name;
@@ -950,7 +1063,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     if (clockMs === null || !station) return;
     setLog((l) => [...l, `${clock(skyNow(), tz, true)}  ${statusText}`].slice(-60));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusText.replace(/\d+ \/ \d+/, ''), station]);
+  }, [statusText.replace(/\d+/g, ''), station]);
 
   const offArcmin = (() => {
     if (!onTarget || !snap || !station || !target) return null;
@@ -973,7 +1086,12 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
     : null;
 
   // The panels that need no tick keep their props between ticks, so they are not drawn again four times a second.
-  const targetsProp = useMemo(() => ({ list: hubTargets, best: bestTargets, up: hubTargets.filter((h) => h.up).length, selectedId: picked, onSelect: setPicked, onCustom: addCustom, locked: false }), [hubTargets, bestTargets, picked, addCustom]);
+  // A target picked by hand ends the simulated night's plan: the user drives from here.
+  const selectTarget = useCallback((id: string) => {
+    endTour();
+    setPicked(id);
+  }, [endTour]);
+  const targetsProp = useMemo(() => ({ list: hubTargets, best: bestTargets, up: hubTargets.filter((h) => h.up).length, selectedId: picked, onSelect: selectTarget, onCustom: addCustom, locked: false }), [hubTargets, bestTargets, picked, selectTarget, addCustom]);
   // The dome's crosshair moves in half-degree steps: a still tube is a still dome.
   const domeKey = station ? `${Math.round(pointing.altitude * 2)}:${Math.round(pointing.azimuth * 2)}` : '';
   const domePointing = useMemo(() => (station ? { altitude: Math.round(pointing.altitude * 2) / 2, azimuth: Math.round(pointing.azimuth * 2) / 2 } : null), [domeKey]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -1034,7 +1152,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       mounted={mounted}
       night={night}
       onNight={toggleNight}
-      simulated={simulated}
       observatoryName={observatoryName}
       clock={{ local: mounted ? clock(skyMs, tz, true) : '--:--:--', lst: mounted ? lstText(localSiderealHours(node.lon, date)) : '--' }}
       devices={[
@@ -1074,10 +1191,11 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         status: { text: statusText, go: onTarget || stacking, blink: inGoto || connecting || park === 'running' || cal === 'running' },
         exposing: cameraOn && exp >= 0.5 && exposing !== null ? exposing : null,
         alerts,
-        hudLive: [cameraOn ? (simulated ? t.stage.simulatedFeed : t.stage.liveFeed) : t.stage.standby, stationName, opticsLine],
+        hudLive: [stationName, opticsLine],
         hudTarget,
         hudField: [fovText, scaleText],
-        caption,
+        // Everything this console draws is the sky model's: SIM from the moment it starts.
+        mode: station ? 'sim' : null,
         idle,
       }}
       tools={{
@@ -1106,8 +1224,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         ],
         log,
         links: [
-          { label: t.hub.autopilot.whereAmI, run: whereAmI, disabled: busy || inGoto },
-          { label: t.hub.autopilot.gotoOnly, run: () => pickedTarget && pointAt(pickedTarget), disabled: cal !== 'done' || !pickedTarget || inGoto },
+          { label: t.hub.autopilot.whereAmI, run: whereAmI, disabled: !station || busy || inGoto },
+          { label: t.hub.autopilot.gotoOnly, run: () => { endTour(); if (pickedTarget) pointAt(pickedTarget); }, disabled: cal !== 'done' || !pickedTarget || inGoto },
           { label: t.hub.autopilot.sync, run: sync, disabled: cal !== 'done' || inGoto },
         ],
         after: [
@@ -1116,6 +1234,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
           { label: t.hub.autopilot.keepCentred, on: tracking !== 'off', onToggle: null },
         ],
         note: target && targetNow && targetNow.altitude <= 0 ? t.steps.hints.belowHorizon : daytime ? t.hub.daytimeNote : null,
+        end: station ? { label: t.hub.autopilot.end, run: disconnect } : null,
       }}
       pointing={{
         path,
@@ -1144,7 +1263,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
         onRate: (v) => setRate(Math.max(1, Math.min(9, v))),
         onPress: press,
         onRelease: release,
-        onCentre: () => target && pointAt(target),
+        onCentre: () => { endTour(); if (target) pointAt(target); },
         canCentre: onTarget && !stacking,
       }}
       focuser={{
@@ -1191,7 +1310,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       hand={{
         rate, onRate: (v) => setRate(Math.max(1, Math.min(9, v))),
         tracking, onTracking: (m) => setTracking(m),
-        onCentre: () => target && pointAt(target), canCentre: onTarget && !stacking,
+        onCentre: () => { endTour(); if (target) pointAt(target); }, canCentre: onTarget && !stacking,
         onSync: cal === 'done' && !inGoto && !!station ? sync : null, synced,
         onStop: stopAll, canStop: !!station && (inGoto || stacking || (snap?.rates.alt !== 0 || snap?.rates.az !== 0)),
         onSettings: () => setModal('mount'),
@@ -1200,7 +1319,7 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName, simulated, ca
       align={{
         done: [!!station, cal === 'done', synced, points.length > 1].filter(Boolean).length,
         points,
-        onWhere: busy || inGoto ? null : whereAmI,
+        onWhere: !station || busy || inGoto ? null : whereAmI,
         onSync: cal === 'done' && !inGoto && !!station ? sync : null,
         onClear: cal === 'done' && !inGoto ? () => { setPoints([]); setSynced(false); setAcquisition(null); setCal('todo'); } : null,
       }}

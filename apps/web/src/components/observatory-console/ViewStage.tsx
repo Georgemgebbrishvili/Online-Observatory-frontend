@@ -73,13 +73,36 @@ export type ViewStageProps = {
   exposing: number | null;
   /** What the field is going through: below the horizon, cloud, dew. A warning is red. */
   alerts: Array<{ text: string; warn: boolean }>;
-  hudLive: [string, string, string];
+  /** The instrument and its optics, top left. */
+  hudLive: [string, string];
   hudTarget: [string, string, string | null] | null;
   hudField: [string, string];
-  /** Under the frame, always: what is drawn here is an illustration (ADR-052). */
-  caption: string;
-  idle: { title: string; text: string; note?: string } | null;
+  /**
+   * The picture's one mark of where it comes from, in its top-right corner (ADR-101):
+   * SIM while the sky model draws it, LIVE while the real instrument observes, nothing on standby.
+   */
+  mode: "sim" | "live" | null;
+  idle: {
+    title: string;
+    text: string;
+    action?: { label: string; run: () => void; disabled?: boolean };
+  } | null;
 };
+
+/** The corner mark: SIM or LIVE, and nothing else says either (ADR-101). */
+export function ModeMark({ mode }: { mode: "sim" | "live" }) {
+  const t = useCopy();
+  return (
+    <span
+      className={`oh-mode is-${mode}`}
+      role="img"
+      aria-label={mode === "sim" ? t.mode.simLabel : t.mode.liveLabel}
+      data-mode={mode}
+    >
+      {mode === "sim" ? "SIM" : "LIVE"}
+    </span>
+  );
+}
 
 /** What the field is going through, over the picture: a warning is red, a passing condition is not. */
 export function ConditionAlerts({ alerts }: { alerts: ViewStageProps["alerts"] }) {
@@ -102,7 +125,9 @@ function ViewStage(p: ViewStageProps) {
   const transform =
     `${look.mirror ? "scaleX(-1) " : ""}${look.flip ? "scaleY(-1)" : ""}`.trim();
   return (
-    <div className={`sdo-view${p.full ? " is-full" : ""}${p.status.go ? " is-go" : ""}`}>
+    <div
+      className={`sdo-view${p.full ? " is-full" : ""}${p.status.go ? " is-go" : ""}${p.mode ? " has-mode" : ""}`}
+    >
       <div className="sdo-view__sky" aria-hidden="true" />
       <div
         className={`sdo-view__feed${p.stream ? " is-stream" : ""}`}
@@ -117,7 +142,11 @@ function ViewStage(p: ViewStageProps) {
       {p.reticle && p.feed && <Reticle />}
       {look.grid && p.feed && <Grid />}
       <span className="oh-frame-c oh-tl" aria-hidden="true" />
-      <span className="oh-frame-c oh-tr" aria-hidden="true" />
+      {p.mode ? (
+        <ModeMark mode={p.mode} />
+      ) : (
+        <span className="oh-frame-c oh-tr" aria-hidden="true" />
+      )}
       <span className="oh-frame-c oh-bl" aria-hidden="true" />
       <span className="oh-frame-c oh-br" aria-hidden="true" />
       <div className="sdo-vignette" />
@@ -137,9 +166,9 @@ function ViewStage(p: ViewStageProps) {
       </div>
       <ConditionAlerts alerts={p.alerts} />
       <div className="sdo-hud sdo-glass sdo-hud--tl">
-        <span className="oh-livetag">{p.hudLive[0]}</span> · {p.hudLive[1]}
+        {p.hudLive[0]}
         <br />
-        {p.hudLive[2]}
+        {p.hudLive[1]}
       </div>
       {p.hudTarget && (
         <div className="sdo-hud sdo-glass sdo-hud--bl">
@@ -161,7 +190,6 @@ function ViewStage(p: ViewStageProps) {
           {p.hudField[1]}
         </span>
       </div>
-      <p className="sdo-hud sdo-glass sdo-hud--bc sdo-caption">{p.caption}</p>
 
       {p.overlay}
       {p.idle && (
@@ -171,11 +199,15 @@ function ViewStage(p: ViewStageProps) {
           </span>
           <p className="sdo-idle__title">{p.idle.title}</p>
           <p className="sdo-idle__text">{p.idle.text}</p>
-          {p.idle.note && (
-            <p className="sdo-idle__note">
-              <span className="sdo-led is-go" />
-              {p.idle.note}
-            </p>
+          {p.idle.action && (
+            <button
+              type="button"
+              className="sdo-idle__go"
+              onClick={p.idle.action.run}
+              disabled={p.idle.action.disabled}
+            >
+              {p.idle.action.label}
+            </button>
           )}
         </div>
       )}
