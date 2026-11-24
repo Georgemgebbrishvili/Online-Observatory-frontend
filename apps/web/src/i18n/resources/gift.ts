@@ -70,6 +70,7 @@ export const giftCopy = {
       until: (date: string) => `Use it by ${date}`,
       redeem: "Book at stellar.astroman.ge and enter the code under “Have a gift code?”.",
     },
+    ticket: { admit: "Admit one" },
     board: {
       label: "Have a gift code?",
       field: "Gift code",
@@ -147,6 +148,7 @@ export const giftCopy = {
       redeem:
         "დაჯავშნე stellar.astroman.ge-ზე და შეიყვანე კოდი.",
     },
+    ticket: { admit: "ერთი სტუმარი" },
     board: {
       label: "გაქვს სასაჩუქრე კოდი?",
       field: "სასაჩუქრე კოდი",

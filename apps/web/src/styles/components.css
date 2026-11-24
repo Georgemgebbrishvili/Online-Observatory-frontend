@@ -910,7 +910,7 @@
   place-items: center;
   align-content: center;
   padding: var(--space-8);
-  border: 1px dashed var(--color-border-strong);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-panel);
   background: var(--color-surface-raised);
   text-align: center;
@@ -925,6 +925,31 @@
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
   color: var(--color-text-tertiary);
+}
+
+/* ADR-102: the empty eyepiece, drawn, turning very slowly. */
+.state-panel-empty .state-symbol {
+  width: 3.75rem;
+  height: 3.75rem;
+  border: 0;
+}
+
+.state-symbol svg {
+  width: 100%;
+  fill: none;
+  stroke: var(--color-text-tertiary);
+  stroke-width: 1.6;
+}
+
+.state-symbol-inner {
+  stroke: var(--color-accent-ink);
+  stroke-dasharray: 3 5;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .state-symbol svg {
+    animation: reticle-turn 90s linear infinite;
+  }
 }
 
 .state-panel p {

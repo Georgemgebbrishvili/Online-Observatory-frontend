@@ -8,6 +8,7 @@ import type { PricingFacts } from "@/features/pricing/read";
 import type { Locale } from "@/i18n/config";
 import { giftCopy } from "@/i18n/resources/gift";
 import { pricingPageCopy } from "@/i18n/resources/pricing";
+import { PageReveal } from "@/components/layout/page-reveal";
 
 type Copy = (typeof pricingPageCopy)[Locale];
 
@@ -257,6 +258,7 @@ export function PricingPage({ facts, locale }: { facts: PricingFacts; locale: Lo
       </section>
 
       <PageGuide id="pricing" locale={locale} />
+      <PageReveal />
     </main>
   );
 }

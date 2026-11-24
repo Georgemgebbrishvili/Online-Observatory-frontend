@@ -636,12 +636,6 @@
   }
 }
 
-@keyframes reticle-turn {
-  to {
-    rotate: 1turn;
-  }
-}
-
 @keyframes halo-breathe {
   50% {
     opacity: 0.6;

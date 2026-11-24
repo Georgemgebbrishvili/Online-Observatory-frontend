@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { GiftForm } from "@/components/gift/gift-form";
+import { GiftTicket } from "@/components/gift/gift-ticket";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ButtonLink } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import { getCurrentUser } from "@/lib/platform/session";
 import { localizedMetadata } from "@/lib/seo";
 import "@/styles/pages.css";
 import "@/styles/gift.css";
+import { PageReveal } from "@/components/layout/page-reveal";
 
 // The price and the buyer's gifts are read when the page is opened.
 export const dynamic = "force-dynamic";
@@ -61,33 +63,47 @@ export default async function GiftPage({ params }: GiftPageProps) {
           <h1 className="visually-hidden">{copy.title}</h1>
           <div className="gift-grid">
             <section className="gift-intro" aria-labelledby="gift-intro-title">
-              <h2 id="gift-intro-title">{copy.title}</h2>
+              <h2 id="gift-intro-title" className="kicker">
+                {copy.title}
+              </h2>
+              <p className="gift-price" data-gift-price="">
+                <span className="visually-hidden">{copy.price}</span>
+                <strong>{slot ? slot.price : "—"}</strong>
+                {slot && <span>{copy.facts.length(slot.durationMinutes)}</span>}
+              </p>
+              {!slot && <p className="gift-note">{copy.priceUnknown}</p>}
               <p className="gift-lede">{copy.lede}</p>
               <ul className="gift-facts">
-                {slot && <li>{copy.facts.length(slot.durationMinutes)}</li>}
                 <li>{copy.facts.valid}</li>
                 <li>{copy.facts.noCash}</li>
               </ul>
-              <p className="gift-price" data-gift-price="">
-                <span className="board-label">{copy.price}</span>
-                <strong>{slot ? slot.price : "—"}</strong>
-              </p>
-              {!slot && <p className="gift-note">{copy.priceUnknown}</p>}
+              <section className="gift-buy" aria-label={copy.form.legend}>
+                {!user ? (
+                  <>
+                    <ButtonLink href={`/${locale}/sign-in`} size="large">
+                      {copy.signIn}
+                    </ButtonLink>
+                    <p className="gift-note">{copy.signInNote}</p>
+                  </>
+                ) : slot ? (
+                  <GiftForm durationMinutes={slot.durationMinutes} locale={locale} />
+                ) : null}
+              </section>
             </section>
-            <section className="gift-buy" aria-label={copy.form.legend}>
-              {!user ? (
-                <>
-                  <p className="gift-note">{copy.signInNote}</p>
-                  <ButtonLink href={`/${locale}/sign-in`}>{copy.signIn}</ButtonLink>
-                </>
-              ) : slot ? (
-                <GiftForm durationMinutes={slot.durationMinutes} locale={locale} />
-              ) : null}
-            </section>
+            {/* ADR-102: the gift as the thing handed over. */}
+            <div className="gift-showcase">
+              <GiftTicket
+                durationMinutes={slot?.durationMinutes}
+                locale={locale}
+                price={slot?.price}
+              />
+            </div>
           </div>
           {gifts && (
-            <section className="gift-mine" aria-labelledby="gift-mine-title">
-              <h2 id="gift-mine-title">{copy.mine}</h2>
+            <section className="gift-mine plate" aria-labelledby="gift-mine-title">
+              <h2 id="gift-mine-title" className="plate-title">
+                {copy.mine}
+              </h2>
               {gifts.kind !== "ok" ? (
                 <p className="gift-note">{copy.unreachable}</p>
               ) : gifts.items.length === 0 ? (
@@ -114,6 +130,7 @@ export default async function GiftPage({ params }: GiftPageProps) {
             </section>
           )}
         </Container>
+        <PageReveal />
       </main>
       <SiteFooter footer={dictionary.footer} locale={locale} path="gift" />
     </div>

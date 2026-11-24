@@ -63,3 +63,10 @@
     transform: rotate(1turn);
   }
 }
+
+/* ADR-100/ADR-102: a graduated ring turning, on the homepage, the gift ticket and sign-in. */
+@keyframes reticle-turn {
+  to {
+    rotate: 1turn;
+  }
+}

@@ -66,8 +66,17 @@ export default async function TonightPage({ params }: TonightPageProps) {
           headingLevel={2}
           title={state.title}
           description={state.detail}
+          action={
+            <div className="tonight-quiet-actions">
+              <ButtonLink href={`/${locale}/app/book`} size="large">
+                {copy.book}
+              </ButtonLink>
+              <ButtonLink href={`/${locale}/sky`} variant="secondary" size="large">
+                {copy.sky}
+              </ButtonLink>
+            </div>
+          }
         />
-        <ButtonLink href={`/${locale}/app/book`}>{copy.book}</ButtonLink>
       </div>
     );
   }
@@ -80,12 +89,14 @@ export default async function TonightPage({ params }: TonightPageProps) {
           {/* No title block (ADR-056): the heading is for the outline and assistive tech. */}
           <h1 className="visually-hidden">{copy.title}</h1>
           {body}
-          {/* ADR-085: the sky as it is, for anyone. */}
-          <p className="tonight-sky-link">
-            <ButtonLink href={`/${locale}/sky`} variant="secondary">
-              {copy.sky}
-            </ButtonLink>
-          </p>
+          {/* ADR-085: the sky as it is, for anyone. Quiet, it sits beside Book (ADR-102). */}
+          {!(result.kind === "ok" && !result.tonight.live) && (
+            <p className="tonight-sky-link">
+              <ButtonLink href={`/${locale}/sky`} variant="secondary">
+                {copy.sky}
+              </ButtonLink>
+            </p>
+          )}
         </Container>
       </main>
       <SiteFooter footer={dictionary.footer} locale={locale} path="tonight" />

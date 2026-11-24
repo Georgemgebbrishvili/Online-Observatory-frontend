@@ -1,0 +1,243 @@
+/*
+ * ADR-102 — THE PREMIUM PASS, EVERY PAGE. The homepage's glass (ADR-100) lent to every
+ * panel on the site: a rim that catches the light at the top-left and brightens where
+ * the pointer is, a soft light inside under the pointer, and a lift on hover. The pointer
+ * position comes from components/layout/ambient-light.tsx; without it the rim is plain.
+ *
+ * Each selector is prefixed with `html` so it outranks the page's own one-class rule,
+ * which loads after this sheet and would otherwise put the flat border back.
+ */
+html
+  :is(
+    .plate,
+    .pricing-plan,
+    .pricing-tonight,
+    .guide-points li,
+    .guide-cta,
+    .auth-panel,
+    .state-panel-empty,
+    .vote-card
+  ) {
+  position: relative;
+  isolation: isolate;
+  border-color: transparent;
+  box-shadow: var(--shadow-glass);
+}
+
+html
+  :is(
+    .plate,
+    .pricing-plan,
+    .pricing-tonight,
+    .guide-points li,
+    .auth-panel,
+    .state-panel-empty
+  ) {
+  background: var(--gradient-tile), var(--color-glass);
+}
+
+html .auth-panel {
+  box-shadow: var(--shadow-glass), var(--shadow-panel);
+}
+
+html
+  :is(
+    .plate,
+    .pricing-plan,
+    .pricing-tonight,
+    .guide-points li,
+    .guide-cta,
+    .auth-panel,
+    .state-panel-empty,
+    .vote-card
+  )::after {
+  position: absolute;
+  padding: 1px;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      16rem circle at var(--px, -50%) var(--py, -50%),
+      var(--color-spot),
+      transparent 60%
+    ),
+    var(--gradient-edge);
+  content: "";
+  inset: -1px;
+  mask: var(--mask-edge);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+html
+  :is(
+    .plate,
+    .pricing-plan,
+    .pricing-tonight,
+    .guide-points li,
+    .guide-cta,
+    .auth-panel,
+    .state-panel-empty,
+    .vote-card
+  )::before {
+  position: absolute;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    22rem circle at var(--px, -50%) var(--py, -50%),
+    var(--color-spot-soft),
+    transparent 65%
+  );
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms var(--ease-sky);
+}
+
+html
+  :is(
+    .plate,
+    .pricing-plan,
+    .pricing-tonight,
+    .guide-points li,
+    .guide-cta,
+    .auth-panel,
+    .state-panel-empty,
+    .vote-card
+  ):hover::before {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html :is(.pricing-plan, .guide-points li, .vote-card) {
+    transition:
+      translate 500ms var(--ease-out-expo),
+      box-shadow 500ms var(--ease-out-expo);
+  }
+
+  html :is(.pricing-plan, .guide-points li, .vote-card):hover {
+    box-shadow: var(--shadow-glass), var(--shadow-panel);
+    translate: 0 -3px;
+  }
+}
+
+/*
+ * The featured plan: a lit edge that travels slowly round it, as the light does round
+ * the homepage's eyepiece. Held still under reduced motion.
+ */
+@property --featured-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: "<angle>";
+}
+
+html .pricing-plan.is-featured {
+  border-color: transparent;
+  box-shadow:
+    var(--shadow-glass),
+    0 24px 60px -36px var(--color-accent);
+}
+
+html .pricing-plan.is-featured::after {
+  background:
+    radial-gradient(
+      16rem circle at var(--px, -50%) var(--py, -50%),
+      var(--color-spot),
+      transparent 60%
+    ),
+    conic-gradient(
+      from var(--featured-angle),
+      transparent 0 62%,
+      var(--color-featured-lead) 74%,
+      var(--color-featured-tail) 82%,
+      transparent 92%
+    ),
+    var(--gradient-edge);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html .pricing-plan.is-featured::after {
+    animation: featured-turn 7s linear infinite;
+  }
+}
+
+@keyframes featured-turn {
+  to {
+    --featured-angle: 360deg;
+  }
+}
+
+/* A field glows softly when it takes the cursor. */
+:is(.input, .textarea, .select) {
+  transition:
+    border-color var(--duration-standard) var(--ease-standard),
+    box-shadow var(--duration-state) var(--ease-standard);
+}
+
+:is(.input, .textarea, .select):focus {
+  box-shadow: var(--shadow-field-focus);
+}
+
+/* An answer opens to its height rather than jumping (where the browser can). */
+:is(.guide-faq-list, .home-faq) details {
+  interpolate-size: allow-keywords;
+}
+
+:is(.guide-faq-list, .home-faq) details::details-content {
+  overflow: clip;
+  block-size: 0;
+  transition:
+    block-size 420ms var(--ease-out-expo),
+    content-visibility 420ms allow-discrete;
+}
+
+:is(.guide-faq-list, .home-faq) details[open]::details-content {
+  block-size: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.guide-faq-list, .home-faq) details::details-content {
+    transition: none;
+  }
+}
+
+::selection {
+  background: var(--color-selection);
+  color: var(--color-text-primary);
+}
+
+html {
+  scrollbar-color: var(--color-scrollbar) transparent;
+}
+
+/*
+ * ADR-102: a panel below the fold waits, faint and soft, until it is scrolled to, then
+ * rises (page-reveal.tsx). An animation that fills backwards only, so once it has run
+ * the panel's own hover transitions are its again.
+ */
+[data-out]:not([data-in]) {
+  filter: blur(6px);
+  opacity: 0;
+  translate: 0 1.5rem;
+}
+
+[data-out][data-in] {
+  animation: page-reveal 850ms var(--ease-out-expo) var(--reveal-delay, 0ms) backwards;
+}
+
+@keyframes page-reveal {
+  from {
+    filter: blur(6px);
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+}
+
+@media print {
+  [data-out] {
+    animation: none;
+    filter: none;
+    opacity: 1;
+    translate: none;
+  }
+}

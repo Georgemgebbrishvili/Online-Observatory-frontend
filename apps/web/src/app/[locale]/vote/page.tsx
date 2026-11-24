@@ -21,6 +21,7 @@ import { getCurrentUser } from "@/lib/platform/session";
 import { localizedMetadata } from "@/lib/seo";
 import "@/styles/pages.css";
 import "@/styles/vote.css";
+import { PageReveal } from "@/components/layout/page-reveal";
 
 type VoteRouteProps = {
   params: Promise<{ locale: string }>;
@@ -228,6 +229,7 @@ export default async function VoteRoute({ params }: VoteRouteProps) {
       <main id="main-content" className="vote-page">
         <h1 className="sr-only">{copy.title}</h1>
         {body}
+        <PageReveal />
       </main>
       <SiteFooter footer={dictionary.footer} locale={locale} path="vote" />
     </div>

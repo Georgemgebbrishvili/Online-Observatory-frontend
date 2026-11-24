@@ -5,6 +5,7 @@
 @import "./navigation.css";
 @import "./footer.css";
 @import "./motion.css";
+@import "./light.css";
 
 * {
   box-sizing: border-box;

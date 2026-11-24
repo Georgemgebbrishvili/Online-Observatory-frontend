@@ -1,31 +1,60 @@
 /* Clients ADR-067: Gift a night. The page, the buyer's list, and the printable card. */
 .gift-page {
-  padding-block: var(--space-10) var(--space-16);
+  padding-block: var(--space-12) var(--space-16);
 }
 
 .gift-grid {
   display: grid;
-  gap: var(--space-8);
+  gap: var(--space-12);
 }
 
 @media (--lg) {
   .gift-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 34rem);
+    align-items: center;
   }
 }
 
 .gift-intro {
   display: grid;
   gap: var(--space-4);
+  min-width: 0;
 }
 
-.gift-intro h2,
+.gift-intro .kicker {
+  margin: 0;
+}
+
 .gift-mine h2 {
   margin: 0;
 }
 
+/* The price up front, as /pricing sets it. */
+.gift-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+.gift-price strong {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-headline);
+  letter-spacing: var(--tracking-headline);
+  line-height: var(--leading-display);
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+.gift-price > span:not(.visually-hidden) {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-lg);
+}
+
 .gift-lede {
+  max-width: 44ch;
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-body-lg);
@@ -35,23 +64,226 @@
   display: grid;
   gap: var(--space-2);
   margin: 0;
-  padding-inline-start: var(--space-5);
+  padding: 0;
+  list-style: none;
   color: var(--color-text-secondary);
 }
 
-.gift-price {
+.gift-facts li {
   display: grid;
-  gap: var(--space-1);
-  margin: 0;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: var(--space-3);
 }
 
-.gift-price strong {
-  font-size: var(--font-size-h3);
+.gift-facts li::before {
+  width: 0.45rem;
+  height: 0.8rem;
+  margin: 0.2rem 0 0 0.25rem;
+  border: solid var(--color-accent-ink);
+  border-width: 0 2px 2px 0;
+  content: "";
+  rotate: 45deg;
 }
 
 .gift-note {
   margin: 0;
   color: var(--color-text-secondary);
+}
+
+.gift-buy {
+  margin-block-start: var(--space-4);
+  justify-items: start;
+}
+
+/*
+ * ADR-102 — THE TICKET. Cream stock with a torn stub, leaning toward the pointer
+ * (ambient-light.tsx sets --mx and --my), a band of light crossing it, and a glow on
+ * the floor beneath.
+ */
+.gift-showcase {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding-block: var(--space-6) var(--space-10);
+  perspective: 70rem;
+}
+
+.gift-showcase::after {
+  position: absolute;
+  z-index: -1;
+  width: 80%;
+  height: 4rem;
+  background: var(--gradient-ticket-floor);
+  content: "";
+  filter: blur(18px);
+  inset: auto 10% 0;
+}
+
+.gift-ticket {
+  --ticket-stub: 9.5rem;
+
+  width: min(100%, 34rem);
+  filter: var(--filter-ticket);
+  rotate: -4deg;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gift-ticket {
+    transform: rotateX(calc((var(--my, 0.5) - 0.5) * -10deg))
+      rotateY(calc((var(--mx, 0.5) - 0.5) * 14deg));
+    transition: transform 700ms var(--ease-out-expo);
+  }
+}
+
+.gift-ticket-face {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-height: 15.5rem;
+  grid-template-columns: minmax(0, 1fr) var(--ticket-stub);
+  border-radius: var(--radius-panel);
+  background: var(--gradient-ticket);
+  color: var(--color-on-paper);
+  /* Two notches, top and bottom, where the stub tears off. */
+  mask:
+    radial-gradient(
+        circle 0.85rem at calc(100% - var(--ticket-stub)) 0,
+        transparent 97%,
+        var(--color-mask-keep)
+      )
+      top / 100% 51% no-repeat,
+    radial-gradient(
+        circle 0.85rem at calc(100% - var(--ticket-stub)) 100%,
+        transparent 97%,
+        var(--color-mask-keep)
+      )
+      bottom / 100% 51% no-repeat;
+}
+
+.gift-ticket-main {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding: var(--space-6);
+}
+
+.gift-ticket-kicker,
+.gift-ticket-code small,
+.gift-ticket-admit {
+  color: var(--color-paper-accent);
+  font-family: var(--font-label);
+  font-size: var(--font-size-kicker);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+}
+
+.gift-ticket-heading {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-ticket);
+  overflow-wrap: anywhere;
+  font-weight: var(--font-weight-headline);
+  letter-spacing: var(--tracking-headline);
+  line-height: var(--leading-display);
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+.gift-ticket-length {
+  color: var(--color-on-paper-2);
+  font-size: var(--font-size-label);
+}
+
+.gift-ticket-code {
+  display: grid;
+  gap: var(--space-1);
+  margin-block-start: auto;
+  padding-block-start: var(--space-4);
+  border-top: 1px solid var(--color-paper-rule);
+}
+
+.gift-ticket-code .data {
+  font-size: var(--font-size-h3);
+  letter-spacing: 0.2em;
+}
+
+.gift-ticket-stub {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-3);
+  border-inline-start: 2px dashed var(--color-paper-rule);
+  background: var(--gradient-ticket-stub);
+  text-align: center;
+}
+
+.gift-ticket-ring {
+  width: 5.5rem;
+  fill: none;
+  stroke: var(--color-on-paper-2);
+  stroke-width: 1.2;
+}
+
+.gift-ticket-ring-dot {
+  fill: var(--color-paper-accent);
+  stroke: none;
+}
+
+.gift-ticket-price {
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.gift-ticket-sheen {
+  position: absolute;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    var(--color-ticket-sheen) 50%,
+    transparent 65%
+  );
+  inset: 0;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  translate: calc((var(--mx, 0.2) - 0.5) * 60%) 0;
+}
+
+:lang(ka) .gift-ticket-heading {
+  font-size: var(--font-size-ticket-ka);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gift-showcase .gift-ticket {
+    animation: ticket-in 1100ms var(--ease-out-expo) both;
+  }
+
+  .gift-ticket-ring {
+    animation: reticle-turn 120s linear infinite;
+  }
+}
+
+@keyframes ticket-in {
+  from {
+    opacity: 0;
+    rotate: -12deg;
+    translate: 0 2.5rem;
+  }
+}
+
+@media (--below-md) {
+  .gift-ticket {
+    --ticket-stub: 7rem;
+    rotate: -2deg;
+  }
+
+  .gift-ticket-main {
+    padding: var(--space-5);
+  }
+
+  .gift-ticket-ring {
+    width: 4rem;
+  }
 }
 
 .gift-buy,
@@ -73,9 +305,7 @@
 }
 
 .gift-mine {
-  display: grid;
-  gap: var(--space-4);
-  margin-block-start: var(--space-12);
+  margin-block-start: var(--space-16);
 }
 
 .gift-list {

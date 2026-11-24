@@ -577,6 +577,8 @@
   /* ADR-100: the instrument's figures, and the name set across the footer. */
   --font-size-figure: clamp(2.75rem, 1.8rem + 3.2vw, 4.5rem);
   --font-size-footer-mark: clamp(3.5rem, 14.5vw, 17rem);
+  --font-size-ticket: clamp(1.75rem, 1rem + 3.4vw, 3rem);
+  --font-size-ticket-ka: clamp(1.25rem, 0.8rem + 2.2vw, 2rem);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -751,6 +753,41 @@
   --gradient-ray: linear-gradient(90deg, var(--st-sun-2), var(--st-red-hi));
   --color-ray: var(--st-sun-2);
   --glow-kicker: 0 0 0.75rem var(--st-red);
+
+  /*
+   * ADR-102: the premium pass, every page. The gift ticket's torn stub and the light
+   * across its stock; the slow lit edge round the featured plan; the field's focus halo;
+   * the ring that turns behind the sign-in card; text selection and the scrollbar.
+   */
+  /* What a mask keeps; the ticket's notches are cut where its stub is (gift.css). */
+  --color-mask-keep: #000;
+  --gradient-ticket:
+    radial-gradient(
+      90% 120% at 0% 0%,
+      color-mix(in srgb, var(--st-white) 55%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(180deg, var(--st-paper), color-mix(in srgb, var(--st-paper) 88%, var(--st-sun-2)));
+  --gradient-ticket-stub: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--st-paper) 82%, var(--st-sun-3)),
+    color-mix(in srgb, var(--st-paper) 70%, var(--st-sun-3))
+  );
+  --color-ticket-sheen: color-mix(in srgb, var(--st-white) 45%, transparent);
+  --filter-ticket:
+    drop-shadow(0 30px 40px color-mix(in srgb, var(--st-black) 80%, transparent))
+    drop-shadow(0 10px 40px color-mix(in srgb, var(--st-sun-4) 30%, transparent));
+  --gradient-ticket-floor: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--st-red) 30%, transparent),
+    transparent
+  );
+  /* The featured plan's travelling edge; the gradient is built where it turns (light.css). */
+  --color-featured-lead: var(--st-sun-2);
+  --color-featured-tail: var(--st-red-hi);
+  --shadow-field-focus: 0 0 0 4px color-mix(in srgb, var(--st-red-hi) 22%, transparent);
+  --color-selection: color-mix(in srgb, var(--st-red) 45%, transparent);
+  --color-scrollbar: color-mix(in srgb, var(--st-white) 18%, transparent);
 }
 
 /* Mkhedruli has no capitals: the Georgian headline is weight, not case. On :lang, not

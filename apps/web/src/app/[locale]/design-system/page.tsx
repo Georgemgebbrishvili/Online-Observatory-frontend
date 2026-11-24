@@ -61,6 +61,7 @@ import { GiftCard } from "@/components/gift/gift-card";
 import { MemberCard, TierLadder } from "@/components/loyalty/club-page";
 import { TargetGuide } from "@/components/room/target-guide";
 import { GiftFormView } from "@/components/gift/gift-form";
+import { GiftTicket } from "@/components/gift/gift-ticket";
 import { tonightCopy } from "@/i18n/resources/tonight";
 import { WatchView, type WatchPhase } from "@/components/room/mission-watch";
 import { roomSharingCopy } from "@/i18n/resources/room-sharing";
@@ -1003,6 +1004,13 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               label="GiftCard 2"
               locale={locale}
             />
+            {/* ADR-102: the gift page's ticket, with a price and without one. */}
+            <div className="gift-showcase">
+              <GiftTicket durationMinutes={30} locale={locale} price="GEL 45.00" />
+            </div>
+            <div className="gift-showcase">
+              <GiftTicket locale={locale} />
+            </div>
           </div>
           <h3 className="ds-subheading">{copy.cards.tonight}</h3>
           <div className="ds-tonight-specimens">

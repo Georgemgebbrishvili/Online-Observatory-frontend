@@ -1,5 +1,8 @@
 .auth-page {
+  position: relative;
   display: grid;
+  overflow: clip;
+  isolation: isolate;
   min-height: min(48rem, calc(100vh - 5rem));
   align-items: center;
   padding-block: clamp(3rem, 8vw, 7rem);
@@ -17,6 +20,48 @@
   border-radius: var(--radius-large);
   background: var(--color-surface-raised);
   box-shadow: var(--shadow-panel);
+  backdrop-filter: var(--blur-glass);
+}
+
+/* ADR-102: the ring behind the card, and the card rising into place. */
+.auth-ring {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: min(54rem, 150vw);
+  fill: none;
+  stroke: var(--color-reticle);
+  stroke-width: 0.35;
+  opacity: 0.55;
+  pointer-events: none;
+  translate: -50% -50%;
+}
+
+.auth-ring line:nth-child(10n + 3) {
+  stroke: var(--color-reticle-major);
+}
+
+.auth-ring-inner {
+  stroke-dasharray: 0.6 2.4;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .auth-ring {
+    animation: reticle-turn 300s linear infinite;
+  }
+
+  .auth-panel {
+    animation: auth-rise 900ms var(--ease-out-expo) both;
+  }
+}
+
+@keyframes auth-rise {
+  from {
+    filter: blur(6px);
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
 }
 
 .auth-message {
