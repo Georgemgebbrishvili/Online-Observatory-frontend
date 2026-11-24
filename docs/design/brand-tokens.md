@@ -1,5 +1,9 @@
 # Stellar design tokens — extracted from Brand Identity System v2.0
 
+> **Stale (ADR-104, 2026-11-24).** This is the pre-ADR-052 Darkview v2.0 palette (Photon Blue,
+> Noto Serif Georgian). ADR-052 replaced its colours, type and glow; `apps/web/src/styles/tokens.css`
+> holds the values. Kept as the record of what v2.0 said; take no value from it.
+
 - **Date:** 2026-08-31
 - **Source:** the Brand Identity System source PDF (private brand archive, outside this repository), page 1 of which
   reads _"Brand Identity System v2.0 · MERGED"_, and its §11 Developer cheat sheet.

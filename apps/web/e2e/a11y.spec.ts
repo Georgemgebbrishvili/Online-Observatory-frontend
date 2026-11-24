@@ -40,11 +40,20 @@ function describeAxe(routes: readonly string[]) {
           // A streamed page shows loading.tsx's <main> beside its own for a moment.
           await expect(page.locator(".route-loading")).toHaveCount(0);
           await expect(page.locator("main")).toBeVisible();
-          // The operator's lists and console are fetched by the browser: scanned loaded,
-          // as the visual gate captures them. The design system's busy specimens stay busy.
-          await expect(
-            page.locator(':is(.operator-list, .operator-manual)[aria-busy="true"]'),
-          ).toHaveCount(0);
+          // The operator's lists and console, and the booking board's targets, are fetched
+          // by the browser: scanned loaded, as the visual gate captures them. The design
+          // system's busy specimens stay busy.
+          const busy = page.locator(
+            ':is(.operator-list, .operator-manual, .board-targets)[aria-busy="true"]',
+          );
+          await expect(busy).toHaveCount(0);
+          // The board dims its targets each time it reads them, and reads them more than
+          // once as it opens: scanned after its reads are done. Since ADR-104 no page-wide
+          // fade on arrival covers that moment.
+          if (await page.locator(".board-targets").count()) {
+            await page.waitForLoadState("networkidle");
+            await expect(busy).toHaveCount(0);
+          }
           // Contrast is judged on the settled page. The wordmark's endorsement fades in
           // on first paint, and a scan that lands mid-fade measures a half-opaque colour.
           await page.evaluate(() =>

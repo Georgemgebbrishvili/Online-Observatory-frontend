@@ -2,18 +2,9 @@
 
 import { useEffect } from "react";
 
-// The glass pieces whose rim catches the pointer (ADR-100), on every page (ADR-102).
-const lit = [
-  ".plate",
-  ".pricing-plan",
-  ".pricing-tonight",
-  ".guide-points li",
-  ".guide-cta",
-  ".auth-panel",
-  ".state-panel",
-  ".vote-card",
-  ".gift-ticket",
-].join(", ");
+// The hero-level pieces whose rim catches a fine pointer (ADR-100, ADR-104): the plans,
+// the sign-in card, the ballot's cards and the gift ticket. Plain panels keep a still rim.
+const lit = [".pricing-plan", ".auth-panel", ".vote-card", ".gift-ticket"].join(", ");
 
 /**
  * ADR-100: two quiet touches on every page. The header is clear over the top of a page and

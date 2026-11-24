@@ -130,7 +130,6 @@
   border-color: var(--color-glass-border);
   background: var(--color-pill-secondary);
   box-shadow: var(--shadow-pill-glass);
-  backdrop-filter: var(--blur-glass);
   color: var(--color-text-primary);
 }
 
@@ -373,7 +372,7 @@
   margin: 0;
   color: var(--color-text-primary);
   font-family: var(--font-headline);
-  font-size: var(--font-size-stat);
+  font-size: var(--font-size-body-lg);
   font-weight: var(--font-weight-headline);
   font-variant-numeric: tabular-nums;
   line-height: 1;

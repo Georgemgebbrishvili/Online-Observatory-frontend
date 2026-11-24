@@ -2,6 +2,7 @@ import { Body, Equator, Horizon, Illumination, MakeTime, SiderealTime } from "as
 
 import { tbilisi } from "@/features/booking/almanac";
 import { nightSky } from "@/features/booking/night-sky";
+import { precess } from "@/features/sky/precess";
 import { nightDate } from "@/features/sky/tonight-sky";
 
 export type StoryKind = "moon" | "planet" | "galaxy" | "nebula" | "cluster";
@@ -73,23 +74,12 @@ const candidates: Candidate[] = [
   { id: "m81", kind: "galaxy", image: "/sky/plates/m81.webp", raHours: 9.926, dec: 69.067, magnitude: 6.9 },
 ];
 
-const DEG = Math.PI / 180;
 const step = 10 * 60_000;
 const hour = 3_600_000;
 /** High enough to clear the roofs and the worst of the air. */
 const minBest = 25;
 const minUp = 15;
 const shown = 6;
-
-/** J2000 to the date, first-order precession (arcseconds over a few decades). */
-export function precess(ra: number, dec: number, years: number): [number, number] {
-  const r = ra * DEG;
-  const d = Math.min(89, Math.max(-89, dec)) * DEG;
-  return [
-    (ra + ((46.1244 + 20.0431 * Math.sin(r) * Math.tan(d)) * years) / 3600 + 360) % 360,
-    dec + (20.0431 * Math.cos(r) * years) / 3600,
-  ];
-}
 
 /**
  * Tonight's dark over the observatory and the showpieces worth pointing at in it: where

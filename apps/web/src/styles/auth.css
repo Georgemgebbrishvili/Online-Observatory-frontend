@@ -52,15 +52,7 @@
   }
 
   .auth-panel {
-    animation: auth-rise 900ms var(--ease-out-expo) both;
-  }
-}
-
-@keyframes auth-rise {
-  from {
-    filter: blur(6px);
-    opacity: 0;
-    translate: 0 1.5rem;
+    animation: settle var(--duration-enter) var(--ease-out-expo) both;
   }
 }
 
@@ -95,7 +87,7 @@
   gap: var(--space-4);
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-caption);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }

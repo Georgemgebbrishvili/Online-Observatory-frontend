@@ -28,8 +28,6 @@ export const palette = {
   sun3: "#e8893a",
   sun4: "#d9442a",
   sun5: "#8f1f16",
-  skyBlue: "#4c8dff",
-  skyViolet: "#a66bff",
   paperInk: "#2b1b12",
   gdHi: "#ee6a3c",
   gdMid: "#b8321f",

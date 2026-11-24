@@ -220,7 +220,7 @@
 }
 
 .ds-type-stat {
-  font-size: var(--font-size-stat);
+  font-size: var(--font-size-body-lg);
   font-variant-numeric: tabular-nums;
 }
 
@@ -597,4 +597,47 @@
   .ds-story-specimens {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+/* ADR-104: the eyepiece specimen, sized as a phone shows it, with its caption. */
+.ds-eye-specimen {
+  display: grid;
+  margin: 0;
+  gap: var(--space-3);
+  justify-items: center;
+}
+
+.ds-eye-specimen .hs-eye {
+  height: 14rem;
+}
+
+.ds-eye-specimen figcaption {
+  color: var(--color-text-small);
+  font-size: var(--font-size-caption);
+}
+
+.ds-row-nav {
+  position: static;
+  align-self: center;
+}
+
+/* A specimen held in its hover or keyboard-focus state, for review. */
+.button-primary.ds-hover {
+  background: var(--gradient-pill-hover);
+  box-shadow: var(--shadow-pill-hover);
+}
+
+.button-secondary.ds-hover {
+  border-color: var(--color-pill-secondary-border-hover);
+  background: var(--color-pill-secondary-hover);
+}
+
+.hs-step.ds-hover {
+  border-color: var(--color-glass-border-hover);
+  color: var(--color-text-primary);
+}
+
+.ds-focus {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
 }

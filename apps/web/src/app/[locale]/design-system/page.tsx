@@ -70,7 +70,7 @@ import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { TargetPreview } from "@/components/room/target-preview";
 import { PageGuide } from "@/components/guide/page-guide";
 import { brand } from "@/brand";
-import { StoryFeedSpecimen, StoryHorizon, StoryTicket } from "@/components/home/home-story";
+import { StoryEyepiece, StoryFeedSpecimen, StoryHorizon, StoryStep, StoryTicket } from "@/components/home/home-story";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -485,6 +485,17 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <Button variant="danger">{copy.buttons.danger}</Button>
               <Button loading>{copy.buttons.loading}</Button>
               <Button disabled>{copy.buttons.disabled}</Button>
+            </div>
+            {/* ADR-104: the filled button lit as on hover, and as keyboard focus rings it. */}
+            <div className="ds-component-row">
+              <Button className="ds-hover">{copy.buttons.primary}</Button>
+              <Button className="ds-focus">{copy.buttons.primary}</Button>
+              <Button variant="secondary" className="ds-hover">
+                {copy.buttons.secondary}
+              </Button>
+              <Button variant="secondary" className="ds-focus">
+                {copy.buttons.secondary}
+              </Button>
             </div>
             <div className="ds-component-row">
               <Button size="small">{copy.buttons.small}</Button>
@@ -1530,7 +1541,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <StoryFeedSpecimen
                 key={depth}
                 depth={depth}
-                image="/sky/targets/saturn.jpg"
+                images={{ raw: "/sky/feed/saturn-raw.webp", settled: "/sky/feed/saturn.webp" }}
                 name={dictionary.home.story.showpieces.names.saturn}
                 simulated={dictionary.home.story.simulated}
                 illustration={dictionary.home.hero.illustration}
@@ -1547,6 +1558,19 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             {/* The hero's horizon, as it sits at the foot of the screen. */}
             <div className="hs-horizon-specimen">
               <StoryHorizon />
+            </div>
+            {/* ADR-104: a showpiece in its eyepiece (ring drawn as vectors, halo from the
+                key light), always captioned; the row's arrows at rest, lit as on hover,
+                ringed as on keyboard focus, and disabled at the row's end. */}
+            <figure className="ds-eye-specimen">
+              <StoryEyepiece image="/sky/targets/saturn.jpg" name={dictionary.home.story.showpieces.names.saturn} />
+              <figcaption>{dictionary.home.hero.illustration}</figcaption>
+            </figure>
+            <div className="hs-row-nav ds-row-nav">
+              <StoryStep label={dictionary.home.story.showpieces.next} />
+              <StoryStep label={dictionary.home.story.showpieces.next} className="ds-hover" />
+              <StoryStep label={dictionary.home.story.showpieces.next} className="ds-focus" />
+              <StoryStep back label={dictionary.home.story.showpieces.previous} disabled />
             </div>
           </div>
         </section>

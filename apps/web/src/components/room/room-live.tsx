@@ -362,8 +362,6 @@ export function RoomLive({
     <>
       <div className="room-atmo" aria-hidden="true">
         <div className="room-atmo-glow" />
-        <div className="room-atmo-aurora room-atmo-aurora-a" />
-        <div className="room-atmo-aurora room-atmo-aurora-b" />
         <div className="room-atmo-aurora room-atmo-aurora-c" />
         <div className="room-atmo-dots" />
         <div className="room-atmo-ring" />

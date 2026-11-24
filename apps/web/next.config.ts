@@ -76,6 +76,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Serves app/global-not-found.tsx for the proxy's 404s; without it they get Next's bare page.
   experimental: { globalNotFound: true },
+  // ADR-104: pictures through next/image come as AVIF where the browser takes it, else WebP.
+  images: { formats: ["image/avif", "image/webp"] },
   async headers() {
     return [
       {

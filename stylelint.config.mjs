@@ -1,5 +1,6 @@
-// Brand Identity System v2.0 enforcement for apps/web. See docs/design/brand-tokens.md
-// and docs/plan/03-design-system.md for the v3 rules.
+// Token and scale enforcement for apps/web: the values are ADR-052's, as tokens.css holds
+// them (docs/design/brand-tokens.md is the stale v2.0 palette, ADR-104); docs/plan/03-design-system.md
+// has the v3 rules.
 const rawLength = "/(^|[\\s(,])-?\\d*\\.?\\d+(rem|px|em)\\b/";
 
 // v3 §4 — a font-size comes from the scale. The one permitted shape beyond a bare

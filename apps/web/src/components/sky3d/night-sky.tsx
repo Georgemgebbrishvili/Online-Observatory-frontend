@@ -12,21 +12,18 @@ import {
   bodyState,
   constellationAt,
   constellationOfBody,
-  FIGURES_URL,
-  STARS_URL,
   declinationAt,
-  decodeCatalogue,
   events,
   fixedAltAz,
   nextRise,
   skyPath,
   skyState,
-  starsAtDate,
   type BodyState,
   type Site,
   type SkyBodyName,
   type Vec3,
 } from "@/features/sky3d/astro";
+import { FIGURES_URL, STARS_URL, decodeCatalogue, starsAtDate } from "@/features/sky3d/catalogue";
 import { aimAt, clampView, directionAt, zoomAbout, type View } from "@/features/sky3d/projection";
 import { dayMonth } from "@/features/cards/dates";
 import type { Locale } from "@/i18n/config";

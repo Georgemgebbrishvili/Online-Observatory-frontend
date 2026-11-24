@@ -34,6 +34,9 @@ export type HomepageDictionary = {
       high: string;
       book: string;
       bookAny: string;
+      /** The row's arrows, for a screen reader. */
+      previous: string;
+      next: string;
       names: Record<string, string>;
       /** The name set large behind the picture: one short word. */
       kinds: Record<"moon" | "planet" | "galaxy" | "nebula" | "cluster", string>;

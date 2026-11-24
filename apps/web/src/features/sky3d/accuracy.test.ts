@@ -8,16 +8,15 @@ import {
   aberration,
   bodies,
   bodyState,
-  decodeCatalogue,
   fixedAltAz,
   horizonMatrix,
   horizontal,
   skyAt,
   skySnapshot,
-  starsAtDate,
   unitJ2000,
   type SkyBodyName,
 } from "./astro";
+import { decodeCatalogue, starsAtDate } from "./catalogue";
 import reference from "./jpl-horizons.fixture.json";
 
 const DEG = Math.PI / 180;

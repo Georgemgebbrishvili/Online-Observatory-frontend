@@ -96,9 +96,10 @@
 }
 
 /*
- * ADR-102 — THE TICKET. Cream stock with a torn stub, leaning toward the pointer
- * (ambient-light.tsx sets --mx and --my), a band of light crossing it, and a glow on
- * the floor beneath.
+ * ADR-102 — THE TICKET. Cream stock with a torn stub and a glow on the floor beneath
+ * (the page's one glow, ADR-104). On a fine pointer only it leans toward the pointer
+ * (ambient-light.tsx sets --mx and --my) and a band of light crosses it; on a touch
+ * screen it lies still, its light where the key light puts it.
  */
 .gift-showcase {
   position: relative;
@@ -127,7 +128,7 @@
   rotate: -4deg;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .gift-ticket {
     transform: rotateX(calc((var(--my, 0.5) - 0.5) * -10deg))
       rotateY(calc((var(--mx, 0.5) - 0.5) * 14deg));
@@ -246,7 +247,13 @@
   inset: 0;
   mix-blend-mode: soft-light;
   pointer-events: none;
-  translate: calc((var(--mx, 0.2) - 0.5) * 60%) 0;
+  translate: -15% 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gift-ticket-sheen {
+    translate: calc((var(--mx, 0.2) - 0.5) * 60%) 0;
+  }
 }
 
 :lang(ka) .gift-ticket-heading {
@@ -255,7 +262,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .gift-showcase .gift-ticket {
-    animation: ticket-in 1100ms var(--ease-out-expo) both;
+    animation: ticket-in calc(var(--duration-enter) * 1.4) var(--ease-out-expo) both;
   }
 
   .gift-ticket-ring {
@@ -265,7 +272,6 @@
 
 @keyframes ticket-in {
   from {
-    opacity: 0;
     rotate: -12deg;
     translate: 0 2.5rem;
   }
@@ -320,7 +326,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-1) var(--space-4);
   padding-block: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 @media (--md) {

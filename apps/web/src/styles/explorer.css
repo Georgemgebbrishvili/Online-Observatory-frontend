@@ -171,7 +171,7 @@
 .explorer-launch {
   gap: var(--space-3);
   margin-top: var(--space-8);
-  box-shadow: var(--glow-launch);
+  box-shadow: var(--shadow-pill);
 }
 
 .explorer-launch svg {

@@ -69,7 +69,7 @@
 .night-tile-weekday,
 .night-tile-month {
   color: var(--color-text-tertiary);
-  font: var(--font-weight-semibold) var(--font-size-hint) / 1.2 var(--font-label);
+  font: var(--font-weight-semibold) var(--font-size-kicker) / 1.2 var(--font-label);
 }
 
 .night-tile-day {
@@ -83,7 +83,7 @@
   gap: var(--space-1);
   margin-top: var(--space-1);
   color: var(--color-text-secondary);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
+  font: var(--font-weight-medium) var(--font-size-kicker) / 1 var(--font-mono);
 }
 
 .night-tile[aria-checked="true"] {
@@ -203,7 +203,7 @@
 
 .time-cloud {
   color: var(--color-text-tertiary);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1 var(--font-mono);
+  font: var(--font-weight-medium) var(--font-size-kicker) / 1 var(--font-mono);
   text-align: right;
 }
 
@@ -426,7 +426,7 @@
 .board-target-sub,
 .board-target-state {
   color: var(--color-text-tertiary);
-  font: var(--font-weight-regular) var(--font-size-hint) / 1.3 var(--font-body);
+  font: var(--font-weight-regular) var(--font-size-kicker) / 1.3 var(--font-body);
 }
 
 /* Up for the chosen start: a green dot before the words. */
@@ -479,7 +479,7 @@
 .board-art-note {
   margin-left: auto;
   color: var(--color-text-small);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
+  font: var(--font-weight-medium) var(--font-size-kicker) / 1.3 var(--font-label);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
@@ -516,7 +516,7 @@
 .board-rows dt,
 .board-label {
   color: var(--color-text-tertiary);
-  font: var(--font-weight-medium) var(--font-size-hint) / 1.3 var(--font-label);
+  font: var(--font-weight-medium) var(--font-size-kicker) / 1.3 var(--font-label);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   white-space: nowrap;
@@ -653,7 +653,7 @@
 }
 
 :lang(ka) .board-quick button {
-  font-size: var(--font-size-hint);
+  font-size: var(--font-size-kicker);
 }
 
 /* The phone's copy of the quick lengths, above the grid on the dark panel. */

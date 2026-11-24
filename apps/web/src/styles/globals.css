@@ -64,19 +64,13 @@ body::before {
     var(--gradient-stars) 0 0 / 340px 300px,
     var(--gradient-stars) 170px 120px / 520px 460px,
     var(--gradient-stars) 60px 40px / 820px 700px,
-    radial-gradient(70% 45% at 85% -5%, var(--color-sky-blue), transparent 70%),
-    radial-gradient(60% 40% at 5% 20%, var(--color-sky-violet), transparent 70%),
+    radial-gradient(60% 45% at 8% -5%, var(--color-sky-warm), transparent 70%),
     radial-gradient(120% 55% at 50% 112%, var(--color-sky-red), transparent 62%),
     var(--color-console);
 }
 
 body::after {
   background: var(--gradient-vignette);
-}
-
-::selection {
-  background: var(--color-accent-muted);
-  color: var(--color-text-primary);
 }
 
 html[lang="ka"] body {
@@ -379,15 +373,24 @@ h1 {
   font-family: system-ui, sans-serif;
 }
 
-/* ADR-100: a page arrives with a short fade; the homepage's hero has its own entrance. */
-@media (prefers-reduced-motion: no-preference) {
-  #main-content:not(.public-home) {
-    animation: page-in 600ms var(--ease-sky) both;
+/*
+ * ADR-104: the one entrance, for anything that rises into place as it is scrolled to (a
+ * page's panels, page-reveal.tsx; the homepage's session and sign-off). Transform and
+ * opacity only; --enter-delay staggers a row by --stagger.
+ *
+ * What is on screen when a page opens only settles: it moves, it never fades, so its words
+ * paint at once and are counted as the page's largest paint straight away. ADR-100's fade
+ * of the whole page is gone for that reason.
+ */
+@keyframes enter {
+  from {
+    opacity: 0;
+    translate: 0 var(--distance-enter);
   }
 }
 
-@keyframes page-in {
+@keyframes settle {
   from {
-    opacity: 0.01;
+    translate: 0 var(--distance-enter);
   }
 }

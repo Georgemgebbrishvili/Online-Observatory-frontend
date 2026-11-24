@@ -87,4 +87,14 @@ form control uses `border-control`.
 | `error` | `surface-hover` | control boundary / focus ring (1.4.11) | 6.01:1 | 3:1 | pass |
 | `live` | `scrim-strong over surface-base` | simulated / mode chip over a picture | 9.92:1 | 4.5:1 | pass |
 | `error` | `scrim-strong over surface-base` | simulated / mode chip over a picture | 8.19:1 | 4.5:1 | pass |
+| `text-primary` | `glass-deep over photon` | text on deep glass over a bright star | 15.30:1 | 4.5:1 | pass |
+| `text-secondary` | `glass-deep over photon` | text on deep glass over a bright star | 8.47:1 | 4.5:1 | pass |
+| `text-tertiary` | `glass-deep over photon` | text on deep glass over a bright star | 5.68:1 | 4.5:1 | pass |
+| `text-small` | `glass-deep over photon` | text on deep glass over a bright star | 7.48:1 | 4.5:1 | pass |
+| `accent-ink` | `glass-deep over photon` | text on deep glass over a bright star | 6.05:1 | 4.5:1 | pass |
+| `text-primary` | `glass over night` | text on glass | 18.32:1 | 4.5:1 | pass |
+| `text-secondary` | `glass over night` | text on glass | 10.14:1 | 4.5:1 | pass |
+| `text-tertiary` | `glass over night` | text on glass | 6.80:1 | 4.5:1 | pass |
+| `text-small` | `glass over night` | text on glass | 8.95:1 | 4.5:1 | pass |
+| `accent-ink` | `glass over night` | text on glass | 7.24:1 | 4.5:1 | pass |
 <!-- /table -->

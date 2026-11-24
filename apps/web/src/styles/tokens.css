@@ -27,21 +27,6 @@
   --st-red-deep: #8f1f16;
   --st-gold: #e2b85a;
 
-  /* Planet colours for the homepage sky strip: highlight and shadow of each disc. */
-  --planet-mercury-hi: #d8d2c8;
-  --planet-mercury-lo: #6f6a63;
-  --planet-venus-hi: #fff4d6;
-  --planet-venus-lo: #c9a868;
-  --planet-mars-hi: #f2a070;
-  --planet-mars-lo: #8e3b1c;
-  --planet-jupiter-hi: #f3e1c4;
-  --planet-jupiter-lo: #a9805a;
-  --planet-saturn-hi: #f4e2a8;
-  --planet-saturn-lo: #a58a4c;
-  --planet-uranus-hi: #c9f1f1;
-  --planet-uranus-lo: #4f9aa6;
-  --planet-neptune-hi: #9fb8ff;
-  --planet-neptune-lo: #2b47a8;
   --st-green: #2ecc71;
   --st-error: #ff7a6b;
   --st-sun-1: #fff4d8;
@@ -49,8 +34,6 @@
   --st-sun-3: #e8893a;
   --st-sun-4: #d9442a;
   --st-sun-5: #8f1f16;
-  --st-sky-blue: #4c8dff;
-  --st-sky-violet: #a66bff;
   --st-paper-ink: #2b1b12;
   /* ADR-075: the Skychaser poster's vermilion button, cream letters on it, its print
      shadow; and the card stock the session ticket is printed on. */
@@ -95,19 +78,30 @@
   --color-surface-base: var(--st-deep);
   --color-surface-raised: color-mix(in srgb, var(--st-cream) 6%, var(--st-canvas));
   --color-surface-hover: color-mix(in srgb, var(--st-cream) 11%, var(--st-canvas));
-  /* The glass of the header and the phone tab bar, and the console's ground. */
-  --color-bar: color-mix(in srgb, var(--st-bar) 82%, transparent);
-  --color-glass: color-mix(in srgb, var(--st-bar) 78%, transparent);
+  /*
+   * ADR-104: one glass — a fill, the blur, a rim lit from the key light and a highlight
+   * along its top edge — for the header, the phone tab bar, panels and dialogs. Never glass
+   * over glass. Over a drawn sky or a star field it takes the deep fill, so text keeps AA
+   * even over a bright star.
+   */
+  --color-glass: color-mix(in srgb, var(--st-bar) 80%, transparent);
+  --color-glass-deep: color-mix(in srgb, var(--st-bar) 90%, transparent);
+  --color-bar: var(--color-glass);
   --color-console: var(--st-bar);
 
   /* Rule and strong rule are hairlines. A form control's edge needs 3:1 (SC 1.4.11). */
   --color-border-subtle: color-mix(in srgb, var(--st-rule) 12%, transparent);
   --color-border-strong: color-mix(in srgb, var(--st-rule) 22%, transparent);
   --color-border-control: color-mix(in srgb, var(--st-rule) 40%, transparent);
-  /* ADR-077: glass, iPhone-style — frosted tiles, glossy pills, soft ambient light. */
-  --color-tile: color-mix(in srgb, var(--st-white) 6%, transparent);
+  /*
+   * ADR-104: one key light, warm, from the top-left (150deg). Every rim, sheen, halo and
+   * shadow on a surface agrees with it; the only other light is the horizon's, which is
+   * inside the drawn scene (ADR-088), not on the interface.
+   */
+  --light-angle: 150deg;
+  --color-key-light: color-mix(in srgb, var(--st-sun-1) 55%, transparent);
   --gradient-tile: linear-gradient(
-    160deg,
+    var(--light-angle),
     color-mix(in srgb, var(--st-white) 11%, transparent),
     color-mix(in srgb, var(--st-white) 3%, transparent) 60%
   );
@@ -116,30 +110,10 @@
   --shadow-glass:
     inset 0 1px 0 color-mix(in srgb, var(--st-white) 16%, transparent),
     0 24px 48px -24px color-mix(in srgb, var(--st-black) 80%, transparent);
-  --blur-glass: blur(24px) saturate(170%);
-  --gradient-ambient:
-    radial-gradient(
-      40rem 28rem at 12% 8%,
-      color-mix(in srgb, var(--st-red) 16%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      36rem 30rem at 92% 38%,
-      color-mix(in srgb, var(--st-sky-blue) 13%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      40rem 30rem at 20% 78%,
-      color-mix(in srgb, var(--st-amber) 9%, transparent),
-      transparent 70%
-    );
+  --blur-glass: blur(20px) saturate(150%);
   --gradient-title: linear-gradient(180deg, var(--st-white) 30%, var(--st-ink-2));
   --gradient-title-accent: linear-gradient(180deg, var(--st-red-hi), var(--st-red));
-  --color-chip: color-mix(in srgb, var(--st-white) 9%, transparent);
-  --color-chip-strong: color-mix(in srgb, var(--st-white) 12%, transparent);
   --color-well: color-mix(in srgb, var(--st-white) 5%, transparent);
-  --color-scrim-chip: color-mix(in srgb, var(--st-black) 55%, transparent);
-  --color-link-hover: var(--st-red-hi);
   --color-pill-secondary: color-mix(in srgb, var(--st-white) 10%, transparent);
   --color-pill-secondary-hover: color-mix(in srgb, var(--st-white) 16%, transparent);
   --color-pill-secondary-border-hover: color-mix(
@@ -149,32 +123,15 @@
   );
   --gradient-pill: linear-gradient(180deg, var(--st-sun-4), var(--st-gd-mid));
   --gradient-pill-hover: linear-gradient(180deg, var(--st-sun-4), var(--st-red-fill));
-  --color-pill-primary-hover: var(--st-red);
   --color-pill-primary-busy: color-mix(in srgb, var(--color-action) 80%, var(--st-black));
   --shadow-pill:
     inset 0 1px 0 color-mix(in srgb, var(--st-white) 35%, transparent),
-    0 10px 28px -10px color-mix(in srgb, var(--color-accent) 80%, transparent);
+    0 8px 24px -10px color-mix(in srgb, var(--color-accent) 70%, transparent);
   --shadow-pill-hover:
     inset 0 1px 0 color-mix(in srgb, var(--st-white) 40%, transparent),
-    0 14px 34px -10px color-mix(in srgb, var(--color-accent) 95%, transparent);
+    0 12px 30px -10px color-mix(in srgb, var(--color-accent) 85%, transparent);
   --shadow-pill-glass: inset 0 1px 0 color-mix(in srgb, var(--st-white) 20%, transparent);
-  /* ADR-078: hairlines that fade at both ends, a dot grid on the panels, the horizon. */
-  --gradient-hairline: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--st-white) 16%, transparent) 50%,
-    transparent
-  );
-  --texture-dots: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--st-white) 7%, transparent) 1px,
-    transparent 1.4px
-  );
-  --gradient-panel: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--st-white) 7%, transparent),
-    color-mix(in srgb, var(--st-white) 2%, transparent) 70%
-  );
+  /* ADR-078: the horizon, lit from below — the light inside the scene (ADR-104). */
   --gradient-horizon:
     radial-gradient(
       60% 90% at 50% 120%,
@@ -197,28 +154,15 @@
     inset 0 100px 220px color-mix(in srgb, var(--st-red-deep) 34%, transparent);
   --mask-horizon: radial-gradient(60% 100% at 50% 100%, var(--st-black) 46%, transparent 100%);
   --color-panel-quiet: color-mix(in srgb, var(--st-bar) 68%, transparent);
-  --gradient-meter: linear-gradient(90deg, var(--st-gd-mid), var(--st-sun-4));
-  --gradient-numeral: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--st-white) 9%, transparent),
-    transparent 85%
-  );
+  /* A glass rim: brightest toward the key light, a faint return on the far edge. */
   --gradient-edge: linear-gradient(
-    150deg,
+    var(--light-angle),
     color-mix(in srgb, var(--st-white) 34%, transparent),
     color-mix(in srgb, var(--st-white) 8%, transparent) 30%,
     color-mix(in srgb, var(--st-white) 4%, transparent) 65%,
     color-mix(in srgb, var(--st-white) 14%, transparent)
   );
   --mask-edge: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  --gradient-open: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--st-red) 42%, transparent),
-    color-mix(in srgb, var(--st-red) 18%, transparent)
-  );
-  --color-open-edge: color-mix(in srgb, var(--st-red-hi) 55%, transparent);
-  --color-track: color-mix(in srgb, var(--st-white) 6%, transparent);
-  --color-now: var(--st-red-hi);
   --color-line: color-mix(in srgb, var(--st-white) 9%, transparent);
   --color-line-strong: color-mix(in srgb, var(--st-white) 22%, transparent);
 
@@ -244,12 +188,6 @@
   --color-on-accent: var(--st-white);
   --color-action: var(--st-red-fill);
   --color-on-action: var(--st-gd-ink);
-  --gradient-accent: radial-gradient(
-    circle at 50% 38%,
-    var(--st-red-hi),
-    var(--st-red) 50%,
-    var(--st-red-deep)
-  );
 
   /*
    * ADR-075: Skychaser's poster button — vermilion, cream letters, a hard print shadow
@@ -261,12 +199,6 @@
     var(--st-sun-4) 0%,
     var(--st-red-fill) 50%,
     var(--st-gd-mid) 100%
-  );
-  --gradient-poster-hover: linear-gradient(
-    180deg,
-    var(--st-gd-hi) 0%,
-    var(--st-sun-4) 50%,
-    var(--st-red-fill) 100%
   );
   --shadow-poster:
     0 3px 0 var(--st-gd-deep),
@@ -301,7 +233,6 @@
     var(--st-sun-5) 86%
   );
 
-  --color-star-brass: var(--st-gold);
   --color-success: var(--st-green);
   --color-warning: var(--st-gold);
   --color-error: var(--st-error);
@@ -312,10 +243,8 @@
   --color-live-border: color-mix(in srgb, var(--st-green) 55%, transparent);
   --color-live-muted: color-mix(in srgb, var(--st-green) 12%, transparent);
   --color-simulated-border: color-mix(in srgb, var(--st-gold) 45%, transparent);
-  --color-photon-faint: color-mix(in srgb, var(--st-ink) 5%, transparent);
   --color-photon-muted: color-mix(in srgb, var(--st-ink) 10%, transparent);
   --color-photon-border: color-mix(in srgb, var(--st-ink) 30%, transparent);
-  --color-success-muted: color-mix(in srgb, var(--st-green) 12%, transparent);
   --color-success-border: color-mix(in srgb, var(--st-green) 55%, transparent);
   --color-warning-muted: color-mix(in srgb, var(--st-gold) 13%, transparent);
   --color-warning-border: color-mix(in srgb, var(--st-gold) 45%, transparent);
@@ -323,12 +252,10 @@
   --color-error-border: color-mix(in srgb, var(--st-error) 40%, transparent);
   --color-overlay-hover: color-mix(in srgb, var(--st-white) 6%, transparent);
   --color-overlay-active: color-mix(in srgb, var(--st-white) 10%, transparent);
-  --color-optical-faint: color-mix(in srgb, var(--st-cream) 12%, transparent);
   --color-optical-medium: color-mix(in srgb, var(--st-cream) 20%, transparent);
   --color-scrim-soft: color-mix(in srgb, var(--st-black) 60%, transparent);
   --color-scrim: color-mix(in srgb, var(--st-black) 74%, transparent);
   --color-scrim-strong: color-mix(in srgb, var(--st-black) 94%, transparent);
-  --color-panel-overlay: var(--color-scrim-strong);
   --color-backdrop: var(--color-scrim);
   --color-mask: var(--st-black);
   --color-shadow: color-mix(in srgb, var(--st-black) 38%, transparent);
@@ -347,15 +274,10 @@
   --color-target-star-blue: var(--st-target-star-blue);
   --color-target-cluster: var(--st-target-cluster);
   --color-target-nebula: var(--st-target-nebula);
-  --color-target-glass: color-mix(in srgb, var(--st-white) 9%, transparent);
   /* The night bar over the start picker: the Sun's glow, twilight blue, the dark. */
-  --color-night-sun: color-mix(in srgb, var(--st-sun-3) 70%, transparent);
-  --color-night-twilight: color-mix(in srgb, var(--st-sky-blue) 34%, var(--st-bar));
-  --color-night-dark: var(--st-bar);
   /* The outlined button: white at 2.5% under a 22% edge, 6% under 50% on hover. */
   --color-outline-fill: color-mix(in srgb, var(--st-white) 2.5%, transparent);
   --color-outline-fill-hover: color-mix(in srgb, var(--st-white) 6%, transparent);
-  --color-outline-hover: color-mix(in srgb, var(--st-white) 50%, transparent);
   /* The light that sweeps across a filled button on hover and while it loads. */
   --gradient-sheen: linear-gradient(
     105deg,
@@ -368,9 +290,6 @@
    * The observatory scene: /observatory sits on the console's ground (ADR-052 §8), its
    * panels the console's monolith.
    */
-  --color-scene-inner: color-mix(in srgb, var(--st-white) 4%, transparent);
-  --color-scene-border: var(--color-line);
-  --color-scene-star: var(--st-ink);
   /* A monolith's four corner ticks (the Skychaser console's), for any panel to wear. */
   --gradient-ticks:
     linear-gradient(var(--color-line-strong), var(--color-line-strong)) 0 0 / 14px 1px
@@ -394,9 +313,8 @@
     color-mix(in srgb, var(--st-monolith-top) 90%, transparent),
     color-mix(in srgb, var(--st-monolith-bottom) 94%, transparent)
   );
-  /* The site backdrop's three lights: blue and violet above, red below. */
-  --color-sky-blue: color-mix(in srgb, var(--st-sky-blue) 10%, transparent);
-  --color-sky-violet: color-mix(in srgb, var(--st-sky-violet) 7%, transparent);
+  /* The site backdrop (ADR-104): the key light's warmth at the top-left, red below. */
+  --color-sky-warm: color-mix(in srgb, var(--st-amber) 7%, transparent);
   --color-sky-red: color-mix(in srgb, var(--st-red) 20%, transparent);
   /* The Night Sky (ADR-085): the night its renderer draws, shown before the first frame --
      deep blue overhead, a haze along the horizon, the ground -- and its deep-sky labels. */
@@ -453,20 +371,6 @@
     );
   --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.93 0 0 0 0 0.8 0 0 0 0.033 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   /* The homepage sky's own vignette and grain, darker at its top and foot. */
-  --gradient-sky-vignette:
-    radial-gradient(
-      90% 80% at 50% 50%,
-      transparent 50%,
-      color-mix(in srgb, var(--st-black) 50%, transparent) 100%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--st-black) 25%, transparent),
-      transparent 18%,
-      transparent 80%,
-      color-mix(in srgb, var(--st-black) 50%, transparent)
-    );
-  --texture-sky-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   --shadow-sky-title: 0 2px 30px color-mix(in srgb, var(--st-black) 60%, transparent);
   --gradient-vignette: radial-gradient(
     90% 90% at 50% 40%,
@@ -485,17 +389,12 @@
   --room-ink-3: #adada8;
   --room-copper: #e3482c;
   --room-copper-ink: #f0785a;
-  --room-amber: #e3482c;
   --room-gold: #e2b85a;
   --room-red: #ff7a6b;
   --room-warm: #ffffff;
-  --room-blue: #4c8dff;
-  --room-violet: #a66bff;
-  --room-panel: color-mix(in srgb, #121218 90%, transparent);
   --room-glass: color-mix(in srgb, #08080c 78%, transparent);
   --room-well: color-mix(in srgb, #0b0b0b 60%, transparent);
   --room-border: color-mix(in srgb, var(--room-warm) 9%, transparent);
-  --room-border-faint: color-mix(in srgb, var(--room-warm) 6%, transparent);
   --room-black: #000000;
   --room-white: #ffffff;
   --room-stage: #040404;
@@ -544,53 +443,43 @@
   --font-weight-title: var(--font-weight-regular);
   --font-weight-label: var(--font-weight-medium);
 
-  /* Type scale. Anton is condensed, so the display steps run larger than a serif's. */
+  /*
+   * ADR-104: one type scale. Twelve steps, display to mono; nothing below 13px (kicker is
+   * the floor). Anton is condensed, so the display steps run larger than a serif's. The
+   * hero follows the height as well as the width, so a short screen keeps its headline in
+   * proportion. Georgian takes its own steps at about 0.85x: Mkhedruli has no capitals and
+   * runs wider.
+   */
   --font-size-display: clamp(2.875rem, 1.6rem + 5.4vw, 6.75rem);
-  --font-size-hero: clamp(2.75rem, 1.9rem + 3.4vw, 4.5rem);
+  --font-size-hero: clamp(2.25rem, min(1.9rem + 3.4vw, 9svh), 4.5rem);
   --font-size-h1: clamp(2rem, 1.6rem + 1.4vw, 2.75rem);
   --font-size-h2: 2rem;
   --font-size-h3: 1.375rem;
-  --font-size-stat: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
+  --font-size-section: clamp(1.875rem, 4vw, 3rem);
+  --font-size-figure: clamp(2.5rem, 5vw, 3.5rem);
   --font-size-body-lg: 1.125rem;
   --font-size-body: 1rem;
   --font-size-label: 0.875rem;
   --font-size-caption: 0.875rem;
   --font-size-kicker: 0.8125rem;
   --font-size-mono: 0.875rem;
-  /* The Skychaser bar's links (15px) and the phone tab bar's labels (12px). */
-  --font-size-nav: 0.9375rem;
-  --font-size-tab: 0.8125rem;
-  /* Four Georgian tab labels on a narrow phone (ADR-085). */
-  --font-size-tab-tight: 0.75rem;
-  /* The wordmark: 20.35px fills the kit's 28px box as Skychaser's outlined word does. */
-  --font-size-wordmark: 1.272rem;
-  --font-size-wordmark-small: 1rem;
-  /* The homepage sky's headline, lede and hint (ADR-052 §7). */
-  --font-size-sky-title: clamp(1.6875rem, 5vw, 4.75rem);
-  --font-size-sky-lede: clamp(1rem, 1.3vw, 1.1875rem);
-  --font-size-hint: 0.8125rem;
-  /* The game's name on its launch screen (ADR-057); Mkhedruli runs wider, so smaller. */
-  --font-size-explorer: clamp(3.25rem, 9vw, 8.5rem);
-  --font-size-explorer-ka: clamp(2.5rem, 7vw, 6.5rem);
-  /* The homepage below the sky (ADR-076). */
-  --font-size-section: clamp(1.875rem, 4vw, 3rem);
-  --font-size-closer: clamp(2.25rem, 5.5vw, 4rem);
-  --font-size-hero-glass: clamp(2.5rem, 7vw, 5.25rem);
-  --font-size-hero-horizon: clamp(2.25rem, min(5.4vw, 9svh), 5rem);
-  /* On a phone the hero headline follows the height: an iPhone SE under Safari's bars. */
+  --font-size-hero-ka: clamp(1.875rem, min(1.6rem + 2.9vw, 7.6svh), 3.8rem);
+  --font-size-section-ka: clamp(1.625rem, 3.4vw, 2.5rem);
+  /* A phone's hero follows the height alone: an iPhone SE under Safari's bars. */
   --font-size-hero-phone: clamp(1.875rem, 5.6svh, 2.25rem);
   --font-size-hero-phone-ka: clamp(1.625rem, 4.6svh, 2rem);
-  --font-size-tile: 1.25rem;
-  --font-size-time: 1.5rem;
-  --font-size-price: clamp(1.5rem, 3vw, 2rem);
-  /* ADR-078: the night chart's readout, the price picker and the step stage. */
-  --font-size-readout: clamp(1.5rem, 2.2vw, 1.75rem);
-  --font-size-stat: 1.125rem;
-  --font-size-price-big: clamp(2.5rem, 5vw, 3.5rem);
-  --font-size-step: clamp(1.25rem, 2vw, 1.5rem);
-  --font-size-numeral: clamp(5rem, 11vw, 8.5rem);
-  /* ADR-100: the instrument's figures, and the name set across the footer. */
+  /*
+   * Kept outside the scale, each for its own reason (ADR-104): the Skychaser bar's 15px
+   * links; the wordmark's box in the lockup; the name set across the footer, which is
+   * decoration; the game's name on its launch screen and the gift ticket's title, which
+   * join the scale in their own pages' passes.
+   */
+  --font-size-nav: 0.9375rem;
+  --font-size-wordmark: 1.272rem;
+  --font-size-wordmark-small: 1rem;
   --font-size-footer-mark: clamp(3.5rem, 14.5vw, 17rem);
+  --font-size-explorer: clamp(3.25rem, 9vw, 8.5rem);
+  --font-size-explorer-ka: clamp(2.5rem, 7vw, 6.5rem);
   --font-size-ticket: clamp(1.75rem, 1rem + 3.4vw, 3rem);
   --font-size-ticket-ka: clamp(1.25rem, 0.8rem + 2.2vw, 2rem);
   --font-weight-regular: 400;
@@ -603,7 +492,14 @@
   --leading-heading: 1.25;
   --leading-body: 1.6;
   --leading-body-georgian: 1.7;
+  /* A Georgian headline's descenders (ღ, ლ, ც, ყ, ფ) need the room. */
+  --leading-display-ka: 1.18;
+  /* Anton by size: display tighter, hero even, h1 to h3 open. */
+  --tracking-display: -0.005em;
+  --tracking-hero: 0em;
   --tracking-headline: 0.012em;
+  /* The homepage story's Geist titles (ADR-088), set tight. */
+  --tracking-tight: -0.045em;
   --tracking-label: 0.14em;
   --tracking-kicker: 0.2em;
   --tracking-nav: 0.12em;
@@ -622,7 +518,8 @@
   --space-page: clamp(var(--space-4), 4vw, 4.5rem);
 
   --size-touch: 2.75rem;
-  --size-app-sidebar: 16rem;
+  /* ADR-104: the one content width every section lays out in. */
+  --size-content: 90rem;
   /* The Skychaser bar: 76px on a desk, 56px on a phone; its tab bar 62px. */
   --size-app-header: 3.5rem;
   --size-bar: 4.75rem;
@@ -649,19 +546,10 @@
    * ADR-052 §4: the glows are Skychaser's, copied. The filled button's halo, the LIVE
    * pill and its LED, the red badge, the current step's pulse, the active tab's icon.
    */
-  --glow-action: var(--shadow-poster);
   --glow-live: 0 0 18px -6px color-mix(in srgb, var(--st-green) 60%, transparent);
   --glow-live-led:
     0 0 0 3px color-mix(in srgb, var(--st-green) 20%, transparent),
     0 0 10px var(--st-green);
-  --glow-hold-led:
-    0 0 0 3px color-mix(in srgb, var(--st-red) 14%, transparent), 0 0 12px var(--st-red);
-  --glow-gold-led:
-    0 0 0 3px color-mix(in srgb, var(--st-gold) 14%, transparent), 0 0 12px var(--st-gold);
-  --glow-badge:
-    0 0 0 1px color-mix(in srgb, var(--st-red-ink) 45%, transparent),
-    0 0 0 7px color-mix(in srgb, var(--st-red) 8%, transparent),
-    0 0 36px -4px color-mix(in srgb, var(--st-red) 55%, transparent);
   --glow-pulse-low:
     0 0 0 5px color-mix(in srgb, var(--st-red) 14%, transparent),
     0 0 22px color-mix(in srgb, var(--st-red) 50%, transparent);
@@ -671,16 +559,6 @@
   --glow-tab-icon: drop-shadow(
     0 0 6px color-mix(in srgb, var(--st-red) 55%, transparent)
   );
-  --glow-nav-current: 0 0 14px color-mix(in srgb, var(--st-white) 35%, transparent);
-  --glow-sky: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--st-red) 22%, transparent),
-    transparent 62%
-  );
-  --glow-account: 0 0 18px -6px var(--st-red);
-  --glow-launch:
-    0 10px 26px -14px var(--st-red),
-    0 0 42px -10px color-mix(in srgb, var(--st-red) 70%, transparent);
   --color-account-ring: color-mix(in srgb, var(--st-red) 60%, transparent);
   /* The game's launch screen: the words on the dark, the game image beyond. */
   --gradient-explorer-fade-phone:
@@ -729,13 +607,31 @@
   --ease-sky: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-spring: cubic-bezier(0.18, 1.25, 0.3, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /*
+   * ADR-104: one entrance. A piece arriving rises 1rem and fades in over 750ms on the
+   * out-expo ease, each after the one before by 75ms. Transform and opacity only.
+   */
+  --duration-enter: 750ms;
+  --stagger: 75ms;
+  --distance-enter: 1rem;
 
   /*
-   * ADR-100: the light of the premium pass. A rim that brightens under the pointer, a
-   * graduated ring's ticks, and the footer's fading name.
+   * ADR-100: the light of the premium pass, warmed to the key light by ADR-104. A rim that
+   * brightens under a fine pointer on hero-level panels only, one radius for all of them;
+   * a graduated ring's ticks; the eyepiece's halo, offset toward the key light; the
+   * footer's fading name.
    */
-  --color-spot: color-mix(in srgb, var(--st-red-hi) 70%, transparent);
-  --color-spot-soft: color-mix(in srgb, var(--st-amber) 10%, transparent);
+  --color-spot: color-mix(in srgb, var(--st-sun-2) 55%, transparent);
+  --color-spot-soft: color-mix(in srgb, var(--st-amber) 8%, transparent);
+  --size-spot: 14rem;
+  /* A disc's edge where the key light catches it: the eyepiece, the planet's limb. */
+  --shadow-rim: inset 1px 1px 0 color-mix(in srgb, var(--st-sun-1) 28%, transparent);
+  --gradient-halo: radial-gradient(
+    closest-side at 40% 38%,
+    color-mix(in srgb, var(--st-sun-2) 18%, transparent),
+    color-mix(in srgb, var(--st-amber) 6%, transparent) 60%,
+    transparent
+  );
   --color-reticle: color-mix(in srgb, var(--st-cream) 30%, transparent);
   --color-reticle-major: color-mix(in srgb, var(--st-red-ink) 80%, transparent);
   --gradient-footer-mark: linear-gradient(
@@ -746,8 +642,9 @@
 
   /*
    * ADR-102: the premium pass, every page. The gift ticket's torn stub and the light
-   * across its stock; the slow lit edge round the featured plan; the field's focus halo;
-   * the ring that turns behind the sign-in card; text selection and the scrollbar.
+   * across its stock (from the top-left, as the key light falls); the ring behind the
+   * sign-in card; text selection and the scrollbar. ADR-104 took out the featured plan's
+   * travelling edge, the field's focus halo and the ticket's coloured shadow.
    */
   /* What a mask keeps; the ticket's notches are cut where its stub is (gift.css). */
   --color-mask-keep: #000;
@@ -765,17 +662,12 @@
   );
   --color-ticket-sheen: color-mix(in srgb, var(--st-white) 45%, transparent);
   --filter-ticket:
-    drop-shadow(0 30px 40px color-mix(in srgb, var(--st-black) 80%, transparent))
-    drop-shadow(0 10px 40px color-mix(in srgb, var(--st-sun-4) 30%, transparent));
+    drop-shadow(0 30px 40px color-mix(in srgb, var(--st-black) 80%, transparent));
   --gradient-ticket-floor: radial-gradient(
     closest-side,
     color-mix(in srgb, var(--st-red) 30%, transparent),
     transparent
   );
-  /* The featured plan's travelling edge; the gradient is built where it turns (light.css). */
-  --color-featured-lead: var(--st-sun-2);
-  --color-featured-tail: var(--st-red-hi);
-  --shadow-field-focus: 0 0 0 4px color-mix(in srgb, var(--st-red-hi) 22%, transparent);
   --color-selection: color-mix(in srgb, var(--st-red) 45%, transparent);
   --color-scrollbar: color-mix(in srgb, var(--st-white) 18%, transparent);
 }

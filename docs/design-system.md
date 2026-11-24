@@ -42,18 +42,29 @@ output.
   text and the focus ring
 - Green for LIVE and online (`--color-live`, #2ecc71); gold for simulated, done and
   degraded (`--color-simulated`, `--color-warning`, #e2b85a); `--color-error` (#ff7a6b)
-- Glass: `--color-bar` under `backdrop-filter: blur(14px) saturate(140%)` for the header
-  and the phone tab bar
-- Glow (ADR-052 §4): `--glow-action` under filled buttons, `--glow-live` and
-  `--glow-live-led` on the LIVE pill, `--glow-badge`, `--glow-pulse-*` on the console's
-  current step, `--glow-tab-icon`, `--glow-nav-current`
+- Light (ADR-104): one key light, warm, from the top-left (`--light-angle`, 150deg). Rims
+  (`--gradient-edge`, `--shadow-rim`), sheens and halos (`--gradient-halo`) agree with it;
+  the horizon's light is inside the drawn scene, the one exception. The pointer brightens a
+  rim (`--color-spot`, `--size-spot`) on the plans, the sign-in card, the ballot's cards
+  and the gift ticket only, and only on a fine pointer
+- Glass (ADR-104): one recipe — `--color-glass` (or `--color-glass-deep` over a drawn sky
+  or star field), `--blur-glass`, the `--gradient-edge` rim and `--shadow-glass` — for the
+  header, the phone tab bar, panels and dialogs; never glass over glass
+- Glow (ADR-052 §4, ADR-104): `--shadow-pill` under filled buttons, `--glow-live` and
+  `--glow-live-led` on the LIVE pill, `--glow-pulse-*` on the console's current step,
+  `--glow-tab-icon` on the active tab; the homepage's eyepiece halo and horizons. One
+  glowing focal point a screen besides the header's button
 - Panels: plate, strong rule, `--radius-panel` (14px); the console's `--radius-console`
   (12px) with corner ticks; buttons and chips `--radius-control` (6px), 50px tall
-- Type scale: `--font-size-display` … `--font-size-caption`, plus `--font-size-stat`,
-  `--font-size-kicker`, `--font-size-nav`, `--font-size-tab`, `--font-size-wordmark` and the
-  homepage sky's three
-- Spacing: `--space-1` … `--space-20` with a fluid `--space-page` gutter
-- Motion: UI 160–220ms, instrument 500–1200ms; Skychaser's `--ease-sky` and `--ease-spring`
+- Type scale (ADR-104): display, hero, h1, h2, h3, section, figure, body-lg, body, label,
+  caption, mono, with kicker (13px) as the floor; Georgian steps `--font-size-hero-ka` and
+  `--font-size-section-ka` at about 0.85x, `--leading-display-ka` 1.18. Outside the scale,
+  each for a stated reason: nav, wordmark, footer-mark, explorer, ticket, hero-phone
+- Spacing: `--space-1` … `--space-20` with a fluid `--space-page` gutter; one content width,
+  `--size-content`
+- Motion: UI 160–220ms, instrument 500–1200ms; Skychaser's `--ease-sky` and `--ease-spring`;
+  one entrance (`@keyframes enter`, `--duration-enter` 750ms, `--stagger` 75ms,
+  `--distance-enter` 1rem), transform and opacity only
 
 `src/styles/tokens.css` is the only file that holds a colour literal. `src/styles/tokens.ts` mirrors the palette for `next/og` and the homepage sky's canvas, which cannot read CSS variables, and offers `withAlpha` for a canvas colour at an opacity; `tokens.test.ts` keeps the two equal and asserts ADR-052's roles exactly. The `--st-*` palette is private to `tokens.css`: everything else uses the semantic `--color-*` tokens.
 
@@ -108,7 +119,7 @@ Status components accept typed values and select a semantic tone internally. The
 | `Button`                           | `.sd-btn`, `skychaser-mobile.css`, `skychaser-motion.css` | 50px, 6px, Oswald 600 `.14em`; filled with the red halo, lift, sheen, press; outline at white 22% |
 | `StatusIndicator`, `LiveIndicator` | `.sdo-pill--live`                                         | The green LIVE pill and LED glow; text label always present                                       |
 | `ModeNotice`, `.capture-simulated` | —                                                         | Gold outline for simulated                                                                        |
-| Header, tab bar                    | `.sd-bar`, `SkychaserTabBar`                              | Glass, Oswald nav with drawn underline and current glow; the tab bar's red current tab            |
+| Header, tab bar                    | `.sd-bar`, `SkychaserTabBar`                              | Glass, Oswald nav with drawn underline on the current page; the tab bar's red current tab         |
 | `BrandLockup`                      | `Wordmark.tsx`, `public/brand/`                           | The kit's mark; STELLAR set in Archivo Expanded Black at the kit's size                           |
 | Homepage hero                      | `SkyReveal.tsx`, `skychaser-home.css`                     | The sky, ported; our four drawn plates, captioned                                                 |
 

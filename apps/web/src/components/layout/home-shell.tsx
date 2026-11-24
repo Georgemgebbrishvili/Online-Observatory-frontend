@@ -10,7 +10,6 @@ import { skyTonightCopy } from "@/i18n/resources/sky-tonight";
 import type { Dictionary } from "@/i18n/types";
 import { exposureLabel } from "@/lib/observatory-sim/camera";
 import { SHOWPIECE_BY_ID } from "@/lib/observatory-sim/showpieces";
-import { palette } from "@/styles/tokens";
 
 type HomeShellProps = {
   content: Dictionary["home"];
@@ -22,24 +21,8 @@ type HomeShellProps = {
 const timezone = "Asia/Tbilisi";
 const minute = 60_000;
 
-/** Each showpiece's own colour, for the light behind it. */
-const glow: Record<string, string> = {
-  moon: palette.targetMoon,
-  saturn: palette.targetSaturn,
-  jupiter: palette.targetJupiter,
-  mars: palette.targetMars,
-  venus: palette.targetVenus,
-  m42: palette.targetMars,
-  m31: palette.targetStarBlue,
-  m13: palette.targetCluster,
-  ngc869: palette.targetCluster,
-  m27: palette.targetNebula,
-  m51: palette.targetStarBlue,
-  m81: palette.targetStarGold,
-};
-
 /**
- * The public homepage (ADR-087): one scroll story. Everything it says is worked out
+ * The public homepage (ADR-087, ADR-104): one scroll story. Everything it says is worked out
  * here, from tonight's almanac, the platform's open times and prices, and the
  * observatory's record; the browser only animates it.
  */
@@ -77,7 +60,6 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
     image: o.image,
     time: clock.format(o.best),
     high: fill(copy.showpieces.high, { altitude: String(o.altitude), direction: compass[o.direction] }),
-    glow: glow[o.id] ?? palette.targetMoon,
     book: near(o) ?? { href: book, label: copy.showpieces.bookAny },
   }));
 
@@ -147,7 +129,7 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
       target={{
         id: targetId,
         name: names[targetId],
-        image: `/sky/targets/${targetId}.jpg`,
+        feed: { raw: `/sky/feed/${targetId}-raw.webp`, settled: `/sky/feed/${targetId}.webp` },
         exposure: exposureLabel(recipe.exposureS),
         gain: recipe.gain,
         stack: recipe.stack,

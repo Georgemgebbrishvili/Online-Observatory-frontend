@@ -76,7 +76,7 @@
 
 .club-card-balance strong {
   font-family: var(--font-display);
-  font-size: var(--font-size-price-big);
+  font-size: var(--font-size-figure);
   line-height: 1;
 }
 

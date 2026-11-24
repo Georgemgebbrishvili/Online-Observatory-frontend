@@ -69,8 +69,10 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
 
-  // ADR-087: the hero, tonight's showpieces, the night, the session, the telescope, the sign-off.
-  await expect(page.locator("main section")).toHaveCount(6);
+  // ADR-087 as ADR-104 left it: the hero, tonight's showpieces, the night, the session, and
+  // the telescope with the sign-off. One drawn sky for the whole page.
+  await expect(page.locator("main section")).toHaveCount(5);
+  await expect(page.locator("main canvas")).toHaveCount(1);
   await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
   // Tonight's showpieces: each with its best time and a way to book.
@@ -80,6 +82,13 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
   await expect(
     page.locator(".hs-coll").getByText("Illustration — not telescope output"),
   ).toBeAttached();
+  await expect(
+    page.locator(".hs-night").getByText("Illustration — not telescope output"),
+  ).toBeAttached();
+  // A wide screen steps the row with its arrows; the first is spent at the start.
+  await expect(page.getByRole("button", { name: "Previous showpiece" })).toBeDisabled();
+  await page.getByRole("button", { name: "Next showpiece" }).click();
+  await expect(page.getByRole("button", { name: "Previous showpiece" })).toBeEnabled();
 
   // The night: a clock on the observatory's time and the drawn sky it turns.
   await expect(page.locator(".hs-clock")).toHaveText(/^\d\d:\d0$/);
@@ -120,7 +129,9 @@ test("the hero's story moves with the scroll, and stands still for reduced motio
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
-  await expect(page.locator(".pin-spacer > .hs-hero")).toHaveCount(1);
+  // ADR-104: two scenes pinned, the hero and the night; the scenes load once the page is idle.
+  await expect(page.locator(".pin-spacer > .hs-hero")).toHaveCount(1, { timeout: 15_000 });
+  await expect(page.locator(".pin-spacer")).toHaveCount(2);
   await expect(page.locator(".hs-slots")).toBeHidden();
   await page.mouse.move(700, 500);
   await page.mouse.wheel(0, 300);
@@ -138,6 +149,7 @@ test("the hero's story moves with the scroll, and stands still for reduced motio
   await expect(
     page.getByRole("heading", { level: 2, name: "Watch it settle." }),
   ).toBeVisible();
+  await expect(page.locator("html.lenis")).toHaveCount(0);
 });
 
 test("keeps the public homepage within a mobile viewport", async ({ page }) => {
@@ -152,9 +164,9 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
       }));
       expect(viewport.scrollWidth, `${locale} at ${width}px`).toBe(viewport.clientWidth);
       await expect(page.locator(".home-hero .button-primary")).toBeVisible();
-      // A phone swipes the showpieces; the corners wait for a wide screen.
-      await expect(page.locator(".hs-corner").first()).toBeHidden();
-      await expect(page.locator(".hs-slide-info").first()).toBeAttached();
+      // A phone swipes the showpieces; the arrows wait for a wide screen.
+      await expect(page.locator(".hs-step").first()).toBeHidden();
+      await expect(page.locator(".hs-slide-info").first()).toBeVisible();
     }
   }
 });

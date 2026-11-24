@@ -40,7 +40,7 @@ export function PageReveal() {
     );
     for (const el of items) {
       const order = el.parentElement ? [...el.parentElement.children].indexOf(el) : 0;
-      el.style.setProperty("--reveal-delay", `${Math.min(order, 5) * 80}ms`);
+      el.style.setProperty("--enter-delay", `calc(var(--stagger) * ${Math.min(order, 5)})`);
       el.dataset.out = "";
       observer.observe(el);
     }

@@ -34,16 +34,7 @@
   background:
     var(--gradient-stars) 0 0 / 340px 300px,
     var(--gradient-stars) 170px 120px / 520px 460px,
-    radial-gradient(
-      70% 45% at 85% -5%,
-      color-mix(in srgb, var(--room-blue) 12%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      60% 40% at 5% 20%,
-      color-mix(in srgb, var(--room-violet) 8%, transparent),
-      transparent 70%
-    ),
+    radial-gradient(60% 45% at 8% -5%, var(--color-sky-warm), transparent 70%),
     radial-gradient(
       120% 55% at 50% 112%,
       color-mix(in srgb, var(--room-copper) 22%, transparent),
@@ -61,32 +52,6 @@
   mix-blend-mode: screen;
   animation: room-drift 26s ease-in-out infinite alternate;
   will-change: transform;
-}
-
-.room-atmo-aurora-a {
-  top: -360px;
-  left: -320px;
-  background: radial-gradient(
-    closest-side,
-    color-mix(in srgb, var(--room-blue) 35%, transparent),
-    transparent 70%
-  );
-  opacity: 0.5;
-}
-
-.room-atmo-aurora-b {
-  top: 30%;
-  right: -380px;
-  width: 1000px;
-  height: 1000px;
-  background: radial-gradient(
-    closest-side,
-    color-mix(in srgb, var(--room-violet) 30%, transparent),
-    transparent 70%
-  );
-  opacity: 0.5;
-  animation-duration: 34s;
-  animation-delay: -12s;
 }
 
 .room-atmo-aurora-c {

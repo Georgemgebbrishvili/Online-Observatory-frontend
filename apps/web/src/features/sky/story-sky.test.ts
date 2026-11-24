@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { precess, storySky } from "./story-sky";
+import { precess } from "./precess";
+import { storySky } from "./story-sky";
 
 describe("storySky", () => {
   const sky = storySky(new Date("2026-11-10T16:00:00Z"), "Asia/Tbilisi")!;

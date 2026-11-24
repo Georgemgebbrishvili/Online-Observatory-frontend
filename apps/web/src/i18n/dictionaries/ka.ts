@@ -83,6 +83,8 @@ const dictionary = {
         high: "{altitude}° · {direction}",
         book: "დაჯავშნე {time}",
         bookAny: "დაჯავშნე სეანსი",
+        previous: "წინა ობიექტი",
+        next: "შემდეგი ობიექტი",
         names: {
           moon: "მთვარე",
           saturn: "სატურნი",

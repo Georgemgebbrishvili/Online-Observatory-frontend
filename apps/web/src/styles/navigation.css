@@ -8,19 +8,31 @@
   z-index: 40;
   top: 0;
   border-bottom: 1px solid var(--color-line);
-  background: var(--color-bar);
-  backdrop-filter: blur(14px) saturate(140%);
-  transition:
-    background-color 500ms var(--ease-sky),
-    border-color 500ms var(--ease-sky),
-    backdrop-filter 500ms var(--ease-sky);
+  isolation: isolate;
+  transition: border-color 500ms var(--ease-sky);
+}
+
+/* ADR-104: the one glass, on a layer behind the bar. Fading the layer is cheap; animating
+   the bar's own backdrop filter repainted everything under it on every frame. */
+.site-header::before {
+  position: absolute;
+  z-index: -1;
+  background: var(--color-glass);
+  backdrop-filter: var(--blur-glass);
+  box-shadow: var(--shadow-pill-glass);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-sky);
 }
 
 /* ADR-100: clear over the top of a page, glass once it scrolls (ambient-light.tsx). */
 html[data-top] .site-header:not(:has([aria-expanded="true"])) {
   border-bottom-color: transparent;
-  background-color: transparent;
-  backdrop-filter: blur(0) saturate(100%);
+}
+
+html[data-top] .site-header:not(:has([aria-expanded="true"]))::before {
+  opacity: 0;
 }
 
 .public-navigation,
@@ -59,7 +71,7 @@ html[data-top] .site-header:not(:has([aria-expanded="true"])) {
 }
 
 /* On a phone the menu is a solid sheet over the whole page, so nothing reads through it.
-   The bar's backdrop filter makes it the containing block, so the sheet hangs from it. */
+   It hangs from the sticky bar, its containing block. */
 .public-mobile-menu {
   position: absolute;
   top: 100%;
@@ -349,10 +361,6 @@ html:has(.public-mobile-menu[data-open]) {
     color: var(--color-text-primary);
   }
 
-  .public-navigation a[aria-current="page"] {
-    text-shadow: var(--glow-nav-current);
-  }
-
   .public-navigation a:is(:hover, :focus-visible)::after {
     transform: scaleX(1);
   }
@@ -411,7 +419,6 @@ html:has(.public-mobile-menu[data-open]) {
 .account-menu-button[aria-expanded="true"] {
   border-color: var(--color-account-ring);
   color: var(--color-text-primary);
-  box-shadow: var(--glow-account);
 }
 
 .account-menu-button[data-signed-in]::after {
@@ -561,8 +568,8 @@ html:has(.public-mobile-menu[data-open]) {
     border: 1px solid var(--color-line);
     border-radius: 1.25rem;
     background: var(--color-glass);
-    box-shadow: var(--shadow-small);
-    backdrop-filter: blur(18px) saturate(140%);
+    box-shadow: var(--shadow-pill-glass), var(--shadow-small);
+    backdrop-filter: var(--blur-glass);
   }
 
   body:has(.room.room-console) .phone-tab-bar,
@@ -585,7 +592,7 @@ html:has(.public-mobile-menu[data-open]) {
     border-radius: 0.9375rem;
     color: var(--color-text-small);
     font-family: var(--font-label);
-    font-size: var(--font-size-tab);
+    font-size: var(--font-size-kicker);
     font-weight: var(--font-weight-medium);
     /* Four tabs (ADR-085 added the Night Sky): OBSERVATORY fits a 360 px phone's tab at
        this tracking with no side padding, measured 72 px in 79. */
@@ -632,11 +639,14 @@ html:has(.public-mobile-menu[data-open]) {
     grid-auto-columns: minmax(max-content, 1fr);
   }
 
-  /* Four Georgian words on a 360 px phone touched each other at 13px; one pixel less
-     gives each tab a little air (ADR-085 made it four). */
+  /* Four Georgian words on a 360 px phone touched each other at 13px. ADR-104 keeps the
+     13px floor and takes the air from the bar instead: narrower insets, no gap. */
   @media (--below-sm) {
-    .phone-tab:lang(ka) {
-      font-size: var(--font-size-tab-tight);
+    .phone-tab-bar:lang(ka) {
+      right: var(--space-2);
+      left: var(--space-2);
+      gap: 0;
+      padding-inline: 0;
     }
   }
 

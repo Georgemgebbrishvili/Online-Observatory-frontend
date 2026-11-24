@@ -884,7 +884,7 @@
 .sky-clock b {
   color: var(--color-text-primary);
   font-family: var(--font-mono);
-  font-size: var(--font-size-time);
+  font-size: var(--font-size-h3);
   font-variant-numeric: tabular-nums;
 }
 

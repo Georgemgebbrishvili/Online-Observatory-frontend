@@ -122,6 +122,15 @@ const pairs: Pair[] = [
       "scrim-strong",
     ),
   ),
+  // ADR-104: words on the one glass. Over a drawn sky it takes the deep fill, measured over
+  // the brightest point a star field holds (a star as bright as the ink); elsewhere the
+  // glass over the night.
+  ...["text-primary", "text-secondary", "text-tertiary", "text-small", "accent-ink"].map((fg) =>
+    measure(fg, "photon", "text on deep glass over a bright star", 4.5, "glass-deep"),
+  ),
+  ...["text-primary", "text-secondary", "text-tertiary", "text-small", "accent-ink"].map((fg) =>
+    measure(fg, "night", "text on glass", 4.5, "glass"),
+  ),
 ];
 
 function table() {

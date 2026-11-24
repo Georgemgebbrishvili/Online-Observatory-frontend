@@ -1,7 +1,6 @@
 "use client";
 
 import type { TonightSession } from "@darkview/contracts";
-import { zGetTonightResponse } from "@darkview/contracts/zod";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -10,7 +9,6 @@ import { Container } from "@/components/ui/container";
 import { fill } from "@/features/operator/format";
 import type { Locale } from "@/i18n/config";
 import { tonightCopy } from "@/i18n/resources/tonight";
-import { apiRequest } from "@/lib/platform/browser";
 
 /**
  * Clients ADR-066: on the home page, while a session is open to everyone, a line that
@@ -22,7 +20,13 @@ export function TonightBanner({ locale }: { locale: Locale }) {
 
   useEffect(() => {
     let cancelled = false;
-    apiRequest("/tonight", { schema: zGetTonightResponse })
+    // The reader and the contract's schema arrive with the read, after the page's first
+    // paint, so the homepage's first load carries no validator (ADR-104). The response is
+    // still checked against the contract before anything is shown.
+    Promise.all([import("@/lib/platform/browser"), import("@darkview/contracts/zod")])
+      .then(([{ apiRequest }, { zGetTonightResponse }]) =>
+        apiRequest("/tonight", { schema: zGetTonightResponse }),
+      )
       .then((tonight) => {
         if (!cancelled) setLive(tonight.live ?? null);
       })

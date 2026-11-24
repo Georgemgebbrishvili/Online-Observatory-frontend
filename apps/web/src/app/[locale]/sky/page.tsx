@@ -4,7 +4,7 @@ import { preload } from "react-dom";
 
 import { SiteHeader } from "@/components/layout/site-header";
 import { NightSky } from "@/components/sky3d/night-sky";
-import { FIGURES_URL, STARS_URL } from "@/features/sky3d/astro";
+import { FIGURES_URL, STARS_URL } from "@/features/sky3d/catalogue";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { nightSkyCopy } from "@/i18n/resources/night-sky";

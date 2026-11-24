@@ -1,8 +1,9 @@
 /*
- * ADR-102 — THE PREMIUM PASS, EVERY PAGE. The homepage's glass (ADR-100) lent to every
- * panel on the site: a rim that catches the light at the top-left and brightens where
- * the pointer is, a soft light inside under the pointer, and a lift on hover. The pointer
- * position comes from components/layout/ambient-light.tsx; without it the rim is plain.
+ * ADR-102 — THE PREMIUM PASS, EVERY PAGE, refined by ADR-104: one light. Every panel on
+ * the site is the one glass (tokens.css): its fill, a rim brightest toward the key light
+ * at the top-left, a highlight along its top edge. On a fine pointer, the hero-level
+ * pieces only — the plans, the sign-in card, the ballot's cards — let the rim brighten
+ * where the pointer is (components/layout/ambient-light.tsx); a touch screen never does.
  *
  * Each selector is prefixed with `html` so it outranks the page's own one-class rule,
  * which loads after this sheet and would otherwise put the flat border back.
@@ -36,10 +37,13 @@ html
   background: var(--gradient-tile), var(--color-glass);
 }
 
+/* Over the ring the sign-in card takes the deep fill, so its words keep AA. */
 html .auth-panel {
+  background: var(--gradient-tile), var(--color-glass-deep);
   box-shadow: var(--shadow-glass), var(--shadow-panel);
 }
 
+/* The rim: a hairline mask over the edge gradient, lit from the top-left. */
 html
   :is(
     .plate,
@@ -54,13 +58,7 @@ html
   position: absolute;
   padding: 1px;
   border-radius: inherit;
-  background:
-    radial-gradient(
-      16rem circle at var(--px, -50%) var(--py, -50%),
-      var(--color-spot),
-      transparent 60%
-    ),
-    var(--gradient-edge);
+  background: var(--gradient-edge);
   content: "";
   inset: -1px;
   mask: var(--mask-edge);
@@ -68,44 +66,36 @@ html
   pointer-events: none;
 }
 
-html
-  :is(
-    .plate,
-    .pricing-plan,
-    .pricing-tonight,
-    .guide-points li,
-    .guide-cta,
-    .auth-panel,
-    .state-panel-empty,
-    .vote-card
-  )::before {
-  position: absolute;
-  z-index: -1;
-  border-radius: inherit;
-  background: radial-gradient(
-    22rem circle at var(--px, -50%) var(--py, -50%),
-    var(--color-spot-soft),
-    transparent 65%
-  );
-  content: "";
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 400ms var(--ease-sky);
-}
+@media (hover: hover) and (pointer: fine) {
+  html :is(.pricing-plan, .auth-panel, .vote-card)::after {
+    background:
+      radial-gradient(
+        var(--size-spot) circle at var(--px, -50%) var(--py, -50%),
+        var(--color-spot),
+        transparent 60%
+      ),
+      var(--gradient-edge);
+  }
 
-html
-  :is(
-    .plate,
-    .pricing-plan,
-    .pricing-tonight,
-    .guide-points li,
-    .guide-cta,
-    .auth-panel,
-    .state-panel-empty,
-    .vote-card
-  ):hover::before {
-  opacity: 1;
+  html :is(.pricing-plan, .auth-panel, .vote-card)::before {
+    position: absolute;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      calc(var(--size-spot) * 1.5) circle at var(--px, -50%) var(--py, -50%),
+      var(--color-spot-soft),
+      transparent 65%
+    );
+    content: "";
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 400ms var(--ease-sky);
+  }
+
+  html :is(.pricing-plan, .auth-panel, .vote-card):hover::before {
+    opacity: 1;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
@@ -121,16 +111,7 @@ html
   }
 }
 
-/*
- * The featured plan: a lit edge that travels slowly round it, as the light does round
- * the homepage's eyepiece. Held still under reduced motion.
- */
-@property --featured-angle {
-  inherits: false;
-  initial-value: 0deg;
-  syntax: "<angle>";
-}
-
+/* The featured plan: a still rim warmed by the key light, where ADR-102 had it travel. */
 html .pricing-plan.is-featured {
   border-color: transparent;
   box-shadow:
@@ -140,64 +121,33 @@ html .pricing-plan.is-featured {
 
 html .pricing-plan.is-featured::after {
   background:
-    radial-gradient(
-      16rem circle at var(--px, -50%) var(--py, -50%),
-      var(--color-spot),
-      transparent 60%
-    ),
-    conic-gradient(
-      from var(--featured-angle),
-      transparent 0 62%,
-      var(--color-featured-lead) 74%,
-      var(--color-featured-tail) 82%,
-      transparent 92%
-    ),
+    linear-gradient(var(--light-angle), var(--color-key-light), transparent 45%),
     var(--gradient-edge);
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (hover: hover) and (pointer: fine) {
   html .pricing-plan.is-featured::after {
-    animation: featured-turn 7s linear infinite;
+    background:
+      radial-gradient(
+        var(--size-spot) circle at var(--px, -50%) var(--py, -50%),
+        var(--color-spot),
+        transparent 60%
+      ),
+      linear-gradient(var(--light-angle), var(--color-key-light), transparent 45%),
+      var(--gradient-edge);
   }
 }
 
-@keyframes featured-turn {
-  to {
-    --featured-angle: 360deg;
-  }
-}
-
-/* A field glows softly when it takes the cursor. */
+/* A field taking the cursor: its edge changes colour (components.css) and the focus
+   ring does the rest; ADR-104 took out the halo ADR-102 put round it. */
 :is(.input, .textarea, .select) {
-  transition:
-    border-color var(--duration-standard) var(--ease-standard),
-    box-shadow var(--duration-state) var(--ease-standard);
+  transition: border-color var(--duration-standard) var(--ease-standard);
 }
 
-:is(.input, .textarea, .select):focus {
-  box-shadow: var(--shadow-field-focus);
-}
-
-/* An answer opens to its height rather than jumping (where the browser can). */
-:is(.guide-faq-list, .home-faq) details {
-  interpolate-size: allow-keywords;
-}
-
-:is(.guide-faq-list, .home-faq) details::details-content {
-  overflow: clip;
-  block-size: 0;
-  transition:
-    block-size 420ms var(--ease-out-expo),
-    content-visibility 420ms allow-discrete;
-}
-
-:is(.guide-faq-list, .home-faq) details[open]::details-content {
-  block-size: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :is(.guide-faq-list, .home-faq) details::details-content {
-    transition: none;
+/* An answer opens at once and its words fade up into it: no height is animated. */
+@media (prefers-reduced-motion: no-preference) {
+  :is(.guide-faq-list, .home-faq) details[open] > :not(summary) {
+    animation: enter var(--duration-enter) var(--ease-out-expo) backwards;
   }
 }
 
@@ -211,32 +161,22 @@ html {
 }
 
 /*
- * ADR-102: a panel below the fold waits, faint and soft, until it is scrolled to, then
- * rises (page-reveal.tsx). An animation that fills backwards only, so once it has run
+ * ADR-102: a panel below the fold waits until it is scrolled to, then rises (page-reveal
+ * tsx) with the one entrance (ADR-104), which fills backwards only, so once it has run
  * the panel's own hover transitions are its again.
  */
 [data-out]:not([data-in]) {
-  filter: blur(6px);
   opacity: 0;
-  translate: 0 1.5rem;
+  translate: 0 var(--distance-enter);
 }
 
 [data-out][data-in] {
-  animation: page-reveal 850ms var(--ease-out-expo) var(--reveal-delay, 0ms) backwards;
-}
-
-@keyframes page-reveal {
-  from {
-    filter: blur(6px);
-    opacity: 0;
-    translate: 0 1.5rem;
-  }
+  animation: enter var(--duration-enter) var(--ease-out-expo) var(--enter-delay, 0ms) backwards;
 }
 
 @media print {
   [data-out] {
     animation: none;
-    filter: none;
     opacity: 1;
     translate: none;
   }

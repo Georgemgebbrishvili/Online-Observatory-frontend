@@ -84,6 +84,8 @@ const dictionary = {
         high: "{altitude}° up · {direction}",
         book: "Book {time}",
         bookAny: "Book a session",
+        previous: "Previous showpiece",
+        next: "Next showpiece",
         names: {
           moon: "The Moon",
           saturn: "Saturn",
