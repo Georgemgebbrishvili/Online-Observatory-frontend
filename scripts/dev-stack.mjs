@@ -20,7 +20,9 @@ const composeFile = path.join(repositoryRoot, "dev/docker-compose.yml");
 const stateDirectory = path.join(repositoryRoot, "dev/.state");
 
 const API_URL = "http://127.0.0.1:4000";
-const AGENT_CLOUD_URL = "ws://localhost:4001/ws/agent";
+// A loopback literal: since platform 60fe80c (the 7 November security review, SR-05) the
+// agent takes plain ws:// only to 127.0.0.1 or ::1, and refuses "localhost".
+const AGENT_CLOUD_URL = "ws://127.0.0.1:4001/ws/agent";
 const FAKE_API_URL = "http://127.0.0.1:4100";
 const STORAGE_ORIGIN = "http://localhost:9000";
 

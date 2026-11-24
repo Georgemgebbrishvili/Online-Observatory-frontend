@@ -191,7 +191,7 @@ Or, in VS Code: _Tasks: Run Task → dev stack: run_.
 | `mail`     | verification webhook sink      | 127.0.0.1:4010                                |
 | `api`      | platform API                   | :4000                                         |
 | `realtime` | observatory link, live view    | :4001                                         |
-| `agent`    | Observatory Agent, `SIMULATED` | no port; dials `ws://localhost:4001/ws/agent` |
+| `agent`    | Observatory Agent, `SIMULATED` | no port; dials `ws://127.0.0.1:4001/ws/agent` |
 | `web`      | this web client                | http://localhost:3000                         |
 
 The agent's observatory id and device token come from the platform's
