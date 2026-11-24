@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 // Under the hero only (ADR-086): the hero and its panels are on screen from the start.
 const targets =
-  ".home-band :is(.home-head, .home-tile, .night-panel, .night-readout, .home-faq details)";
+  ".home-band :is(.home-head, .home-tile, .night-panel, .night-readout, .home-faq details, .home-closing-card)";
 
 /**
  * ADR-077: the homepage's sections rise into place as they scroll into view. Until this

@@ -72,9 +72,18 @@ test("the public homepage: the hero, tonight, the steps, and the rest", async ({
   await expect(
     page.getByRole("heading", { level: 2, name: "How it works" }),
   ).toBeVisible();
-  // ADR-099: the hero, tonight, the steps and questions. Prices sit on the hero; the
-  // other ways in (vote, gift, cards) are in the footer.
-  await expect(page.locator("main section")).toHaveCount(4);
+  // ADR-099, ADR-100: the hero, tonight, the instrument, the steps, questions and the
+  // closing call. Prices sit on the hero; vote and cards are in the footer.
+  await expect(page.locator("main section")).toHaveCount(6);
+  // ADR-100: the instrument in figures, with no model name and a drawn light path only.
+  const instrument = page.locator(".home-instrument");
+  await expect(instrument.getByRole("heading", { level: 2, name: "Real glass. Real light." })).toBeVisible();
+  await expect(instrument.locator(".home-instrument-figure")).toHaveCount(4);
+  await expect(instrument.locator("img")).toHaveCount(0);
+  await expect(instrument.getByText("Diagram — how light travels through the telescope")).toBeVisible();
+  const closing = page.locator(".home-closing");
+  await expect(closing.getByRole("link", { name: "Book a session" })).toHaveAttribute("href", "/en/app/book");
+  await expect(closing.getByRole("link", { name: "Gift a night" })).toHaveAttribute("href", "/en/gift");
   await expect(page.locator(".home-ways")).toHaveCount(0);
   await expect(page.locator(".home-picker")).toHaveCount(0);
   await expect(page.locator(".home-faq details")).toHaveCount(4);

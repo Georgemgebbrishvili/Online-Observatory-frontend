@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { brand } from "@/brand";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/ui/container";
 import type { Locale } from "@/i18n/config";
@@ -74,6 +75,10 @@ export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
           </div>
         </nav>
       </Container>
+      {/* ADR-100: the name set large across the foot, fading into the night. */}
+      <div className="footer-mark" aria-hidden="true" lang="en">
+        {brand.en.name}
+      </div>
     </footer>
   );
 }

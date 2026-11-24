@@ -47,6 +47,7 @@ const dictionary = {
   },
   home: {
     hero: {
+      kicker: "Live remote observatory",
       headline: "The real sky,",
       sunset: "live.",
       lede: "Book a real telescope and watch the night sky live.",
@@ -54,6 +55,7 @@ const dictionary = {
       watch: "Watch live",
       illustration: "Illustration — not telescope output",
       moonCredit: "The Moon: NASA/GSFC/Arizona State University",
+      specs: ["203 mm telescope", "Colour astronomy camera", "Live view in your browser"],
       panels: {
         tonight: "Tonight",
         noTimes: "No open times tonight",
@@ -76,6 +78,27 @@ const dictionary = {
       ],
     },
     tonight: { title: "Tonight" },
+    instrument: {
+      kicker: "The instrument",
+      title: "Real glass. Real light.",
+      lede: "An 8-inch Schmidt-Cassegrain on a computerised mount, and a colour astronomy camera. Short exposures, stacked as you watch.",
+      figures: [
+        { value: "203", unit: "mm", label: "Aperture" },
+        { value: "2032", unit: "mm", label: "Focal length · f/10" },
+        { value: "3", unit: "", label: "Optical setups, f/6.3 to f/20" },
+        { value: "8.3", unit: "MP", label: "Colour camera, every frame in colour" },
+      ],
+      safety: {
+        title: "Checked twice",
+        text: "Every command is checked in the cloud, then again at the telescope.",
+      },
+      diagram: "Diagram — how light travels through the telescope",
+    },
+    closing: {
+      title: "Tonight, the sky is yours.",
+      lede: "Pick a time and a target, and watch a real telescope turn to it.",
+      gift: "Gift a night",
+    },
     more: {
       price: {
         title: "Pay by the minute",

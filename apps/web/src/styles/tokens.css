@@ -564,7 +564,7 @@
   /* The homepage below the sky (ADR-076). */
   --font-size-section: clamp(1.875rem, 4vw, 3rem);
   --font-size-closer: clamp(2.25rem, 5.5vw, 4rem);
-  --font-size-hero-glass: clamp(2.5rem, 7vw, 5.25rem);
+  --font-size-hero-glass: clamp(2.75rem, 7.4vw, 6.5rem);
   --font-size-tile: 1.25rem;
   --font-size-time: 1.5rem;
   --font-size-price: clamp(1.5rem, 3vw, 2rem);
@@ -574,6 +574,9 @@
   --font-size-price-big: clamp(2.5rem, 5vw, 3.5rem);
   --font-size-step: clamp(1.25rem, 2vw, 1.5rem);
   --font-size-numeral: clamp(5rem, 11vw, 8.5rem);
+  /* ADR-100: the instrument's figures, and the name set across the footer. */
+  --font-size-figure: clamp(2.75rem, 1.8rem + 3.2vw, 4.5rem);
+  --font-size-footer-mark: clamp(3.5rem, 14.5vw, 17rem);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -709,6 +712,45 @@
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-sky: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-spring: cubic-bezier(0.18, 1.25, 0.3, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /*
+   * ADR-100: the light of the premium pass. A rim that brightens under the pointer, the
+   * eyepiece's halo and its reticle, a planet's lit edge rising at the foot of the closing
+   * card, the footer's fading name, and the kicker's live dot.
+   */
+  --color-spot: color-mix(in srgb, var(--st-red-hi) 70%, transparent);
+  --color-spot-soft: color-mix(in srgb, var(--st-amber) 10%, transparent);
+  --color-reticle: color-mix(in srgb, var(--st-cream) 30%, transparent);
+  --color-reticle-major: color-mix(in srgb, var(--st-red-ink) 80%, transparent);
+  --gradient-halo: radial-gradient(
+    circle,
+    transparent 36%,
+    color-mix(in srgb, var(--st-amber) 10%, transparent) 40%,
+    color-mix(in srgb, var(--st-red) 9%, transparent) 50%,
+    transparent 70%
+  );
+  --gradient-limb: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--st-sun-1) 70%, transparent),
+    color-mix(in srgb, var(--st-sun-3) 45%, transparent) 30%,
+    color-mix(in srgb, var(--st-red) 22%, transparent) 60%,
+    transparent
+  );
+  --gradient-limb-body: radial-gradient(
+    circle at 50% 0%,
+    var(--st-monolith-top),
+    var(--st-bar) 70%
+  );
+  --gradient-footer-mark: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--st-cream) 14%, transparent),
+    transparent 85%
+  );
+  --gradient-figure: linear-gradient(180deg, var(--st-white) 20%, var(--st-ink-3));
+  --gradient-ray: linear-gradient(90deg, var(--st-sun-2), var(--st-red-hi));
+  --color-ray: var(--st-sun-2);
+  --glow-kicker: 0 0 0.75rem var(--st-red);
 }
 
 /* Mkhedruli has no capitals: the Georgian headline is weight, not case. On :lang, not

@@ -20,6 +20,7 @@
   gap: var(--space-8);
   padding: var(--space-10) var(--space-page) var(--space-8);
   overflow: clip;
+  isolation: isolate;
 }
 
 /* A warm glow behind the planet, the sunset's red kept low. */
@@ -43,10 +44,7 @@
 
 .home-hero-title {
   margin: 0;
-  padding-bottom: 0.08em;
-  background: var(--gradient-title);
-  background-clip: text;
-  color: transparent;
+  color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: var(--font-size-hero-glass);
   font-weight: var(--font-weight-bold);
@@ -57,10 +55,30 @@
 }
 
 .home-hero-title em {
-  background: var(--gradient-title-accent);
+  font-style: normal;
+}
+
+/*
+ * ADR-100: every word in a mask of its own, so each rises out of the line beneath it. The
+ * gradient sits on each word, since a parent's text fill does not reach a moving child.
+ */
+.home-hero-word {
+  display: inline-block;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+  overflow: clip;
+  vertical-align: top;
+}
+
+.home-hero-word > span {
+  display: inline-block;
+  background: var(--gradient-title);
   background-clip: text;
   color: transparent;
-  font-style: normal;
+}
+
+.home-hero-title em .home-hero-word > span {
+  background-image: var(--gradient-title-accent);
 }
 
 /* Mkhedruli has no capitals and runs wide: never tracked tight. */
@@ -75,6 +93,72 @@
   color: var(--color-text-cream);
   font-size: var(--font-size-body-lg);
   line-height: 1.5;
+}
+
+/* ADR-100: the line above the headline, a dot of the accent beside it. */
+.home-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-5);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-full);
+  background: var(--color-chip);
+  box-shadow: var(--shadow-pill-glass);
+  color: var(--color-text-cream);
+  font-family: var(--font-label);
+  font-size: var(--font-size-kicker);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  backdrop-filter: var(--blur-glass);
+}
+
+.home-hero-kicker i {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: var(--glow-kicker);
+}
+
+/* The instrument in three facts under the buttons, a hairline before them. */
+.home-hero-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-8) 0 0;
+  padding: var(--space-5) 0 0;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  list-style: none;
+  max-width: 34rem;
+}
+
+.home-hero-specs li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.home-hero-specs li::before {
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border-radius: 50%;
+  background: var(--color-accent-ink);
+  content: "";
+}
+
+/* The drawn star field behind the hero, faded out at its foot. */
+.home-hero-sky {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  mask-image: linear-gradient(180deg, var(--color-mask) 60%, transparent);
+  pointer-events: none;
 }
 
 .home-hero-actions {
@@ -95,7 +179,9 @@
 .home-hero-field {
   position: relative;
   display: grid;
-  width: min(100%, 26rem);
+  width: min(100%, 28rem);
+  /* ADR-100: the eyepiece leans against the pointer; the stars lean with it. */
+  translate: calc(var(--tilt-x, 0) * -12px) calc(var(--tilt-y, 0) * -9px);
   aspect-ratio: 1;
   place-items: center;
   border: 1px solid var(--color-glass-border);
@@ -108,6 +194,36 @@
   position: relative;
   display: grid;
   width: 74%;
+}
+
+/* The eyepiece's graduated ring, a little outside its rim; a tick every 5°. */
+.home-hero-reticle {
+  position: absolute;
+  width: 112%;
+  height: 112%;
+  inset: -6%;
+  fill: none;
+  pointer-events: none;
+  stroke: var(--color-reticle);
+  stroke-width: 0.35;
+}
+
+.home-hero-reticle circle {
+  stroke: var(--color-line);
+}
+
+.home-hero-reticle [data-major] {
+  stroke: var(--color-reticle-major);
+  stroke-width: 0.6;
+}
+
+/* A warm light behind the eyepiece, as if the planet lit the glass. */
+.home-hero-halo {
+  position: absolute;
+  z-index: -1;
+  background: var(--gradient-halo);
+  inset: -32%;
+  pointer-events: none;
 }
 
 .home-hero-field img {
@@ -174,6 +290,7 @@
   color: var(--color-text-primary);
   backdrop-filter: var(--blur-glass);
   text-decoration: none;
+  translate: calc(var(--tilt-x, 0) * 8px) calc(var(--tilt-y, 0) * 6px);
   transition: border-color var(--duration-state) var(--ease-sky);
 }
 
@@ -428,35 +545,45 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .home-hero-lead > *,
+  .home-hero-lead > :not(.home-hero-title),
   .home-hero-planet,
   .home-hero-panels > * {
-    animation: hero-rise 900ms var(--ease-sky) both;
+    animation: hero-rise 1000ms var(--ease-out-expo) both;
   }
 
-  .home-hero-lead > :nth-child(2) {
-    animation-delay: 80ms;
-  }
-
+  /* ADR-100: the kicker first, the words rise out of their masks, then the rest. */
   .home-hero-lead > :nth-child(3) {
-    animation-delay: 160ms;
+    animation-delay: 420ms;
+  }
+
+  .home-hero-lead > :nth-child(4) {
+    animation-delay: 520ms;
+  }
+
+  .home-hero-lead > :nth-child(5) {
+    animation-delay: 620ms;
+  }
+
+  .home-hero-word > span {
+    animation: word-rise 1100ms var(--ease-out-expo) both;
+    animation-delay: calc(80ms + var(--word, 0) * 85ms);
   }
 
   .home-hero-planet {
-    animation-delay: 120ms;
+    animation-delay: 200ms;
   }
 
   /* The panels follow the words, one after another. */
   .home-hero-panels > :nth-child(1) {
-    animation-delay: 260ms;
+    animation-delay: 640ms;
   }
 
   .home-hero-panels > :nth-child(2) {
-    animation-delay: 340ms;
+    animation-delay: 720ms;
   }
 
   .home-hero-panels > :nth-child(3) {
-    animation-delay: 420ms;
+    animation-delay: 800ms;
   }
 
   .home-hero-body {
@@ -466,6 +593,19 @@
   /* The little moon goes round its orbit once a minute. */
   .home-hero-moon {
     animation: hero-orbit 60s linear infinite;
+  }
+
+  /* The eyepiece's ring turns slowly; its warm halo breathes. */
+  .home-hero-reticle {
+    animation: reticle-turn 240s linear infinite;
+  }
+
+  .home-hero-halo {
+    animation: halo-breathe 9s ease-in-out infinite;
+  }
+
+  .home-hero-kicker i {
+    animation: kicker-pulse 2.4s ease-in-out infinite;
   }
 
   /* Tonight's bars draw in from dusk when the chart comes into view. */
@@ -482,6 +622,47 @@
 
   .night-now span {
     animation: now-glow 3s ease-in-out infinite;
+  }
+
+  .home-optics-pulse {
+    animation: ray-run 3.6s var(--ease-standard) infinite;
+  }
+}
+
+@keyframes word-rise {
+  from {
+    opacity: 0.01;
+    translate: 0 105%;
+  }
+}
+
+@keyframes reticle-turn {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@keyframes halo-breathe {
+  50% {
+    opacity: 0.6;
+    scale: 1.06;
+  }
+}
+
+@keyframes kicker-pulse {
+  50% {
+    box-shadow: none;
+    opacity: 0.55;
+  }
+}
+
+@keyframes ray-run {
+  from {
+    stroke-dashoffset: 100;
+  }
+
+  to {
+    stroke-dashoffset: -6;
   }
 }
 
@@ -605,7 +786,10 @@
   position: absolute;
   padding: 1px;
   border-radius: inherit;
-  background: var(--gradient-edge);
+  /* ADR-100: where the pointer is, the rim catches more light. */
+  background:
+    radial-gradient(16rem circle at var(--px, -50%) var(--py, -50%), var(--color-spot), transparent 60%),
+    var(--gradient-edge);
   content: "";
   inset: -1px;
   mask: var(--mask-edge);
@@ -1283,7 +1467,8 @@ a.home-tile:focus-visible,
     .home-tile,
     .night-panel,
     .night-readout,
-    .home-faq details
+    .home-faq details,
+    .home-closing-card
   ):not([data-in]) {
   opacity: 0;
   filter: blur(6px);
@@ -1374,5 +1559,278 @@ a.home-tile:focus-visible,
   a.home-tile,
   .night-row {
     transition: none;
+  }
+}
+
+/*
+ * ADR-100 — THE PREMIUM PASS. A soft light inside a glass tile under the pointer; the
+ * section kicker; the instrument in figures with the light running through the drawn
+ * telescope; the closing card over a planet's lit edge.
+ */
+.home-tile::before {
+  position: absolute;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(22rem circle at var(--px, -50%) var(--py, -50%), var(--color-spot-soft), transparent 65%);
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms var(--ease-sky);
+}
+
+.home-tile:hover::before {
+  opacity: 1;
+}
+
+.home-kicker {
+  color: var(--color-accent-ink);
+  font-family: var(--font-label);
+  font-size: var(--font-size-kicker);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.home-instrument-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.home-instrument-lead {
+  grid-column: 1 / -1;
+  margin: 0;
+  align-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background:
+    var(--texture-dots) 0 0 / 1.375rem 1.375rem,
+    var(--gradient-panel);
+}
+
+.home-instrument-lead p {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--color-text-cream);
+  font-size: var(--font-size-body-lg);
+  text-wrap: pretty;
+}
+
+.home-instrument-lead figcaption {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-label);
+}
+
+.home-optics {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.home-optics-tube {
+  fill: var(--color-well);
+  stroke: var(--color-line-strong);
+}
+
+.home-optics-glass {
+  stroke: var(--color-reticle);
+  stroke-width: 2;
+}
+
+.home-optics-mirror {
+  fill: none;
+  stroke: var(--color-text-primary);
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+.home-optics-camera {
+  fill: var(--color-chip-strong);
+  stroke: var(--color-accent-border);
+}
+
+.home-optics-ray,
+.home-optics-pulse {
+  fill: none;
+  stroke-linejoin: round;
+}
+
+.home-optics-ray {
+  stroke: var(--color-ray);
+  stroke-opacity: 0.22;
+  stroke-width: 0.8;
+}
+
+.home-optics-pulse {
+  filter: drop-shadow(0 0 3px var(--color-spot));
+  stroke: var(--color-ray);
+  stroke-dasharray: 6 94;
+  stroke-dashoffset: 100;
+  stroke-linecap: round;
+  stroke-width: 1.6;
+}
+
+.home-instrument-figure {
+  align-content: end;
+  min-height: 11rem;
+  gap: var(--space-2);
+}
+
+.home-instrument-figure b {
+  padding-bottom: 0.04em;
+  background: var(--gradient-figure);
+  background-clip: text;
+  color: transparent;
+  font-size: var(--font-size-figure);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.home-instrument-figure small {
+  margin-left: 0.12em;
+  font-size: var(--font-size-h3);
+  letter-spacing: 0;
+}
+
+.home-instrument-figure > span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-instrument-safety {
+  grid-column: 1 / -1;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-1) var(--space-4);
+}
+
+.home-instrument-safety b {
+  font-size: var(--font-size-tile);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+.home-instrument-safety > span:last-child {
+  grid-column: 2;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.home-instrument-check {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  grid-row: span 2;
+  place-items: center;
+  border: 1px solid var(--color-accent-border);
+  border-radius: 50%;
+  background: var(--color-accent-muted);
+  color: var(--color-accent-ink);
+}
+
+.home-instrument-check svg {
+  width: 1.375rem;
+  height: 1.375rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+/* THE CLOSING — one line over a planet's lit edge, rising from the foot of the card. */
+.home-closing-card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  padding: clamp(3.5rem, 8vw, 7rem) var(--space-6) clamp(7rem, 14vw, 11rem);
+  overflow: clip;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 1.75rem;
+  background: var(--gradient-tile);
+  box-shadow: var(--shadow-glass);
+  text-align: center;
+  isolation: isolate;
+}
+
+.home-closing-card h2 {
+  max-width: 16ch;
+  margin: 0;
+  padding-bottom: 0.06em;
+  background: var(--gradient-title);
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-body);
+  font-size: var(--font-size-closer);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+.home-closing-card h2:lang(ka) {
+  letter-spacing: 0;
+}
+
+.home-closing-card p {
+  max-width: 40ch;
+  margin: 0;
+  color: var(--color-text-cream);
+  font-size: var(--font-size-body-lg);
+  text-wrap: balance;
+}
+
+.home-closing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.public-home .home-closing-actions .button {
+  min-height: 3.25rem;
+  padding-inline: var(--space-8);
+  font-size: var(--font-size-body);
+}
+
+.home-closing-limb {
+  position: absolute;
+  z-index: -1;
+  bottom: 0;
+  left: 50%;
+  width: max(160%, 60rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--gradient-limb-body);
+  box-shadow:
+    0 -1px 0 var(--color-spot),
+    0 -2.5rem 7rem var(--color-accent-muted);
+  translate: -50% 93%;
+}
+
+.home-closing-limb::before {
+  position: absolute;
+  top: -2.5rem;
+  left: 50%;
+  width: 46%;
+  height: 5rem;
+  background: var(--gradient-limb);
+  content: "";
+  translate: -50% 0;
+}
+
+@media (--lg) {
+  .home-instrument-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .home-instrument-lead {
+    grid-column: 1 / 3;
+    grid-row: 1 / 3;
   }
 }

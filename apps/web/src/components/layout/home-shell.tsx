@@ -1,4 +1,6 @@
+import { HomeClosing } from "@/components/home/home-closing";
 import { HomeHero } from "@/components/home/home-hero";
+import { HomeInstrument } from "@/components/home/home-instrument";
 import { HomeMore } from "@/components/home/home-more";
 import { HomeQuick } from "@/components/home/home-quick";
 import { HomeSteps } from "@/components/home/home-steps";
@@ -19,8 +21,9 @@ type HomeShellProps = {
 };
 
 /**
- * The public homepage (ADR-086, ADR-099): the hero with its panels, tonight (the planets
- * and the open times on one night chart), how a session works, and questions.
+ * The public homepage (ADR-086, ADR-099, ADR-100): the hero with its panels, tonight (the
+ * planets and the open times on one night chart), the instrument, how a session works,
+ * questions, and the closing call.
  */
 export function HomeShell({ content, navigation, locale, pricing, sky }: HomeShellProps) {
   // Each step opens the page where it happens.
@@ -65,6 +68,8 @@ export function HomeShell({ content, navigation, locale, pricing, sky }: HomeShe
         </Container>
       </section>
 
+      <HomeInstrument content={content.instrument} />
+
       <section className="home-band" id="about" aria-labelledby="steps-title">
         <Container>
           <header className="home-head">
@@ -75,6 +80,7 @@ export function HomeShell({ content, navigation, locale, pricing, sky }: HomeShe
       </section>
 
       <HomeMore content={content.more} />
+      <HomeClosing content={content.closing} cta={content.hero.cta} locale={locale} />
       <ScrollReveal />
     </main>
   );

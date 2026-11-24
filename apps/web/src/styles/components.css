@@ -94,6 +94,30 @@
   box-shadow: var(--shadow-pill-hover);
 }
 
+/* ADR-100: a band of light crosses a filled button as the pointer arrives. */
+.button-primary {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.button-primary::after {
+  position: absolute;
+  z-index: -1;
+  background: var(--gradient-sheen);
+  content: "";
+  inset: 0;
+  opacity: 0.4;
+  pointer-events: none;
+  translate: -110% 0;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .button-primary:hover:not(:disabled)::after {
+    translate: 110% 0;
+    transition: translate 900ms var(--ease-out-expo);
+  }
+}
+
 .button-primary[aria-busy] {
   background: var(--color-pill-primary-busy);
 }

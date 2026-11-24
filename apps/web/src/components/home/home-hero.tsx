@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
 
+import { HeroSky } from "@/components/home/hero-sky";
 import { ButtonLink } from "@/components/ui/button";
 import { fill } from "@/features/operator/format";
 import type { PricingFacts } from "@/features/pricing/read";
@@ -49,6 +50,39 @@ function Arrow() {
   );
 }
 
+/** Each word in its own mask, so the headline rises line by line (ADR-100). */
+function Words({ text, from }: { text: string; from: number }) {
+  return text.split(" ").map((word, index) => (
+    <Fragment key={`${word}-${index}`}>
+      {index > 0 && " "}
+      <span className="home-hero-word" style={{ "--word": from + index } as CSSProperties}>
+        <span>{word}</span>
+      </span>
+    </Fragment>
+  ));
+}
+
+/** The eyepiece's graduated ring: a tick every 5°, a longer one every 30°. */
+function Reticle() {
+  return (
+    <svg className="home-hero-reticle" viewBox="-100 -100 200 200" aria-hidden="true">
+      <circle r="96" />
+      {Array.from({ length: 72 }, (_, index) => {
+        const major = index % 6 === 0;
+        return (
+          <line
+            key={index}
+            y1="-96"
+            y2={major ? -88 : -92.5}
+            transform={`rotate(${index * 5})`}
+            data-major={major ? "" : undefined}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
 function Panel({ href, head, children }: { href: string; head: ReactNode; children: ReactNode }) {
   return (
     <Link className="home-tile hero-panel" href={href}>
@@ -88,10 +122,20 @@ export function HomeHero({ content, price, navigation, locale, pricing, sky, tim
 
   return (
     <section className="home-hero" aria-labelledby={titleId}>
+      <HeroSky />
       <div className="home-hero-stage">
         <div className="home-hero-lead">
+          <p className="home-hero-kicker">
+            <i aria-hidden="true" />
+            {content.kicker}
+          </p>
           <Heading id={titleId} className="home-hero-title">
-            <span>{content.headline}</span> <em>{content.sunset}</em>
+            <span>
+              <Words text={content.headline} from={0} />
+            </span>{" "}
+            <em>
+              <Words text={content.sunset} from={content.headline.split(" ").length} />
+            </em>
           </Heading>
           <p className="home-hero-lede">{content.lede}</p>
           <div className="home-hero-actions">
@@ -100,10 +144,17 @@ export function HomeHero({ content, price, navigation, locale, pricing, sky, tim
               {content.watch}
             </ButtonLink>
           </div>
+          <ul className="home-hero-specs">
+            {content.specs.map((spec) => (
+              <li key={spec}>{spec}</li>
+            ))}
+          </ul>
         </div>
 
         <figure className="home-hero-planet">
           <div className="home-hero-field" aria-hidden="true">
+            <Reticle />
+            <span className="home-hero-halo" />
             <svg className="home-hero-orbit" viewBox="0 0 400 400">
               <ellipse cx="200" cy="200" rx="196" ry="70" transform="rotate(-18 200 200)" />
               <circle className="home-hero-moon" r="3.5" />

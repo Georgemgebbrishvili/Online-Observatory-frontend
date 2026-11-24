@@ -72,6 +72,8 @@ import { HomeQuick } from "@/components/home/home-quick";
 import type { PricingFacts } from "@/features/pricing/read";
 import { HomeHero } from "@/components/home/home-hero";
 import { HomeSteps } from "@/components/home/home-steps";
+import { HomeInstrument } from "@/components/home/home-instrument";
+import { HomeClosing } from "@/components/home/home-closing";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -1582,6 +1584,11 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               locale={locale}
               common={dictionary.home.common}
             />
+          </div>
+          {/* ADR-100: the instrument in figures, and the closing call. */}
+          <div className="ds-home-specimen">
+            <HomeInstrument content={dictionary.home.instrument} />
+            <HomeClosing content={dictionary.home.closing} cta={dictionary.home.hero.cta} locale={locale} />
           </div>
           <div className="ds-home-specimen">
             <PageGuide id="pricing" locale={locale} />

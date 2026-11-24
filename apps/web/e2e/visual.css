@@ -68,8 +68,22 @@ nextjs-portal {
 .home-hero-moon,
 .night-now span,
 .status-dot,
-.button-primary::after {
+.button-primary::after,
+.home-hero-word > span,
+.home-hero-reticle,
+.home-hero-halo,
+.home-hero-kicker i,
+.home-optics-pulse,
+#main-content {
   animation: none !important;
+}
+
+/*
+ * ADR-100: the hero's drawn star field twinkles and leans with the pointer, a different
+ * frame at each capture. Hidden; the page around it is compared.
+ */
+.home-hero-sky {
+  display: none !important;
 }
 
 /*

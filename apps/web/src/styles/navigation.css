@@ -10,6 +10,17 @@
   border-bottom: 1px solid var(--color-line);
   background: var(--color-bar);
   backdrop-filter: blur(14px) saturate(140%);
+  transition:
+    background-color 500ms var(--ease-sky),
+    border-color 500ms var(--ease-sky),
+    backdrop-filter 500ms var(--ease-sky);
+}
+
+/* ADR-100: clear over the top of a page, glass once it scrolls (ambient-light.tsx). */
+html[data-top] .site-header:not(:has([aria-expanded="true"])) {
+  border-bottom-color: transparent;
+  background-color: transparent;
+  backdrop-filter: blur(0) saturate(100%);
 }
 
 .public-navigation,

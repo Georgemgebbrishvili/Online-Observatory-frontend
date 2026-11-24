@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { AmbientLight } from "@/components/layout/ambient-light";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale, locales } from "@/i18n/config";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
@@ -75,6 +76,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           {dictionary.navigation.skip}
         </a>
         {children}
+        <AmbientLight />
       </body>
     </html>
   );

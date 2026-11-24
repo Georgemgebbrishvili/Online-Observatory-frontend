@@ -377,3 +377,16 @@ h1 {
 :root:lang(en) a[lang="ka"] {
   font-family: system-ui, sans-serif;
 }
+
+/* ADR-100: a page arrives with a short fade; the homepage's hero has its own entrance. */
+@media (prefers-reduced-motion: no-preference) {
+  #main-content:not(.public-home) {
+    animation: page-in 600ms var(--ease-sky) both;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0.01;
+  }
+}
