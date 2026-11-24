@@ -72,6 +72,13 @@ test("refuses a wrong password without leaving the sign-in page", async ({ page 
     "Email or password is incorrect.",
   );
   await expect(page).toHaveURL(/\/en\/sign-in$/, { timeout: firstCompile });
+  // The email stays as typed and only the password is cleared, so a second try needs
+  // only the password (React resets a form after its action; found 2026-11-24).
+  await expect(page.getByLabel("Email")).toHaveValue("observer@darkview.test");
+  await expect(page.getByLabel("Password")).toHaveValue("");
+  await page.getByLabel("Password").fill("correct horse battery");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/en\/app$/, { timeout: firstCompile });
 });
 
 test("treats a session cookie without its CSRF cookie as signed out", async ({

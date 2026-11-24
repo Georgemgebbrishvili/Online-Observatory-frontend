@@ -25,6 +25,11 @@ export type AuthActionState = {
   redirectTo?: string;
   /** A reset link that is unknown, used or expired (ADR-040's 404). */
   deadLink?: boolean;
+  /**
+   * What the visitor typed, handed back on a refusal: React resets a form after its action,
+   * and without these a wrong password also emptied the email (found 2026-11-24).
+   */
+  values?: { name?: string; email?: string };
 };
 
 function text(formData: FormData, field: string) {
@@ -68,9 +73,9 @@ export async function signInAction(
     // reading the status alone sent every visitor behind a misrouted proxy to verify
     // an address that was verified (the hosted demo, 2026-10-08).
     if (error instanceof ApiRequestError && error.error?.code === "EMAIL_UNVERIFIED") {
-      return { message: authCopy[locale].errors.unverified };
+      return { message: authCopy[locale].errors.unverified, values: { email: body.email } };
     }
-    return failure(locale, error);
+    return { ...failure(locale, error), values: { email: body.email } };
   }
 }
 
@@ -89,9 +94,10 @@ export async function registerAction(
   // DV-096: a member's referral code, carried from `/register?ref=` (ADR-084).
   const referralCode = text(formData, "referralCode");
   if (referralCode.length >= 6 && referralCode.length <= 16) body.referralCode = referralCode;
-  if (body.displayName.length < 2) return { errors: { name: copy.shortName } };
+  const values = { name: body.displayName, email: body.email };
+  if (body.displayName.length < 2) return { errors: { name: copy.shortName }, values };
   if (body.password.length < 12 || body.password.length > 128) {
-    return { errors: { password: copy.weakPassword } };
+    return { errors: { password: copy.weakPassword }, values };
   }
   try {
     // 200 with the user: the demo verified the address at once and signed it in
@@ -99,7 +105,7 @@ export async function registerAction(
     const user = await apiRequest("/auth/register", { method: "POST", body, schema: zUser });
     return { redirectTo: user ? `/${locale}/app` : `/${locale}/verify-email` };
   } catch (error) {
-    return failure(locale, error);
+    return { ...failure(locale, error), values };
   }
 }
 
@@ -113,7 +119,7 @@ export async function requestPasswordResetAction(
     await apiRequest("/auth/password-reset", { method: "POST", body });
     return { redirectTo: `/${locale}/reset-password?sent=1` };
   } catch (error) {
-    return failure(locale, error);
+    return { ...failure(locale, error), values: { email: body.email } };
   }
 }
 
