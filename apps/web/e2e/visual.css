@@ -57,33 +57,15 @@ nextjs-portal {
 }
 
 /*
- * What moves on its own: the homepage hero's words, planet and panels rise, the planet
- * floats, its little moon orbits and tonight's Now tag glows (ADR-086, ADR-099), the LIVE
- * LED blinks, a loading button's sheen loops. Captured at rest.
+ * What moves on its own: the homepage hero's words rise and its showpieces float (ADR-087),
+ * the LIVE LED blinks, a loading button's sheen loops. Captured at rest.
  */
-.home-hero-lead > *,
-.home-hero-planet,
-.home-hero-panels > *,
-.home-hero-body,
-.home-hero-moon,
-.night-now span,
+.hs-ln *,
+.hs-eye img,
 .status-dot,
 .button-primary::after,
-.home-hero-word > span,
-.home-hero-reticle,
-.home-hero-halo,
-.home-hero-kicker i,
-.home-optics-pulse,
 #main-content {
   animation: none !important;
-}
-
-/*
- * ADR-100: the hero's drawn star field twinkles and leans with the pointer, a different
- * frame at each capture. Hidden; the page around it is compared.
- */
-.home-hero-sky {
-  display: none !important;
 }
 
 /*
@@ -153,3 +135,11 @@ nextjs-portal {
   display: none !important;
 }
 
+/*
+ * ADR-087: the homepage's drawn skies follow the server's tonight and fill their scenes.
+ * Hidden rather than masked, so the copy laid over them is still compared.
+ */
+.hs-hero-sky,
+.hs-night-sky {
+  visibility: hidden !important;
+}

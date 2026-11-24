@@ -4,10 +4,6 @@ import { useEffect } from "react";
 
 // The glass pieces whose rim catches the pointer (ADR-100), on every page (ADR-102).
 const lit = [
-  ".home-tile",
-  ".night-panel",
-  ".night-readout",
-  ".home-closing-card",
   ".plate",
   ".pricing-plan",
   ".pricing-tonight",
