@@ -57,6 +57,8 @@ function masks(page: Page) {
     // The observatory console's clocks and the stations' local times run on the browser's
     // clock, which is held, and on the server's first render, which is not.
     page.locator(".oh-clock"),
+    // The Night Sky's clock and date are the moment it was opened.
+    page.locator(".sky-clock"),
     page.locator(".oh-tncard"),
     page.locator(".oh-tgcard .oh-best"),
     page.locator(".oh-row__meta"),

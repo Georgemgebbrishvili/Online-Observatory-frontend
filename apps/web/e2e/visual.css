@@ -146,3 +146,14 @@ nextjs-portal {
 .hs-sky {
   visibility: hidden !important;
 }
+
+/*
+ * The Night Sky (ADR-085) draws the sky of the moment it is opened, by the server's
+ * clock when the browser's held one is far behind it: other stars at each capture.
+ * The drawn sky and its labels are hidden; the page's own controls still count.
+ */
+.sky-canvas,
+.sky-overlay,
+.sky-labels {
+  visibility: hidden !important;
+}
