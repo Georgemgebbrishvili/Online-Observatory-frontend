@@ -30,9 +30,16 @@ test("communicates real telescope access in the English hero", async ({ page }) 
   await expect(hero.locator(".observatory-dome")).toHaveCount(0);
   await expect(hero.getByText("Online", { exact: true })).toHaveCount(0);
 
-  // ADR-087: the sky is a drawing and says so; the feed behind it is badged Simulated.
-  await expect(hero.getByText("Illustration — not telescope output")).toBeVisible();
-  await expect(hero.locator(".hs-hud-badge dd")).toHaveText("Simulated");
+  // ADR-107: no caption over the sky; the picture behind it is a real photograph through
+  // the same telescope and is badged as one. The homepage never says "simulated".
+  await expect(page.getByText("Illustration — not telescope output")).toHaveCount(0);
+  await expect(page.locator("main")).not.toContainText(/simulat/i);
+  await expect(hero.locator(".hs-hud-badge dd")).toHaveText("Real photo · 8SE");
+  // Hidden until the scroll reaches it, so found by its label, not by role.
+  await expect(hero.locator(".hs-feed")).toHaveAttribute(
+    "aria-label",
+    /photographed through a NexStar 8SE telescope$/,
+  );
   await expect(hero.locator(".hs-hero-feed")).toBeHidden();
   // The four steps after the headline are headings a reader can reach.
   for (const name of [
@@ -55,9 +62,9 @@ test("renders the Georgian hero and switches locale", async ({ page }) => {
   await expect(
     page.locator(".home-hero-actions").getByRole("link", { name: "დაჯავშნე სეანსი" }),
   ).toHaveAttribute("href", "/ka/app/book");
-  await expect(
-    page.locator(".home-hero").getByText("ილუსტრაცია — არა ტელესკოპის გამოსახულება"),
-  ).toBeVisible();
+  // ADR-107: no caption, and the picture behind the sky is badged as a real photograph.
+  await expect(page.getByText("ილუსტრაცია — არა ტელესკოპის გამოსახულება")).toHaveCount(0);
+  await expect(page.locator(".home-hero .hs-hud-badge dd")).toHaveText("ნამდვილი ფოტო · 8SE");
   // Mkhedruli has no capitals: the headline and the labels are never uppercased.
   await expect(page.locator("h1.home-hero-title")).toHaveCSS("text-transform", "none");
   await expect(page.locator(".hs-label").first()).toHaveCSS("text-transform", "none");
@@ -75,21 +82,13 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
   // the telescope with the sign-off. One drawn sky for the whole page.
   await expect(page.locator("main section")).toHaveCount(5);
   await expect(page.locator("main canvas")).toHaveCount(1);
-  await expect(page.getByText(/Celestron/)).toHaveCount(0);
 
   // Tonight's showpieces: each with its best time and a way to book.
   const slides = page.locator(".hs-slide");
   expect(await slides.count()).toBeGreaterThan(0);
   await expect(slides.first().getByRole("link")).toHaveAttribute("href", /^\/en\/app\/book/);
-  // ADR-105: the showpieces carry no caption, and the page no picture credits; the drawn
-  // night sky keeps its caption.
-  await expect(
-    page.locator(".hs-coll").getByText("Illustration — not telescope output"),
-  ).toHaveCount(0);
+  // ADR-105: the showpieces carry no caption, and the page no data credits.
   await expect(page.getByText(/Arizona State University|Bright Star Catalogue/)).toHaveCount(0);
-  await expect(
-    page.locator(".hs-night").getByText("Illustration — not telescope output"),
-  ).toBeAttached();
   // A wide screen steps the row with its arrows; the first is spent at the start.
   await expect(page.getByRole("button", { name: "Previous showpiece" })).toBeDisabled();
   await page.getByRole("button", { name: "Next showpiece" }).click();
@@ -112,13 +111,22 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
   await expect(questions.nth(2)).toHaveAttribute("aria-expanded", "true");
   await expect(questions.nth(0)).toHaveAttribute("aria-expanded", "false");
 
-  // The observatory (ADR-105): what the telescope does, never which telescope it is; its
-  // console in miniature, badged Simulated.
-  await expect(page.locator(".hs-scope")).not.toContainText(/203 mm|Schmidt|Cassegrain|2032/);
-  await expect(
-    page.getByRole("img", { name: /^Simulated: the observatory console finding / }),
-  ).toBeVisible();
-  await expect(page.locator(".hs-scope .pv .hs-badge")).toHaveText("Simulated");
+  // The observatory (ADR-107): real views through 8-inch Celestron telescopes beside the
+  // words: a film that waits to be scrolled to, three photographs, and every author named
+  // with a link to the licence.
+  const reel = page.locator(".hs-scope .hs-reel");
+  await expect(reel.locator("video")).toHaveAttribute("preload", "none");
+  await expect(reel.locator(".hs-reel-film img")).toHaveAttribute("loading", "lazy");
+  await expect(reel.locator(".hs-reel-stills img")).toHaveCount(3);
+  for (const author of ["Thomas Bresson", "Dilshan Jayakody", "John Purvis"])
+    await expect(reel.getByRole("link", { name: author })).toHaveAttribute(
+      "href",
+      /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/,
+    );
+  await expect(reel.getByRole("link", { name: "CC BY-SA 2.0" })).toHaveAttribute(
+    "href",
+    "https://creativecommons.org/licenses/by-sa/2.0/",
+  );
   await expect(
     page.locator(".hs-scope").getByRole("link", { name: "See the observatory" }),
   ).toHaveAttribute("href", "/en/observatory");

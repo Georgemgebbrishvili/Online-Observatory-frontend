@@ -8,7 +8,6 @@ import type { Locale } from "@/i18n/config";
 import { constellationKa } from "@/i18n/resources/night-sky";
 import { skyTonightCopy } from "@/i18n/resources/sky-tonight";
 import type { Dictionary } from "@/i18n/types";
-import { exposureLabel } from "@/lib/observatory-sim/camera";
 import { SHOWPIECE_BY_ID } from "@/lib/observatory-sim/showpieces";
 
 type HomeShellProps = {
@@ -50,7 +49,7 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
   // The hero's camera: tonight's brightest planet, or Saturn as a stand-in.
   const planet = sky?.objects.find((o) => o.kind === "planet");
   const targetId = planet?.id ?? "saturn";
-  const recipe = SHOWPIECE_BY_ID.get(targetId)!.recipe;
+  const stack = SHOWPIECE_BY_ID.get(targetId)!.recipe.stack;
   const picture = heroPicture(targetId);
 
   const slides: StorySlide[] = (sky?.objects ?? []).map((o) => ({
@@ -136,9 +135,7 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
               timeZone: "UTC",
             }).format(new Date(`${picture.capturedOn}T00:00:00Z`))
           : null,
-        exposure: exposureLabel(recipe.exposureS),
-        gain: recipe.gain,
-        stack: recipe.stack,
+        stack,
         line: planet
           ? fill(copy.aimTonight, {
               name: names[planet.id],
@@ -176,14 +173,8 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
         })),
         perMinute: pricing.slot?.perMinute ?? null,
         night: nightLabel,
-        cloud: content.more.price.cloud,
       }}
       faq={content.more.faq}
-      preview={{
-        // Where tonight's planet stands at its best; the stand-in's is a plausible height.
-        altitude: planet?.altitude ?? 42,
-        direction: planet ? compass[planet.direction] : compass[4],
-      }}
       brandName={locale === "ka" ? brand.ka.nominative : brand.en.name}
     />
   );

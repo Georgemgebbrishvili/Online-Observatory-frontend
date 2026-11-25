@@ -70,7 +70,7 @@ import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { TargetPreview } from "@/components/room/target-preview";
 import { PageGuide } from "@/components/guide/page-guide";
 import { brand } from "@/brand";
-import { ObservatoryPreview, StoryEyepiece, StoryFeedSpecimen, StoryHorizon, StoryStep, StoryTicket } from "@/components/home/home-story";
+import { TelescopeReel, StoryEyepiece, StoryFeedSpecimen, StoryHorizon, StoryStep, StoryTicket } from "@/components/home/home-story";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -1536,15 +1536,14 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
         <section className="ds-section" aria-labelledby="showcase-title">
           <SectionHeader id="showcase-title" section={copy.sections.showcase} />
           <div className="ds-home-specimen ds-story-specimens">
-            {/* The story's camera feed, a raw sub and the settled stack, always badged. */}
+            {/* The story's camera feed (ADR-107): a real 8SE photograph, as a raw sub and as the settled stack. */}
             {[0, 1].map((depth) => (
               <StoryFeedSpecimen
                 key={depth}
                 depth={depth}
                 images={{ raw: "/sky/feed/saturn-raw.webp", settled: "/sky/feed/saturn.webp" }}
-                name={dictionary.home.story.showpieces.names.saturn}
-                simulated={dictionary.home.story.simulated}
-                illustration={dictionary.home.hero.illustration}
+                label={fill(dictionary.home.story.photoLabel, { name: dictionary.home.story.showpieces.names.saturn })}
+                badge={dictionary.home.story.photo}
               />
             ))}
             <StoryTicket
@@ -1565,20 +1564,9 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             <div className="ds-eye-specimen">
               <StoryEyepiece image="/sky/targets/saturn.jpg" name={dictionary.home.story.showpieces.names.saturn} />
             </div>
-            {/* ADR-105: the observatory's console in miniature, badged Simulated; it runs
-                while on screen and stands still, Track lit, under reduced motion. */}
+            {/* ADR-107: real views through 8-inch Celestron telescopes, each author named. */}
             <div className="ds-preview-specimen">
-              <ObservatoryPreview
-                copy={dictionary.home.story.scope.preview}
-                simulated={dictionary.home.story.simulated}
-                target={{
-                  name: dictionary.home.story.showpieces.names.saturn,
-                  feed: { raw: "/sky/feed/saturn-raw.webp", settled: "/sky/feed/saturn.webp" },
-                  stack: 200,
-                }}
-                altitude={38}
-                direction={dictionary.home.story.night.compass[4]}
-              />
+              <TelescopeReel copy={dictionary.home.story.scope.reel} />
             </div>
             <div className="hs-row-nav ds-row-nav">
               <StoryStep label={dictionary.home.story.showpieces.next} />

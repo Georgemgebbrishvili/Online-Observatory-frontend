@@ -75,7 +75,9 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   reactStrictMode: true,
   // Serves app/global-not-found.tsx for the proxy's 404s; without it they get Next's bare page.
-  experimental: { globalNotFound: true },
+  // inlineCss (ADR-107): a page's styles arrive in its HTML, so the first paint waits on no
+  // stylesheet request. They are about 30 KB compressed; client navigation does not refetch them.
+  experimental: { globalNotFound: true, inlineCss: true },
   // ADR-104: pictures through next/image come as AVIF where the browser takes it, else WebP.
   images: { formats: ["image/avif", "image/webp"] },
   async headers() {

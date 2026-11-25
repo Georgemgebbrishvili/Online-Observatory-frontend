@@ -176,27 +176,15 @@ html.lenis body {
   gap: var(--space-3);
 }
 
-/* Every drawn scene says what it is (CLAUDE.md, ADR-052 §7). */
-.hs-illustration {
-  position: absolute;
-  z-index: 3;
-  top: var(--space-4);
-  left: var(--space-page);
-  margin: 0;
-  color: var(--color-text-small);
-  font-size: var(--font-size-caption);
-  pointer-events: none;
-}
-
 .hs-badge,
 .hs-hud-badge dd {
   display: inline-flex;
   align-items: center;
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-simulated-border);
+  border: 1px solid var(--color-glass-border);
   border-radius: var(--radius-control);
-  background: var(--color-warning-muted);
-  color: var(--color-simulated);
+  background: var(--color-glass-deep);
+  color: var(--color-text-cream);
   font-family: var(--font-label);
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-medium);
@@ -1087,18 +1075,25 @@ html.lenis body {
   font-family: var(--font-body);
 }
 
-.hs-night .hs-illustration {
-  top: var(--space-4);
-}
-
 /*
  * THE SESSION — the price by the minute, the session printed on the cream ticket, and
  * the questions.
  */
 .hs-session {
+  position: relative;
   overflow: hidden;
   background: var(--color-night);
   isolation: isolate;
+}
+
+/* One warm light behind the ticket, the section's only glow (ADR-107). */
+.hs-session::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(42rem 26rem at 50% 58%, var(--color-accent-muted), transparent 72%);
+  content: "";
+  pointer-events: none;
 }
 
 .hs-session-in {
@@ -1115,17 +1110,50 @@ html.lenis body {
   gap: var(--space-4);
 }
 
-.hs-session-text p {
-  max-width: 22rem;
-  margin: 0;
-  color: var(--color-text-secondary);
+.hs-session-text .hs-title {
+  font-size: var(--font-size-figure);
+  line-height: 1;
+}
+
+/* Three facts, each a quiet pill with the accent's dot. */
+.hs-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hs-facts li {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-full);
+  background: var(--color-well);
+  color: var(--color-text-cream);
+  font-size: var(--font-size-label);
+}
+
+.hs-facts li::before {
+  width: 0.375rem;
+  height: 0.375rem;
+  flex: none;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  content: "";
 }
 
 .hs-buy {
   display: grid;
-  max-width: 24rem;
-  gap: var(--space-4);
-  padding: var(--space-5);
+  max-width: 26rem;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  border-top-color: var(--color-accent-border);
+  border-radius: var(--radius-large);
 }
 
 .hs-buy p {
@@ -1160,11 +1188,22 @@ html.lenis body {
 
 .hs-seg button[aria-pressed="true"] {
   background: var(--color-paper);
+  box-shadow: var(--shadow-small);
   color: var(--color-on-paper);
 }
 
+/* The price, large, with the rate beside its baseline. */
+.hs-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+}
+
 .hs-price b {
-  display: block;
   font-family: var(--font-mono);
   font-size: var(--font-size-figure);
   font-variant-numeric: tabular-nums;
@@ -1174,9 +1213,7 @@ html.lenis body {
 }
 
 .hs-price span {
-  display: block;
-  margin-top: var(--space-2);
-  color: var(--color-text-small);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-label);
 }
 
@@ -1305,6 +1342,10 @@ html.lenis body {
   display: grid;
   align-content: center;
   gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-large);
+  background: var(--color-well);
 }
 
 .hs-ask-wrap > h3 {
@@ -1318,7 +1359,7 @@ html.lenis body {
   list-style: none;
 }
 
-.hs-ask li {
+.hs-ask li:not(:last-child) {
   border-bottom: 1px solid var(--color-line);
 }
 
@@ -1392,16 +1433,19 @@ html.lenis body {
     grid-row: 2;
   }
 
+  /* The ticket hangs a little off true, as paper out of a printer does. */
   .hs-printer {
     width: clamp(17rem, 26vw, 22rem);
     align-self: center;
     grid-column: 2;
     grid-row: 1 / -1;
+    rotate: -2deg;
   }
 
   .hs-ask-wrap {
     width: 100%;
-    max-width: 22rem;
+    max-width: 24rem;
+    align-self: center;
     grid-column: 3;
     grid-row: 1 / -1;
     justify-self: end;
@@ -1484,322 +1528,108 @@ html.lenis body {
 }
 
 /*
- * THE CONSOLE IN MINIATURE (ADR-105). The one glass, deep over the night; a viewport of
- * sky; the pipeline's five steps; two readouts. One ten-second loop, run while on screen
- * (data-run): the field slides past as the telescope slews (2–4s), the reticle closes on
- * the solved field (4–6s), the target is centred and the frames stack up (6–9.5s). Each
- * step is lit for its two seconds with the console's current-step glow. Held still, it
- * shows the target tracked and the stack complete.
+ * REAL VIEWS (ADR-107). A short film of the Moon crossing the eyepiece of an 8-inch
+ * Celestron, three photographs through the same kind of telescope under it, and the
+ * people who made them, named. No glass, no badge: the pictures are the panel.
  */
-@property --pv-a {
-  inherits: false;
-  initial-value: 0;
-  syntax: "<integer>";
-}
-
-@property --pv-s {
-  inherits: false;
-  initial-value: 0;
-  syntax: "<integer>";
-}
-
-@property --pv-d {
-  inherits: true;
-  initial-value: 1;
-  syntax: "<number>";
-}
-
-.pv {
-  --pv-loop: 10s;
-
+.hs-reel {
   display: grid;
   margin: 0;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-large);
-  background: var(--gradient-tile), var(--color-glass-deep);
-  box-shadow: var(--shadow-glass), var(--shadow-panel);
-}
-
-.pv-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
 }
 
-.pv-view {
+.hs-reel-film {
   position: relative;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-large);
+  background: var(--color-mask);
+  box-shadow: var(--shadow-glass), var(--shadow-panel);
+}
+
+/* The first frame as a lazy picture; the film plays over it once it is scrolled to. */
+.hs-reel-film img,
+.hs-reel-film video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hs-reel-stills {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hs-reel-stills li {
+  position: relative;
   overflow: hidden;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-panel);
   background: var(--color-mask);
 }
 
-.pv-stars,
-.pv-target {
-  position: absolute;
-  inset: 0;
+.hs-reel-stills img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  transition: scale var(--duration-enter) var(--ease-out-expo);
 }
 
-.pv-stars {
-  background:
-    var(--gradient-stars) 0 0 / 340px 300px,
-    var(--gradient-stars) 170px 120px / 520px 460px;
-  inset: -50%;
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .hs-reel-stills li:hover img {
+    scale: 1.05;
+  }
 }
 
-.pv-target .hs-feed {
-  --cap-w: 58%;
-  --cap-x: 50%;
-  --cap-y: 50%;
-  --depth: var(--pv-d);
-
+.hs-reel-stills span {
   position: absolute;
-  background: none;
-  inset: 0;
-}
-
-.pv-reticle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 58%;
-  fill: none;
-  stroke: var(--color-accent-ink);
-  stroke-width: 0.6;
-  translate: -50% -50%;
-}
-
-.pv-name {
-  position: absolute;
-  bottom: var(--space-3);
-  left: var(--space-3);
-  color: var(--color-text-secondary);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: var(--space-6) var(--space-3) var(--space-2);
+  background: linear-gradient(to top, var(--color-mask), transparent);
+  color: var(--color-text-primary);
   font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
 }
 
-/* Five steps in a row where they fit; on a phone they wrap, never cut short. */
-.pv-pipe {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+.hs-reel figcaption {
+  display: grid;
   gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.hs-reel figcaption p {
   margin: 0;
-  padding: 0;
-  list-style: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  line-height: 1.5;
 }
 
-.pv-pipe li {
-  flex: 1 0 auto;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-control);
-  color: var(--color-text-small);
-  font-family: var(--font-label);
-  font-size: var(--font-size-kicker);
-  letter-spacing: var(--tracking-label);
-  text-align: center;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.pv-pipe li:lang(ka) {
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-/* Still, and before the loop starts: the last step, Track, is the one under way. */
-.pv-pipe li:last-child {
-  border-color: var(--color-accent-border);
-  background: var(--color-accent-muted);
-  box-shadow: var(--glow-pulse-low);
-  color: var(--color-text-primary);
-}
-
-.pv-read {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-6);
-  margin: 0;
-}
-
-.pv-read div {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-}
-
-.pv-read dt {
+.hs-reel .hs-reel-credits {
   color: var(--color-text-small);
   font-size: var(--font-size-caption);
 }
 
-.pv-read dd {
-  margin: 0;
+.hs-reel-credits a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 0.2em;
+}
+
+.hs-reel-credits a:hover {
   color: var(--color-text-primary);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.pv-alt {
-  --pv-a: var(--pv-alt);
-
-  counter-reset: pv-alt var(--pv-a);
-}
-
-.pv-alt::after {
-  content: counter(pv-alt) "°";
-}
-
-.pv-stack {
-  --pv-s: var(--pv-total);
-
-  counter-reset: pv-s var(--pv-s) pv-t var(--pv-total);
-}
-
-.pv-stack::after {
-  content: counter(pv-s) " / " counter(pv-t);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .pv[data-run] .pv-view {
-    animation: pv-cycle var(--pv-loop) linear infinite;
-  }
-
-  .pv[data-run] :is(.pv-stars, .pv-target) {
-    animation: pv-slew var(--pv-loop) var(--ease-standard) infinite;
-  }
-
-  .pv[data-run] .pv-reticle {
-    animation: pv-close var(--pv-loop) var(--ease-out-expo) infinite;
-  }
-
-  .pv[data-run] .pv-target {
-    animation:
-      pv-slew var(--pv-loop) var(--ease-standard) infinite,
-      pv-stack var(--pv-loop) linear infinite;
-  }
-
-  .pv[data-run] .pv-alt {
-    animation: pv-alt var(--pv-loop) var(--ease-standard) infinite;
-  }
-
-  .pv[data-run] .pv-stack {
-    animation: pv-count var(--pv-loop) linear infinite;
-  }
-
-  .pv[data-run] .pv-pipe li:last-child {
-    border-color: var(--color-line);
-    background: none;
-    box-shadow: none;
-    color: var(--color-text-small);
-  }
-
-  .pv[data-run] .pv-pipe li {
-    animation: pv-step var(--pv-loop) step-end infinite;
-    animation-delay: calc(var(--i) * var(--pv-loop) / 5);
-  }
-}
-
-/* The view fades at the loop's seam, so the field never jumps. */
-@keyframes pv-cycle {
-  0% {
-    opacity: 0;
-  }
-
-  4%,
-  96% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes pv-slew {
-  0%,
-  20% {
-    transform: translate(34%, -22%);
-  }
-
-  40%,
-  100% {
-    transform: none;
-  }
-}
-
-@keyframes pv-close {
-  0%,
-  40% {
-    opacity: 0.45;
-    scale: 1.4;
-  }
-
-  60%,
-  100% {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
-@keyframes pv-stack {
-  0%,
-  60% {
-    --pv-d: 0;
-  }
-
-  95%,
-  100% {
-    --pv-d: 1;
-  }
-}
-
-@keyframes pv-alt {
-  0%,
-  20% {
-    --pv-a: 12;
-  }
-
-  40%,
-  100% {
-    --pv-a: var(--pv-alt);
-  }
-}
-
-@keyframes pv-count {
-  0%,
-  60% {
-    --pv-s: 1;
-  }
-
-  95%,
-  100% {
-    --pv-s: var(--pv-total);
-  }
-}
-
-/* A step is lit for its fifth of the loop (each starts a fifth later). */
-@keyframes pv-step {
-  0% {
-    border-color: var(--color-accent-border);
-    background: var(--color-accent-muted);
-    box-shadow: var(--glow-pulse-low);
-    color: var(--color-text-primary);
-  }
-
-  20%,
-  100% {
-    border-color: var(--color-line);
-    background: none;
-    box-shadow: none;
-    color: var(--color-text-small);
-  }
 }
 
 /* The design system's specimen of the feed. */
@@ -1826,14 +1656,6 @@ html.lenis body {
   position: absolute;
   top: var(--space-3);
   right: var(--space-3);
-}
-
-.hs-feed-specimen figcaption {
-  position: absolute;
-  bottom: var(--space-3);
-  left: var(--space-3);
-  color: var(--color-text-small);
-  font-size: var(--font-size-caption);
 }
 
 /* The design system's specimen of the horizon. */
@@ -2039,20 +1861,12 @@ html.lenis body {
     gap: var(--space-8);
   }
 
-  .pv {
-    gap: var(--space-3);
-    padding: var(--space-3);
+  .hs-reel-stills {
+    gap: var(--space-2);
   }
 
-  .pv-view {
-    aspect-ratio: 16 / 9;
-  }
-
-  /* On a phone the five steps keep their own widths, centred, and wrap only if they must. */
-  .pv-pipe li {
-    flex: 0 1 auto;
-    padding-inline: var(--space-2);
-    letter-spacing: 0.06em;
+  .hs-reel-stills span {
+    padding: var(--space-4) var(--space-2) var(--space-1);
   }
 
   /* The ticket repeats the price just above it: a phone keeps the price and the questions. */

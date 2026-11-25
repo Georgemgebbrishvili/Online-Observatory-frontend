@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { heroCaptures, heroPicture } from "@/features/home/captures";
 
 describe("heroPicture", () => {
-  it("is the drawn feed, undated, for an object with no capture", () => {
+  it("is the 8SE photograph, undated, for an object with no capture of our own", () => {
     expect(heroPicture("saturn", {})).toEqual({
       feed: { raw: "/sky/feed/saturn-raw.webp", settled: "/sky/feed/saturn.webp" },
       capturedOn: null,

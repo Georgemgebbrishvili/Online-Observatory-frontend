@@ -52,7 +52,6 @@ const dictionary = {
       lede: "Book a real telescope and watch the night sky live.",
       cta: "Book a session",
       watch: "Watch live",
-      illustration: "Illustration — not telescope output",
     },
     common: {
       minutes: "min",
@@ -60,7 +59,8 @@ const dictionary = {
       altitude: "Altitude now",
     },
     story: {
-      simulated: "Simulated",
+      photo: "Real photo · 8SE",
+      photoLabel: "{name}, photographed through a NexStar 8SE telescope",
       steps: [
         { a: "Pick", b: "your time.", text: "Any open night, from 15 minutes to 4 hours." },
         { a: "It turns", b: "to your target.", text: "A real telescope turns to what you choose." },
@@ -73,12 +73,10 @@ const dictionary = {
       ],
       aimTonight: "Tonight {name} stands highest at {time}, {altitude}° up.",
       booking: { tonight: "Open times", none: "No open times tonight", all: "All nights" },
-      feed: { label: "Camera", stack: "Stack", exposure: "Exposure", gain: "Gain" },
+      feed: { label: "Camera", stack: "Stack" },
       capture: {
         saved: "Saved to your collection",
-        frames: "{count} frames",
-        real: "Real capture",
-        realCaption: "{name}: a real capture from this telescope, {date}. The sky around it is drawn.",
+        real: "Real capture · {date}",
       },
       showpieces: {
         label: "Tonight",
@@ -144,6 +142,7 @@ const dictionary = {
         perMinute: "{price} a minute",
         noPrice: "Prices are on the booking board.",
         pricing: "See all prices",
+        facts: ["15 minutes to 4 hours", "Nothing to install", "Clouded out? The next one is free"],
         ticket: {
           admit: "Admit one observer",
           night: "Night",
@@ -160,12 +159,12 @@ const dictionary = {
         lede: "For your session it answers to you alone: it turns to your target, finds it in the sky, centres it and follows it as the night turns.",
         see: "See the observatory",
         sky: "Open Night Sky",
-        preview: {
-          label: "Simulated: the observatory console finding {name}",
-          console: "Observatory console",
-          pipe: ["Align", "Slew", "Solve", "Center", "Track"],
-          altitude: "Alt",
-          stack: "Stack",
+        reel: {
+          film: "The Moon drifting through the eyepiece of an 8-inch Celestron telescope",
+          stills: { saturn: "Saturn", jupiter: "Jupiter", clavius: "Clavius crater" },
+          note: "Real views through 8-inch Celestron telescopes, the kind you will use.",
+          credits: "Film and photos",
+          changes: "cropped",
         },
       },
       closer: {

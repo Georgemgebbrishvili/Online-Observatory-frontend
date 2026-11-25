@@ -1,7 +1,7 @@
 /**
  * Real captures for the homepage hero (ADR-106), by object. A picture here was taken with
  * this observatory's own telescope and camera on `capturedOn`; the hero shows it in
- * place of the drawn one and says so. Empty until the first one is taken: see
+ * place of another observer's photograph (ADR-107) and says so. Empty until the first is taken: see
  * `public/sky/captures/README.md`.
  */
 export type HeroCapture = { src: string; capturedOn: string };

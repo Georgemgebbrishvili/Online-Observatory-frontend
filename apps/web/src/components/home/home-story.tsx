@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type Ref } from "react";
 
 import { ButtonLink } from "@/components/ui/button";
+import { reelCredits, reelFilm, reelStills } from "@/features/home/reel";
 import type { StorySky } from "@/features/sky/story-sky";
 import { fill } from "@/features/operator/format";
 import type { HomepageDictionary } from "@/types/homepage";
@@ -30,7 +31,7 @@ export type StoryNightStep = {
   text: string;
   book: { href: string; label: string } | null;
 };
-/** The feed's two drawings of one object: a raw sub and the settled stack (public/sky/feed). */
+/** The feed's two layers of one photograph: as a raw sub and as the settled stack (public/sky/feed). */
 export type StoryFeedImages = { raw: string; settled: string };
 
 export type HomeStoryProps = {
@@ -42,10 +43,8 @@ export type HomeStoryProps = {
     id: string;
     name: string;
     feed: StoryFeedImages;
-    /** ADR-106: the day a real capture was taken, worded; null while the feed is drawn. */
+    /** ADR-106: the day the observatory's own capture was taken, worded; null for another observer's photograph. */
     capturedOn: string | null;
-    exposure: string;
-    gain: number;
     stack: number;
     /** The aim step's line when tonight names it: its best time and height. Null for the stand-in. */
     line: string | null;
@@ -72,11 +71,8 @@ export type HomeStoryProps = {
     lengths: { minutes: number; label: string; price: string }[];
     perMinute: string | null;
     night: string;
-    cloud: string;
   };
   faq: HomepageDictionary["more"]["faq"];
-  /** The console preview's readout: where tonight's planet stands at its best. */
-  preview: { altitude: number; direction: string };
   brandName: string;
 };
 
@@ -208,9 +204,9 @@ export function StoryHorizon() {
 }
 
 /**
- * The simulated camera feed (ADR-104): a raw sub under the settled stack, sensor grain over
- * both. `--depth` on the frame runs from 0, one raw sub, to 1, the stack settled; only
- * opacity changes with it. Always badged Simulated where it is shown.
+ * The camera feed (ADR-104, ADR-107): a real photograph through a NexStar 8SE, as a raw sub
+ * under the settled stack, sensor grain over both. `--depth` on the frame runs from 0, one
+ * raw sub, to 1, the stack settled; only opacity changes with it.
  */
 export function StoryFeed({
   images,
@@ -233,10 +229,10 @@ export function StoryFeed({
       aria-label={label}
       style={depth === undefined ? undefined : ({ "--depth": depth } as CSSProperties)}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- two layers of one small drawing, cross-faded */}
-      <img className="hs-feed-raw" src={images.raw} alt="" decoding="async" />
-      {/* eslint-disable-next-line @next/next/no-img-element -- two layers of one small drawing, cross-faded */}
-      <img className="hs-feed-settled" src={images.settled} alt="" decoding="async" />
+      {/* eslint-disable-next-line @next/next/no-img-element -- two layers of one small picture, cross-faded */}
+      <img className="hs-feed-raw" src={images.raw} alt="" decoding="async" loading="lazy" />
+      {/* eslint-disable-next-line @next/next/no-img-element -- two layers of one small picture, cross-faded */}
+      <img className="hs-feed-settled" src={images.settled} alt="" decoding="async" loading="lazy" />
       <i className="hs-feed-grain" />
     </div>
   );
@@ -246,21 +242,18 @@ export function StoryFeed({
 export function StoryFeedSpecimen({
   depth,
   images,
-  name,
-  simulated,
-  illustration,
+  label,
+  badge,
 }: {
   depth: number;
   images: StoryFeedImages;
-  name: string;
-  simulated: string;
-  illustration: string;
+  label: string;
+  badge: string;
 }) {
   return (
     <figure className="hs-feed-specimen">
-      <StoryFeed images={images} label={`${simulated}: ${name}`} depth={depth} />
-      <span className="hs-badge">{simulated}</span>
-      <figcaption>{illustration}</figcaption>
+      <StoryFeed images={images} label={label} depth={depth} />
+      <span className="hs-badge">{badge}</span>
     </figure>
   );
 }
@@ -286,78 +279,65 @@ export function StoryEyepiece({ image, name }: { image: string; name: string }) 
 }
 
 /**
- * The observatory page in miniature (ADR-105): its console finding tonight's target — the
- * field sliding past as the telescope slews, the plate solved, the target centred and
- * tracked while the frames stack up — the five steps of its pipeline lit in turn. A loop of
- * ten seconds in CSS (transform and opacity, and three counters), run only while it is on
- * screen; still, it shows the target tracked. Always badged Simulated.
+ * Real views through 8-inch Celestron telescopes (ADR-107): a short film of the Moon
+ * crossing the eyepiece and three photographs, by other observers, each named under
+ * them. The film is fetched and played only while it is on screen, and never under
+ * reduced motion or data saving, where its first frame stands in.
  */
-export function ObservatoryPreview({
-  copy,
-  simulated,
-  target,
-  altitude,
-  direction,
-}: {
-  copy: HomepageDictionary["story"]["scope"]["preview"];
-  simulated: string;
-  target: { name: string; feed: StoryFeedImages; stack: number };
-  altitude: number;
-  direction: string;
-}) {
-  const ref = useRef<HTMLElement>(null);
+export function TelescopeReel({ copy }: { copy: HomepageDictionary["story"]["scope"]["reel"] }) {
+  const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
-    const el = ref.current;
+    const el = video.current;
     if (!el || !("IntersectionObserver" in window)) return;
-    const seen = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) el.dataset.run = "";
-      else delete el.dataset.run;
-    });
+    const saving = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (saving || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const seen = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) void el.play().catch(() => {});
+        else el.pause();
+      },
+      { threshold: 0.25 },
+    );
     seen.observe(el);
     return () => seen.disconnect();
   }, []);
   return (
-    <figure
-      ref={ref}
-      className="pv"
-      role="img"
-      aria-label={fill(copy.label, { name: target.name })}
-      style={{ "--pv-alt": altitude, "--pv-total": target.stack } as CSSProperties}
-    >
-      <div className="pv-bar" aria-hidden="true">
-        <span className="hs-badge">{simulated}</span>
-        <span className="hs-label">{copy.console}</span>
+    <figure className="hs-reel">
+      <div className="hs-reel-film">
+        <Image src={reelFilm.poster} alt="" fill sizes="(max-width: 63.999rem) 100vw, 44rem" />
+        <video ref={video} muted loop playsInline preload="none" aria-label={copy.film}>
+          <source src={reelFilm.webm} type="video/webm" />
+          <source src={reelFilm.mp4} type="video/mp4" />
+        </video>
       </div>
-      <div className="pv-view" aria-hidden="true">
-        <i className="pv-stars" />
-        <div className="pv-target">
-          <StoryFeed images={target.feed} label={target.name} />
-        </div>
-        <svg className="pv-reticle" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="22" />
-          <path d="M50 18v10M50 72v10M18 50h10M72 50h10" />
-        </svg>
-        <span className="pv-name">{target.name}</span>
-      </div>
-      <ol className="pv-pipe" aria-hidden="true">
-        {copy.pipe.map((name, i) => (
-          <li key={name} style={{ "--i": i } as CSSProperties}>
-            {name}
+      <ul className="hs-reel-stills">
+        {reelStills.map((still) => (
+          <li key={still.id}>
+            <Image src={still.src} alt={copy.stills[still.id]} width={880} height={660} sizes="(max-width: 47.999rem) 30vw, 12rem" />
+            <span>{copy.stills[still.id]}</span>
           </li>
         ))}
-      </ol>
-      <dl className="pv-read" aria-hidden="true">
-        <div>
-          <dt>{copy.altitude}</dt>
-          <dd>
-            <span className="pv-alt" /> · {direction}
-          </dd>
-        </div>
-        <div>
-          <dt>{copy.stack}</dt>
-          <dd className="pv-stack" />
-        </div>
-      </dl>
+      </ul>
+      <figcaption>
+        <p>{copy.note}</p>
+        <p className="hs-reel-credits">
+          {copy.credits}:{" "}
+          {reelCredits.map((credit, i) => (
+            <span key={credit.author}>
+              {i > 0 && ", "}
+              <a href={credit.source} rel="noopener noreferrer" target="_blank">
+                {credit.author}
+              </a>{" "}
+              (
+              <a href={credit.licenceUrl} rel="noopener noreferrer license" target="_blank">
+                {credit.licence}
+              </a>
+              )
+            </span>
+          ))}
+          , {copy.changes}.
+        </p>
+      </figcaption>
     </figure>
   );
 }
@@ -372,7 +352,7 @@ export function ObservatoryPreview({
  * almanac, the platform and the observatory's record.
  */
 export function HomeStory(props: HomeStoryProps) {
-  const { copy, hero, links, target, booking, sky, skyLabels, heroMinute, slides, night, session, faq, preview } = props;
+  const { copy, hero, links, target, booking, sky, skyLabels, heroMinute, slides, night, session, faq } = props;
   const root = useRef<HTMLElement>(null);
   const heroPin = useRef<HTMLDivElement>(null);
   const skyCanvas = useRef<HTMLCanvasElement>(null);
@@ -886,14 +866,11 @@ export function HomeStory(props: HomeStoryProps) {
             <StoryFeed
               ref={feedRef}
               images={target.feed}
-              label={`${target.capturedOn ? copy.capture.real : copy.simulated}: ${target.name}`}
+              label={fill(copy.photoLabel, { name: target.name })}
             />
             <div className="hs-capture">
               <div className="hs-capture-note">
                 <b>{target.name}</b>
-                <span>
-                  {fill(copy.capture.frames, { count: String(target.stack) })} · {target.exposure}
-                </span>
                 <span className="hs-capture-saved">{copy.capture.saved}</span>
               </div>
             </div>
@@ -901,28 +878,15 @@ export function HomeStory(props: HomeStoryProps) {
           <dl className="hs-hud">
             <div className="hs-hud-badge">
               <dt className="visually-hidden">{copy.feed.label}</dt>
-              <dd>{target.capturedOn ? copy.capture.real : copy.simulated}</dd>
+              <dd>{target.capturedOn ? fill(copy.capture.real, { date: target.capturedOn }) : copy.photo}</dd>
             </div>
             <div>
               <dt>{copy.feed.stack}</dt>
               <dd ref={stackRef}>1 / {target.stack}</dd>
             </div>
-            <div>
-              <dt>{copy.feed.exposure}</dt>
-              <dd>{target.exposure}</dd>
-            </div>
-            <div>
-              <dt>{copy.feed.gain}</dt>
-              <dd>{target.gain}</dd>
-            </div>
           </dl>
         </div>
         <StoryHorizon />
-        <p className="hs-illustration">
-          {target.capturedOn
-            ? fill(copy.capture.realCaption, { name: target.name, date: target.capturedOn })
-            : hero.illustration}
-        </p>
 
         {booking && (
           <aside className="hs-slots hs-glass" aria-label={copy.booking.tonight}>
@@ -1064,7 +1028,6 @@ export function HomeStory(props: HomeStoryProps) {
               </div>
             </div>
           </article>
-          <p className="hs-illustration">{hero.illustration}</p>
         </section>
       )}
 
@@ -1075,7 +1038,11 @@ export function HomeStory(props: HomeStoryProps) {
           <div className="hs-session-text hs-rise">
             <span className="hs-label">{copy.session.label}</span>
             <Title id="home-session-title" title={copy.session.title} em={copy.session.em} />
-            <p>{session.cloud}</p>
+            <ul className="hs-facts">
+              {copy.session.facts.map((fact) => (
+                <li key={fact}>{fact}</li>
+              ))}
+            </ul>
           </div>
           <div className="hs-buy hs-glass hs-rise">
             {chosen ? (
@@ -1147,13 +1114,7 @@ export function HomeStory(props: HomeStoryProps) {
             </div>
           </div>
           <div className="hs-rise">
-            <ObservatoryPreview
-              copy={copy.scope.preview}
-              simulated={copy.simulated}
-              target={target}
-              altitude={preview.altitude}
-              direction={preview.direction}
-            />
+            <TelescopeReel copy={copy.scope.reel} />
           </div>
         </div>
         <div className="hs-closer-call">

@@ -634,11 +634,6 @@
   );
   --color-reticle: color-mix(in srgb, var(--st-cream) 30%, transparent);
   --color-reticle-major: color-mix(in srgb, var(--st-red-ink) 80%, transparent);
-  --gradient-footer-mark: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--st-cream) 14%, transparent),
-    transparent 85%
-  );
 
   /*
    * ADR-102: the premium pass, every page. The gift ticket's torn stub and the light

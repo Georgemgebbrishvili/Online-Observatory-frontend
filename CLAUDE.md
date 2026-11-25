@@ -248,8 +248,11 @@ only in the weekly card draw, never sold (ADR-058).
 
 The real feed and real instrument status are the visual focus. Every rendered or drawn
 object is captioned "Illustration — not telescope output", and a simulated stream is
-always badged "Simulated". One exception, the maintainer's (ADR-105): the homepage's
-showpieces carry no caption and the homepage no picture credits.
+always badged "Simulated". Two exceptions, the maintainer's, for the homepage only:
+its showpieces carry no caption (ADR-105), and neither do its drawn skies (ADR-107). The
+homepage's telescope pictures are real photographs and a film through 8-inch Celestron
+telescopes by other observers, each credited on the page under its licence, never
+presented as this observatory's output; the homepage does not say "simulated".
 
 ## Building a surface
 

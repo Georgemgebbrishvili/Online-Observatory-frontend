@@ -87,8 +87,13 @@ const shown = 6;
  * the night has no astronomical dark.
  */
 export function storySky(now: Date, timezone: string): StorySky | null {
-  const date = nightDate(now, timezone);
-  const night = nightSky(date, timezone);
+  // The night under way, or the next one: once dawn has come, "tonight" is this evening's.
+  let date = nightDate(now, timezone);
+  let night = nightSky(date, timezone);
+  if (night && now.getTime() > night.dawn) {
+    date = new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
+    night = nightSky(date, timezone);
+  }
   if (!night) return null;
   const { dusk: start, dawn: end } = night;
   const years = (start - Date.UTC(2000, 0, 1, 12)) / (365.25 * 86_400_000);
@@ -109,7 +114,9 @@ export function storySky(now: Date, timezone: string): StorySky | null {
     let best = { at: start, alt: -90, az: 0 };
     let from: number | null = null;
     let to = start;
-    for (let at = start; at <= end; at += step) {
+    // Every ten minutes of the dark, and its last minute: an object still climbing at dawn
+    // is at its best then, not at the sample before.
+    for (let at = start; at <= end; at = at < end && at + step > end ? end : at + step) {
       const p = place(at);
       const { alt, az } = altAz(p.ra, p.dec, at);
       if (alt > best.alt) best = { at, alt, az };

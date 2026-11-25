@@ -10,19 +10,29 @@
 /* ADR-100: the name set large across the foot of every page, fading into the night. */
 .footer-mark {
   margin-bottom: calc(-1 * var(--space-8));
-  background: var(--gradient-footer-mark);
-  background-clip: text;
-  color: transparent;
-  font-family: var(--font-archivo), var(--font-headline);
   font-size: var(--font-size-footer-mark);
-  font-stretch: 125%;
-  font-weight: var(--font-weight-black);
-  letter-spacing: -0.02em;
   line-height: 0.82;
-  text-align: center;
-  text-transform: uppercase;
   user-select: none;
-  white-space: nowrap;
+}
+
+/* Drawn from the lockup's outlines at the size the word was set: 6.02em wide, 0.712em tall. */
+.footer-mark svg {
+  display: block;
+  width: 5.9em;
+  max-width: none;
+  height: auto;
+  margin-inline: auto;
+  translate: 0 0.06em;
+}
+
+.footer-mark-top {
+  stop-color: var(--color-text-cream);
+  stop-opacity: 0.17;
+}
+
+.footer-mark-foot {
+  stop-color: var(--color-text-cream);
+  stop-opacity: 0;
 }
 
 .footer-grid {

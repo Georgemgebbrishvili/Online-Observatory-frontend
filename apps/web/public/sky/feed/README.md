@@ -1,7 +1,8 @@
-# The homepage feed's two layers (ADR-104)
+# The homepage feed's two layers (ADR-104, ADR-107)
 
-`<target>.webp` is the reference picture in `../targets/<target>.jpg`, re-encoded.
-`<target>-raw.webp` is the same picture as one raw sub would show it: scaled to a ninth
-and back (the seeing), bands of rows slid sideways (the air), at 58% brightness. Sensor
-grain is laid over it in CSS. Both are drawings from a reference picture, shown only
-under the "Simulated" badge and the "Illustration — not telescope output" caption.
+`<target>.webp` is a real photograph of the planet taken through a Celestron NexStar 8SE,
+the telescope the observatory uses, cropped onto a black ground. `<target>-raw.webp` is
+the same photograph as one raw sub would show it: scaled to a ninth and back (the
+seeing), bands of rows slid sideways (the air), at 58% brightness. Sensor grain is laid
+over it in CSS. None of them was taken by this observatory; the page says whose they are
+(`src/features/home/reel.ts`) and `../scope/README.md` records each source and licence.

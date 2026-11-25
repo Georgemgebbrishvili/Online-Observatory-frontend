@@ -1,7 +1,7 @@
 # Real captures for the homepage hero (ADR-106)
 
 A picture taken with this observatory's own telescope and camera, shown in the homepage
-hero in place of the drawn one for that object.
+hero in place of another observer's photograph of that object (ADR-107).
 
 1. Save the capture here as `<object>.webp`: square, the object centred on a black
    ground, 1,200 px or more a side. `<object>` is `jupiter`, `saturn`, `mars` or `venus`.

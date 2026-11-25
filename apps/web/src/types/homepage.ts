@@ -6,8 +6,6 @@ export type HomepageDictionary = {
     lede: string;
     cta: string;
     watch: string;
-    /** Under every drawn object: it is a drawing, not the telescope's picture. */
-    illustration: string;
   };
   common: {
     minutes: string;
@@ -16,14 +14,18 @@ export type HomepageDictionary = {
   };
   /** ADR-087: the homepage as one scroll story. */
   story: {
-    simulated: string;
+    /** ADR-107: the hero's picture is a real photograph through the same telescope. */
+    photo: string;
+    /** {name} */
+    photoLabel: string;
     /** The hero's steps after the headline: book, aim, watch, keep. */
     steps: readonly { a: string; b: string; text: string }[];
     /** The aim step when tonight has a planet to name: {name} {time} {altitude}. */
     aimTonight: string;
     booking: { tonight: string; none: string; all: string };
-    feed: { label: string; stack: string; exposure: string; gain: string };
-    capture: { saved: string; frames: string; real: string; realCaption: string };
+    feed: { label: string; stack: string };
+    /** `real` names a capture of the observatory's own, with its {date} (ADR-106). */
+    capture: { saved: string; real: string };
     showpieces: {
       label: string;
       title: string;
@@ -70,9 +72,11 @@ export type HomepageDictionary = {
       perMinute: string;
       noPrice: string;
       pricing: string;
+      /** Three short facts under the headline, each already said elsewhere on the site. */
+      facts: readonly string[];
       ticket: { admit: string; night: string; target: string; choice: string; length: string; price: string };
     };
-    /** The observatory (ADR-105): what the telescope does for you, never which one it is. */
+    /** The observatory (ADR-105, ADR-107): what the telescope does for you, beside real views through one like it. */
     scope: {
       label: string;
       title: string;
@@ -80,14 +84,13 @@ export type HomepageDictionary = {
       lede: string;
       see: string;
       sky: string;
-      /** The console preview beside it, as the observatory page's console names its parts. */
-      preview: {
-        /** {name} */
-        label: string;
-        console: string;
-        pipe: [string, string, string, string, string];
-        altitude: string;
-        stack: string;
+      /** The film and photographs beside it, taken through 8-inch Celestron telescopes. */
+      reel: {
+        film: string;
+        stills: Record<"saturn" | "jupiter" | "clavius", string>;
+        note: string;
+        credits: string;
+        changes: string;
       };
     };
     closer: { title: string; em: string };
