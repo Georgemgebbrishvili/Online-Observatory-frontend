@@ -244,3 +244,21 @@
   justify-self: start;
   color: var(--color-text-primary);
 }
+
+/* A phone: the odds a size down, so a Georgian rarity stays one word in its column. */
+@media (--below-sm) {
+  .cards-odds th,
+  .cards-odds td {
+    padding-inline-end: var(--space-1);
+    font-size: var(--font-size-caption);
+  }
+
+  .cards-odds th:first-child {
+    width: 38%;
+  }
+
+  /* The heading over the chances is three short words; it wraps between them. */
+  .cards-odds thead th:last-child {
+    overflow-wrap: normal;
+  }
+}

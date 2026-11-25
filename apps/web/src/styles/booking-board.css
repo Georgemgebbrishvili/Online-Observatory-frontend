@@ -900,3 +900,13 @@
     animation: none;
   }
 }
+
+/*
+ * A phone: one object to a row. Two to a row left each name about six characters, and
+ * Georgian broke inside the word.
+ */
+@media (--below-sm) {
+  .board-targets {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

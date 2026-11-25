@@ -422,3 +422,19 @@
     background: Canvas;
   }
 }
+
+/* A small phone: the tilted ticket kept inside the screen, its price inside the stub. */
+@media (--below-sm) {
+  .gift-ticket {
+    width: calc(100% - var(--space-3));
+    margin-inline: auto;
+  }
+
+  .gift-ticket-main {
+    padding: var(--space-4) var(--space-3) var(--space-4) var(--space-4);
+  }
+
+  .gift-ticket-stub {
+    padding-inline: var(--space-1);
+  }
+}

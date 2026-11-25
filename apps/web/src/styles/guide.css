@@ -147,7 +147,10 @@
   color: var(--color-text-secondary);
 }
 
+/* A block of its own with room above and below: a finger's height, not a line's. */
 .guide-faq-list details a {
+  display: inline-block;
+  padding-block: var(--space-2);
   color: var(--color-accent-ink);
   font-weight: var(--font-weight-medium);
 }
