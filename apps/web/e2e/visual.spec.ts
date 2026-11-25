@@ -59,6 +59,7 @@ function masks(page: Page) {
     page.locator(".oh-clock"),
     // The Night Sky's clock and date are the moment it was opened.
     page.locator(".sky-clock"),
+    page.locator(".sky-dock-text"),
     page.locator(".oh-tncard"),
     page.locator(".oh-tgcard .oh-best"),
     page.locator(".oh-row__meta"),
