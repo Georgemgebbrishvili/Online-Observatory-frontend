@@ -109,3 +109,26 @@ export async function readPricing(locale: Locale, now = Date.now()): Promise<Pri
     loyalty,
   };
 }
+
+const sharedForMs = 60_000;
+const unreachableForMs = 10_000;
+const shared = new Map<Locale, { until: number; facts: Promise<PricingFacts> }>();
+
+/**
+ * `readPricing` for the homepage, shared between its visitors for a minute (ADR-106).
+ * The read is a dozen platform requests and nothing in it depends on who asks (`GET
+ * /slots` and `GET /loyalty/scheme` are public), so the homepage does not make every
+ * visitor wait for them. An unreachable platform is asked again after ten seconds. The
+ * board, the pricing page and the checkout still read the platform on every request.
+ */
+export function readPricingShared(locale: Locale, now = Date.now()): Promise<PricingFacts> {
+  const held = shared.get(locale);
+  if (held && now < held.until) return held.facts;
+  const facts = readPricing(locale, now);
+  const entry = { until: now + sharedForMs, facts };
+  shared.set(locale, entry);
+  void facts.then((value) => {
+    if (!value.reachable) entry.until = now + unreachableForMs;
+  });
+  return facts;
+}

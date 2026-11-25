@@ -40,7 +40,7 @@ test("a stranger watches a simulated session: the feed, badged, and an invitatio
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "Saturn, live from Georgia",
+      name: "Saturn, live from the observatory",
     }),
   ).toBeVisible();
   await expect(
@@ -80,7 +80,7 @@ test("the same session in Georgian", async ({ browser, request }) => {
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "სატურნი, პირდაპირ საქართველოდან",
+      name: "სატურნი, პირდაპირ ობსერვატორიიდან",
     }),
   ).toBeVisible();
   await expect(page.getByText("00:30-მდე")).toBeVisible();

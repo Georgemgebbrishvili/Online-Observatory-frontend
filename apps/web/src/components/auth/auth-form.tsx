@@ -65,9 +65,12 @@ export function SignInForm({
   copy,
   locale,
   message,
+  next = null,
 }: {
   copy: AuthResource;
   locale: Locale;
+  /** ADR-106: the booking board to return to, already checked by `bookingReturn`. */
+  next?: string | null;
   /** A message the page arrived with, such as Google's sign-in not completing. */
   message?: string;
 }) {
@@ -77,6 +80,7 @@ export function SignInForm({
   return (
     <form action={action} className="auth-form">
       <FormMessage state={state} />
+      {next && <input type="hidden" name="next" value={next} />}
       <GoogleOrEmail copy={copy} locale={locale} />
       <Field htmlFor="email" label={copy.fields.email} error={state.errors?.email}>
         <TextInput
@@ -108,7 +112,7 @@ export function SignInForm({
       </p>
       <p className="auth-alternate">
         {copy.signIn.alternate}{" "}
-        <Link href={`/${locale}/register`}>{copy.signIn.alternateAction}</Link>
+        <Link href={`/${locale}/register${next ? `?next=${encodeURIComponent(next)}` : ""}`}>{copy.signIn.alternateAction}</Link>
       </p>
     </form>
   );
@@ -117,10 +121,12 @@ export function SignInForm({
 export function RegistrationForm({
   copy,
   locale,
+  next = null,
   referralCode = null,
 }: {
   copy: AuthResource;
   locale: Locale;
+  next?: string | null;
   /** ADR-084: a member's code from `?ref=`; the platform names nobody, so neither do we. */
   referralCode?: string | null;
 }) {
@@ -130,6 +136,7 @@ export function RegistrationForm({
   return (
     <form action={action} className="auth-form">
       <FormMessage state={state} />
+      {next && <input type="hidden" name="next" value={next} />}
       {referralCode && (
         <>
           <p className="auth-invited" role="status" data-referral>

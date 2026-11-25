@@ -42,6 +42,8 @@ export type HomeStoryProps = {
     id: string;
     name: string;
     feed: StoryFeedImages;
+    /** ADR-106: the day a real capture was taken, worded; null while the feed is drawn. */
+    capturedOn: string | null;
     exposure: string;
     gain: number;
     stack: number;
@@ -372,6 +374,7 @@ export function ObservatoryPreview({
 export function HomeStory(props: HomeStoryProps) {
   const { copy, hero, links, target, booking, sky, skyLabels, heroMinute, slides, night, session, faq, preview } = props;
   const root = useRef<HTMLElement>(null);
+  const heroPin = useRef<HTMLDivElement>(null);
   const skyCanvas = useRef<HTMLCanvasElement>(null);
   const feedRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLElement>(null);
@@ -758,6 +761,7 @@ export function HomeStory(props: HomeStoryProps) {
                   start: pinStart,
                   end: () => (phone() ? "+=65%" : "+=120%"),
                   pin: true,
+                  pinSpacer: heroPin.current ?? undefined,
                   refreshPriority: 2,
                   scrub: 0.35,
                   anticipatePin: 1,
@@ -768,7 +772,8 @@ export function HomeStory(props: HomeStoryProps) {
                 // explicit starts: the first step's are mid-way through its CSS rise when this runs
                 const first = i === 0;
                 tl.fromTo(words(i), { y: 0, yPercent: 0 }, { yPercent: -112, duration: 0.3, stagger: 0.05, ease: "power3.in", immediateRender: first }, i + 0.06)
-                  .fromTo(para(i), { opacity: 1, y: 0 }, { opacity: 0, y: -10, duration: 0.24, ease: "power2.in", immediateRender: first }, i + 0.06)
+                  // the lede is not touched until it leaves: a transform on it now is a second, later largest paint (ADR-106)
+                  .fromTo(para(i), { opacity: 1, y: 0 }, { opacity: 0, y: -10, duration: 0.24, ease: "power2.in", immediateRender: false }, i + 0.06)
                   .fromTo(words(i + 1), { y: 0, yPercent: 112 }, { yPercent: 0, duration: 0.42, stagger: 0.07, ease: "power3.out" }, i + 0.42)
                   .fromTo(para(i + 1), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.36, ease: "power2.out" }, i + 0.56);
               }
@@ -870,11 +875,19 @@ export function HomeStory(props: HomeStoryProps) {
       <canvas ref={skyCanvas} className="hs-sky" aria-hidden="true" />
 
       {/* ── How a session goes ───────────────────────────── */}
+      {/* The hero's pin spacer, here from the first paint: wrapped by the script later, the
+          hero left the page and came back, and its lede was counted as the largest paint a
+          second time, seconds late (ADR-106). */}
+      <div className="hs-pin" ref={heroPin}>
       <section className="home-hero hs-hero" aria-labelledby="home-title">
         <div className="hs-hero-shade" />
         <div className="hs-hero-feed">
           <div className="hs-hero-turn">
-            <StoryFeed ref={feedRef} images={target.feed} label={`${copy.simulated}: ${target.name}`} />
+            <StoryFeed
+              ref={feedRef}
+              images={target.feed}
+              label={`${target.capturedOn ? copy.capture.real : copy.simulated}: ${target.name}`}
+            />
             <div className="hs-capture">
               <div className="hs-capture-note">
                 <b>{target.name}</b>
@@ -888,7 +901,7 @@ export function HomeStory(props: HomeStoryProps) {
           <dl className="hs-hud">
             <div className="hs-hud-badge">
               <dt className="visually-hidden">{copy.feed.label}</dt>
-              <dd>{copy.simulated}</dd>
+              <dd>{target.capturedOn ? copy.capture.real : copy.simulated}</dd>
             </div>
             <div>
               <dt>{copy.feed.stack}</dt>
@@ -905,7 +918,11 @@ export function HomeStory(props: HomeStoryProps) {
           </dl>
         </div>
         <StoryHorizon />
-        <p className="hs-illustration">{hero.illustration}</p>
+        <p className="hs-illustration">
+          {target.capturedOn
+            ? fill(copy.capture.realCaption, { name: target.name, date: target.capturedOn })
+            : hero.illustration}
+        </p>
 
         {booking && (
           <aside className="hs-slots hs-glass" aria-label={copy.booking.tonight}>
@@ -953,6 +970,7 @@ export function HomeStory(props: HomeStoryProps) {
           </div>
         </div>
       </section>
+      </div>
 
       {/* ── Tonight's showpieces: a row to swipe ──────────── */}
       {slides.length > 0 && (

@@ -5,6 +5,7 @@ import { RegistrationForm } from "@/components/auth/auth-form";
 import { AuthPage } from "@/components/auth/auth-page";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { bookingReturn } from "@/features/auth/next";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { authCopy } from "@/i18n/resources/auth";
@@ -14,7 +15,7 @@ import "@/styles/auth.css";
 
 type RegistrationPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ ref?: string | string[] }>;
+  searchParams: Promise<{ ref?: string | string[]; next?: string | string[] }>;
 };
 
 /** DV-096: a member's code from `?ref=`, in the contract's shape, or none. */
@@ -38,9 +39,11 @@ export default async function RegistrationPage({
 }: RegistrationPageProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  if (await getCurrentUser()) redirect(`/${locale}/app`);
+  const query = await searchParams;
+  const next = bookingReturn(query.next, locale);
+  if (await getCurrentUser()) redirect(next ?? `/${locale}/app`);
 
-  const ref = referralCode((await searchParams).ref);
+  const ref = referralCode(query.ref);
   const dictionary = await getDictionary(locale);
   const copy = authCopy[locale];
   return (
@@ -49,7 +52,7 @@ export default async function RegistrationPage({
       <AuthPage
         title={copy.register.title}
       >
-        <RegistrationForm copy={copy} locale={locale} referralCode={ref} />
+        <RegistrationForm copy={copy} locale={locale} next={next} referralCode={ref} />
       </AuthPage>
       <SiteFooter footer={dictionary.footer} locale={locale} path="register" />
     </div>

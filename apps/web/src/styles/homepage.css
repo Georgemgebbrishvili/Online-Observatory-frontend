@@ -36,7 +36,8 @@ html.lenis body {
 
 /* Every scene sits over the sky; those without it are opaque, so it shows only through
    the hero and the night. */
-.hs > section {
+.hs > section,
+.hs > .hs-pin {
   position: relative;
   z-index: 1;
 }
@@ -602,6 +603,16 @@ html.lenis body {
   line-height: 1.5;
 }
 
+/*
+ * The lede is the page's largest paint, and it stands still on its own layer from the
+ * first paint (ADR-106). The scroll script gives it a transform seconds later; painted
+ * without one first, it measured a few pixels smaller, and the browser counted the later
+ * paint as the largest, at over four seconds.
+ */
+.hs-ln:first-child > p {
+  transform: translate(0, 0);
+}
+
 .hs-ln:not(:first-child) .hs-m > span {
   transform: translateY(112%);
 }
@@ -622,11 +633,6 @@ html.lenis body {
 
   .hs-ln:first-child .hs-m:nth-child(2) > span {
     animation-delay: var(--stagger);
-  }
-
-  /* It moves and never fades: painted at once, it is the page's largest paint at once. */
-  .hs-ln:first-child > p {
-    animation: hs-rise var(--duration-enter) var(--ease-out-expo) calc(var(--stagger) * 3) backwards;
   }
 
   .hs-hero .hs-acts {

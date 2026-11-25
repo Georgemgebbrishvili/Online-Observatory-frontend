@@ -74,7 +74,12 @@ const dictionary = {
       aimTonight: "Tonight {name} stands highest at {time}, {altitude}° up.",
       booking: { tonight: "Open times", none: "No open times tonight", all: "All nights" },
       feed: { label: "Camera", stack: "Stack", exposure: "Exposure", gain: "Gain" },
-      capture: { saved: "Saved to your collection", frames: "{count} frames" },
+      capture: {
+        saved: "Saved to your collection",
+        frames: "{count} frames",
+        real: "Real capture",
+        realCaption: "{name}: a real capture from this telescope, {date}. The sky around it is drawn.",
+      },
       showpieces: {
         label: "Tonight",
         title: "The sky tonight.",

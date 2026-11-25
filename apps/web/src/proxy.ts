@@ -17,6 +17,7 @@ function preferredLocale(request: NextRequest) {
 export const SECTIONS = [
   "admin",
   "app",
+  "book",
   "c",
   "design-system",
   "explorer",
@@ -73,6 +74,12 @@ export async function proxy(request: NextRequest) {
     // A cheap pre-check only. The cookie proves nothing here; the server verifies
     // it with GET /me, and only the server may send a visitor on to /app.
     if (isProtectedRoute && !request.cookies.has(sessionCookieName)) {
+      // ADR-106: the board is open to a visitor without an account, at /book.
+      if (pathname === `/${locale}/app/book`) {
+        return NextResponse.redirect(
+          new URL(`/${locale}/book${request.nextUrl.search}`, request.url),
+        );
+      }
       return NextResponse.redirect(new URL(`/${locale}/sign-in`, request.url));
     }
     // not-found.tsx receives no params, so this is how it learns the language.

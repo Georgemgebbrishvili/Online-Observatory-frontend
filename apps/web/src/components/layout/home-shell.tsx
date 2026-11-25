@@ -1,3 +1,4 @@
+import { heroPicture } from "@/features/home/captures";
 import { brand } from "@/brand";
 import { HomeStory, type StoryNightStep, type StorySlide } from "@/components/home/home-story";
 import { fill } from "@/features/operator/format";
@@ -50,6 +51,7 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
   const planet = sky?.objects.find((o) => o.kind === "planet");
   const targetId = planet?.id ?? "saturn";
   const recipe = SHOWPIECE_BY_ID.get(targetId)!.recipe;
+  const picture = heroPicture(targetId);
 
   const slides: StorySlide[] = (sky?.objects ?? []).map((o) => ({
     id: o.id,
@@ -127,7 +129,13 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
       target={{
         id: targetId,
         name: names[targetId],
-        feed: { raw: `/sky/feed/${targetId}-raw.webp`, settled: `/sky/feed/${targetId}.webp` },
+        feed: picture.feed,
+        capturedOn: picture.capturedOn
+          ? new Intl.DateTimeFormat(locale === "ka" ? "ka-GE" : "en-GB", {
+              dateStyle: "long",
+              timeZone: "UTC",
+            }).format(new Date(`${picture.capturedOn}T00:00:00Z`))
+          : null,
         exposure: exposureLabel(recipe.exposureS),
         gain: recipe.gain,
         stack: recipe.stack,

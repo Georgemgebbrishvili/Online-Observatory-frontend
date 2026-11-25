@@ -959,6 +959,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName }: Observatory
   };
 
   const longWay = acquisition?.plan.longWay ?? false;
+  // Before the simulation starts its devices wait; "Offline" read as a broken observatory.
+  const waiting = t.status.standby;
   const statusText = !station ? t.status.standby
     : connecting ? t.status.connecting
     : stacking ? t.status.stacking(subsDone, subsGoal)
@@ -1155,9 +1157,9 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName }: Observatory
       observatoryName={observatoryName}
       clock={{ local: mounted ? clock(skyMs, tz, true) : '--:--:--', lst: mounted ? lstText(localSiderealHours(node.lon, date)) : '--' }}
       devices={[
-        { key: 'mount', label: t.hub.devices.mount, text: !station ? t.hub.devices.offline : park === 'running' || (park === 'done' && cal !== 'done') ? t.hub.devices.parked : inGoto ? t.hub.devices.slewing : cal === 'done' ? t.hub.devices.aligned : t.hub.devices.online, on: !!station && !connecting },
-        { key: 'camera', label: t.hub.devices.camera, text: !cameraOn ? t.hub.devices.offline : fps !== null ? t.hub.devices.fps(fps) : expLabel, on: cameraOn },
-        { key: 'focuser', label: t.hub.devices.focuser, text: station ? t.hub.devices.pos(focusPos) : t.hub.devices.offline, on: !!station && !connecting },
+        { key: 'mount', label: t.hub.devices.mount, text: !station ? waiting : park === 'running' || (park === 'done' && cal !== 'done') ? t.hub.devices.parked : inGoto ? t.hub.devices.slewing : cal === 'done' ? t.hub.devices.aligned : t.hub.devices.online, on: !!station && !connecting },
+        { key: 'camera', label: t.hub.devices.camera, text: !cameraOn ? (station ? t.hub.devices.offline : waiting) : fps !== null ? t.hub.devices.fps(fps) : expLabel, on: cameraOn },
+        { key: 'focuser', label: t.hub.devices.focuser, text: station ? t.hub.devices.pos(focusPos) : waiting, on: !!station && !connecting },
       ]}
       onPark={station && park !== 'running' ? parkHome : null}
       onStopAll={station ? stopAll : null}

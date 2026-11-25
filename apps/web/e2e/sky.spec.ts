@@ -189,6 +189,8 @@ test.describe("pointing a phone at the sky", () => {
   });
 
   test("the sky follows the phone over a dark screen, no camera, and points the way to what is searched", async ({ page }) => {
+    // The view is read through `window.__sky`, which a production build leaves out.
+    test.skip(process.env.E2E_BUILD === "1", "window.__sky is development only");
     await page.goto("/en/sky");
     await expect(page.locator('.sky[data-phase="ready"]')).toBeAttached({ timeout: firstCompile });
     // The phone held up 45° to the east, on true north (Android's absolute event).

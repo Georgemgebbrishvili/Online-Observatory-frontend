@@ -73,7 +73,12 @@ const dictionary = {
       aimTonight: "{name}: ამაღამ ყველაზე მაღლა {time}-ზე, {altitude}°.",
       booking: { tonight: "თავისუფალი დრო", none: "ამაღამ თავისუფალი დრო არ არის", all: "ყველა ღამე" },
       feed: { label: "კამერა", stack: "დაგროვება", exposure: "ექსპოზიცია", gain: "გაძლიერება" },
-      capture: { saved: "შენახულია კოლექციაში", frames: "{count} კადრი" },
+      capture: {
+        saved: "შენახულია კოლექციაში",
+        frames: "{count} კადრი",
+        real: "ნამდვილი კადრი",
+        realCaption: "{name}: ამ ტელესკოპით გადაღებული ნამდვილი კადრი, {date}. ირგვლივ ცა დახატულია.",
+      },
       showpieces: {
         label: "ამაღამ",
         title: "ამაღამის ცა.",

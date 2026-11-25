@@ -8,6 +8,7 @@ const publicRoutes = [
   { path: "/observatory", changeFrequency: "monthly", priority: 0.8 },
   { path: "/vote", changeFrequency: "weekly", priority: 0.7 },
   { path: "/pricing", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/book", changeFrequency: "daily", priority: 0.7 },
   { path: "/explorer", changeFrequency: "monthly", priority: 0.6 },
   { path: "/tonight", changeFrequency: "daily", priority: 0.6 },
   { path: "/sky", changeFrequency: "daily", priority: 0.6 },

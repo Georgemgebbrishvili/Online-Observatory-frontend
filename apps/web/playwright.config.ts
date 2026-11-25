@@ -37,7 +37,7 @@ export default defineConfig({
     {
       name: "chromium",
       testIgnore:
-        /auth\.(setup|spec)\.ts|warm\.setup\.ts|shell-signed-out\.spec\.ts|operator(-records)?\.(evidence\.)?spec\.ts|visual\.spec\.ts/,
+        /auth\.(setup|spec)\.ts|warm\.setup\.ts|(shell-signed-out|booking-public)\.spec\.ts|operator(-records)?\.(evidence\.)?spec\.ts|visual\.spec\.ts/,
       dependencies: ["warm"],
       use: {
         ...devices["Desktop Chrome"],
@@ -70,7 +70,7 @@ export default defineConfig({
     },
     {
       name: "signed-out",
-      testMatch: /(auth|shell-signed-out)\.spec\.ts/,
+      testMatch: /(auth|booking-public|shell-signed-out)\.spec\.ts/,
       dependencies: ["warm"],
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },

@@ -13,6 +13,7 @@ import {
 } from "@darkview/contracts/zod";
 
 import type { Locale } from "@/i18n/config";
+import { bookingReturn } from "@/features/auth/next";
 import { authCopy } from "@/i18n/resources/auth";
 import { ApiRequestError, apiRequest } from "@/lib/platform/browser";
 
@@ -67,7 +68,7 @@ export async function signInAction(
   };
   try {
     await apiRequest("/auth/sign-in", { method: "POST", body, schema: zSignInResponse });
-    return { redirectTo: `/${locale}/app` };
+    return { redirectTo: bookingReturn(text(formData, "next"), locale) ?? `/${locale}/app` };
   } catch (error) {
     // By code, not status: a 403 is also what the cross-origin refusal answers, and
     // reading the status alone sent every visitor behind a misrouted proxy to verify
@@ -103,7 +104,11 @@ export async function registerAction(
     // 200 with the user: the demo verified the address at once and signed it in
     // (platform ADR-049). 202 with nothing: a link is on its way.
     const user = await apiRequest("/auth/register", { method: "POST", body, schema: zUser });
-    return { redirectTo: user ? `/${locale}/app` : `/${locale}/verify-email` };
+    return {
+      redirectTo: user
+        ? (bookingReturn(text(formData, "next"), locale) ?? `/${locale}/app`)
+        : `/${locale}/verify-email`,
+    };
   } catch (error) {
     return { ...failure(locale, error), values };
   }

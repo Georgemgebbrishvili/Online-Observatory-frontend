@@ -70,6 +70,8 @@ type BookingBoardProps = {
   /** A start named in the address (the old reserve page's way in): chosen on arrival. */
   initialStartAt: string | null;
   signInPath: string;
+  /** ADR-106: a visitor without an account browses the board; booking sends them to sign in. */
+  guest?: boolean;
   /** ADR-058: the account's unspent free-slot and discount prizes for this observatory. */
   prizes?: CardPrize[];
   /** ADR-085: an object named in the address (`?target=<slug>`), chosen on arrival. */
@@ -149,6 +151,7 @@ export function BookingBoard({
   club = null,
   initialTargetId = null,
   durationMinutes,
+  guest = false,
   initialStartAt,
   locale,
   nights,
@@ -548,6 +551,21 @@ export function BookingBoard({
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    if (guest) {
+      // The slot goes with them, so signing in lands on it (`bookingReturn`).
+      const picked = chosen ?? waiting;
+      if (!picked) return;
+      const query = new URLSearchParams({
+        startAt: picked.startAt,
+        length: String(chosen ? chosen.durationMinutes : firstCells * QUARTER),
+      });
+      if (target) query.set("target", target.slug);
+      setPhase("redirecting");
+      navigateWithFreshSession(
+        `${signInPath}?next=${encodeURIComponent(`/${locale}/app/book?${query}`)}`,
+      );
+      return;
+    }
     if (waiting) return void joinWaitlist();
     if (!chosen || !ready || phase !== "idle") return;
     setPhase("reserving");
@@ -651,7 +669,9 @@ export function BookingBoard({
     ? `${clock(slots[run.from].startAt)} – ${clock(Date.parse(slots[run.to].startAt) + QUARTER_MS)}`
     : null;
   const cost = chosen ? price(chosen) : checking ? copy.checking : "—";
-  const buttonLabel = waiting
+  const buttonLabel = guest
+    ? reserve.form.signIn
+    : waiting
     ? phase === "reserving"
       ? copy.waitlist.joining
       : copy.waitlist.join
@@ -1085,7 +1105,9 @@ export function BookingBoard({
           >
             <span>{buttonLabel}</span>
           </button>
-          <p className="board-caption">{reschedule ? replacing.note : reserve.note}</p>
+          <p className="board-caption">
+            {guest ? reserve.guestNote : reschedule ? replacing.note : reserve.note}
+          </p>
           {notice && (
             <p className="board-caption board-notice" role="status">
               {notice}
@@ -1104,7 +1126,7 @@ export function BookingBoard({
           <span>{runText}</span>
           <b>{cost}</b>
           <span className="board-bar-go">
-            {reschedule ? replacing.form.book : reserve.form.reserve}
+            {guest ? reserve.form.signIn : reschedule ? replacing.form.book : reserve.form.reserve}
           </span>
         </a>
       )}

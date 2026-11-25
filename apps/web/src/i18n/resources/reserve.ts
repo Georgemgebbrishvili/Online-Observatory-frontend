@@ -6,6 +6,7 @@ type StateCopy = { title: string; description: string };
 export type ReserveFormCopy = {
   choose: string;
   reserve: string;
+  signIn: string;
   reserving: string;
   redirecting: string;
   taken: string;
@@ -28,6 +29,7 @@ type ReserveCopy = {
   withheld: string;
   needs: (minutes: number) => string;
   note: string;
+  guestNote: string;
   form: ReserveFormCopy;
 };
 
@@ -51,7 +53,9 @@ export const reserveCopy: Record<"en" | "ka", ReserveCopy> = {
     withheld: "Not up for the whole slot",
     needs: (minutes) => `Needs ${minutes} min`,
     note: "We hold the session while you pay. If payment fails, it is released.",
+    guestNote: "You pay after you sign in. Nothing is held until then.",
     form: {
+      signIn: "Sign in to book",
       choose: "Choose what to observe",
       reserve: "Reserve and pay",
       reserving: "Reserving",
@@ -85,7 +89,9 @@ export const reserveCopy: Record<"en" | "ka", ReserveCopy> = {
     withheld: "მთელი სეანსის განმავლობაში არ ჩანს",
     needs: (minutes) => `საჭიროა ${minutes} წთ`,
     note: "გადახდამდე სეანსი შენთვის ინახება. თუ გადახდა ვერ მოხერხდა, თავისუფლდება.",
+    guestNote: "გადახდა ანგარიშში შესვლის შემდეგ ხდება. მანამდე სეანსი არ ინახება.",
     form: {
+      signIn: "შედი და დაჯავშნე",
       choose: "აირჩიე, რას დააკვირდები",
       reserve: "დაჯავშნა და გადახდა",
       reserving: "იჯავშნება",

@@ -23,7 +23,7 @@ export type HomepageDictionary = {
     aimTonight: string;
     booking: { tonight: string; none: string; all: string };
     feed: { label: string; stack: string; exposure: string; gain: string };
-    capture: { saved: string; frames: string };
+    capture: { saved: string; frames: string; real: string; realCaption: string };
     showpieces: {
       label: string;
       title: string;
