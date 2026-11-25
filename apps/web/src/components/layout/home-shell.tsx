@@ -1,6 +1,5 @@
 import { brand } from "@/brand";
 import { HomeStory, type StoryNightStep, type StorySlide } from "@/components/home/home-story";
-import { observatories } from "@/features/observatory/observatories";
 import { fill } from "@/features/operator/format";
 import type { PricingFacts } from "@/features/pricing/read";
 import type { StoryObject, StorySky } from "@/features/sky/story-sky";
@@ -113,7 +112,6 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
   const nightLabel = new Intl.DateTimeFormat(tag, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(
     new Date(`${pricing.tonight?.date ?? sky?.date ?? new Date().toISOString().slice(0, 10)}T12:00:00Z`),
   );
-  const telescope = observatories[0]?.telescope;
 
   return (
     <HomeStory
@@ -173,15 +171,10 @@ export function HomeShell({ content, locale, pricing, sky }: HomeShellProps) {
         cloud: content.more.price.cloud,
       }}
       faq={content.more.faq}
-      scope={{
-        lede: telescope ? fill(copy.scope.lede, { aperture: telescope.aperture, type: telescope.type[locale] }) : "",
-        facts: telescope
-          ? [
-              { label: copy.scope.optics, value: `${telescope.type[locale]} · ${telescope.aperture}` },
-              { label: copy.scope.focal, value: telescope.focalLength },
-              { label: copy.scope.mount, value: telescope.mount[locale] },
-            ]
-          : [],
+      preview={{
+        // Where tonight's planet stands at its best; the stand-in's is a plausible height.
+        altitude: planet?.altitude ?? 42,
+        direction: planet ? compass[planet.direction] : compass[4],
       }}
       brandName={locale === "ka" ? brand.ka.nominative : brand.en.name}
     />

@@ -13,7 +13,9 @@ test("communicates real telescope access in the English hero", async ({ page }) 
   ).toBeVisible();
   // ADR-052 §7: the last words in red, as the Skychaser headline sets its own.
   await expect(hero.locator("h1 .hs-accent")).toHaveText("live.");
-  await expect(hero.getByText(/Book a real telescope in Georgia/)).toBeVisible();
+  // The site names neither Tbilisi nor Georgia (2026-11-16).
+  await expect(hero.getByText(/^Book a real telescope and watch the night sky live\.$/)).toBeVisible();
+  await expect(page.getByText(/Georgia|Tbilisi/)).toHaveCount(0);
   await expect(page.getByLabel(brand.en.siteName).first()).toBeVisible();
   const actions = hero.locator(".home-hero-actions");
   await expect(actions.getByRole("link", { name: "Book a session" })).toHaveAttribute(
@@ -79,9 +81,12 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
   const slides = page.locator(".hs-slide");
   expect(await slides.count()).toBeGreaterThan(0);
   await expect(slides.first().getByRole("link")).toHaveAttribute("href", /^\/en\/app\/book/);
+  // ADR-105: the showpieces carry no caption, and the page no picture credits; the drawn
+  // night sky keeps its caption.
   await expect(
     page.locator(".hs-coll").getByText("Illustration — not telescope output"),
-  ).toBeAttached();
+  ).toHaveCount(0);
+  await expect(page.getByText(/Arizona State University|Bright Star Catalogue/)).toHaveCount(0);
   await expect(
     page.locator(".hs-night").getByText("Illustration — not telescope output"),
   ).toBeAttached();
@@ -107,8 +112,13 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
   await expect(questions.nth(2)).toHaveAttribute("aria-expanded", "true");
   await expect(questions.nth(0)).toHaveAttribute("aria-expanded", "false");
 
-  // The telescope: the observatory record's aperture, never the maker's name.
-  await expect(page.locator(".hs-scope")).toContainText("203 mm");
+  // The observatory (ADR-105): what the telescope does, never which telescope it is; its
+  // console in miniature, badged Simulated.
+  await expect(page.locator(".hs-scope")).not.toContainText(/203 mm|Schmidt|Cassegrain|2032/);
+  await expect(
+    page.getByRole("img", { name: /^Simulated: the observatory console finding / }),
+  ).toBeVisible();
+  await expect(page.locator(".hs-scope .pv .hs-badge")).toHaveText("Simulated");
   await expect(
     page.locator(".hs-scope").getByRole("link", { name: "See the observatory" }),
   ).toHaveAttribute("href", "/en/observatory");
@@ -164,8 +174,8 @@ test("keeps the public homepage within a mobile viewport", async ({ page }) => {
       }));
       expect(viewport.scrollWidth, `${locale} at ${width}px`).toBe(viewport.clientWidth);
       await expect(page.locator(".home-hero .button-primary")).toBeVisible();
-      // A phone swipes the showpieces; the arrows wait for a wide screen.
-      await expect(page.locator(".hs-step").first()).toBeHidden();
+      // A phone swipes the showpieces, or steps them with the arrows either side of the dots.
+      await expect(page.getByRole("button", { name: /Next showpiece|შემდეგი ობიექტი/ })).toBeVisible();
       await expect(page.locator(".hs-slide-info").first()).toBeVisible();
     }
   }

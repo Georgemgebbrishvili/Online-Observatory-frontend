@@ -73,7 +73,8 @@ export type HomeStoryProps = {
     cloud: string;
   };
   faq: HomepageDictionary["more"]["faq"];
-  scope: { lede: string; facts: { label: string; value: string }[] };
+  /** The console preview's readout: where tonight's planet stands at its best. */
+  preview: { altitude: number; direction: string };
   brandName: string;
 };
 
@@ -283,6 +284,83 @@ export function StoryEyepiece({ image, name }: { image: string; name: string }) 
 }
 
 /**
+ * The observatory page in miniature (ADR-105): its console finding tonight's target — the
+ * field sliding past as the telescope slews, the plate solved, the target centred and
+ * tracked while the frames stack up — the five steps of its pipeline lit in turn. A loop of
+ * ten seconds in CSS (transform and opacity, and three counters), run only while it is on
+ * screen; still, it shows the target tracked. Always badged Simulated.
+ */
+export function ObservatoryPreview({
+  copy,
+  simulated,
+  target,
+  altitude,
+  direction,
+}: {
+  copy: HomepageDictionary["story"]["scope"]["preview"];
+  simulated: string;
+  target: { name: string; feed: StoryFeedImages; stack: number };
+  altitude: number;
+  direction: string;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const seen = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) el.dataset.run = "";
+      else delete el.dataset.run;
+    });
+    seen.observe(el);
+    return () => seen.disconnect();
+  }, []);
+  return (
+    <figure
+      ref={ref}
+      className="pv"
+      role="img"
+      aria-label={fill(copy.label, { name: target.name })}
+      style={{ "--pv-alt": altitude, "--pv-total": target.stack } as CSSProperties}
+    >
+      <div className="pv-bar" aria-hidden="true">
+        <span className="hs-badge">{simulated}</span>
+        <span className="hs-label">{copy.console}</span>
+      </div>
+      <div className="pv-view" aria-hidden="true">
+        <i className="pv-stars" />
+        <div className="pv-target">
+          <StoryFeed images={target.feed} label={target.name} />
+        </div>
+        <svg className="pv-reticle" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="22" />
+          <path d="M50 18v10M50 72v10M18 50h10M72 50h10" />
+        </svg>
+        <span className="pv-name">{target.name}</span>
+      </div>
+      <ol className="pv-pipe" aria-hidden="true">
+        {copy.pipe.map((name, i) => (
+          <li key={name} style={{ "--i": i } as CSSProperties}>
+            {name}
+          </li>
+        ))}
+      </ol>
+      <dl className="pv-read" aria-hidden="true">
+        <div>
+          <dt>{copy.altitude}</dt>
+          <dd>
+            <span className="pv-alt" /> · {direction}
+          </dd>
+        </div>
+        <div>
+          <dt>{copy.stack}</dt>
+          <dd className="pv-stack" />
+        </div>
+      </dl>
+    </figure>
+  );
+}
+
+/**
  * The homepage as one scroll story (ADR-087, refined by ADR-104): how a session goes
  * (pinned, five steps), tonight's showpieces (a row to swipe), one night over the
  * observatory (pinned, a clock), the session and its price, then the telescope and the
@@ -292,7 +370,7 @@ export function StoryEyepiece({ image, name }: { image: string; name: string }) 
  * almanac, the platform and the observatory's record.
  */
 export function HomeStory(props: HomeStoryProps) {
-  const { copy, hero, links, target, booking, sky, skyLabels, heroMinute, slides, night, session, faq, scope } = props;
+  const { copy, hero, links, target, booking, sky, skyLabels, heroMinute, slides, night, session, faq, preview } = props;
   const root = useRef<HTMLElement>(null);
   const skyCanvas = useRef<HTMLCanvasElement>(null);
   const feedRef = useRef<HTMLDivElement>(null);
@@ -427,29 +505,6 @@ export function HomeStory(props: HomeStoryProps) {
       if (phone && slots && lns[1] && topOf(slots) + slots.offsetHeight + 12 > topOf(lns[1])) hero.dataset.tight = "";
       hero.style.setProperty("--cap-room", `${Math.round(roomUnder())}px`);
       if (lns[0] && canvas) canvas.style.setProperty("--sky-room", `${Math.round(topOf(lns[0]))}px`);
-
-      // The showpieces: the eyepiece between the heading and the words under it; where a
-      // short screen has no such gap it stays behind the words, dimmed.
-      const coll = el.querySelector<HTMLElement>(".hs-coll");
-      const head = coll?.querySelector<HTMLElement>(".hs-coll-head");
-      const slide = coll?.querySelector<HTMLElement>(".hs-slide");
-      if (coll && head && slide) {
-        delete coll.dataset.fit;
-        delete coll.dataset.dim;
-        if (phone) {
-          const base = slide.getBoundingClientRect().top;
-          const ring = 28;
-          const top = head.getBoundingClientRect().bottom - base + ring;
-          const infos = Array.from(coll.querySelectorAll<HTMLElement>(".hs-slide-info"));
-          const bottom = Math.min(slide.clientHeight, ...infos.map((i) => i.getBoundingClientRect().top - base)) - ring;
-          const size = Math.min(bottom - top, window.innerWidth * 0.78, window.innerHeight * 0.4);
-          if (size >= 160) {
-            coll.dataset.fit = "";
-            coll.style.setProperty("--eye-h", `${Math.round(size)}px`);
-            coll.style.setProperty("--eye-top", `${Math.round(top + (bottom - top - size) / 2)}px`);
-          } else coll.dataset.dim = "";
-        }
-      }
 
       // The night: on a short screen the clock card needs the heading's place.
       const nightScene = el.querySelector<HTMLElement>(".hs-night");
@@ -701,7 +756,7 @@ export function HomeStory(props: HomeStoryProps) {
                 scrollTrigger: {
                   trigger: hero,
                   start: pinStart,
-                  end: () => (phone() ? "+=70%" : "+=120%"),
+                  end: () => (phone() ? "+=65%" : "+=120%"),
                   pin: true,
                   refreshPriority: 2,
                   scrub: 0.35,
@@ -748,7 +803,7 @@ export function HomeStory(props: HomeStoryProps) {
                     scrollTrigger: {
                       trigger: one(".hs-night"),
                       start: pinStart,
-                      end: () => (phone() ? "+=50%" : "+=100%"),
+                      end: () => (phone() ? "+=40%" : "+=100%"),
                       pin: true,
                       scrub: 0.8,
                       refreshPriority: 1,
@@ -912,10 +967,14 @@ export function HomeStory(props: HomeStoryProps) {
           <div className="hs-track" ref={trackRef}>
             {slides.map((slide) => (
               <article key={slide.id} className="hs-slide" aria-label={slide.name}>
-                <StoryEyepiece image={slide.image} name={slide.name} />
+                <div className="hs-eye-wrap">
+                  <StoryEyepiece image={slide.image} name={slide.name} />
+                </div>
                 <div className="hs-slide-info">
                   <span className="hs-label">
-                    {slide.kind} · {copy.showpieces.best} {slide.time}
+                    {/* The kind, unless the name says it already: the Moon is not "Moon · The Moon". */}
+                    {slide.name.toLocaleLowerCase().includes(slide.kind.toLocaleLowerCase()) ? "" : `${slide.kind} · `}
+                    {copy.showpieces.best} {slide.time}
                   </span>
                   <h3>{slide.name}</h3>
                   <p>{slide.note}</p>
@@ -929,16 +988,15 @@ export function HomeStory(props: HomeStoryProps) {
           </div>
           {slides.length > 1 && (
             <div className="hs-row-nav">
+              <StoryStep back label={copy.showpieces.previous} disabled={ci === 0} onClick={() => step(-1)} />
               <div className="hs-dots" aria-hidden="true">
                 {slides.map((slide, i) => (
                   <i key={slide.id} className={i === ci ? "hs-on" : undefined} />
                 ))}
               </div>
-              <StoryStep back label={copy.showpieces.previous} disabled={ci === 0} onClick={() => step(-1)} />
               <StoryStep label={copy.showpieces.next} disabled={ci === slides.length - 1} onClick={() => step(1)} />
             </div>
           )}
-          <p className="hs-illustration">{hero.illustration}</p>
         </section>
       )}
 
@@ -1053,24 +1111,14 @@ export function HomeStory(props: HomeStoryProps) {
         </div>
       </section>
 
-      {/* ── The telescope, and the sign-off ──────────────── */}
+      {/* ── The observatory, and the sign-off ────────────── */}
       <section className="hs-closer" aria-labelledby="home-closer-title">
         <div className="hs-lines" aria-hidden="true" />
-        <div className="hs-scope hs-rise">
-          <div>
+        <div className="hs-scope">
+          <div className="hs-scope-text hs-rise">
             <span className="hs-label">{copy.scope.label}</span>
             <Title title={copy.scope.title} em={copy.scope.em} level={3} />
-            <p className="hs-lead">{scope.lede}</p>
-          </div>
-          <div>
-            <dl>
-              {scope.facts.map((fact) => (
-                <div key={fact.label}>
-                  <dt>{fact.label}</dt>
-                  <dd>{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
+            <p className="hs-lead">{copy.scope.lede}</p>
             <div className="hs-scope-links">
               <Link className="hs-more" href={links.observatory}>
                 {copy.scope.see} <Arrow />
@@ -1079,6 +1127,15 @@ export function HomeStory(props: HomeStoryProps) {
                 {copy.scope.sky} <Arrow />
               </Link>
             </div>
+          </div>
+          <div className="hs-rise">
+            <ObservatoryPreview
+              copy={copy.scope.preview}
+              simulated={copy.simulated}
+              target={target}
+              altitude={preview.altitude}
+              direction={preview.direction}
+            />
           </div>
         </div>
         <div className="hs-closer-call">
@@ -1093,7 +1150,6 @@ export function HomeStory(props: HomeStoryProps) {
               {hero.watch}
             </ButtonLink>
           </div>
-          <p className="hs-credits">{copy.closer.credits}</p>
         </div>
       </section>
     </main>

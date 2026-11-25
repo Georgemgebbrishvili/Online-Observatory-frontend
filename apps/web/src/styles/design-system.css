@@ -599,21 +599,15 @@
   }
 }
 
-/* ADR-104: the eyepiece specimen, sized as a phone shows it, with its caption. */
+/* ADR-104: the eyepiece specimen, sized as a phone shows it. */
 .ds-eye-specimen {
   display: grid;
-  margin: 0;
-  gap: var(--space-3);
+  padding: var(--space-6);
   justify-items: center;
 }
 
 .ds-eye-specimen .hs-eye {
   height: 14rem;
-}
-
-.ds-eye-specimen figcaption {
-  color: var(--color-text-small);
-  font-size: var(--font-size-caption);
 }
 
 .ds-row-nav {
@@ -640,4 +634,10 @@
 .ds-focus {
   outline: var(--focus-ring);
   outline-offset: 3px;
+}
+
+/* ADR-105: the console preview takes the row's full width. */
+.ds-preview-specimen {
+  grid-column: 1 / -1;
+  max-width: 40rem;
 }

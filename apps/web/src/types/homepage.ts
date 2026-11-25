@@ -72,19 +72,25 @@ export type HomepageDictionary = {
       pricing: string;
       ticket: { admit: string; night: string; target: string; choice: string; length: string; price: string };
     };
+    /** The observatory (ADR-105): what the telescope does for you, never which one it is. */
     scope: {
       label: string;
       title: string;
       em: string;
-      /** {aperture} {type} */
       lede: string;
-      optics: string;
-      focal: string;
-      mount: string;
       see: string;
       sky: string;
+      /** The console preview beside it, as the observatory page's console names its parts. */
+      preview: {
+        /** {name} */
+        label: string;
+        console: string;
+        pipe: [string, string, string, string, string];
+        altitude: string;
+        stack: string;
+      };
     };
-    closer: { title: string; em: string; credits: string };
+    closer: { title: string; em: string };
   };
   more: {
     price: { title: string; cloud: string };

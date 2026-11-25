@@ -70,7 +70,7 @@ import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { TargetPreview } from "@/components/room/target-preview";
 import { PageGuide } from "@/components/guide/page-guide";
 import { brand } from "@/brand";
-import { StoryEyepiece, StoryFeedSpecimen, StoryHorizon, StoryStep, StoryTicket } from "@/components/home/home-story";
+import { ObservatoryPreview, StoryEyepiece, StoryFeedSpecimen, StoryHorizon, StoryStep, StoryTicket } from "@/components/home/home-story";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -1560,12 +1560,26 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               <StoryHorizon />
             </div>
             {/* ADR-104: a showpiece in its eyepiece (ring drawn as vectors, halo from the
-                key light), always captioned; the row's arrows at rest, lit as on hover,
-                ringed as on keyboard focus, and disabled at the row's end. */}
-            <figure className="ds-eye-specimen">
+                key light), uncaptioned since ADR-105; the row's arrows at rest, lit as on
+                hover, ringed as on keyboard focus, and disabled at the row's end. */}
+            <div className="ds-eye-specimen">
               <StoryEyepiece image="/sky/targets/saturn.jpg" name={dictionary.home.story.showpieces.names.saturn} />
-              <figcaption>{dictionary.home.hero.illustration}</figcaption>
-            </figure>
+            </div>
+            {/* ADR-105: the observatory's console in miniature, badged Simulated; it runs
+                while on screen and stands still, Track lit, under reduced motion. */}
+            <div className="ds-preview-specimen">
+              <ObservatoryPreview
+                copy={dictionary.home.story.scope.preview}
+                simulated={dictionary.home.story.simulated}
+                target={{
+                  name: dictionary.home.story.showpieces.names.saturn,
+                  feed: { raw: "/sky/feed/saturn-raw.webp", settled: "/sky/feed/saturn.webp" },
+                  stack: 200,
+                }}
+                altitude={38}
+                direction={dictionary.home.story.night.compass[4]}
+              />
+            </div>
             <div className="hs-row-nav ds-row-nav">
               <StoryStep label={dictionary.home.story.showpieces.next} />
               <StoryStep label={dictionary.home.story.showpieces.next} className="ds-hover" />

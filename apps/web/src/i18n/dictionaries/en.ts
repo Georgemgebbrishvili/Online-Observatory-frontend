@@ -149,21 +149,23 @@ const dictionary = {
         },
       },
       scope: {
-        label: "The instrument",
-        title: "One real",
-        em: "telescope.",
-        lede: "A {aperture} {type}. For your session, you are its only observer.",
-        optics: "Optics",
-        focal: "Focal length",
-        mount: "Mount",
+        label: "The observatory",
+        title: "One real telescope,",
+        em: "yours for the session.",
+        lede: "For your session it answers to you alone: it turns to your target, finds it in the sky, centres it and follows it as the night turns.",
         see: "See the observatory",
         sky: "Open Night Sky",
+        preview: {
+          label: "Simulated: the observatory console finding {name}",
+          console: "Observatory console",
+          pipe: ["Align", "Slew", "Solve", "Center", "Track"],
+          altitude: "Alt",
+          stack: "Stack",
+        },
       },
       closer: {
         title: "The night",
         em: "is yours.",
-        credits:
-          "Planet pictures: NASA, ESA, JPL (reference photographs). Deep-sky pictures are painted. The Moon: NASA/GSFC/Arizona State University. Stars: Yale Bright Star Catalogue; figures: d3-celestial (BSD).",
       },
     },
     more: {

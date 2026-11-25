@@ -109,7 +109,7 @@ html.lenis body {
 }
 
 /* A scene's first label opens with a short red rule. */
-:is(.hs-coll-head > .hs-label, .hs-night-head > .hs-label, .hs-session-text > .hs-label, .hs-scope .hs-label)::before {
+:is(.hs-coll-head > .hs-label, .hs-night-head > .hs-label, .hs-session-text > .hs-label, .hs-scope-text > .hs-label)::before {
   display: inline-block;
   width: var(--space-6);
   height: 1px;
@@ -268,9 +268,13 @@ html.lenis body {
     var(--color-mask);
 }
 
+/* Screened onto the black, as the canvas once drew them "lighter", and faded out toward their
+   edges: a plate's not-quite-black ground leaves no square behind the object. */
 .hs-feed-raw,
 .hs-feed-settled {
   position: absolute;
+  mask-image: radial-gradient(50% 50% at 50% 50%, var(--color-mask) 86%, transparent 100%);
+  mix-blend-mode: screen;
   top: var(--cap-y);
   left: var(--cap-x);
   width: calc(var(--cap-w) * 0.82);
@@ -667,13 +671,17 @@ html.lenis body {
 }
 
 /*
- * THE SHOWPIECES — tonight's best objects, a row to swipe (ADR-104): one to a screen, each
- * in an eyepiece with its graduated ring and one warm halo from the key light; the
- * object's own colours are the plate's, never a wash behind it. Arrows step the row on a
- * wide screen; a finger swipes it.
+ * THE SHOWPIECES — tonight's best objects, a row to swipe (ADR-104), centred (ADR-105): the
+ * heading over the row, each object in its eyepiece in the middle of the screen with its
+ * graduated ring and one warm halo from the key light, its name and its time beneath, and
+ * the row's arrows either side of its dots. The object's own colours are the plate's, never
+ * a wash behind it.
  */
 .hs-coll {
+  display: flex;
   height: var(--hs-h);
+  flex-direction: column;
+  padding: var(--space-10) 0 var(--hs-foot);
   overflow: hidden;
   background: var(--color-night);
 }
@@ -687,11 +695,27 @@ html.lenis body {
   pointer-events: none;
 }
 
+.hs-coll-head {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  gap: var(--space-2);
+  padding-inline: var(--space-page);
+  justify-items: center;
+  text-align: center;
+}
+
+.hs-coll-head .hs-title em {
+  display: inline;
+}
+
 .hs-track {
   position: relative;
+  z-index: 2;
   display: flex;
   width: 100%;
-  height: 100%;
+  min-height: 0;
+  flex: 1;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
@@ -699,20 +723,30 @@ html.lenis body {
 }
 
 .hs-slide {
-  position: relative;
-  display: grid;
+  display: flex;
   width: 100%;
   height: 100%;
   flex: none;
-  overflow: hidden;
-  place-items: center;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: var(--space-page);
   scroll-snap-align: center;
+}
+
+/* The eyepiece takes the height the words leave it, the ring's margin kept clear. */
+.hs-eye-wrap {
+  display: grid;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  padding: var(--space-8) 0 var(--space-6);
+  place-items: center;
 }
 
 .hs-eye {
   position: relative;
   z-index: 2;
-  height: min(50svh, 32rem);
+  height: min(100%, 30rem, 70vw);
   aspect-ratio: 1;
   margin: 0;
 }
@@ -734,7 +768,7 @@ html.lenis body {
   background: var(--color-mask);
   box-shadow: var(--shadow-rim);
   object-fit: contain;
-  padding: 7%;
+  padding: 5%;
 }
 
 /* The graduated ring: minor ticks every 5°, major every 30°, as vectors. */
@@ -759,32 +793,12 @@ html.lenis body {
   stroke-width: 2.2;
 }
 
-.hs-coll-head {
-  position: absolute;
-  z-index: 5;
-  top: var(--space-12);
-  left: var(--space-page);
-  display: grid;
-  gap: var(--space-3);
-  justify-items: start;
-}
-
-.hs-coll .hs-illustration {
-  top: auto;
-  right: var(--space-page);
-  bottom: var(--space-2);
-  left: auto;
-}
-
 .hs-slide-info {
-  position: absolute;
-  z-index: 4;
-  bottom: calc(var(--hs-foot) + var(--space-4));
-  left: var(--space-page);
   display: grid;
-  max-width: min(30rem, calc(100% - 2 * var(--space-page)));
+  max-width: 34rem;
   gap: var(--space-1);
-  justify-items: start;
+  justify-items: center;
+  text-align: center;
 }
 
 .hs-slide-info h3 {
@@ -794,29 +808,34 @@ html.lenis body {
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.02em;
   text-transform: none;
+  text-wrap: balance;
 }
 
 .hs-slide-info p {
   margin: 0;
   color: var(--color-text-secondary);
+  text-wrap: pretty;
 }
 
-/* The row's place and its two arrows, at the foot on the right. */
+.hs-slide-info .hs-more {
+  min-height: var(--size-touch);
+}
+
+/* The row's place, its arrows either side, centred under the words. */
 .hs-row-nav {
-  position: absolute;
+  position: relative;
   z-index: 5;
-  right: var(--space-page);
-  bottom: calc(var(--hs-foot) + var(--space-4));
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  justify-content: center;
+  gap: var(--space-4);
+  padding-top: var(--space-3);
 }
 
 .hs-dots {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-right: var(--space-2);
 }
 
 .hs-dots i {
@@ -1384,14 +1403,14 @@ html.lenis body {
 }
 
 /*
- * THE TELESCOPE AND THE SIGN-OFF — one screen (ADR-104): the instrument's record as a row
- * of facts, then the closing headline, its two buttons and the picture credits, over the
- * closing horizon, the screen's one glow.
+ * THE OBSERVATORY AND THE SIGN-OFF — one screen (ADR-104, ADR-105): what the telescope does
+ * for you beside its console in miniature, then the closing headline and its two buttons,
+ * over the closing horizon, the screen's one glow. No telescope is named.
  */
 .hs-closer {
   display: grid;
   gap: var(--space-16);
-  padding: var(--space-20) var(--space-page) calc(var(--space-12) + var(--tab-bar-space, 0rem));
+  padding: var(--space-20) var(--space-page) calc(var(--space-16) + var(--tab-bar-space, 0rem));
   overflow: hidden;
   background: var(--gradient-horizon), var(--color-night);
   isolation: isolate;
@@ -1401,8 +1420,8 @@ html.lenis body {
   display: grid;
   width: 100%;
   max-width: var(--size-content);
-  align-items: end;
-  gap: var(--space-8) var(--space-12);
+  align-items: center;
+  gap: var(--space-10) var(--space-16);
   margin-inline: auto;
 }
 
@@ -1417,46 +1436,25 @@ html.lenis body {
   color: var(--color-text-cream);
   font-size: var(--font-size-body-lg);
   line-height: 1.5;
-}
-
-.hs-scope dl {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 0;
-  border-top: 1px solid var(--color-line);
-}
-
-.hs-scope dl div {
-  padding: var(--space-4) var(--space-4) var(--space-4) 0;
-  border-bottom: 1px solid var(--color-line);
-}
-
-/* Three facts: the optics, the longest, takes the row; the other two share the next. */
-.hs-scope dl div:first-child {
-  grid-column: 1 / -1;
-}
-
-.hs-scope dt {
-  color: var(--color-text-small);
-  font-size: var(--font-size-caption);
-}
-
-.hs-scope dd {
-  margin: var(--space-1) 0 0;
-  font-variant-numeric: tabular-nums;
-  font-weight: var(--font-weight-semibold);
+  text-wrap: pretty;
 }
 
 .hs-scope-links {
   display: flex;
   flex-wrap: wrap;
   gap: 0 var(--space-6);
-  margin-top: var(--space-4);
+  margin-top: var(--space-5);
 }
 
-@media (--md) {
+@media (--lg) {
   .hs-scope {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+@media (--md) and (--below-lg) {
+  .hs-scope {
+    max-width: 40rem;
   }
 }
 
@@ -1479,12 +1477,323 @@ html.lenis body {
   justify-content: center;
 }
 
-.hs-credits {
-  max-width: 48rem;
+/*
+ * THE CONSOLE IN MINIATURE (ADR-105). The one glass, deep over the night; a viewport of
+ * sky; the pipeline's five steps; two readouts. One ten-second loop, run while on screen
+ * (data-run): the field slides past as the telescope slews (2–4s), the reticle closes on
+ * the solved field (4–6s), the target is centred and the frames stack up (6–9.5s). Each
+ * step is lit for its two seconds with the console's current-step glow. Held still, it
+ * shows the target tracked and the stack complete.
+ */
+@property --pv-a {
+  inherits: false;
+  initial-value: 0;
+  syntax: "<integer>";
+}
+
+@property --pv-s {
+  inherits: false;
+  initial-value: 0;
+  syntax: "<integer>";
+}
+
+@property --pv-d {
+  inherits: true;
+  initial-value: 1;
+  syntax: "<number>";
+}
+
+.pv {
+  --pv-loop: 10s;
+
+  display: grid;
   margin: 0;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-large);
+  background: var(--gradient-tile), var(--color-glass-deep);
+  box-shadow: var(--shadow-glass), var(--shadow-panel);
+}
+
+.pv-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.pv-view {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-panel);
+  background: var(--color-mask);
+}
+
+.pv-stars,
+.pv-target {
+  position: absolute;
+  inset: 0;
+}
+
+.pv-stars {
+  background:
+    var(--gradient-stars) 0 0 / 340px 300px,
+    var(--gradient-stars) 170px 120px / 520px 460px;
+  inset: -50%;
+}
+
+.pv-target .hs-feed {
+  --cap-w: 58%;
+  --cap-x: 50%;
+  --cap-y: 50%;
+  --depth: var(--pv-d);
+
+  position: absolute;
+  background: none;
+  inset: 0;
+}
+
+.pv-reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 58%;
+  fill: none;
+  stroke: var(--color-accent-ink);
+  stroke-width: 0.6;
+  translate: -50% -50%;
+}
+
+.pv-name {
+  position: absolute;
+  bottom: var(--space-3);
+  left: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+/* Five steps in a row where they fit; on a phone they wrap, never cut short. */
+.pv-pipe {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pv-pipe li {
+  flex: 1 0 auto;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  color: var(--color-text-small);
+  font-family: var(--font-label);
+  font-size: var(--font-size-kicker);
+  letter-spacing: var(--tracking-label);
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pv-pipe li:lang(ka) {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Still, and before the loop starts: the last step, Track, is the one under way. */
+.pv-pipe li:last-child {
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-muted);
+  box-shadow: var(--glow-pulse-low);
+  color: var(--color-text-primary);
+}
+
+.pv-read {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-6);
+  margin: 0;
+}
+
+.pv-read div {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.pv-read dt {
   color: var(--color-text-small);
   font-size: var(--font-size-caption);
-  line-height: 1.5;
+}
+
+.pv-read dd {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.pv-alt {
+  --pv-a: var(--pv-alt);
+
+  counter-reset: pv-alt var(--pv-a);
+}
+
+.pv-alt::after {
+  content: counter(pv-alt) "°";
+}
+
+.pv-stack {
+  --pv-s: var(--pv-total);
+
+  counter-reset: pv-s var(--pv-s) pv-t var(--pv-total);
+}
+
+.pv-stack::after {
+  content: counter(pv-s) " / " counter(pv-t);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pv[data-run] .pv-view {
+    animation: pv-cycle var(--pv-loop) linear infinite;
+  }
+
+  .pv[data-run] :is(.pv-stars, .pv-target) {
+    animation: pv-slew var(--pv-loop) var(--ease-standard) infinite;
+  }
+
+  .pv[data-run] .pv-reticle {
+    animation: pv-close var(--pv-loop) var(--ease-out-expo) infinite;
+  }
+
+  .pv[data-run] .pv-target {
+    animation:
+      pv-slew var(--pv-loop) var(--ease-standard) infinite,
+      pv-stack var(--pv-loop) linear infinite;
+  }
+
+  .pv[data-run] .pv-alt {
+    animation: pv-alt var(--pv-loop) var(--ease-standard) infinite;
+  }
+
+  .pv[data-run] .pv-stack {
+    animation: pv-count var(--pv-loop) linear infinite;
+  }
+
+  .pv[data-run] .pv-pipe li:last-child {
+    border-color: var(--color-line);
+    background: none;
+    box-shadow: none;
+    color: var(--color-text-small);
+  }
+
+  .pv[data-run] .pv-pipe li {
+    animation: pv-step var(--pv-loop) step-end infinite;
+    animation-delay: calc(var(--i) * var(--pv-loop) / 5);
+  }
+}
+
+/* The view fades at the loop's seam, so the field never jumps. */
+@keyframes pv-cycle {
+  0% {
+    opacity: 0;
+  }
+
+  4%,
+  96% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pv-slew {
+  0%,
+  20% {
+    transform: translate(34%, -22%);
+  }
+
+  40%,
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes pv-close {
+  0%,
+  40% {
+    opacity: 0.45;
+    scale: 1.4;
+  }
+
+  60%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes pv-stack {
+  0%,
+  60% {
+    --pv-d: 0;
+  }
+
+  95%,
+  100% {
+    --pv-d: 1;
+  }
+}
+
+@keyframes pv-alt {
+  0%,
+  20% {
+    --pv-a: 12;
+  }
+
+  40%,
+  100% {
+    --pv-a: var(--pv-alt);
+  }
+}
+
+@keyframes pv-count {
+  0%,
+  60% {
+    --pv-s: 1;
+  }
+
+  95%,
+  100% {
+    --pv-s: var(--pv-total);
+  }
+}
+
+/* A step is lit for its fifth of the loop (each starts a fifth later). */
+@keyframes pv-step {
+  0% {
+    border-color: var(--color-accent-border);
+    background: var(--color-accent-muted);
+    box-shadow: var(--glow-pulse-low);
+    color: var(--color-text-primary);
+  }
+
+  20%,
+  100% {
+    border-color: var(--color-line);
+    background: none;
+    box-shadow: none;
+    color: var(--color-text-small);
+  }
 }
 
 /* The design system's specimen of the feed. */
@@ -1637,46 +1946,17 @@ html.lenis body {
 
   /* A phone's row is a little shorter than its screen: the page stays within 6,000px. */
   .hs-coll {
-    height: min(var(--hs-h), 42rem);
+    height: min(var(--hs-h), 40rem);
+    padding-top: var(--space-8);
   }
 
-  .hs-slide-info {
-    right: var(--space-page);
-    max-width: none;
-  }
-
-  /* A finger swipes the row: the arrows wait for a wide screen; the dots stay. */
-  .hs-step {
-    display: none;
-  }
-
-  .hs-row-nav {
-    bottom: calc(var(--hs-foot) + var(--space-5));
-  }
-
-  .hs-eye {
-    height: min(40svh, 78vw);
-    margin-top: -14svh;
-  }
-
-  /* Sized and placed by home-story.tsx into the gap between the heading and the words. */
-  .hs-coll[data-fit] .hs-eye {
-    height: var(--eye-h);
-    margin-top: var(--eye-top);
-    align-self: start;
-  }
-
-  .hs-coll[data-dim] .hs-eye {
-    opacity: 0.35;
-  }
-
-  .hs-coll-head {
-    top: var(--space-8);
-    pointer-events: none;
-  }
-
+  /* The sky's link waits for a wide screen; the menu and the tab bar carry it here. */
   .hs-coll-head .hs-more {
     display: none;
+  }
+
+  .hs-eye-wrap {
+    padding: var(--space-6) 0 var(--space-5);
   }
 
   .hs-night-head {
@@ -1744,6 +2024,31 @@ html.lenis body {
     gap: 0 var(--space-4);
   }
 
+  /* The sky's link is in the tab bar at the thumb; the observatory's stays. */
+  .hs-scope-links .hs-more + .hs-more {
+    display: none;
+  }
+
+  .hs-scope {
+    gap: var(--space-8);
+  }
+
+  .pv {
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .pv-view {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* On a phone the five steps keep their own widths, centred, and wrap only if they must. */
+  .pv-pipe li {
+    flex: 0 1 auto;
+    padding-inline: var(--space-2);
+    letter-spacing: 0.06em;
+  }
+
   /* The ticket repeats the price just above it: a phone keeps the price and the questions. */
   .hs-printer {
     display: none;
@@ -1752,6 +2057,7 @@ html.lenis body {
   .hs-closer {
     gap: var(--space-10);
     padding-top: var(--space-12);
+    padding-bottom: calc(var(--space-12) + var(--tab-bar-space, 0rem));
   }
 }
 

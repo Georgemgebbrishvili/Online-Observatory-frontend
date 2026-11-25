@@ -248,7 +248,8 @@ only in the weekly card draw, never sold (ADR-058).
 
 The real feed and real instrument status are the visual focus. Every rendered or drawn
 object is captioned "Illustration — not telescope output", and a simulated stream is
-always badged "Simulated".
+always badged "Simulated". One exception, the maintainer's (ADR-105): the homepage's
+showpieces carry no caption and the homepage no picture credits.
 
 ## Building a surface
 
