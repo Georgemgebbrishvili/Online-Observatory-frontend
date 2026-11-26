@@ -13,7 +13,6 @@ import {
   targetName,
   targetVisual,
 } from "@/features/targets/present";
-import { readObservatories } from "@/features/collection/read";
 import { readTarget } from "@/features/targets/read";
 import { isLocale } from "@/i18n/config";
 import { targetGuideCopy } from "@/i18n/resources/target-guide";
@@ -70,9 +69,6 @@ export default async function MissionTargetPage({ params }: MissionTargetPagePro
   }
 
   const { target, tonight } = result;
-  const telescope =
-    (await readObservatories())?.find((observatory) => observatory.kind === "FIRST_PARTY")
-      ?.telescope ?? null;
   const name = targetName(target, locale);
   const visibility = tonight?.item.visibility ?? null;
   const reason = visibility ? primaryReason(visibility) : null;
@@ -96,7 +92,7 @@ export default async function MissionTargetPage({ params }: MissionTargetPagePro
             <span className="board-label">{targetGuideCopy[locale].view}</span>{" "}
             {targetGuideCopy[locale].classes[target.type]}
           </p>
-          {telescope && <AstromanLine locale={locale} telescope={telescope} />}
+          <AstromanLine locale={locale} />
         </div>
         <figure className="mission-detail-figure">
           <div

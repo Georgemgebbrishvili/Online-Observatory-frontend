@@ -218,16 +218,16 @@ const observatories = zListBookableObservatoriesResponse.parse({
   items: [
     {
       id: observatoryId,
-      slug: "tbilisi",
+      slug: "stellar",
       kind: "FIRST_PARTY",
-      nameEn: "Stellar Tbilisi",
-      nameKa: "სტელარი თბილისი",
-      city: "Tbilisi",
+      nameEn: "Stellar Observatory",
+      nameKa: "სტელარის ობსერვატორია",
+      city: "",
       countryCode: "GE",
       timezone: "Asia/Tbilisi",
       telescope: {
-        manufacturer: "Celestron",
-        model: "NexStar 8SE",
+        manufacturer: "Stellar",
+        model: "Main telescope",
         apertureMm: 203,
         focalLengthMm: 2032,
       },
@@ -2033,9 +2033,9 @@ const routes = {
         items: [
           {
             id: observatoryId,
-            slug: "tbilisi",
-            nameEn: "Stellar Tbilisi",
-            nameKa: "სტელარი თბილისი",
+            slug: "stellar",
+            nameEn: "Stellar Observatory",
+            nameKa: "სტელარის ობსერვატორია",
             mode: "SIMULATED",
             isDemo: false,
             hardwareTest: false,
@@ -2047,8 +2047,8 @@ const routes = {
                 {
                   id: hardwareTestObservatoryId,
                   slug: "stellar-tbilisi-hardware",
-                  nameEn: "Stellar Tbilisi — hardware test",
-                  nameKa: "სტელარი თბილისი — აპარატურის ტესტი",
+                  nameEn: "Stellar Observatory — hardware test",
+                  nameKa: "სტელარის ობსერვატორია — აპარატურის ტესტი",
                   mode: "SIMULATED",
                   isDemo: false,
                   hardwareTest: true,
@@ -4028,7 +4028,7 @@ http
         zGetGalleryCaptureResponse.parse({
           id: capture.id,
           target: { slug: "saturn", nameEn: "Saturn", nameKa: "სატურნი", type: "PLANET" },
-          place: { city: "Tbilisi", countryCode: "GE", timezone: "Asia/Tbilisi" },
+          place: { city: "", countryCode: "GE", timezone: "Asia/Tbilisi" },
           telescope: { apertureMm: 203, focalLengthMm: 2032 },
           capturedAt: capture.capturedAt,
           imagingProfile: capture.imagingProfile,

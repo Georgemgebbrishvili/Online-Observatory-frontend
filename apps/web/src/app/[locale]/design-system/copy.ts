@@ -161,8 +161,8 @@ export const designSystemCopy = {
     },
     georgianSample: brand.ka.tagline,
     titleSample: "The real sky",
-    labelSample: "Tonight · Tbilisi",
-    georgianLabelSample: "ამაღამ · თბილისი",
+    labelSample: "Tonight · Observatory",
+    georgianLabelSample: "ამაღამ · ობსერვატორია",
     georgianBodySample: "ტელესკოპი ნამდვილად მიბრუნდება შენ მიერ არჩეული ობიექტისკენ.",
     typeScale: {
       display: "The real sky",
@@ -171,7 +171,7 @@ export const designSystemCopy = {
       h2: "The instrument is ready",
       h3: "Reserve an observation",
       stat: "14 · 42.7° · 08:12",
-      kicker: "Live telescope · Tbilisi",
+      kicker: "Live telescope",
       "body-lg": "Lead paragraphs and intros",
       body: "Body copy across the product",
       label: "Labels · metadata",
@@ -209,7 +209,7 @@ export const designSystemCopy = {
     chips: ["Available tonight", "Bright nebula", "Selected"],
     simulatedBadge: "Simulated",
     poster: {
-      kicker: "Live telescope · Tbilisi",
+      kicker: "Live telescope",
       headline: "One telescope. Your sky.",
       stats: [
         ["6″", "Aperture"],
@@ -229,7 +229,7 @@ export const designSystemCopy = {
       eyebrow: "Tonight · 22:40",
       title: "M42 · Orion Nebula",
       description:
-        "Emission nebula in Orion with an excellent observation window from Tbilisi.",
+        "Emission nebula in Orion with an excellent observation window tonight.",
       footer: "Available for a 12-minute mission",
       panelTitle: "Surface panel",
       panelDescription:
@@ -473,8 +473,8 @@ export const designSystemCopy = {
     },
     georgianSample: brand.ka.tagline,
     titleSample: "The real sky",
-    labelSample: "Tonight · Tbilisi",
-    georgianLabelSample: "ამაღამ · თბილისი",
+    labelSample: "Tonight · Observatory",
+    georgianLabelSample: "ამაღამ · ობსერვატორია",
     georgianBodySample: "ტელესკოპი ნამდვილად მიბრუნდება შენ მიერ არჩეული ობიექტისკენ.",
     typeScale: {
       display: "ნამდვილი ცა",
@@ -483,7 +483,7 @@ export const designSystemCopy = {
       h2: "ინსტრუმენტი მზადაა",
       h3: "დაკვირვების დაჯავშნა",
       stat: "14 · 42.7° · 08:12",
-      kicker: "პირდაპირი დაკვირვება · თბილისი",
+      kicker: "პირდაპირი დაკვირვება",
       "body-lg": "შესავალი აბზაცები",
       body: "ძირითადი ტექსტი მთელ პროდუქტში",
       label: "ეტიკეტები · მეტამონაცემები",
@@ -521,7 +521,7 @@ export const designSystemCopy = {
     chips: ["ხელმისაწვდომია ამაღამ", "კაშკაშა ნისლეული", "არჩეულია"],
     simulatedBadge: "სიმულირებული",
     poster: {
-      kicker: "პირდაპირი დაკვირვება · თბილისი",
+      kicker: "პირდაპირი დაკვირვება",
       headline: "ერთი ტელესკოპი. შენი ცა.",
       stats: [
         ["6″", "აპერტურა"],
@@ -541,7 +541,7 @@ export const designSystemCopy = {
       eyebrow: "ამაღამ · 22:40",
       title: "M42 · ორიონის ნისლეული",
       description:
-        "ემისიური ნისლეული ორიონში, თბილისიდან დაკვირვებისთვის შესანიშნავი დროის მონაკვეთით.",
+        "ემისიური ნისლეული ორიონში, ამაღამ დაკვირვებისთვის შესანიშნავი დროის მონაკვეთით.",
       footer: "ხელმისაწვდომია 12-წუთიანი მისიისთვის",
       panelTitle: "ზედაპირის პანელი",
       panelDescription:

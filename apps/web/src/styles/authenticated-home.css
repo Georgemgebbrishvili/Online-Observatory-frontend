@@ -1,49 +1,40 @@
 /*
- * The app home in the poster language (ADR-039, design slice B5). The shared page
- * patterns come from pages.css; this file only lays them out. Every panel is as tall
- * as what it holds: no reserved heights, so no empty halves.
+ * The app home (ADR-109): one dense grid. Tonight and the observatory side by side,
+ * then sessions, the weekly cards and the Collection as one row of small cards. Every
+ * card is as tall as what it holds; an empty one says so in a line, not a panel.
  */
 
 .authenticated-home {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  width: min(100%, 94rem);
+  gap: var(--space-3);
+  width: min(100%, 80rem);
   margin-inline: auto;
-  padding: 0 var(--space-page) var(--space-16);
+  padding: var(--space-6) var(--space-page) var(--space-8);
 }
 
-.tonight-notices {
+.home-grid {
   display: grid;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.tonight-notices:empty {
-  display: none;
+.home-quiet {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  line-height: var(--leading-body);
 }
 
-.home-dashboard-grid {
-  display: grid;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-}
-
-.home-side {
-  display: grid;
-  align-content: start;
-  gap: var(--space-4);
-  min-width: 0;
-}
-
-/* TONIGHT — the recommendation, its figures and one orange action. */
+/* TONIGHT — the recommendation, or why there is none, and one action. */
 .home-tonight {
-  gap: var(--space-8);
+  align-content: center;
+  gap: var(--space-5);
 }
 
 .home-tonight-copy {
   display: grid;
   align-content: start;
-  gap: var(--space-5);
+  gap: var(--space-3);
   min-width: 0;
 }
 
@@ -54,20 +45,39 @@
 }
 
 .home-tonight h2 {
-  max-width: 14ch;
-  font-size: var(--font-size-h1);
+  font-size: var(--font-size-h2);
 }
 
 .home-tonight-copy > p {
-  max-width: 42ch;
+  max-width: 52ch;
   color: var(--color-text-secondary);
+}
+
+.home-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-8);
+  margin: 0;
+}
+
+.home-figures dt {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-label);
+  font-size: var(--font-size-caption);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.home-figures dd {
+  margin: var(--space-1) 0 0;
 }
 
 .home-tonight-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4) var(--space-6);
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-2);
 }
 
 .home-illustration {
@@ -80,7 +90,7 @@
 .home-illustration img {
   display: block;
   width: 100%;
-  max-width: 16rem;
+  max-width: 9rem;
   height: auto;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-small);
@@ -91,21 +101,15 @@
   font-size: var(--font-size-caption);
 }
 
-/* OBSERVATORY */
+/* OBSERVATORY — its name and two lights. */
+.home-observatory {
+  gap: var(--space-3);
+}
+
 .home-observatory h3 {
   margin: 0;
-  font-size: var(--font-size-h2);
+  font-size: var(--font-size-h3);
   overflow-wrap: break-word;
-}
-
-.home-observatory-copy p {
-  margin: var(--space-1) 0 0;
-  color: var(--color-text-secondary);
-}
-
-/* The panel is narrow beside the recommendation: label over value, never two columns. */
-.home-observatory .ruled-specs > div {
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .home-observatory-status {
@@ -128,7 +132,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-4);
-  padding-block: var(--space-4);
+  padding-block: var(--space-3);
   border-bottom: 1px solid var(--color-border-subtle);
 }
 
@@ -175,25 +179,21 @@
   }
 }
 
-/* ALSO TONIGHT and COLLECTION — a section heading over its body. */
-.home-section-body {
-  min-width: 0;
-  margin-top: var(--space-8);
+/* THE WEEKLY CARDS (ADR-058), a link only. */
+.home-cards {
+  justify-items: start;
+  gap: var(--space-3);
 }
 
-.section-heading .page-lede {
-  margin-top: var(--space-3);
-}
-
-.home-collection .page-link {
-  display: inline-block;
-  margin-top: var(--space-4);
+/* COLLECTION — the latest captures in a strip, or a line when there are none. */
+.home-collection {
+  gap: var(--space-3);
 }
 
 .home-recent-captures {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 12rem));
-  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 10rem));
+  gap: var(--space-2);
 }
 
 .home-recent-captures a {
@@ -224,11 +224,11 @@
   position: absolute;
   z-index: 1;
   bottom: var(--space-2);
+  right: var(--space-2);
   left: var(--space-2);
   padding: 0.15rem var(--space-2);
   border: 1px solid var(--color-simulated-border);
   border-radius: var(--radius-full);
-  letter-spacing: var(--tracking-label);
   background: var(--color-scrim-strong);
   color: var(--color-simulated);
   font-family: var(--font-label);
@@ -238,20 +238,60 @@
   text-transform: uppercase;
 }
 
-@media (--md) {
-  .home-tonight[data-illustrated] {
-    grid-template-columns: minmax(0, 1fr) minmax(10rem, 14rem);
-  }
+/* ALSO TONIGHT — under the grid, its title as small as the cards'. */
+.home-also {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
 }
 
-@media (--lg) {
-  .home-dashboard-grid {
-    align-items: start;
-    grid-template-columns: minmax(0, 1.5fr) minmax(19rem, 1fr);
+@media (--md) {
+  .home-grid {
+    grid-template-areas:
+      "tonight tonight"
+      "observatory upcoming"
+      "cards collection";
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .home-tonight {
-    padding: var(--space-8);
+    grid-area: tonight;
+  }
+
+  .home-observatory {
+    grid-area: observatory;
+  }
+
+  .home-upcoming {
+    grid-area: upcoming;
+  }
+
+  .home-cards {
+    grid-area: cards;
+  }
+
+  .home-collection {
+    grid-area: collection;
+  }
+
+  .home-tonight[data-illustrated] {
+    grid-template-columns: minmax(0, 1fr) 9rem;
+  }
+}
+
+/* Laptop: tonight beside a column of the observatory over the sessions; the cards and
+   the Collection under them. */
+@media (--lg) {
+  .home-grid {
+    grid-template-areas:
+      "tonight tonight observatory"
+      "tonight tonight upcoming"
+      "cards collection collection";
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-tonight {
+    padding: var(--space-6);
   }
 }
 
@@ -259,16 +299,4 @@
   .home-tonight-actions .button {
     width: 100%;
   }
-}
-
-/* ADR-058: the weekly cards, a link only. */
-.home-cards {
-  display: grid;
-  justify-items: start;
-  gap: var(--space-3);
-}
-
-.home-cards p {
-  margin: 0;
-  color: var(--color-text-secondary);
 }

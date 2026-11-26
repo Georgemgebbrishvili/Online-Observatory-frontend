@@ -22,7 +22,7 @@ test("reports the observatory, with one feed badge and no simulator banner", asy
   });
   // The simulated badge lives on telescope output, not on the status page.
   await expect(page.getByText("SIMULATED OBSERVATORY")).toHaveCount(0);
-  await expect(page.getByText("Stellar Tbilisi")).toBeVisible();
+  await expect(page.getByText("Stellar Observatory")).toBeVisible();
   await expect(page.getByText(/Reported \d+ (s|min|h) ago/)).toBeVisible();
 
   const now = field(page, "link");

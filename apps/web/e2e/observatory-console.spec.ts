@@ -39,22 +39,19 @@ test.describe("the sky model's 8SE", () => {
     await page.clock.install({ time: evening });
   });
 
-  test("is the 8-inch Schmidt-Cassegrain, framed by the 585", async ({ page }) => {
+  test("names no telescope or camera model, and keeps the viewing figures", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/en/observatory");
     // The console sizes itself and takes its handlers once mounted.
     await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
 
-    // The station's details are the maker's numbers, on the Setup tab.
+    // ADR-109: the Setup tab names the design, never a maker, a model or a size.
     await step(page, "More");
     await page.getByRole("tab", { name: "Setup" }).click();
     const setup = page.getByRole("tabpanel");
-    await expect(setup.getByText("203 mm Schmidt-Cassegrain")).toBeVisible();
-    await expect(setup.getByText("203.2 mm")).toBeVisible();
-    await expect(setup.getByText("2032 mm")).toBeVisible();
-    await expect(setup.getByText("0.57″")).toBeVisible();
-    await expect(setup.getByText(/3840 × 2160 · 2.9 µm/)).toBeVisible();
+    await expect(setup.getByText("Schmidt-Cassegrain", { exact: true })).toBeVisible();
+    await expect(setup.getByText(/203(\.2)? mm|2032 mm|ASI ?585|ZWO|Tbilisi/)).toHaveCount(0);
     await page.getByRole("tab", { name: "Mount" }).click();
 
     // The field at native focal length, and the three trains and three read-out regions.

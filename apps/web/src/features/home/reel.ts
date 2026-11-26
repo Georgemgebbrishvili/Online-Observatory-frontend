@@ -1,7 +1,7 @@
 /**
  * The homepage's real views (ADR-107): a film and photographs taken through 8-inch
  * Celestron telescopes by other observers, each under a Creative Commons licence that
- * asks for its author to be named. `public/sky/scope/README.md` records every source.
+ * asks for its author to be named. `docs/media/sky-scope-sources.md` records every source.
  */
 export const reelFilm = {
   webm: "/sky/scope/moon.webm",

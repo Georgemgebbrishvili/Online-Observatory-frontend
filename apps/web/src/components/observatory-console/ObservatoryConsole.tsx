@@ -1119,12 +1119,8 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName }: Observatory
         <dl className="oh-kv">
           {([
             [t.details.optics, selected.instrument.optics],
-            [t.details.aperture, `${selected.instrument.apertureMm} mm`],
-            [t.details.focalLength, `${selected.instrument.focalLengthMm} mm`],
-            [t.details.resolution, `${resolvingPowerArcsec(selected.instrument).toFixed(2)}″`],
             [t.details.mount, selected.instrument.mount],
             [t.details.camera, t.details.cameraKind],
-            [t.details.sensor, `${fieldOfView(selected.instrument).widthPx} × ${fieldOfView(selected.instrument).heightPx} · ${selected.instrument.pixelSizeUm} µm`],
           ] as const).map(([k, v]) => (
             <div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>
           ))}
@@ -1134,7 +1130,6 @@ function SimConsole({ locale, tonight, nodeCloud, observatoryName }: Observatory
         <h3 className="oh-h3" style={{ marginTop: 0 }}>{t.hub.setup.site}</h3>
         <dl className="oh-kv">
           {([
-            [t.details.elevation, `${selected.elevationM} m`],
             [t.details.sky, t.details.bortle(selected.bortle)],
             [t.cloud, nodeCloud !== null ? `${nodeCloud}%` : '—'],
             [t.seeing, `${seeing.toFixed(1)}″`],

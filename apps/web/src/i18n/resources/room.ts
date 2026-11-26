@@ -112,11 +112,11 @@ const en: RoomCopy = {
     label: "Live view",
     illustration: "Illustration — not telescope output",
     before: "The live view opens here when the telescope reaches {target}.",
-    camera: "ZWO ASI585MC",
+    camera: "Colour astronomy camera",
     optics: {
-      F20_BARLOW: "4064 mm · f/20",
-      F10_NATIVE: "2032 mm · f/10",
-      F6_3_REDUCER: "1280 mm · f/6.3",
+      F20_BARLOW: "f/20",
+      F10_NATIVE: "f/10",
+      F6_3_REDUCER: "f/6.3",
     },
   },
   steps: {
@@ -400,11 +400,11 @@ const ka: RoomCopy = {
     label: "პირდაპირი გამოსახულება",
     illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
     before: "პირდაპირი გამოსახულება აქ გამოჩნდება, როცა ტელესკოპი ობიექტამდე მივა: {target}.",
-    camera: "ZWO ASI585MC",
+    camera: "ფერადი ასტროკამერა",
     optics: {
-      F20_BARLOW: "4064 მმ · f/20",
-      F10_NATIVE: "2032 მმ · f/10",
-      F6_3_REDUCER: "1280 მმ · f/6.3",
+      F20_BARLOW: "f/20",
+      F10_NATIVE: "f/10",
+      F6_3_REDUCER: "f/6.3",
     },
   },
   steps: {

@@ -169,7 +169,7 @@ test.describe("the hardware test observatory (platform ADR-075)", () => {
 
     await page
       .locator(".operator-picker select")
-      .selectOption({ label: "Stellar Tbilisi — hardware test · hardware test" });
+      .selectOption({ label: "Stellar Observatory — hardware test · hardware test" });
     const panel = page.getByRole("region", { name: "Your own session" });
     await expect(panel).toBeVisible({ timeout: firstCompile });
     await panel.getByLabel("Length").selectOption("60");

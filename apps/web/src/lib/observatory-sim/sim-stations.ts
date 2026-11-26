@@ -30,11 +30,11 @@ export const SESSION_MINUTES = 120;
 const NEXSTAR_8SE: Instrument = TBILISI_8SE;
 
 const EVOLUTION_925: Instrument = {
-  optics: '235 mm Schmidt-Cassegrain',
+  optics: 'Schmidt-Cassegrain',
   apertureMm: 235,
   focalLengthMm: 2350,
   mount: 'Single-fork altazimuth, GoTo',
-  camera: 'ZWO ASI585MC',
+  camera: 'Colour astronomy camera',
   sensorWidthMm: 11.18,
   sensorHeightMm: 6.32,
   pixelSizeUm: 2.9,

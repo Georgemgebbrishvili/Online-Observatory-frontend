@@ -28,13 +28,12 @@ test("a stranger opens a shared capture: the sky and the facts, never the person
   await expect(
     page.getByRole("img", { name: "Saturn, captured live through the telescope" }),
   ).toBeVisible();
-  await expect(page.getByText("203 mm aperture · 2032 mm focal length")).toBeVisible();
   await expect(page.getByText("60 frames")).toBeVisible();
   await expect(page.getByRole("link", { name: "Book your own night" })).toHaveAttribute(
     "href",
     "/en/app/book",
   );
-  for (const absent of ["Sharer", "sharer@darkview.test", "Celestron", "NexStar"]) {
+  for (const absent of ["Sharer", "sharer@darkview.test", "Celestron", "NexStar", "2032 mm"]) {
     await expect(page.getByText(absent)).toHaveCount(0);
   }
   const robots = await page.locator('meta[name="robots"]').getAttribute("content");

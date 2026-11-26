@@ -77,9 +77,9 @@ test("a capture shows its provenance and mints downloads on the click", async ({
   await expect(
     page.getByRole("heading", { level: 1, name: "Hercules Cluster" }),
   ).toBeVisible();
-  await expect(page.getByText("Stellar Tbilisi")).toBeVisible();
+  await expect(page.getByText("Stellar Observatory")).toBeVisible();
   await expect(page.getByText("Simulator, not the telescope")).toBeVisible();
-  await expect(page.getByText("1280 mm · f/6.3, with reducer")).toBeVisible();
+  await expect(page.getByText("f/6.3, with reducer")).toBeVisible();
   await expect(page.getByText("948 mm")).toBeVisible();
   await expect(page.getByText("3840 × 2160 px")).toBeVisible();
   await decoded(page, "Hercules Cluster, as captured");
@@ -148,7 +148,7 @@ test("a capture names the telescope behind it, with a link to Astroman (ADR-070)
   page,
 }) => {
   await page.goto(`/en/app/collection/${first}`);
-  await expect(page.getByText("Seen through a Celestron NexStar 8SE.")).toBeVisible();
+  await expect(page.getByText("Want a telescope of your own?")).toBeVisible();
   await expect(
     page.getByRole("link", { name: /Telescopes at Astroman/ }),
   ).toHaveAttribute("href", "https://astroman.ge");

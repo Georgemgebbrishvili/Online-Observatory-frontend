@@ -197,9 +197,9 @@ export const captureDetailCopy: Record<"en" | "ka", CaptureDetailCopy> = {
     source: "Source",
     sources: { SIMULATED: "Simulator, not the telescope", REAL: "The telescope" },
     opticalConfigs: {
-      F20_BARLOW: "4064 mm · f/20, with Barlow",
-      F10_NATIVE: "2032 mm · f/10, native",
-      F6_3_REDUCER: "1280 mm · f/6.3, with reducer",
+      F20_BARLOW: "f/20, with Barlow",
+      F10_NATIVE: "f/10, native",
+      F6_3_REDUCER: "f/6.3, with reducer",
     },
   },
   ka: {
@@ -230,9 +230,9 @@ export const captureDetailCopy: Record<"en" | "ka", CaptureDetailCopy> = {
     source: "წყარო",
     sources: { SIMULATED: "სიმულატორი, არა ტელესკოპი", REAL: "ტელესკოპი" },
     opticalConfigs: {
-      F20_BARLOW: "4064 მმ · f/20, ბარლოუთი",
-      F10_NATIVE: "2032 მმ · f/10, ძირითადი",
-      F6_3_REDUCER: "1280 მმ · f/6.3, რედუქტორით",
+      F20_BARLOW: "f/20, ბარლოუთი",
+      F10_NATIVE: "f/10, ძირითადი",
+      F6_3_REDUCER: "f/6.3, რედუქტორით",
     },
   },
 };
@@ -277,8 +277,6 @@ export const galleryPageCopy = {
     metadataDescription: "{target} on {date}, live from the observatory.",
     kicker: "Seen through a real telescope",
     taken: "Taken",
-    instrument: "Telescope",
-    instrumentValue: "{aperture} mm aperture · {focal} mm focal length",
     exposure: "Exposure",
     stack: "Stack",
     integration: "Total light",
@@ -294,8 +292,6 @@ export const galleryPageCopy = {
     metadataDescription: "{target}, {date}, პირდაპირ ობსერვატორიიდან.",
     kicker: "გადაღებულია ნამდვილი ტელესკოპით",
     taken: "გადაღებულია",
-    instrument: "ტელესკოპი",
-    instrumentValue: "აპერტურა {aperture} მმ · ფოკუსური მანძილი {focal} მმ",
     exposure: "ექსპოზიცია",
     stack: "დაგროვება",
     integration: "ჯამური ექსპოზიცია",

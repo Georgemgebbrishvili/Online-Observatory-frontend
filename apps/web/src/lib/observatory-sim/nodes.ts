@@ -1,15 +1,17 @@
 /**
- * The simulator's one real site: the first-party observatory in Tbilisi (ADR-003).
+ * The simulator's one real site: the first-party observatory (ADR-003).
  *
  * The coordinates place the simulated sky over the right city; they are never shown.
  * Everything a customer reads about the real instrument comes from the platform.
  */
+import { brand } from "@/brand";
+
 import type { ObservatoryNode } from "./types";
 
 export const NODES: ObservatoryNode[] = [
   {
     id: "tbilisi-01",
-    name: "Tbilisi Observatory",
+    name: `${brand.en.name} Observatory`,
     site: "the observatory",
     countryCode: "GE",
     lat: 41.7151,
@@ -19,11 +21,11 @@ export const NODES: ObservatoryNode[] = [
     tier: "first_party",
     status: "commissioning",
     instrument: {
-      optics: "203 mm Schmidt-Cassegrain",
+      optics: "Schmidt-Cassegrain",
       apertureMm: 203,
       focalLengthMm: 2032,
       mount: "Single-fork altazimuth, GoTo",
-      camera: "ZWO ASI585MC",
+      camera: "Colour astronomy camera",
       // 3856 x 2180 at 2.9 um.
       sensorWidthMm: 11.18,
       sensorHeightMm: 6.32,

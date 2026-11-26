@@ -55,14 +55,14 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     documents: {
       terms: {
         metadataTitle: `Terms of service · ${brand.en.name}`,
-        metadataDescription: `Draft terms of service for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
+        metadataDescription: `Draft terms of service for ${brand.en.name}, a live remote observatory. Not yet in force.`,
         title: "Terms of service",
         sections: [
           {
             heading: `What ${brand.en.name} is`,
             status: "decided",
             body: [
-              `${brand.en.name} is a live remote observatory in Tbilisi, Georgia. You reserve an observation slot, choose a target from an operator-approved list, and a real telescope moves to that target while you watch its camera output.`,
+              `${brand.en.name} is a live remote observatory. You reserve an observation slot, choose a target from an operator-approved list, and a real telescope moves to that target while you watch its camera output.`,
               `${brand.en.name} is a live-view service. It uses short exposures and live stacking, the technique usually called electronically assisted astronomy. It is not a long-exposure astrophotography service, and it does not produce results comparable to a research observatory or a space telescope.`,
             ],
           },
@@ -83,7 +83,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             anchor: "card-draw",
             status: "decided",
             body: [
-              "A signed-in account with a verified email address is dealt three face-down cards each week, Monday to Sunday in Tbilisi time, and may turn one. Playing is free. Cards are never sold, and nothing is bought to play.",
+              "A signed-in account with a verified email address is dealt three face-down cards each week, Monday to Sunday in Georgian time (GMT+4), and may turn one. Playing is free. Cards are never sold, and nothing is bought to play.",
               "What each card holds is decided when the cards are dealt, before you choose. A card can hold a free observation slot, a free observer seat on a live session, a discount on one booking, or nothing. The chance of each is shown on the cards page, as the service holds it at that moment, and a limited number of free slots can be won each week.",
               "A prize belongs to the account that won it, can be used only at the observatory it was won for, and expires 30 days after it is won. It cannot be exchanged for money or transferred. One account per person.",
             ],
@@ -94,7 +94,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       },
       privacy: {
         metadataTitle: `Privacy policy · ${brand.en.name}`,
-        metadataDescription: `Draft privacy policy for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
+        metadataDescription: `Draft privacy policy for ${brand.en.name}, a live remote observatory. Not yet in force.`,
         title: "Privacy policy",
         sections: [
           {
@@ -115,7 +115,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       },
       refunds: {
         metadataTitle: `Refund policy · ${brand.en.name}`,
-        metadataDescription: `Draft refund and cancellation policy for ${brand.en.name}, a live remote observatory in Tbilisi. Not yet in force.`,
+        metadataDescription: `Draft refund and cancellation policy for ${brand.en.name}, a live remote observatory. Not yet in force.`,
         title: "Refund policy",
         sections: [
           {
@@ -169,7 +169,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             heading: `რა არის ${brand.ka.nominative}`,
             status: "decided",
             body: [
-              `${brand.ka.nominative} დისტანციური ობსერვატორიაა თბილისში, რომელსაც პირდაპირ უყურებ. შენ ჯავშნი დაკვირვების სეანსს, ირჩევ ობიექტს ოპერატორის მიერ დამტკიცებული სიიდან, და ნამდვილი ტელესკოპი ობიექტისკენ ფიზიკურად ბრუნდება, შენ კი კამერის გამოსახულებას უყურებ.`,
+              `${brand.ka.nominative} დისტანციური ობსერვატორიაა, რომელსაც პირდაპირ უყურებ. შენ ჯავშნი დაკვირვების სეანსს, ირჩევ ობიექტს ოპერატორის მიერ დამტკიცებული სიიდან, და ნამდვილი ტელესკოპი ობიექტისკენ ფიზიკურად ბრუნდება, შენ კი კამერის გამოსახულებას უყურებ.`,
               `${brand.ka.nominative} პირდაპირი დაკვირვების სერვისია. ის იყენებს მოკლე ექსპოზიციებსა და კადრების რეალურ დროში დაგროვებას — მეთოდს, რომელსაც ელექტრონულად დახმარებულ ასტრონომიას (EAA) უწოდებენ. ეს არ არის ხანგრძლივი ექსპოზიციის ასტროფოტოგრაფიის სერვისი და არ იძლევა სამეცნიერო ობსერვატორიის ან კოსმოსური ტელესკოპის დონის შედეგს.`,
             ],
           },
@@ -190,7 +190,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
             anchor: "card-draw",
             status: "decided",
             body: [
-              "ავტორიზებულ ანგარიშს დადასტურებული ელფოსტით ყოველ კვირას, ორშაბათიდან კვირამდე თბილისის დროით, ურიგდება სამი დაფარული ბარათი და შეუძლია ერთის გადაბრუნება. თამაში უფასოა. ბარათები არასდროს იყიდება და სათამაშოდ არაფრის ყიდვა არ არის საჭირო.",
+              "ავტორიზებულ ანგარიშს დადასტურებული ელფოსტით ყოველ კვირას, ორშაბათიდან კვირამდე საქართველოს დროით (GMT+4), ურიგდება სამი დაფარული ბარათი და შეუძლია ერთის გადაბრუნება. თამაში უფასოა. ბარათები არასდროს იყიდება და სათამაშოდ არაფრის ყიდვა არ არის საჭირო.",
               "რა არის თითოეულ ბარათში, წყდება დარიგებისას, შენს არჩევამდე. ბარათში შეიძლება იყოს უფასო დაკვირვების სეანსი, დამკვირვებლის უფასო ადგილი პირდაპირ დაკვირვებაზე, ფასდაკლება ერთ ჯავშანზე, ან არაფერი. თითოეულის შანსი ბარათების გვერდზეა ნაჩვენები, როგორც სერვისს ამ მომენტში აქვს დადგენილი, და კვირაში შეზღუდული რაოდენობის უფასო სეანსი გაიცემა.",
               "პრიზი ეკუთვნის ანგარიშს, რომელმაც ის მოიგო, გამოიყენება მხოლოდ იმ ობსერვატორიაში, რომლისთვისაც მოიგო, და ვადა მოგებიდან 30 დღეში გასდის. ის ფულზე არ იცვლება და სხვას არ გადაეცემა. ერთი ადამიანი — ერთი ანგარიში.",
             ],

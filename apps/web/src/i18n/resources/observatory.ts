@@ -161,11 +161,11 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     aperture: "aperture",
     focalLength: "focal length",
     camera: "Camera",
-    cameraModel: "ZWO ASI585MC",
+    cameraModel: "Colour astronomy camera",
     cameraType: "Uncooled, one-shot colour",
     instrumentSection: {
       kicker: "01 · The instrument",
-      title: "An 8-inch telescope and a colour camera.",
+      title: "A telescope and a colour camera.",
       lede: "The Moon, planets, double stars and bright clusters and nebulae, live.",
       design: "Design",
       designValue: "Schmidt-Cassegrain",
@@ -182,9 +182,9 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       opticsLede:
         "Each target uses one of three setups.",
       configurations: [
-        { name: "With reducer", value: "1280 mm · f/6.3" },
-        { name: "Native", value: "2032 mm · f/10" },
-        { name: "With Barlow", value: "4064 mm · f/20" },
+        { name: "With reducer", value: "f/6.3" },
+        { name: "Native", value: "f/10" },
+        { name: "With Barlow", value: "f/20" },
       ],
       millimetres: "mm",
     },
@@ -321,11 +321,11 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
     aperture: "აპერტურა",
     focalLength: "ფოკუსური მანძილი",
     camera: "კამერა",
-    cameraModel: "ZWO ASI585MC",
+    cameraModel: "Colour astronomy camera",
     cameraType: "ფერადი, გაგრილების გარეშე",
     instrumentSection: {
       kicker: "01 · ინსტრუმენტი",
-      title: "203 მმ ტელესკოპი და ფერადი კამერა.",
+      title: "ტელესკოპი და ფერადი კამერა.",
       lede: "მთვარე, პლანეტები, ორმაგი ვარსკვლავები, კაშკაშა გროვები და ნისლეულები — პირდაპირ.",
       design: "ოპტიკური სქემა",
       designValue: "შმიდტ-კასეგრენი",
@@ -342,9 +342,9 @@ export const observatoryPageCopy: Record<"en" | "ka", ObservatoryPageCopy> = {
       opticsLede:
         "ყოველ ობიექტს სამიდან ერთი ვარიანტი აქვს.",
       configurations: [
-        { name: "რედუქტორით", value: "1280 მმ · f/6.3" },
-        { name: "ძირითადი", value: "2032 მმ · f/10" },
-        { name: "ბარლოუთი", value: "4064 მმ · f/20" },
+        { name: "რედუქტორით", value: "f/6.3" },
+        { name: "ძირითადი", value: "f/10" },
+        { name: "ბარლოუთი", value: "f/20" },
       ],
       millimetres: "მმ",
     },

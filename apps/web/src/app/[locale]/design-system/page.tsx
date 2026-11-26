@@ -272,7 +272,7 @@ const tonightSpecimen: TonightSession = {
   )}`,
 };
 
-/** A Tbilisi horizon for the SkyChart specimens: higher to the east, the city's hills. */
+/** A horizon for the SkyChart specimens: higher to the east, where the hills are. */
 const skyHorizonSpecimen: ObservatoryHorizon = {
   observatoryId: "10000000-0000-4000-8000-000000000001",
   latitudeDegrees: 41.7,
@@ -356,7 +356,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
   // The feed's plates as the first-party observatory fills them, for Saturn.
   const specimenPlates: FeedPlates = {
     instrument: [
-      locale === "ka" ? "თბილისის ობსერვატორია" : "Tbilisi Observatory",
+      locale === "ka" ? `${brand.ka.genitive} ობსერვატორია` : `${brand.en.name} Observatory`,
       `${room.feed.camera} · ${room.feed.optics.F10_NATIVE}`,
     ],
     subject: { name: locale === "ka" ? "სატურნი" : "Saturn", coordinates: null },

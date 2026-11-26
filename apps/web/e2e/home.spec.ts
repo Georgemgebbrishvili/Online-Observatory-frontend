@@ -34,11 +34,11 @@ test("communicates real telescope access in the English hero", async ({ page }) 
   // the same telescope and is badged as one. The homepage never says "simulated".
   await expect(page.getByText("Illustration — not telescope output")).toHaveCount(0);
   await expect(page.locator("main")).not.toContainText(/simulat/i);
-  await expect(hero.locator(".hs-hud-badge dd")).toHaveText("Real photo · 8SE");
+  await expect(hero.locator(".hs-hud-badge dd")).toHaveText("Real photo");
   // Hidden until the scroll reaches it, so found by its label, not by role.
   await expect(hero.locator(".hs-feed")).toHaveAttribute(
     "aria-label",
-    /photographed through a NexStar 8SE telescope$/,
+    /a real photograph through a telescope$/,
   );
   await expect(hero.locator(".hs-hero-feed")).toBeHidden();
   // The four steps after the headline are headings a reader can reach.
@@ -64,7 +64,7 @@ test("renders the Georgian hero and switches locale", async ({ page }) => {
   ).toHaveAttribute("href", "/ka/app/book");
   // ADR-107: no caption, and the picture behind the sky is badged as a real photograph.
   await expect(page.getByText("ილუსტრაცია — არა ტელესკოპის გამოსახულება")).toHaveCount(0);
-  await expect(page.locator(".home-hero .hs-hud-badge dd")).toHaveText("ნამდვილი ფოტო · 8SE");
+  await expect(page.locator(".home-hero .hs-hud-badge dd")).toHaveText("ნამდვილი ფოტო");
   // Mkhedruli has no capitals: the headline and the labels are never uppercased.
   await expect(page.locator("h1.home-hero-title")).toHaveCSS("text-transform", "none");
   await expect(page.locator(".hs-label").first()).toHaveCSS("text-transform", "none");
@@ -111,7 +111,7 @@ test("the public homepage: the story's scenes, with the platform's prices", asyn
   await expect(questions.nth(2)).toHaveAttribute("aria-expanded", "true");
   await expect(questions.nth(0)).toHaveAttribute("aria-expanded", "false");
 
-  // The observatory (ADR-107): real views through 8-inch Celestron telescopes beside the
+  // The observatory (ADR-107): real views through telescopes by other observers beside the
   // words: a film that waits to be scrolled to, three photographs, and every author named
   // with a link to the licence.
   const reel = page.locator(".hs-scope .hs-reel");
@@ -457,9 +457,10 @@ test("the /app dashboard reads the platform, section by section", async ({ page 
 
   const observatory = page.locator(".home-observatory");
   await expect(
-    observatory.getByRole("heading", { name: "Stellar Tbilisi" }),
+    observatory.getByRole("heading", { name: "Stellar Observatory" }),
   ).toBeVisible();
-  await expect(observatory.getByText("203 mm · 2032 mm")).toBeVisible();
+  // ADR-109: the telescope is not described anywhere.
+  await expect(page.getByText(/203 mm|2032 mm|Celestron|NexStar|Tbilisi/)).toHaveCount(0);
 
   const upcoming = page.locator(".home-upcoming");
   await expect(upcoming.getByRole("heading", { name: "Saturn" })).toBeVisible();
@@ -507,7 +508,7 @@ test("the observatory console stands by, unmarked, with the platform's name and 
   await expect(page.locator(".oh-head").getByText(/Simulated|Live/)).toHaveCount(0);
 
   // The one station is the platform's observatory; its forecast is the platform's.
-  await expect(page.locator(".oh-head .oh-bt b")).toHaveText("Stellar Tbilisi");
+  await expect(page.locator(".oh-head .oh-bt b")).toHaveText("Stellar Observatory");
   // ADR-053 §6 as amended: no stations the product has no plan behind.
   await expect(page.getByText("Coming soon")).toHaveCount(0);
   await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
@@ -595,12 +596,12 @@ test("preserves observatory locale and mobile width", async ({ page }) => {
 
   // The sr-only h1 carries the platform's name for the observatory (nameKa).
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    /ობსერვატორია — სტელარი თბილისი/,
+    /ობსერვატორია — სტელარის ობსერვატორია/,
   );
   // The site header on the phone too; the console's bar keeps the station, and the
   // Autopilot offers the simulation (ADR-101).
   await expect(page.getByRole("banner")).toHaveCount(1);
-  await expect(page.locator(".oh-head .oh-bt b")).toHaveText("სტელარი თბილისი");
+  await expect(page.locator(".oh-head .oh-bt b")).toHaveText("სტელარის ობსერვატორია");
   await expect(page.locator(".oh")).not.toHaveAttribute("aria-busy", "true");
   await expect(
     page.getByRole("button", { name: /სიმულაციის დაწყება/ }).first(),

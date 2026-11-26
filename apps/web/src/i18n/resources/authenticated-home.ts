@@ -14,7 +14,7 @@ type AuthenticatedHomeCopy = {
   altitude: string;
   illustration: string;
   observatory: string;
-  telescope: string;
+  book: string;
   fullStatus: string;
   statusUnavailable: StateCopy;
   noObservatory: StateCopy;
@@ -25,9 +25,7 @@ type AuthenticatedHomeCopy = {
   noUpcoming: StateCopy & { action: string };
   upcomingUnavailable: StateCopy;
   alsoTonight: string;
-  alsoTonightDescription: string;
   collection: string;
-  collectionDescription: string;
   openCollection: string;
 };
 
@@ -44,7 +42,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     altitude: "Altitude now",
     illustration: "Illustration — not telescope output",
     observatory: "Observatory",
-    telescope: "Telescope",
+    book: "Book a session",
     fullStatus: "Full status",
     statusUnavailable: {
       title: "Status unavailable right now.",
@@ -68,9 +66,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
       description: "Try again shortly.",
     },
     alsoTonight: "Also up tonight",
-    alsoTonightDescription: "More objects in reach tonight.",
     collection: "Your Collection",
-    collectionDescription: "Your most recent captures.",
     openCollection: "Open Collection",
   },
   ka: {
@@ -86,7 +82,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
     altitude: "სიმაღლე ახლა",
     illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
     observatory: "ობსერვატორია",
-    telescope: "ტელესკოპი",
+    book: "სეანსის დაჯავშნა",
     fullStatus: "სრული სტატუსი",
     statusUnavailable: {
       title: "სტატუსი ახლა მიუწვდომელია.",
@@ -110,9 +106,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
       description: "ცოტა ხანში სცადე.",
     },
     alsoTonight: "ასევე ჩანს ამაღამ",
-    alsoTonightDescription: "სხვა ობიექტები ამაღამ.",
     collection: "შენი კოლექცია",
-    collectionDescription: "შენი ბოლო კადრები.",
     openCollection: "კოლექციის გახსნა",
   },
 };

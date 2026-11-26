@@ -149,7 +149,7 @@ export function CaptureDetail({ locale, result }: CaptureDetailProps) {
           </dl>
         </aside>
       </div>
-      {observatory && <AstromanLine locale={locale} telescope={observatory.telescope} />}
+      <AstromanLine locale={locale} />
     </article>
   );
 }

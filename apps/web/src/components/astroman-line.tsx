@@ -1,20 +1,13 @@
 import type { Locale } from "@/i18n/config";
 
 /**
- * Clients ADR-070: the instrument behind the view, and where to find one. A plain line,
- * never a banner; the telescope named is the observatory's own.
+ * Clients ADR-070: where to find a telescope of your own. A plain line, never a banner;
+ * since ADR-109 the observatory's own instrument is not named.
  */
-export function AstromanLine({
-  locale,
-  telescope,
-}: {
-  locale: Locale;
-  telescope: { manufacturer: string; model: string };
-}) {
-  const instrument = `${telescope.manufacturer} ${telescope.model}`;
+export function AstromanLine({ locale }: { locale: Locale }) {
   return (
     <p className="astroman-line">
-      {locale === "ka" ? `ნანახია ${instrument}-ით.` : `Seen through a ${instrument}.`}{" "}
+      {locale === "ka" ? "გინდა საკუთარი ტელესკოპი?" : "Want a telescope of your own?"}{" "}
       <a href="https://astroman.ge" rel="noopener" target="_blank">
         {locale === "ka" ? "ასტრომანი" : "Telescopes at Astroman"}
         <span className="visually-hidden">

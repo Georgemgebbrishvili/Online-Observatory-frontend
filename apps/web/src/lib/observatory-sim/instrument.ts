@@ -10,7 +10,7 @@ import type { Instrument } from './types';
 
 /** Celestron NexStar 8SE: 203.2 mm Schmidt-Cassegrain, 2032 mm, f/10. */
 export const NEXSTAR_8SE = {
-  model: '203 mm Schmidt-Cassegrain',
+  model: 'Schmidt-Cassegrain',
   apertureMm: 203.2,
   focalLengthMm: 2032,
   /** Secondary obstruction, 64 mm: 31 % by diameter, 9.8 % by area. Out of focus a star is this ring. */
@@ -48,7 +48,7 @@ export const MAX_SLEW_DEG_S = 5;
 
 /** ZWO ASI585MC: Sony IMX585, 3840 × 2160 at 2.9 µm, 11.14 × 6.26 mm, 12-bit. */
 export const ASI585MC = {
-  model: 'ZWO ASI585MC',
+  model: 'Colour astronomy camera',
   sensor: 'IMX585',
   widthPx: 3840,
   heightPx: 2160,

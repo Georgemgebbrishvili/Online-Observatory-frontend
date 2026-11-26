@@ -59,8 +59,8 @@ const dictionary = {
       altitude: "Altitude now",
     },
     story: {
-      photo: "Real photo · 8SE",
-      photoLabel: "{name}, photographed through a NexStar 8SE telescope",
+      photo: "Real photo",
+      photoLabel: "{name}, a real photograph through a telescope",
       steps: [
         { a: "Pick", b: "your time.", text: "Any open night, from 15 minutes to 4 hours." },
         { a: "It turns", b: "to your target.", text: "A real telescope turns to what you choose." },
@@ -160,9 +160,9 @@ const dictionary = {
         see: "See the observatory",
         sky: "Open Night Sky",
         reel: {
-          film: "The Moon drifting through the eyepiece of an 8-inch Celestron telescope",
+          film: "The Moon drifting through a telescope's eyepiece",
           stills: { saturn: "Saturn", jupiter: "Jupiter", clavius: "Clavius crater" },
-          note: "Real views through 8-inch Celestron telescopes, the kind you will use.",
+          note: "Real views through telescopes, by other observers.",
           credits: "Film and photos",
           changes: "cropped",
         },

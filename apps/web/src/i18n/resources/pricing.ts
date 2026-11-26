@@ -17,7 +17,7 @@ export const pricingPageCopy = {
         "Each session shows its length and price before you pay.",
       book: "Book a session",
       explore: "See tonight's sky",
-      specs: ["203 mm telescope", "Colour astronomy camera", "Live view in your browser"],
+      specs: ["A real telescope", "Colour astronomy camera", "Live view in your browser"],
     },
     tonight: {
       title: "Open tonight",
@@ -64,7 +64,7 @@ export const pricingPageCopy = {
         "სეანსის ხანგრძლივობა და ფასი გადახდამდე ჩანს.",
       book: "დაჯავშნე სეანსი",
       explore: "ამაღამის ცა",
-      specs: ["203 მმ ტელესკოპი", "ფერადი ასტროკამერა", "პირდაპირი გამოსახულება ბრაუზერში"],
+      specs: ["ნამდვილი ტელესკოპი", "ფერადი ასტროკამერა", "პირდაპირი გამოსახულება ბრაუზერში"],
     },
     tonight: {
       title: "ამაღამ თავისუფალია",

@@ -139,7 +139,7 @@ describe("feedPlates", () => {
 
   it("names the first-party camera and the target's optics, and a fixed target's RA/Dec", () => {
     expect(feedPlates(observatory, m13, "en", roomCopy.en.feed)).toEqual({
-      instrument: ["Tbilisi Observatory", "ZWO ASI585MC · 2032 mm · f/10"],
+      instrument: ["Tbilisi Observatory", "Colour astronomy camera · f/10"],
       subject: { name: "Hercules Cluster", coordinates: "16h 41m 42s / +36° 27′ 41″" },
     });
   });

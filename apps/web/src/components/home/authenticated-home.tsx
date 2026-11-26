@@ -1,16 +1,21 @@
 import Link from "next/link";
 
-import { TonightNotices } from "@/components/astronomy/tonight-notices";
 import { CaptureImage } from "@/components/collection/capture-card";
 import { TonightList } from "@/components/home/tonight-list";
 import { linkTone, weatherTone } from "@/components/status/status-page";
 import { StatePanel } from "@/components/ui/state-panel";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { captureTitle } from "@/features/collection/present";
+import { fill } from "@/features/operator/format";
 import type { CollectionResult } from "@/features/collection/read";
 import type { ObservatoryPanelResult, UpcomingResult } from "@/features/home/read";
 import { plateFor } from "@/features/missions/room";
-import { formatWindow, targetDescription, targetName } from "@/features/targets/present";
+import {
+  formatWindow,
+  primaryReason,
+  targetDescription,
+  targetName,
+} from "@/features/targets/present";
 import type { TonightResult } from "@/features/targets/read";
 import type { Locale } from "@/i18n/config";
 import { authenticatedHomeCopy } from "@/i18n/resources/authenticated-home";
@@ -88,15 +93,6 @@ export function ObservatoryPanel({
               <StatusIndicator label={words.now.holdActive} tone="danger" />
             )}
           </div>
-          <dl className="ruled-specs">
-            <div>
-              <dt>{copy.telescope}</dt>
-              <dd>
-                {panel.observatory.telescope.apertureMm} mm ·{" "}
-                {panel.observatory.telescope.focalLengthMm} mm
-              </dd>
-            </div>
-          </dl>
         </>
       )}
     </aside>
@@ -135,182 +131,168 @@ export function AuthenticatedHome({
 
   const plate = recommended ? plateFor(recommended.target.slug) : null;
 
+  const reason =
+    tonight.kind === "ok" && tonight.items[0] ? primaryReason(tonight.items[0].visibility) : null;
+
   return (
     <div className="authenticated-home">
       <h1 className="visually-hidden">{copy.greeting(displayName)}</h1>
 
-      <div className="tonight-notices">
-        <TonightNotices result={tonight} locale={locale} headingLevel={2} />
-      </div>
-
-      <div className="home-dashboard-grid">
-        {recommended ? (
-          <section
-            className="home-tonight plate"
-            data-illustrated={plate ? "true" : undefined}
-            aria-labelledby="home-tonight-title"
-          >
-            <div className="home-tonight-copy">
-              <p className="kicker">
-                {copy.tonight} · {words.types[recommended.target.type]}
-              </p>
-              <h2 id="home-tonight-title">
-                {copy.recommendation(targetName(recommended.target, locale))}
-              </h2>
-              {targetDescription(recommended.target, locale) && (
-                <p>{targetDescription(recommended.target, locale)}</p>
-              )}
-              <dl className="ruled-specs">
-                <div>
-                  <dt>{copy.window}</dt>
-                  <dd>
-                    <span className="figure">
-                      {formatWindow(
-                        recommended.visibility,
-                        timezone,
-                        locale,
-                        words.window,
-                      )}
-                    </span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>{copy.altitude}</dt>
-                  <dd>
-                    <span className="figure">
+      <div className="home-grid">
+        <section
+          className="home-tonight plate"
+          data-illustrated={plate ? "true" : undefined}
+          aria-labelledby="home-tonight-title"
+        >
+          <div className="home-tonight-copy">
+            {recommended ? (
+              <>
+                <p className="kicker">
+                  {copy.tonight} · {words.types[recommended.target.type]}
+                </p>
+                <h2 id="home-tonight-title">
+                  {copy.recommendation(targetName(recommended.target, locale))}
+                </h2>
+                {targetDescription(recommended.target, locale) && (
+                  <p>{targetDescription(recommended.target, locale)}</p>
+                )}
+                <dl className="home-figures">
+                  <div>
+                    <dt>{copy.window}</dt>
+                    <dd className="figure">
+                      {formatWindow(recommended.visibility, timezone, locale, words.window)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{copy.altitude}</dt>
+                    <dd className="figure">
                       {Math.round(recommended.visibility.horizontal.altitudeDegrees)}°
-                    </span>
-                  </dd>
-                </div>
-              </dl>
-              <div className="home-tonight-actions">
+                    </dd>
+                  </div>
+                </dl>
+              </>
+            ) : (
+              <>
+                <p className="kicker">{copy.tonight}</p>
+                {tonight.kind === "unreachable" ? (
+                  <>
+                    <h2 id="home-tonight-title">{words.unreachable.title}</h2>
+                    <p>{words.unreachable.description}</p>
+                  </>
+                ) : tonight.kind === "no-observatory" ? (
+                  <>
+                    <h2 id="home-tonight-title">{words.noObservatory.title}</h2>
+                    <p>{words.noObservatory.description}</p>
+                  </>
+                ) : (
+                  <>
+                    <h2 id="home-tonight-title">{words.noneObservable.title}</h2>
+                    {reason && (
+                      <p>
+                        {fill(words.noneObservable.reason, {
+                          reason: words.reasons[reason],
+                        })}
+                      </p>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+            <div className="home-tonight-actions">
+              {recommended ? (
                 <Link
-                  className="button button-primary button-large"
+                  className="button button-primary"
                   href={`/${locale}/app/missions/${recommended.target.slug}`}
                 >
                   <span>{copy.observe(targetName(recommended.target, locale))}</span>
                 </Link>
-                <Link className="page-link" href={`/${locale}/app/missions`}>
-                  {copy.exploreTonight} <span aria-hidden="true">→</span>
+              ) : (
+                <Link className="button button-primary" href={`/${locale}/app/book`}>
+                  <span>{copy.book}</span>
                 </Link>
-              </div>
+              )}
+              <Link className="page-link" href={`/${locale}/app/missions`}>
+                {copy.exploreTonight} <span aria-hidden="true">→</span>
+              </Link>
             </div>
-            {plate && <Illustration label={copy.illustration} src={plate} />}
-          </section>
-        ) : (
-          <section className="home-tonight plate" aria-label={copy.tonight}>
-            <Link className="page-link" href={`/${locale}/app/missions`}>
-              {copy.exploreTonight} <span aria-hidden="true">→</span>
-            </Link>
-          </section>
-        )}
-
-        <div className="home-side">
-          <ObservatoryPanel locale={locale} panel={panel} />
-
-          <section className="home-upcoming plate" aria-labelledby="home-upcoming-title">
-            <header>
-              <h2 id="home-upcoming-title" className="plate-title">
-                {copy.upcoming}
-              </h2>
-            </header>
-            {upcoming.kind === "unreachable" && (
-              <StatePanel variant="error" {...copy.upcomingUnavailable} />
-            )}
-            {upcoming.kind === "ok" && upcoming.items.length === 0 && (
-              <StatePanel
-                title={copy.noUpcoming.title}
-                description={copy.noUpcoming.description}
-                action={
-                  <Link
-                    className="button button-secondary"
-                    href={`/${locale}/app/missions`}
-                  >
-                    <span>{copy.noUpcoming.action}</span>
-                  </Link>
-                }
-              />
-            )}
-            {upcoming.kind === "ok" && upcoming.items.length > 0 && (
-              <ol className="home-upcoming-list">
-                {upcoming.items.map(({ mission, target }) => {
-                  const name = target ? targetName(target, locale) : copy.retiredTarget;
-                  return (
-                    <li key={mission.id}>
-                      <div>
-                        <p>
-                          {mission.scheduledStartAt &&
-                            scheduleFormat.format(new Date(mission.scheduledStartAt))}
-                        </p>
-                        <h3>
-                          <Link
-                            href={`/${locale}/app/missions/${mission.id}/session`}
-                            aria-label={`${copy.openMission}: ${name}`}
-                          >
-                            {name}
-                          </Link>
-                        </h3>
-                      </div>
-                      <span className="tonight-list-arrow" aria-hidden="true">
-                        →
-                      </span>
-                    </li>
-                  );
-                })}
-              </ol>
-            )}
-          </section>
-
-          {/* A link only: reading the week's cards deals them, so the home never does. */}
-          <section className="home-cards plate" aria-labelledby="home-cards-title">
-            <h2 id="home-cards-title" className="plate-title">
-              {cards.title}
-            </h2>
-            <p>{cards.description}</p>
-            <Link className="button button-secondary" href={`/${locale}/app/cards`}>
-              <span>{cards.action}</span>
-            </Link>
-          </section>
-        </div>
-      </div>
-
-      {alsoTonight.length > 0 && (
-        <section className="page-section" aria-labelledby="home-explore-title">
-          <div className="section-heading">
-            <h2 id="home-explore-title">{copy.alsoTonight}</h2>
-            <p className="page-lede">{copy.alsoTonightDescription}</p>
           </div>
-          <div className="home-section-body">
-            <TonightList
-              common={{ altitude: copy.altitude, window: copy.window }}
-              items={alsoTonight}
-              locale={locale}
-              timezone={timezone}
-            />
-          </div>
+          {plate && <Illustration label={copy.illustration} src={plate} />}
         </section>
-      )}
 
-      <section
-        className="page-section home-collection"
-        aria-labelledby="home-collection-title"
-      >
-        <div className="section-heading">
-          <h2 id="home-collection-title">{copy.collection}</h2>
-          <p className="page-lede">{copy.collectionDescription}</p>
-          <Link className="page-link" href={`/${locale}/app/collection`}>
-            {copy.openCollection} <span aria-hidden="true">→</span>
+        <ObservatoryPanel locale={locale} panel={panel} />
+
+        <section className="home-upcoming plate" aria-labelledby="home-upcoming-title">
+          <h2 id="home-upcoming-title" className="plate-title">
+            {copy.upcoming}
+          </h2>
+          {upcoming.kind === "unreachable" && (
+            <p className="home-quiet">{copy.upcomingUnavailable.title}</p>
+          )}
+          {upcoming.kind === "ok" && upcoming.items.length === 0 && (
+            <>
+              <p className="home-quiet">
+                {copy.noUpcoming.title} {copy.noUpcoming.description}
+              </p>
+              <Link className="page-link" href={`/${locale}/app/book`}>
+                {copy.book} <span aria-hidden="true">→</span>
+              </Link>
+            </>
+          )}
+          {upcoming.kind === "ok" && upcoming.items.length > 0 && (
+            <ol className="home-upcoming-list">
+              {upcoming.items.map(({ mission, target }) => {
+                const name = target ? targetName(target, locale) : copy.retiredTarget;
+                return (
+                  <li key={mission.id}>
+                    <div>
+                      <p>
+                        {mission.scheduledStartAt &&
+                          scheduleFormat.format(new Date(mission.scheduledStartAt))}
+                      </p>
+                      <h3>
+                        <Link
+                          href={`/${locale}/app/missions/${mission.id}/session`}
+                          aria-label={`${copy.openMission}: ${name}`}
+                        >
+                          {name}
+                        </Link>
+                      </h3>
+                    </div>
+                    <span className="tonight-list-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </section>
+
+        {/* A link only: reading the week's cards deals them, so the home never does. */}
+        <section className="home-cards plate" aria-labelledby="home-cards-title">
+          <h2 id="home-cards-title" className="plate-title">
+            {cards.title}
+          </h2>
+          <p className="home-quiet">{cards.description}</p>
+          <Link className="button button-secondary" href={`/${locale}/app/cards`}>
+            <span>{cards.action}</span>
           </Link>
-        </div>
-        <div className="home-section-body">
+        </section>
+
+        <section className="home-collection plate" aria-labelledby="home-collection-title">
+          <header>
+            <h2 id="home-collection-title" className="plate-title">
+              {copy.collection}
+            </h2>
+            <Link className="page-link" href={`/${locale}/app/collection`}>
+              {copy.openCollection} <span aria-hidden="true">→</span>
+            </Link>
+          </header>
           {collection.kind === "unreachable" && (
-            <StatePanel variant="error" {...collectionGalleryCopy[locale].unreachable} />
+            <p className="home-quiet">{collectionGalleryCopy[locale].unreachable.title}</p>
           )}
           {collection.kind === "ok" && collection.entries.length === 0 && (
-            <StatePanel
-              title={collectionGalleryCopy[locale].empty.title}
-              description={collectionGalleryCopy[locale].empty.description}
-            />
+            <p className="home-quiet">{collectionGalleryCopy[locale].empty.description}</p>
           )}
           {collection.kind === "ok" && collection.entries.length > 0 && (
             <div className="home-recent-captures">
@@ -324,7 +306,7 @@ export function AuthenticatedHome({
                     alt=""
                     captureId={`home-${entry.capture.id}`}
                     noPreview={collectionGalleryCopy[locale].noPreview}
-                    sizes="12rem"
+                    sizes="8rem"
                     src={entry.thumbnail}
                   />
                   {entry.capture.mode === "SIMULATED" && (
@@ -334,8 +316,22 @@ export function AuthenticatedHome({
               ))}
             </div>
           )}
-        </div>
-      </section>
+        </section>
+      </div>
+
+      {alsoTonight.length > 0 && (
+        <section className="home-also" aria-labelledby="home-explore-title">
+          <h2 id="home-explore-title" className="plate-title">
+            {copy.alsoTonight}
+          </h2>
+          <TonightList
+            common={{ altitude: copy.altitude, window: copy.window }}
+            items={alsoTonight}
+            locale={locale}
+            timezone={timezone}
+          />
+        </section>
+      )}
     </div>
   );
 }

@@ -1508,7 +1508,7 @@ export function NightSky({ locale, openedAt }: { locale: Locale; openedAt: numbe
           <div className="sky-sheet sky-sheet-time sky-time" role="group" aria-label={copy.time.label}>
             <div className="sky-clock">
               <span>
-                <b>{clock(now, "Asia/Tbilisi")}</b> {copy.time.tbilisi} · {dayMonth(now, locale, "Asia/Tbilisi")}
+                <b>{clock(now, "Asia/Tbilisi")}</b> {copy.time.observatory} · {dayMonth(now, locale, "Asia/Tbilisi")}
               </span>
               {zone !== "Asia/Tbilisi" && (
                 <span>
