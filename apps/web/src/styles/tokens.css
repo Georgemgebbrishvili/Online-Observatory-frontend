@@ -116,7 +116,7 @@
     transparent
   );
   --gradient-pill: var(--color-action);
-  --gradient-pill-hover: color-mix(in srgb, var(--color-action) 88%, var(--st-white));
+  --gradient-pill-hover: color-mix(in srgb, var(--color-action) 82%, var(--st-black));
   --color-pill-primary-busy: color-mix(in srgb, var(--color-action) 80%, var(--st-black));
   --shadow-pill: none;
   --shadow-pill-hover: none;

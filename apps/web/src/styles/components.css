@@ -104,7 +104,7 @@
 
 .button-secondary {
   border-color: var(--color-glass-border-hover);
-  background: transparent;
+  background: var(--color-surface-base);
   color: var(--color-text-primary);
 }
 

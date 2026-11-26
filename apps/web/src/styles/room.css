@@ -421,7 +421,7 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.live-feed-status span {
+.live-feed-status span:not(.button *) {
   color: var(--color-text-secondary);
   font-size: var(--font-size-label);
 }

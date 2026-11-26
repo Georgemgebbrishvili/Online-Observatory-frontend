@@ -688,7 +688,7 @@
   font-weight: var(--font-weight-medium);
 }
 
-.room-console .live-feed-status span {
+.room-console .live-feed-status span:not(.button *) {
   color: var(--room-ink-2);
   font-size: var(--font-size-caption);
 }
