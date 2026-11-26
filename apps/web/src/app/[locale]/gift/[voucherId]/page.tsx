@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { GiftCard } from "@/components/gift/gift-card";
 import { PrintButton } from "@/components/gift/print-button";
+import { PaymentNotice } from "@/components/payment/payment-notice";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Container } from "@/components/ui/container";
@@ -17,7 +18,10 @@ import "@/styles/gift.css";
 
 export const dynamic = "force-dynamic";
 
-type GiftDetailProps = { params: Promise<{ locale: string; voucherId: string }> };
+type GiftDetailProps = {
+  params: Promise<{ locale: string; voucherId: string }>;
+  searchParams: Promise<{ payment?: string | string[]; code?: string | string[] }>;
+};
 
 export async function generateMetadata({ params }: GiftDetailProps): Promise<Metadata> {
   const { locale } = await params;
@@ -30,7 +34,7 @@ export async function generateMetadata({ params }: GiftDetailProps): Promise<Met
  * Clients ADR-067: one gift, as its buyer sees it -- where the sandbox checkout returns
  * them. The code is shown, with Print, only while the gift can be spent.
  */
-export default async function GiftDetailPage({ params }: GiftDetailProps) {
+export default async function GiftDetailPage({ params, searchParams }: GiftDetailProps) {
   const { locale, voucherId } = await params;
   if (!isLocale(locale)) notFound();
 
@@ -106,6 +110,11 @@ export default async function GiftDetailPage({ params }: GiftDetailProps) {
       <main className="public-page gift-page" id="main-content">
         <Container>
           <h1 className="visually-hidden">{copy.detail.metadataTitle}</h1>
+          <PaymentNotice
+            locale={locale}
+            query={await searchParams}
+            retryHref={`/${locale}/gift`}
+          />
           {body}
         </Container>
       </main>

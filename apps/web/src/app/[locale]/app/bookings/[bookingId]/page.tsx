@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { BookingDetail } from "@/components/booking/booking-detail";
+import { PaymentNotice } from "@/components/payment/payment-notice";
 import { bookingTitle } from "@/components/booking/booking-list";
 import { StatePanel } from "@/components/ui/state-panel";
 import { readBooking } from "@/features/booking/bookings";
@@ -11,9 +12,11 @@ import { requireUser } from "@/lib/platform/session";
 import "@/styles/pages.css";
 import "@/styles/booking.css";
 
-// Also where the sandbox checkout returns the customer (platform `bookingReturnUrl`).
+// Also where the sandbox checkout and Bank of Georgia return the customer (platform
+// `bookingReturnUrl`; ADR-073 adds `payment` and `code` when the payment did not go through).
 type BookingPageProps = {
   params: Promise<{ locale: string; bookingId: string }>;
+  searchParams: Promise<{ payment?: string | string[]; code?: string | string[] }>;
 };
 
 export async function generateMetadata({ params }: BookingPageProps): Promise<Metadata> {
@@ -34,7 +37,7 @@ function readClock() {
   return Date.now();
 }
 
-export default async function BookingPage({ params }: BookingPageProps) {
+export default async function BookingPage({ params, searchParams }: BookingPageProps) {
   const { locale, bookingId } = await params;
   if (!isLocale(locale)) notFound();
 
@@ -56,6 +59,13 @@ export default async function BookingPage({ params }: BookingPageProps) {
   }
 
   return (
-    <BookingDetail entry={result.entry} locale={locale} now={readClock()} />
+    <>
+      <PaymentNotice
+        locale={locale}
+        query={await searchParams}
+        retryHref={`/${locale}/app/book`}
+      />
+      <BookingDetail entry={result.entry} locale={locale} now={readClock()} />
+    </>
   );
 }
