@@ -157,3 +157,13 @@ nextjs-portal {
 .sky-labels {
   visibility: hidden !important;
 }
+
+/*
+ * The homepage's night card says which object the night is best for, in words as long as
+ * that night's: a line more or less, and the card with it. Held to one height here, so
+ * its mask is the same box every night.
+ */
+.hs-ncard .hs-swap {
+  height: 9rem;
+  overflow: hidden;
+}

@@ -91,7 +91,8 @@ function masks(page: Page) {
     page.locator(".hs-ln:nth-child(3) p"),
     page.locator(".hs-track"),
     page.locator(".hs-ncard"),
-    page.locator(".hs-ticket dd"),
+    // The whole list: a night's name is as long as its weekday, and the mask's box with it.
+    page.locator(".hs-ticket dl"),
   ];
 }
 
