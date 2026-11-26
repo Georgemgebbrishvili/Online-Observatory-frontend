@@ -256,6 +256,9 @@
 }
 
 .club-entries a {
+  display: inline-flex;
+  min-height: var(--size-touch);
+  align-items: center;
   grid-column: 2;
   justify-self: end;
 }

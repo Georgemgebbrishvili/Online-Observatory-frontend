@@ -2292,8 +2292,8 @@
   .oh-vtools button {
     flex: 1 1 0;
     width: auto;
-    max-width: 40px;
-    height: 36px;
+    max-width: 44px;
+    height: 40px;
   }
   .oh-vtools__sep {
     display: none;
@@ -2323,9 +2323,9 @@
     right: 72px;
   }
   .oh-seg button {
-    padding: 4px 7px;
+    padding: 4px 8px;
     font-size: 13px;
-    min-height: 32px;
+    min-height: 40px;
   }
   .oh-tabs {
     gap: 0;
@@ -2423,7 +2423,18 @@
     gap: 14px;
   }
   .oh-speed__segs button {
-    min-height: 32px;
+    min-height: 40px;
+  }
+  .oh-slew__b {
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+  }
+  .oh-linkbtns .oh-btn {
+    min-height: 40px;
+  }
+  .oh-pill {
+    min-height: 40px;
   }
   /* Beside the pad there is room for three a row, not nine: a finger-wide key each. */
   .oh-speed__segs {
@@ -2441,8 +2452,8 @@
   }
   .oh-slew__plate {
     flex: none;
-    width: 136px;
-    height: 136px;
+    width: 148px;
+    height: 148px;
   }
   .oh-dial__knob {
     width: min(100%, 140px);

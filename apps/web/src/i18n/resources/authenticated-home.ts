@@ -93,7 +93,7 @@ export const authenticatedHomeCopy: Record<"en" | "ka", AuthenticatedHomeCopy> =
       description: "ჯერ საჩვენებელი არაფერია.",
     },
     upcoming: "მომავალი სეანსები",
-    simulated: "სიმულირებული",
+    simulated: "სიმულაცია",
     openMission: "სეანსის გახსნა",
     retiredTarget: "ობიექტი აღარ არის ხელმისაწვდომი",
     noUpcoming: {
