@@ -201,8 +201,13 @@ test("the owner's switch in Georgian, and a refusal said plainly", async ({ page
   );
   await page.goto(`/ka/app/missions/${observing}/session`, { timeout: firstCompile });
   const panel = page.getByRole("region", { name: "ამაღამ, პირდაპირ" });
-  await panel.getByRole("button", { name: "ჩვენება „ამაღამ, პირდაპირ“-ზე" }).click();
-  await expect(panel.getByRole("alert")).toHaveText("შენახვა ვერ მოხერხდა. სცადე თავიდან.");
+  // A click that lands before the page has hydrated does nothing, so it is repeated.
+  await expect(async () => {
+    await panel.getByRole("button", { name: "ჩვენება „ამაღამ, პირდაპირ“-ზე" }).click();
+    await expect(panel.getByRole("alert")).toHaveText("შენახვა ვერ მოხერხდა. სცადე თავიდან.", {
+      timeout: 2_000,
+    });
+  }).toPass({ timeout: 30_000 });
   await expect(panel).toContainText(
     "ამას მხოლოდ შენ და შენი სტუმრები ხედავთ.",
   );
