@@ -1,10 +1,6 @@
 import Link from "next/link";
 
-import {
-  BrandLockup,
-  wordmarkPath,
-  wordmarkViewBox,
-} from "@/components/brand/brand-lockup";
+import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/ui/container";
 import type { Locale } from "@/i18n/config";
 import { legalPaths } from "@/i18n/resources/legal";
@@ -78,19 +74,6 @@ export function SiteFooter({ footer, locale, path = "" }: SiteFooterProps) {
           </div>
         </nav>
       </Container>
-      {/* ADR-100: the name set large across the foot, fading into the night. */}
-      <div className="footer-mark" aria-hidden="true">
-        {/* The lockup's outlines, so the foot of every page loads no font for one word. */}
-        <svg viewBox={wordmarkViewBox} focusable="false">
-          <defs>
-            <linearGradient id="footer-mark-fade" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" className="footer-mark-top" />
-              <stop offset="0.85" className="footer-mark-foot" />
-            </linearGradient>
-          </defs>
-          <path d={wordmarkPath} fill="url(#footer-mark-fade)" />
-        </svg>
-      </div>
     </footer>
   );
 }

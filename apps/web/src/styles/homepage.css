@@ -95,7 +95,6 @@ html.lenis body {
 
 .hs-title em {
   display: block;
-  color: var(--color-text-tertiary);
   font-style: normal;
 }
 
@@ -107,17 +106,6 @@ html.lenis body {
   letter-spacing: var(--tracking-label);
   line-height: 1.3;
   text-transform: uppercase;
-}
-
-/* A scene's first label opens with a short red rule. */
-:is(.hs-coll-head > .hs-label, .hs-night-head > .hs-label, .hs-session-text > .hs-label, .hs-scope-text > .hs-label)::before {
-  display: inline-block;
-  width: var(--space-6);
-  height: 1px;
-  margin-right: var(--space-3);
-  background: var(--color-accent);
-  content: "";
-  vertical-align: middle;
 }
 
 .hs-data {
@@ -407,29 +395,6 @@ html.lenis body {
   pointer-events: none;
 }
 
-/* The horizon: a planet's limb at the foot of the hero, its light fading to the sides. */
-.hs-horizon {
-  position: absolute;
-  z-index: 1;
-  overflow: hidden;
-  inset: 0;
-  mask-image: var(--mask-horizon);
-  pointer-events: none;
-}
-
-.hs-horizon i {
-  --d: max(220vw, 80rem);
-
-  position: absolute;
-  top: calc(100% - var(--hs-arc));
-  left: calc(50% - var(--d) / 2);
-  width: var(--d);
-  height: var(--d);
-  border-radius: 50%;
-  background: var(--color-mask);
-  box-shadow: var(--shadow-horizon);
-}
-
 /* Step two: tonight's open times, on glass. */
 .hs-slots {
   position: absolute;
@@ -627,9 +592,6 @@ html.lenis body {
     animation: enter var(--duration-enter) var(--ease-out-expo) calc(var(--stagger) * 4) backwards;
   }
 
-  .hs-hero .hs-horizon {
-    animation: hs-fade var(--duration-enter) var(--ease-out-expo) calc(var(--stagger) * 5) backwards;
-  }
 }
 
 @keyframes hs-up {
@@ -641,12 +603,6 @@ html.lenis body {
 @keyframes hs-rise {
   from {
     transform: translateY(var(--distance-enter));
-  }
-}
-
-@keyframes hs-fade {
-  from {
-    opacity: 0;
   }
 }
 
@@ -1086,16 +1042,6 @@ html.lenis body {
   isolation: isolate;
 }
 
-/* One warm light behind the ticket, the section's only glow (ADR-107). */
-.hs-session::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: radial-gradient(42rem 26rem at 50% 58%, var(--color-accent-muted), transparent 72%);
-  content: "";
-  pointer-events: none;
-}
-
 .hs-session-in {
   display: grid;
   width: 100%;
@@ -1136,15 +1082,6 @@ html.lenis body {
   background: var(--color-well);
   color: var(--color-text-cream);
   font-size: var(--font-size-label);
-}
-
-.hs-facts li::before {
-  width: 0.375rem;
-  height: 0.375rem;
-  flex: none;
-  border-radius: var(--radius-full);
-  background: var(--color-accent);
-  content: "";
 }
 
 .hs-buy {
@@ -1656,19 +1593,6 @@ html.lenis body {
   position: absolute;
   top: var(--space-3);
   right: var(--space-3);
-}
-
-/* The design system's specimen of the horizon. */
-.hs-horizon-specimen {
-  --hs-arc: 5rem;
-
-  position: relative;
-  height: 12rem;
-  overflow: hidden;
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-night);
-  grid-column: 1 / -1;
 }
 
 /* PHONES — the copy keeps the foot of the screen; the pictures take the space above it. */

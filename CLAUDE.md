@@ -236,9 +236,9 @@ right (ADR-057). The lockup is the Skychaser kit's comet mark beside
 STELLAR in Archivo Expanded Black. Type: Anton, Oswald, Geist, JetBrains Mono; Georgian in
 Noto Sans Georgian and FiraGO, never uppercased or tracked.
 
-The glow is Skychaser's (ADR-052 §4): filled buttons, the LIVE pill, the camera badge,
-the console's current step and the active tab glow; the header and phone tab bar are
-glass. White text on `#E3482C` fails WCAG AA and is never used.
+Since ADR-108 the surface is plain: no glow under buttons or behind cards, no horizon,
+sheen or ornamental rings, headings in one colour, buttons as flat 10px rectangles. The
+LIVE light stays, because it is state; the header and phone tab bar are glass. White text on `#E3482C` fails WCAG AA and is never used.
 
 Avoid: purple-nebula SaaS gradients, cartoon astronomy, military HUD decoration or
 NASA marks (ADR-055 takes NASA's colour, not its costume), stock space imagery presented as telescope output, any claim of

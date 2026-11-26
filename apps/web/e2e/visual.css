@@ -63,11 +63,9 @@ nextjs-portal {
  */
 .hs-ln *,
 .hs-hero .hs-acts,
-.hs-horizon,
 .hs-feed *,
 .status-dot,
 .status-dot,
-.button-primary::after,
 #main-content {
   animation: none !important;
 }

@@ -23,34 +23,7 @@
   backdrop-filter: var(--blur-glass);
 }
 
-/* ADR-102: the ring behind the card, and the card rising into place. */
-.auth-ring {
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  left: 50%;
-  width: min(54rem, 150vw);
-  fill: none;
-  stroke: var(--color-reticle);
-  stroke-width: 0.35;
-  opacity: 0.55;
-  pointer-events: none;
-  translate: -50% -50%;
-}
-
-.auth-ring line:nth-child(10n + 3) {
-  stroke: var(--color-reticle-major);
-}
-
-.auth-ring-inner {
-  stroke-dasharray: 0.6 2.4;
-}
-
 @media (prefers-reduced-motion: no-preference) {
-  .auth-ring {
-    animation: reticle-turn 300s linear infinite;
-  }
-
   .auth-panel {
     animation: settle var(--duration-enter) var(--ease-out-expo) both;
   }

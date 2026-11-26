@@ -100,19 +100,13 @@
    */
   --light-angle: 150deg;
   --color-key-light: color-mix(in srgb, var(--st-sun-1) 55%, transparent);
-  --gradient-tile: linear-gradient(
-    var(--light-angle),
-    color-mix(in srgb, var(--st-white) 11%, transparent),
-    color-mix(in srgb, var(--st-white) 3%, transparent) 60%
-  );
+  --gradient-tile: none;
   --color-glass-border: color-mix(in srgb, var(--st-white) 13%, transparent);
   --color-glass-border-hover: color-mix(in srgb, var(--st-white) 26%, transparent);
-  --shadow-glass:
-    inset 0 1px 0 color-mix(in srgb, var(--st-white) 16%, transparent),
-    0 24px 48px -24px color-mix(in srgb, var(--st-black) 80%, transparent);
+  --shadow-glass: none;
   --blur-glass: blur(20px) saturate(150%);
-  --gradient-title: linear-gradient(180deg, var(--st-white) 30%, var(--st-ink-2));
-  --gradient-title-accent: linear-gradient(180deg, var(--st-red-hi), var(--st-red));
+  --gradient-title: linear-gradient(var(--st-white), var(--st-white));
+  --gradient-title-accent: linear-gradient(var(--st-white), var(--st-white));
   --color-well: color-mix(in srgb, var(--st-white) 5%, transparent);
   --color-pill-secondary: color-mix(in srgb, var(--st-white) 10%, transparent);
   --color-pill-secondary-hover: color-mix(in srgb, var(--st-white) 16%, transparent);
@@ -121,47 +115,17 @@
     var(--st-white) 34%,
     transparent
   );
-  --gradient-pill: linear-gradient(180deg, var(--st-sun-4), var(--st-gd-mid));
-  --gradient-pill-hover: linear-gradient(180deg, var(--st-sun-4), var(--st-red-fill));
+  --gradient-pill: var(--color-action);
+  --gradient-pill-hover: color-mix(in srgb, var(--color-action) 88%, var(--st-white));
   --color-pill-primary-busy: color-mix(in srgb, var(--color-action) 80%, var(--st-black));
-  --shadow-pill:
-    inset 0 1px 0 color-mix(in srgb, var(--st-white) 35%, transparent),
-    0 8px 24px -10px color-mix(in srgb, var(--color-accent) 70%, transparent);
-  --shadow-pill-hover:
-    inset 0 1px 0 color-mix(in srgb, var(--st-white) 40%, transparent),
-    0 12px 30px -10px color-mix(in srgb, var(--color-accent) 85%, transparent);
-  --shadow-pill-glass: inset 0 1px 0 color-mix(in srgb, var(--st-white) 20%, transparent);
+  --shadow-pill: none;
+  --shadow-pill-hover: none;
+  --shadow-pill-glass: none;
   /* ADR-078: the horizon, lit from below — the light inside the scene (ADR-104). */
-  --gradient-horizon:
-    radial-gradient(
-      60% 90% at 50% 120%,
-      color-mix(in srgb, var(--st-red) 38%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      30% 40% at 50% 100%,
-      color-mix(in srgb, var(--st-amber) 22%, transparent),
-      transparent 70%
-    );
-  /* ADR-088: the horizon — a planet's limb under the homepage hero, lit from behind. */
-  --shadow-horizon:
-    0 0 0 1px color-mix(in srgb, var(--st-red-hi) 60%, transparent),
-    0 -2px 14px color-mix(in srgb, var(--st-amber) 55%, transparent),
-    0 -14px 56px color-mix(in srgb, var(--st-red) 62%, transparent),
-    0 -56px 180px color-mix(in srgb, var(--st-red) 34%, transparent),
-    inset 0 2px 6px color-mix(in srgb, var(--st-sun-1) 42%, transparent),
-    inset 0 26px 80px color-mix(in srgb, var(--st-red) 42%, transparent),
-    inset 0 100px 220px color-mix(in srgb, var(--st-red-deep) 34%, transparent);
-  --mask-horizon: radial-gradient(60% 100% at 50% 100%, var(--st-black) 46%, transparent 100%);
+  --gradient-horizon: none;
   --color-panel-quiet: color-mix(in srgb, var(--st-bar) 68%, transparent);
   /* A glass rim: brightest toward the key light, a faint return on the far edge. */
-  --gradient-edge: linear-gradient(
-    var(--light-angle),
-    color-mix(in srgb, var(--st-white) 34%, transparent),
-    color-mix(in srgb, var(--st-white) 8%, transparent) 30%,
-    color-mix(in srgb, var(--st-white) 4%, transparent) 65%,
-    color-mix(in srgb, var(--st-white) 14%, transparent)
-  );
+  --gradient-edge: none;
   --mask-edge: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   --color-line: color-mix(in srgb, var(--st-white) 9%, transparent);
   --color-line-strong: color-mix(in srgb, var(--st-white) 22%, transparent);
@@ -194,17 +158,9 @@
    * beneath — for a filled button and whatever is chosen; and the cream ticket a session
    * is summed up on.
    */
-  --gradient-poster: linear-gradient(
-    180deg,
-    var(--st-sun-4) 0%,
-    var(--st-red-fill) 50%,
-    var(--st-gd-mid) 100%
-  );
-  --shadow-poster:
-    0 3px 0 var(--st-gd-deep),
-    0 12px 30px -8px color-mix(in srgb, var(--st-sun-4) 60%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--st-sun-1) 40%, transparent);
-  --shadow-gloss: inset 0 1px 0 color-mix(in srgb, var(--st-sun-1) 40%, transparent);
+  --gradient-poster: var(--color-action);
+  --shadow-poster: none;
+  --shadow-gloss: none;
   --shadow-raised: var(--shadow-monolith);
   --shadow-paper: 0 30px 60px -30px color-mix(in srgb, var(--st-black) 90%, transparent);
   --text-shadow-poster: 0 1px 1px color-mix(in srgb, var(--st-gd-deep) 60%, transparent);
@@ -279,12 +235,6 @@
   --color-outline-fill: color-mix(in srgb, var(--st-white) 2.5%, transparent);
   --color-outline-fill-hover: color-mix(in srgb, var(--st-white) 6%, transparent);
   /* The light that sweeps across a filled button on hover and while it loads. */
-  --gradient-sheen: linear-gradient(
-    105deg,
-    transparent 30%,
-    color-mix(in srgb, var(--st-white) 50%, transparent) 50%,
-    transparent 70%
-  );
 
   /*
    * The observatory scene: /observatory sits on the console's ground (ADR-052 §8), its
@@ -314,8 +264,8 @@
     color-mix(in srgb, var(--st-monolith-bottom) 94%, transparent)
   );
   /* The site backdrop (ADR-104): the key light's warmth at the top-left, red below. */
-  --color-sky-warm: color-mix(in srgb, var(--st-amber) 7%, transparent);
-  --color-sky-red: color-mix(in srgb, var(--st-red) 20%, transparent);
+  --color-sky-warm: transparent;
+  --color-sky-red: transparent;
   /* The Night Sky (ADR-085): the night its renderer draws, shown before the first frame --
      deep blue overhead, a haze along the horizon, the ground -- and its deep-sky labels. */
   --gradient-night-sky: linear-gradient(
@@ -372,11 +322,7 @@
   --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.93 0 0 0 0 0.8 0 0 0 0.033 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   /* The homepage sky's own vignette and grain, darker at its top and foot. */
   --shadow-sky-title: 0 2px 30px color-mix(in srgb, var(--st-black) 60%, transparent);
-  --gradient-vignette: radial-gradient(
-    90% 90% at 50% 40%,
-    transparent 55%,
-    color-mix(in srgb, var(--st-black) 45%, transparent)
-  );
+  --gradient-vignette: none;
 
   /*
    * The live room's console (ADR-052 §8): the Skychaser site's /node console — near-black
@@ -477,7 +423,6 @@
   --font-size-nav: 0.9375rem;
   --font-size-wordmark: 1.272rem;
   --font-size-wordmark-small: 1rem;
-  --font-size-footer-mark: clamp(3.5rem, 14.5vw, 17rem);
   --font-size-explorer: clamp(3.25rem, 9vw, 8.5rem);
   --font-size-explorer-ka: clamp(2.5rem, 7vw, 6.5rem);
   --font-size-ticket: clamp(1.75rem, 1rem + 3.4vw, 3rem);
@@ -550,15 +495,9 @@
   --glow-live-led:
     0 0 0 3px color-mix(in srgb, var(--st-green) 20%, transparent),
     0 0 10px var(--st-green);
-  --glow-pulse-low:
-    0 0 0 5px color-mix(in srgb, var(--st-red) 14%, transparent),
-    0 0 22px color-mix(in srgb, var(--st-red) 50%, transparent);
-  --glow-pulse-high:
-    0 0 0 9px color-mix(in srgb, var(--st-red) 6%, transparent),
-    0 0 34px color-mix(in srgb, var(--st-red) 75%, transparent);
-  --glow-tab-icon: drop-shadow(
-    0 0 6px color-mix(in srgb, var(--st-red) 55%, transparent)
-  );
+  --glow-pulse-low: none;
+  --glow-pulse-high: none;
+  --glow-tab-icon: none;
   --color-account-ring: color-mix(in srgb, var(--st-red) 60%, transparent);
   /* The game's launch screen: the words on the dark, the game image beyond. */
   --gradient-explorer-fade-phone:
@@ -625,13 +564,8 @@
   --color-spot-soft: color-mix(in srgb, var(--st-amber) 8%, transparent);
   --size-spot: 14rem;
   /* A disc's edge where the key light catches it: the eyepiece, the planet's limb. */
-  --shadow-rim: inset 1px 1px 0 color-mix(in srgb, var(--st-sun-1) 28%, transparent);
-  --gradient-halo: radial-gradient(
-    closest-side at 40% 38%,
-    color-mix(in srgb, var(--st-sun-2) 18%, transparent),
-    color-mix(in srgb, var(--st-amber) 6%, transparent) 60%,
-    transparent
-  );
+  --shadow-rim: none;
+  --gradient-halo: none;
   --color-reticle: color-mix(in srgb, var(--st-cream) 30%, transparent);
   --color-reticle-major: color-mix(in srgb, var(--st-red-ink) 80%, transparent);
 

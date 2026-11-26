@@ -70,7 +70,7 @@ import { roomSessionCopy } from "@/i18n/resources/room-session";
 import { TargetPreview } from "@/components/room/target-preview";
 import { PageGuide } from "@/components/guide/page-guide";
 import { brand } from "@/brand";
-import { TelescopeReel, StoryEyepiece, StoryFeedSpecimen, StoryHorizon, StoryStep, StoryTicket } from "@/components/home/home-story";
+import { TelescopeReel, StoryEyepiece, StoryFeedSpecimen, StoryStep, StoryTicket } from "@/components/home/home-story";
 import { TonightList } from "@/components/home/tonight-list";
 import type { LiveStatus } from "@/features/missions/live";
 import { missionProgress, plateFor, type FeedPlates } from "@/features/missions/room";
@@ -1554,10 +1554,6 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
               length={`30 ${dictionary.home.common.minutes}`}
               price="GEL 45.00"
             />
-            {/* The hero's horizon, as it sits at the foot of the screen. */}
-            <div className="hs-horizon-specimen">
-              <StoryHorizon />
-            </div>
             {/* ADR-104: a showpiece in its eyepiece (ring drawn as vectors, halo from the
                 key light), uncaptioned since ADR-105; the row's arrows at rest, lit as on
                 hover, ringed as on keyboard focus, and disabled at the row's end. */}

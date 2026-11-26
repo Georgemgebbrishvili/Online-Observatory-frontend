@@ -79,12 +79,6 @@ html .tonight-quiet .state-panel {
   background: var(--gradient-horizon), var(--gradient-tile), var(--color-surface-base);
 }
 
-.tonight-quiet .state-symbol {
-  width: 5.5rem;
-  height: 5.5rem;
-  margin-bottom: var(--space-6);
-}
-
 .tonight-quiet .state-panel :is(h1, h2) {
   font-size: var(--font-size-h1);
 }

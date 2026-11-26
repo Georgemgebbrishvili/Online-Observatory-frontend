@@ -194,15 +194,6 @@ export function StoryTicket({
   );
 }
 
-/** The horizon at the foot of the hero (ADR-088): a planet's limb, lit from behind. */
-export function StoryHorizon() {
-  return (
-    <div className="hs-horizon" aria-hidden="true">
-      <i />
-    </div>
-  );
-}
-
 /**
  * The camera feed (ADR-104, ADR-107): a real photograph through a NexStar 8SE, as a raw sub
  * under the settled stack, sensor grain over both. `--depth` on the frame runs from 0, one
@@ -886,7 +877,6 @@ export function HomeStory(props: HomeStoryProps) {
             </div>
           </dl>
         </div>
-        <StoryHorizon />
 
         {booking && (
           <aside className="hs-slots hs-glass" aria-label={copy.booking.tonight}>
