@@ -24,8 +24,14 @@ export type BoardCopy = {
   siteTime: string;
   /** ADR-074: the time grid's prompt, as the run is chosen. */
   hint: { start: string; end: string; again: string };
-  /** The night's dark hours, above the grid. */
-  dark: (from: string, to: string) => string;
+  /** ADR-110: the night band above the grid, sunset to sunrise. */
+  band: {
+    sunset: string;
+    dark: string;
+    sunrise: string;
+    moonUp: string;
+    moonLit: (percent: number) => string;
+  };
   grid: string;
   /** Why a run stopped short of the tap. */
   clipped: (time: string) => string;
@@ -118,7 +124,13 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
       end: "Tap the end, up to 4 h later.",
       again: "Tap to change, or use − and +.",
     },
-    dark: (from, to) => `Dark ${from} – ${to}`,
+    band: {
+      sunset: "Sunset",
+      dark: "Dark",
+      sunrise: "Sunrise",
+      moonUp: "the Moon up in the light stretch",
+      moonLit: (percent) => `Moon ${percent}% lit`,
+    },
     grid: "Observing time",
     clipped: (time) => `Ends at ${time}: next time is taken.`,
     longest: "Longest session: 4 h.",
@@ -200,7 +212,13 @@ export const boardCopy: Record<"en" | "ka", BoardCopy> = {
       end: "ახლა მონიშნე დასასრული (4 სთ-მდე).",
       again: "შესაცვლელად მონიშნე სხვა დრო ან გამოიყენე − და +.",
     },
-    dark: (from, to) => `სიბნელე ${from} – ${to}`,
+    band: {
+      sunset: "მზის ჩასვლა",
+      dark: "სიბნელე",
+      sunrise: "მზის ამოსვლა",
+      moonUp: "ღია მონაკვეთში მთვარე ცაზეა",
+      moonLit: (percent) => `მთვარე ${percent}%`,
+    },
     grid: "დაკვირვების დრო",
     clipped: (time) => `მთავრდება ${time}-ზე: მერე დაკავებულია.`,
     longest: "სეანსი მაქსიმუმ 4 საათია.",

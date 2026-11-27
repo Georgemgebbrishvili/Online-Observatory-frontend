@@ -103,7 +103,6 @@ export function CardDraw({ draw: initial, locale, now, signInPath, targets, time
         durationMinutes: prize?.durationMinutes ?? draw.odds.freeSlotDurationMinutes,
         percentOff: prize?.percentOff ?? draw.odds.discountPercentOff,
       }),
-      position: card.position,
     };
   };
 
@@ -125,12 +124,16 @@ export function CardDraw({ draw: initial, locale, now, signInPath, targets, time
                 turnLabel={copy.turn(card.position)}
                 busy={pending === card.position}
                 disabled={pending !== null}
-                caption={face ? copy.illustration : pending === card.position ? copy.turning : undefined}
+                caption={!face && pending === card.position ? copy.turning : undefined}
               />
             </li>
           );
         })}
       </ol>
+
+      {draw.cards.some((card) => faceOf(card)) && (
+        <p className="cards-art-note">{copy.illustration}</p>
+      )}
 
       <p className="cards-note" role="status" aria-live="polite">
         {note}

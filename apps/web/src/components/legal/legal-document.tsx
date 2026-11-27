@@ -22,7 +22,6 @@ export function LegalDocumentPage({
   const sections = document.sections.map((section, index) => ({
     ...section,
     id: section.anchor ?? `section-${index + 1}`,
-    number: String(index + 1).padStart(2, "0"),
   }));
   const pending = sections.filter((section) => section.status === "pending").length;
 
@@ -44,7 +43,6 @@ export function LegalDocumentPage({
                 className={section.status === "pending" ? "legal-toc-pending" : undefined}
               >
                 <a href={`#${section.id}`}>
-                  <span className="legal-toc-number">{section.number}</span>
                   <span>
                     {section.heading}
                     {section.status === "pending" && (
@@ -81,10 +79,7 @@ export function LegalDocumentPage({
                 key={section.id}
                 aria-labelledby={`${section.id}-title`}
               >
-                <h2 id={`${section.id}-title`}>
-                  <span className="legal-section-number">{section.number}</span>
-                  {section.heading}
-                </h2>
+                <h2 id={`${section.id}-title`}>{section.heading}</h2>
                 <span className="legal-status legal-status-decided">
                   {copy.decidedLabel}
                 </span>
@@ -99,10 +94,7 @@ export function LegalDocumentPage({
                 key={section.id}
                 aria-labelledby={`${section.id}-title`}
               >
-                <h2 id={`${section.id}-title`}>
-                  <span className="legal-section-number">{section.number}</span>
-                  {section.heading}
-                </h2>
+                <h2 id={`${section.id}-title`}>{section.heading}</h2>
                 <span className="legal-status legal-status-pending">
                   {copy.pendingLabel}
                 </span>

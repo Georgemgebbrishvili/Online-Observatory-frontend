@@ -91,18 +91,20 @@ export default async function CardsPage({ params }: CardsPageProps) {
 
   return shell(
     <>
-      <header className="cards-head">
-        <p className="kicker">{copy.week(range)}</p>
-        <p className="cards-lede">{copy.lede}</p>
-      </header>
-      <CardDraw
-        locale={locale}
-        draw={draw}
-        targets={targets}
-        timezone={observatory.timezone}
-        signInPath={`/${locale}/sign-in`}
-        now={readClock()}
-      />
+      <div className="cards-stage">
+        <header className="cards-head">
+          <p className="kicker">{copy.week(range)}</p>
+          <p className="cards-lede">{copy.lede}</p>
+        </header>
+        <CardDraw
+          locale={locale}
+          draw={draw}
+          targets={targets}
+          timezone={observatory.timezone}
+          signInPath={`/${locale}/sign-in`}
+          now={readClock()}
+        />
+      </div>
       <div className="cards-columns">
         <PrizeList locale={locale} prizes={prizes} />
         <CardOdds locale={locale} odds={draw.odds} />

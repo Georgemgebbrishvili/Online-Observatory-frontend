@@ -29,11 +29,8 @@ export function PageGuide({ id, locale }: PageGuideProps) {
           <div className="guide-block">
             <h3 className="guide-block-title">{guide.stepsTitle}</h3>
             <ol className="guide-steps">
-              {guide.steps.map((step, index) => (
+              {guide.steps.map((step) => (
                 <li key={step.title}>
-                  <span className="guide-index" aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
                   <h4>{step.title}</h4>
                   <p>{step.body}</p>
                 </li>

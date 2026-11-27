@@ -76,6 +76,11 @@ function masks(page: Page) {
     page.locator(".night-strip"),
     page.locator(".board-step:has(.board-aside) h2"),
     page.locator(".board-sum-meta"),
+    // ADR-110: the night band is the server's tonight; the next night and the figures
+    // are picked by the clock.
+    page.locator(".night-band"),
+    page.locator(".nights-next"),
+    page.locator(".nights-figures dd"),
     // How many slots are open this week, on /pricing.
     page.locator(".pricing-tonight footer small"),
     // The board's night bar: sunset, twilight and the Moon for the server's tonight.

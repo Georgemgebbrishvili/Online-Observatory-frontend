@@ -34,14 +34,12 @@ export function CardSpecimens({ labels, locale }: { labels: Labels; locale: Loca
     slug: string | null,
     name: string,
     kind: string,
-    position = 0,
   ): CardFaceProps => ({
     rarity,
     rarityLabel: copy.rarity[rarity],
     slug,
     name,
     kind,
-    position,
     prize: copy.prize(prizeOf[rarity], { durationMinutes: 40, percentOff: 20 }),
   });
   const ka = locale === "ka";
@@ -90,7 +88,6 @@ export function CardSpecimens({ labels, locale }: { labels: Labels; locale: Loca
             "saturn",
             ka ? "სატურნი" : "Saturn",
             ka ? "პლანეტა" : "Planet",
-            1,
           )}
           caption={copy.illustration}
         />
@@ -105,7 +102,6 @@ export function CardSpecimens({ labels, locale }: { labels: Labels; locale: Loca
             "moon-terminator",
             ka ? "მთვარის ტერმინატორი" : "Moon terminator",
             ka ? "მთვარე" : "Moon",
-            2,
           )}
           caption={copy.illustration}
         />
@@ -134,7 +130,6 @@ export function CardSpecimens({ labels, locale }: { labels: Labels; locale: Loca
             "albireo",
             ka ? "ალბირეო" : "Albireo",
             ka ? "ორმაგი ვარსკვლავი" : "Double star",
-            2,
           )}
           caption={copy.illustration}
         />

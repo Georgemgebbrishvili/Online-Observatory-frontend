@@ -2,10 +2,44 @@
 .cards-page {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-8);
+  align-items: start;
+  gap: var(--space-6);
   width: min(100%, 90rem);
   margin-inline: auto;
   padding: var(--space-6) var(--space-page) var(--space-12);
+}
+
+/* ADR-110: the draw on a piece of the night, the prizes and the odds beside it. */
+@media (--lg) {
+  .cards-page {
+    grid-template-columns: minmax(0, 1fr) 26rem;
+  }
+}
+
+.cards-stage {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+  padding: var(--space-6);
+  border: 1px solid var(--color-panel-edge);
+  border-radius: var(--radius-panel);
+  background:
+    var(--gradient-stars) 0 0 / 340px 300px,
+    var(--gradient-stars) 170px 120px / 520px 460px,
+    linear-gradient(180deg, var(--color-panel-night), var(--color-night-deep));
+}
+
+@media (--below-md) {
+  .cards-stage {
+    padding: var(--space-4);
+  }
+}
+
+.cards-art-note {
+  margin: 0;
+  color: var(--color-text-small);
+  font-size: var(--font-size-caption);
+  text-align: center;
 }
 
 .cards-head {
@@ -17,7 +51,7 @@
 .cards-lede {
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
+  font-size: var(--font-size-body);
   line-height: 1.5;
 }
 
@@ -44,7 +78,7 @@
 /* Three across at every width while they are face down: a choice is seen whole. */
 .cards-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 17rem));
+  grid-template-columns: repeat(3, minmax(0, 15rem));
   justify-content: center;
   gap: var(--space-3);
   margin: 0;
@@ -54,7 +88,7 @@
 
 @media (--md) {
   .cards-row {
-    gap: var(--space-8);
+    gap: var(--space-6);
   }
 }
 
@@ -122,26 +156,32 @@
 .cards-columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-8);
+  gap: var(--space-4);
 }
 
-@media (--lg) {
+/* Between a phone and a laptop the two sit side by side under the draw. */
+@media (--md) and (--below-lg) {
   .cards-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--space-12);
   }
 }
 
 .cards-section {
   display: grid;
   align-content: start;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-panel-edge);
+  border-radius: var(--radius-panel);
+  background:
+    var(--gradient-stars) 0 0 / 340px 300px,
+    linear-gradient(180deg, var(--color-panel-night), var(--color-surface-raised) 70%);
 }
 
 .cards-section h2 {
   margin: 0;
   font-family: var(--font-label);
-  font-size: var(--font-size-h3);
+  font-size: var(--font-size-body-lg);
   font-weight: var(--font-weight-label);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
@@ -212,7 +252,7 @@
   padding: var(--space-2) var(--space-3) var(--space-2) 0;
   border-bottom: 1px solid var(--color-line);
   text-align: start;
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-caption);
 }
 
 .cards-odds th,
@@ -238,6 +278,7 @@
   margin: 0;
   padding-inline-start: var(--space-5);
   color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
 }
 
 .cards-terms {

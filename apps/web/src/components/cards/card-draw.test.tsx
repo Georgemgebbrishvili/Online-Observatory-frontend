@@ -109,7 +109,9 @@ describe("CardDraw", () => {
     expect(screen.getByText("STLRSEAT0001")).toBeTruthy();
     expect(screen.queryByRole("button", { name: /Turn card/ })).toBeNull();
     // The other two turn after the picked one, and the prize list is read again.
-    await waitFor(() => expect(screen.getAllByText(copy.illustration)).toHaveLength(3), { timeout: 2000 });
+    await waitFor(() => expect(document.querySelectorAll(".sdc-card--front")).toHaveLength(3), { timeout: 2000 });
+    // One caption under the row says all three are illustrations.
+    expect(screen.getAllByText(copy.illustration)).toHaveLength(1);
     expect(refresh).toHaveBeenCalled();
   });
 
@@ -123,7 +125,8 @@ describe("CardDraw", () => {
   it("shows a deal already picked, turned, with no way to turn again", () => {
     renderDraw(picked);
     expect(screen.queryByRole("button", { name: /Turn card/ })).toBeNull();
-    expect(screen.getAllByText(copy.illustration)).toHaveLength(3);
+    expect(document.querySelectorAll(".sdc-card--front")).toHaveLength(3);
+    expect(screen.getAllByText(copy.illustration)).toHaveLength(1);
     expect(screen.getByText(/New cards on Monday 26 October, 00:00/)).toBeTruthy();
   });
 });

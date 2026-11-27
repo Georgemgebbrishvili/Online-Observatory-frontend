@@ -23,7 +23,8 @@ test("turns one of three cards, shows the prize and its code, and keeps it", asy
   await page.getByRole("button", { name: "Turn card 2 of 3" }).click();
   await expect(page.getByRole("heading", { name: "Epic: A free observer seat." })).toBeVisible();
   await expect(page.getByRole("button", { name: /^Turn card/ })).toHaveCount(0);
-  await expect(page.getByText("Illustration — not telescope output")).toHaveCount(3);
+  await expect(page.locator(".sdc-card--front")).toHaveCount(3);
+  await expect(page.getByText("Illustrations — not telescope output")).toHaveCount(1);
 
   const prizes = page.getByRole("region", { name: "Your prizes" });
   await expect(prizes.getByText("Ready to use")).toBeVisible();

@@ -22,6 +22,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { formatPrice } from "@/components/booking/booking-night";
+import { moonThatNight } from "@/components/booking/moon-glyph";
+import { NightBand } from "@/components/booking/night-band";
 import { NightStrip } from "@/components/booking/night-strip";
 import { TargetArt, targetAccent } from "@/components/booking/target-art";
 import { TimeGrid, type GridCell } from "@/components/booking/time-grid";
@@ -104,33 +106,21 @@ function bookable({ target, visibility }: SlotTarget, durationMinutes: number) {
   return visibility.observable && target.expectedMissionMinutes <= durationMinutes;
 }
 
-/** A step's heading, numbered as the poster numbers its chapters: 01, 02, 03. */
-function StepTitle({ step, title }: { step: number; title: string }) {
-  return (
-    <h2>
-      <span className="board-step-no" aria-hidden="true">
-        {String(step).padStart(2, "0")}
-      </span>
-      {title}
-    </h2>
-  );
-}
-
 function Section({
-  step,
+  className,
   title,
   aside,
   children,
 }: {
-  step: number;
+  className: string;
   title: string;
   aside?: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <section className="board-section">
+    <section className={`board-section ${className}`}>
       <header className="board-step">
-        <StepTitle step={step} title={title} />
+        <h2>{title}</h2>
         {aside && <span className="board-aside">{aside}</span>}
       </header>
       {children}
@@ -711,12 +701,10 @@ export function BookingBoard({
     <form className="board" onSubmit={submit} aria-busy={phase !== "idle" || undefined}>
       <header className="board-head">
         <h1 className="visually-hidden">{booking.title}</h1>
+        <h2 className="visually-hidden">{copy.night}</h2>
         <p className="board-lede">{reschedule ? replacing.replacing : copy.lede}</p>
       </header>
 
-      <header className="board-step board-step-bare">
-        <StepTitle step={1} title={copy.night} />
-      </header>
       <NightStrip
         nights={nights.map((candidate) => ({
           date: candidate.date,
@@ -734,17 +722,26 @@ export function BookingBoard({
       <div className="board-grid">
         <div className="board-main">
           <Section
-            step={2}
+            className="board-section-time"
             title={current ? current.label.long : copy.start}
-            aside={
-              <>
-                {darkness && (
-                  <span>{copy.dark(clock(darkness.dusk), clock(darkness.dawn))}</span>
-                )}
-                <span>{zone ? `${copy.siteTime} · ${zone}` : copy.siteTime}</span>
-              </>
-            }
+            aside={<span>{zone ? `${copy.siteTime} · ${zone}` : copy.siteTime}</span>}
           >
+            {darkness && current && (
+              <NightBand
+                sky={darkness}
+                moon={moonThatNight(current.date, timezone)}
+                clock={clock}
+                words={copy.band}
+                run={
+                  run
+                    ? {
+                        from: Date.parse(slots[run.from].startAt),
+                        to: Date.parse(slots[run.to].startAt) + QUARTER_MS,
+                      }
+                    : null
+                }
+              />
+            )}
             <p className="board-hint" aria-live="polite">
               {hint}
             </p>
@@ -769,7 +766,7 @@ export function BookingBoard({
           </Section>
 
           <Section
-            step={3}
+            className="board-section-targets"
             title={copy.target}
             aside={
               !chosen

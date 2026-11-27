@@ -24,13 +24,10 @@ export function TonightList({ common, items, locale, timezone }: TonightListProp
 
   return (
     <ol className="tonight-list">
-      {items.map(({ target, visibility }, index) => {
+      {items.map(({ target, visibility }) => {
         const reason = primaryReason(visibility);
         return (
           <li key={target.id} data-observable={visibility.observable}>
-            <span className="tonight-list-index" aria-hidden="true">
-              {String(index + 1).padStart(2, "0")}
-            </span>
             <div className="tonight-list-name">
               <p>
                 {copy.types[target.type]}

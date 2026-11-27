@@ -239,6 +239,9 @@ Noto Sans Georgian and FiraGO, never uppercased or tracked.
 Since ADR-108 the surface is plain: no glow under buttons or behind cards, no horizon,
 sheen or ornamental rings, headings in one colour, buttons as flat 10px rectangles. The
 LIVE light stays, because it is state; the header and phone tab bar are glass. White text on `#E3482C` fails WCAG AA and is never used.
+Since ADR-110 the app pages' panels are a piece of the night (blue-black with the star
+tile, still no glow), the booking board draws the night from sunset to sunrise, and no
+heading carries a number.
 
 Avoid: purple-nebula SaaS gradients, cartoon astronomy, military HUD decoration or
 NASA marks (ADR-055 takes NASA's colour, not its costume), stock space imagery presented as telescope output, any claim of

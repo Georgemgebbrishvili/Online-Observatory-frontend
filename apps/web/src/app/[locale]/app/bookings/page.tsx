@@ -7,6 +7,7 @@ import { isLocale } from "@/i18n/config";
 import { bookingsCopy } from "@/i18n/resources/bookings";
 import "@/styles/pages.css";
 import "@/styles/booking.css";
+import "@/styles/target-art.css";
 
 type BookingsPageProps = {
   params: Promise<{ locale: string }>;
@@ -20,6 +21,11 @@ export async function generateMetadata({ params }: BookingsPageProps): Promise<M
   return { title: copy.metadataTitle, description: copy.metadataDescription };
 }
 
+/** The request's clock, read outside the render (react-hooks/purity). */
+function readClock() {
+  return new Date().toISOString();
+}
+
 /** The customer's nights, on a page of their own, so the booking board fits one screen. */
 export default async function BookingsPage({ params, searchParams }: BookingsPageProps) {
   const { locale } = await params;
@@ -27,5 +33,12 @@ export default async function BookingsPage({ params, searchParams }: BookingsPag
   const cursor = bookingCursorOf((await searchParams).cursor);
   const nights = await readBookings(cursor);
   if (nights.kind === "signed-out") redirect(`/${locale}/sign-in`);
-  return <BookingList locale={locale} paged={cursor !== null} result={nights} />;
+  return (
+    <BookingList
+      locale={locale}
+      now={readClock()}
+      paged={cursor !== null}
+      result={nights}
+    />
+  );
 }

@@ -57,12 +57,6 @@
   border-top: 1px solid var(--color-line-strong);
 }
 
-.guide-index {
-  color: var(--color-accent-ink);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-mono);
-}
-
 .guide-steps h4,
 .guide-points h4,
 .guide-cta h3 {

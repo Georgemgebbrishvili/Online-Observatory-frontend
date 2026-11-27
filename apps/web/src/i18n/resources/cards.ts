@@ -82,7 +82,7 @@ export const cardsCopy: Record<Locale, CardsCopy> = {
           return "No prize";
       }
     },
-    illustration: "Illustration — not telescope output",
+    illustration: "Illustrations — not telescope output",
     turn: (position) => `Turn card ${position + 1} of 3`,
     turning: "Turning…",
     faceDown: "Face down",
@@ -168,7 +168,7 @@ export const cardsCopy: Record<Locale, CardsCopy> = {
           return "პრიზის გარეშე";
       }
     },
-    illustration: "ილუსტრაცია — არა ტელესკოპის გამოსახულება",
+    illustration: "ილუსტრაციები — არა ტელესკოპის გამოსახულება",
     turn: (position) => `გადააბრუნე ბარათი ${position + 1} (სამიდან)`,
     turning: "ბრუნდება…",
     faceDown: "დაფარულია",

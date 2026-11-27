@@ -4,10 +4,10 @@
  */
 .board {
   display: grid;
-  gap: var(--space-5);
-  width: min(100%, 80rem);
+  gap: var(--space-4);
+  width: min(100%, 90rem);
   margin-inline: auto;
-  padding: var(--space-6) var(--space-page) var(--space-12);
+  padding: var(--space-4) var(--space-page) var(--space-12);
 }
 
 .board > * {
@@ -22,8 +22,19 @@
   max-width: 46rem;
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
+  font-size: var(--font-size-body);
   line-height: 1.5;
+}
+
+/*
+ * ADR-110: a panel is a piece of the night: blue-black at the top, the page's dark below,
+ * a few stars in it. No glow, no ring (ADR-108 holds).
+ */
+.board-section,
+.night-tile {
+  background:
+    var(--gradient-stars) 0 0 / 340px 300px,
+    linear-gradient(180deg, var(--color-panel-night), var(--color-surface-raised) 70%);
 }
 
 /* ── The nights: one row of tiles ── */
@@ -48,10 +59,9 @@
   scroll-snap-align: start;
   justify-items: center;
   gap: 2px;
-  padding: var(--space-3) var(--space-2);
-  border: 1px solid var(--color-border-subtle);
+  padding: var(--space-2);
+  border: 1px solid var(--color-panel-edge);
   border-radius: var(--radius-medium);
-  background: var(--color-surface-raised);
   box-shadow: var(--shadow-raised);
   color: var(--color-text-primary);
   cursor: pointer;
@@ -73,7 +83,7 @@
 }
 
 .night-tile-day {
-  font: var(--font-weight-bold) var(--font-size-h2) / 1.1 var(--font-headline);
+  font: var(--font-weight-bold) var(--font-size-h3) / 1.1 var(--font-headline);
   letter-spacing: var(--tracking-headline);
 }
 
@@ -131,15 +141,44 @@
 
 .board-main {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
   min-width: 0;
+  align-items: start;
+}
+
+/* A desktop: the times and the objects side by side, the ticket beside both. */
+@media (--xl) {
+  .board-grid {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    gap: var(--space-4);
+  }
+
+  .board-main {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+  }
+
+  .board-section-targets .board-targets {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+}
+
+/* Two hours side by side wherever the panel has room: the whole night on one screen. */
+.board-section-time {
+  container-type: inline-size;
+}
+
+@container (min-width: 36rem) {
+  .time-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-4);
+  }
 }
 
 .board-section {
-  padding: var(--space-6);
-  border: 1px solid var(--color-border-subtle);
+  padding: var(--space-5);
+  border: 1px solid var(--color-panel-edge);
   border-radius: var(--radius-panel);
-  background: var(--color-surface-raised);
   box-shadow: var(--shadow-raised);
 }
 
@@ -153,24 +192,8 @@
 }
 
 .board-step h2 {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
   margin: 0;
   font-size: var(--font-size-h3);
-}
-
-/* The step's number: the poster's red, in the label face. */
-.board-step-no {
-  flex: none;
-  overflow-wrap: normal;
-  color: var(--color-accent-ink);
-  font: var(--font-weight-semibold) var(--font-size-label) / 1 var(--font-label);
-  letter-spacing: var(--tracking-label);
-}
-
-.board-step-bare {
-  margin-bottom: calc(-1 * var(--space-2));
 }
 
 .board-aside {
@@ -182,15 +205,91 @@
 }
 
 .board-hint {
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-3);
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
+}
+
+/* ── ADR-110: the night band, sunset to sunrise ── */
+.night-band {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+}
+
+.night-band-bar {
+  position: relative;
+  overflow: hidden;
+  height: 2.5rem;
+  border: 1px solid var(--color-panel-edge);
+  border-radius: var(--radius-small);
+  background:
+    var(--gradient-stars) 0 0 / 340px 300px,
+    linear-gradient(
+      90deg,
+      var(--color-dusk) 0%,
+      var(--color-twilight) calc(var(--dusk) / 2),
+      var(--color-night-deep) var(--dusk),
+      var(--color-night-deep) var(--dawn),
+      var(--color-twilight) calc((var(--dawn) + 100%) / 2),
+      var(--color-dusk) 100%
+    );
+}
+
+.night-band-moon {
+  position: absolute;
+  inset-block: 0;
+  background: linear-gradient(180deg, var(--color-moonlight), transparent 85%);
+}
+
+.night-band-tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 0.375rem;
+  background: var(--color-line-strong);
+}
+
+.night-band-tick span {
+  position: absolute;
+  bottom: 0.625rem;
+  left: 0;
+  color: var(--color-text-tertiary);
+  font: var(--font-weight-medium) var(--font-size-kicker) / 1 var(--font-mono);
+  translate: -50% 0;
+}
+
+.night-band-run {
+  position: absolute;
+  inset-block: 0;
+  border-inline: 2px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+.night-band-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.night-band-legend b {
+  color: var(--color-text-primary);
+  font: var(--font-weight-medium) var(--font-size-caption) / 1.3 var(--font-mono);
+}
+
+.night-band-moon-key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 /* ── The quarter hours: an hour to a row ── */
 .time-grid {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
   user-select: none;
 }
 
@@ -214,7 +313,7 @@
 }
 
 .time-cell {
-  min-height: var(--size-touch);
+  min-height: 2.25rem;
   padding: 0;
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-small);
@@ -556,8 +655,8 @@
   top: calc(var(--size-bar) + var(--space-4));
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-6);
+  gap: var(--space-3);
+  padding: var(--space-5);
   border-radius: var(--radius-large);
   background: var(--color-paper);
   box-shadow: var(--shadow-paper);
@@ -572,14 +671,14 @@
 }
 
 .board-sum-time {
-  margin: calc(-1 * var(--space-2)) 0 0;
-  font: var(--font-weight-bold) var(--font-size-h1) / 1.1 var(--font-headline);
+  margin: calc(-1 * var(--space-1)) 0 0;
+  font: var(--font-weight-bold) var(--font-size-h2) / 1.1 var(--font-headline);
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--tracking-headline);
 }
 
 .board-sum-meta {
-  margin: calc(-1 * var(--space-3)) 0 0;
+  margin: calc(-1 * var(--space-2)) 0 0;
   color: var(--color-on-paper-2);
   font-size: var(--font-size-caption);
 }
@@ -821,6 +920,14 @@
   .time-row {
     grid-template-columns: minmax(0, 1fr) 2.25rem;
     gap: var(--space-2);
+  }
+
+  .time-cell {
+    min-height: var(--size-touch);
+  }
+
+  .night-band-tick.is-odd span {
+    display: none;
   }
 
   .board-targets {

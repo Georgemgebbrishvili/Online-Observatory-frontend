@@ -33,7 +33,7 @@
 
 .legal-toc a {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
   min-height: var(--size-touch);
   align-items: center;
@@ -51,12 +51,6 @@
 .legal-toc a:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
-}
-
-.legal-toc-number {
-  color: var(--color-text-tertiary);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-caption);
 }
 
 .legal-toc-pending a {
@@ -127,15 +121,6 @@
   gap: var(--space-3);
   margin: 0;
   font-size: var(--font-size-h2);
-}
-
-.legal-section-number {
-  flex-shrink: 0;
-  color: var(--color-accent-ink);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-mono);
-  font-weight: var(--font-weight-regular);
-  letter-spacing: normal;
 }
 
 .legal-section p {

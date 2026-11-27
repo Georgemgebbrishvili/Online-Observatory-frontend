@@ -50,6 +50,11 @@
   --st-mark-core: #c8102e;
   /* The social card's ember ground, amber name and blush kicker (opengraph-image.tsx). */
   --st-ember: #220b07;
+  /* ADR-110: the night itself on the app pages: a blue-black sky and the twilight either side. */
+  --st-sky-night: #0a1024;
+  --st-night-deep: #05070f;
+  --st-twilight: #2b3f73;
+  --st-dusk: #8a4a3c;
   --st-amber: #ffb347;
   --st-blush: #fae0d6;
   /* The homepage sky's canvas: warm and cool stars, the flare, the ignition bloom. */
@@ -220,6 +225,13 @@
   /* The booking board's Moon glyph (ADR-053 §7): its dark side and its lit side. */
   --color-moon-dark: #2a2a30;
   --color-moon-lit: #e6e3d6;
+  /* ADR-110: the night band and the night panels. */
+  --color-night-deep: var(--st-night-deep);
+  --color-twilight: var(--st-twilight);
+  --color-dusk: var(--st-dusk);
+  --color-moonlight: color-mix(in srgb, var(--color-moon-lit) 22%, transparent);
+  --color-panel-night: color-mix(in srgb, var(--st-sky-night) 55%, var(--st-canvas));
+  --color-panel-edge: color-mix(in srgb, var(--st-star-cool) 12%, transparent);
   /* The booking board's target cards (ADR-057): a wash and a glow in each object's colour. */
   --color-target-saturn: var(--st-target-saturn);
   --color-target-jupiter: var(--st-target-jupiter);

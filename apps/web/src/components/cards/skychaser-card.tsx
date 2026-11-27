@@ -14,7 +14,6 @@ export type CardFaceProps = {
   name: string;
   kind: string;
   prize: string;
-  position: number;
 };
 
 type SkychaserCardProps = {
@@ -122,12 +121,11 @@ export function SkychaserCard({
   );
 }
 
-function CardFront({ kind, name, position, prize, rarity, rarityLabel, slug }: CardFaceProps) {
+function CardFront({ kind, name, prize, rarity, rarityLabel, slug }: CardFaceProps) {
   const art = cardArt(slug);
   return (
     <div className="sdc-card sdc-card--front" data-rarity={rarity.toLowerCase()} data-face={slug ?? undefined}>
       <header className="sdc-top">
-        <span className="sdc-no">No. {String(position + 1).padStart(2, "0")}</span>
         <span className="sdc-tier">
           {rarityLabel}
           <i aria-hidden="true" />

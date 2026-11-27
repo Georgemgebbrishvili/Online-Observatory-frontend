@@ -12,6 +12,18 @@ type BookingsCopy = {
   /** The nights section on /app/book (ADR-051). */
   section: string;
   bookSlot: string;
+  /** ADR-110: the next night, large, above the list. */
+  ahead: {
+    label: string;
+    tonight: string;
+    tomorrow: string;
+    inDays: (days: number) => string;
+    open: string;
+  };
+  /** ADR-110: the account's nights in three figures, beside the list. */
+  summary: { title: string; ahead: string; observed: string; hours: string };
+  more: { title: string; cards: string; collection: string; gift: string };
+  illustrations: string;
   newest: string;
   older: string;
   empty: StateCopy;
@@ -72,6 +84,26 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     title: "Your bookings.",
     section: "Your nights",
     bookSlot: "Book a session",
+    ahead: {
+      label: "Next night",
+      tonight: "Tonight",
+      tomorrow: "Tomorrow",
+      inDays: (days) => `In ${days} days`,
+      open: "Open the booking",
+    },
+    summary: {
+      title: "Your sky",
+      ahead: "Nights ahead",
+      observed: "Nights observed",
+      hours: "Hours booked",
+    },
+    more: {
+      title: "More",
+      cards: "This week's cards",
+      collection: "Your captures",
+      gift: "Give a night",
+    },
+    illustrations: "Illustrations — not telescope output",
     newest: "Latest bookings",
     older: "Older bookings",
     empty: {
@@ -155,6 +187,26 @@ export const bookingsCopy: Record<"en" | "ka", BookingsCopy> = {
     title: "შენი ჯავშნები.",
     section: "შენი ღამეები",
     bookSlot: "დაჯავშნე სეანსი",
+    ahead: {
+      label: "შემდეგი ღამე",
+      tonight: "დღეს ღამით",
+      tomorrow: "ხვალ",
+      inDays: (days) => `${days} დღეში`,
+      open: "ჯავშნის გახსნა",
+    },
+    summary: {
+      title: "შენი ცა",
+      ahead: "წინ მყოფი ღამეები",
+      observed: "ნანახი ღამეები",
+      hours: "დაჯავშნილი საათები",
+    },
+    more: {
+      title: "მეტი",
+      cards: "კვირის ბარათები",
+      collection: "შენი კადრები",
+      gift: "აჩუქე ღამე",
+    },
+    illustrations: "ილუსტრაციები — არა ტელესკოპის გამოსახულება",
     newest: "ბოლო ჯავშნები",
     older: "უფრო ძველი ჯავშნები",
     empty: {

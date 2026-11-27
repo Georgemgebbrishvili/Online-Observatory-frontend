@@ -4,9 +4,12 @@ import { useState } from "react";
 
 import type { Target } from "@darkview/contracts";
 
+import { moonThatNight } from "@/components/booking/moon-glyph";
+import { NightBand } from "@/components/booking/night-band";
 import { NightStrip, type StripNight } from "@/components/booking/night-strip";
 import { TargetArt, targetAccent } from "@/components/booking/target-art";
 import { TimeGrid, type GridCell } from "@/components/booking/time-grid";
+import { nightSky } from "@/features/booking/night-sky";
 import { targetName } from "@/features/targets/present";
 import type { Locale } from "@/i18n/config";
 import { boardCopy } from "@/i18n/resources/board";
@@ -50,6 +53,8 @@ const clock = (at: string) =>
     hourCycle: "h23",
     timeZone: "Asia/Tbilisi",
   }).format(new Date(at));
+
+const bandNight = nightSky("2026-10-21", "Asia/Tbilisi");
 
 // One of each kind of card art, from the contract's shape; nothing here reads the sky.
 const base = targetSpecimens[0].target;
@@ -122,6 +127,19 @@ export function CalendarSpecimens({ locale }: { locale: Locale }) {
           groupLabel={bookingCopy[locale].nights}
           openLabel={copy.open}
           fullLabel={copy.full}
+        />
+      </div>
+      <div className="ds-calendar-wide">
+        {/* ADR-110: the fixed night of 21 October, with the chosen run on it. */}
+        <NightBand
+          sky={bandNight!}
+          moon={moonThatNight("2026-10-21", "Asia/Tbilisi")}
+          clock={(at) => clock(new Date(at).toISOString())}
+          words={copy.band}
+          run={{
+            from: Date.parse(cells[run.from].startAt),
+            to: Date.parse(cells[run.to].startAt) + 15 * 60_000,
+          }}
         />
       </div>
       <div className="ds-calendar-wide">

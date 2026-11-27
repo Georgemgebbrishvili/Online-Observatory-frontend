@@ -48,8 +48,7 @@
 .sdc-card::after { content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none; border-radius: inherit; padding: max(1.5px, .55cqw); background: linear-gradient(155deg, color-mix(in srgb, var(--card-accent) 55%, #fff) 0%, var(--card-accent) 22%, color-mix(in srgb, var(--card-accent) 55%, #000) 50%, var(--card-accent) 78%, color-mix(in srgb, var(--card-accent) 55%, #fff) 100%); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
 .sdc-card::before { content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 4cqw -1cqw color-mix(in srgb, var(--card-accent) 45%, transparent); }
 .sdc-card--front { display: flex; flex-direction: column; padding: 4.2% 4.2% 4.6%; background: radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--card-accent) 9%, #070707), #050505 70%); }
-.sdc-top { display: flex; justify-content: space-between; align-items: center; gap: 2cqw; min-height: 10.6cqw; padding: 0 1cqw; flex: none; }
-.sdc-no { color: color-mix(in srgb, var(--card-accent) 70%, #fff); font: 600 max(13px, 3.5cqw)/1 var(--font-mono); letter-spacing: .24em; text-transform: uppercase; }
+.sdc-top { display: flex; justify-content: flex-end; align-items: center; gap: 2cqw; min-height: 10.6cqw; padding: 0 1cqw; flex: none; }
 .sdc-tier {
   position: relative; overflow: hidden; isolation: isolate; padding: 1.9cqw 3.8cqw 1.7cqw; border-radius: 1.6cqw;
   --t-hi: color-mix(in srgb, var(--rarity) 30%, #fff); --t-up: color-mix(in srgb, var(--rarity) 60%, #fff); --t-mid: var(--rarity); --t-lo: color-mix(in srgb, var(--rarity) 70%, #000); --t-edge: color-mix(in srgb, var(--rarity) 45%, #000); --t-ink: color-mix(in srgb, var(--rarity) 20%, #000);
