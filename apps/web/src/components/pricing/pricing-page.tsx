@@ -240,22 +240,10 @@ export function PricingPage({ facts, locale }: { facts: PricingFacts; locale: Lo
               <Plan key={offering.id} copy={copy} facts={facts} locale={locale} offering={offering} />
             ))}
           </ol>
-          <p className="pricing-provisional">{copy.provisional}</p>
         </Container>
       </section>
 
       <Club copy={copy} facts={facts} locale={locale} />
-
-      <section className="page-section pricing-later-section" aria-labelledby="pricing-later-title">
-        <Container>
-          <div className="pricing-later">
-            <h2 id="pricing-later-title" className="plate-title">
-              {copy.laterTitle}
-            </h2>
-            <p>{copy.later}</p>
-          </div>
-        </Container>
-      </section>
 
       <PageGuide id="pricing" locale={locale} />
       <PageReveal />

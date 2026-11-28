@@ -27,8 +27,6 @@ const en = {
     holdInactive: "No hold",
     mission: "Observation in progress",
     target: "Current target",
-    lastMission: "Last completed observation",
-    never: "None yet",
     none: "None",
     unknown: "Unknown",
     yes: "Yes",
@@ -53,8 +51,6 @@ const en = {
   weatherSource: { OPERATOR: "The operator", SENSOR: "A sensor at the observatory" },
   conditions: {
     title: "Tonight's conditions",
-    detail:
-      "Hourly forecast. For guidance only; the operator decides on weather holds.",
     empty: "No bookable hours tonight.",
     hour: "Hour",
     cloud: "Cloud",
@@ -132,8 +128,6 @@ export const statusCopy = {
       holdInactive: "შეჩერება არ არის",
       mission: "მიმდინარე დაკვირვება",
       target: "მიმდინარე ობიექტი",
-      lastMission: "ბოლო დასრულებული დაკვირვება",
-      never: "ჯერ არ ყოფილა",
       none: "არცერთი",
       unknown: "უცნობია",
       yes: "კი",
@@ -159,8 +153,6 @@ export const statusCopy = {
     weatherSource: { OPERATOR: "ოპერატორი", SENSOR: "ობსერვატორიის სენსორი" },
     conditions: {
       title: "ამაღამის პირობები",
-      detail:
-        "საათობრივი პროგნოზი. მხოლოდ ორიენტირისთვის; პაუზაზე ოპერატორი წყვეტს.",
       empty: "ამაღამ დასაჯავშნი საათები არ არის.",
       hour: "საათი",
       cloud: "ღრუბლიანობა",

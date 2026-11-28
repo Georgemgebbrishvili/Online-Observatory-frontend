@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { AmbientLight } from "@/components/layout/ambient-light";
+import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale, locales } from "@/i18n/config";
 import { localizedMetadata, siteUrl } from "@/lib/seo";
@@ -70,13 +71,14 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   const dictionary = await getDictionary(locale);
   return (
-    <html lang={locale} className={fontVariables}>
+    <html lang={locale} className={fontVariables} data-scroll-behavior="smooth">
       <body>
         <a className="skip-link" href="#main-content">
           {dictionary.navigation.skip}
         </a>
         {children}
         <AmbientLight />
+        <SmoothScroll />
       </body>
     </html>
   );

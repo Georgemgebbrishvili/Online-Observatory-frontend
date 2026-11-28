@@ -212,18 +212,6 @@ export function StatusPage({
               {/* Present only while the session owner has opted in (ADR-007). */}
               {status.currentTargetName ?? copy.now.none}
             </Row>
-            <Row field="last-mission" label={copy.now.lastMission}>
-              {status.lastSuccessfulMissionAt ? (
-                <span className="data">
-                  {new Date(status.lastSuccessfulMissionAt).toLocaleString(
-                    locale === "ka" ? "ka-GE" : "en-GB",
-                    { dateStyle: "medium", timeStyle: "short", timeZone: timezone },
-                  )}
-                </span>
-              ) : (
-                copy.now.never
-              )}
-            </Row>
           </dl>
         </Container>
       </section>
@@ -248,7 +236,6 @@ export function StatusPage({
             <h2 id="status-conditions" className="status-heading">
               {copy.conditions.title}
             </h2>
-            <p className="status-advisory">{copy.conditions.detail}</p>
           </header>
 
           {hours.length === 0 ? (

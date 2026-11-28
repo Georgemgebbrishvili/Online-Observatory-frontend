@@ -78,33 +78,6 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
       eyebrow: "What a slot gives you",
       title: "Time with one real telescope.",
       lede: "The whole telescope is yours for the slot. No queue.",
-      pointsTitle: "Included with every slot",
-      points: [
-        {
-          title: "The telescope to yourself",
-          body: "One customer at a time. Nobody else can move it.",
-        },
-        {
-          title: "Your target, centred",
-          body: "The telescope finds and centres your target.",
-        },
-        {
-          title: "The live camera picture",
-          body: "Short exposures stack live as you watch.",
-        },
-        {
-          title: "Captures you keep",
-          body: "Every capture is saved in your Collection.",
-        },
-        {
-          title: "Seats for friends",
-          body: "Share a watch link with up to ten people.",
-        },
-        {
-          title: "Weather watched for you",
-          body: "If clouds roll in, the session holds. The refund policy covers it.",
-        },
-      ],
       faqTitle: "Paying and prices",
       faq: [
         {
@@ -189,33 +162,6 @@ export const guideCopy: Record<Locale, Record<GuideId, GuideCopy>> = {
       eyebrow: "რას გაძლევს სეანსი",
       title: "დრო ერთ ნამდვილ ტელესკოპთან.",
       lede: "სეანსის დროს მთელი ტელესკოპი შენია. რიგი არ არის.",
-      pointsTitle: "ყოველ სეანსში შედის",
-      points: [
-        {
-          title: "ტელესკოპი მხოლოდ შენთვის",
-          body: "სეანსისას მას სხვა ვერ ამოძრავებს.",
-        },
-        {
-          title: "შენი ობიექტი, დაცენტრებული",
-          body: "ტელესკოპი პოულობს შენს ობიექტს და ცენტრში აქცევს.",
-        },
-        {
-          title: "პირდაპირი გამოსახულება",
-          body: "მოკლე კადრები შენს თვალწინ გროვდება.",
-        },
-        {
-          title: "კადრები შენ გრჩება",
-          body: "ყოველი კადრი შენს კოლექციაში ინახება.",
-        },
-        {
-          title: "ადგილები მეგობრებისთვის",
-          body: "გაუზიარე ბმული ათამდე ადამიანს.",
-        },
-        {
-          title: "ამინდს ჩვენ ვადევნებთ თვალს",
-          body: "თუ მოიღრუბლა, სეანსი ჩერდება.",
-        },
-      ],
       faqTitle: "გადახდა და ფასები",
       faq: [
         {

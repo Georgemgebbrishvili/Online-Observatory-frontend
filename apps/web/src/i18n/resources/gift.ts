@@ -17,8 +17,6 @@ export const giftCopy = {
     price: "Price",
     priceUnknown: "Price unavailable. Try again shortly.",
     signIn: "Sign in to buy a gift",
-    signInNote:
-      "You need an account to pay. They need one to book.",
     form: {
       legend: "Who it is for",
       name: "Their name (optional)",
@@ -94,8 +92,6 @@ export const giftCopy = {
     price: "ფასი",
     priceUnknown: "ფასი ახლა ვერ ჩაიტვირთა. სცადე ცოტა ხანში.",
     signIn: "შედი საჩუქრის საყიდლად",
-    signInNote:
-      "საყიდლად ანგარიში გჭირდება, გამოსაყენებლად — მასაც.",
     form: {
       legend: "ვისთვის",
       name: "სახელი (არასავალდებულო)",

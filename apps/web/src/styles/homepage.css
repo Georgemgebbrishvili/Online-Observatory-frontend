@@ -25,15 +25,6 @@
   }
 }
 
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
 /* Every scene sits over the sky; those without it are opaque, so it shows only through
    the hero and the night. */
 .hs > section,

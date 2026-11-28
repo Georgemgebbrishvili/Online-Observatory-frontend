@@ -79,12 +79,9 @@ export default async function GiftPage({ params }: GiftPageProps) {
               </ul>
               <section className="gift-buy" aria-label={copy.form.legend}>
                 {!user ? (
-                  <>
-                    <ButtonLink href={`/${locale}/sign-in`} size="large">
-                      {copy.signIn}
-                    </ButtonLink>
-                    <p className="gift-note">{copy.signInNote}</p>
-                  </>
+                  <ButtonLink href={`/${locale}/sign-in`} size="large">
+                    {copy.signIn}
+                  </ButtonLink>
                 ) : slot ? (
                   <GiftForm durationMinutes={slot.durationMinutes} locale={locale} />
                 ) : null}

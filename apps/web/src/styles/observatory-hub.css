@@ -535,7 +535,8 @@
   align-items: center;
   gap: 3px;
 }
-/* A name takes two lines before it is cut: "Andromeda Galaxy" reads whole. */
+/* A name takes two lines before it is cut, and a word too long for the tile hyphenates
+   ("Andro-meda") instead of breaking at any letter ("Androme / da"). */
 .oh-best button > span {
   max-width: 100%;
   min-height: 2.4em;
@@ -543,7 +544,9 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 .oh-best button small {
   color: var(--mute);
@@ -1769,7 +1772,7 @@
 .oh-pipe li {
   position: relative;
   min-width: 0;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
   text-align: center;
   font-size: 13px;
   font-weight: 600;
@@ -1779,12 +1782,10 @@
 }
 .oh-pipe li:lang(ka) {
   letter-spacing: 0;
-  white-space: nowrap;
-  overflow-wrap: normal;
 }
-/* Georgian's step names run wider than a fifth of the card: every other one sits a line
-   lower, so each word has two columns to itself and none is broken. */
-.oh-pipe li:lang(ka):nth-child(even)::before {
+/* The step names run wider than a fifth of the card ("CENTE / R" in English): every
+   other one sits a line lower, so each word has two columns to itself and none breaks. */
+.oh-pipe li:nth-child(even)::before {
   margin-bottom: calc(4px + 1.35em);
 }
 .oh-pipe li::before {

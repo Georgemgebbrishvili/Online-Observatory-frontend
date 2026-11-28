@@ -43,10 +43,6 @@ export const pricingPageCopy = {
     earn: (points: number) => `${points} points per GEL paid`,
     redeem: (points: number) => `${points} points take 1 GEL off a booking`,
     welcome: (points: number) => `${points} points for confirming your email`,
-    provisional: "Prices may change before launch.",
-    laterTitle: "Later",
-    later:
-      "Subscriptions, passes and private sessions are planned. Not on sale yet.",
   },
   ka: {
     metadataTitle: `ფასები · ${brand.ka.nominative}`,
@@ -90,9 +86,5 @@ export const pricingPageCopy = {
     earn: (points: number) => `${points} ქულა ყოველ ლარზე`,
     redeem: (points: number) => `${points} ქულა = 1 ლარი ფასდაკლება`,
     welcome: (points: number) => `${points} ქულა ელფოსტის დადასტურებაზე`,
-    provisional: "ფასები გაშვებამდე შეიძლება შეიცვალოს.",
-    laterTitle: "მოგვიანებით",
-    later:
-      "მალე: გამოწერა, აბონემენტი, კერძო სეანსი.",
   },
 } as const;

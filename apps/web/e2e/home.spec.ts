@@ -637,11 +637,10 @@ test("shows what exists today, priced by the platform, without concept tiers", a
     page.getByRole("link", { name: /^Book a (slot|session)$/ }).first(),
   ).toHaveAttribute("href", "/en/app/book");
 
-  // Provisional once, and the future in one note.
-  await expect(page.getByText(/Prices may change before launch/)).toHaveCount(1);
+  // Live prices: no launch disclaimer and no "later" note (ADR-111).
   await expect(
-    page.getByText(/Subscriptions, passes and private sessions/),
-  ).toBeVisible();
+    page.getByText(/Prices may change before launch|Subscriptions, passes and private sessions/),
+  ).toHaveCount(0);
 
   // The internal configuration is not the public's business.
   await expect(

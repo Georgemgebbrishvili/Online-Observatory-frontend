@@ -23,6 +23,25 @@ html {
   overscroll-behavior-x: none;
   -webkit-tap-highlight-color: transparent;
   text-size-adjust: 100%;
+  /* An in-page link lands below the sticky header, not under it. */
+  scroll-padding-top: calc(var(--size-bar) + var(--space-4));
+}
+
+/* In-page links glide; the wheel is smoothed by Lenis (smooth-scroll.tsx), which turns
+   this off while it runs. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
 body {
