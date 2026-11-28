@@ -45,15 +45,15 @@ test("shows an hour with no forecast as unknown, never as clear", async ({ page 
   await expect(unknownRow.locator("td")).toHaveCount(1);
 });
 
-test("calls the forecast advisory and keeps the operator's hold authoritative", async ({
+test("shows the forecast without a disclaimer", async ({
   page,
 }) => {
   await page.goto("/en/status");
   await expect(page.getByRole("heading", { name: "Tonight's conditions" })).toBeVisible({
     timeout: firstCompile,
   });
-  await expect(page.getByText(/For guidance only/)).toBeVisible();
-  await expect(page.getByText(/the operator decides on weather holds/)).toBeVisible();
+  // The hold is the operator's, shown in "Right now"; the forecast says no more (ADR-111).
+  await expect(page.getByText(/For guidance only/)).toHaveCount(0);
 });
 
 test("shows thirty days of the link, with unmeasured days never drawn as up", async ({
